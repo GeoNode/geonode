@@ -104,6 +104,7 @@ def post_bootstrap(options):
     sh('bin/pip install -e ./')
 
 gs = "geoserver-build"
+gs_data = "gs-data"
 
 #@@ Move svn urls out to a config file
 
@@ -111,9 +112,17 @@ gs = "geoserver-build"
 def checkout_geoserver(options):
     with pushd('src'):
         svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
+
+@task
+def setup_gs_data(options):
+    if path(gs_data).exists(): 
+        path(gs_data).rmtree()
+    svn.checkout("http://svn.codehaus.org/geoserver/trunk/data/minimal",  gs_data)
     
 @task
 def setup_geoserver(options):
+    if not path(gs_data).exists():
+        call_task('setup_gs_data')
     if not (path('src') / gs).exists():
         call_task('checkout_geoserver')
     with pushd('src'):

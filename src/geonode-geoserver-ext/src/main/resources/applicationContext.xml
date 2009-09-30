@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="processRestletMapping" class="org.geoserver.rest.RESTMapping">
+    <property name="routes">
+      <map>
+        <entry>
+          <key><value>/process/hazard</value></key>
+          <value>processRestlet</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="processRestlet" class="org.geonode.rest.ProcessRestlet"/>
+</beans>
