@@ -69,7 +69,13 @@
         <version>6.1.10</version>
         <configuration>
           <contextPath>/geoserver</contextPath>
-          <stopPort>8080</stopPort>
+          <connectors>
+            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+              <port>8889</port>
+              <maxIdleTime>10000</maxIdleTime>
+            </connector>
+          </connectors>
+
           <webApp>${project.build.directory}/geoserver-geonode-dev</webApp>
         </configuration>
       </plugin>
