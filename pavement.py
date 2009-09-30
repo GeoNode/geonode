@@ -109,7 +109,8 @@ gs = "geoserver-build"
 
 @task
 def checkout_geoserver(options):
-    svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
+    with pushd('src'):
+        svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
     
 @task
 def setup_geoserver(options):
@@ -117,6 +118,7 @@ def setup_geoserver(options):
         call_task('checkout_geoserver')
     with pushd('src'):
         with pushd(gs):
+            sh('mvn install')
             sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.0-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
         with pushd('geonode-geoserver-ext'):
             sh("mvn install")
