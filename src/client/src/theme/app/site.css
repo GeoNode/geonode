@@ -101,6 +101,8 @@ text-align:center;
  }
 
 ul#sitenav li a { 
+text-align: center;
+width: 12.4%;
 display: block;
 float: left;
 vertical-align:middle;
@@ -112,13 +114,20 @@ text-decoration: none;
 background: transparent url(img/mainnav-sep.gif) no-repeat scroll right bottom;
  }
 
+ul#sitenav li.last a { background: none; }
+
 ul#sitenav li a.here{ 
 font-weight:bold;
 color: #000;
  }
 
  h3 { 
- color: #C21317;
+ color: #C21317; 
+ }
+
+h4 { 
+font-weight:bold;
+color: #C21317; 
  }
 
 div#sidebar{ 
@@ -126,6 +135,35 @@ div#sidebar{
   width: 350px; 
   clear:none;
 }
+
+
+div#sidebar ul, div#main ul, div#sidebar ol, div#main ol{ 
+  list-style-position: inside;
+}
+
+div#featured-map-metadata{
+border:1px solid black;
+background-color: #EEE;
+padding: 1em;
+ }
+
+div#featured-map-metadata p{
+margin-bottom: 0;
+}
+
+
+div#featured-map-metadata h4{
+height:auto;
+margin-bottom: 1em;
+ }
+
+
+div#featured-map-header{ 
+text-transform:uppercase;
+color: #333;
+font-weight: bold;
+margin-bottom:.75em;
+ }
 
 #main{
   float:left;
@@ -138,6 +176,14 @@ div#sidebar{
   background-color: #CCCCFF;
  }
 
+
+p, ul, ol { 
+margin-bottom: 2em;
+}
+
+code { 
+font-family: "Courier New", Monospace;
+}
 
 /* CAPRA Styles */
 
