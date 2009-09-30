@@ -10,7 +10,7 @@ def proxy(request):
         return HttpResponse('The proxy service requires a URL-encoded URL as a parameter.', status=400, content_type="text/plain")
 
     url = urlsplit(request.GET['url'])
-    locator = '/' + url.path
+    locator = url.path
     if url.query != "":
         locator += '?' + url.query
     if url.fragment != "":
