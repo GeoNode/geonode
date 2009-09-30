@@ -1,6 +1,8 @@
 from geonode.maps.models import Map
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.conf import settings
+
 try:
     import json
 except ImportError:
@@ -16,16 +18,16 @@ DEFAULT_MAP_CONFIG = {
         "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>."
     },
     "wms": {
-        "capra": "http://capra.opengeo.org/geoserver/wms/"
+        "capra": "%swms" % settings.GEOSERVER_BASE_URL
     },
     "map": {
         "layers": [ {
-            "name": "risk:nicaragua_admin",
+            "name": "base:nicaragua_admin",
             "wms": "capra",
             "group": "background"
         } ],
         "center": [-84.7, 12.8],
-        "zoom": 5
+        "zoom": 7
     }
 }
 
@@ -137,7 +139,9 @@ def view_js(request, mapid):
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
    
 def static(request, page):
-    return render_to_response('maps/' + page + '.html')
+    return render_to_response('maps/' + page + '.html', {
+        'GEOSERVER_BASE_URL': settings.GEOSERVER_BASE_URL
+    })
 
 def lang(request): 
     return render_to_response('maps/lang.js', mimetype="text/javascript")

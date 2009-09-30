@@ -75,6 +75,8 @@ def path_extrapolate(stub, pkg='GeoNode'):
 
 TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
                 path_extrapolate('django/contrib/admin/templates', 'django'),
+               
+GEOSERVER_BASE_URL = "http://capra.opengeo.org/geoserver/"
 
 INSTALLED_APPS = (
     'django.contrib.auth',

@@ -6,7 +6,7 @@
 <script type="text/javascript">
 Ext.onReady(function(){
     var app = new DataPage({
-        ows: "http://capra.opengeo.org/geoserver/wms",
+        ows: "{{GEOSERVER_BASE_URL}}wms",
         proxy: "/proxy/?url=",
         url: '/geoserver',
         ame_link_prefix: 'http://capra.opengeo.org/dev/'
