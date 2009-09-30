@@ -9,3 +9,6 @@ development.db
 pip-log.txt
 geonode.bundle
 *~
+src/geoserver-build/
+src/pil/
+src/wsgiproxy/
