@@ -114,6 +114,11 @@ def checkout_geoserver(options):
         svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
     
 @task
+def setup_gs_data(options):
+    path(gs_data).rmtree()
+    svn.checkout("http://svn.codehaus.org/geoserver/trunk/data/minimal",  gs_data)
+    
+@task
 def setup_geoserver(options):
     if not path(gs_data).exists():
         call_task('setup_gs_data')

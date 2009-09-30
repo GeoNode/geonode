@@ -2,7 +2,7 @@
 Django
 dj.paste
 
--e third-party svn+http://svn.repoze.org/thirdparty/PIL/trunk#egg=PIL
+http://svn.repoze.org/thirdparty/PIL/trunk#egg=PIL
 http://www.reportlab.org/ftp/ReportLab_2_3.tar.gz#egg=reportlab
 simplejson # needed for python2.5
 
