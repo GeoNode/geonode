@@ -5,36 +5,65 @@
 {% block developerclass %} class="here" {%endblock%}
 
 {% block main %}
-<h3>{% trans "What are OGC Services?" %}</h3>
-<p>
-{% blocktrans %} 
-The data in this application is served using open standards endorsed by the Open Geospatial Consortium; in particular, WMS (the Web Mapping Service) is used for accessing maps and WFS (the Web Feature Service) is used for accessing data. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).
-{% endblocktrans %}
-</p>
+<p>The CAPRA GeoNode is an open service built on open source software.  We encourage you to build new applications using the its components and the resources it provides.  This page is a starting point for developers interesting in taking full advantage of the GeoNode.  It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>
 
-<h3>{% trans "OpenLayers Example Code" %}</h3>
-<p>{% blocktrans %} 
-To include a CAPRA map layer in an OpenLayers map, first find the name for that layer (available in the 'name' field (not title) of the layer list. For this example, we will use the Central American political boundaries background layer, whose name is 'overlay:CA'. Then, create an instance of OpenLayers.Layer.WMS: 
-{% endblocktrans %}
-</p>
-<code>
-    var capraLayer = new OpenLayers.Layer.WMS("CAPRA Risk Data", "http://capra.opengeo.org/geoserver/wms",{ layers: "overlay:CA" });
-</code>
+<h4>GeoNode Software</h4>
 
-<h3>{% trans "GeoTools Example Code" %}</h3>
-<p>
-{% blocktrans %}
-Create a DataStore and extract a FeatureType from it, then run a Query. It's all documented on the wiki at http://geotools.org/ .
-{% endblocktrans %}
-</p>
+<p>All the code that runs the GeoNode is open source. 
+ The code is available at <a href="http://svn.opengeo.org/CAPRA/">http://svn.opengeo.org/CAPRA/</a>. 
+ The issue tracker for the project is at <a href="http://projects.opengeo.org/CAPRA">http://projects.opengeo.org/CAPRA</a>.</p>
+
+<p>The GeoNode is built using several open source projects, each with its own community. 
+If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the  projects on which it is built:</p>
+<ul>
+<li><a href='http://geoext.org'>GeoExt</a> - The JavaScript toolkit for rich web mapping applications</li>
+<li><a href='http://openlayers.org'>OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</lie>
+<li><a href='http://geowebcache.org'>GeoWebCache</a> - Cache engine for WMS Tiles</li>
+<li><a href='http://geoserver.org'>GeoServer</a> - Standards based server for geospatial information</li>
+</ul>
+
+<h4>What are OGC Services?</h4>
+
+<p>The data in this application is served using open standards endorsed by the <a href='http://opengeospatial.org'>Open Geospatial Consortium</a>; in particular, WMS (Web Mapping Service) is used for accessing maps and WFS (the Web Feature Service) is used for accessing data.  You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).</p>
+
+<h4>What is GeoWebCache?</h4>
+
+<p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers.  All the data hosted by the GeoNode is also available through GeoWebCache.  GeoWebCache improves on WMS by caching data and returning it much more quickly.</p>
+
+<h4>OpenLayers Example Code</h4>
+
+<p>To include a CAPRA map layer in an OpenLayers map, first find the name for that layer. 
+ This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list.
+ For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>.
+ Then, create an instance of OpenLayers.Layer.WMS:</p>
+
+<p><code>var capraLayer = new OpenLayers.Layer.WMS("CAPRA Risk Data", "http://capra.opengeo.org/geoserver/wms",{ layers: "risk:nicaragua_admin" });</code></p>
+
+<h4>Google Maps Example Code</h4>
+
+<p>To include a CAPRA map layer in a Google Map, include the layer name in the URL template.</p>
+
+<p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://capra.opengeo.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&zoom={Z}&x={X}&y={Y}', isPng:true, opacity:0.5 } );</code></p>
+
+<h4>Shapefile/GeoJSON/GML Output</h4>
+
+<p>To get data from the GeoNode web services use the WFS protocol.  For example, to get the full Nicaraguan admin boundaries use:</p>
+
+<p><code>http://capra.opengeo.org/geoserver/wfs?request=GetFeature&typeName=risk:nicaragua_admin&outputformat=SHAPE-ZIP</code></p>
+
+<p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats.  The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>
+
+<h4>GeoTools Example Code</h4>
+
+<p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>
 {% endblock %}
 {% block sidebar %}
-<h3>{% trans "CAPRA's OGC Services" %}</h3>
-{% blocktrans %}
-CAPRA's OGC Services are available from the following URLs:
-{% endblocktrans %}
+<h3>CAPRA's Web Services</h3>
+
+<p>CAPRA's Web Services are available from the following URLs:</p>
 <ul>
-    <li>WMS: http://capra.opengeo.org/geoserver/wms</li>
-    <li>WFS: http://capra.opengeo.org/geoserver/wfs</li>
-</ul>
+<li><b>WMS:</b> <code>http://capra.opengeo.org/geoserver/wms</code></li>
+<li><b>WFS:</b> <code>http://capra.opengeo.org/geoserver/wfs</code></li>
+<li><b>GeoWebCache Tiles:</b> <code>http://capra.opengeo.org/geoserver/gwc</code></li>
+<li><b>KML through WMS:</b> <code>http://capra.opengeo.org/geoserver/wms/kml?layers=&lt;layername&gt;</code></li>
 {% endblock %}

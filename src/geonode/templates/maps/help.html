@@ -3,17 +3,55 @@
 {% block helpclass %} class="here" {% endblock %}
 {% block title %} {% trans "User Guide" %} {% endblock %}
 {% block main %} 
-<h3> {% trans "Using the GeoNode" %} </h3>
 {% blocktrans %}
-The CAPRA GeoNode provides access to risk data as well as particular refined data sets which can be freely combined to created maps that visualize particular risks for specific regions.  The GeoNode consists of three main sections:
-{% endblocktrans %}
+<p>The CAPRA GeoNode provides access to risk data as well as particular refined data sets.  These can be freely combined to create maps that visualize risks for specific regions.  A map editing  application allows users to browse existing maps and contribute their own.</p>
+<a name='browsing-data'><h4>Browsing Data</h4></a>
+<p>The <a href='data.html'>Data</a> tab allows you to browse data produced for the CAPRA project.</p>
+<p>All data can  be downloaded in a variety of formats, for use in  other applications.</p>
+<p>Three kinds of data are available:</p>
 <ul>
-    <li><strong>{% trans "A map browser" %}</strong> {% blocktrans %} that allows you to expore the maps already contributed by the community.  There is also a {% endblocktrans %} <strong> {% trans "featured map browser" %}</strong> {% blocktrans %} which highlights particularly effective or interesting maps selected by CAPRA. {% endblocktrans %} </li>
-    <li><strong>{% trans "A data browser" %}</strong> {% blocktrans %} that allows you to view the individual data sets that are available.  You can use these data sets to create your own maps. {% endblocktrans %}</li>
-    <li><strong>{% trans "A map editor" %}</strong> {% blocktrans %} that lets you view maps created by others, create your own maps (either from scratch or by customizing existing maps), and share your maps with the CAPRA community. {% endblocktrans %} </li>
+  <li>The Risk section contains the actual risk maps resulting from the hazard layers and the risk models. </li>
+  <li>The Hazard section consists of the .AME data files that represent the probabilities of various hazards (earthquakes, landslides, cyclones, etc.) over different amounts of time.  A whole .AME file can be downloaded to power a new risk model, or individual slices of the .AME can be downloaded as GeoTiffs.</li>
+  <li>The Base layer section contains all the base data sets that go in to constructing the hazard and risk models, so that anyone who is interested in creating and running their own models can start with the exact same datasets.</li>
 </ul>
+
+<a name='developer-access'><h4>Developer Access</h4></a>
+<p>The <a href='developer.html'>Developer</a> tab is the place for developers to get started building applications against the CAPRA  GeoNode.  It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.<p>
+
+<a name='browsing-maps'><h4>Browsing Maps</h4></a>
+<p>The CAPRA GeoNode allows users to create and share maps with one another.</p>
+<p>The <a href='featured.html'>CAPRA Maps</a> tab highlights the best maps on the site, selected by the CAPRA team.</p>
+<p>The <a href='community.html'>Contributed Maps</a> tab shows the maps that have been contributed by the community.  Any map created in the Map Editor will be automatically listed on the page.</p>
+<p>To view any of the maps on either tab simply click on the title and then hit <b>Open Map</b> button.  This will open the <a href='map.html'>Map Composer</a> to your selected map.</p>
+<h5>Google Earth Mode</h5>
+<p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin.  To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar.  If you do not have the Google Earth plugin installed you will be prompted to install it. </p>
+<a name='creating-a-map'><h4>Creating a Map</h4></a>
+<p>To create a new map go to the <a href='community.html'>Contributed Maps</a> tab and click the <a href='map.html'>create your own map</a> link.</p>
+<p> This will take you to the <a href='map.html'>Map Composer</a> with a base layer loaded.</p>
+<p>To add data layers from the CAPRA GeoNode click on the green plus button located below the Data tab on the left hand side of the screen.  This will open a dialog listing all the layers available on the CAPRA GeoNode.</p>
+<p>To add layers to your map select them and hit the <b>Add Layers</b> button.  When finished you may hit <b>Done</b> to close the dialog and go back to the map.</p>
+<h5>Reordering and Removing Layers</h5>
+<p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names.  The order in the map will be updated to reflect that.  To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>
+<h5>Saving your map</h5>
+<p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  To do this select the '+' icon to the right of 'About this Map'.  This should expand in to a dialog to customize the Title, Contact, Abstract and Tags.  These will appear in the online list of maps, and will be used to search for the created map, so be as detailed as possible.  After filling out this basic information you then save the map.  This is the left most icon on the top toolbar, an image of a map with a disk.</p>
+<a name='exporting-a-map'><h4>Exporting a Map</h4></a>
+<p>Any map from the GeoNode can be embedded for use in another site or blog.  To export a map:</p><ol><li>Select the from the list of maps on the community or CAPRA map page and then hit the 'export map' button.</li> <li>Choose your desired height and width for the widget in the wizard.</li> <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li></ol><p>This will put an interactive widget showing you map in your web pageor blog post.  The <a href='index.html'>Featured Map</a> page ispowered by just this kind of widget..</p><p>Note that the <a href='map.html'>Map Composer</a> also has a button to export the map.  Just be sure to save the map before exporting if there are changes that you want others to see.  It exports the last saved version, not the last viewed version.</p>
+<a name='remixing-a-map'><h4>Remixing a Map</h4></a><p>Any map available can serve as a starting point for a new map.</p>
+<ol><li>Open the map.</li><li>Add and remove layers as you like.</li><li>Pan and zoom to highlight the area of interest.</li><li><b>IMPORTANT:</b> Update the title, abstract, contact info and tags to reflect the new map.</li><li>Save the map.</li></ol>
+You will be able to see your new map in the <a href='community.html'>Contributed Maps</a> tab.</p>
+{% endblocktrans %}
 {% endblock %}
 {% block sidebar %} 
-<h3>{% trans "About the Sidebar" %}</h3>
-{% blocktrans %} Sometimes there is interesting information here. {% endblocktrans %}
+<h3>{% trans "GeoNode Help" %}</h3>
+{% blocktrans %} 
+<p>This page provides helpful information about how to use the GeoNode.  You can use the links below to navigate to what you want to know.</p>
+<ul>
+  <li><a href='#browsing-data'>Browsing Data</a></li>
+  <li><a href='#developer-access'>Developer Access</a></li>
+  <li><a href='#browsing-maps'>Browsing Maps</a></li>
+  <li><a href='#creating-a-map'>Creating a Map</a></li>
+  <li><a href='#exporting-a-map'>Exporting a Map</a></li>
+  <li><a href='#remixing-a-map'>Remixing a Map</a></li>
+</ul>
+{% endblocktrans %}
 {% endblock %}
