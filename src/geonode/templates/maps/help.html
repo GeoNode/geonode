@@ -1,0 +1,19 @@
+{% extends "maps/page_layout.html" %}
+{% load i18n %}
+{% block helpclass %} class="here" {% endblock %}
+{% block title %} {% trans "User Guide" %} {% endblock %}
+{% block main %} 
+<h3> {% trans "Using the GeoNode" %} </h3>
+{% blocktrans %}
+The CAPRA GeoNode provides access to risk data as well as particular refined data sets which can be freely combined to created maps that visualize particular risks for specific regions.  The GeoNode consists of three main sections:
+{% endblocktrans %}
+<ul>
+    <li><strong>{% trans "A map browser" %}</strong> {% blocktrans %} that allows you to expore the maps already contributed by the community.  There is also a {% endblocktrans %} <strong> {% trans "featured map browser" %}</strong> {% blocktrans %} which highlights particularly effective or interesting maps selected by CAPRA. {% endblocktrans %} </li>
+    <li><strong>{% trans "A data browser" %}</strong> {% blocktrans %} that allows you to view the individual data sets that are available.  You can use these data sets to create your own maps. {% endblocktrans %}</li>
+    <li><strong>{% trans "A map editor" %}</strong> {% blocktrans %} that lets you view maps created by others, create your own maps (either from scratch or by customizing existing maps), and share your maps with the CAPRA community. {% endblocktrans %} </li>
+</ul>
+{% endblock %}
+{% block sidebar %} 
+<h3>{% trans "About the Sidebar" %}</h3>
+{% blocktrans %} Sometimes there is interesting information here. {% endblocktrans %}
+{% endblock %}

@@ -1,0 +1,34 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Using a Layer.Text to display markers</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var map, layer;
+
+        function init(){
+            OpenLayers.ProxyHost="/proxy/?url=";
+            map = new OpenLayers.Map('map');
+            layer = new OpenLayers.Layer.WMS( "OpenLayers WMS", 
+                "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} );
+                
+            map.addLayer(layer);
+
+            var newl = new OpenLayers.Layer.Text( "text", {location: "./textfile.txt"} );
+            map.addLayer(newl);
+
+            map.addControl(new OpenLayers.Control.LayerSwitcher());
+            map.zoomToMaxExtent();
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">Using a Layer.Text to display markers</h1>
+    <p id="shortdesc">
+      The Layer.Text class reads a Tab seperated values file and displays it as markers on
+      the map.
+    </p>  
+    <div id="map" class="smallmap"></div>
+  </body>
+</html>

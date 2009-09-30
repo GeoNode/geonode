@@ -1,0 +1,104 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <title>{% block title %} {% endblock %} - CAPRA GeoNode</title>
+
+        <!-- IE 8 Compatibility -->
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+
+        <link rel="shortcut icon" href="/static/theme/app/img/favicon.ico"/>
+
+        <!-- Ext resources -->
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/resources/css/xtheme-gray.css" />
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-2.2.1/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-2.2.1/ext-all.js"></script>
+
+        <!-- OpenLayers resources -->
+        <link rel="stylesheet" type="text/css" href="/static/theme/ol/style.css" />
+        <script src="/static/script/OpenLayers.js"></script>
+
+        <!-- GeoExt resources -->
+        <link rel="stylesheet" type="text/css" href="/static/theme/gx/css/geoext-all-debug.css" />
+        <link rel="stylesheet" type="text/css" href="/static/theme/gx/css/gxtheme-gray.css" />
+        <script src="/static/script/GeoExt.js"></script> 
+
+        <!-- GeoExplorer resources -->
+        <link rel="stylesheet" type="text/css" href="/static/theme/app/geoexplorer.css" />
+        <!--[if IE]><link rel="stylesheet" type="text/css" href="/static/theme/app/ie.css"/><![endif]-->
+        <script src="/static/script/ux.js"></script> 
+        <script src="/static/script/GeoExplorer.js"></script> 
+
+        <link rel="stylesheet" type="text/css" href="/static/theme/app/site.css" />
+        <script type="text/javascript" src="{% url GeoNode.maps.views.lang %}"></script>
+        <script id="app-locale" type="text/javascript"></script>
+        {% block header_append %}
+        {% endblock %}
+    </head>
+    <body>
+        <div id="container" class="selfclear">
+            <div class="clearfix" id="ja-topbar">
+                <div id="ja-pathway">
+
+                </div>
+                <div class="clearfix" id="ja-search">
+                    <a title="CAPRA"  href="#" id="spanish"> </a>
+                    <a title="CAPRA" href="#" id="english"></a> 
+                    <a title="CAPRA" id="home" href="http://ecapra.org/en/index.php"></a>
+                </div>
+            </div>
+            <div id="header"></div>
+            {% block nav %}
+            <ul id="sitenav" class="selfclear">
+                <li>
+                <a {%block dataclass%}{%endblock%}
+                    href="{%url GeoNode.maps.views.static page='data' %}" 
+                    id="dataLink">
+                    {% trans "Data" %}
+                </a>
+                </li>
+                <li>
+                <a {%block developerclass%}{%endblock%}
+                    href="{%url GeoNode.maps.views.static page='developer' %}" 
+                    id="developerLink">
+                    {% trans "OGC Services" %}
+                </a>
+                </li>
+                <li>
+                <a {%block indexclass%}{%endblock%}
+                    href="{%url GeoNode.maps.views.index %}" 
+                    id="indexLink">
+                    {% trans "Featured Map" %}
+                </a>
+                </li>
+                <li>
+                <a {%block featuredclass%}{%endblock%}
+                    href="{%url GeoNode.maps.views.maps %}" 
+                    id="featuredLink">
+                    {% trans "CAPRA Maps" %}
+                </a>
+                </li>
+                <li>
+                <a {%block communityclass%}{%endblock%}
+                    href="{%url GeoNode.maps.views.community %}" 
+                    id="communityLink">
+                    {% trans "Contributed Maps" %}
+                </a>
+                </li>
+                <li>
+                <a {%block helpclass%}{%endblock%}
+                    href="{%url GeoNode.maps.views.static page='help'%}" 
+                    id="helpLink">
+                    {% trans "About This Site" %}
+                </a>
+                </li>
+            </ul>
+            {% endblock %}
+
+            <div id="main"> {% block main %} {% endblock %} </div>
+            <div id="sidebar"> {% block sidebar %} {% endblock %} </div>
+        </div>
+    </body>
+</html>
+

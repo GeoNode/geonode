@@ -1,0 +1,30 @@
+{% extends "maps/page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Community Map List" %} {% endblock %}
+
+{% block communityclass %} class="here" {% endblock %}
+
+{% block main %}
+<h3>{% trans "Welcome to CAPRA GeoNode!" %}</h3>
+{% if maps %}
+<p> {% trans "The Community Map Listing:" %}</p>
+<ul>
+    {% for m in maps %}
+    <p>
+        <a href="{{m.get_absolute_url}}">{{m.title}}</a> by {{m.contact}} 
+        <div style="font-size: smaller">{{m.abstract}}</div>
+    </p>
+    {% endfor %}
+</ul>
+{% else %}
+<p> {% blocktrans %}The GeoNode doesn't have any community maps yet.  You should {% endblocktrans %} <a href="{%url GeoNode.maps.views.newmap %}">{% trans "make one" %}.</a></p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<h3> {% trans "Sidebar Content" %} </h3>
+{% blocktrans %}
+The sidebar contains useful, but not urgent information.  Check it out, if you like.
+{% endblocktrans %}
+{% endblock %}

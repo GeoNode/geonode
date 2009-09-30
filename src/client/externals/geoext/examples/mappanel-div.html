@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>GeoExt MapPanel Example</title>
+
+        <script type="text/javascript" src="http://extjs.cachefly.net/builds/ext-cdn-771.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/examples/shared/examples.css" />
+        <script src="http://openlayers.org/api/2.8/OpenLayers.js"></script>
+        <script type="text/javascript" src="../lib/GeoExt.js"></script>
+
+        <script type="text/javascript" src="mappanel-div.js"></script>
+
+    </head>
+    <body>
+        <h1>GeoExt.MapPanel with an Existing OpenLayers.Map</h1>
+        <p>This example shows the how to create a MapPanel with a map that has
+        already been created.  See <a href="mappanel-window.html">mappanel-window.html</a>
+        for an example that creates the MapPanel without creating the map first.<p>
+        <p>The js is not minified so it is readable. See <a href="mappanel-div.js">mappanel-div.js</a>.</p>
+        <div id="mappanel"></div>
+        <input type="button" onclick="mapSizeUp()" value="bigger"></input>
+        <input type="button" onclick="mapSizeDown()" value="smaller"></input>
+    </body>
+</html>

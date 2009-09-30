@@ -1,0 +1,160 @@
+<html> 
+<head> 
+    <script src="../../../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+    
+    var test_xml =
+        '<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">' +
+            '<ogc:Or>' +
+                '<ogc:PropertyIsBetween>' +
+                    '<ogc:PropertyName>number</ogc:PropertyName>' +
+                    '<ogc:LowerBoundary>' +
+                        '<ogc:Literal>1064866676</ogc:Literal>' +
+                    '</ogc:LowerBoundary>' +
+                    '<ogc:UpperBoundary>' +
+                        '<ogc:Literal>1065512599</ogc:Literal>' +
+                    '</ogc:UpperBoundary>' +
+                '</ogc:PropertyIsBetween>' +
+                '<ogc:PropertyIsLike wildCard="*" singleChar="." escape="!">' +
+                    '<ogc:PropertyName>cat</ogc:PropertyName>' +
+                    '<ogc:Literal>*dog.food!*good</ogc:Literal>' +
+                '</ogc:PropertyIsLike>' +
+                '<ogc:Not>' +
+                    '<ogc:PropertyIsLessThanOrEqualTo>' +
+                        '<ogc:PropertyName>FOO</ogc:PropertyName>' +
+                        '<ogc:Literal>5000</ogc:Literal>' +
+                    '</ogc:PropertyIsLessThanOrEqualTo>' +
+                '</ogc:Not>' +
+            '</ogc:Or>' +
+        '</ogc:Filter>';
+
+    function test_read(t) {
+        t.plan(3);
+
+        var parser = new OpenLayers.Format.Filter.v1_0_0();
+        var xml = new OpenLayers.Format.XML();
+        var filter = parser.read(xml.read(test_xml).documentElement);
+
+        t.ok(filter instanceof OpenLayers.Filter.Logical, "instance of correct class");
+        t.eq(filter.type, OpenLayers.Filter.Logical.OR, "correct type");
+        t.eq(filter.filters.length, 3, "correct number of child filters");
+    }
+    
+    function test_write(t) {
+        t.plan(1);
+
+        // read first - testing that write produces the ogc:Filter element above
+        var parser = new OpenLayers.Format.Filter.v1_0_0();
+        var xml = new OpenLayers.Format.XML();
+        var filter = parser.read(xml.read(test_xml).documentElement);
+        
+        var node = parser.write(filter);
+        t.xml_eq(node, test_xml, "filter correctly written");
+        
+    }
+    
+    function test_BBOX(t) {
+        t.plan(1);
+        var filter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.BBOX,
+            property: "the_geom",
+            value: new OpenLayers.Bounds(-180, -90, 180, 90),
+            projection: "EPSG:4326"
+        });
+        
+        var out =
+            '<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">' +
+                '<ogc:BBOX>' +
+                    '<ogc:PropertyName>the_geom</ogc:PropertyName>' +
+                    '<gml:Box xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326">' +
+                        '<gml:coordinates decimal="." cs="," ts=" ">-180,-90 180,90</gml:coordinates>' +
+                    '</gml:Box>' +
+                '</ogc:BBOX>' +
+            '</ogc:Filter>';
+        
+        var parser = new OpenLayers.Format.Filter.v1_0_0();
+        var node = parser.write(filter);
+        
+        t.xml_eq(node, out, "bbox correctly written");
+    }
+
+    function test_DWithin(t) {
+        
+        t.plan(6);
+        
+        var str =
+            '<Filter xmlns="http://www.opengis.net/ogc">' +
+                '<DWithin>' +
+                    '<PropertyName>Geometry</PropertyName>' +
+                    '<gml:Point xmlns:gml="http://www.opengis.net/gml">' +
+                        '<gml:coordinates decimal="." cs="," ts=" ">2488789,289552</gml:coordinates>' +
+                    '</gml:Point>' +
+                    '<Distance units="m">1000</Distance>' +
+                '</DWithin>' +
+            '</Filter>';
+
+        var format = new OpenLayers.Format.Filter.v1_0_0();
+        var filter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.DWITHIN,
+            property: "Geometry",
+            value: new OpenLayers.Geometry.Point(2488789,289552),
+            distance: 1000,
+            distanceUnits: "m"
+        });
+        
+        // test writing
+        var node = format.write(filter);
+        t.xml_eq(node, str, "filter correctly written");
+        
+        // test reading
+        var doc = (new OpenLayers.Format.XML).read(str);
+        var got = format.read(doc.firstChild);
+        t.eq(got.type, filter.type, "read correct type");
+        t.eq(got.property, filter.property, "read correct property");
+        t.geom_eq(got.value, filter.value, "read correct value");
+        t.eq(got.distance, filter.distance, "read correct distance");
+        t.eq(got.distanceUnits, filter.distanceUnits, "read correct distance units");
+
+    }
+
+    function test_Intersects(t) {
+        
+        t.plan(4);
+        
+        var str =
+            '<Filter xmlns="http://www.opengis.net/ogc">' +
+                '<Intersects>' +
+                    '<PropertyName>Geometry</PropertyName>' +
+                    '<gml:Box xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326">' +
+                        '<gml:coordinates decimal="." cs="," ts=" ">-180,-90 180,90</gml:coordinates>' +
+                    '</gml:Box>' +
+                '</Intersects>' +
+            '</Filter>';
+
+        var format = new OpenLayers.Format.Filter.v1_0_0();
+        var filter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.INTERSECTS,
+            property: "Geometry",
+            value: new OpenLayers.Bounds(-180, -90, 180, 90),
+            projection: "EPSG:4326"
+        });
+        
+        // test writing
+        var node = format.write(filter);
+        t.xml_eq(node, str, "filter correctly written");
+        
+        // test reading
+        var doc = (new OpenLayers.Format.XML).read(str);
+        var got = format.read(doc.firstChild);
+        t.eq(got.type, filter.type, "read correct type");
+        t.eq(got.property, filter.property, "read correct property");
+        t.eq(got.value.toArray(), filter.value.toArray(), "read correct value");
+
+    }
+
+
+    </script> 
+</head> 
+<body>
+</body> 
+</html> 

@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>GeoExt Toolbar Example</title>
+
+        <script type="text/javascript" src="http://extjs.cachefly.net/builds/ext-cdn-771.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/examples/shared/examples.css" />
+        <script src="http://openlayers.org/api/2.8/OpenLayers.js"></script>
+        <script type="text/javascript" src="../lib/GeoExt.js"></script>
+
+        <script type="text/javascript" src="toolbar.js"></script>
+
+        <style type="text/css">
+            /* work around an Ext bug that makes the rendering
+               of menu items not as one would expect */
+            .ext-ie .x-menu-item-icon {
+                left: -24px;
+            }
+            .ext-strict .x-menu-item-icon {
+                left: 3px;
+            }
+            .ext-ie6 .x-menu-item-icon {
+                left: -24px;
+            }
+            .ext-ie7 .x-menu-item-icon {
+                left: -24px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>OpenLayers controls in an Ext toolbar</h1>
+
+        <p>This example shows how to add OpenLayers controls in an Ext toolbar.
+        GeoExt provides the GeoExt.Action class for adapating a control to an
+        object that can be inserted in a toolbar or in a menu.</p>
+
+        <p>The js is not minified so it is readable. See <a
+        href="toolbar.js">toolbar.js</a>.</p>
+
+        <div id="mappanel"></div>
+    </body>
+</html>

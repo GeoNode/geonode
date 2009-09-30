@@ -1,0 +1,19 @@
+# GeoNode Requirements
+Django
+dj.paste
+
+-e svn+http://svn.repoze.org/thirdparty/PIL/trunk#egg=PIL
+http://www.reportlab.org/ftp/ReportLab_2_3.tar.gz#egg=reportlab
+simplejson # needed for python2.5
+
+# deployment/later
+#jstools
+#-e svn+http://svn.pythonpaste.org/Paste/WSGIProxy/trunk#egg=WSGIProxy
+#-e http://svn.repoze.org/repoze.django/trunk#egg=repoze.django
+
+# Dev tools
+#firepython
+#Spawning # better wsgi server
+#pastedeploy # required for paste
+#-e hg+http://dev.pocoo.org/hg/flickzeug-main#egg=flickzeug
+

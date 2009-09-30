@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <title>GeoExt Layer Tree</title>
+
+        <script type="text/javascript" src="http://extjs.cachefly.net/builds/ext-cdn-771.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/examples/shared/examples.css" />
+        <script src="http://openlayers.org/api/2.8/OpenLayers.js"></script>
+        <script type="text/javascript" src="../lib/GeoExt.js"></script>
+
+        <script type="text/javascript" src="layercontainer.js"></script>
+
+    </head>
+    <body>
+        <h1>Layer Tree Example</h1>
+        <p>This is example that shows how create a TreePanel with layers
+        from a map.  GeoExt does not provide a LayerTree component.  Instead,
+        to create a tree with nodes that represent layers, create a tree with
+        a LayerContainer at the root, or add LayerNodes directly.</p>
+
+        <p>Note that the js is not minified so it is readable.
+        See <a href="layercontainer.js">layercontainer.js</a>.</p>
+
+        <div style="position: relative;">
+            <div id="capgrid"></div>
+            <div id="tree"></div>
+            <div id="mappanel"></div>
+        </div>
+    </body>
+</html>

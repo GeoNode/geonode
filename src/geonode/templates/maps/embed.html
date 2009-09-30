@@ -1,0 +1,42 @@
+{% extends "maps/fullscreen.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Map Viewer" %} {% endblock %}
+
+{% block header_append %}
+{% comment %} 
+Google Earth resources
+Note: We should change this key on final deploy!
+{% endcomment %} 
+
+<script src="http://www.google.com/jsapi?key=ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"></script>
+<script type="text/javascript">
+    google.load("earth", "1");
+</script>
+
+<script type="text/javascript">
+Ext.BLANK_IMAGE_URL = "/static/theme/app/img/blank.gif";
+var app;
+Ext.onReady(function() {
+    var config = {
+        /* This option works around issue #109
+         * until http://trac.openlayers.org/ticket/2178
+         * is fixed.
+         */
+        alignToGrid: true,
+        useToolbar: false,
+        proxy: "/proxy/?url=",
+
+        /* The URL to a REST map configuration service.  This service 
+         * provides listing and, with an authenticated user, saving of 
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/"
+    };
+
+    Ext.apply(config, {{config|safe}});
+    app = new Embed(config);
+});
+</script>
+
+{% endblock %}

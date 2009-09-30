@@ -1,0 +1,46 @@
+{% extends "maps/page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Browse Data" %} {% endblock %}
+{% block header_append %}
+<script type="text/javascript">
+Ext.onReady(function(){
+    var app = new DataPage({
+        ows: "http://capra.opengeo.org/geoserver/wms",
+        proxy: "/proxy/?url=",
+        url: '/geoserver',
+        ame_link_prefix: 'http://capra.opengeo.org/dev/'
+    });
+});
+</script> 
+{% endblock %}
+{% block dataclass %} class="here" {%endblock%}
+{% block main %}
+<div id="risk-description">
+    <h3>{% trans "Risk Data" %}</h3>
+    {% blocktrans %} Lorem ipsum, etc. {% endblocktrans %}
+</div>
+<div id="data">
+    <div id="risk-layer-browser"></div>
+</div>
+<div id="overlay-description">
+    <h3>{% trans "Overlay Data" %}</h3>
+    {% blocktrans %} Lorem ipsum, etc. {% endblocktrans %}
+</div>
+<div id="data">
+    <div id="overlay-layer-browser"></div>
+</div>
+<div id="ame-description">
+    <h3>{%trans "AME Hazard Data"%}</h3>
+    {% blocktrans %} Lorem ipsum, etc. {% endblocktrans %}
+</div>
+<div id="data">
+    <div id="ame-layer-browser"></div>
+</div>
+{% endblock %}
+{% block sidebar %}
+<h2>{% trans "Welcome to CAPRA's GeoNode" %}</h2>
+{% blocktrans %}
+The GeoNode is a data clearing house for CAPRA. Currently a prototype, it provides tools for the distribution and composition of hazard and risk map data. Its purpose is to inform decisions about future data management developments for CAPRA.
+{% endblocktrans %}
+{% endblock %}

@@ -1,0 +1,84 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opengeo</groupId>
+  <artifactId>geonode-geoserver-ext</artifactId>A
+  <packaging>jar</packaging>
+  <version>0.1-SNAPSHOT</version>
+  <name>GeoNode GeoServer Extensions</name>
+
+  <repositories>
+    <repository>
+      <id>opengeo</id>
+      <name>OpenGeo Maven Repository</name>
+      <url>http://repo.opengeo.org/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.2</version>
+      <scope>test</scope>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>rest</artifactId>
+      <version>2.0-SNAPSHOT</version>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>geoserver</artifactId>
+      <type>war</type>
+      <version>2.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <properties>
+    <maven.test.search.classdir>true</maven.test.search.classdir>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <version>6.1.10</version>
+        <configuration>
+          <contextPath>/geoserver</contextPath>
+          <stopPort>8080</stopPort>
+          <webApp>${project.build.directory}/geoserver-geonode-dev</webApp>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <warName>geoserver-geonode-dev</warName> 
+          <webappDirectory>${project.build.directory}/geoserver-geonode-dev</webappDirectory> -->
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>war</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

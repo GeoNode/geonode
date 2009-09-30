@@ -1,0 +1,40 @@
+{% extends "maps/page_layout.html" %}
+{% load i18n %}
+{% block title %} {% trans "OGC Services" %} {% endblock %}
+
+{% block developerclass %} class="here" {%endblock%}
+
+{% block main %}
+<h3>{% trans "What are OGC Services?" %}</h3>
+<p>
+{% blocktrans %} 
+The data in this application is served using open standards endorsed by the Open Geospatial Consortium; in particular, WMS (the Web Mapping Service) is used for accessing maps and WFS (the Web Feature Service) is used for accessing data. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).
+{% endblocktrans %}
+</p>
+
+<h3>{% trans "OpenLayers Example Code" %}</h3>
+<p>{% blocktrans %} 
+To include a CAPRA map layer in an OpenLayers map, first find the name for that layer (available in the 'name' field (not title) of the layer list. For this example, we will use the Central American political boundaries background layer, whose name is 'overlay:CA'. Then, create an instance of OpenLayers.Layer.WMS: 
+{% endblocktrans %}
+</p>
+<code>
+    var capraLayer = new OpenLayers.Layer.WMS("CAPRA Risk Data", "http://capra.opengeo.org/geoserver/wms",{ layers: "overlay:CA" });
+</code>
+
+<h3>{% trans "GeoTools Example Code" %}</h3>
+<p>
+{% blocktrans %}
+Create a DataStore and extract a FeatureType from it, then run a Query. It's all documented on the wiki at http://geotools.org/ .
+{% endblocktrans %}
+</p>
+{% endblock %}
+{% block sidebar %}
+<h3>{% trans "CAPRA's OGC Services" %}</h3>
+{% blocktrans %}
+CAPRA's OGC Services are available from the following URLs:
+{% endblocktrans %}
+<ul>
+    <li>WMS: http://capra.opengeo.org/geoserver/wms</li>
+    <li>WFS: http://capra.opengeo.org/geoserver/wfs</li>
+</ul>
+{% endblock %}

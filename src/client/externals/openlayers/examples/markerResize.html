@@ -1,0 +1,51 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Resize a Marker</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var map, layer;
+        var size, icon;
+        
+        function init(){
+            map = new OpenLayers.Map('map');
+            layer = new OpenLayers.Layer.WMS( "OpenLayers WMS", 
+                "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} );
+                
+            map.addLayer(layer);
+            var markers = new OpenLayers.Layer.Markers( "Markers" );
+            map.addLayer(markers);
+
+            size = new OpenLayers.Size(50,50);
+            calculateOffset = function(size) {
+                        return new OpenLayers.Pixel(-(size.w/2), -size.h); };
+            icon = new OpenLayers.Icon(
+                'http://boston.openguides.org/markers/AQUA.png',
+                size, null, calculateOffset);
+            markers.addMarker(
+                new OpenLayers.Marker(new OpenLayers.LonLat(-71,40), icon));
+
+            map.addControl(new OpenLayers.Control.LayerSwitcher());
+            map.zoomToMaxExtent();
+        }
+
+        function resize() {
+         
+            size = new OpenLayers.Size(size.w + 10, size.h + 10);
+            icon.setSize(size);   
+            
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <div id="title">Resize a Marker</div>
+    <div id="tags"></div>
+    <div id="shortdesc">Dynamically resize a marker</div>
+    <div id="map" class="smallmap"></div>
+    <div id="docs">
+        This example shows how to create a OpenLayers.Layer.Markers layer, add an icon, put it into a marker, and add the marker to the layer.  Once the marker has been added it is possible to use setSize() on the icon in order to resize the marker.
+    </div>
+    <div style="background-color:purple" onclick="resize()"> click to resize marker</div>
+  </body>
+</html>

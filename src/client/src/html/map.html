@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <title>CAPRA GeoNode : Map Composer</title>
+        
+        <!-- IE 8 Compatibility -->
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+        
+        <link rel="shortcut icon" href="theme/img/favicon.ico"/>
+
+        <!-- Ext resources -->
+        <link rel="stylesheet" type="text/css" href="@ext-base-url@resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="@ext-base-url@resources/css/xtheme-gray.css" />
+        <script type="text/javascript" src="@ext-base-url@adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="@ext-base-url@@ext-all.js@"></script>
+
+        <!-- OpenLayers resources -->
+        <link rel="stylesheet" type="text/css" href="@ol-style.css@" />
+        <script src="@OpenLayers.js@"></script>
+        
+        <!-- Google Earth resources-->
+        <!-- Note: We should change this key on final deploy! -->
+        <script src="http://www.google.com/jsapi?key=@google-apikey@"></script>
+        <script type="text/javascript">
+            google.load("earth", "1");
+        </script>
+
+
+        <!-- GeoExt resources -->
+        <link rel="stylesheet" type="text/css" href="@geoext-all.css@" />
+        <link rel="stylesheet" type="text/css" href="@gxtheme-gray.css@" />
+        <script src="@GeoExt.js@"></script> 
+
+        <!-- GeoExplorer resources -->
+        <link rel="stylesheet" type="text/css" href="@geoexplorer.css@" />
+        <!--[if IE]><link rel="stylesheet" type="text/css" href="@ie.css@"/><![endif]-->
+        <script src="@ux.js@"></script> 
+        <script src="@GeoExplorer.js@"></script> 
+
+        <link rel="stylesheet" type="text/css" href="@site.css@" />
+        <script type="text/javascript">window.localeDir = "@localeDir@";</script>
+        <script id="app-locale" type="text/javascript"></script>
+
+        <script>
+
+            Ext.BLANK_IMAGE_URL = "@blank.gif@";
+            var app;
+            Ext.onReady(function() {
+                var config = {
+                    /* This option works around issue #109
+                     * until http://trac.openlayers.org/ticket/2178
+                     * is fixed.
+                     */
+                    alignToGrid: true,
+                    proxy: "/proxy/?url=",
+
+                    /* The URL to a REST map configuration service.  This service 
+                     * provides listing and, with an authenticated user, saving of 
+                     * maps on the server for sharing and editing.
+                     */
+                    rest: "/geoserver/rest/json",
+
+                    about: {
+                        title: "GeoNode Demo Map",
+                        "abstract": "This is a demonstration of GeoNode, " +
+                            "an application for assembling and publishing web " +
+                            "based maps.  After adding layers to the map, use " +
+                            "the 'Save Map' button above to contribute your map " + 
+                            "to the GeoNode community.",
+                        contact: "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>."
+                    },
+                    wms: {
+                        "capra": "http://capra.opengeo.org/geoserver/wms/",
+                        "un": "http://preview.grid.unep.ch:8080/geoserver/ows/"
+                    },
+                    map: {
+                        layers: [ {
+                            name: "overlay:CA",
+                            wms: "capra",
+                            group: "background"
+                        } ],
+                        center: [-84.7, 12.8],
+                        zoom: 5
+                    }
+                };
+
+                var query = Ext.urlDecode(document.location.search.substr(1));
+                var mapID = query.map;
+
+                if (mapID != null) {
+                    var mapConfigURL = config.rest + '/' + mapID;
+
+                    Ext.Ajax.request({
+                        url: mapConfigURL,
+                        success: function(response, options) { 
+                            var remoteConfig = Ext.util.JSON.decode(response.responseText);
+                            Ext.apply(config, remoteConfig);
+                            config.mapID = mapID;
+
+                            app = new GeoExplorer(config);
+                        },
+                        failure: function(response, options) {
+                            Ext.MessageBox.alert(GeoExplorer.prototype.unknownMapTitle, GeoExplorer.prototype.unknownMapMessage);
+                            app = new GeoExplorer(config);
+                        },
+                        scope: this
+                    });
+                } else {
+                    app = new GeoExplorer(config);
+                }
+            });
+        </script>
+
+    </head>
+    <body>
+    </body>
+</html>

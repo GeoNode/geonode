@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <title>GeoExt LayerOpacitySlider</title>
+
+        <script type="text/javascript" src="http://extjs.cachefly.net/builds/ext-cdn-771.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.com/deploy/dev/examples/shared/examples.css"></link>
+        <script src="http://openlayers.org/api/2.8/OpenLayers.js"></script>
+        <script type="text/javascript" src="../lib/GeoExt.js"></script>
+        <style type="text/css">
+            .x-tree-node-leaf .gx-tree-layer-icon {
+                width: 0px;
+            }
+        </style>
+
+        <script type="text/javascript" src="layeropacityslider.js"></script>
+    </head>
+    <body>
+        <h1>GeoExt.LayerOpacitySlider</h1>
+
+        <p>The LayerOpacitySlider allows control of a layer opacity using an
+        Ext.Slider.  It is also possible to add a special tooltip plugin,
+        LayerOpacitySliderTip, which will show the opacity value while dragging
+        the slider (the content is configurable).<p>
+
+        <p>In this example, the slider in below the map is in aggressive mode: the
+        opacity is changed as soon as the slider is moved. The slider inside
+        Map 1 is not aggressive: the opacity is changed when the slider is
+        released.</p>
+
+        <p>In Map 2 we have a fading effect between two layers. The slider is configured
+        with changeVisibility:true and a complementaryLayer. This avoids downloading images
+        when layer opacity is 0 or when complementaryLayer is fully covered by layer.
+        The effect on layer visibility is shown in the tree (checkboxes).</p>
+
+        <p>The js is not minified so it is readable. See <a
+        href="layeropacityslider.js">layeropacityslider.js</a>.</p>
+
+            <div id="map1-container" style="float:left"></div>
+            <div id="map2-container" style="float:right"></div>
+            <div id="tree" style="float:right"></div>
+            <div id="slider" style="clear:both"></div>
+    </body>
+</html>

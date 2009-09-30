@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <script type="text/javascript" src="http://extjs.cachefly.net/builds/ext-cdn-771.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/examples/shared/examples.css" />
+        <script src="http://openlayers.org/api/2.8/OpenLayers.js"></script>
+        <script type="text/javascript" src="../lib/GeoExt.js"></script>
+
+        <script type="text/javascript" src="search-form.js"></script>
+    </head>
+    <body>
+        <h1>Example of a search form using GeoExt.form.FormPanel</h1>
+
+        <p>This example shows how to create a search form based on
+        GeoExt.form.FormPanel.</p>
+        
+        <p>A GeoExt.form.FormPanel instance uses an OpenLayers.Protocol object
+        for sending search requests. In this example a fake protocol is used,
+        in a real-life scenario a specific protocol like
+        OpenLayers.Protocol.WFS would be used.</p>
+
+        <p>If you click on the "search" button below the form, the filter
+        resulting from the form values is represented to the right of the
+        form.</p>
+
+        <p>The js is not minified so it is readable. See <a
+        href="search-form.js">search-form.js</a></p>
+
+        <div id="formpanel" style="float:left;"></div>
+        <div id="filter"></div>
+    </body>
+</html>

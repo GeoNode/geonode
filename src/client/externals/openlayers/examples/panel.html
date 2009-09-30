@@ -1,0 +1,96 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>OpenLayers: Control Panel</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <style type="text/css">
+        .olControlPanel div { 
+          display:block;
+          width:  24px;
+          height: 24px;
+          margin: 5px;
+          background-color:red;
+        }
+        
+        .olControlPanel .olControlMouseDefaultsItemActive { 
+          background-color: blue;
+          background-image: url("../theme/default/img/pan_on.png");
+        }
+        .olControlPanel .olControlMouseDefaultsItemInactive { 
+          background-color: orange;
+          background-image: url("../theme/default/img/pan_off.png");
+        }
+        .olControlPanel .olControlDrawFeatureItemActive { 
+          width:  22px;  
+          height: 22px;
+          background-image: url("../theme/default/img/draw_line_on.png");
+        }
+        .olControlPanel .olControlDrawFeatureItemInactive { 
+          width:  22px;  
+          height: 22px;
+          background-image: url("../theme/default/img/draw_line_off.png");
+        }
+        .olControlPanel .olControlZoomBoxItemInactive { 
+          width:  22px;  
+          height: 22px;
+          background-color: orange;
+          background-image: url("../img/drag-rectangle-off.png");
+        }
+        .olControlPanel .olControlZoomBoxItemActive { 
+          width:  22px;  
+          height: 22px;
+          background-color: blue;
+          background-image: url("../img/drag-rectangle-on.png");
+        }
+        .olControlPanel .olControlZoomToMaxExtentItemInactive { 
+          width:  18px;  
+          height: 18px;
+          background-image: url("../img/zoom-world-mini.png");
+        }
+        
+    </style>
+    <script src="../lib/Firebug/firebug.js"></script>
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var lon = 5;
+        var lat = 40;
+        var zoom = 5;
+        var map, layer;
+
+        function init(){
+            map = new OpenLayers.Map( 'map', { controls: [] } );
+            layer = new OpenLayers.Layer.WMS( "OpenLayers WMS", 
+                    "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} );
+            map.addLayer(layer);
+
+            vlayer = new OpenLayers.Layer.Vector( "Editable" );
+            map.addLayer(vlayer);
+            
+            
+            zb = new OpenLayers.Control.ZoomBox(
+                {title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."});
+            var panel = new OpenLayers.Control.Panel({defaultControl: zb});
+            panel.addControls([
+                new OpenLayers.Control.MouseDefaults(
+                    {title:'You can use the default mouse configuration'}), 
+                zb,
+                new OpenLayers.Control.DrawFeature(vlayer, OpenLayers.Handler.Path,
+                    {title:'Draw a feature'}),
+                new OpenLayers.Control.ZoomToMaxExtent({title:"Zoom to the max extent"}) 
+            ]);
+            map.addControl(panel);
+
+            map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <h3 id="title">Custom Control.Panel</h3>
+    <p id="shortdesc">
+      Create a custom control.panel, styled entirely with
+      CSS, and add your own controls to it.
+    </p>  
+    <div id="panel"></div>
+    <div id="map" class="smallmap"></div>
+  </body>
+</html>

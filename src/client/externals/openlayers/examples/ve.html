@@ -1,0 +1,68 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+      <title>OpenLayers Virtual Earth Example</title>
+    <link rel="stylesheet" href="../theme/default/style.css" type="text/css" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <script src='http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1'></script>
+
+    <script src="../lib/OpenLayers.js"></script>
+    <script type="text/javascript">
+
+        var lon = 5;
+        var lat = 40;
+        var zoom = 15;
+        var map, velayer, layer;
+
+        function init(){
+            map = new OpenLayers.Map( 'map' ,
+            {controls:[new OpenLayers.Control.MouseDefaults()]});
+
+            velayer = new OpenLayers.Layer.VirtualEarth( "VE",
+            { minZoomLevel: 4, maxZoomLevel: 6, 'type': VEMapStyle.Aerial});
+            map.addLayer(velayer);
+
+            var twms = new OpenLayers.Layer.WMS( "World Map",
+                        "http://world.freemap.in/cgi-bin/mapserv?",
+                        { map: '/www/freemap.in/world/map/factbooktrans.map',
+                          transparent:'true',
+                          layers: 'factbook',
+                          'format':'png'},
+                          {'reproject': true});
+            map.addLayer(twms);
+
+            markers = new OpenLayers.Layer.Markers("markers");
+            map.addLayer(markers);
+
+            map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
+            map.addControl( new OpenLayers.Control.LayerSwitcher() );
+            map.addControl( new OpenLayers.Control.PanZoomBar() );
+        }
+
+        function add() {
+
+            marker = new OpenLayers.Marker(new OpenLayers.LonLat(2, 41));
+            markers.addMarker(marker);
+        }
+
+        function remove() {
+            markers.removeMarker(marker);
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">Virtual Earth Example</h1>
+
+    <div id="tags"></div>
+
+    <p id="shortdesc">
+        Demonstrates the use of a Virtual Earth base layer.
+    </p>
+
+    <div id="map" class="smallmap"></div>
+    <input type="button" onClick="javascript:add()"value="Add the marker from the map">
+    <input type="button" onClick="javascript:remove()" value="Remove the marker from the map">
+    <div id="docs">This example demonstrates the ability to add VirtualEarth and the and remove markers.</div>
+  </body>
+</html>
+
+
