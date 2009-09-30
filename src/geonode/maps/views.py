@@ -42,7 +42,6 @@ def community(request):
             'maps': maps
         })
 
-#@@ replace with piston
 def maps(request):
     if request.method == 'GET':
         maps = Map.objects.filter(featured=True)[:5]
