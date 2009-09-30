@@ -80,7 +80,7 @@ def install_deps(options):
         sh("pip install %s" %bundle)    
     else:
         info('installing from requirements file')
-        sh("pip install -r shared/geonode-requirments.txt")
+        sh("pip install -r shared/core-libs.txt")
 
 # put bundle on atlas or capra
 # download it, then install
