@@ -12,3 +12,7 @@ geonode.bundle
 src/geoserver-build/
 src/pil/
 src/wsgiproxy/
+shared/geonode.bundle.zip
+*.orig
+3rd-party/
+*pyc
