@@ -1,0 +1,7 @@
+## Dev tools ##
+#firepython    # debugging output to firebug
+#Spawning      # better wsgi server
+
+# Advanced debugger (already included w/ dj.paste)
+#-e hg+http://dev.pocoo.org/hg/flickzeug-main#egg=flickzeug
+
