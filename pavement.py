@@ -103,14 +103,19 @@ def post_bootstrap(options):
     # installs the current package
     sh('bin/pip install -e ./')
 
+gs = "geoserver-build"
+
+#@@ Move svn urls out to a config file
 
 @task
+def checkout_geoserver(options):
+    svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
+    
+@task
 def setup_geoserver(options):
+    if not (path('src') / gs).exists():
+        call_task('checkout_geoserver')
     with pushd('src'):
-        gs = "geoserver-build"
-
-        #@@ svn checkout crapping out on styler
-        svn.checkout("http://svn.codehaus.org/geoserver/tags/2.0-RC1/src/",  gs)
         with pushd(gs):
             sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.0-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
         with pushd('geonode-geoserver-ext'):
