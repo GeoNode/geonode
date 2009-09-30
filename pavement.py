@@ -64,13 +64,10 @@ options(
       ),
     )
 
-pkg_rec_spec=pkg_resources.Requirement.parse(name)
-
 options.setup.package_data=find_package_data(package='GeoNode',
                                              only_in_packages=False)
 
 venv = os.environ.get('VIRTUAL_ENV')
-req_file = pkg_resources.resource_filename(pkg_rec_spec, 'shared/geonode-requirments.txt')
 
 @task
 def install_deps(options):
