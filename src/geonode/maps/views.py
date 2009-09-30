@@ -1,7 +1,9 @@
 from geonode.maps.models import Map
+from geonode.maps.context_processors import resource_urls
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.template import RequestContext
 
 try:
     import json
@@ -36,13 +38,17 @@ def index(request):
         map = DEFAULT_MAP_CONFIG
     else: 
         map = build_map_config(Map.objects.all()[0])
-    return render_to_response('maps/index.html', {'map': map});
+    return render_to_response('maps/index.html', 
+            context_instance=RequestContext(
+                request, {'map': map}, [resource_urls]
+            ));
 
 def community(request):
         maps = Map.objects.filter(featured=False)[:5]
-        return render_to_response('maps/community.html', {
-            'maps': maps
-        })
+        return render_to_response('maps/community.html', 
+            context_instance=RequestContext(
+                request, {'maps': maps}, [resource_urls]
+        ));
 
 def maps(request):
     if request.method == 'GET':
@@ -86,12 +92,20 @@ def maps(request):
         return response
 
 def newmap(request):
-    return render_to_response('maps/view.html', { 'config': json.dumps(DEFAULT_MAP_CONFIG) })
+    return render_to_response('maps/view.html', 
+            context_instance = RequestContext(request, 
+                { 'config': json.dumps(DEFAULT_MAP_CONFIG) },
+                [resource_urls]
+            ))
 
 def view(request, mapid):
     map = Map.objects.get(pk=mapid)
     config = build_map_config(map)
-    return render_to_response('maps/view.html', { 'config': json.dumps(config) })
+    return render_to_response('maps/view.html',
+                context_instance = RequestContext(request, 
+                    { 'config': json.dumps(config) },
+                    [resource_urls]
+                ))
 
 def embed(request, mapid=None):
     if mapid is None:
@@ -99,7 +113,12 @@ def embed(request, mapid=None):
     else:
         map = Map.objects.get(pk=mapid)
         config = build_map_config(map)
-    return render_to_response('maps/embed.html', { 'config': json.dumps(config) })
+    return render_to_response('maps/embed.html', 
+        context_instance = RequestContext(request, 
+            { 'config': json.dumps(config) },
+            [resource_urls]
+    ))
+
 
 def build_map_config(map):
     layers = map.layer_set.all()
@@ -139,9 +158,11 @@ def view_js(request, mapid):
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
    
 def static(request, page):
-    return render_to_response('maps/' + page + '.html', {
-        'GEOSERVER_BASE_URL': settings.GEOSERVER_BASE_URL
-    })
+    return render_to_response('maps/' + page + '.html', 
+        context_instance = RequestContext(request, {
+            'GEOSERVER_BASE_URL': settings.GEOSERVER_BASE_URL
+        }, [resource_urls])
+    )
 
 def lang(request): 
     return render_to_response('maps/lang.js', mimetype="text/javascript")
