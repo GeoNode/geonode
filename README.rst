@@ -12,5 +12,5 @@ Install
   . bin/activate
   python bootstrap.py
   paver build
-  django-admin  syncdb --settings=geonode.settings
+  django-admin.py syncdb --settings=geonode.settings 
   paster serve shared/dev-paste.ini
