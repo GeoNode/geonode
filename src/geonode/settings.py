@@ -77,7 +77,7 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
                 path_extrapolate('django/contrib/admin/templates', 'django'),
                
 GEOSERVER_BASE_URL = "http://capra.opengeo.org/geoserver/"
-
+GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
