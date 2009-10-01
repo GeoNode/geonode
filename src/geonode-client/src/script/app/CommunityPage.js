@@ -64,7 +64,6 @@ var CommunityPage = Ext.extend(Page, {
      * Create the various parts that compose the layout.
      */
     createLayout: function() {
-	this.populateContent();
 
 	// create layer store
 	this.layers = new GeoExt.data.LayerStore({});
