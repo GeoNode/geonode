@@ -4,6 +4,8 @@ from paver.path25 import pushd
 from paver.setuputils import setup, find_package_data
 from paver.easy import options
 from setuptools import find_packages
+import os
+from shutil import copytree
 from paver import svn
 import pkg_resources
 
@@ -137,6 +139,16 @@ def build(options):
     info('to start node: paster serve shared/dev-paste.ini\n'\
          'to start geoserver:mvn jetty:run-war -DGEOSERVER_DATA_DIR=/path/to/datadir/') #@@ replace with something real
 
+
+@task
+def concat_js():
+    with pushd('src/client/build/'):
+       path("geonode-client").rmtree()
+       os.makedirs("geonode-client/script")
+       copytree("../src/theme/", "geonode-client/theme/")
+       copytree("../externals/openlayers/theme/default", "geonode-client/theme/ol/")
+       copytree("../externals/geoext/resources", "geonode-client/theme/gx/")
+       sh("jsbuild -o geonode-client/script/ all.cfg") 
 
 # set up supervisor?
 

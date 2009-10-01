@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from django.conf import settings
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -22,9 +23,20 @@ urlpatterns = patterns('',
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
-        {'document_root': 'src/geonode/static'}),
-
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls))
 )
+
+# Extra static file endpoint for development use
+if settings.DEBUG:
+    import os
+    def here(*x): 
+        return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
+
+    root = here("..", "client", "build", "geonode-client") if settings.MINIFIED_RESOURCES else here("..", "client", "")
+    print root
+    urlpatterns += patterns('',
+        (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': root}),
+    )
+
+

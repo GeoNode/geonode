@@ -5,6 +5,7 @@ try:
     DEBUG = True
 except ImportError:
     DEBUG = True
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -78,6 +79,11 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
                
 GEOSERVER_BASE_URL = "http://capra.opengeo.org/geoserver/"
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
+
+# Determines whether the minified or the "raw" JavaScript files are included.
+# Only applies in development mode. (That is, when DEBUG==True)
+MINIFIED_RESOURCES = False #True
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -87,3 +93,29 @@ INSTALLED_APPS = (
     'geonode.maps',
     'geonode.proxy',
 )
+
+if DEBUG:
+    if MINIFIED_RESOURCES: 
+        MEDIA_LOCATIONS = {
+            "ext_base": "http://extjs.cachefly.net/ext-2.2.1/",
+            "ol_theme": "/static/theme/ol/style.css",
+            "ol_script":"/static/script/OpenLayers.js",
+            "gx_themes":"/static/theme/gx/",
+            "gx_script":"/static/script/GeoExt.js",
+            "app_themes": "/static/theme/app/",
+            "app_script":"/static/script/GeoNode.js",
+            "ux_script":"/static/script/ux.js",
+        }                
+    else:
+        MEDIA_LOCATIONS = {
+            "ext_base": "http://extjs.cachefly.net/ext-2.2.1/",
+            "ol_theme": "/static/externals/openlayers/theme/default/style.css",
+            "ol_script":"/static/externals/openlayers/lib/OpenLayers.js",
+            "gx_themes":"/static/externals/geoext/resources/",
+            "gx_script":"/static/externals/geoext/lib/GeoExt.js",
+            "app_themes": "/static/src/theme/app/",
+            "app_script":"/static/src/script/app/loader.js",
+            "ux_script":"/static/src/script/ux/RowExpander.js",
+        }
+else:
+    MEDIA_LOCATIONS = { } # TODO: Set up production mappings

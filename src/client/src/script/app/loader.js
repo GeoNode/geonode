@@ -1,24 +1,24 @@
 (function() {
 
     var jsfiles = new Array(
-        "../../src/script/app/GeoExplorer.js",
-        "../../src/script/app/Lang.js",
-        "../../src/script/app/Embed.js",
-        "../../src/script/app/ExportWizard.js",
-        "../../src/script/app/Page.js",
-        "../../src/script/app/DeveloperPage.js",
-        "../../src/script/app/DataPage.js",
-        "../../src/script/app/HelpPage.js",
-        "../../src/script/app/FeaturedPage.js",
-        "../../src/script/app/CommunityPage.js",
-        "../../src/script/app/IndexPage.js",
-        "../../src/script/app/MapGrid.js",
-        "../../src/script/app/GeoExplorer/CapabilitiesGrid.js",
-        "../../src/script/app/GeoExplorer/CapabilitiesRowExpander.js",
-        "../../src/script/app/GeoExplorer/GroupContainer.js",
-        "../../src/script/app/GeoExplorer/GoogleEarthPanel.js",
-        "../../src/script/app/GeoExplorer/util.js",
-        "../../src/script/app/GeoExplorer/NewSourceWindow.js"
+        "/static/src/script/app/GeoExplorer.js",
+        "/static/src/script/app/Lang.js",
+        "/static/src/script/app/Embed.js",
+        "/static/src/script/app/ExportWizard.js",
+        "/static/src/script/app/Page.js",
+        "/static/src/script/app/DeveloperPage.js",
+        "/static/src/script/app/DataPage.js",
+        "/static/src/script/app/HelpPage.js",
+        "/static/src/script/app/FeaturedPage.js",
+        "/static/src/script/app/CommunityPage.js",
+        "/static/src/script/app/IndexPage.js",
+        "/static/src/script/app/MapGrid.js",
+        "/static/src/script/app/GeoExplorer/CapabilitiesGrid.js",
+        "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js",
+        "/static/src/script/app/GeoExplorer/GroupContainer.js",
+        "/static/src/script/app/GeoExplorer/GoogleEarthPanel.js",
+        "/static/src/script/app/GeoExplorer/util.js",
+        "/static/src/script/app/GeoExplorer/NewSourceWindow.js"
     );
 
     var appendable = !((/MSIE/).test(navigator.userAgent) ||

@@ -5,31 +5,31 @@
         
         <!-- IE 8 Compatibility -->
         <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
-        
-        <link rel="shortcut icon" href="/static/theme/app/img/favicon.ico"/>
+
+        <link rel="shortcut icon" href="{{MEDIA_LOCATIONS.app_themes}}img/favicon.ico"/>
 
         <!-- Ext resources -->
-        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css" />
-        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2.1/resources/css/xtheme-gray.css" />
-        <script type="text/javascript" src="http://extjs.cachefly.net/ext-2.2.1/adapter/ext/ext-base.js"></script>
-        <script type="text/javascript" src="http://extjs.cachefly.net/ext-2.2.1/ext-all.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.ext_base}}resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.ext_base}}resources/css/xtheme-gray.css" />
+        <script type="text/javascript" src="{{MEDIA_LOCATIONS.ext_base}}adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="{{MEDIA_LOCATIONS.ext_base}}ext-all.js"></script>
 
         <!-- OpenLayers resources -->
-        <link rel="stylesheet" type="text/css" href="/static/theme/ol/style.css" />
-        <script src="/static/script/OpenLayers.js"></script>
-        
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.ol_theme}}" />
+        <script src="{{MEDIA_LOCATIONS.ol_script}}"></script>
+
         <!-- GeoExt resources -->
-        <link rel="stylesheet" type="text/css" href="/static/theme/gx/css/geoext-all-debug.css" />
-        <link rel="stylesheet" type="text/css" href="/static/theme/gx/css/gxtheme-gray.css" />
-        <script src="/static/script/GeoExt.js"></script> 
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.gx_themes}}css/geoext-all-debug.css" />
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.gx_themes}}css/gxtheme-gray.css" />
+        <script src="{{MEDIA_LOCATIONS.gx_script}}"></script> 
 
         <!-- GeoExplorer resources -->
-        <link rel="stylesheet" type="text/css" href="/static/theme/app/geoexplorer.css" />
-        <!--[if IE]><link rel="stylesheet" type="text/css" href="/static/theme/app/ie.css"/><![endif]-->
-        <script src="/static/script/ux.js"></script> 
-        <script src="/static/script/GeoExplorer.js"></script> 
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.app_themes}}geoexplorer.css" />
+        <!--[if IE]><link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.app_themes}}ie.css"/><![endif]-->
+        <script src="{{MEDIA_LOCATIONS.ux_script}}"></script> 
+        <script src="{{MEDIA_LOCATIONS.app_script}}"></script> 
 
-        <link rel="stylesheet" type="text/css" href="/static/theme/app/site.css" />
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.app_themes}}site.css" />
         <script type="text/javascript" src="{% url geonode.maps.views.lang %}"></script>
 
         {% block header_append%}
