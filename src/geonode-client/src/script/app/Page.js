@@ -43,7 +43,7 @@ var Page = Ext.extend(Ext.util.Observable, {
 	 * Create the various parts that compose the layout.
 	 */
     createLayout: function() {
-        this.populateContent();
+
     },
 
     /**
