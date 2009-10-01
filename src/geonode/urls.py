@@ -41,7 +41,7 @@ if settings.DEBUG:
     def here(*x): 
         return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
-    root = here("..", "client", "build", "geonode-client") if settings.MINIFIED_RESOURCES else here("..", "client", "")
+    root = here("..", "geonode-client", "build", "geonode-client") if settings.MINIFIED_RESOURCES else here("..", "geonode-client", "")
     urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': root}),
         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': path_extrapolate('django/contrib/admin/media', 'django')})
