@@ -7,10 +7,35 @@ Install
 
 ::
 
-  git clone git@github.com:GeoNode/GeoNode.git
+  svn co http://svn.opengeo.org/CAPRA/GeoNode/trunk/
   cd GeoNode
-  . bin/activate
   python bootstrap.py
+  . bin/activate
   paver build
   django-admin.py syncdb --settings=geonode.settings 
   paster serve shared/dev-paste.ini
+
+Options
+=======
+
+For JavaScript Developers
+-------------------------
+
+JavaScript Developers can switch to using unminified scripts and CSS styles by 
+setting the MINIFIED_RESOURCES entry in settings.py to False.  If you are developing JavaScript and testing against minified builds, make sure to use::
+
+   $ paver concat_js 
+
+to update the built script directory.
+
+For Java Developers
+-------------------
+
+Java Developers can point the application at a particular GeoServer instance by setting the GEOSERVER_BASE_URL entry in settings.py to the context path of the GeoServer instance.  This should include the trailing slash.  For example, the default is::
+
+    http://capra.opengeo.org/geoserver/
+
+The GeoServer module in :file:`src/geonode-gs-ext/` is configured to stand up a GeoServer instance with the module ready on use of :command:`mvn jetty:run-war -DGEOSERVER_DATA_DIRECTORY=/path/to/data/` .  If you want to use this service, set::
+  
+    GEOSERVER_BASE_URL="http://localhost:8889/geoserver/"
+
