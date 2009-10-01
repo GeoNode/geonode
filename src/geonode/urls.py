@@ -28,6 +28,12 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls))
 )
 
+def path_extrapolate(stub, pkg='GeoNode'):
+    import pkg_resources
+    req = pkg_resources.Requirement.parse(pkg)
+    return pkg_resources.resource_filename(req,  stub)
+
+#
 # Extra static file endpoint for development use
 if settings.DEBUG:
     import os
@@ -37,6 +43,7 @@ if settings.DEBUG:
     root = here("..", "client", "build", "geonode-client") if settings.MINIFIED_RESOURCES else here("..", "client", "")
     urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': root}),
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': path_extrapolate('django/contrib/admin/media', 'django')})
     )
 
 
