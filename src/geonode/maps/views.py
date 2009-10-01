@@ -57,8 +57,8 @@ def curated(request):
                 request, {'maps': maps}, [resource_urls]
         ));
 
-def maps(request):
-    if request.method == 'GET':
+def maps(request, mapid=None):
+    if request.method == 'GET' and mapid is None:
         map_configs = {}
         for map in Map.objects.all():
             map_configs[map.pk] = build_map_config(map)
@@ -71,6 +71,10 @@ def maps(request):
         #        {'maps': maps},
         #        [resource_urls]
         #))
+    elif request.method == 'GET' and mapid is not None:
+        map = Map.objects.get(pk=mapid)
+        config = build_map_config(map)
+        return HttpResponse(json.dumps(config))
     elif request.method == 'POST':
         try:
             conf = json.loads(request.raw_post_data)
@@ -115,7 +119,7 @@ def newmap(request):
 
 def view(request, mapid):
     """  
-    The view that returns a JSON configuration object for
+    The view that returns the map composer opened to
     the map with the given map ID.
     """
     map = Map.objects.get(pk=mapid)
