@@ -2,6 +2,14 @@
  GeoNode
 =========
 
+Build Requirements
+==================
+
+* Sun Java Development Kit 1.5 or Higher: http://java.sun.com/javase/downloads/index.jsp
+  (Make sure to install the *JDK*!)
+* Python 2.6: http://python.org/download/
+* Apache Maven 2.0.10 or Later: http://maven.apache.org/download.html/
+
 Install
 =======
 
