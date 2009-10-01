@@ -53,9 +53,11 @@ def community(request):
 def maps(request):
     if request.method == 'GET':
         maps = Map.objects.filter(featured=True)[:5]
-        return render_to_response('maps/maps.html', {
-            'maps': maps
-        })
+        return render_to_response('maps/maps.html', 
+            context_instance = RequestContext(request, 
+                {'maps': maps},
+                [resource_urls]
+        ))
     elif request.method == 'POST':
         try:
             conf = json.loads(request.raw_post_data)

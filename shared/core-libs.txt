@@ -7,7 +7,7 @@ http://www.reportlab.org/ftp/ReportLab_2_3.tar.gz#egg=reportlab
 simplejson # needed for python2.5
 
 # deployment/later
-#jstools
+jstools
 #-e svn+http://svn.pythonpaste.org/Paste/WSGIProxy/trunk#egg=WSGIProxy
 #-e http://svn.repoze.org/repoze.django/trunk#egg=repoze.django
 
