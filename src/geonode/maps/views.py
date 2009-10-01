@@ -52,9 +52,10 @@ def community(request):
 
 def curated(request):
         maps = Map.objects.filter(featured=True)[:5]
-        return render_to_response('maps/curated.html', {
-            'maps': maps
-        })
+        return render_to_response('maps/curated.html',
+            context_instance=RequestContext(
+                request, {'maps': maps}, [resource_urls]
+        ));
 
 def maps(request):
     if request.method == 'GET':
