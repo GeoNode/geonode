@@ -1,6 +1,6 @@
 var MapGrid = Ext.extend(Ext.grid.GridPanel, {
 
-    
+
     //rest URL for getting the maps
     url: null,
 
@@ -26,7 +26,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store = this.store || new Ext.data.JsonStore({
             url: this.url,
             root: 'maps',
-            id: 'id', 
+            id: 'id',
             fields: [
                 {name: 'id', mapping: 'id'},
                 {name: "title", mapping: "config.about.title"},
@@ -44,7 +44,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
                                        '<p><a href="map.html?map={id}">' + this.mapLinkLabelText + '</a></p>');
 
             this.expander = new Ext.grid.RowExpander({
-                tpl: tpl});	
+                tpl: tpl});
         }
 
         if(!this.plugins){
@@ -53,12 +53,12 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
 
         if(!this.cm){
             this.cm = new Ext.grid.ColumnModel([
-                this.expander, 
+                this.expander,
                 {id: 'title', header: this.mapTitleLabelText, dataIndex: 'title', sortable: true},
                 {id: 'contact', header: this.mapContactLabelText, dataIndex: 'contact', width: 250, sortable: true}
             ])
         }
-       
+
         var mapGrid = this;
         this.tbar = [
             "->",
@@ -78,16 +78,16 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
                     var rec = mapGrid.getSelectionModel().getSelected();
                     if (rec) mapGrid.showExportWizard({map: rec.id});
                 }
-            }),
+            }) /*,
             new Ext.Button({
                 text: this.createMapText,
                 iconCls: "icon-create-map",
                 handler: function() {
                     location.href = "map.html"
                 }
-            })
+            }) */
         ],
-        
+
         this.listeners = Ext.applyIf(this.listeners || {}, {
             "rowdblclick": function(grid, rowIndex, evt) {
                 var rec = grid.store.getAt(rowIndex);
@@ -96,8 +96,8 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
                 }
             }
         });
-        
-        MapGrid.superclass.initComponent.call(this);       
+
+        MapGrid.superclass.initComponent.call(this);
     },
 
     showExportWizard: function(mapid) {
