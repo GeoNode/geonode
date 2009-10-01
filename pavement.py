@@ -134,7 +134,7 @@ def setup_geoserver(options):
             sh("mvn install")
 
 @task
-@needs(['install_deps','setup_geoserver'])
+@needs(['install_deps','setup_geoserver','concat_js'])
 def build(options):
     info('to start node: paster serve shared/dev-paste.ini\n'\
          'to start geoserver:mvn jetty:run-war -DGEOSERVER_DATA_DIR=/path/to/datadir/') #@@ replace with something real
