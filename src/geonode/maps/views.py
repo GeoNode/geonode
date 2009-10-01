@@ -50,14 +50,26 @@ def community(request):
                 request, {'maps': maps}, [resource_urls]
         ));
 
+def curated(request):
+        maps = Map.objects.filter(featured=True)[:5]
+        return render_to_response('maps/curated.html', {
+            'maps': maps
+        })
+
 def maps(request):
     if request.method == 'GET':
-        maps = Map.objects.filter(featured=True)[:5]
-        return render_to_response('maps/maps.html', 
-            context_instance = RequestContext(request, 
-                {'maps': maps},
-                [resource_urls]
-        ))
+        map_configs = {}
+        for map in Map.objects.all():
+            map_configs[map.pk] = build_map_config(map)
+        return HttpResponse(json.dumps(map_configs))
+    
+        ## need to return JSON of all maps here
+        #maps = Map.objects.filter(featured=True)[:5]
+        #return render_to_response('maps/maps.html', 
+        #    context_instance = RequestContext(request, 
+        #        {'maps': maps},
+        #        [resource_urls]
+        #))
     elif request.method == 'POST':
         try:
             conf = json.loads(request.raw_post_data)
@@ -101,6 +113,10 @@ def newmap(request):
             ))
 
 def view(request, mapid):
+    """  
+    The view that returns a JSON configuration object for
+    the map with the given map ID.
+    """
     map = Map.objects.get(pk=mapid)
     config = build_map_config(map)
     return render_to_response('maps/view.html',
