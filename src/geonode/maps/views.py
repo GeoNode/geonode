@@ -34,10 +34,11 @@ DEFAULT_MAP_CONFIG = {
 }
 
 def index(request): 
-    if Map.objects.count() == 0:
+    featured = Map.objects.filter(featured=True)
+    if featured.count() == 0:
         map = DEFAULT_MAP_CONFIG
     else: 
-        map = build_map_config(Map.objects.all()[0])
+        map = build_map_config(featured[0])
     return render_to_response('maps/index.html', 
             context_instance=RequestContext(
                 request, {'map': map}, [resource_urls]

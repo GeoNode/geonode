@@ -7,6 +7,7 @@ class Map(models.Model):
     abstract = models.CharField(max_length=200)
     contact = models.CharField(max_length=200)
     featured = models.BooleanField()
+    endorsed = models.BooleanField()
 
     # viewer configuration
     zoom = models.IntegerField()
