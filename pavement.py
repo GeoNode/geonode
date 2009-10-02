@@ -142,7 +142,7 @@ def build(options):
 
 @task
 def concat_js():
-    with pushd('src/client/build/'):
+    with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
        os.makedirs("geonode-client/script")
        copytree("../src/theme/", "geonode-client/theme/")
