@@ -1,10 +1,18 @@
-<html>
-    <head>
-        <title>Hazard Page</title>
-    </head>
-    <body>
-        <h2>Welcome to the Hazard App!</h2>
-        We haven't gotten around to the content yet...
-    </body>
-</html>
+{% extends "maps/page_layout.html" %}
+{% load i18n %}
 
+{% block title %} {% trans "MyHazard" %} {% endblock %}
+
+{% block header_append %}
+    <script src="{{MEDIA_LOCATIONS.capra_script}}" type="text/javascript"></script>
+    <script type="text/javascript">
+        Ext.onReady(function() {
+            var app = new MyHazard();
+        });
+    </script>
+{% endblock %}
+
+{% block main %}
+    <h2>Welcome to the Hazard App!</h2>
+    We haven't gotten around to the content yet...
+{% endblock %}
