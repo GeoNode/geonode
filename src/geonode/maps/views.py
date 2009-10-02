@@ -59,18 +59,8 @@ def curated(request):
 
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
-        map_configs = {}
-        for map in Map.objects.all():
-            map_configs[map.pk] = build_map_config(map)
-        return HttpResponse(json.dumps(map_configs))
-    
-        ## need to return JSON of all maps here
-        #maps = Map.objects.filter(featured=True)[:5]
-        #return render_to_response('maps/maps.html', 
-        #    context_instance = RequestContext(request, 
-        #        {'maps': maps},
-        #        [resource_urls]
-        #))
+        map_configs = [{"id": map.pk, "config": build_map_config(map)} for map in Map.objects.all()]
+        return HttpResponse(json.dumps({"maps": map_configs}), mimetype="application/json")
     elif request.method == 'GET' and mapid is not None:
         map = Map.objects.get(pk=mapid)
         config = build_map_config(map)
