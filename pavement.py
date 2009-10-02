@@ -73,9 +73,7 @@ venv = os.environ.get('VIRTUAL_ENV')
 
 @task
 def install_deps(options):
-    """
-    Installs all the python deps from a requirments file
-    """
+    """Installs all the python deps from a requirments file"""
     bundle = path('shared/geonode.bundle')
     if bundle.exists():
         info('using to install python deps bundle')
@@ -97,6 +95,7 @@ def install_bundle(options):
 
 @task
 def install_25_deps(options):
+    """Fetch python 2_5-specific dependencies (not maintained)"""
     pass
 
     
@@ -112,16 +111,19 @@ gs_data = "gs-data"
 
 @task
 def checkout_geoserver(options):
+    """Fetch GeoServer sources from SVN in order to compile our extension."""
     with pushd('src'):
         svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
     
 @task
 def setup_gs_data(options):
+    """Fetch a data directory to use with GeoServer for testing."""
     path(gs_data).rmtree()
     svn.checkout("http://svn.codehaus.org/geoserver/trunk/data/minimal",  gs_data)
     
 @task
 def setup_geoserver(options):
+    """Prepare a testing instance of GeoServer."""
     if not path(gs_data).exists():
         call_task('setup_gs_data')
     if not (path('src') / gs).exists():
@@ -134,14 +136,16 @@ def setup_geoserver(options):
             sh("mvn install")
 
 @task
-@needs(['install_deps','setup_geoserver','concat_js'])
+@needs(['install_deps','setup_geoserver','concat_js','capra_js'])
 def build(options):
+    """Get dependencies and generally prepare a GeoNode development environment."""
     info('to start node: paster serve shared/dev-paste.ini\n'\
          'to start geoserver:mvn jetty:run-war -DGEOSERVER_DATA_DIR=/path/to/datadir/') #@@ replace with something real
 
 
 @task
 def concat_js():
+    """Compress the JavaScript resources used by the base GeoNode site."""
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
        os.makedirs("geonode-client/script")
@@ -149,6 +153,14 @@ def concat_js():
        copytree("../externals/openlayers/theme/default", "geonode-client/theme/ol/")
        copytree("../externals/geoext/resources", "geonode-client/theme/gx/")
        sh("jsbuild -o geonode-client/script/ all.cfg") 
+
+@task
+def capra_js():
+    """Compress the JavaScript resources used by the CAPRA GeoNode extensions."""
+    with pushd('src/capra-client/build/'):
+       path("capra-client").rmtree()
+       os.makedirs("capra-client/")
+       sh("jsbuild -o capra-client/ all.cfg") 
 
 # set up supervisor?
 
