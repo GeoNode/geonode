@@ -1,10 +1,6 @@
 # Django settings for GeoNode project.
-import pkg_resources
-try:
-    import dj.paste
-    DEBUG = True
-except ImportError:
-    DEBUG = True
+from utils import path_extrapolate
+DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -70,9 +66,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'geonode.urls'
 
-def path_extrapolate(stub, pkg='GeoNode'):
-    req = pkg_resources.Requirement.parse(pkg)
-    return pkg_resources.resource_filename(req,  stub)
+
 
 TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
                 path_extrapolate('django/contrib/admin/templates', 'django'),
@@ -92,6 +86,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'geonode.maps',
+    #'geonode.core',
     'geonode.proxy',
 )
 
