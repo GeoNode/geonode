@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from utils import path_extrapolate
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -28,11 +29,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls))
 )
-
-def path_extrapolate(stub, pkg='GeoNode'):
-    import pkg_resources
-    req = pkg_resources.Requirement.parse(pkg)
-    return pkg_resources.resource_filename(req,  stub)
 
 #
 # Extra static file endpoint for development use
