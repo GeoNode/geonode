@@ -85,7 +85,7 @@ if DEBUG:
     if MINIFIED_RESOURCES: 
         MEDIA_LOCATIONS["capra_script"] = "/capra_static/CAPRA.js"
     else:
-        MEDIA_LOCATIONS["capra_script"] = "/capra_static/src/app/MyHazard.js"
+        MEDIA_LOCATIONS["capra_script"] = "/capra_static/src/script/app/MyHazard.js"
 else:
     pass
     #TODO: Populate map for production
