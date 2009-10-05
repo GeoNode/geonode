@@ -79,6 +79,9 @@ ROOT_URLCONF = 'capra.urls'
 ##     'django.contrib.sites',
 ## )
 
+GEOSERVER_BASE_URL = "http://localhost:8889/geoserver/"
+GEOSERVER_CREDENTIALS = ('admin', 'geoserver')
+
 INSTALLED_APPS += ('capra.hazard',)
 
 if DEBUG: 
