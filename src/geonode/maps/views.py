@@ -146,7 +146,8 @@ def build_map_config(map):
         'about': {
             'title': map.title,
             'contact': map.contact,
-            'abstract': map.abstract
+            'abstract': map.abstract,
+            'endorsed': map.endorsed
             },
         'map': { 
             'layers': [],

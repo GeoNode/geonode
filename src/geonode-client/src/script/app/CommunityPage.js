@@ -118,13 +118,13 @@ var CommunityPage = Ext.extend(Page, {
                     {name: "tags", mapping: "config.about.tags"},
                     {name: "abstract", mapping: "config.about.abstract"},
                     {name: "contact", mapping: "config.about.contact"},
-                    {name: "featured", mapping: "config.about.featured"}
+                    {name: "endorsed", mapping: "config.about.endorsed"}
                 ],
                 autoLoad: true,
                 listeners : {
                     "load" : function(store){
                         store.filterBy(function(record){
-                            return !record.get("featured");
+                            return !record.get("endorsed");
                         });
                     }
                 }

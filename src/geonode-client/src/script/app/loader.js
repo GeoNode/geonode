@@ -9,7 +9,7 @@
         "/static/src/script/app/DeveloperPage.js",
         "/static/src/script/app/DataPage.js",
         "/static/src/script/app/HelpPage.js",
-        "/static/src/script/app/FeaturedPage.js",
+        "/static/src/script/app/CuratedPage.js",
         "/static/src/script/app/CommunityPage.js",
         "/static/src/script/app/IndexPage.js",
         "/static/src/script/app/MapGrid.js",

@@ -1,5 +1,5 @@
 
-var FeaturedPage = Ext.extend(Page, {
+var CuratedPage = Ext.extend(Page, {
 
     /**
      * Property: capabilities
@@ -58,8 +58,6 @@ var FeaturedPage = Ext.extend(Page, {
 	 * Create the various parts that compose the layout.
 	 */
     createLayout: function() {
-	this.populateContent();
-
 	// create layer store
 	//TODO
 	this.layers = new GeoExt.data.LayerStore({});
@@ -115,12 +113,12 @@ var FeaturedPage = Ext.extend(Page, {
                     {name: "tags", mapping: "config.about.tags"},
                     {name: "abstract", mapping: "config.about.abstract"},
                     {name: "contact", mapping: "config.about.contact"},
-                    {name: "featured", mapping: "config.about.featured"}
+                    {name: "endorsed", mapping: "config.about.endorsed"}
                 ],
                 autoLoad: true,
                 listeners : {
                     "load" : function(store){
-                        store.filter("featured", true);
+                        store.filter("endorsed", true);
                     }
                 }
             })
