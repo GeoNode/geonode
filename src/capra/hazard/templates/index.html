@@ -6,13 +6,13 @@
 {% block header_append %}
     <script src="{{MEDIA_LOCATIONS.capra_script}}" type="text/javascript"></script>
     <script type="text/javascript">
+        var app;
         Ext.onReady(function() {
-            var app = new MyHazard();
+            app = new MyHazard();
         });
     </script>
 {% endblock %}
 
 {% block main %}
-    <h2>Welcome to the Hazard App!</h2>
-    We haven't gotten around to the content yet...
+<div id="app"></div>
 {% endblock %}
