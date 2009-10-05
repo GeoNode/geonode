@@ -41,6 +41,83 @@ var MyHazard = Ext.extend(Ext.util.Observable, {
 
         var toolGroup = "toolGroup";
 
+        var reportSplit = new Ext.SplitButton({
+            iconCls: "icon-getfeatureinfo",
+            tooltip: "TODO: Tooltip here",
+            enableToggle: true,
+/*            toggleGroup: toolGroup, // Ext doesn't respect this, registered with ButtonToggleMgr below
+            allowDepress: false, // Ext doesn't respect this, handler deals with it
+            handler: function(button, event) {
+                // allowDepress should deal with this first condition
+                if(!button.pressed) {
+                    button.toggle();
+                } else {
+                    button.menu.items.itemAt(activeIndex).setChecked(true);
+                }
+            },
+            listeners: {
+                toggle: function(button, pressed) {
+                    // toggleGroup should handle this
+                    if(!pressed) {
+                        button.menu.items.each(function(i) {
+                            i.setChecked(false);
+                        });
+                    }
+                },
+                render: function(button) {
+                    // toggleGroup should handle this
+                    Ext.ButtonToggleMgr.register(button);
+                }
+            }, */
+            menu: new Ext.menu.Menu({
+                items: [
+                    new Ext.menu.CheckItem(
+                        new GeoExt.Action({
+			    text: "TODO: Point reporter",
+                            iconCls: "icon-point",
+                            map: this.map,
+                            toggleGroup: toolGroup,
+                            group: toolGroup,
+                            allowDepress: false,
+                            map: this.map,
+                            control: new OpenLayers.Control.Navigation() //tool here
+                        })),
+                    new Ext.menu.CheckItem(
+                        new GeoExt.Action({
+                            text: this.areaActionText,
+                            iconCls: "icon-line",
+                            map: this.map,
+                            toggleGroup: toolGroup,
+                            group: toolGroup,
+                            allowDepress: false,
+                            map: this.map,
+                            control: new OpenLayers.Control.Navigation() // tool here
+                        })),
+                    new Ext.menu.CheckItem(
+                        new GeoExt.Action({
+                            text: this.areaActionText,
+                            iconCls: "icon-polygon",
+                            map: this.map,
+                            toggleGroup: toolGroup,
+                            group: toolGroup,
+                            allowDepress: false,
+                            map: this.map,
+                            control: new OpenLayers.Control.Navigation() // tool here
+                        }))
+                ]                
+            })
+        });
+/*        reportSplit.menu.items.each(function(item, index) {
+            item.on({checkchange: function(item, checked) {
+                reportSplit.toggle(checked);
+                if(checked) {
+                    activeIndex = index;
+                    reportSplit.setIconClass(item.iconCls);
+                }
+            }});
+        }); */
+        
+        
         var tools = [
             new GeoExt.Action({
 		tooltip: this.navActionTipText,
@@ -52,6 +129,7 @@ var MyHazard = Ext.extend(Ext.util.Observable, {
                 map: this.map,
                 toggleGroup: toolGroup
             }),
+            reportSplit,
             "-",
             new Ext.Button({
                 handler: function(){
