@@ -1,0 +1,11 @@
+{
+    "statistics": {
+        "zombie:attacks_10y": [3, 5, 4, 1],
+        "candy:drought_2y": [1, 10, 5.5, 4]
+    },
+    "political": [{
+        "country": "Nicaragua",
+        "municipality": "Hometown"
+    }]
+}
+
