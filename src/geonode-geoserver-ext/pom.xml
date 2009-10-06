@@ -68,6 +68,8 @@
         <artifactId>maven-jetty-plugin</artifactId>
         <version>6.1.10</version>
         <configuration>
+          <stopPort>8890</stopPort>
+          <stopKey>geonode-stop</stopKey>
           <contextPath>/geoserver</contextPath>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
@@ -84,8 +86,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <stopPort>8890</stopPort>
-          <stopKey>geonode-stop</stopKey>
           <warName>geoserver-geonode-dev</warName> 
           <webappDirectory>${project.build.directory}/geoserver-geonode-dev</webappDirectory> -->
         </configuration>
