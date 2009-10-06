@@ -1,10 +1,10 @@
 <ul id="sitenav" class="selfclear">
   {% for section in sections %}
-  <li>
-    <a class="{{section.class}}"
+  <li class="{{section.item_class}}">
+    <a class="{{section.link_class}}"
        id="{{section.id}}"
        href="{{section.url}}">
-      {% trans section.text %}
+      {{ section.text }}
     </a>
   </li>
   {% endfor%}
