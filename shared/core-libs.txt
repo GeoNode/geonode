@@ -6,6 +6,8 @@ http://svn.repoze.org/thirdparty/PIL/trunk#egg=PIL
 http://www.reportlab.org/ftp/ReportLab_2_3.tar.gz#egg=reportlab
 simplejson # needed for python2.5
 
+httplib2
+
 # deployment/later
 jstools
 #-e svn+http://svn.pythonpaste.org/Paste/WSGIProxy/trunk#egg=WSGIProxy
