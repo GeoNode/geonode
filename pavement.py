@@ -177,7 +177,7 @@ def setup_geoserver(options):
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     info('to start node: django-admin runserver --settings=geonode.settings\n'\
-         'to start geoserver:mvn jetty:run-war -DGEOSERVER_DATA_DIR=%s' %(path(os.environ['VIRTUAL_ENV']) / gs_data)) #@@ replace with something real
+         'to start geoserver: cd src/geonode-geoserver-ext/; mvn jetty:run-war') #@@ replace with something real
 
 
 @task
