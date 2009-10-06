@@ -65,14 +65,26 @@ For Java Developers
 Java Developers can point the application at a particular GeoServer instance by
 setting the GEOSERVER_BASE_URL entry in settings.py to the context path of the
 GeoServer instance.  This should include the trailing slash.  For example, the
-default is::
+GeoServer used for http://capra.opengeo.org/ is::
 
     http://capra.opengeo.org/geoserver/
 
-The GeoServer module in :file:`src/geonode-gs-ext/` is configured to stand up a
-GeoServer instance with the module ready on use of 
-:command:`mvn jetty:run-war -DGEOSERVER_DATA_DIRECTORY=/path/to/data/` .  If you
-want to use this service, edit :file:`src/geonode/settings.py` and set::
+The default value is ``http://localhost:8889/geoserver/``.  The GeoServer module
+in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
+instance at that port with the following commands::
+   
+    cd src/geonode-geoserver-ext/
+    mvn jetty:run-war
+
+If you want to change this service URL, edit :file:`src/geonode/settings.py` and
+change the line::
   
     GEOSERVER_BASE_URL="http://localhost:8889/geoserver/"
 
+to indicate the GeoServer URL that you want to use. 
+
+This server defaults to using :file:`gs-data/` as the data directory by default.
+If you need you need to use an alternative data directory, you can specify it
+via the command line, using a command like::
+ 
+    mvn jetty:run-war -DGEOSERVER_DATA_DIR=/home/me/mydata/ 
