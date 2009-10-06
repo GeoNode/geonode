@@ -5,6 +5,8 @@ from paver.setuputils import setup, find_package_data
 from paver.easy import options
 from setuptools import find_packages
 import os
+import sys
+from os.path import join
 from shutil import copytree
 from paver import svn
 import pkg_resources
@@ -80,7 +82,10 @@ def install_deps(options):
         sh("pip install %s" %bundle)    
     else:
         info('installing from requirements file')
-        corelibs = "core-libs.txt" if sys.platform != "win32" else "core-libs-win.txt"
+        if sys.platfrom == 'win32':
+            corelibs = "core-libs-win.txt"
+        else:
+            corelibs = "core-libs.txt"
         sh("pip install -r shared/%s" % corelibs)
 
 # put bundle on atlas or capra
@@ -102,8 +107,6 @@ def install_25_deps(options):
 @task
 def post_bootstrap(options):
     # installs the current package
-    import sys
-    from os.path import join
     if sys.platform == 'win32':
         bin = "Scripts"
     else:
