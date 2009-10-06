@@ -82,7 +82,7 @@ def install_deps(options):
         sh("pip install %s" %bundle)    
     else:
         info('installing from requirements file')
-        if sys.platfrom == 'win32':
+        if sys.platform == 'win32':
             corelibs = "core-libs-win.txt"
         else:
             corelibs = "core-libs.txt"
