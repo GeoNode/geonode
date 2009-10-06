@@ -66,13 +66,54 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'geonode.urls'
 
-
-
 TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
                 path_extrapolate('django/contrib/admin/templates', 'django'),
                
 GEOSERVER_BASE_URL = "http://capra.opengeo.org/geoserver/"
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
+
+# NAVBAR expects a dict of dicts or a path to an ini file
+#NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
+NAVBAR = \
+{'community': {'id': '%sLink',
+               'item_class': '',
+               'link_class': '',
+               'text': 'Contributed Maps',
+               'url': 'geonode.maps.views.community'},
+ 'curated': {'id': '%sLink',
+             'item_class': '',
+             'link_class': '',
+             'text': 'CAPRA Maps',
+             'url': 'geonode.maps.views.curated'},
+ 'data': {'id': '%sLink',
+          'item_class': '',
+          'link_class': '',
+          'text': 'For Developers',
+          'url': "geonode.maps.views.static page='developer'"},
+ 'help': {'id': '%sLink',
+          'item_class': '',
+          'link_class': '',
+          'text': 'Help',
+          'url': "geonode.maps.views.static page='help'"},
+ 'index': {'id': '%sLink',
+           'item_class': '',
+           'link_class': '',
+           'text': 'Featured Map',
+           'url': 'geonode.maps.views.index'},
+ 'master': {'id': '%sLink',
+            'item_class': '',
+            'link_class': '',
+            'text': 'This page has no tab for this navigation'},
+ 'meta': {'active_class': 'here',
+          'default_id': '%sLink',
+          'default_item_class': '',
+          'default_link_class': '',
+          'end_class': 'last',
+          'id': '%sLink',
+          'item_class': '',
+          'link_class': '',
+          'visible': 'data\nindex\ncurated\ncommunity\nhelp'}}
+
 
 # Determines whether the minified or the "raw" JavaScript files are included.
 # Only applies in development mode. (That is, when DEBUG==True)
@@ -86,7 +127,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'geonode.maps',
-    #'geonode.core',
+    'geonode.core',
     'geonode.proxy',
 )
 
