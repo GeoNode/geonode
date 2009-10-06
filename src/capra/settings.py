@@ -84,6 +84,8 @@ GEOSERVER_CREDENTIALS = ('admin', 'geoserver')
 
 INSTALLED_APPS += ('capra.hazard',)
 
+TEMPLATE_DIRS = (path_extrapolate("capra/hazard/templates"),) + TEMPLATE_DIRS 
+
 if DEBUG: 
     if MINIFIED_RESOURCES: 
         MEDIA_LOCATIONS["capra_script"] = "/capra_static/CAPRA.js"
