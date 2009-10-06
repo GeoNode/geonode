@@ -84,6 +84,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
+          <stopPort>8890</stopPort>
+          <stopKey>geonode-stop</stopKey>
           <warName>geoserver-geonode-dev</warName> 
           <webappDirectory>${project.build.directory}/geoserver-geonode-dev</webappDirectory> -->
         </configuration>
