@@ -75,3 +75,4 @@ GeoServer instance with the module ready on use of
 want to use this service, edit :file:`src/geonode/settings.py` and set::
   
     GEOSERVER_BASE_URL="http://localhost:8889/geoserver/"
+
