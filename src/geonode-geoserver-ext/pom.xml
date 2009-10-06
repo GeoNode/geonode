@@ -50,6 +50,7 @@
     </dependency>
   </dependencies>
   <properties>
+    <GEOSERVER_DATA_DIR>../../gs-data/</GEOSERVER_DATA_DIR>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
   <build>
@@ -70,7 +71,9 @@
         <configuration>
           <stopPort>8890</stopPort>
           <stopKey>geonode-stop</stopKey>
+          <scanIntervalSeconds>30</scanIntervalSeconds>
           <contextPath>/geoserver</contextPath>
+          
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>8889</port>
