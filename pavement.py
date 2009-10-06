@@ -102,7 +102,14 @@ def install_25_deps(options):
 @task
 def post_bootstrap(options):
     # installs the current package
-    sh('bin/pip install -e ./')
+    import sys
+    from os.path import join
+    if sys.platform == 'win32':
+        bin = "Scripts"
+    else:
+        bin = "bin"
+    pip = join(bin, "pip")
+    sh('%s install -e .' % pip)
 
 gs = "geoserver-build"
 gs_data = "gs-data"
