@@ -73,13 +73,14 @@ options.setup.package_data=find_package_data(package='GeoNode',
 
 venv = os.environ.get('VIRTUAL_ENV')
 
+bundle = path('shared/geonode.pybundle')
+
 @task
 def install_deps(options):
     """Installs all the python deps from a requirments file"""
-    bundle = path('shared/geonode.bundle')
     if bundle.exists():
         info('using to install python deps bundle')
-        sh("pip install %s" %bundle)    
+        call_task('install_bundle')
     else:
         info('installing from requirements file')
         if sys.platform == 'win32':
@@ -93,11 +94,34 @@ def install_deps(options):
 
 @task
 def bundle_deps(options):
-    sh("pip bundle -r shared/geonode-requirments.txt shared/geonode.bundle")
+    sh("pip bundle -r shared/core-libs.txt %s" %bundle)
 
+@task
+@needs(['download_bundle'])
 def install_bundle(options):
-    sh("pip install ./geonode.bundle")    
+    """
+    Installs a bundle of dependencies located at %s.
+    """ %bundle
+    
+    info('install the bundle')
+    sh("pip install %s" %bundle)    
 
+dlname = 'geonode.bundle'
+
+@task
+def download_bundle(options):
+    """
+    Downloads zipped bundle of python dependencies to %s. Does not overwrite.
+    """ %bundle
+    
+    bpath = bundle.abspath()
+    if not bundle.exists():
+        with pushd('shared'):
+            #sh('wget http://capra.opengeo.org/repo/%s.zip' %bundle.name)
+            sh('wget http://capra.opengeo.org/repo/%s.zip' %dlname)
+            path(dlname + '.zip').copy(bpath)
+    else:
+        info("oSkipping download. 'rm bundle  %s' if you need a fresh download. " %bundle)
 
 @task
 def install_25_deps(options):
@@ -125,12 +149,14 @@ def checkout_geoserver(options):
     with pushd('src'):
         svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
     
+
 @task
 def setup_gs_data(options):
     """Fetch a data directory to use with GeoServer for testing."""
     path(gs_data).rmtree()
     svn.checkout("http://svn.codehaus.org/geoserver/trunk/data/minimal",  gs_data)
     
+
 @task
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
@@ -145,16 +171,23 @@ def setup_geoserver(options):
     with pushd('src/geonode-geoserver-ext'):
         sh("mvn install")
 
+
 @task
-@needs(['install_deps','setup_geoserver','concat_js','capra_js'])
+@needs(['install_deps','setup_geoserver', 'build_js'])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info('to start node: paster serve shared/dev-paste.ini\n'\
-         'to start geoserver:mvn jetty:run-war -DGEOSERVER_DATA_DIR=/path/to/datadir/') #@@ replace with something real
+    info('to start node: django-admin runserver --settings=geonode\n'\
+         'to start geoserver:mvn jetty:run-war -DGEOSERVER_DATA_DIR=%s' %(path(os.environ['VIRTUAL_ENV']) / gs_data)) #@@ replace with something real
 
 
 @task
-def concat_js():
+@needs(['concat_js','capra_js'])
+def build_js(options):
+    info('GeoNode Client Javascript is done building')
+
+
+@task
+def concat_js(options):
     """Compress the JavaScript resources used by the base GeoNode site."""
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
@@ -164,8 +197,9 @@ def concat_js():
        sh("svn export ../externals/geoext/resources geonode-client/theme/gx/")
        sh("jsbuild -o geonode-client/script/ all.cfg") 
 
+
 @task
-def capra_js():
+def capra_js(options):
     """Compress the JavaScript resources used by the CAPRA GeoNode extensions."""
     with pushd('src/capra-client/build/'):
        path("capra-client").rmtree()
@@ -173,7 +207,6 @@ def capra_js():
        sh("jsbuild -o capra-client/ all.cfg") 
 
 # set up supervisor?
-
 
 if ALL_TASKS_LOADED:
     @task
