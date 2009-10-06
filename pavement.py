@@ -80,7 +80,8 @@ def install_deps(options):
         sh("pip install %s" %bundle)    
     else:
         info('installing from requirements file')
-        sh("pip install -r shared/core-libs.txt")
+        corelibs = "core-libs.txt" if sys.platform != "win32" else "core-libs-win.txt"
+        sh("pip install -r shared/%s" % corelibs)
 
 # put bundle on atlas or capra
 # download it, then install
@@ -97,7 +98,6 @@ def install_bundle(options):
 def install_25_deps(options):
     """Fetch python 2_5-specific dependencies (not maintained)"""
     pass
-
     
 @task
 def post_bootstrap(options):
