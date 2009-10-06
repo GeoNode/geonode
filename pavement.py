@@ -176,7 +176,7 @@ def setup_geoserver(options):
 @needs(['install_deps','setup_geoserver', 'build_js'])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info('to start node: django-admin runserver --settings=geonode\n'\
+    info('to start node: django-admin runserver --settings=geonode.settings\n'\
          'to start geoserver:mvn jetty:run-war -DGEOSERVER_DATA_DIR=%s' %(path(os.environ['VIRTUAL_ENV']) / gs_data)) #@@ replace with something real
 
 
