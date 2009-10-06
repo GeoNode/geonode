@@ -1,13 +1,15 @@
 import pkg_resources
 from UserDict import DictMixin
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoOptionError
+from pprint import pformat
 
 
 def path_extrapolate(stub, pkg='GeoNode'):
     req = pkg_resources.Requirement.parse(pkg)
     return pkg_resources.resource_filename(req,  stub)
 
-class SectionConfigMap(DictMixin):
+
+class ConfigMap(DictMixin):
 
     def __init__(self, parser):
         self.parser = parser
@@ -18,7 +20,7 @@ class SectionConfigMap(DictMixin):
             yield sname
             
     def __getitem__(self, idx):
-        return dict(self.parser.items(idx))
+        return OptionMap(self.parser, idx)
 
     def __setitem__(self, idx, val):
         for item in val.items():
@@ -38,3 +40,26 @@ class SectionConfigMap(DictMixin):
         parser = ConfigParser()
         parser.read(fname)
         return cls(parser)
+
+
+class OptionMap(DictMixin):
+    def __init__(self, parser, section):
+        self.parser = parser
+        self.section = section
+        
+    def __getitem__(self, idx):
+        try:
+            return self.parser.get(self.section, idx)
+        except NoOptionError, e:
+            raise KeyError(e)
+
+    def __setitem__(self, name, val):
+        self.parser.set(self.section, name, val)
+
+    def __delitem__(self, name):
+        self.parser.remove_option(self.section, name)
+
+    def keys(self):
+        return self.parser.options(self.section)
+
+
