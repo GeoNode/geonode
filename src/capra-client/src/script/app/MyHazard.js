@@ -149,23 +149,39 @@ var MyHazard = Ext.extend(Ext.util.Observable, {
             })
         ];
 
-        this.sidebar = 
-            this.mapPanel = new Ext.Panel({
-                region: "west",
-                width: 250,
-                tbar: tools
-
-            });
-
-        this.map = new OpenLayers.Map();
+        this.sidebar = new Ext.tree.TreePanel({
+            region: "west",
+            width: 250,
+            tbar: tools,
+            loader: new Ext.tree.TreeLoader({
+                applyLoader: false
+            }),
+            rootVisible: false,
+            root: {
+                nodeType: "async",
+                children: [
+                    {nodeType: "gx_baselayercontainer"}
+                ]
+            }
+        });
+        
+        this.map = new OpenLayers.Map({allOverlays: false});
 
         //dummy layers for development standin
-        var layer = new OpenLayers.Layer.WMS(
-            "Global Imagery",
-            "http://demo.opengeo.org/geoserver/wms",
-            {layers: 'bluemarble'}
-        );
-        this.map.addLayer(layer);
+        var layers = [
+            new OpenLayers.Layer.WMS(
+                "Global Imagery",
+                "http://demo.opengeo.org/geoserver/wms",
+                {layers: 'bluemarble'}
+            ),
+            new OpenLayers.Layer.Google(
+                "Google Hybrid", 
+                {numZoomLevels: 20,
+                 type: G_HYBRID_MAP}
+            )
+        ];
+
+        this.map.addLayers(layers);
 
 
         this.mapPanel = new GeoExt.MapPanel({
