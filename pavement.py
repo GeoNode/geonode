@@ -135,12 +135,12 @@ def setup_geoserver(options):
         call_task('setup_gs_data')
     if not (path('src') / gs).exists():
         call_task('checkout_geoserver')
-    with pushd('src'):
-        with pushd(gs):
-            sh('mvn install')
-            sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.0-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
-        with pushd('geonode-geoserver-ext'):
-            sh("mvn install")
+        with pushd('src'):
+            with pushd(gs):
+                sh('mvn install')
+                sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.0-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
+            with pushd('geonode-geoserver-ext'):
+                sh("mvn install")
 
 @task
 @needs(['install_deps','setup_geoserver','concat_js','capra_js'])
