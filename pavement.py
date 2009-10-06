@@ -142,7 +142,7 @@ def setup_geoserver(options):
             with pushd(gs):
                 sh('mvn install')
                 sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.0-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
-    with pushd('geonode-geoserver-ext'):
+    with pushd('src/geonode-geoserver-ext'):
         sh("mvn install")
 
 @task
