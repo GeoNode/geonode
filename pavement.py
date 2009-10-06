@@ -159,9 +159,9 @@ def concat_js():
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
        os.makedirs("geonode-client/script")
-       copytree("../src/theme/", "geonode-client/theme/")
-       copytree("../externals/openlayers/theme/default", "geonode-client/theme/ol/")
-       copytree("../externals/geoext/resources", "geonode-client/theme/gx/")
+       sh("svn export ../src/theme/ geonode-client/theme/")
+       sh("svn export ../externals/openlayers/theme/default geonode-client/theme/ol/")
+       sh("svn export ../externals/geoext/resources geonode-client/theme/gx/")
        sh("jsbuild -o geonode-client/script/ all.cfg") 
 
 @task
