@@ -60,7 +60,6 @@
     
   </dependencies>
   <properties>
-    <GEOSERVER_DATA_DIR>../../gs-data/</GEOSERVER_DATA_DIR>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
   <build>
@@ -99,6 +98,13 @@
               <maxIdleTime>10000</maxIdleTime>
             </connector>
           </connectors>
+
+          <systemProperties>
+            <systemProperty>
+              <name>GEOSERVER_DATA_DIR</name>
+              <value>../../gs-data/</value>
+            </systemProperty>
+          </systemProperties>
 
           <webApp>${project.build.directory}/geoserver-geonode-dev</webApp>
         </configuration>
