@@ -1,5 +1,6 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
+{% load navbar %}
 
 {% block title %} {% trans "CAPRA Map List" %} {% endblock %}
 
@@ -19,7 +20,7 @@
 {% endblock %}
 
 {% block nav %}
-{% navbar featured %}
+{% navbar curated %}
 {% endblock %}
 
 {% block main %}
@@ -43,7 +44,7 @@ to open it in a map editor, or click
 to export it as a widget.
 </p>
 See the{% endblocktrans %}
-<a href="{%url geonode.maps.views.community %}">{% trans "contributed map"%}</a>
+<a href="{%url geonode.views.community %}">{% trans "contributed map"%}</a>
 {% blocktrans %}
 list for other maps created by GeoNode users.
 {% endblocktrans %}

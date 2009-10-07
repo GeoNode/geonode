@@ -13,7 +13,7 @@
     <h3> {% trans "Welcome to CAPRA's GeoNode!" %} </h3>
 </div>
 <div id="featuredmap">
-    <iframe id="map-iframe" src="{%if map.id %}{% url geonode.maps.views.embed mapid=map.id %}{%else%}{%url geonode.maps.views.embed%}{%endif%}" height="400" width="550"> </iframe>
+    <iframe id="map-iframe" src="{%if map.id %}{% url geonode.views.embed mapid=map.id %}{%else%}{%url geonode.maps.views.embed%}{%endif%}" height="400" width="550"> </iframe>
     <h4 id="map-title">{% trans "Featured Map:" %} {{map.about.title}}</h4>
     <div id="map-abstract">{{map.about.abstract}}</div>
 </div>

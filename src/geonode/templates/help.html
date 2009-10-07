@@ -1,5 +1,6 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
+{% load navbar %}
 {% block title %} {% trans "User Guide" %} {% endblock %}
 
 {% block nav %}
@@ -14,36 +15,47 @@
   application allows users to browse existing maps and contribute their
   own.
 </p>
-<a name='browsing-data' />
-<h4>Browsing Data</h4>
-</a>
-<p>The <a href='data.html'>Data
-  </a> tab allows you to browse data
-  produced for the CAPRA project.
-</p>
-<p>All data can be downloaded in a variety of formats, for use in
-  other applications.
+<a name='browsing-data><h4>Browsing Data</h4></a>
+         <p>The <a href='data.html'>Data
+           </a> tab allows you to browse data
+           produced for the CAPRA project.
+         </p>
+<p>
+  All data can be downloaded in a variety of formats, for use in other
+  applications.
 </p>
 <p>Three kinds of data are available:
 </p>
 <ul>
-  <li>The Risk section contains the actual risk maps resulting from the hazard layers and the risk models. 
+  <li>
+    The Risk section contains the actual risk maps resulting from the
+    hazard layers and the risk models.
   </li>
-  <li>The Hazard section consists of the .AME data files that represent the probabilities of various hazards (earthquakes, landslides, cyclones, etc.) over different amounts of time.  A whole .AME file can be downloaded to power a new risk model, or individual slices of the .AME can be downloaded as GeoTiffs.
+  <li>
+    The Hazard section consists of the .AME data files that represent the
+    probabilities of various hazards (earthquakes, landslides, cyclones,
+    etc.) over different amounts of time.  A whole .AME file can be
+    downloaded to power a new risk model, or individual slices of the .AME
+    can be downloaded as GeoTiffs.
   </li>
-  <li>The Base layer section contains all the base data sets that go in to constructing the hazard and risk models, so that anyone who is interested in creating and running their own models can start with the exact same datasets.
+  <li>
+    The Base layer section contains all the base data sets that go in to
+    constructing the hazard and risk models, so that anyone who is
+    interested in creating and running their own models can start with the
+    exact same datasets.
   </li>
 
 </ul>
 
-<a name='developer-access' /><h4>Developer Access</h4>
-</a>
-<p>The <a href='developer.html'>Developer
-  </a> tab is the place for developers to get started building applications against the CAPRA  GeoNode.  It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.<p>
-
-  <a name='browsing-maps' />
-  <h4>Browsing Maps</h4>
-</a>
+<a name='developer-access'><h4>Developer Access</h4></a>
+<p>
+  The <a href='developer.html'> Developer</a> tab is the place for
+  developers to get started building applications against the CAPRA
+  GeoNode.  It includes instructions on using the web services, links to
+  the source code of the GeoNode, and information about the open source
+  projects used to create it.
+</p>
+<a name='browsing-maps'><h4>Browsing Maps</h4></a>
 <p>The CAPRA GeoNode allows users to create and share maps with one
   another.
 </p>
@@ -70,8 +82,8 @@
   have the Google Earth plugin installed you will be prompted to install
   it. 
 </p>
-<a name='creating-a-map' />
-<h4>Creating a Map</h4>
+<a name='creating-a-map'>
+  <h4>Creating a Map</h4>
 </a>
 <p>To create a new map go to the <a href='community.html'>Contributed
     Maps
@@ -113,23 +125,34 @@
   information you then save the map.  This is the left most icon on the
   top toolbar, an image of a map with a disk.
 </p>
-<a name='exporting-a-map' />
-<h4>Exporting a Map</h4>
+<a name='exporting-a-map'>
+  <h4>Exporting a Map</h4>
 </a>
 <p>Any map from the GeoNode can be embedded for use in another site or blog.  To export a map:
-</p><ol><li>Select the from the list of maps on the community or CAPRA map page and then hit the 'export map' button.
-  </li> <li>Choose your desired height and width for the widget in the wizard.
-  </li> <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.
+</p>
+<ol>
+  <li>Select the from the list of maps on the community or CAPRA map
+    page and then hit the 'export map' button.
+  </li> 
+  <li>Choose your desired height and width for the widget in the wizard.
+  </li> 
+  <li>Copy the HTML snippet provided in the wizard to any HTML
+    page or iFrame-supporting blog post.
   </li>
-</ol><p>This will put an interactive widget showing you map in your web pageor blog post.  The <a href='index.html'>Featured Map
+</ol>
+<p>This will put an interactive widget showing you map in your web
+  pageor blog post.  The <a href='index.html'>Featured Map
   </a> page ispowered by just this kind of widget..
 </p><p>Note that the <a href='map.html'>Map Composer
-  </a> also has a button to export the map.  Just be sure to save the map before exporting if there are changes that you want others to see.  It exports the last saved version, not the last viewed version.
+  </a> also has a button to export the map.  Just be sure to save the
+  map before exporting if there are changes that you want others to
+  see.  It exports the last saved version, not the last viewed
+  version.
 </p>
-<a name='remixing-a-map' />
-<h4>Remixing a Map</h4>
-</a><p>Any map available can serve as a starting point for a new map.
-</p>
+<a name='remixing-a-map'>
+  <h4>Remixing a Map</h4>
+</a>
+<p>Any map available can serve as a starting point for a new map.</p>
 <ol>
   <li>Open the map.
   </li>
@@ -150,33 +173,34 @@
 You will be able to see your new map in
 the <a href='community.html'>Contributed Maps
 </a> tab.
-</p>  {%
-endblocktrans %} {% endblock %} {% block sidebar %}
-<h3>{% trans "GeoNode Help" %}
-</h3>
+</p>  \
+{% endblocktrans %} 
+{% endblock %} 
+{% block sidebar %}
+<h3>{% trans "GeoNode Help" %}</h3>
 {% blocktrans %} 
 <p>This page provides helpful information about how to use the
   GeoNode.  You can use the links below to navigate to what you want to
   know.
 </p>
 <ul>
-  <li><a href='#browsing-data'>Browsing Data
-    </a>
+  <li>
+    <a href='#browsing-data'>Browsing Data</a>
   </li>
-  <li><a href='#developer-access'>Developer Access
-    </a>
+  <li>
+    <a href='#developer-access'>Developer Access</a>
   </li>
-  <li><a href='#browsing-maps'>Browsing Maps
-    </a>
+  <li>
+    <a href='#browsing-maps'>Browsing Maps</a>
   </li>
-  <li><a href='#creating-a-map'>Creating a Map
-    </a>
+  <li>
+    <a href='#creating-a-map'>Creating a Map</a>
   </li>
-  <li><a href='#exporting-a-map'>Exporting a Map
-    </a>
+  <li>
+    <a href='#exporting-a-map'>Exporting a Map</a>
   </li>
-  <li><a href='#remixing-a-map'>Remixing a Map
-    </a>
+  <li>
+    <a href='#remixing-a-map'>Remixing a Map</a>
   </li>
 
 </ul>
