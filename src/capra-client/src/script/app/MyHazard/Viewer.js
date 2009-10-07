@@ -1,6 +1,7 @@
 Ext.namespace("MyHazard");
 MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     reportService: "/hazard/report.html",
+    popup: null,
     mapPanel: null,
     sidebar: null,
     
@@ -64,8 +65,9 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
 
         var toolGroup = "toolGroup";
 
+        var activeIndex = 0;
         var reportSplit = new Ext.SplitButton({
-            iconCls: "icon-getfeatureinfo",
+            iconCls: "icon-point",
             tooltip: "TODO: Tooltip here",
             enableToggle: true,
             toggleGroup: toolGroup, // Ext doesn't respect this, registered with ButtonToggleMgr below
@@ -103,12 +105,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                             group: toolGroup,
                             allowDepress: false,
                             map: this.map,
-                            control: new MyHazard.Reporter(OpenLayers.Handler.Point, {
-                                eventListeners: {
-                                    report: this.report,
-                                    scope: this
-                                }
-                            })
+                            control: this.createReporter(OpenLayers.Handler.Point)
                         })),
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
@@ -119,12 +116,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                             group: toolGroup,
                             allowDepress: false,
                             map: this.map,
-                            control: new MyHazard.Reporter(OpenLayers.Handler.Path, {
-                                eventListeners: {
-                                    report: this.report,
-                                    scope: this
-                                }
-                            })
+                            control: this.createReporter(OpenLayers.Handler.Path)
                         })),
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
@@ -135,12 +127,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                             group: toolGroup,
                             allowDepress: false,
                             map: this.map,
-                            control: new MyHazard.Reporter(OpenLayers.Handler.Polygon, {
-                                eventListeners: {
-                                    report: this.report,
-                                    scope: this
-                                }
-                            })
+                            control: this.createReporter(OpenLayers.Handler.Polygon)
                         }))
                 ]                
             })
@@ -221,22 +208,54 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         //activate the reporting controls.
     },
 
+    createReporter: function(handlerType) {
+        return new MyHazard.Reporter(handlerType, {
+            eventListeners: {
+                report: this.report,
+                activate: this.clearPopup,
+                deactivate: this.clearPopup,
+                scope: this
+            }
+        })
+    },
+
+    clearPopup: function() {
+        if (this.popup) {
+            this.popup.close();
+            delete this.popup;
+
+            // If we still have a transient geometry from one of the draw tools, kill it.
+            var controls = this.mapPanel.map.controls;
+            for (var i = 0, len = controls.length; i < len; i++) {
+                var c = controls[i];
+                if (c.active && c.handler && c.handler.cancel) {
+                    c.handler.cancel();
+                }
+            }
+        }
+    },
+
     report: function(evt) {
         var geom = evt.geom;
         var format = new OpenLayers.Format.GeoJSON();
+        this.clearPopup();
 
         Ext.Ajax.request({
             url: this.reportService,
             xmlData: format.write(geom),
             method: "POST",
             success: function(response, options) {
-                var popup = new GeoExt.Popup({
+                this.popup = new GeoExt.Popup({
                     feature: new OpenLayers.Feature.Vector(geom),
                     html: response.responseText,
-                    map: this.mapPanel
+                    map: this.mapPanel,
+                    listeners: {
+                       hide: this.clearPopup,
+                       scope: this
+                    }
                 });
-                this.mapPanel.add(popup);
-                popup.show();
+                this.mapPanel.add(this.popup);
+                this.popup.show();
             },
             failure: function() {
                 alert("Failure while retrieving report...");
