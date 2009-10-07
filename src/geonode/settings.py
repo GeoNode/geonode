@@ -120,47 +120,6 @@ NAVBAR = \
           'visible': 'data\nindex\ncurated\ncommunity\ndeveloper\nhelp'}}
 
 
-## NAVBAR = \
-## {'community': {'id': '%sLink',
-##                'item_class': '',
-##                'link_class': '',
-##                'text': 'Contributed Maps',
-##                'url': 'geonode.maps.views.community'},
-##  'curated': {'id': '%sLink',
-##              'item_class': '',
-##              'link_class': '',
-##              'text': 'CAPRA Maps',
-##              'url': 'geonode.maps.views.curated'},
-##  'data': {'id': '%sLink',
-##           'item_class': '',
-##           'link_class': '',
-##           'text': 'For Developers',
-##           'url': "geonode.maps.views.static page='developer'"},
-##  'help': {'id': '%sLink',
-##           'item_class': '',
-##           'link_class': '',
-##           'text': 'Help',
-##           'url': "geonode.maps.views.static page='help'"},
-##  'index': {'id': '%sLink',
-##            'item_class': '',
-##            'link_class': '',
-##            'text': 'Featured Map',
-##            'url': 'geonode.maps.views.index'},
-##  'master': {'id': '%sLink',
-##             'item_class': '',
-##             'link_class': '',
-##             'text': 'This page has no tab for this navigation'},
-##  'meta': {'active_class': 'here',
-##           'default_id': '%sLink',
-##           'default_item_class': '',
-##           'default_link_class': '',
-##           'end_class': 'last',
-##           'id': '%sLink',
-##           'item_class': '',
-##           'link_class': '',
-##           'visible': 'data\nindex\ncurated\ncommunity\nhelp'}}
-
-
 # Determines whether the minified or the "raw" JavaScript files are included.
 # Only applies in development mode. (That is, when DEBUG==True)
 #MINIFIED_RESOURCES = False
