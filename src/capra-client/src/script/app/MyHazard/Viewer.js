@@ -145,7 +145,8 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 ]                
             })
         });
-/*        reportSplit.menu.items.each(function(item, index) {
+
+        reportSplit.menu.items.each(function(item, index) {
             item.on({checkchange: function(item, checked) {
                 reportSplit.toggle(checked);
                 if(checked) {
@@ -153,7 +154,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                     reportSplit.setIconClass(item.iconCls);
                 }
             }});
-        }); */
+        });
         
         var tools = [
             new GeoExt.Action({
@@ -230,7 +231,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             method: "POST",
             success: function(response, options) {
                 var popup = new GeoExt.Popup({
-                    lonlat: geom.getCentroid(),
+                    feature: new OpenLayers.Feature.Vector(geom),
                     html: response.responseText,
                     map: this.mapPanel
                 });
