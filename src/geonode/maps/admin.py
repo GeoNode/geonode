@@ -1,13 +1,13 @@
 from geonode.maps.models import Map
-from geonode.maps.models import Layer
+from geonode.maps.models import MapLayer
 from django.contrib import admin
 
-class LayerInline(admin.TabularInline):
-    model = Layer
+class MapLayerInline(admin.TabularInline):
+    model = MapLayer
 
 class MapAdmin(admin.ModelAdmin):
-    inlines = [LayerInline,]
+    inlines = [MapLayerInline,]
 
 
 admin.site.register(Map, MapAdmin)
-admin.site.register(Layer)
+admin.site.register(MapLayer)

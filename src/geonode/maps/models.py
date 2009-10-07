@@ -20,7 +20,7 @@ class Map(models.Model):
     def get_absolute_url(self):
         return '/maps/%i' % self.id
 
-class Layer(models.Model):
+class MapLayer(models.Model):
     name = models.CharField(max_length=200)
     ows_url = models.URLField()
     group = models.CharField(max_length=200,blank=True)
