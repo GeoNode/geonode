@@ -73,7 +73,52 @@ GEOSERVER_BASE_URL = "http://capra.opengeo.org/geoserver/"
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 
 # NAVBAR expects a dict of dicts or a path to an ini file
-NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
+#NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
+NAVBAR = \
+{'community': {'id': '%sLink',
+               'item_class': '',
+               'link_class': '',
+               'text': 'Contributed Maps',
+               'url': 'geonode.views.community'},
+ 'curated': {'id': '%sLink',
+             'item_class': '',
+             'link_class': '',
+             'text': 'CAPRA Maps',
+             'url': 'geonode.views.curated'},
+ 'data': {'id': '%sLink',
+          'item_class': '',
+          'link_class': '',
+          'text': 'Data',
+          'url': "geonode.views.static page='data'"},
+ 'developer': {'id': '%sLink',
+               'item_class': '',
+               'link_class': '',
+               'text': 'For Developers',
+               'url': "geonode.views.static page='developer'"},
+ 'help': {'id': '%sLink',
+          'item_class': '',
+          'link_class': '',
+          'text': 'Help',
+          'url': "geonode.views.static page='help'"},
+ 'index': {'id': '%sLink',
+           'item_class': '',
+           'link_class': '',
+           'text': 'Featured Map',
+           'url': 'geonode.views.index'},
+ 'master': {'id': '%sLink',
+            'item_class': '',
+            'link_class': '',
+            'text': 'This page has no tab for this navigation'},
+ 'meta': {'active_class': 'here',
+          'default_id': '%sLink',
+          'default_item_class': '',
+          'default_link_class': '',
+          'end_class': 'last',
+          'id': '%sLink',
+          'item_class': '',
+          'link_class': '',
+          'visible': 'data\nindex\ncurated\ncommunity\ndeveloper\nhelp'}}
+
 
 ## NAVBAR = \
 ## {'community': {'id': '%sLink',
