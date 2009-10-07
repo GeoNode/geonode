@@ -78,7 +78,7 @@ def maps(request, mapid=None):
         return response
 
 def newmap(request):
-    return render_to_response('map/view.html', 
+    return render_to_response('maps/view.html', 
             context_instance = RequestContext(request, 
                 { 'config': json.dumps(DEFAULT_MAP_CONFIG) },
                 [resource_urls]
@@ -91,7 +91,7 @@ def view(request, mapid):
     """
     map = Map.objects.get(pk=mapid)
     config = build_map_config(map)
-    return render_to_response('map/view.html',
+    return render_to_response('maps/view.html',
                 context_instance = RequestContext(request, 
                     { 'config': json.dumps(config) },
                     [resource_urls]
