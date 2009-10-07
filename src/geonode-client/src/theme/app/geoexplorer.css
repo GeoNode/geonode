@@ -67,15 +67,15 @@
 }
 
 /* Really for CAPRA, watch out! */
-.icon-point {
+.x-btn .icon-point {
     background-image: url(img/geosilk/bullet_orange.png); !important
 }
 
-.icon-line {
+.x-btn .icon-line {
     background-image: url(img/geosilk/line_orange.png);
 }
 
-.icon-polygon {
+.x-btn .icon-polygon {
     background-image: url(img/geosilk/shape_square_orange.png);
 }
 
