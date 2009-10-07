@@ -1,4 +1,4 @@
-{% extends "maps/fullscreen.html" %}
+{% extends "fullscreen.html" %}
 {% load i18n %}
 
 {% block title %}
@@ -33,7 +33,7 @@ Ext.onReady(function() {
          * maps on the server for sharing and editing.
          */
         rest: "/maps/",
-        homeUrl: "{% url geonode.maps.views.index %}"
+        homeUrl: "{% url geonode.views.index %}"
     };
 
     Ext.apply(config, {% if config %}{{config|safe}}{%else%} {%endif%});
