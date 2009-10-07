@@ -67,7 +67,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             iconCls: "icon-getfeatureinfo",
             tooltip: "TODO: Tooltip here",
             enableToggle: true,
-/*            toggleGroup: toolGroup, // Ext doesn't respect this, registered with ButtonToggleMgr below
+            toggleGroup: toolGroup, // Ext doesn't respect this, registered with ButtonToggleMgr below
             allowDepress: false, // Ext doesn't respect this, handler deals with it
             handler: function(button, event) {
                 // allowDepress should deal with this first condition
@@ -90,12 +90,12 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                     // toggleGroup should handle this
                     Ext.ButtonToggleMgr.register(button);
                 }
-            }, */
+            },
             menu: new Ext.menu.Menu({
                 items: [
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
-			    text: "TODO: Point reporter",
+                            text: "TODO: Point reporter",
                             iconCls: "icon-point",
                             map: this.map,
                             toggleGroup: toolGroup,
@@ -106,25 +106,25 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                         })),
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
-                            text: this.areaActionText,
+                            text: "TODO: Line reporter",
                             iconCls: "icon-line",
                             map: this.map,
                             toggleGroup: toolGroup,
                             group: toolGroup,
                             allowDepress: false,
                             map: this.map,
-                            control: new OpenLayers.Control.Navigation() // tool here
+                            control: new MyHazard.Reporter(OpenLayers.Handler.Path)
                         })),
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
-                            text: this.areaActionText,
+                            text: "TODO: Polygon reporter",
                             iconCls: "icon-polygon",
                             map: this.map,
                             toggleGroup: toolGroup,
                             group: toolGroup,
                             allowDepress: false,
                             map: this.map,
-                            control: new OpenLayers.Control.Navigation() // tool here
+                            control: new MyHazard.Reporter(OpenLayers.Handler.Polygon)
                         }))
                 ]                
             })
