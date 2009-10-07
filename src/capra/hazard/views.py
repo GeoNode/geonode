@@ -6,7 +6,7 @@ from httplib2 import Http
 import json 
 
 def index(request): 
-    return render_to_response("index.html",
+    return render_to_response("hazard/index.html",
         context_instance=RequestContext(request, {}, [resource_urls])
     )
 
@@ -14,7 +14,7 @@ def report(request):
     params = extract_params(request)
     result = request_rest_process("hazard", params)
 
-    return render_to_response("report.html",
+    return render_to_response("hazard/report.html",
         context_instance=RequestContext(request, {"result": result}, [resource_urls])
     )
 
