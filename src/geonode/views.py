@@ -34,10 +34,8 @@ def index(request):
         map = DEFAULT_MAP_CONFIG
     else: 
         map = build_map_config(featured[0])
-    return render_to_response('index.html', 
-            context_instance=RequestContext(
-                request, {'map': map}, [resource_urls]
-            ));
+    context = RequestContext(request, {'map': map}, [resource_urls])
+    return render_to_response('index.html', context_instance=context);
 
 def static(request, page):
     info = dict(GEOSERVER_BASE_URL=settings.GEOSERVER_BASE_URL)

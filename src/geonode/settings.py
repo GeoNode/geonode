@@ -1,7 +1,9 @@
 # Django settings for GeoNode project.
 from utils import path_extrapolate
-DEBUG = True
+from django.utils.translation import ugettext as _
 
+DEBUG = True
+SITENAME = "CAPRA GeoNode"
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -74,6 +76,7 @@ GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAh
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
+# @@ i18n replace 'text' w/ simply an i18n message?
 NAVBAR = \
 {'community': {'id': '%sLink',
                'item_class': '',
