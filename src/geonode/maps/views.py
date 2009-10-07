@@ -33,30 +33,6 @@ DEFAULT_MAP_CONFIG = {
     }
 }
 
-def index(request): 
-    featured = Map.objects.filter(featured=True)
-    if featured.count() == 0:
-        map = DEFAULT_MAP_CONFIG
-    else: 
-        map = build_map_config(featured[0])
-    return render_to_response('maps/index.html', 
-            context_instance=RequestContext(
-                request, {'map': map}, [resource_urls]
-            ));
-
-def community(request):
-        maps = Map.objects.filter(featured=False)[:5]
-        return render_to_response('maps/community.html', 
-            context_instance=RequestContext(
-                request, {'maps': maps}, [resource_urls]
-        ));
-
-def curated(request):
-        maps = Map.objects.filter(featured=True)[:5]
-        return render_to_response('maps/curated.html',
-            context_instance=RequestContext(
-                request, {'maps': maps}, [resource_urls]
-        ));
 
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
@@ -102,7 +78,7 @@ def maps(request, mapid=None):
         return response
 
 def newmap(request):
-    return render_to_response('maps/view.html', 
+    return render_to_response('map/view.html', 
             context_instance = RequestContext(request, 
                 { 'config': json.dumps(DEFAULT_MAP_CONFIG) },
                 [resource_urls]
@@ -115,7 +91,7 @@ def view(request, mapid):
     """
     map = Map.objects.get(pk=mapid)
     config = build_map_config(map)
-    return render_to_response('maps/view.html',
+    return render_to_response('map/view.html',
                 context_instance = RequestContext(request, 
                     { 'config': json.dumps(config) },
                     [resource_urls]
@@ -172,12 +148,4 @@ def view_js(request, mapid):
     config = build_map_config(map)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
    
-def static(request, page):
-    return render_to_response('maps/' + page + '.html', 
-        context_instance = RequestContext(request, {
-            'GEOSERVER_BASE_URL': settings.GEOSERVER_BASE_URL
-        }, [resource_urls])
-    )
 
-def lang(request): 
-    return render_to_response('maps/lang.js', mimetype="text/javascript")
