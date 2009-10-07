@@ -1,5 +1,6 @@
 Ext.namespace("MyHazard");
 MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
+    reportService: "/hazard/report.html",
     mapPanel: null,
     sidebar: null,
     
@@ -102,7 +103,12 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                             group: toolGroup,
                             allowDepress: false,
                             map: this.map,
-                            control: new MyHazard.Reporter()
+                            control: new MyHazard.Reporter(OpenLayers.Handler.Point, {
+                                eventListeners: {
+                                    report: this.report,
+                                    scope: this
+                                }
+                            })
                         })),
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
@@ -113,7 +119,12 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                             group: toolGroup,
                             allowDepress: false,
                             map: this.map,
-                            control: new MyHazard.Reporter(OpenLayers.Handler.Path)
+                            control: new MyHazard.Reporter(OpenLayers.Handler.Path, {
+                                eventListeners: {
+                                    report: this.report,
+                                    scope: this
+                                }
+                            })
                         })),
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
@@ -124,7 +135,12 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                             group: toolGroup,
                             allowDepress: false,
                             map: this.map,
-                            control: new MyHazard.Reporter(OpenLayers.Handler.Polygon)
+                            control: new MyHazard.Reporter(OpenLayers.Handler.Polygon, {
+                                eventListeners: {
+                                    report: this.report,
+                                    scope: this
+                                }
+                            })
                         }))
                 ]                
             })
@@ -202,5 +218,29 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         //hazard configuration
 
         //activate the reporting controls.
+    },
+
+    report: function(evt) {
+        var geom = evt.geom;
+        var format = new OpenLayers.Format.GeoJSON();
+
+        Ext.Ajax.request({
+            url: this.reportService,
+            xmlData: format.write(geom),
+            method: "POST",
+            success: function(response, options) {
+                var popup = new GeoExt.Popup({
+                    lonlat: geom.getCentroid(),
+                    html: response.responseText,
+                    map: this.mapPanel
+                });
+                this.mapPanel.add(popup);
+                popup.show();
+            },
+            failure: function() {
+                alert("Failure while retrieving report...");
+            },
+            scope: this
+        });
     }
 });
