@@ -1,10 +1,8 @@
-var MyHazard = Ext.extend(Ext.util.Observable, {
-
+Ext.namespace("MyHazard");
+MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     mapPanel: null,
     sidebar: null,
-
     
-
     constructor: function (config) {
         this.initialConfig = config;
         Ext.apply(this, this.initialConfig);
@@ -38,6 +36,30 @@ var MyHazard = Ext.extend(Ext.util.Observable, {
     },
 
     createLayout: function(){
+        this.map = new OpenLayers.Map({allOverlays: false});
+
+        //dummy layers for development standin
+        var layers = [
+            new OpenLayers.Layer.WMS(
+                "Global Imagery",
+                "http://demo.opengeo.org/geoserver/wms",
+                {layers: 'bluemarble'}
+            ),
+            new OpenLayers.Layer.Google(
+                "Google Hybrid", 
+                {numZoomLevels: 20,
+                 type: G_HYBRID_MAP}
+            )
+        ];
+
+        this.map.addLayers(layers);
+
+        this.mapPanel = new GeoExt.MapPanel({
+            region: "center",
+            center: new OpenLayers.LonLat(5, 45),
+            zoom: 4,
+            map: this.map
+        });
 
         var toolGroup = "toolGroup";
 
@@ -80,7 +102,7 @@ var MyHazard = Ext.extend(Ext.util.Observable, {
                             group: toolGroup,
                             allowDepress: false,
                             map: this.map,
-                            control: new OpenLayers.Control.Navigation() //tool here
+                            control: new MyHazard.Reporter()
                         })),
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
@@ -117,10 +139,9 @@ var MyHazard = Ext.extend(Ext.util.Observable, {
             }});
         }); */
         
-        
         var tools = [
             new GeoExt.Action({
-		tooltip: this.navActionTipText,
+                tooltip: this.navActionTipText,
                 iconCls: "icon-pan",
                 enableToggle: true,
                 pressed: true,
@@ -165,31 +186,6 @@ var MyHazard = Ext.extend(Ext.util.Observable, {
             }
         });
         
-        this.map = new OpenLayers.Map({allOverlays: false});
-
-        //dummy layers for development standin
-        var layers = [
-            new OpenLayers.Layer.WMS(
-                "Global Imagery",
-                "http://demo.opengeo.org/geoserver/wms",
-                {layers: 'bluemarble'}
-            ),
-            new OpenLayers.Layer.Google(
-                "Google Hybrid", 
-                {numZoomLevels: 20,
-                 type: G_HYBRID_MAP}
-            )
-        ];
-
-        this.map.addLayers(layers);
-
-
-        this.mapPanel = new GeoExt.MapPanel({
-            region: "center",
-            center: new OpenLayers.LonLat(5, 45),
-            zoom: 4,
-            map: this.map
-        });
 
         var appPanel = new Ext.Panel({
             renderTo: "app",
@@ -206,6 +202,5 @@ var MyHazard = Ext.extend(Ext.util.Observable, {
         //hazard configuration
 
         //activate the reporting controls.
-
     }
 });
