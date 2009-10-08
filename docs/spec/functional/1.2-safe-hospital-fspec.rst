@@ -106,7 +106,7 @@ Building off the myHazard application base:
 
 
 Flow
-----
+====
 
 0. Opens onto a map viewer with a base layer, a base layer switcher
    and hospitals marked by "red cross" markers.

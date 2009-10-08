@@ -48,17 +48,18 @@ View Components
 ---------------
 
 0. myHazard tab 
-  - entry point to application that goes on every page
-  - either a tab in the current set of tabs, or another structure
+
+ - entry point to application that goes on every page
+ - either a tab in the current set of tabs, or another structure
+
 
 0. Tab bar for application window.
    Gives access to rest of site.
 
 0. Overall view 
-
-  - 2 column layout
-   - layer tree(left sidebar)
-   - map viewer
+   2 column layout
+   * layer tree(left sidebar)
+   * map viewer
 
 0. Toolbar w/ selection tools 
 
@@ -77,9 +78,8 @@ View Components
 0. Printable report (downloadable pdf)
 
 0. Admin UI (loosely specified as the problem needs solving generally)
-
-  - Ability on upload to declare a layer's hazard, period, country,
-    and mark for use in 'myHazard'
+   Ability on upload to declare a layer's hazard, period, country,
+   and mark for use in 'myHazard'
 
 
 Layer Tree
@@ -157,16 +157,16 @@ presented with a report summary including:
 * For each of the layers that has been selected as ON in the layer
   tree (see above), include:
 
-  - The Hazard (e.g. Landslide) and period (e.g. "100 years") for the layer.
+ - The Hazard (e.g. Landslide) and period (e.g. "100 years") for the layer.
 
-  - The mean, median, range, and standard deviation values of the
-  (scalar) values of the data in the QUERY AREA (see below)
+ - The mean, median, range, and standard deviation values of the
+   (scalar) values of the data in the QUERY AREA (see below)
 
-  - Range of the whole layer.
+ - Range of the whole layer.
 
-  - "Administrative data" about the point clicked--country,
-     municipality, etc.  Administrative data will be defined as
-     specific vector layers related to the application.
+ - "Administrative data" about the point clicked--country,
+    municipality, etc.  Administrative data will be defined as
+    specific vector layers related to the application.
 
 
 .. note::
@@ -229,6 +229,7 @@ The report should return sensible error messages:
   - traceback or any debugging info possible
 
 * Django 500
+
  - "There has been an issue generating this report"
  - traceback
 
@@ -237,6 +238,7 @@ Flow
 ----
 
 * Click my hazard tab -> open viewer
+
  - Map Viewer zoomed to extent of Nicuragua & Costa Rica
  - All layer are not visible or active.
 
@@ -247,30 +249,34 @@ Flow
    turned on
 
 * Click on map with a point selection tool and sample
+
  - data from all available hazard layers reported
    - reporting applies any calculation or normalization needed for report 
  - Popup with report summary returned and displayed
 
 * Click on map with a path or polygon selection tool
+
  - An anchor point (the starting point) is created on the map view
-  - Holding down the click and dragging results in panning the map
-  - Releasing and moving mouse shows preview of next path
-  - Clicking a second time creates a path from the starting point to the new anchor point.
+ - Holding down the click and dragging results in panning the map
+ - Releasing and moving mouse shows preview of next path
+ - Clicking a second time creates a path from the starting point to the new anchor point.
 
 * Click on PDF link
+
  - PDF report is generated
  - Report downloaded by browser
 
 * Click hazard activation checkbox for a hazard and period
+
  - The layer appears in map viewer
-  - Select an area
-   - A summary report appear derived from related layers 
-     - Click PDF link ...
+ - Select an area
+ - A summary report appear derived from related layers 
+ - Click PDF link ...
 
 
 
 Sequencing of Requirements
-=========================
+==========================
 
 Delivery Rounds
 ---------------
