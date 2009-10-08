@@ -136,6 +136,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'geonode.core',
     'geonode.maps',
+    'geonode.layers',
     'geonode.proxy',
 
 )
