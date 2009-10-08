@@ -76,7 +76,6 @@ GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAh
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
-# @@ i18n replace 'text' w/ simply an i18n message?
 NAVBAR = \
 {'community': {'id': '%sLink',
                'item_class': '',
@@ -155,7 +154,8 @@ if DEBUG:
         }                
     else:
         MEDIA_LOCATIONS = {
-            "ext_base": "http://extjs.cachefly.net/ext-2.2.1/",
+            #"ext_base": "http://extjs.cachefly.net/ext-2.2.1/",
+            "ext_base": "/static/externals/ext/",
             "ol_theme": "/static/externals/openlayers/theme/default/style.css",
             "ol_script":"/static/externals/openlayers/lib/OpenLayers.js",
             "gx_themes":"/static/externals/geoext/resources/",
