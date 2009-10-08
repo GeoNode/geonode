@@ -66,7 +66,10 @@ if(window.DataPage){
   );
 }
 
-if(GeoExplorer && GeoExplorer.CapabilitiesGrid){
+var GeoExplorer = GeoExplorer;
+var ExportWizard = ExportWizard;
+
+if(GeoExplorer != null && GeoExplorer.CapabilitiesGrid){
   Ext.apply(GeoExplorer.CapabilitiesGrid.prototype, {
     nameHeaderText :  "{% trans "Name" %}",
     titleHeaderText :  "{% trans "Title" %}",
@@ -89,7 +92,7 @@ if (ExportWizard) {
 }
 
 
-if(GeoExplorer && GeoExplorer.CapabilitiesRowExpander){
+if(GeoExplorer != null && GeoExplorer.CapabilitiesRowExpander){
   Ext.apply(GeoExplorer.CapabilitiesRowExpander.prototype, {
     abstractText:  "{% trans "Abstract:" %}",
     downloadText :  "{% trans "Download:" %}",
