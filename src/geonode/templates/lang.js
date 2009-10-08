@@ -77,7 +77,7 @@ if(GeoExplorer != null && GeoExplorer.CapabilitiesGrid){
   });
 }
 
-if (ExportWizard) {
+if (ExportWizard != null) {
     Ext.apply(ExportWizard.prototype, {
         exportDialogMessage:  "{% trans "<p>  Your map is ready to be published to the web! </p> <p> Simply copy the following HTML to embed the map in your website: </p>" %}",
         publishActionText:  "{% trans "Publish Map" %}",
