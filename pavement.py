@@ -1,31 +1,20 @@
 from __future__ import with_statement
+from os.path import join
+from paver import svn
 from paver.easy import *
+from paver.easy import options
 from paver.path25 import pushd
 from paver.setuputils import setup, find_package_data
-from paver.easy import options
 from setuptools import find_packages
-import os
-import sys
-from os.path import join
 from shutil import copytree
-from paver import svn
-import pkg_resources
-
-
 import os
+import os
+import paver.doctools
+import paver.misctasks
+import paver.virtual
+import pkg_resources
+import sys
 
-try:
-    # Optional tasks, only needed for development
-    #from github.tools.task import *
-    import paver.doctools
-    import paver.virtual
-    from paver.virtual import bootstrap
-    import paver.misctasks
-    ALL_TASKS_LOADED = True
-except ImportError, e:
-    info("some tasks could not not be imported.")
-    debug(str(e))
-    ALL_TASKS_LOADED = False
 
 name='GeoNode'
 version = "1.0.1"
@@ -53,12 +42,15 @@ setup(name=name,
 
 
 options(
-    minilib=Bunch(extra_files=['virtual', 'doctools']),
+    minilib=Bunch(extra_files=['virtual',
+                               'doctools',
+                               'misctasks']),
     sphinx=Bunch(
       docroot='docs',
       builddir="_build",
-      sourcedir=""
+      sourcedir="./"
       ),
+    # must hand install virtualenv to run paver bootstrap
     virtualenv=Bunch(
       packages_to_install=['pip'],
       dest_dir='./',
@@ -72,6 +64,9 @@ options.setup.package_data=find_package_data(package='GeoNode',
                                              only_in_packages=False)
 
 venv = os.environ.get('VIRTUAL_ENV')
+bin = "bin"
+if sys.platform == 'win32':
+    bin = "Scripts"
 
 bundle = path('shared/geonode.pybundle')
 
@@ -121,22 +116,19 @@ def download_bundle(options):
             sh('wget http://capra.opengeo.org/repo/%s.zip' %dlname)
             path(dlname + '.zip').copy(bpath)
     else:
-        info("oSkipping download. 'rm bundle  %s' if you need a fresh download. " %bundle)
+        info("Skipping download. 'rm bundle  %s' if you need a fresh download. " %bundle)
+
 
 @task
 def install_25_deps(options):
     """Fetch python 2_5-specific dependencies (not maintained)"""
     pass
+
     
 @task
 def post_bootstrap(options):
     # installs the current package
-    if sys.platform == 'win32':
-        bin = "Scripts"
-    else:
-        bin = "bin"
-    pip = join(bin, "pip")
-    sh('%s install -e .' % pip)
+    sh('%s install -e .' %(path(bin) / "pip"))
 
 gs = "geoserver-build"
 gs_data = "gs-data"
@@ -206,10 +198,20 @@ def capra_js(options):
        os.makedirs("capra-client/")
        sh("jsbuild -o capra-client/ all.cfg") 
 
-# set up supervisor?
+@task
+def install_sphinx_conditionally(options):
+    """if no sphinx, install it"""
+    try:
+        import sphinx
+    except ImportError:
+        sh("%s install sphinx" %(path(bin) / 'pip'))
 
-if ALL_TASKS_LOADED:
-    @task
-    @needs('generate_setup', 'minilib', 'setuptools.command.sdist')
-    def sdist():
-        """Overrides sdist to make sure that our setup.py is generated."""
+@task
+@needs(['install_sphinx_conditionally'])
+def html(options):
+    call_task('paver.doctools.html')
+
+@task
+@needs('minilib', 'setuptools.command.sdist')
+def sdist():
+    """update minilib, run sdist"""
