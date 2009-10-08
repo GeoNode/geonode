@@ -56,4 +56,10 @@ Ext.onReady(function(){
 <p>Here you can browse the data hosted by CAPRA.</p>
 <p>Click the <b>+</b> on any row to show layer metadata or download in PDF, KML, GeoTIFF, or SHP.</p>
 {% endblocktrans %}
+
+<h3>{% trans "For Developers" %}</h3>
+{% blocktrans %} 
+If you are interested in information about accessing this information through OGC services, click 
+{% endblocktrans %}
+<a href="{% url geonode.views.static "developer" %}">{% trans "here" %}</a>.
 {% endblock %}

@@ -92,11 +92,6 @@ NAVBAR = \
           'link_class': '',
           'text': 'Data',
           'url': "geonode.views.static page='data'"},
- 'developer': {'id': '%sLink',
-               'item_class': '',
-               'link_class': '',
-               'text': 'For Developers',
-               'url': "geonode.views.static page='developer'"},
  'help': {'id': '%sLink',
           'item_class': '',
           'link_class': '',
@@ -119,7 +114,7 @@ NAVBAR = \
           'id': '%sLink',
           'item_class': '',
           'link_class': '',
-          'visible': 'data\ndeveloper\nindex\ncurated\ncommunity\nhelp'}}
+          'visible': 'data\nindex\ncurated\ncommunity\nhelp'}}
 
 
 # Determines whether the minified or the "raw" JavaScript files are included.
@@ -136,7 +131,6 @@ INSTALLED_APPS = (
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
-
 )
 
 if DEBUG:
