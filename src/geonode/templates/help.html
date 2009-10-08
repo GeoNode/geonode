@@ -3,6 +3,8 @@
 {% load navbar %}
 {% block title %} {% trans "User Guide" %} {% endblock %}
 
+{% block mapjs %}{% endblock %}
+
 {% block nav %}
 {% navbar help %}
 {% endblock %}
@@ -15,7 +17,8 @@
   application allows users to browse existing maps and contribute their
   own.
 </p>
-<a name='browsing-data><h4>Browsing Data</h4></a>
+<a name='browsing-data>
+         <h4>Browsing Data</h4></a>
          <p>The <a href='data.html'>Data
            </a> tab allows you to browse data
            produced for the CAPRA project.
