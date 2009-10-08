@@ -2,4 +2,4 @@
 pastedeploy # required for paste
 -e svn+http://svn.pythonpaste.org/Paste/WSGIProxy/trunk#egg=WSGIProxy
 -e svn+http://svn.repoze.org/repoze.django/trunk#egg=repoze.django
--e hg+https://bitbucket.org/jespern/django-piston/
+-e hg+https://bitbucket.org/jespern/django-piston#egg=django-piston
