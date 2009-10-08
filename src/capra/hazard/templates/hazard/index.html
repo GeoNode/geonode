@@ -1,5 +1,6 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
+{% load navbar %}
 
 {% block title %} {% trans "MyHazard" %} {% endblock %}
 
@@ -13,6 +14,8 @@
         });
     </script>
 {% endblock %}
+
+{% block navbar %} {% navbar hazard %} {% endblock %}
 
 {% block main %}
 <div id="app"></div>
