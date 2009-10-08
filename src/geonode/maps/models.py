@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Map(models.Model):
@@ -8,6 +9,8 @@ class Map(models.Model):
     contact = models.CharField(max_length=200)
     featured = models.BooleanField()
     endorsed = models.BooleanField()
+    owner = models.ForeignKey(User, related_name='owned_maps')    
+    contributors = models.ManyToManyField(User, related_name='maps_contributed_to')
 
     # viewer configuration
     zoom = models.IntegerField()
@@ -17,8 +20,10 @@ class Map(models.Model):
     def __unicode__(self):
         return '%s by %s' % (self.title, self.contact)
 
+    #@@has to be a better way to do this?
     def get_absolute_url(self):
         return '/maps/%i' % self.id
+
 
 class MapLayer(models.Model):
     name = models.CharField(max_length=200)
