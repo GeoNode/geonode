@@ -76,7 +76,6 @@ GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAh
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
-# @@ i18n replace 'text' w/ simply an i18n message?
 NAVBAR = \
 {'community': {'id': '%sLink',
                'item_class': '',
@@ -120,7 +119,7 @@ NAVBAR = \
           'id': '%sLink',
           'item_class': '',
           'link_class': '',
-          'visible': 'data\nindex\ncurated\ncommunity\ndeveloper\nhelp'}}
+          'visible': 'data\ndeveloper\nindex\ncurated\ncommunity\nhelp'}}
 
 
 # Determines whether the minified or the "raw" JavaScript files are included.
