@@ -8,7 +8,7 @@ static documents there is no need to worry about setting up models or
 interpolating values into the documents. 
 
 .. note:: 
-    The Map editor is a notable exception; see :doc:`/geonode-core/map-viewer`
+    The Map editor is a notable exception; see :doc:`../geonode-core/map-viewer`
     for details.
 
 The pages include:
@@ -21,7 +21,7 @@ The pages include:
 * Featured Maps: Provides a listing of CAPRA-endorsed maps on the GeoNode
 * Community Maps: Provides a listing of contributed maps that have not been
   reviewed and endorsed by CAPRA staff
-* :doc:`/geonode-core/map-viewer`: Allows editing of maps on the GeoNode.
+* :doc:`./map-viewer`: Allows editing of maps on the GeoNode.
 
 The template conversion process should have minimal change on the functionality
 of the application (although some changes to the map viewer will happen.)  We

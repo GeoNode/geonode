@@ -127,7 +127,7 @@ maps will be exposed via a REST service.  The API will be the following:
 
         .. seealso:: 
 
-             :doc:`/geonode-core/map-viewer` for information about this 
+             :doc:`../geonode-core/map-viewer` for information about this 
              configuration object.
 
 .. todo:: 

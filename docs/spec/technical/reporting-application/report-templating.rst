@@ -27,7 +27,7 @@ The HTML output will be generated via a standard Django template.
 
 .. seealso:: 
 
-    :doc:`/reporting-application/data-aggregation` for discussion of the
+    :doc:`../reporting-application/data-aggregation` for discussion of the
     contents of the WPS response
 
 PDF

@@ -42,7 +42,7 @@ Grouped Layer Switcher
 
     .. seealso:: 
 
-        :doc:`/reporting-application/category-application` for information 
+        :doc:`../reporting-application/category-application` for information 
         about the category handling extensions to the server.
 
 Report Control

@@ -5,7 +5,7 @@ The Map Viewer is currently implemented as a static HTML file.  For the current
 round, we will be porting it to a Django template (to take advantage of code
 reuse options provided by templating) as well as moving the map storage service
 from a custom GeoServer extension to a Django application (described at
-:doc:`/geonode-core/map-application`).
+:doc:`../geonode-core/map-application`).
 
 Older Specifications
 --------------------

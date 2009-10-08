@@ -5,7 +5,7 @@ On the Django side, the following views will be required:
 
 :file:`/hazard/`
     Presents the HTML housing the :doc:`JavaScript reporting application
-    </reporting-application/frontend>`.
+    <../reporting-application/frontend>`.
 
     This view will need to provide:
 
@@ -13,7 +13,7 @@ On the Django side, the following views will be required:
         * Application-specific scripts and styles
         * Configuration for the reporting application 
 
-          .. seealso:: :doc:`/reporting-application/category-application`
+          .. seealso:: :doc:`../reporting-application/category-application`
 
         * i18n values for the JavaScript components and HTML template.
 

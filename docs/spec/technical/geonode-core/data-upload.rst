@@ -36,7 +36,7 @@ Benefits of going straight to GeoServer:
 .. todo:: 
 
     Determine if the upload process integrates at all with GeoNode extensions
-    such as the :doc:`/reporting-application/category-application`.
+    such as the :doc:`../reporting-application/category-application`.
 
-When :doc:`/geonode-core/data-styling` is supported, it may be integrated into the upload
+When :doc:`../geonode-core/data-styling` is supported, it may be integrated into the upload
 process as an additional, final step.
