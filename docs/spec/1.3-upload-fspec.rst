@@ -1,0 +1,135 @@
+=========================================
+Upload and Basic Metadata Functional Spec
+=========================================
+
+Overview
+========
+
+Adding the basic ability for a user (initially just an admin) to load
+data into the geonode through an integrated interface.
+
+
+User Stories
+============
+
+0. ERN employee X is entrusted with putting new data up on the CAPRA
+   geonode to fufill their project obligations. X has geotiffs
+   representing hazards and risk, shp files for overlays, and finally
+   .AME files.
+
+   Some of these file have 'correctly' embedded metadata, some do
+   not. Some may be important to geonode sub-applications like "MyHazard".
+
+   X needs upload these files onto the geonode, complete or fix any
+   metadata required by his project, categorize them appropriately as
+   Risk, Hazard or Overlayr, and specify any sub-application specific
+   information.
+
+
+Goals/Non-Goals
+===============
+
+* Get ERN-LA able to push data to GeoNode themselves
+* Layer upload
+* Layer page
+* Basic metadata management
+
+Non-Goals for initial round
+
+* .AME upload (see 1.3.5)
+* multiple users
+* batch uploads
+* geonetwork integration
+* sophisticated metadata extraction
+
+
+Feature Set
+===========
+
+Views
+-----
+
+0. Upload form
+  - Admin login (might just be basic auth box)
+  - Validation/Error responses
+
+0. Layer Management form(s)
+  - metadata edit form(s)
+   - validation
+  - Replace/Delete form 
+  - Category management: Risk, Overlay, Hazard, other arbitrary categories
+  
+0. Layer info page
+  - refer to: http://projects.opengeo.org/CAPRA/attachment/wiki/WikiStart/20090722%20Resource.png
+  - links to management forms
+
+.. todo:: 
+
+   Layer management dashboard??? (for replace, delete.  these items could also)
+   could be a prototype of the "user" dashboard (RP: How so?)
+
+
+Server Components
+-----------------
+
+0. Layer Replace and Delete
+  
+.. todo:: 
+  
+   notifications, side effects? see map composition, etc
+
+
+
+Flow
+----
+
+**Upload**
+
+0. Open administrative upload form
+  - requires login
+
+0. Pick file to upload, submit
+  - get error response, choose a valid file
+  - Success!
+
+0. Layer metadata form is returned, populated with whatever is
+   available (filename = title)
+
+ - Presents basic iterative editing workflow ala 
+   [save][save and continue editing][cancel]
+ - field validation
+
+**Layer Info Page**
+
+0. Click on layer info link
+
+0. View of layer metadata
+ - link to edit metadata
+ - link to delete layer
+ - link to upload replacement metadata 
+
+
+.. todo:: 
+   
+   how does one get to the layer info page (where is it linked from)?
+
+.. todo:: 
+
+   multipage metadata form???
+
+.. todo:: 
+
+   how likely is basic metadata to be in the file?
+
+
+Sequencing of Requirements
+==========================
+
+Any basic upload with any basic metadata handling currently is win.
+
+
+
+
+
+
+

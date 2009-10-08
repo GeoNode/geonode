@@ -1,0 +1,183 @@
+= 20090921 World Bank =
+''Attendees'': Cholmes, Stu, Oscar, Seb, Rollie, Whit
+
+== Agenda ==
+ - Reporting (myHazard & Safe Hospitals; see: http://etherpad.com/PMolwJQpjR )
+ - Validation / Certification
+ - GeoNode.org (see: http://etherpad.com/W1zABCKWe8 )
+ - Uploading and Styling (Discussed 20090922)
+== Strategy and Background ==
+
+Jean Roch (SIDR)
+ - SNIT GeoNode
+ - 'GeoNode' in Guatamala adds credibility
+
+INSPIRE
+ - Stu spoke to head of INSPIRE about GeoNode
+ - Thinking of testing their 'next-generation' system on this platform
+
+ITC ( http://www.itc.nl/ )
+ - Meeting in Netherlands about geoinformation for disaster risk management
+   - Oscar traveling to this event
+ - Do training and capacity-building around geospatial and SDI stuff
+   - http://www.itc.nl/Pub/Research/Research-themes/SDIT
+   - OpenGeo Traning Partner?
+     - Using CC-licensed "OpenGeo Certified" training material
+     - Meeting in DC in early October, send an OpenGeo rep?*
+ - Create professional networks across the developing world
+ - UN Spider and GEOSS also attending
+   - GEOSS working on several portals and pilots (eg, Caribbean flood pilot)
+   - GEOSS attempting to see how people use geospatial data
+
+New national SDIs: Australia, Korea
+ - Stu chasing Korean money
+ - Australia
+   - Cholmes: Aussies committing back complex features work to GeoServer*
+   - Could be interested in exploring geospatial licensing issues...
+     - Some government in Australia using CC*
+     - LandGate?
+
+== Validation and Certification ==
+
+Guatemala/Colombia Cadastral Data
+ - Workflows leveraging relationship between national GeoNode and municipal GeoNodes
+ - Validating and '''certifying''' against OpenStreetMap
+   - Interface OSM with local government system (eg, municipal GeoNode)
+   - Feedback up to OSM as well, workflow unclear
+     - Review every commit? General benchmarks (pegged to revisions?), etc
+     - Certify revisions? Certify committers?
+     - Similar to USGS Hydrography project?
+   - "One of the main things behind the Korean money..." -Stu
+   - "All you have to do is install a GeoNode to get these benefits" - Stu
+   - "The governments aren't going to collect the data, we need an existing community like OSM and just have the government certify it so we can use it." - Stu
+ - "In Central America we have to start at the national level... in Colombia we can work at the local level." - Oscar
+
+== GeoNode.org ==
+
+See also: http://etherpad.com/W1zABCKWe8
+
+ - Political concerns:
+   - We have various governments and UN agencies on board...
+     - Spain, Guatamala
+   - What technical communities need to get on board?
+   - "Easier to say 'We support OGC' than vice versa." - Cholmes
+   - Get OSM onboard?
+     - Official validation of OSM would be a good win for them.
+     - License issues with OSM?
+   - Licensing issues
+     - We need Open GeoData License, can World Bank help?
+
+ - GeoNode in a box
+   - Needs to be as compelling at the ESRI out-of-the-box solution
+ - GeoNode vendors
+   - Get implementation partners on board
+
+== Uploading and Styling ==
+
+Meeting on 20090922
+''Attendees'': Stu, Seb, Rollie, Whit
+
+ 1. Data management & cartography
+    - Goal: Get ERN-LA able to push data to GeoNode themselves
+    - Upload
+      - Shapefile, TIFF
+      - AME?
+        - Upload to web server
+        - Populate the list of AMEs
+        - Manage metadata for each AME
+      - First round: backend uploading support for one generalized user
+      - Next round: support for multiple user accounts
+    - Data management
+      - Managing data
+        - Layer page
+          - See older wireframes: http://projects.opengeo.org/CAPRA/attachment/wiki/WikiStart/20090722%20Resource.png
+          - Create demo page of future work
+        - Deleting
+          - Maintaining map coherence
+            - Remove layer from all maps?
+            - Hide from future maps?
+          - Replace (eg, canonical 100 year return period)
+        - Category management: Hazard, Risk, Overlay
+          - For myHazard; for Safe Hospitals
+            - Can backend work be moved into current contract?*
+      - Managing maps
+          - Deleting
+          - Edit
+          - Category management
+            - Featured map?
+            - Contributed map
+      - Metadata
+        - GeoServer vs ISO
+        - Requires GeoNetwork integration?
+        - GeoServer doesn't implement ISO metadata standards
+        - World Bank requires ISO subset*
+      - Styling
+        - Basic vector and raster
+          - Raster more important than vector
+          - Simple colors, transparency
+        - New, edit, duplicate (and edit), delete, download
+        - Base layers (use widget from myHazard)
+        - Support for multiple styles per layer
+          - Including in the map composer
+            - Manual transparency in composer
+      - Export/Print (to PDF/JPG/PNG)
+        - From map composer
+        - From map browser
+        - "Nice to have"
+      - Administrative interfaces
+        - General GeoNode Context
+          - Data: Edit metadata, delete, replace
+          - Maps: Edit, delete
+        - CAPRA Clearing House (considered as separate "app")
+          - {Hazard, Risk, Overlay} Layers
+          - {Home/CAPRA/Contributed} Maps
+          - AME file management
+        - myHazard
+          - Use in myHazard?
+          - Hazard on each layer
+        - Safe Hospitals
+          - The hospitals layer
+          - Split off UI
+ 2. Integration of GeoNetwork & Search
+    - Compliance with ISO metadata standards
+      - World Bank prioritizes subset of ISO
+    - Search (as a context for download)
+    - Integration with GeoNetwork
+      - Nice to have...
+      - Access to other GeoNetwork data from CAPRA
+      - Exposure to other GeoNetwork nodes for harvesting
+      - Have GeoNetwork as part of deployment
+      - http://geonetwork-opensource.org/geonetwork-nodes
+ 3. Deployment plan
+    - A document describing the deployment needs
+    - Determine what capacity is needed in the field
+    - Long term plan for splitting out PAHO (Safe Hospitals) GeoNode
+      - PAHO ownership of admin tasks
+      - Point at CAPRA GeoNode data
+ 4. UI Improvements
+    - Create map from multiple selected layers
+
+== Tasks ==
+
+From 20090921:
+ - Follow up with Stu on:
+   - Australia details (from Cholmes)
+     - complex features in GeoServer
+     - CC licensing of data?
+   - UK report on SDI funding models (charging for data)
+   - Vulcan 'out-of-the-box' installer
+   - OpenGeo rep at ITC meeting in DC?
+ - Cholmes needs to reply to Paul
+ - Reach to OSM?
+
+From 20090922:
+ - Follow up with Stu on:
+   - World Bank metdata requirements (subset of ISO)
+   - Tech prereqs for myHazard and Safe Hospitals
+
+
+
+
+from:
+
+http://etherpad.com/jdTXS4gPJi

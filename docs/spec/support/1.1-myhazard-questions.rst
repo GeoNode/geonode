@@ -1,0 +1,42 @@
+=====================================
+ Questions for myHazard based on ToR
+=====================================
+
+* country focus
+
+  - does this mean more than simply setting the initial extent to
+    Nicuragua and Costa Rica.
+
+* display and control functional status of relevant hazard maps
+
+  - what does this mean beyond allowing the visibility of hazard layers to be toggled on and off?
+  - * does this mean which groups of layers we are generating reports from?
+
+
+* being able to see hazard maps (SLDs)
+
+* Reporting
+
+  - we *are* dealing with just points?
+  - what is the "expert formula"? could we have some examples?
+  - what sort of formatting is required for the report?
+    - examples? what is the layout?
+    - are images or other special things required
+
+Examples, context information    
+
+
+* PDF
+  - is printer friendly html initially ok?
+  - example of what pdf should look like.
+  - processing doesn't make sense on client.
+
+* Data
+  - where is it coming from?
+  - can we specify the format?
+
+* Configuration 
+
+* GeoNode integration
+  - is there any greater integration than the UI expected?
+
