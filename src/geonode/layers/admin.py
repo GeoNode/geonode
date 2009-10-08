@@ -1,4 +1,4 @@
-from geonode.models.models import Layer
+from geonode.layers.models import Layer
 from django.contrib import admin
 
 class MapAdmin(admin.ModelAdmin):
