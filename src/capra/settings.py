@@ -79,6 +79,16 @@ ROOT_URLCONF = 'capra.urls'
 ##     'django.contrib.sites',
 ## )
 
+NAVBAR['hazard'] = {'id': '%sLink',
+    'item_class': '',
+    'link_class': '',
+    'text': 'Hazard Reporting',
+    'url': 'capra.hazard.views.index'
+}
+
+NAVBAR['meta']['visible'] += "\nhazard"
+
+
 GEOSERVER_BASE_URL = "http://localhost:8889/geoserver/"
 GEOSERVER_CREDENTIALS = ('admin', 'geoserver')
 
