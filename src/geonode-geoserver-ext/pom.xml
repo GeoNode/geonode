@@ -28,6 +28,7 @@
       <artifactId>geoserver</artifactId>
       <type>war</type>
       <version>2.0-SNAPSHOT</version>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- GeoJSON module dependencies -->
