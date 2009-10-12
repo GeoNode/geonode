@@ -4,6 +4,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     popup: null,
     mapPanel: null,
     sidebar: null,
+    hazardConfig: null,
     
     constructor: function (config) {
         this.initialConfig = config;
@@ -37,11 +38,41 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             this);
     },
 
+    createLayers: function(){
+        var layers = [];
+        var hazard;
+        for(var i = 0; i < this.hazardConfig.length; i++){
+            hazard = this.hazardConfig[i];
+
+            var periods = hazard.periods;
+            periods.sort(function(period){return period.length});
+            var layersParam = []
+            for(var j = 0; j < periods.length; j++){
+                layersParam.push(periods[j].typename);
+            }
+            
+            layers.unshift(new OpenLayers.Layer.WMS(hazard.hazard,
+ 	                             "http://demo.opengeo.org/geoserver/wms", {
+ 	                                 layers: layersParam,
+ 	                                 transparent: true,
+ 	                                 format: "image/gif"
+ 	                             }, {
+ 	                                 isBaseLayer: false,
+ 	                                 buffer: 0, 
+ 	                                 // exclude this layer from layer container nodes
+ 	                                 displayInLayerSwitcher: false,
+ 	                                 visibility: false
+ 	                             }));
+            
+        }
+
+        return layers;
+    },
+
     createLayout: function(){
         this.map = new OpenLayers.Map({allOverlays: false});
 
-        //dummy layers for development standin
-        var layers = [
+        var baseLayers = [
             new OpenLayers.Layer.WMS(
                 "Global Imagery",
                 "http://demo.opengeo.org/geoserver/wms",
@@ -54,12 +85,14 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             )
         ];
 
-        this.map.addLayers(layers);
+        var layers = this.createLayers();
+
+        this.map.addLayers(layers.concat(baseLayers));
 
         this.mapPanel = new GeoExt.MapPanel({
             region: "center",
-            center: new OpenLayers.LonLat(5, 45),
-            zoom: 4,
+            center: new OpenLayers.LonLat(-87, 13),
+            zoom: 5,
             map: this.map
         });
 
@@ -174,6 +207,22 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             })
         ];
 
+        treeConfig = [];
+
+        for(var i = 0; i < layers.length; i++){
+            treeConfig.push({
+                nodeType: "gx_layer",
+                layer: layers[i].name,
+                isLead: false,
+                loader: {
+                    params: "LAYERS"
+                }
+
+            });
+        }
+
+        treeConfig.push({nodeType: "gx_baselayercontainer"});
+
         this.sidebar = new Ext.tree.TreePanel({
             region: "west",
             width: 250,
@@ -184,9 +233,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             rootVisible: false,
             root: {
                 nodeType: "async",
-                children: [
-                    {nodeType: "gx_baselayercontainer"}
-                ]
+                children: treeConfig
             }
         });
         
