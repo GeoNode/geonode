@@ -7,6 +7,7 @@ http://www.reportlab.org/ftp/ReportLab_2_3.tar.gz#egg=reportlab
 simplejson # needed for python2.5
 
 httplib2
+urlgrabber
 
 # deployment/later
 jstools
