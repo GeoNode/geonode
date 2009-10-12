@@ -1,18 +1,19 @@
 from __future__ import with_statement
+import os
+from os.path import join
+from paver import svn
 from paver.easy import *
 from paver.path25 import pushd
 from paver.setuputils import setup, find_package_data
 from paver.easy import options
-from setuptools import find_packages
-import os
-import sys
-from os.path import join
-from shutil import copytree
-from paver import svn
 import pkg_resources
+from setuptools import find_packages
+from shutil import copytree
+import sys
+from urlgrabber.grabber import urlgrab
+from urlgrabber.progress import text_progress_meter
+import zipfile
 
-
-import os
 
 try:
     # Optional tasks, only needed for development
@@ -156,9 +157,12 @@ def checkout_geoserver(options):
 @task
 def setup_gs_data(options):
     """Fetch a data directory to use with GeoServer for testing."""
+    src_url = "http://capra.opengeo.org/dev-data/geonode-geoserver-data.zip"
+    path("work").mkdir()
+    dst_url = "work/geonode-geoserver-data.zip"
+    urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
     path(gs_data).rmtree()
-    svn.checkout("http://svn.codehaus.org/geoserver/trunk/data/minimal",  gs_data)
-    
+    unzip_file(dst_url, gs_data)
 
 @task
 def setup_geoserver(options):
@@ -204,6 +208,22 @@ def capra_js(options):
        path("capra-client").rmtree()
        os.makedirs("capra-client/")
        sh("jsbuild -o capra-client/ all.cfg") 
+
+def unzip_file(src, dest): 
+    zip = zipfile.ZipFile(src)
+    if not path(dest).exists():
+        os.makedirs(dest)
+    for name in zip.namelist():
+        if name.endswith("/"):
+            os.mkdir(join(dest, name))
+        else:
+            parent, file = os.path.split(name)
+            parent = join(dest, parent)
+            if parent and not os.path.isdir(parent):
+                os.makedirs(parent)
+            out = open(join(parent,file), 'wb')
+            out.write(zip.read(name))
+            out.close()
 
 # set up supervisor?
 

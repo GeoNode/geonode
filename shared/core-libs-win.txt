@@ -3,6 +3,8 @@ Django
 dj.paste
 
 simplejson # needed for python2.5
+httplib2
+urlgrabber
 
 # deployment/later
 jstools
