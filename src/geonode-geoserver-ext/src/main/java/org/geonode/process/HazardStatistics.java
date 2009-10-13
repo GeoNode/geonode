@@ -70,7 +70,7 @@ final class HazardStatistics extends AbstractProcess {
         List<Map<String, double[]>> perLayerStats = new ArrayList<Map<String, double[]>>();
         for (AbstractGridCoverage2DReader layer : inputDataLayers) {
             Map<String, double[]> stats = gatherCoverageStats(layer, bufferedGeometry);
-            perLayerStats.add(new HashMap<String, double[]>(stats));
+            perLayerStats.add(stats == null? null : new HashMap<String, double[]>(stats));
         }
 
         Map<String, Object> results = new HashMap<String, Object>();
@@ -90,12 +90,6 @@ final class HazardStatistics extends AbstractProcess {
     private Map<String, double[]> gatherCoverageStats(final AbstractGridCoverage2DReader layer,
             final Geometry bufferedGeometry) throws ProcessException {
 
-        Map<String, double[]> stats = new HashMap<String, double[]>();
-        stats.put("min", null);
-        stats.put("max", null);
-        stats.put("mean", null);
-        stats.put("stddev", null);
-
         final GridCoverage2D geophysics;
         try {
             final ReferencedEnvelope requesEnvelope;
@@ -104,8 +98,8 @@ final class HazardStatistics extends AbstractProcess {
 
             GridCoverage2D coverage = getGridCoverage(layer, requesEnvelope);
             if (coverage == null) {
-                // request envelope did not intersect coverage
-                geophysics = null;
+                // request envelope did not intersect coverage, return null stats
+                return null;
             } else {
                 geophysics = coverage.view(ViewType.GEOPHYSICS);
             }
@@ -120,6 +114,7 @@ final class HazardStatistics extends AbstractProcess {
         GridCoverage2D coverage = (GridCoverage2D) op.doOperation(params, null);
         Histogram histogram = (Histogram) coverage.getProperty("histogram");
 
+        Map<String, double[]> stats = new HashMap<String, double[]>();
         stats.put("min", histogram.getLowValue());
         stats.put("max", histogram.getHighValue());
         stats.put("mean", histogram.getMean());
