@@ -284,12 +284,20 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
 
     report: function(evt) {
         var geom = evt.geom;
-        var format = new OpenLayers.Format.GeoJSON();
+        var geojson = new OpenLayers.Format.GeoJSON();
+        var json = new OpenLayers.Format.JSON();
+        var request = json.read(geojson.write(geom));
+        request = {
+            geometry: request,
+            scale: this.mapPanel.map.getScale()
+            // TODO: Layers
+        };
+        request.geometry.crs = geojson.createCRSObject({layer:{projection:"EPSG:4326"}});
         this.clearPopup();
 
         Ext.Ajax.request({
             url: this.reportService,
-            xmlData: format.write(geom),
+            xmlData: json.write(request),
             method: "POST",
             success: function(response, options) {
                 this.popup = new GeoExt.Popup({
