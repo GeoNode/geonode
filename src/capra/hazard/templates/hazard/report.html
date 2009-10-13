@@ -8,7 +8,10 @@
         <ul>
             {% for layer, stat in result.statistics.items %}
             <li> <em>{{layer}}</em> <br>
-                Min: {{ stat.0 }}, Max: {{ stat.1 }}, Mean: {{ stat.2 }}, Std Dev: {{ stat.3 }}
+            Min: {{ stat.min.0|floatformat }},
+            Max: {{ stat.max.0|floatformat }},
+            Mean: {{ stat.mean.0|floatformat }},
+            Std Dev: {{ stat.stddev.0|floatformat }}
             </li>
             {% endfor %}
         </ul>
@@ -16,7 +19,9 @@
         <p> The area of interest overlaps the following areas:</p>
         <ul>
             {% for info in result.political %}
-            <li> {{info.municipality}}, {{info.country}} </li>
+                {% if info.municipality %}
+                    <li> {{info.municipality}}, {{info.country}} </li>
+                {% endif %}
             {% endfor %}
         </ul>
     </body>
