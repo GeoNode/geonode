@@ -177,7 +177,7 @@ margin-bottom:.75em;
  }
 
 
-p, ul, ol { 
+p, ul#sitenav, ol { 
 margin-bottom: 2em;
 }
 

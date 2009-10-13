@@ -214,10 +214,9 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 nodeType: "gx_layer",
                 layer: layers[i].name,
                 isLead: false,
-                loader: {
-                    params: "LAYERS"
-                }
-
+                loader: new GeoExt.tree.LayerParamLoader({
+                    param: "LAYERS"
+                })
             });
         }
 
@@ -289,10 +288,16 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         var request = json.read(geojson.write(geom));
         request = {
             geometry: request,
-            scale: this.mapPanel.map.getScale()
-            // TODO: Layers
+            scale: this.mapPanel.map.getScale(),
+            layers: []
         };
         request.geometry.crs = geojson.createCRSObject({layer:{projection:"EPSG:4326"}});
+        this.mapPanel.layers.each(function(rec) {
+            var layer = rec.get("layer");
+            if (!layer.displayInLayerSwitcher && layer.params) {
+                request.layers = request.layers.concat(layer.params.LAYERS);
+            }
+        });
         this.clearPopup();
 
         Ext.Ajax.request({
