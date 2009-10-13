@@ -15,7 +15,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.Feature;
 import org.opengis.feature.IllegalAttributeException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -63,6 +62,7 @@ public class GeoJSONParserTest {
         assertTrue(newPoint.equals(origPoint));
     }
 
+    @Test
     public void testLineString() throws JSONException {
         GeometryFactory gf = new GeometryFactory();
         Coordinate[] coords = new Coordinate[4];
@@ -80,6 +80,7 @@ public class GeoJSONParserTest {
         assertTrue(newLine.equals(origLine));
     }
 
+    @Test
     public void testPolygon() throws JSONException {
         GeometryFactory gf = new GeometryFactory();
         Coordinate[] coords = new Coordinate[4];
@@ -98,6 +99,7 @@ public class GeoJSONParserTest {
         assertTrue(newPoly.equals(origPoly));
     }
 
+    @Test
     public void testMultiPoint() throws JSONException {
         GeometryFactory gf = new GeometryFactory();
         Coordinate[] coords = new Coordinate[3];
@@ -114,6 +116,7 @@ public class GeoJSONParserTest {
         assertTrue(newPoints.equals(origPoints));
     }
 
+    @Test
     public void testMultiLineString() throws JSONException {
         GeometryFactory gf = new GeometryFactory();
         LineString line1 = gf.createLineString(new Coordinate[] { new Coordinate(0, 0),
@@ -129,6 +132,7 @@ public class GeoJSONParserTest {
         assertTrue(newMLS.equals(origMLS));
     }
 
+    @Test
     public void testMultiPolygon() throws JSONException {
         GeometryFactory gf = new GeometryFactory();
         LinearRing ring1 = gf.createLinearRing(new Coordinate[] { new Coordinate(0, 0),
@@ -147,6 +151,7 @@ public class GeoJSONParserTest {
         assertTrue(newMultiPoly.equals(origMultiPoly));
     }
 
+    @Test
     public void testGeometryCollection() throws JSONException {
         GeometryFactory gf = new GeometryFactory();
         Geometry[] geometries = new Geometry[3];
@@ -182,6 +187,7 @@ public class GeoJSONParserTest {
     // Note: GeoJSONParser does not presently convert arbitrary JSON objects to Java objects
     // Thus the 'properties' attribute is simply carried over as JSON.
     // TODO: Generalize feature conversion to allow for more sophisticated object conversion.
+    @Test
     public void testFeature() throws JSONException {
         GeometryFactory gf = new GeometryFactory();
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -243,6 +249,7 @@ public class GeoJSONParserTest {
      * 
      * assertTrue(false); }
      */
+
     private JSONObject createJSONObject(Geometry g) {
         StringWriter sw = new StringWriter();
         new GeoJSONSerializer(sw).writeGeometry(g);
