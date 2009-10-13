@@ -1,6 +1,7 @@
 package org.geonode.geojson;
 
 import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
@@ -37,12 +38,15 @@ public class GeoJSONConfig {
      * @param coordinate
      * @return
      */
-    public int getDimension(Object coordinateSequence) {
-        if (coordinateSequence instanceof CoordinateSequence) {
-            return ((CoordinateSequence) coordinateSequence).getDimension();
+    public int getDimension(final Object geom) {
+        if (geom instanceof CoordinateSequence) {
+            return ((CoordinateSequence) geom).getDimension();
+        }
+        if (geom instanceof Geometry) {
+            return getDimension(((Geometry) geom).getInteriorPoint().getCoordinateSequence());
         }
         throw new IllegalArgumentException("unrecognized coordinateSequence type: "
-                + (coordinateSequence == null ? "null" : coordinateSequence.getClass().getName()));
+                + (geom == null ? "null" : geom.getClass().getName()));
     }
 
     public double getOrdinate(final Object coordinatesequence, final int index, final int ordinate) {
@@ -92,6 +96,14 @@ public class GeoJSONConfig {
 
     public Object getInteriorRingN(final Object polygon, final int holeN) {
         return getCoordinateSequence(((Polygon) polygon).getInteriorRingN(holeN));
+    }
+
+    public int getNumGeometries(final Object geometryCollection) {
+        return ((GeometryCollection) geometryCollection).getNumGeometries();
+    }
+
+    public Object getGeometryN(final Object geometryCollection, final int geomN) {
+        return ((GeometryCollection) geometryCollection).getGeometryN(geomN);
     }
 
 }

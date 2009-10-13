@@ -25,6 +25,18 @@ public class GeoJSONSerializer extends JSONBuilder {
         case POLYGON:
             polygon(geometry);
             break;
+        case MULTIPOINT:
+            multiPoint(geometry);
+            break;
+        case MULTILINESTRING:
+            multiLineString(geometry);
+            break;
+        case MULTIPOLYGON:
+            multiPolygon(geometry);
+            break;
+        case GEOMETRYCOLLECTION:
+            geometryCollection(geometry);
+            break;
         default:
             throw new IllegalArgumentException("Unrecognized geometry type: " + geometryType);
         }
@@ -76,7 +88,7 @@ public class GeoJSONSerializer extends JSONBuilder {
         return this;
     }
 
-    public void lineString(final Object lineString) {
+    public GeoJSONSerializer lineString(final Object lineString) {
         this.object();
         this.key("type").value(GeoJSONObjectType.LINESTRING.getJSONName());
 
@@ -84,13 +96,20 @@ public class GeoJSONSerializer extends JSONBuilder {
         this.coordinates(coordinateSequence);
 
         this.endObject();
+        return this;
     }
 
-    public void polygon(final Object polygon) {
+    public GeoJSONSerializer polygon(final Object polygon) {
         this.object();
         this.key("type").value(GeoJSONObjectType.POLYGON.getJSONName());
 
         this.key("coordinates");
+        polygonInternal(polygon);
+        this.endObject();
+        return this;
+    }
+
+    private void polygonInternal(final Object polygon) {
         this.array();
 
         final Object shell = config.getExteriorRing(polygon);
@@ -103,7 +122,72 @@ public class GeoJSONSerializer extends JSONBuilder {
         }
 
         this.endArray();
-        this.endObject();
     }
 
+    private GeoJSONSerializer multiPoint(final Object multiPoint) {
+        this.object();
+        this.key("type").value(GeoJSONObjectType.MULTIPOINT.getJSONName());
+
+        this.key("coordinates");
+        final int dimension = config.getDimension(multiPoint);
+        final int numGeoms = config.getNumGeometries(multiPoint);
+        this.array();
+        for (int geomN = 0; geomN < numGeoms; geomN++) {
+            Object geometryN = config.getGeometryN(multiPoint, geomN);
+            Object coordinates = config.getCoordinateSequence(geometryN);
+            this.coordinate(coordinates, dimension, 0);
+        }
+        this.endArray();
+        this.endObject();
+        return this;
+    }
+
+    private GeoJSONSerializer multiLineString(final Object multiLineString) {
+        this.object();
+        this.key("type").value(GeoJSONObjectType.MULTILINESTRING.getJSONName());
+
+        this.key("coordinates");
+        final int numGeoms = config.getNumGeometries(multiLineString);
+        this.array();
+        for (int geomN = 0; geomN < numGeoms; geomN++) {
+            Object geometryN = config.getGeometryN(multiLineString, geomN);
+            Object coordinates = config.getCoordinateSequence(geometryN);
+            this.coordinatesInternal(coordinates);
+        }
+        this.endArray();
+        this.endObject();
+        return this;
+    }
+
+    private GeoJSONSerializer multiPolygon(final Object multiPolygon) {
+        this.object();
+        this.key("type").value(GeoJSONObjectType.MULTIPOLYGON.getJSONName());
+
+        this.key("coordinates");
+        final int numGeoms = config.getNumGeometries(multiPolygon);
+        this.array();
+        for (int geomN = 0; geomN < numGeoms; geomN++) {
+            Object geometryN = config.getGeometryN(multiPolygon, geomN);
+            polygonInternal(geometryN);
+        }
+        this.endArray();
+        this.endObject();
+        return this;
+    }
+
+    private GeoJSONSerializer geometryCollection(final Object geometryCollection) {
+        this.object();
+        this.key("type").value(GeoJSONObjectType.GEOMETRYCOLLECTION.getJSONName());
+
+        this.key("geometries");
+        final int numGeoms = config.getNumGeometries(geometryCollection);
+        this.array();
+        for (int geomN = 0; geomN < numGeoms; geomN++) {
+            Object geometryN = config.getGeometryN(geometryCollection, geomN);
+            writeGeometry(geometryN);
+        }
+        this.endArray();
+        this.endObject();
+        return this;
+    }
 }
