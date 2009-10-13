@@ -53,6 +53,7 @@ final class HazardStatistics extends AbstractProcess {
     public Map<String, Object> execute(final Map<String, Object> input,
             final ProgressListener monitor) throws ProcessException {
 
+        //TODO: check CRS is provided (either as userData or srsId?)
         final Geometry inputGeometry = (Geometry) input.get(GEOMERTY.key);
         final Double inputRadius = (Double) input.get(RADIUS.key);
 
@@ -61,6 +62,7 @@ final class HazardStatistics extends AbstractProcess {
 
         checkInputs(inputGeometry, inputRadius, inputDataLayers);
 
+        //TODO: set CRS as userData
         final Geometry bufferedGeometry = performBuffer(inputGeometry, inputRadius);
 
         /**
@@ -83,6 +85,7 @@ final class HazardStatistics extends AbstractProcess {
         politicalData.put("municipality", "Bicheno");
 
         results.put(HazardStatisticsFactory.RESULT_POLITICAL.key, politicalData);
+        results.put(HazardStatisticsFactory.RESULT_BUFER.key, bufferedGeometry);
 
         return results;
     }

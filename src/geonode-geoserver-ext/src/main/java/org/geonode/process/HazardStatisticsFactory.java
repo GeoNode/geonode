@@ -91,9 +91,13 @@ public class HazardStatisticsFactory extends SingleProcessFactory {
                     .text("Aggregate result of datalayer statistics"));
 
     @SuppressWarnings("unchecked")
-    public static final Parameter<Map> RESULT_POLITICAL = new Parameter<Map>("result", Map.class,
-            Text.text("Political"), Text
+    public static final Parameter<Map> RESULT_POLITICAL = new Parameter<Map>("political",
+            Map.class, Text.text("Political"), Text
                     .text("Political subdivision names where the staistics lie"));
+
+    public static final Parameter<Geometry> RESULT_BUFER = new Parameter<Geometry>("buffer",
+            Geometry.class, Text.text("Buffer"), Text
+                    .text("The area the statistics are generated for"));
 
     /**
      * Map used to describe operation results.
@@ -103,6 +107,7 @@ public class HazardStatisticsFactory extends SingleProcessFactory {
     static {
         resultInfo.put(RESULT_STATISTICS.key, RESULT_STATISTICS);
         resultInfo.put(RESULT_POLITICAL.key, RESULT_POLITICAL);
+        resultInfo.put(RESULT_BUFER.key, RESULT_BUFER);
     }
 
     public HazardStatisticsFactory() {
