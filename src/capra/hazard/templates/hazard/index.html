@@ -12,7 +12,10 @@
 
         var hazardConfig = {{config|safe}};
         Ext.onReady(function() {
-            app = new MyHazard.Viewer({hazardConfig: hazardConfig});
+                app = new MyHazard.Viewer({
+                    GEONODE_WMS: "{{GEOSERVER_BASE_URL|safe}}wms",
+                    hazardConfig: hazardConfig
+                });
         });
     </script>
 {% endblock %}
