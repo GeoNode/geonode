@@ -10,22 +10,7 @@
     <script type="text/javascript">
         var app;
 
-        //this config object should be populated from the
-        //hazard categories app.
-        var hazardConfig = [
-            {"hazard": "Zombie Attack",
-             "periods": [
-               {"length": 100, "typename": "zombies:attack_100y"},
-               {"length": 20, "typename": "zombies:attack_20y"}
-             ]
-            },{
-             "hazard": "Candy Drought",
-             "periods": [
-               {"length": 100, "typename" : "candy:drought_100y"}              
-             ]
-            }
-        ]
-
+        var hazardConfig = {{config|safe}};
         Ext.onReady(function() {
             app = new MyHazard.Viewer({hazardConfig: hazardConfig});
         });

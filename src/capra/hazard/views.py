@@ -1,13 +1,19 @@
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from capra.hazard.models import Hazard
 from geonode.maps.context_processors import resource_urls
 from httplib2 import Http
 import json 
 
 def index(request): 
+    hazards = Hazard.objects.all()
+    def periods(hazard): 
+        return [{'typename': p.typename, 'length': p.length} for p in hazard.period_set.all()]
+    config = [{'hazard': x.name, 'periods': periods(x)} for x in hazards]
+    config = json.dumps(config)
     return render_to_response("hazard/index.html",
-        context_instance=RequestContext(request, {}, [resource_urls])
+        context_instance=RequestContext(request, {'config': config}, [resource_urls])
     )
 
 def report(request): 
