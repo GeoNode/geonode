@@ -12,11 +12,13 @@ import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
+import org.geonode.geojson.GeoJSONParser;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.TestData;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class ProcessRestletTest extends GeoServerTestSupport {
 
@@ -46,6 +48,21 @@ public class ProcessRestletTest extends GeoServerTestSupport {
         assertEquals(200, r.getStatusCode());
     }
 
+    public void testOutputObjects() throws Exception {
+        String jsonRequest = loadTestData("sample-request-DEM-point.json");
+
+        final String resultStr;
+        {
+            final InputStream in = post(RESTLET_PATH, jsonRequest);
+            resultStr = IOUtils.toString(in, "UTF-8");
+        }
+
+        JSONObject result = JSONObject.fromObject(resultStr);
+        assertTrue(result.containsKey("statistics"));
+        assertTrue(result.containsKey("political"));
+        assertTrue(result.containsKey("buffer"));
+    }
+
     public void testRequestOneCoverageWithPoint() throws Exception {
         String jsonRequest = loadTestData("sample-request-DEM-point.json");
 
@@ -71,6 +88,23 @@ public class ProcessRestletTest extends GeoServerTestSupport {
         assertTrue(demStats.get("stddev") instanceof JSONArray);
     }
 
+    public void testBufferResponse() throws Exception {
+        String jsonRequest = loadTestData("sample-request-DEM-point.json");
+
+        final String resultStr;
+        {
+            final InputStream in = post(RESTLET_PATH, jsonRequest);
+            resultStr = IOUtils.toString(in, "UTF-8");
+        }
+        // System.out.println(resultStr);
+
+        JSONObject result = JSONObject.fromObject(resultStr);
+        JSONObject buffer = result.getJSONObject("buffer");
+        
+        Object parsed = GeoJSONParser.parse(buffer);
+        assertTrue(parsed instanceof Polygon);
+    }
+
     /**
      * If the request geometry/buffer does not intersect the requested coverage the returned
      * statistics shall be {@code null}
@@ -80,16 +114,12 @@ public class ProcessRestletTest extends GeoServerTestSupport {
      * <code>
      * <pre>
      * {
-     *     "statistics": {"wcs:DEM":   {
-     *       "min": null,
-     *       "mean": null,
-     *       "stddev": null,
-     *       "max": null
-     *     }},
+     *     "statistics": {"wcs:DEM": null},
      *     "political":   {
      *       "country": "Tasmania",
      *       "municipality": "Bicheno"
-     *     }
+     *     },
+     *     "buffer": {"type":"Polygon", "coordinates":[...]}
      *  }
      * </pre>
      * <code>
@@ -105,7 +135,7 @@ public class ProcessRestletTest extends GeoServerTestSupport {
             final InputStream in = post(RESTLET_PATH, jsonRequest);
             resultStr = IOUtils.toString(in, "UTF-8");
         }
-        System.out.println(resultStr);
+        // System.out.println(resultStr);
 
         JSONObject result = JSONObject.fromObject(resultStr);
         assertTrue(result.get("statistics") instanceof JSONObject);

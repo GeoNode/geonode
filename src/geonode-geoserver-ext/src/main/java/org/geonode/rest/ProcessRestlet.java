@@ -2,6 +2,8 @@ package org.geonode.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +22,7 @@ import net.sf.json.JSONSerializer;
 
 import org.apache.commons.io.IOUtils;
 import org.geonode.geojson.GeoJSONParser;
+import org.geonode.geojson.GeoJSONSerializer;
 import org.geonode.process.HazardStatisticsFactory;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -134,7 +137,7 @@ public class ProcessRestlet extends Restlet {
             return;
         }
 
-        final String jsonStr = responseData.toString(2);
+        final String jsonStr = responseData.toString(0);
         final Representation representation = new StringRepresentation(jsonStr,
                 MediaType.APPLICATION_JSON);
 
@@ -160,6 +163,8 @@ public class ProcessRestlet extends Restlet {
             final Map<String, Object> processOutputs) {
 
         final Map<String, Map<String, double[]>> stats;
+        final Map<String, Object> political;
+
         {
             final List<Map<String, double[]>> perLayerStats;
             perLayerStats = (List<Map<String, double[]>>) processOutputs
@@ -171,15 +176,25 @@ public class ProcessRestlet extends Restlet {
                 stats.put(layerNames.get(i), perLayerStats.get(i));
             }
         }
-        Map<String, Object> political;
         political = (Map<String, Object>) processOutputs
                 .get(HazardStatisticsFactory.RESULT_POLITICAL.key);
+
+        final JSONObject buffer;
+        {
+            Geometry computedArea;
+            computedArea = (Geometry) processOutputs.get(HazardStatisticsFactory.RESULT_BUFER.key);
+            Writer w = new StringWriter();
+            GeoJSONSerializer geoJSONSerializer = new GeoJSONSerializer(w);
+            geoJSONSerializer.writeGeometry(computedArea);
+            buffer = JSONObject.fromObject(w.toString());
+        }
 
         final JSONObject convertedOutputs;
         {
             Map<String, Object> results = new HashMap<String, Object>();
             results.put("statistics", stats);
             results.put("political", political);
+            results.put("buffer", buffer);
 
             convertedOutputs = JSONObject.fromObject(results);
         }
