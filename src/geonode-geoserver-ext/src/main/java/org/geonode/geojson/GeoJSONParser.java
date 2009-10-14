@@ -15,8 +15,12 @@ import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -46,7 +50,7 @@ public class GeoJSONParser {
 
     private static GeometryFactory gf = new GeometryFactory();
 
-    // TODO: add support for CRS
+    // TODO: add support for CRS or Feature and FeatureCollection
     // TODO: add support for bbox
 
     /**
@@ -291,8 +295,10 @@ public class GeoJSONParser {
         final String typeStr = obj.getString("type");
         final GeoJSONObjectType geomType = GeoJSONObjectType.fromJSONTypeName(typeStr);
 
+        final Geometry parsed;
+
         if (geomType == GEOMETRYCOLLECTION) {
-            return parseGeometryCollection(obj);
+            parsed = parseGeometryCollection(obj);
         } else {
             if (!obj.containsKey("coordinates")) {
                 throw new JSONException("Missing required attribute 'coordinates'");
@@ -302,27 +308,80 @@ public class GeoJSONParser {
 
             switch (geomType) {
             case POINT:
-                return parsePoint(coords);
-
+                parsed = parsePoint(coords);
+                break;
             case MULTIPOINT:
-                return parseMultiPoint(coords);
-
+                parsed = parseMultiPoint(coords);
+                break;
             case LINESTRING:
-                return parseLineString(coords);
-
+                parsed = parseLineString(coords);
+                break;
             case MULTILINESTRING:
-                return parseMultiLineString(coords);
-
+                parsed = parseMultiLineString(coords);
+                break;
             case POLYGON:
-                return parsePolygon(coords);
-
+                parsed = parsePolygon(coords);
+                break;
             case MULTIPOLYGON:
-                return parseMultiPolygon(coords);
-
+                parsed = parseMultiPolygon(coords);
+                break;
             default:
                 throw new JSONException("Invalid geometry type");
             }
         }
+
+        if (obj.containsKey("crs")) {
+            CoordinateReferenceSystem crs = parseCrs(obj.getJSONObject("crs"));
+            parsed.setUserData(crs);
+        }
+
+        return parsed;
+    }
+
+    /**
+     * Parses a named CRS.
+     * <p>
+     * GeoJSON crs objects might come in two different forms: named and linked. Linked ones require
+     * downloading and parsing the CRS definition from an external source, so <strong>we only
+     * support</strong> Named CRS's. See <a
+     * href="http://geojson.org/geojson-spec.html#coordinate-reference-system-objects">the GeoJSON
+     * CRS spec</a> for more information on named and linked CRS's.
+     * </p>
+     * 
+     * @param jsonObject
+     * @return the {@link CoordinateReferenceSystem} if {@code jsonObject} is a Named GeoJSON CRS
+     *         and it can be parsed, or {@code null} if {@code jsonObject} IS NOT a GeoJSON CRS at
+     *         all.
+     * @throws UnsupportedOperationException
+     *             if {@code jsonObject} is a Linked CRS
+     * @throws JSONException
+     *             if the Named CRS can't be parsed (for example, the Authority code is not
+     *             supported)
+     */
+    private static CoordinateReferenceSystem parseCrs(final JSONObject jsonObject)
+            throws JSONException, UnsupportedOperationException {
+        if (!jsonObject.containsKey("type") || !jsonObject.containsKey("properties")) {
+            // not a GeoJSON CRS
+            return null;
+        }
+        final String type = jsonObject.getString("type");
+        if (!"name".equals(type)) {
+            throw new UnsupportedOperationException("GeoJSON CRS's of type " + type
+                    + " are not supported");
+        }
+
+        final String code = jsonObject.getJSONObject("properties").getString("name");
+
+        final CoordinateReferenceSystem coordinateReferenceSystem;
+        try {
+            coordinateReferenceSystem = CRS.decode(code);
+        } catch (NoSuchAuthorityCodeException e) {
+            throw new JSONException("Error decoding CRS " + code, e);
+        } catch (FactoryException e) {
+            throw new JSONException("Error decoding CRS " + code, e);
+        }
+
+        return coordinateReferenceSystem;
     }
 
     private static Point parsePoint(final JSONArray xy) {
