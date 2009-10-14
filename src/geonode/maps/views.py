@@ -15,7 +15,7 @@ DEFAULT_MAP_CONFIG = {
     "proxy": "/proxy/?url=",
 
     "about": {
-        "title": "GeoNode Demo Map",
+        "title": "GeoNode Default Map",
         "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the 'Save Map' button above to contribute your map to the GeoNode community.",
         "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>."
     },
@@ -28,8 +28,8 @@ DEFAULT_MAP_CONFIG = {
             "wms": "capra",
             "group": "background"
         } ],
-        "center": [-84.7, 12.8],
-        "zoom": 7
+        "center": settings.DEFAULT_MAP_CENTER,
+        "zoom": settings.DEFAULT_MAP_ZOOM
     }
 }
 
