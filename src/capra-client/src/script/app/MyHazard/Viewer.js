@@ -235,7 +235,13 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                         draggable: false,
                         allowDrop: false // this should be a default
                     }
-                })
+                }),
+                listeners : {
+                    "move" : function(tree, node, oldParent, newParent, index){
+                        this.map.setLayerIndex(node.layer, index);
+                    },
+                    scope: this
+                }
             });
         }
 
