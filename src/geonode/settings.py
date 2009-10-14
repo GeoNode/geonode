@@ -74,6 +74,9 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 GEOSERVER_BASE_URL = "http://capra.opengeo.org/geoserver/"
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 
+#The layer shown in the map composing application by default.
+DEFAULT_MAP_BASE_LAYER = "base:CA"
+
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
 NAVBAR = \
