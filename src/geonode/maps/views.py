@@ -24,7 +24,7 @@ DEFAULT_MAP_CONFIG = {
     },
     "map": {
         "layers": [ {
-            "name": "base:CA",
+            "name": settings.DEFAULT_MAP_BASE_LAYER,
             "wms": "capra",
             "group": "background"
         } ],
