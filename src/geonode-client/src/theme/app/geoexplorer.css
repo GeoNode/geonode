@@ -79,6 +79,10 @@
     background-image: url(img/geosilk/shape_square_orange.png);
 }
 
+.x-btn .icon-visibility {
+    background-image: url(img/silk/eye.png);
+}
+
 /* ------------ */
 
 .x-btn .icon-export {
