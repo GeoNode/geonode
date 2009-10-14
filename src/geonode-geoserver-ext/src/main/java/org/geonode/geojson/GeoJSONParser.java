@@ -12,6 +12,7 @@ import net.sf.json.JSONSerializer;
 
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
+import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.opengis.feature.simple.SimpleFeature;
@@ -30,11 +31,11 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- * This class is a (complementary) companion class to GeoJSONBuilder.
+ * This class is a (complementary) companion class to {@link GeoJSONSerializer}.
  * 
- * @author Nicholas Bergson-Shilcock, The Open Planning Project
+ * @author originally written by Nicholas Bergson-Shilcock at the The Open Planning Project and
+ *         adapted by Gabriel Roldan afterwards
  * @version $Id$
- * 
  */
 public class GeoJSONParser {
     private GeoJSONConfig config;
