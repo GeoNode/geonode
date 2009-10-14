@@ -24,7 +24,7 @@ DEFAULT_MAP_CONFIG = {
     },
     "map": {
         "layers": [ {
-            "name": "base:nicaragua_admin",
+            "name": "base:CA",
             "wms": "capra",
             "group": "background"
         } ],
