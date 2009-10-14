@@ -10,8 +10,6 @@ import pkg_resources
 from setuptools import find_packages
 from shutil import copytree
 import sys
-from urlgrabber.grabber import urlgrab
-from urlgrabber.progress import text_progress_meter
 import zipfile
 
 
@@ -157,6 +155,8 @@ def checkout_geoserver(options):
 @task
 def setup_gs_data(options):
     """Fetch a data directory to use with GeoServer for testing."""
+    from urlgrabber.grabber import urlgrab
+    from urlgrabber.progress import text_progress_meter
     src_url = "http://capra.opengeo.org/dev-data/geonode-geoserver-data.zip"
     path("work").mkdir()
     dst_url = "work/geonode-geoserver-data.zip"
