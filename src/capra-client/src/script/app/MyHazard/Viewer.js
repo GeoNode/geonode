@@ -6,10 +6,6 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     sidebar: null,
     hazardConfig: null,
     
-    setLayerTransparencyText: "UT: Set layer transparency...",
-    showLayersText: "UT: Show active layers",
-    hideLayersText: "UT: Hide active layers",
-
     constructor: function (config) {
         this.initialConfig = config;
         Ext.apply(this, this.initialConfig);
@@ -213,24 +209,13 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 tooltip: this.transparencyMenuText,
                 iconCls: "icon-visibility",
                 menu: [
-                    new Ext.menu.CheckItem({
-                        text: this.hideLayersText
-                    }),
-                    new Ext.menu.CheckItem({
-                        text: this.showLayersText
-                    }),
-                    new Ext.menu.Separator(), 
-                    {
-                        text: this.setLayerTransparencyText,
-                        menu: [
-                            new Ext.menu.Adapter(
-                                new MyHazard.LayerGroupOpacitySlider({
-                                    layers: layers,
-                                    width: 150
-                                })
-                            )
-                        ]
-                    }
+                    new Ext.menu.Adapter(
+                        new MyHazard.LayerGroupOpacitySlider({
+                            layers: layers,
+                            vertical: true,
+                            height: 150
+                        })
+                    )
                 ]
             })
         ];
