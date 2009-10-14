@@ -2,6 +2,7 @@
 
     var jsfiles = new Array(
         "/capra_static/src/script/app/MyHazard/Viewer.js",
+        "/capra_static/src/script/app/MyHazard/LayerGroupOpacitySlider.js",
         "/capra_static/src/script/app/MyHazard/Reporter.js"
     );
 
