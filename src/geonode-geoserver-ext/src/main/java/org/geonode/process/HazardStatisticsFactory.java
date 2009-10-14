@@ -90,9 +90,14 @@ public class HazardStatisticsFactory extends SingleProcessFactory {
             Map.class, Text.text("Statistics"), Text
                     .text("Aggregate result of datalayer statistics"));
 
+    /**
+     * {@code List<Map<String, Object>>} with one entry per feature from the political layer that
+     * intersects the buffered geometry, where the keys are the {@link #POLITICAL_LAYER_ATTRIBUTES}
+     * and the values the Feature attribute values.
+     */
     @SuppressWarnings("unchecked")
-    public static final Parameter<Map> RESULT_POLITICAL = new Parameter<Map>("political",
-            Map.class, Text.text("Political"), Text
+    public static final Parameter<List> RESULT_POLITICAL = new Parameter<List>("political",
+            List.class, Text.text("Political"), Text
                     .text("Political subdivision names where the staistics lie"));
 
     public static final Parameter<Geometry> RESULT_BUFER = new Parameter<Geometry>("buffer",

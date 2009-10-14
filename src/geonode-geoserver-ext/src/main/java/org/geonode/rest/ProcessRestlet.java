@@ -74,15 +74,15 @@ public class ProcessRestlet extends Restlet {
 
     public static final Logger LOGGER = Logging.getLogger("org.geonode.rest");
 
-    private static final String POLITICAL_LAYER_PARAM = "politicalLayer";
+    static final String POLITICAL_LAYER_PARAM = "politicalLayer";
 
-    private static final String POLITICAL_LAYER_ATTRIBUTES_PARAM = "politicalLayerAttributes";
+    static final String POLITICAL_LAYER_ATTRIBUTES_PARAM = "politicalLayerAttributes";
 
-    private static final String DATALAYERS_PARAM = "datalayers";
+    static final String DATALAYERS_PARAM = "datalayers";
 
-    private static final String GEOMETRY_PARAM = "geometry";
+    static final String GEOMETRY_PARAM = "geometry";
 
-    private static final String RADIUS_PARAM = "radius";
+    static final String RADIUS_PARAM = "radius";
 
     private final Catalog catalog;
 
@@ -102,6 +102,7 @@ public class ProcessRestlet extends Restlet {
     public void handle(Request request, Response response) {
         if (!request.getMethod().equals(Method.POST)) {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            return;
         }
 
         final String requestContent;
@@ -163,7 +164,7 @@ public class ProcessRestlet extends Restlet {
             final Map<String, Object> processOutputs) {
 
         final Map<String, Map<String, double[]>> stats;
-        final Map<String, Object> political;
+        final List<Map<String, Object>> political;
 
         {
             final List<Map<String, double[]>> perLayerStats;
@@ -176,7 +177,7 @@ public class ProcessRestlet extends Restlet {
                 stats.put(layerNames.get(i), perLayerStats.get(i));
             }
         }
-        political = (Map<String, Object>) processOutputs
+        political = (List<Map<String, Object>>) processOutputs
                 .get(HazardStatisticsFactory.RESULT_POLITICAL.key);
 
         final JSONObject buffer;
@@ -281,11 +282,23 @@ public class ProcessRestlet extends Restlet {
             return Collections.emptyList();
         }
 
+        if (!request.containsKey(POLITICAL_LAYER_ATTRIBUTES_PARAM)) {
+            throw new IllegalArgumentException(POLITICAL_LAYER_PARAM
+                    + " parameter was provided but " + POLITICAL_LAYER_ATTRIBUTES_PARAM
+                    + " was not");
+        }
+
         final List<String> politicalLayerAttribtues;
         {
-            final String politicalLayerAttsParam;
-            politicalLayerAttsParam = (String) request.get(POLITICAL_LAYER_ATTRIBUTES_PARAM);
-            politicalLayerAttribtues = (List<String>) GeoJSONParser.parse(politicalLayerAttsParam);
+            final JSONArray politicalLayerAttsParam;
+            politicalLayerAttsParam = request.getJSONArray(POLITICAL_LAYER_ATTRIBUTES_PARAM);
+            if (politicalLayerAttsParam.size() == 0) {
+                throw new IllegalArgumentException(POLITICAL_LAYER_PARAM
+                        + " parameter was provided but " + POLITICAL_LAYER_ATTRIBUTES_PARAM
+                        + " was not");
+            }
+            Collection collection = JSONArray.toCollection(politicalLayerAttsParam);
+            politicalLayerAttribtues = new ArrayList<String>(collection);
         }
 
         final LayerInfo politicalLayer = catalog.getLayerByName(politicalLayerName);

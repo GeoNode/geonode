@@ -7,6 +7,7 @@ import static org.geonode.process.HazardStatisticsFactory.RADIUS;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,12 @@ import org.geotools.coverage.grid.ViewType;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.processing.OperationJAI;
+import org.geotools.data.DefaultQuery;
+import org.geotools.data.FeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.Parameter;
@@ -28,6 +35,12 @@ import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.impl.AbstractProcess;
 import org.geotools.referencing.CRS;
+import org.opengis.feature.Feature;
+import org.opengis.feature.Property;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
@@ -53,16 +66,16 @@ final class HazardStatistics extends AbstractProcess {
     public Map<String, Object> execute(final Map<String, Object> input,
             final ProgressListener monitor) throws ProcessException {
 
-        //TODO: check CRS is provided (either as userData or srsId?)
+        // TODO: check CRS is provided (either as userData or srsId?)
         final Geometry inputGeometry = (Geometry) input.get(GEOMERTY.key);
         final Double inputRadius = (Double) input.get(RADIUS.key);
-
         final List<AbstractGridCoverage2DReader> inputDataLayers;
+
         inputDataLayers = (List<AbstractGridCoverage2DReader>) input.get(DATALAYER.key);
 
         checkInputs(inputGeometry, inputRadius, inputDataLayers);
 
-        //TODO: set CRS as userData
+        // TODO: set CRS as userData
         final Geometry bufferedGeometry = performBuffer(inputGeometry, inputRadius);
 
         /**
@@ -72,22 +85,86 @@ final class HazardStatistics extends AbstractProcess {
         List<Map<String, double[]>> perLayerStats = new ArrayList<Map<String, double[]>>();
         for (AbstractGridCoverage2DReader layer : inputDataLayers) {
             Map<String, double[]> stats = gatherCoverageStats(layer, bufferedGeometry);
-            perLayerStats.add(stats == null? null : new HashMap<String, double[]>(stats));
+            perLayerStats.add(stats == null ? null : new HashMap<String, double[]>(stats));
         }
 
         Map<String, Object> results = new HashMap<String, Object>();
 
         results.put(HazardStatisticsFactory.RESULT_STATISTICS.key, perLayerStats);
 
-        // TODO: un-fake
-        HashMap<String, Object> politicalData = new HashMap<String, Object>();
-        politicalData.put("country", "Tasmania");
-        politicalData.put("municipality", "Bicheno");
+        FeatureSource<FeatureType, Feature> politicalLayer = (FeatureSource<FeatureType, Feature>) input
+                .get(HazardStatisticsFactory.POLITICAL_LAYER.key);
+        List<String> politicalLayerAtts = (List<String>) input
+                .get(HazardStatisticsFactory.POLITICAL_LAYER_ATTRIBUTES.key);
+
+        List<Map<String, Object>> politicalData = getPoliticalLayerIntersectionInfo(politicalLayer,
+                politicalLayerAtts, bufferedGeometry);
 
         results.put(HazardStatisticsFactory.RESULT_POLITICAL.key, politicalData);
         results.put(HazardStatisticsFactory.RESULT_BUFER.key, bufferedGeometry);
 
         return results;
+    }
+
+    private List<Map<String, Object>> getPoliticalLayerIntersectionInfo(
+            final FeatureSource<FeatureType, Feature> politicalLayer,
+            final List<String> politicalLayerAtts, final Geometry bufferedGeometry) {
+
+        if (politicalLayer == null) {
+            return Collections.emptyList();
+        }
+        if (politicalLayerAtts == null || politicalLayerAtts.size() == 0) {
+            throw new IllegalArgumentException(
+                    "Required return attribtues shall be specified for the political layer");
+        }
+
+        final GeometryDescriptor geometryDescriptor = politicalLayer.getSchema()
+                .getGeometryDescriptor();
+        if (geometryDescriptor == null) {
+            throw new IllegalArgumentException("Political layer " + politicalLayer.getName()
+                    + " has no geometry property");
+        }
+
+        final FeatureIterator<Feature> iterator;
+        {
+            final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
+                    .getDefaultHints());
+            final Filter filter = ff.intersects(ff.property(geometryDescriptor.getName()), ff
+                    .literal(bufferedGeometry));
+
+            DefaultQuery query = new DefaultQuery();
+            query.setPropertyNames(politicalLayerAtts);
+            query.setFilter(filter);
+
+            FeatureCollection<FeatureType, Feature> features;
+            try {
+                features = politicalLayer.getFeatures(query);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            iterator = features.features();
+        }
+
+        List<Map<String, Object>> political = new ArrayList<Map<String, Object>>(2);
+        try {
+            Feature feature;
+            Map<String, Object> featureData;
+            while (iterator.hasNext()) {
+                feature = iterator.next();
+                featureData = new HashMap<String, Object>();
+                for (String propName : politicalLayerAtts) {
+                    Property property = feature.getProperty(propName);
+                    Object value = property == null ? null : property.getValue();
+                    featureData.put(propName, value);
+                }
+                political.add(featureData);
+            }
+        } finally {
+            iterator.close();
+        }
+
+        return political;
     }
 
     private Map<String, double[]> gatherCoverageStats(final AbstractGridCoverage2DReader layer,
@@ -159,7 +236,6 @@ final class HazardStatistics extends AbstractProcess {
      * @throws IOException
      *             Any errors that occur loading the coverage.
      */
-    @SuppressWarnings("deprecation")
     public GridCoverage2D getGridCoverage(final AbstractGridCoverage2DReader reader,
             final ReferencedEnvelope env) throws IOException {
 

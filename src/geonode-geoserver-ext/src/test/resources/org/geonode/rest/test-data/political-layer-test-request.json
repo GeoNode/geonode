@@ -1,0 +1,9 @@
+{
+    "radius": 2,
+    "geometry": {"type": "Point", "coordinates": [42.41930400000001, -79.444252]},
+    "datalayers": [
+        "wcs:BlueMarble"
+    ],
+    "politicalLayer":"gs:states",
+    "politicalLayerAttributes":["STATE_NAME", "SUB_REGION"]
+}
