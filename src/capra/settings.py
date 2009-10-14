@@ -86,7 +86,10 @@ NAVBAR['hazard'] = {'id': '%sLink',
     'url': 'capra.hazard.views.index'
 }
 
-NAVBAR['meta']['visible'] += "\nhazard"
+import re
+pattern = re.compile("hazard")
+if not pattern.search(NAVBAR['meta']['visible']):
+    NAVBAR['meta']['visible'] += "\nhazard" #Why is this a string not a list?
 
 
 GEOSERVER_BASE_URL = "http://localhost:8889/geoserver/"
