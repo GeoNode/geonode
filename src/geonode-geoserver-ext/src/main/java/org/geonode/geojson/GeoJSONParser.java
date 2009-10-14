@@ -170,7 +170,12 @@ public class GeoJSONParser {
                 throw new JSONException("Missing required attribute 'features'");
             }
 
-            prototype = obj.getJSONArray("features").getJSONObject(0);
+            JSONArray array = obj.getJSONArray("features");
+            if (array.size() == 0) {
+                throw new JSONException(
+                        "No features present in the FeatureCollection, can't infer FeatureType");
+            }
+            prototype = array.getJSONObject(0);
 
             break;
 
