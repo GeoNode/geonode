@@ -3,6 +3,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     reportService: "/hazard/report.html",
     popup: null,
     mapPanel: null,
+    appPanel: null,
     sidebar: null,
     hazardConfig: null,
     
@@ -226,14 +227,24 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             treeConfig.push({
                 nodeType: "gx_layer",
                 layer: layers[i].name,
+                allowDrop: false,
                 isLead: false,
                 loader: new GeoExt.tree.LayerParamLoader({
-                    param: "LAYERS"
+                    param: "LAYERS",
+                    baseAttrs: {
+                        draggable: false,
+                        allowDrop: false // this should be a default
+                    }
                 })
             });
         }
 
-        treeConfig.push({nodeType: "gx_baselayercontainer"});
+        treeConfig.push({
+            nodeType: "gx_baselayercontainer",
+            draggable: false,
+            allowDrop: false,
+            isTarget: false
+        });
 
         this.sidebar = new Ext.tree.TreePanel({
             region: "west",
@@ -242,6 +253,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             loader: new Ext.tree.TreeLoader({
                 applyLoader: false
             }),
+            enableDD: true,
             rootVisible: false,
             root: {
                 nodeType: "async",
@@ -250,7 +262,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         });
         
 
-        var appPanel = new Ext.Panel({
+        this.appPanel = new Ext.Panel({
             renderTo: "app",
             width: 950,
             height: 400,
