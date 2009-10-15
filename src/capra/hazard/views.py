@@ -1,11 +1,10 @@
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse
 from capra.hazard.models import Hazard
+from capra.hazard.reports import render_pdf_response
 from geonode.maps.context_processors import resource_urls
 from httplib2 import Http
-from reportlab.pdfgen import canvas
 import json 
 
 def index(request): 
@@ -73,12 +72,3 @@ def request_rest_process(process, params):
     if (response.status is not 200):
         raise Exception
     return json.loads(content)
-
-def render_pdf_response(summary):
-    response = HttpResponse(mimetype="application/pdf")
-    response["Content-Disposition"] = "attachment; filename=report.pdf"
-    p = canvas.Canvas(response)
-    p.drawString(100, 100, "Hello, PDF!")
-    p.showPage()
-    p.save()
-    return response
