@@ -195,15 +195,16 @@ var DataPage = Ext.extend(Page, {
     initPanel: function(){
         var riskExpander = new GeoExplorer.CapabilitiesRowExpander({ows: this.ows});
         var overlayExpander = new GeoExplorer.CapabilitiesRowExpander({ows: this.ows});
-
+        
+        // risk store 
         var riskStore = new Ext.data.SimpleStore({
             fields: this.capabilities.fields
         });
-        
+
         this.capabilities.each(function(record) {
             if (record.get("prefix") == "risk") riskStore.add([record]);
         });
-	
+	    // overlay store 
         var overlayStore = new Ext.data.SimpleStore({
             fields: this.capabilities.fields
         });
@@ -211,9 +212,23 @@ var DataPage = Ext.extend(Page, {
         this.capabilities.each(function(record) {
             if (record.get("prefix") == "overlay") overlayStore.add([record]);
         });
+       
+        // base store 
+        var baseStore = new Ext.data.SimpleStore({ 
+            fields: this.capabilities.fields
+        });
+        this.capabilities.each(function(record) { 
+            if (record.get("prefix") == "base") baseStore.add([record]);
+        });
 
+        // get the url for out.json file 
+        if (this.proxy) {
+                base_url = this.ows.replace(/wms$/, '');
+                base_url = base_url + "www/out.json";  
+                json_url = this.proxy + encodeURIComponent(base_url) ;    
+            };
         var ameStore = new Ext.data.GroupingStore({
-            proxy: new Ext.data.HttpProxy({url: this.url + "/www/out.json"}),
+            proxy: new Ext.data.HttpProxy({url: json_url}),
             reader: new Ext.data.JsonReader({fields: ['rel_tifs','path','scenario','country']}),
             groupField: 'scenario',
             sortInfo: {field: 'scenario', direction: 'ASC'},
@@ -295,6 +310,26 @@ var DataPage = Ext.extend(Page, {
             viewConfig: {/*forceFit: true,*/ autoFill:true },
             sm: new Ext.grid.RowSelectionModel({singleSelect:true})
         });
+
+
+        
+        this.baseCapGrid = new Ext.grid.GridPanel({
+            renderTo:"base-layer-browser",	    
+            // title: this.dataGridText,
+            store: baseStore,
+            autoScroll: true,
+            height:200,
+            alignToGrid: this.alignToGrid,
+            cm: new Ext.grid.ColumnModel([
+                overlayExpander,
+                {id: "title", header: this.dataTitleHeaderText, dataIndex: "title", sortable: true},
+                {header: this.dataNameHeaderText, dataIndex: "name", width: 180, sortable: true}
+            ]),
+            viewConfig: {/*forceFit: true,*/ autoFill:true },
+            sm: new Ext.grid.RowSelectionModel({singleSelect:true})
+        });
+
+
 
         this.ameGrid = new Ext.grid.GridPanel({
             renderTo: 'ame-layer-browser',

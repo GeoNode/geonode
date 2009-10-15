@@ -5,7 +5,8 @@ from geonode.urls import urlpatterns
 urlpatterns += patterns('capra.hazard.views',
     (r'^hazard/report', 'report'),
     (r'^hazard/', 'index'),
-)
+    )
+
 
 if settings.DEBUG:
     import os

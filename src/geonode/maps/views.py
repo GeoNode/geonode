@@ -110,6 +110,12 @@ def embed(request, mapid=None):
     ))
 
 
+
+def data(request):
+    context = RequestContext(request,[resource_urls])
+    return render_to_response('data.html', context_instance=context)
+
+
 def build_map_config(map):
     layers = map.layer_set.all()
     servers = list(set(l.ows_url for l in layers))
