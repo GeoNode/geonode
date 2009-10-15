@@ -1,28 +1,33 @@
-<html>
-    <head>
-        <title>Formatted Report</title>
-    </head>
-    <body>
-        <h2>Formatted Hazard Report</h2>
-        <h3> Layer Statistics </h3>
-        <ul>
-            {% for layer, stat in result.statistics.items %}
-            <li> <em>{{layer}}</em> <br>
-            Min: {{ stat.min.0|floatformat }},
-            Max: {{ stat.max.0|floatformat }},
-            Mean: {{ stat.mean.0|floatformat }},
-            Std Dev: {{ stat.stddev.0|floatformat }}
-            </li>
-            {% endfor %}
-        </ul>
-        <h3> Political Context Information </h3>
-        <p> The area of interest overlaps the following areas:</p>
-        <ul>
-            {% for info in result.political %}
-                {% if info.municipality %}
-                    <li> {{info.municipality}}, {{info.country}} </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    </body>
-</html>
+<div class="report">
+  <p> The area of interest overlaps the following areas:</p>
+  <ul>
+    {% for info in result.political %}
+    {% if info.municipality %}
+    <li> {{info.municipality}}, {{info.country}} </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+  <ul>
+    {% for hazard, layers in data.items %}
+    <h3>{{hazard}}</h3>
+    <table>
+      <tr>
+        <td class="corner"></td>
+        <th>Min</th>
+        <th>Max</th>
+        <th>Mean</th>
+        <th>Std. Dev</th>
+      </tr>
+      {% for period, stats in layers %}
+      <tr class="{% cycle 'odd' 'even' %}">
+        <th>{{period}}y</th>
+        <td>{{ stats.min.0|floatformat }}</td>
+        <td>{{ stats.max.0|floatformat }}</td>
+        <td>{{ stats.mean.0|floatformat }}</td>
+        <td>{{ stats.stddev.0|floatformat }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% endfor %}
+  </ul>
+</div>

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from capra.hazard.models import Hazard
+from capra.hazard.models import Hazard, Period
 from capra.hazard.reports import render_pdf_response
 from geonode.maps.context_processors import resource_urls
 from httplib2 import Http
@@ -22,8 +22,18 @@ def report(request, format):
     result = request_rest_process("hazard", params)
 
     if format == 'html':
+        data_for_report = {}
+        statistics = result['statistics']
+        for layer, stats in statistics.items():
+            period = Period.objects.get(typename=layer)
+            hazard = period.hazard.name
+            if data_for_report.get(hazard):            
+               data_for_report[hazard].append((period.length,stats))
+               data_for_report[hazard].sort() #ensure nice ordering
+            else:
+                data_for_report[hazard] = [(period.length,stats)]
         return render_to_response("hazard/report.html",
-            context_instance=RequestContext(request, {"result": result}, [resource_urls])
+            context_instance=RequestContext(request, {"data": data_for_report}, [resource_urls])
         )
     elif format == 'pdf':
         return render_pdf_response(result)
