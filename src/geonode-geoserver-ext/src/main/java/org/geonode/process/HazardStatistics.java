@@ -137,13 +137,13 @@ final class HazardStatistics extends AbstractProcess {
         {
             final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
                     .getDefaultHints());
+            final CoordinateReferenceSystem layerCrs = geometryDescriptor
+                    .getCoordinateReferenceSystem();
 
             final CoordinateReferenceSystem requestCrs;
             if (bufferedGeometry.getUserData() instanceof CoordinateReferenceSystem) {
                 requestCrs = (CoordinateReferenceSystem) bufferedGeometry.getUserData();
             } else {
-                CoordinateReferenceSystem layerCrs;
-                layerCrs = geometryDescriptor.getCoordinateReferenceSystem();
                 requestCrs = layerCrs;
             }
             final Filter filter = ff.intersects(ff.property(geometryDescriptor.getName()), ff
@@ -153,7 +153,7 @@ final class HazardStatistics extends AbstractProcess {
             query.setPropertyNames(politicalLayerAtts);
             query.setFilter(filter);
             query.setCoordinateSystem(requestCrs);
-            query.setCoordinateSystemReproject(requestCrs);
+            // query.setCoordinateSystemReproject(layerCrs);
 
             FeatureCollection<FeatureType, Feature> features;
             try {
@@ -249,6 +249,7 @@ final class HazardStatistics extends AbstractProcess {
                 }
                 try {
                     requestGeometry = JTS.transform(bufferedGeometry, bufferToCoverage);
+                    requestGeometry.setUserData(layerCrs);
                 } catch (RuntimeException e) {
                     throw e;
                 } catch (Exception e) {

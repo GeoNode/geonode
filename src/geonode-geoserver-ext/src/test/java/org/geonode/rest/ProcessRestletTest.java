@@ -20,6 +20,8 @@ import org.geonode.geojson.GeoJSONParser;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.TestData;
+import org.geotools.factory.GeoTools;
+import org.geotools.factory.Hints;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.restlet.data.Status;
@@ -35,6 +37,7 @@ public class ProcessRestletTest extends GeoServerTestSupport {
             MockData.DEFAULT_PREFIX);
 
     static {
+        GeoTools.getDefaultHints().put(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
         ProcessRestlet.LOGGER.setLevel(Level.FINER);
     }
 
@@ -140,7 +143,7 @@ public class ProcessRestletTest extends GeoServerTestSupport {
             final InputStream in = post(RESTLET_PATH, jsonRequest);
             resultStr = IOUtils.toString(in, "UTF-8");
         }
-        //System.out.println(resultStr);
+        System.out.println(resultStr);
 
         JSONObject result = JSONObject.fromObject(resultStr);
 
@@ -162,7 +165,7 @@ public class ProcessRestletTest extends GeoServerTestSupport {
         Object userData = ((Polygon) parsedBuffer).getUserData();
         assertTrue(userData instanceof CoordinateReferenceSystem);
 
-        final CoordinateReferenceSystem reqCrs = CRS.decode("EPSG:26986");
+        final CoordinateReferenceSystem reqCrs = CRS.decode("EPSG:26986", true);
         assertTrue(CRS.equalsIgnoreMetadata(reqCrs, ((Polygon) parsedBuffer).getUserData()));
 
         final JSONArray expected = JSONArray.fromObject("["
@@ -170,7 +173,7 @@ public class ProcessRestletTest extends GeoServerTestSupport {
                 + "{\"STATE_NAME\":\"Pennsylvania\",\"SUB_REGION\":\"Mid Atl\"}" + "]");
         final JSONArray actual = result.getJSONArray("political");
 
-        JSONAssert.assertEquals(expected, actual);
+        JSONAssert.assertEquals(actual.toString(), expected, actual);
     }
 
     public void testBufferResponse() throws Exception {
@@ -274,6 +277,7 @@ public class ProcessRestletTest extends GeoServerTestSupport {
             final InputStream in = post(RESTLET_PATH, jsonRequest);
             resultStr = IOUtils.toString(in, "UTF-8");
         }
+        System.out.println(resultStr);
 
         JSONObject result = JSONObject.fromObject(resultStr);
         assertTrue(result.get("political") instanceof JSONArray);

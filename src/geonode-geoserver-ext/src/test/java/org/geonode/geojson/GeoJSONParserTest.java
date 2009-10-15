@@ -165,7 +165,7 @@ public class GeoJSONParserTest {
         Object parsed = GeoJSONParser.parse(jsonStr);
         assertNotNull(parsed);
 
-        CoordinateReferenceSystem expected = CRS.decode("EPSG:4326");
+        CoordinateReferenceSystem expected = CRS.decode("EPSG:4326", true);
 
         assertTrue(parsed instanceof Point);
         assertTrue(((Point) parsed).getUserData() instanceof CoordinateReferenceSystem);
