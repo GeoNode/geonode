@@ -346,6 +346,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             success: function(response, options) {
                 this.popup = new GeoExt.Popup({
                     feature: new OpenLayers.Feature.Vector(geom),
+                    title: "UT:MyHazard Report",
                     html: response.responseText,
                     map: this.mapPanel,
                     bbar: [

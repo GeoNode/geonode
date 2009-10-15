@@ -87,6 +87,27 @@
     background-image: url(img/silk/page_white_acrobat.png);
 }
 
+div.report { 
+    background-color: white;
+}
+
+div.report table, div.report td, div.report th { 
+padding: .4em;
+}
+
+div.report th { 
+background-color: #CCC;
+}
+
+div.report tr.odd { 
+background-color: #EEF;
+}
+
+.report td.corner{ 
+background-color:white;
+}
+
+
 /* ------------ */
 
 .x-btn .icon-export {
