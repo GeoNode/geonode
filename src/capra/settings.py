@@ -95,7 +95,7 @@ if not pattern.search(NAVBAR['meta']['visible']):
 GEOSERVER_BASE_URL = "http://localhost:8889/geoserver/"
 GEOSERVER_CREDENTIALS = ('admin', 'geoserver')
 
-INSTALLED_APPS += ('capra.hazard',)
+INSTALLED_APPS += ('capra.hazard','capra.ame')
 
 TEMPLATE_DIRS = (path_extrapolate("capra/hazard/templates"),) + TEMPLATE_DIRS 
 
