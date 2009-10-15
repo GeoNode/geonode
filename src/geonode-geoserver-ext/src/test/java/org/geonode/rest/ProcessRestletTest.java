@@ -20,6 +20,8 @@ import org.geonode.geojson.GeoJSONParser;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.TestData;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.restlet.data.Status;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -102,6 +104,73 @@ public class ProcessRestletTest extends GeoServerTestSupport {
         assertTrue(demStats.get("max") instanceof JSONArray);
         assertTrue(demStats.get("mean") instanceof JSONArray);
         assertTrue(demStats.get("stddev") instanceof JSONArray);
+    }
+
+    public void testRequestWithGeoJSONGeometryContainingCRSInformation() throws Exception {
+        String jsonRequest = loadTestData("sample-request-World-point-crs.json");
+
+        final String resultStr;
+        {
+            final InputStream in = post(RESTLET_PATH, jsonRequest);
+            resultStr = IOUtils.toString(in, "UTF-8");
+        }
+        // System.out.println(resultStr);
+
+        JSONObject result = JSONObject.fromObject(resultStr);
+        assertTrue(result.get("statistics") instanceof JSONObject);
+
+        JSONObject statistics = (JSONObject) result.get("statistics");
+        assertEquals(1, statistics.size());
+
+        assertTrue(statistics.get("wcs:World") instanceof JSONObject);
+        JSONObject worldStats = (JSONObject) ((JSONObject) result.get("statistics"))
+                .get("wcs:World");
+
+        assertTrue(worldStats.get("min") instanceof JSONArray);
+        assertTrue(worldStats.get("max") instanceof JSONArray);
+        assertTrue(worldStats.get("mean") instanceof JSONArray);
+        assertTrue(worldStats.get("stddev") instanceof JSONArray);
+    }
+
+    public void testFullRequestIntegrationTest() throws Exception {
+        String jsonRequest = loadTestData("full-sample-request-World-linestring.json");
+
+        final String resultStr;
+        {
+            final InputStream in = post(RESTLET_PATH, jsonRequest);
+            resultStr = IOUtils.toString(in, "UTF-8");
+        }
+        //System.out.println(resultStr);
+
+        JSONObject result = JSONObject.fromObject(resultStr);
+
+        JSONObject statistics = (JSONObject) result.get("statistics");
+
+        assertEquals(1, statistics.size());
+
+        JSONObject worldStats = (JSONObject) ((JSONObject) result.get("statistics"))
+                .get("wcs:World");
+
+        assertTrue(worldStats.get("min") instanceof JSONArray);
+        assertTrue(worldStats.get("max") instanceof JSONArray);
+        assertTrue(worldStats.get("mean") instanceof JSONArray);
+        assertTrue(worldStats.get("stddev") instanceof JSONArray);
+
+        JSONObject buffer = result.getJSONObject("buffer");
+        Object parsedBuffer = GeoJSONParser.parse(buffer);
+        assertTrue(parsedBuffer instanceof Polygon);
+        Object userData = ((Polygon) parsedBuffer).getUserData();
+        assertTrue(userData instanceof CoordinateReferenceSystem);
+
+        final CoordinateReferenceSystem reqCrs = CRS.decode("EPSG:26986");
+        assertTrue(CRS.equalsIgnoreMetadata(reqCrs, ((Polygon) parsedBuffer).getUserData()));
+
+        final JSONArray expected = JSONArray.fromObject("["
+                + "{\"STATE_NAME\":\"New York\",\"SUB_REGION\":\"Mid Atl\"},"
+                + "{\"STATE_NAME\":\"Pennsylvania\",\"SUB_REGION\":\"Mid Atl\"}" + "]");
+        final JSONArray actual = result.getJSONArray("political");
+
+        JSONAssert.assertEquals(expected, actual);
     }
 
     public void testBufferResponse() throws Exception {
