@@ -28,6 +28,7 @@ import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.Parameter;
 import org.geotools.process.Process;
@@ -66,7 +67,6 @@ final class HazardStatistics extends AbstractProcess {
     public Map<String, Object> execute(final Map<String, Object> input,
             final ProgressListener monitor) throws ProcessException {
 
-        // TODO: check CRS is provided (either as userData or srsId?)
         final Geometry inputGeometry = (Geometry) input.get(GEOMERTY.key);
         final Double inputRadius = (Double) input.get(RADIUS.key);
         final List<AbstractGridCoverage2DReader> inputDataLayers;
@@ -75,10 +75,18 @@ final class HazardStatistics extends AbstractProcess {
 
         checkInputs(inputGeometry, inputRadius, inputDataLayers);
 
-        // TODO: set CRS as userData
         final Geometry bufferedGeometry = performBuffer(inputGeometry, inputRadius);
+        /*
+         * If the inputGeometry carries over CRS information lets set it to the buffered geometry so
+         * #gatherCoverageStats reprojects as needed
+         */
+        if (inputGeometry.getUserData() instanceof CoordinateReferenceSystem) {
+            CoordinateReferenceSystem bufferCrs;
+            bufferCrs = (CoordinateReferenceSystem) inputGeometry.getUserData();
+            bufferedGeometry.setUserData(bufferCrs);
+        }
 
-        /**
+        /*
          * CoverageReaders have no Name, so we return a list of results in the same order than the
          * provided readers for client code to match them up
          */
@@ -129,12 +137,23 @@ final class HazardStatistics extends AbstractProcess {
         {
             final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
                     .getDefaultHints());
+
+            final CoordinateReferenceSystem requestCrs;
+            if (bufferedGeometry.getUserData() instanceof CoordinateReferenceSystem) {
+                requestCrs = (CoordinateReferenceSystem) bufferedGeometry.getUserData();
+            } else {
+                CoordinateReferenceSystem layerCrs;
+                layerCrs = geometryDescriptor.getCoordinateReferenceSystem();
+                requestCrs = layerCrs;
+            }
             final Filter filter = ff.intersects(ff.property(geometryDescriptor.getName()), ff
                     .literal(bufferedGeometry));
 
             DefaultQuery query = new DefaultQuery();
             query.setPropertyNames(politicalLayerAtts);
             query.setFilter(filter);
+            query.setCoordinateSystem(requestCrs);
+            query.setCoordinateSystemReproject(requestCrs);
 
             FeatureCollection<FeatureType, Feature> features;
             try {
@@ -170,13 +189,17 @@ final class HazardStatistics extends AbstractProcess {
     private Map<String, double[]> gatherCoverageStats(final AbstractGridCoverage2DReader layer,
             final Geometry bufferedGeometry) throws ProcessException {
 
+        final CoordinateReferenceSystem layerCrs = layer.getCrs();
+
+        final Geometry requestGeometry = transformBufferToLayerCrs(bufferedGeometry, layerCrs);
+
         final GridCoverage2D geophysics;
         try {
-            final ReferencedEnvelope requesEnvelope;
-            final CoordinateReferenceSystem crs = layer.getCrs();
-            requesEnvelope = new ReferencedEnvelope(bufferedGeometry.getEnvelopeInternal(), crs);
+            final ReferencedEnvelope requestEnvelope;
+            requestEnvelope = new ReferencedEnvelope(requestGeometry.getEnvelopeInternal(),
+                    layerCrs);
 
-            GridCoverage2D coverage = getGridCoverage(layer, requesEnvelope);
+            GridCoverage2D coverage = getGridCoverage(layer, requestEnvelope);
             if (coverage == null) {
                 // request envelope did not intersect coverage, return null stats
                 return null;
@@ -201,6 +224,45 @@ final class HazardStatistics extends AbstractProcess {
         stats.put("stddev", histogram.getStandardDeviation());
 
         return stats;
+    }
+
+    private Geometry transformBufferToLayerCrs(final Geometry bufferedGeometry,
+            final CoordinateReferenceSystem layerCrs) {
+        final Geometry requestGeometry;
+        if (bufferedGeometry.getUserData() instanceof CoordinateReferenceSystem) {
+            /*
+             * The buffer contains CRS information, lets see if we need to reproject the buffer to
+             * the coverage's CRS
+             */
+            final CoordinateReferenceSystem requestCrs;
+            requestCrs = (CoordinateReferenceSystem) bufferedGeometry.getUserData();
+
+            if (CRS.equalsIgnoreMetadata(layerCrs, requestCrs)) {
+                requestGeometry = bufferedGeometry;
+            } else {
+                final MathTransform bufferToCoverage;
+                try {
+                    bufferToCoverage = CRS.findMathTransform(requestCrs, layerCrs, true);
+                } catch (FactoryException e) {
+                    throw new RuntimeException("Error obtaining input geometry CRS to "
+                            + "Coverage CRS math transform", e);
+                }
+                try {
+                    requestGeometry = JTS.transform(bufferedGeometry, bufferToCoverage);
+                } catch (RuntimeException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new RuntimeException("Error transforming buffer to Coverage's CRS", e);
+                }
+            }
+        } else {
+            /*
+             * Assume the buffer is in the same CRS than the coverage and the user knows what he's
+             * doing
+             */
+            requestGeometry = bufferedGeometry;
+        }
+        return requestGeometry;
     }
 
     private void checkInputs(final Geometry inputGeometry, final Double inputRadius,
