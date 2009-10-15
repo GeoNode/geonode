@@ -2,6 +2,8 @@ package org.geonode.geojson;
 
 import static org.geonode.geojson.GeoJSONObjectType.GEOMETRYCOLLECTION;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -9,6 +11,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+import net.sf.json.JsonConfig;
+import net.sf.json.processors.JsonBeanProcessor;
 
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
@@ -42,6 +46,33 @@ import com.vividsolutions.jts.geom.Polygon;
  * @version $Id$
  */
 public class GeoJSONParser {
+
+    /**
+     * {@link JsonConfig} configured to parse JTS {@link Geometry} objects into {@link JSONObject}
+     * 
+     * @see #fromObject(Object)
+     */
+    public static final JsonConfig JTS_GEOMETRY_CONFIG = new JsonConfig();
+    static {
+        JsonBeanProcessor geomProcessor = new JsonBeanProcessor() {
+            public JSONObject processBean(Object bean, JsonConfig jsonConfig) {
+                Geometry g = (Geometry) bean;
+                Writer w = new StringWriter();
+                new GeoJSONSerializer(w).writeGeometry(g);
+                String geojsonGeomStr = w.toString();
+                JSONObject jsonGeom = JSONObject.fromObject(geojsonGeomStr);
+                return jsonGeom;
+            }
+        };
+        JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(Point.class, geomProcessor);
+        JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(MultiPoint.class, geomProcessor);
+        JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(LineString.class, geomProcessor);
+        JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(MultiLineString.class, geomProcessor);
+        JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(Polygon.class, geomProcessor);
+        JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(MultiPolygon.class, geomProcessor);
+        JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(GeometryCollection.class, geomProcessor);
+    }
+
     private GeoJSONConfig config;
 
     public GeoJSONParser(final GeoJSONConfig config) {
@@ -481,6 +512,21 @@ public class GeoJSONParser {
             geomObjs[i] = parseGeometry(geometries.getJSONObject(i));
 
         return gf.createGeometryCollection(geomObjs);
+    }
+
+    /**
+     * Parses an object (JSON string, Java Bean, etc) to a {@link JSONObject}, handling JTS
+     * Geometries.
+     * <p>
+     * This method is a shorthand for
+     * </p>
+     * 
+     * @param object
+     * @return
+     */
+    public static JSONObject fromObject(final Object object) {
+        JSONObject obj = JSONObject.fromObject(object, JTS_GEOMETRY_CONFIG);
+        return obj;
     }
 
 }
