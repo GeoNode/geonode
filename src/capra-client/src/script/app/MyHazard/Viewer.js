@@ -1,11 +1,13 @@
 Ext.namespace("MyHazard");
 MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
-    reportService: "/hazard/report.html",
+    reportService: "/hazard/report",
     popup: null,
     mapPanel: null,
     appPanel: null,
     sidebar: null,
     hazardConfig: null,
+
+    pdfButtonText: "UT: PDF Report",
     
     constructor: function (config) {
         this.initialConfig = config;
@@ -316,13 +318,17 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         var geom = evt.geom;
         var geojson = new OpenLayers.Format.GeoJSON();
         var json = new OpenLayers.Format.JSON();
-        var request = json.read(geojson.write(geom));
-        request = {
-            geometry: request,
+        var request = {
+            geometry: json.read(geojson.write(geom)),
             scale: this.mapPanel.map.getScale(),
             datalayers: []
         };
-        request.geometry.crs = geojson.createCRSObject({layer:{projection:"EPSG:4326"}});
+
+        request.geometry.crs = { 
+            "type": "name",
+            "properties": { "name": "EPSG:4326" }
+        };
+
         this.mapPanel.layers.each(function(rec) {
             var layer = rec.get("layer");
             if (!layer.displayInLayerSwitcher && layer.params) {
@@ -331,15 +337,22 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         });
         this.clearPopup();
 
+        request = json.write(request);
+
         Ext.Ajax.request({
-            url: this.reportService,
-            xmlData: json.write(request),
+            url: this.reportService + '.html',
+            xmlData: request,
             method: "POST",
             success: function(response, options) {
                 this.popup = new GeoExt.Popup({
                     feature: new OpenLayers.Feature.Vector(geom),
                     html: response.responseText,
                     map: this.mapPanel,
+                    bbar: [
+                        '<a class="download pdf" href="' + this.reportService + '.pdf?' + 
+                        Ext.urlEncode({ q: request }) + '"> ' +
+                        this.pdfButtonText + '</a>'
+                    ],
                     listeners: {
                        hide: this.clearPopup,
                        scope: this

@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.http import HttpResponse
 from capra.hazard.models import Hazard
 from geonode.maps.context_processors import resource_urls
 from httplib2 import Http
+from reportlab.pdfgen import canvas
 import json 
 
 def index(request): 
@@ -16,22 +18,35 @@ def index(request):
         context_instance=RequestContext(request, {'config': config}, [resource_urls])
     )
 
-def report(request): 
+def report(request, format): 
     params = extract_params(request)
     result = request_rest_process("hazard", params)
 
-    return render_to_response("hazard/report.html",
-        context_instance=RequestContext(request, {"result": result}, [resource_urls])
-    )
+    if format == 'html':
+        return render_to_response("hazard/report.html",
+            context_instance=RequestContext(request, {"result": result}, [resource_urls])
+        )
+    elif format == 'pdf':
+        return render_pdf_response(result)
+    else:
+        raise Exception()
 
 def extract_params(request):
     """
     Examine a report request and extract the parameters that should be 
     included in the corresponding WPS request.
     """
-    if (request.method == "POST"):
+    if request.method == "POST":
         try:
             params = json.loads(request.raw_post_data)
+            params["radius"] = radius_for(params["scale"])
+            del params["scale"]
+            return params
+        except:
+            pass
+    elif request.method == 'GET': 
+        try:
+            params = json.loads(request.GET['q'])
             params["radius"] = radius_for(params["scale"])
             del params["scale"]
             return params
@@ -59,3 +74,11 @@ def request_rest_process(process, params):
         raise Exception
     return json.loads(content)
 
+def render_pdf_response(summary):
+    response = HttpResponse(mimetype="application/pdf")
+    response["Content-Disposition"] = "attachment; filename=report.pdf"
+    p = canvas.Canvas(response)
+    p.drawString(100, 100, "Hello, PDF!")
+    p.showPage()
+    p.save()
+    return response

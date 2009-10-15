@@ -83,6 +83,10 @@
     background-image: url(img/silk/eye.png);
 }
 
+.x-btn .icon-pdf {
+    background-image: url(img/silk/page_white_acrobat.png);
+}
+
 /* ------------ */
 
 .x-btn .icon-export {

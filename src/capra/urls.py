@@ -3,9 +3,9 @@ from django.conf import settings
 from geonode.urls import urlpatterns
 
 urlpatterns += patterns('capra.hazard.views',
-    (r'^hazard/report', 'report'),
+    (r'^hazard/report(.(?P<format>html|pdf))?', 'report'),
     (r'^hazard/', 'index'),
-    )
+)
 
 
 if settings.DEBUG:
