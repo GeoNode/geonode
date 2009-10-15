@@ -405,7 +405,11 @@ public class GeoJSONParser {
 
         final CoordinateReferenceSystem coordinateReferenceSystem;
         try {
-            coordinateReferenceSystem = CRS.decode(code);
+            /*
+             * The GeoJSON spec mandates longiture/latitude axis order
+             */
+            final boolean longitudeFirst = true;
+            coordinateReferenceSystem = CRS.decode(code, longitudeFirst);
         } catch (NoSuchAuthorityCodeException e) {
             throw new JSONException("Error decoding CRS " + code, e);
         } catch (FactoryException e) {
