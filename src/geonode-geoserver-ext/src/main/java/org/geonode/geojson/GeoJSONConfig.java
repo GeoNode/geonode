@@ -1,5 +1,12 @@
 package org.geonode.geojson;
 
+import org.geotools.feature.FeatureCollection;
+import org.geotools.referencing.CRS;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -104,6 +111,44 @@ public class GeoJSONConfig {
 
     public Object getGeometryN(final Object geometryCollection, final int geomN) {
         return ((GeometryCollection) geometryCollection).getGeometryN(geomN);
+    }
+
+    @SuppressWarnings("unchecked")
+    public String getCRSName(Object geometryOrFeature) {
+        String crsName = null;
+        if (geometryOrFeature instanceof Geometry) {
+            Geometry g = (Geometry) geometryOrFeature;
+            if (g.getUserData() instanceof CoordinateReferenceSystem) {
+                CoordinateReferenceSystem crs = (CoordinateReferenceSystem) g.getUserData();
+                crsName = getIdentifier(crs);
+            }
+        } else if (geometryOrFeature instanceof Feature) {
+            Feature f = (Feature) geometryOrFeature;
+            CoordinateReferenceSystem crs = f.getType().getCoordinateReferenceSystem();
+            crsName = getIdentifier(crs);
+        } else if (geometryOrFeature instanceof FeatureCollection) {
+            FeatureCollection<FeatureType, Feature> fc;
+            fc = (FeatureCollection<FeatureType, Feature>) geometryOrFeature;
+            FeatureType schema = fc.getSchema();
+            if (schema != null) {
+                CoordinateReferenceSystem crs = schema.getCoordinateReferenceSystem();
+                crsName = getIdentifier(crs);
+            }
+        }
+        return crsName;
+    }
+
+    private String getIdentifier(CoordinateReferenceSystem crs) {
+        if (crs != null) {
+            final boolean fullScan = false;// if true it'd be too expensive
+            try {
+                String identifier = CRS.lookupIdentifier(crs, fullScan);
+                return identifier;
+            } catch (FactoryException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
 }

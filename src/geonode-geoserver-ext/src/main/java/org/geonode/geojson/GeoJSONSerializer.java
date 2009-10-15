@@ -43,7 +43,7 @@ public class GeoJSONSerializer extends JSONBuilder {
         return this;
     }
 
-    public GeoJSONSerializer coordinates(final Object coordinates) throws JSONException {
+    private GeoJSONSerializer coordinates(final Object coordinates) throws JSONException {
         this.key("coordinates");
 
         coordinatesInternal(coordinates);
@@ -75,7 +75,7 @@ public class GeoJSONSerializer extends JSONBuilder {
         this.endArray();
     }
 
-    public GeoJSONSerializer point(final Object point) throws JSONException {
+    private GeoJSONSerializer point(final Object point) throws JSONException {
         this.object();
         this.key("type").value(GeoJSONObjectType.POINT.getJSONName());
 
@@ -84,29 +84,51 @@ public class GeoJSONSerializer extends JSONBuilder {
         final Object coordinateSequence = config.getCoordinateSequence(point);
         final int dimension = config.getDimension(coordinateSequence);
         this.coordinate(coordinateSequence, dimension, 0);
+
+        crs(point);
+
         this.endObject();
         return this;
     }
 
-    public GeoJSONSerializer lineString(final Object lineString) {
+    private GeoJSONSerializer lineString(final Object lineString) {
         this.object();
         this.key("type").value(GeoJSONObjectType.LINESTRING.getJSONName());
 
         final Object coordinateSequence = config.getCoordinateSequence(lineString);
         this.coordinates(coordinateSequence);
 
+        crs(lineString);
+
         this.endObject();
         return this;
     }
 
-    public GeoJSONSerializer polygon(final Object polygon) {
+    private GeoJSONSerializer polygon(final Object polygon) {
         this.object();
         this.key("type").value(GeoJSONObjectType.POLYGON.getJSONName());
 
         this.key("coordinates");
         polygonInternal(polygon);
+
+        crs(polygon);
+
         this.endObject();
         return this;
+    }
+
+    private void crs(Object geometryOrFeature) {
+        String crsName = config.getCRSName(geometryOrFeature);
+        if (crsName != null) {
+            this.key("crs");
+            this.object();
+            this.key("type").value("name");
+            this.key("properties");
+            this.object();
+            this.key("name").value(crsName);
+            this.endObject();
+            this.endObject();
+        }
     }
 
     private void polygonInternal(final Object polygon) {
@@ -138,6 +160,9 @@ public class GeoJSONSerializer extends JSONBuilder {
             this.coordinate(coordinates, dimension, 0);
         }
         this.endArray();
+
+        crs(multiPoint);
+
         this.endObject();
         return this;
     }
@@ -155,6 +180,9 @@ public class GeoJSONSerializer extends JSONBuilder {
             this.coordinatesInternal(coordinates);
         }
         this.endArray();
+
+        crs(multiLineString);
+
         this.endObject();
         return this;
     }
@@ -171,6 +199,9 @@ public class GeoJSONSerializer extends JSONBuilder {
             polygonInternal(geometryN);
         }
         this.endArray();
+
+        crs(multiPolygon);
+
         this.endObject();
         return this;
     }
@@ -187,6 +218,7 @@ public class GeoJSONSerializer extends JSONBuilder {
             writeGeometry(geometryN);
         }
         this.endArray();
+        crs(geometryCollection);
         this.endObject();
         return this;
     }
