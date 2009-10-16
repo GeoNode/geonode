@@ -162,7 +162,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     metaDataMapAbstract: 'UT:Abstract',
     metaDataMapTags: 'UT:Tags',
     metaDataMapId: "UT:Permalink",
-    metaDataFeatured : "UT: Featured Map",
     saveMapText: "UT: Save Map",
     permalinkLabel: 'UT: Permalink',
     noPermalinkText: "UT: This map has not yet been saved.",
@@ -653,16 +652,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             }
         });
 
-        var featuredCheck = new Ext.form.Checkbox({
-            disabled: true,
-            listeners: {
-                'check': function(field, newValue, oldValue) {
-                    this.about.featured = newValue;
-                },
-                scope: this
-            }
-        });
-
         var permalink = function(id) {
             return window.location.protocol + "//" +
                 window.location.host +
@@ -690,9 +679,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     new Ext.form.Label({html: this.metaDataMapTags}), 
                     tagField,
                     new Ext.form.Label({html: this.metaDataMapId}), 
-                    linkField,
-                    new Ext.form.Label({html: this.metaDataFeatured}), 
-                    featuredCheck
+                    linkField
                     ],
             title: this.metaDataHeader,
             height: 250
@@ -704,7 +691,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             contactField.setValue(this.about.contact);
             abstractField.setValue(this.about["abstract"]);
             tagField.setValue(this.about.tags);
-            featuredCheck.setValue(this.about.featured);
             if (!this.mapID) {
                 linkField.setValue(this.noPermalinkText);
             } else {
