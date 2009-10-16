@@ -33,8 +33,8 @@ def index(request):
     featured = Map.objects.filter(featured=True)
     if featured.count() == 0:
         map = DEFAULT_MAP_CONFIG
-    else: 
-        map = build_map_config(random.choice(featured))
+    else:         
+        map = build_map_config(featured[random.randint(0, featured.count() - 1)])
     context = RequestContext(request, {'map': map}, [resource_urls])
     return render_to_response('index.html', context_instance=context);
 
