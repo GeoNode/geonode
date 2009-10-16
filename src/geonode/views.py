@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from geonode.maps.views import build_map_config
 from geonode.maps.context_processors import resource_urls
+import random
 
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
@@ -33,7 +34,7 @@ def index(request):
     if featured.count() == 0:
         map = DEFAULT_MAP_CONFIG
     else: 
-        map = build_map_config(featured[0])
+        map = build_map_config(random.choice(featured))
     context = RequestContext(request, {'map': map}, [resource_urls])
     return render_to_response('index.html', context_instance=context);
 
