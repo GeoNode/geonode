@@ -34,6 +34,9 @@
         <link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.app_themes}}site.css" />
         <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
         <script id="app-locale" type="text/javascript"></script>
+        <script type="text/javascript">
+            Ext.BLANK_IMAGE_URL = "{{MEDIA_LOCATIONS.ext_base}}resources/images/default/s.gif";
+        </script>
         {% block header_append %}
         {% endblock %}
     </head>
