@@ -73,7 +73,12 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     },
 
     createLayout: function(){
-        this.map = new OpenLayers.Map({allOverlays: false});
+        this.map = new OpenLayers.Map(
+            {allOverlays: false,
+             controls: [new OpenLayers.Control.Navigation(),
+                       new OpenLayers.Control.PanPanel(),
+                       new OpenLayers.Control.ZoomPanel()]
+            });
 
         var baseLayers = [
             new OpenLayers.Layer.WMS(
@@ -96,7 +101,18 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             region: "center",
             center: new OpenLayers.LonLat(-87, 13),
             zoom: 5,
-            map: this.map
+            map: this.map,
+            items: [
+                {
+                    xtype: "gx_zoomslider",
+                    vertical: true,
+                    height: 100,
+                    plugins: new GeoExt.ZoomSliderTip({
+			template: "<div>"+this.zoomSliderTipText+": {zoom}<div>"
+                    })
+                },
+                this.createMapOverlay()
+            ]
         });
 
         var toolGroup = "toolGroup";
@@ -367,5 +383,84 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             },
             scope: this
         });
+    },
+
+
+    createMapOverlay: function() {
+        var scaleLinePanel = new Ext.Panel({
+            cls: 'olControlScaleLine overlay-element overlay-scaleline',
+            border: false
+        });
+
+        scaleLinePanel.on('render', function(){
+            var scaleLine = new OpenLayers.Control.ScaleLine({
+                div: scaleLinePanel.body.dom
+            });
+
+            this.map.addControl(scaleLine);
+            scaleLine.activate();
+        }, this);
+
+        var zoomStore = new GeoExt.data.ScaleStore({
+            map: this.map
+        });
+
+        var zoomSelector = new Ext.form.ComboBox({
+		emptyText: this.zoomSelectorText,
+            tpl: '<tpl for="."><div class="x-combo-list-item">1 : {[parseInt(values.scale)]}</div></tpl>',
+            editable: false,
+            triggerAction: 'all',
+            mode: 'local',
+            store: zoomStore,
+            width: 110
+        });
+
+        zoomSelector.on('click', function(evt){evt.stopEvent();});
+        zoomSelector.on('mousedown', function(evt){evt.stopEvent();});
+
+        zoomSelector.on('select', function(combo, record, index) {
+                this.map.zoomTo(record.data.level);
+            },
+            this);
+
+        var zoomSelectorWrapper = new Ext.Panel({
+            items: [zoomSelector],
+            cls: 'overlay-element overlay-scalechooser',
+            border: false });
+
+        this.map.events.register('zoomend', this, function() {
+            var scale = zoomStore.queryBy(function(record){
+                return this.map.getZoom() == record.data.level;
+            });
+
+            if (scale.length > 0) {
+                scale = scale.items[0];
+                zoomSelector.setValue("1 : " + parseInt(scale.data.scale, 10));
+            } else {
+                if (!zoomSelector.rendered) return;
+                zoomSelector.clearValue();
+            }
+        });
+
+        var mapOverlay = new Ext.Panel({
+            // title: "Overlay",
+            cls: 'map-overlay',
+            items: [
+                scaleLinePanel,
+                zoomSelectorWrapper
+            ]
+        });
+
+
+        mapOverlay.on("afterlayout", function(){
+            scaleLinePanel.body.dom.style.position = 'relative';
+            scaleLinePanel.body.dom.style.display = 'inline';
+
+            mapOverlay.getEl().on("click", function(x){x.stopEvent();});
+            mapOverlay.getEl().on("mousedown", function(x){x.stopEvent();});
+        }, this);
+
+        return mapOverlay;
     }
+
 });
