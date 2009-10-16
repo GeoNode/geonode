@@ -8,5 +8,5 @@ setup(name='geonode',
       author='',
       author_email='',
       url='',
-      packages=['geonode'],
+      packages=['.'],
      )
