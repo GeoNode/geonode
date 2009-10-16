@@ -38,7 +38,7 @@ def report(request, format):
     elif format == 'pdf':
         return render_pdf_response(result)
     else:
-        raise Exception()
+        raise Exception("Report requested in invalid format. (Expects .html or .pdf)")
 
 def extract_params(request):
     """
@@ -80,5 +80,5 @@ def request_rest_process(process, params):
     http.add_credentials(user, pw)
     response, content = http.request(url, "POST", json.dumps(params))
     if (response.status is not 200):
-        raise Exception
+        raise Exception("REST process responded with\nStatus: {0}\nResponse:\n{1}".format(response.status, content))
     return json.loads(content)
