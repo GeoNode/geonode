@@ -67,16 +67,32 @@
 }
 
 /* Really for CAPRA, watch out! */
+
+.x-menu-group-item .icon-point,
 .x-btn .icon-point {
-    background-image: url(img/geosilk/bullet_orange.png); !important
+    background-image: url(img/geosilk/bullet_orange.png) !important;
+    background-position: center center;
+    margin: 0px;
+    height: 16px;
+    width: 16px;
 }
 
+.x-menu-group-item .icon-line,
 .x-btn .icon-line {
     background-image: url(img/geosilk/line_orange.png);
+    background-position: center center;
+    margin: 0px;
+    height: 16px;
+    width: 16px;
 }
 
+.x-menu-group-item .icon-polygon,
 .x-btn .icon-polygon {
     background-image: url(img/geosilk/shape_square_orange.png);
+    background-position: center center;
+    margin: 0px;
+    height: 16px;
+    width: 16px;
 }
 
 .x-btn .icon-visibility {
