@@ -8,7 +8,7 @@ from paver.setuputils import setup, find_package_data
 from paver.easy import options
 import pkg_resources
 from setuptools import find_packages
-from shutil import copytree
+from shutil import copy, copytree
 import sys
 import zipfile
 
@@ -208,6 +208,39 @@ def capra_js(options):
        path("capra-client").rmtree()
        os.makedirs("capra-client/")
        sh("jsbuild -o capra-client/ all.cfg") 
+
+@task
+@needs('concat_js', 'capra_js')
+def package_client(options):
+    """Package compressed client resources (JavaScript, CSS, images)."""
+
+    zip = zipfile.ZipFile("build/geonode-client.zip",'w') #create zip in write mode
+    with pushd('src/geonode-client/build/'):
+        for file in path("geonode-client/").walkfiles():
+            print(file)
+            zip.write(file)
+    
+    with pushd('src/capra-client/build/'):
+        for file in path("capra-client/").walkfiles():
+            print(file)
+            zip.write(file)
+
+    zip.close()
+
+
+@task
+@needs('checkout_geoserver', 'setup_geoserver')
+def package_geoserver(options):
+    """Package GeoServer WAR file with appropriate extensions."""
+    copy('src/geonode-geoserver-ext/target/geoserver-geonode-dev.war', 'build/')
+    
+
+@task
+@needs('install_deps')
+def package_webapp(options):
+    """Package (Python, Django) web application and dependencies."""
+    sh("pip bundle -r shared/core-libs.txt build/geonode-webapp.bundle geonode capra")    
+
 
 def unzip_file(src, dest): 
     zip = zipfile.ZipFile(src)
