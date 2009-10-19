@@ -14,11 +14,15 @@ software installed and in your PATH:
     installed version).
   - If not, download from http://java.sun.com/javase/downloads/index.jsp 
     (Make sure to install the *JDK*!) 
+
 * Python 2.6:
   - To verify that it is available, run 
     ``python --version`` and verify that it reports a version number like
     ``Python 2.6``
   - If not, download from http://python.org/download/
+  - Python must be compiled w/ SSL support and sqlite support to
+    support the geonode development setup.
+
 * Apache Maven 2.0.10 or Later:
   - To verify that it is available, run
     ``mvn -version`` and verify that it reports version information like::
