@@ -21,7 +21,8 @@ software installed and in your PATH:
     ``Python 2.6``
   - If not, download from http://python.org/download/
   - Python must be compiled w/ SSL support and sqlite support to
-    support the geonode development setup.
+    support the geonode development setup.  Installing the sqlite and
+    openssl development headers will suffice.
 
 * Apache Maven 2.0.10 or Later:
   - To verify that it is available, run
@@ -44,7 +45,7 @@ Install
   . bin/activate
   paver build
   django-admin.py syncdb --settings=geonode.settings 
-  paster serve shared/dev-paste.ini
+  django-admin.py runserver --settings=geonode.settings 
 
 Options
 =======
