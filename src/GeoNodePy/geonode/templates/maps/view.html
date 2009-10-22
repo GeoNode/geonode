@@ -1,0 +1,43 @@
+{% extends "fullscreen.html" %}
+{% load i18n %}
+
+{% block title %}
+Map Viewer 
+{% endblock %}
+
+{% block header_append %}
+{% comment %} 
+Google Earth resources
+Note: We should change this key on final deploy!
+{% endcomment %} 
+
+<script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+<script type="text/javascript">
+    google.load("earth", "1");
+</script>
+
+<script type="text/javascript">
+var app;
+Ext.onReady(function() {
+    var config = {
+        /* This option works around issue #109
+         * until http://trac.openlayers.org/ticket/2178
+         * is fixed.
+         */
+        alignToGrid: true,
+        proxy: "/proxy/?url=",
+
+        /* The URL to a REST map configuration service.  This service 
+         * provides listing and, with an authenticated user, saving of 
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/",
+        homeUrl: "{% url geonode.views.index %}"
+    };
+
+    Ext.apply(config, {% if config %}{{config|safe}}{%else%} {%endif%});
+    app = new GeoExplorer(config);
+});
+</script>
+
+{% endblock %}

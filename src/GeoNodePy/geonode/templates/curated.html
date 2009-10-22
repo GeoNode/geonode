@@ -1,0 +1,51 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+{% load navbar %}
+
+{% block title %} {% trans "CAPRA Map List" %} {% endblock %}
+
+{% block header_append %}
+<script type="text/javascript">
+  Ext.onReady(function(){
+    var app = new CuratedPage({
+      /* The URL to a REST map configuration service.  This service 
+       * provides listing and, with an authenticated user, saving of 
+       * maps on the server for sharing and editing.
+       */
+       rest: "{%url geonode.maps.views.maps %}",
+       proxy: "/proxy/?url="
+  });
+});
+</script> 
+{% endblock %}
+
+{% block nav %}
+{% navbar curated %}
+{% endblock %}
+
+{% block main %}
+
+<div id="data">
+  <div id="map-browser"></div>
+</div>          
+
+
+{% endblock %}
+
+{% block sidebar %}
+<h3> {% trans "CAPRA Maps" %} </h3>
+{% blocktrans %}
+<p> This is a list of particularly interesting or effective maps selected by the CAPRA team.</p>
+<p>
+Click on a map to select it. Then click
+<b>Open Map</b>
+to open it in a map editor, or click
+<b>Export Map</b>
+to export it as a widget.
+</p>
+See the{% endblocktrans %}
+<a href="{%url geonode.views.community %}">{% trans "contributed map"%}</a>
+{% blocktrans %}
+list for other maps created by GeoNode users.
+{% endblocktrans %}
+{% endblock %}
