@@ -149,7 +149,7 @@ def checkout_geoserver(options):
         svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
         with pushd(gs):
             sh('mvn install')
-            sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.0-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
+            sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.1-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
     
 
 @task
