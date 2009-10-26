@@ -13,7 +13,7 @@ if settings.DEBUG:
     def here(*x): 
         return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
-    root = here("..", "capra-client", "build", "capra-client") if settings.MINIFIED_RESOURCES else here("..", "capra-client", "")
+    root = here("..", "..", "capra-client", "build", "capra-client") if settings.MINIFIED_RESOURCES else here("..", "..", "capra-client", "")
     urlpatterns += patterns('',
         (r'^capra_static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': root}),
     )
