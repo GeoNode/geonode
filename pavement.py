@@ -1,58 +1,28 @@
 from __future__ import with_statement
-import os
-from os.path import join
 from paver import svn
 from paver.easy import *
+from paver.easy import options
 from paver.path25 import pushd
 from paver.setuputils import setup, find_package_data
-from paver.easy import options
-import pkg_resources
 from setuptools import find_packages
-from shutil import copy, copytree
+import shutil
+import os
+import paver.doctools
+import paver.misctasks
+import pkg_resources
 import sys
 import zipfile
 
-
 try:
-    # Optional tasks, only needed for development
-    #from github.tools.task import *
-    import paver.doctools
-    import paver.virtual
     from paver.virtual import bootstrap
-    import paver.misctasks
-    ALL_TASKS_LOADED = True
 except ImportError, e:
-    info("some tasks could not not be imported.")
-    debug(str(e))
-    ALL_TASKS_LOADED = False
+    info("VirtualEnv must be installed to enable 'paver bootstrap'. If you need this command, run: pip install virtualenv")
 
-name='GeoNode'
-version = "1.0.1"
-
-
-setup(name=name,
-      version=version,
-      description="Application for serving and sharing geospatial data",
-      long_description=""" """,
-      classifiers=[
-        "Development Status :: 1 - Planning" ], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      keywords='',
-      author='GeoNode Developers',
-      author_email='dev@geonode.org',
-      url='http://geonode.org',
-      license='GPL',
-      packages = ['capra', 'geonode',],
-      package_dir = {'': 'src'},
-      include_package_data=True,
-      zip_safe=False,
-      entry_points="""
-      # -*- Entry points: -*-
-      """,
-      )
-
+#build_dir = path('./build/')
+build_dir = path('./package')
 
 options(
-    minilib=Bunch(extra_files=['virtual', 'doctools']),
+    minilib=Bunch(extra_files=['virtual', 'doctools', 'misctasks']),
     sphinx=Bunch(
       docroot='docs',
       builddir="_build",
@@ -65,13 +35,19 @@ options(
       script_name='bootstrap.py',
       paver_command_line='post_bootstrap'
       ),
+    deploy=Bunch(
+      pavement=path('shared/deployment_pavement.py'),
+      req_file=path('shared/deploy-libs.txt'),
+      packages_to_install=['pip'],
+      dest_dir='./',
+      out_dir=build_dir,
+      install_paver=True,
+      script_name=build_dir / 'bootstrap.py',
+      paver_command_line='post_bootstrap'      
     )
-
-options.setup.package_data=find_package_data(package='GeoNode',
-                                             only_in_packages=False)
+)
 
 venv = os.environ.get('VIRTUAL_ENV')
-
 bundle = path('shared/geonode.pybundle')
 
 @task
@@ -120,7 +96,7 @@ def download_bundle(options):
             sh('wget http://capra.opengeo.org/repo/%s.zip' %dlname)
             path(dlname + '.zip').copy(bpath)
     else:
-        info("oSkipping download. 'rm bundle  %s' if you need a fresh download. " %bundle)
+        info("Skipping download. 'rm bundle  %s' if you need a fresh download. " %bundle)
 
 @task
 def install_25_deps(options):
@@ -129,13 +105,13 @@ def install_25_deps(options):
     
 @task
 def post_bootstrap(options):
-    # installs the current package
+    """installs the current package"""
     if sys.platform == 'win32':
         bin = "Scripts"
     else:
         bin = "bin"
-    pip = join(bin, "pip")
-    sh('%s install -e .' % pip)
+    pip = path(bin) / "pip"
+    sh('%s install -e %s' %(pip, path("src/GeoNodePy")))
 
 gs = "geoserver-build"
 gs_data = "gs-data"
@@ -150,7 +126,6 @@ def checkout_geoserver(options):
         with pushd(gs):
             sh('mvn install')
             sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.1-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
-    
 
 @task
 def setup_gs_data(options):
@@ -158,11 +133,15 @@ def setup_gs_data(options):
     from urlgrabber.grabber import urlgrab
     from urlgrabber.progress import text_progress_meter
     src_url = "http://capra.opengeo.org/dev-data/geonode-geoserver-data.zip"
-    path("work").mkdir()
-    dst_url = "work/geonode-geoserver-data.zip"
-    urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
-    path(gs_data).rmtree()
-    unzip_file(dst_url, gs_data)
+    shared = path("./shared")
+    if not shared.exists():
+        shared.mkdir()
+    dst_url = shared / "geonode-geoserver-data.zip"
+    if not dst_url.exists() or getattr(options, 'clean', False):
+        urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
+        path(gs_data).rmtree()
+        unzip_file(dst_url, gs_data)
+
 
 @task
 def setup_geoserver(options):
@@ -174,6 +153,18 @@ def setup_geoserver(options):
     with pushd('src/geonode-geoserver-ext'):
         sh("mvn install")
 
+@task
+def rebuild_gs(options):
+    with pushd('src/geoserver-build'):
+        sh("svn up")
+        sh("mvn clean")
+        sh("mvn install")
+
+@task
+def rebuild_gs_ext(options):
+    with pushd('src/geonode-geoserver-ext'):
+        sh("mvn clean")
+        sh("mvn install")
 
 @task
 @needs(['install_deps','setup_geoserver', 'build_js'])
@@ -194,7 +185,7 @@ def concat_js(options):
     """Compress the JavaScript resources used by the base GeoNode site."""
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
-       os.makedirs("geonode-client/script")
+       path("geonode-client/script").makedirs()
        sh("svn export ../src/theme/ geonode-client/theme/")
        sh("svn export ../externals/openlayers/theme/default geonode-client/theme/ol/")
        sh("svn export ../externals/geoext/resources geonode-client/theme/gx/")
@@ -206,15 +197,23 @@ def capra_js(options):
     """Compress the JavaScript resources used by the CAPRA GeoNode extensions."""
     with pushd('src/capra-client/build/'):
        path("capra-client").rmtree()
-       os.makedirs("capra-client/")
+       path("capra-client/").makedirs()
        sh("jsbuild -o capra-client/ all.cfg") 
 
 @task
-@needs('concat_js', 'capra_js')
-def package_client(options):
-    """Package compressed client resources (JavaScript, CSS, images)."""
+def build_dir(options):
+    if not options.deploy.out_dir.exists():
+        options.deploy.out_dir.mkdir()
 
-    zip = zipfile.ZipFile("build/geonode-client.zip",'w') #create zip in write mode
+@task
+@needs('build_dir', 'concat_js', 'capra_js')
+def package_client(options):
+    """
+    Package compressed client resources (JavaScript, CSS, images).
+    """
+    build_dir = options.deploy.out_dir
+    zip = zipfile.ZipFile(build_dir / 'geonode-client.zip','w') #create zip in write mode
+
     with pushd('src/geonode-client/build/'):
         for file in path("geonode-client/").walkfiles():
             print(file)
@@ -229,39 +228,70 @@ def package_client(options):
 
 
 @task
-@needs('checkout_geoserver', 'setup_geoserver')
+@needs('build_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
-    copy('src/geonode-geoserver-ext/target/geoserver-geonode-dev.war', 'build/')
-    
+    path('src/geonode-geoserver-ext/target/geoserver-geonode-dev.war').copy(options.deploy.out_dir)
+
+
+deploy_req_txt = """
+# NOTE... this file is generated
+-r %(venv)s/shared/core-libs.txt
+-e %(venv)s/src/GeoNodePy
+""" %locals()
+
 
 @task
-@needs('install_deps')
+@needs('build_dir')
 def package_webapp(options):
     """Package (Python, Django) web application and dependencies."""
-    sh("pip bundle -r shared/core-libs.txt build/geonode-webapp.bundle geonode capra")    
+    with pushd('src/GeoNodePy'):
+        import pdb;pdb.set_trace()
+        sh('python setup.py egg_info sdist')
+
+    import pkg_resources
+    pkg_resources.get_distribution('GeoNodePy')        
+        
+    req_file = options.deploy.req_file
+    req_file.write_text(deploy_req_txt)
+    sh("pip bundle -r %s %s/geonode-webapp.pybundle" %(req_file, options.deploy.out_dir))
 
 
-def unzip_file(src, dest): 
+
+@task
+@needs('package_geoserver','package_webapp', 'package_client', 'package_bootstrap')
+def package_all(options):
+    info('all is packaged, ready to deploy')
+
+
+def unzip_file(src, dest):
     zip = zipfile.ZipFile(src)
     if not path(dest).exists():
-        os.makedirs(dest)
+        path(dest).makedirs()
+        
     for name in zip.namelist():
         if name.endswith("/"):
-            os.mkdir(join(dest, name))
+            (path(dest) / name).makedirs()
         else:
-            parent, file = os.path.split(name)
-            parent = join(dest, parent)
-            if parent and not os.path.isdir(parent):
-                os.makedirs(parent)
-            out = open(join(parent,file), 'wb')
+            parent, file = path(name).splitpath()
+            parent = path(dest) / parent
+            if parent and not parent.isdir():
+                path(parent).makedirs()
+            out = open(path(parent) / file, 'wb')
             out.write(zip.read(name))
             out.close()
 
-# set up supervisor?
 
-if ALL_TASKS_LOADED:
+@task
+@needs('generate_setup', 'minilib', 'setuptools.command.sdist')
+def sdist():
+    """Overrides sdist to make sure that our setup.py is generated."""
+
+
+if locals().has_key('bootstrap'):
     @task
-    @needs('generate_setup', 'minilib', 'setuptools.command.sdist')
-    def sdist():
-        """Overrides sdist to make sure that our setup.py is generated."""
+    @needs('build_dir')
+    def package_bootstrap(options):
+        """Create a bootstrap script for deployment"""
+        options.virtualenv = options.deploy
+        call_task("paver.virtual.bootstrap")
