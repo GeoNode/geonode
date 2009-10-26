@@ -26,7 +26,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 Ext.onReady(function() {
                     this.createLayout();
                     done();
-                }, this)
+                }, this);
             },
             function(done) {
                 //TODO: Get hazard configuration from django
@@ -48,8 +48,8 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             hazard = this.hazardConfig[i];
 
             var periods = hazard.periods;
-            periods.sort(function(period){return period.length});
-            var layersParam = []
+            periods.sort(function(period){return period.length;});
+            var layersParam = [];
             for(var j = 0; j < periods.length; j++){
                 layersParam.push(periods[j].typename);
             }
@@ -311,7 +311,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 deactivate: this.clearPopup,
                 scope: this
             }
-        })
+        });
     },
 
     clearPopup: function() {
