@@ -4,7 +4,7 @@ from ConfigParser import ConfigParser, NoOptionError
 from pprint import pformat
 
 
-def path_extrapolate(stub, pkg='GeoNode'):
+def path_extrapolate(stub, pkg='GeoNodePy'):
     req = pkg_resources.Requirement.parse(pkg)
     return pkg_resources.resource_filename(req,  stub)
 
