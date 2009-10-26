@@ -105,6 +105,6 @@ if DEBUG:
     else:
         MEDIA_LOCATIONS["capra_script"] = "/capra_static/src/script/app/loader.js"
 else:
-    pass
-    #TODO: Populate map for production
+    MEDIA_LOCATIONS["capra_script"] = GEONODE_CLIENT_LOCATION + "/capra-client/CAPRA.js"
+
 
