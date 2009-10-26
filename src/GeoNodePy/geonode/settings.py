@@ -126,7 +126,7 @@ NAVBAR = \
 # Determines whether the minified or the "raw" JavaScript files are included.
 # Only applies in development mode. (That is, when DEBUG==True)
 #MINIFIED_RESOURCES = False
-MINIFIED_RESOURCES = False
+MINIFIED_RESOURCES = True
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -139,17 +139,19 @@ INSTALLED_APPS = (
     'geonode.proxy',
 )
 
+GEONODE_CLIENT_LOCATION = "http://capra.opengeo.org/geonode-client"
+
 if DEBUG:
     if MINIFIED_RESOURCES: 
         MEDIA_LOCATIONS = {
             "ext_base": "http://extjs.cachefly.net/ext-2.2.1/",
-            "ol_theme": "/static/theme/ol/style.css",
-            "ol_script":"/static/script/OpenLayers.js",
-            "gx_themes":"/static/theme/gx/",
-            "gx_script":"/static/script/GeoExt.js",
-            "app_themes": "/static/theme/app/",
-            "app_script":"/static/script/GeoNode.js",
-            "ux_script":"/static/script/ux.js",
+            "ol_theme": "/static/ol/theme/default/style.css",
+            "ol_script":"/static/ol/OpenLayers.js",
+            "gx_themes":"/static/gx/theme/",
+            "gx_script":"/static/gx/GeoExt.js",
+            "app_themes": "/static/gn/theme/app/",
+            "app_script":"/static/gn/GeoNode.js",
+            "ux_script":"/static/gn/ux.js",
         }                
     else:
         MEDIA_LOCATIONS = {
@@ -163,4 +165,13 @@ if DEBUG:
             "ux_script":"/static/src/script/ux/RowExpander.js",
         }
 else:
-    MEDIA_LOCATIONS = { } # TODO: Set up production mappings
+    MEDIA_LOCATIONS = {
+        "ext_base": "http://extjs.cachefly.net/ext-2.2.1/",
+        "ol_theme":  GEONODE_CLIENT_LOCATION + "/geonode-client/ol/theme/default/style.css",
+        "ol_script": GEONODE_CLIENT_LOCATION + "/geonode-client/ol/OpenLayers.js",
+        "gx_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/gx/theme/",
+        "gx_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gx/GeoExt.js",
+        "app_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/theme/app/",
+        "app_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/GeoNode.js",
+        "ux_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/ux.js",
+    }

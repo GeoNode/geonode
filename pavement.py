@@ -10,6 +10,7 @@ import os
 import paver.doctools
 import paver.misctasks
 import pkg_resources
+from shutil import copy, copytree, move
 import sys
 import zipfile
 
@@ -185,11 +186,18 @@ def concat_js(options):
     """Compress the JavaScript resources used by the base GeoNode site."""
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
-       path("geonode-client/script").makedirs()
-       sh("svn export ../src/theme/ geonode-client/theme/")
-       sh("svn export ../externals/openlayers/theme/default geonode-client/theme/ol/")
-       sh("svn export ../externals/geoext/resources geonode-client/theme/gx/")
-       sh("jsbuild -o geonode-client/script/ all.cfg") 
+       os.makedirs("geonode-client/gx")
+       sh("svn export ../externals/geoext/resources geonode-client/gx/theme")
+       os.makedirs("geonode-client/ol") #need to split this off b/c of dumb hard coded OL paths
+       sh("svn export ../externals/openlayers/theme geonode-client/ol/theme")
+       os.makedirs("geonode-client/gn")
+       sh("svn export ../src/theme/ geonode-client/gn/theme/")
+
+       sh("jsbuild -o geonode-client/ all.cfg") 
+       move("geonode-client/OpenLayers.js","geonode-client/ol/")
+       move("geonode-client/GeoExt.js","geonode-client/gx/")
+       move("geonode-client/GeoNode.js","geonode-client/gn/")
+       move("geonode-client/ux.js","geonode-client/gn/")
 
 
 @task
