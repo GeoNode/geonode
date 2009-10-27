@@ -141,6 +141,10 @@ div#sidebar ul, div#main ul, div#sidebar ol, div#main ol{
   list-style-position: inside;
 }
 
+div#main ul.x-tree-root-ct {
+  list-style-position: outside;
+}
+
 div#featured-map-metadata{
 border:1px solid black;
 background-color: #EEE;
