@@ -16,25 +16,26 @@ DEFAULT_MAP_CONFIG = {
         "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>."
     },
     "wms": {
-        "capra": "%swms" % settings.GEOSERVER_BASE_URL
+        "geonode": "%swms" % settings.GEOSERVER_BASE_URL
     },
     "map": {
         "layers": [ {
-            "name": "base:nicaragua_admin",
-            "wms": "capra",
+            "name": settings.DEFAULT_MAP_BASE_LAYER,
+            "wms": "geonode",
             "group": "background"
         } ],
-        "center": [-84.7, 12.8],
-        "zoom": 7
+        "center": settings.DEFAULT_MAP_CENTER,
+        "zoom": settings.DEFAULT_MAP_ZOOM
     }
 }
 
 def index(request): 
     featured = Map.objects.filter(featured=True)
-    if featured.count() == 0:
+    count = featured.count()
+    if count == 0:
         map = DEFAULT_MAP_CONFIG
     else:         
-        map = build_map_config(featured[random.randint(0, featured.count() - 1)])
+        map = build_map_config(featured[random.randint(0, count - 1)])
     context = RequestContext(request, {'map': map}, [resource_urls])
     return render_to_response('index.html', context_instance=context);
 
