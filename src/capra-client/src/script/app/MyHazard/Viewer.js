@@ -364,6 +364,8 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                     feature: new OpenLayers.Feature.Vector(geom),
                     title: "UT:MyHazard Report",
                     html: response.responseText,
+                    height: 350,
+                    width: 275,
                     map: this.mapPanel,
                     bbar: [
                         '<a class="download pdf" href="' + this.reportService + '.pdf?' + 
