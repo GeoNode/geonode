@@ -91,10 +91,6 @@ pattern = re.compile("hazard")
 if not pattern.search(NAVBAR['meta']['visible']):
     NAVBAR['meta']['visible'] += "\nhazard" #Why is this a string not a list?
 
-
-GEOSERVER_BASE_URL = "http://localhost:8889/geoserver/"
-GEOSERVER_CREDENTIALS = ('admin', 'geoserver')
-
 INSTALLED_APPS += ('capra.hazard',) #'capra.ame')
 
 TEMPLATE_DIRS = (path_extrapolate("capra/hazard/templates"),) + TEMPLATE_DIRS 
