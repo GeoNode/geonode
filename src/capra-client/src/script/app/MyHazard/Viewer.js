@@ -227,15 +227,17 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             new Ext.Button({
                 tooltip: this.transparencyMenuText,
                 iconCls: "icon-visibility",
-                menu: [
-                    new Ext.menu.Adapter(
-                        new MyHazard.LayerGroupOpacitySlider({
-                            layers: layers,
-                            vertical: true,
-                            height: 150
-                        })
-                    )
-                ]
+                menu: {
+                    minWidth: 10,
+                    items: [
+                        new Ext.menu.Adapter(
+                            new MyHazard.LayerGroupOpacitySlider({
+                                layers: layers,
+                                vertical: true,
+                                height: 150
+                            })
+                    )]
+                }
             })
         ];
 
