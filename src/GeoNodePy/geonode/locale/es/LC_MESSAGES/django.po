@@ -1,0 +1,401 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-10-28 12:44-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: settings.py:34
+msgid "English"
+msgstr "Inglés"
+
+#: settings.py:35
+msgid "Spanish"
+msgstr "Español"
+
+#: core/templatetags/navbar.py:33
+#, python-format
+msgid ""
+"%r tag requires a single argument (what page should be selected in the nav?)"
+msgstr ""
+
+#: core/templatetags/navbar.py:97
+msgid "text"
+msgstr ""
+
+#: templates/community.html:5
+msgid "Community Map List"
+msgstr ""
+
+#: templates/community.html:36
+msgid "Contributed Maps"
+msgstr ""
+
+#: templates/community.html:37
+msgid ""
+"\n"
+"<p> Contributed Maps are made by people like you. They are made from data "
+"hosted by the CAPRA GeoNode, as well as data hosted by other entities. </p>\n"
+"<p> You can browse the contributed maps using the grid to the left.</p>\n"
+"<p>\n"
+"  Click on a map to select it. Then click\n"
+"  <b>Open Map</b>\n"
+"  to open it in a map editor, or click\n"
+"  <b>Export Map</b>\n"
+"  to export it as a widget.\n"
+"</p>\n"
+"<p>\n"
+"  Click here to"
+msgstr ""
+
+#: templates/community.html:49
+msgid "create your own map"
+msgstr ""
+
+#: templates/curated.html:5
+msgid "CAPRA Map List"
+msgstr ""
+
+#: templates/curated.html:36
+msgid "CAPRA Maps"
+msgstr ""
+
+#: templates/curated.html:37
+msgid ""
+"\n"
+"<p> This is a list of particularly interesting or effective maps selected by "
+"the CAPRA team.</p>\n"
+"<p>\n"
+"Click on a map to select it. Then click\n"
+"<b>Open Map</b>\n"
+"to open it in a map editor, or click\n"
+"<b>Export Map</b>\n"
+"to export it as a widget.\n"
+"</p>\n"
+"See the"
+msgstr ""
+
+#: templates/curated.html:47
+msgid "contributed map"
+msgstr ""
+
+#: templates/curated.html:48
+msgid ""
+"\n"
+"list for other maps created by GeoNode users.\n"
+msgstr ""
+
+#: templates/data.html:5
+msgid "Browse Data"
+msgstr ""
+
+#: templates/data.html:25
+msgid "Risk Data"
+msgstr ""
+
+#: templates/data.html:26
+msgid " A list of risk data layers available for download. "
+msgstr ""
+
+#: templates/data.html:32
+msgid "Hazard Data"
+msgstr ""
+
+#: templates/data.html:33
+msgid " A list of hazard layers available for download. "
+msgstr ""
+
+#: templates/data.html:43
+msgid "AME Hazard Data"
+msgstr ""
+
+#: templates/data.html:44
+msgid " A list of AME files available for download. "
+msgstr ""
+
+#: templates/data.html:50
+msgid "Base Data"
+msgstr ""
+
+#: templates/data.html:51
+msgid " A list of base layers available for download. "
+msgstr ""
+
+#: templates/data.html:58
+msgid "Browse Capra's Data"
+msgstr ""
+
+#: templates/data.html:59
+msgid ""
+"\n"
+"<p>Here you can browse the data hosted by CAPRA.</p>\n"
+"<p>Click the <b>+</b> on any row to show layer metadata or download in PDF, "
+"KML, GeoTIFF, or SHP.</p>\n"
+msgstr ""
+
+#: templates/data.html:64
+msgid "For Developers"
+msgstr ""
+
+#: templates/data.html:65
+msgid ""
+" \n"
+"If you are interested in information about accessing this information "
+"through OGC services, click \n"
+msgstr ""
+
+#: templates/data.html:68
+msgid "here"
+msgstr ""
+
+#: templates/developer.html:4
+msgid "OGC Services"
+msgstr ""
+
+#: templates/help.html:4
+msgid "User Guide"
+msgstr ""
+
+#: templates/help.html:11
+msgid ""
+"\n"
+"<p>The CAPRA GeoNode provides access to risk data as well as\n"
+"  particular refined data sets.  These can be freely combined to create\n"
+"  maps that visualize risks for specific regions.  A map editing\n"
+"  application allows users to browse existing maps and contribute their\n"
+"  own.\n"
+"</p>\n"
+"<a name='browsing-data><h4>Browsing Data</h4></a>\n"
+"         <p>The <a href='data.html'>Data\n"
+"           </a> tab allows you to browse data\n"
+"           produced for the CAPRA project.\n"
+"         </p>\n"
+"<p>\n"
+"  All data can be downloaded in a variety of formats, for use in other\n"
+"  applications.\n"
+"</p>\n"
+"<p>Three kinds of data are available:\n"
+"</p>\n"
+"<ul>\n"
+"  <li>\n"
+"    The Risk section contains the actual risk maps resulting from the\n"
+"    hazard layers and the risk models.\n"
+"  </li>\n"
+"  <li>\n"
+"    The Hazard section consists of the .AME data files that represent the\n"
+"    probabilities of various hazards (earthquakes, landslides, cyclones,\n"
+"    etc.) over different amounts of time.  A whole .AME file can be\n"
+"    downloaded to power a new risk model, or individual slices of the .AME\n"
+"    can be downloaded as GeoTiffs.\n"
+"  </li>\n"
+"  <li>\n"
+"    The Base layer section contains all the base data sets that go in to\n"
+"    constructing the hazard and risk models, so that anyone who is\n"
+"    interested in creating and running their own models can start with the\n"
+"    exact same datasets.\n"
+"  </li>\n"
+"\n"
+"</ul>\n"
+"\n"
+"<a name='developer-access'><h4>Developer Access</h4></a>\n"
+"<p>\n"
+"  The <a href='developer.html'> Developer</a> tab is the place for\n"
+"  developers to get started building applications against the CAPRA\n"
+"  GeoNode.  It includes instructions on using the web services, links to\n"
+"  the source code of the GeoNode, and information about the open source\n"
+"  projects used to create it.\n"
+"</p>\n"
+"<a name='browsing-maps'><h4>Browsing Maps</h4></a>\n"
+"<p>The CAPRA GeoNode allows users to create and share maps with one\n"
+"  another.\n"
+"</p>\n"
+"<p>The <a href='featured.html'>CAPRA Maps\n"
+"  </a> tab highlights the best\n"
+"  maps on the site, selected by the CAPRA team.\n"
+"</p>\n"
+"<p>The <a href='community.html'>Contributed Maps\n"
+"  </a> tab shows the\n"
+"  maps that have been contributed by the community.  Any map created in\n"
+"  the Map Editor will be automatically listed on the page.\n"
+"</p>\n"
+"<p>To view any of the maps on either tab simply click on the title and\n"
+"  then hit <b>Open Map\n"
+"  </b> button.  This will open\n"
+"  the <a href='map.html'>Map Composer\n"
+"  </a> to your selected map.\n"
+"</p>\n"
+"<h5>Google Earth Mode\n"
+"</h5>\n"
+"<p>Any map viewed in the interactive map editor can be seen in 3D mode\n"
+"  with the Google Earth plugin.  To switch to 3D mode select the Google\n"
+"  Earth globe logo, the rightmost button on top toolbar.  If you do not\n"
+"  have the Google Earth plugin installed you will be prompted to install\n"
+"  it. \n"
+"</p>\n"
+"<a name='creating-a-map'>\n"
+"  <h4>Creating a Map</h4>\n"
+"</a>\n"
+"<p>To create a new map go to the <a href='community.html'>Contributed\n"
+"    Maps\n"
+"  </a> tab and click the <a href='map.html'>create your own map\n"
+"  </a>\n"
+"  link.\n"
+"</p>\n"
+"<p> This will take you to the <a href='map.html'>Map Composer\n"
+"  </a> with\n"
+"  a base layer loaded.\n"
+"</p>\n"
+"<p>To add data layers from the CAPRA GeoNode click on the green plus\n"
+"  button located below the Data tab on the left hand side of the screen.\n"
+"  This will open a dialog listing all the layers available on the CAPRA\n"
+"  GeoNode.\n"
+"</p>\n"
+"<p>To add layers to your map select them and hit the <b>Add Layers\n"
+"  </b>\n"
+"  button.  When finished you may hit <b>Done\n"
+"  </b> to close the dialog and\n"
+"  go back to the map.\n"
+"</p>\n"
+"<h5>Reordering and Removing Layers\n"
+"</h5>\n"
+"<p>Change the display order of the layers listed in the data tab by\n"
+"  simply dragging and dropping their names.  The order in the map will\n"
+"  be updated to reflect that.  To turn a layer's visibility off simply\n"
+"  uncheck it, and to remove it entirely select it and hit the red minus\n"
+"  button.\n"
+"</p>\n"
+"<h5>Saving your map\n"
+"</h5>\n"
+"<p>Once a suitable set of layers and zoom level has been found it's\n"
+"  time to save it so others can see it.  To do this select the '+' icon\n"
+"  to the right of 'About this Map'.  This should expand in to a dialog\n"
+"  to customize the Title, Contact, Abstract and Tags.  These will appear\n"
+"  in the online list of maps, and will be used to search for the created\n"
+"  map, so be as detailed as possible.  After filling out this basic\n"
+"  information you then save the map.  This is the left most icon on the\n"
+"  top toolbar, an image of a map with a disk.\n"
+"</p>\n"
+"<a name='exporting-a-map'>\n"
+"  <h4>Exporting a Map</h4>\n"
+"</a>\n"
+"<p>Any map from the GeoNode can be embedded for use in another site or "
+"blog.  To export a map:\n"
+"</p>\n"
+"<ol>\n"
+"  <li>Select the from the list of maps on the community or CAPRA map\n"
+"    page and then hit the 'export map' button.\n"
+"  </li> \n"
+"  <li>Choose your desired height and width for the widget in the wizard.\n"
+"  </li> \n"
+"  <li>Copy the HTML snippet provided in the wizard to any HTML\n"
+"    page or iFrame-supporting blog post.\n"
+"  </li>\n"
+"</ol>\n"
+"<p>This will put an interactive widget showing you map in your web\n"
+"  pageor blog post.  The <a href='index.html'>Featured Map\n"
+"  </a> page ispowered by just this kind of widget..\n"
+"</p><p>Note that the <a href='map.html'>Map Composer\n"
+"  </a> also has a button to export the map.  Just be sure to save the\n"
+"  map before exporting if there are changes that you want others to\n"
+"  see.  It exports the last saved version, not the last viewed\n"
+"  version.\n"
+"</p>\n"
+"<a name='remixing-a-map'>\n"
+"  <h4>Remixing a Map</h4>\n"
+"</a>\n"
+"<p>Any map available can serve as a starting point for a new map.</p>\n"
+"<ol>\n"
+"  <li>Open the map.\n"
+"  </li>\n"
+"  <li>Add and remove layers as you\n"
+"    like.\n"
+"  </li>\n"
+"  <li>Pan and zoom to highlight the area of\n"
+"    interest.\n"
+"  </li>\n"
+"  <li><b>IMPORTANT:\n"
+"    </b> Update the title, abstract,\n"
+"    contact info and tags to reflect the new map.\n"
+"  </li><li>Save the\n"
+"    map.\n"
+"  </li>\n"
+"\n"
+"</ol>\n"
+"You will be able to see your new map in\n"
+"the <a href='community.html'>Contributed Maps\n"
+"</a> tab.\n"
+"</p>  \\\n"
+msgstr ""
+
+#: templates/help.html:180
+msgid "GeoNode Help"
+msgstr ""
+
+#: templates/help.html:181
+msgid ""
+" \n"
+"<p>This page provides helpful information about how to use the\n"
+"  GeoNode.  You can use the links below to navigate to what you want to\n"
+"  know.\n"
+"</p>\n"
+"<ul>\n"
+"  <li>\n"
+"    <a href='#browsing-data'>Browsing Data</a>\n"
+"  </li>\n"
+"  <li>\n"
+"    <a href='#developer-access'>Developer Access</a>\n"
+"  </li>\n"
+"  <li>\n"
+"    <a href='#browsing-maps'>Browsing Maps</a>\n"
+"  </li>\n"
+"  <li>\n"
+"    <a href='#creating-a-map'>Creating a Map</a>\n"
+"  </li>\n"
+"  <li>\n"
+"    <a href='#exporting-a-map'>Exporting a Map</a>\n"
+"  </li>\n"
+"  <li>\n"
+"    <a href='#remixing-a-map'>Remixing a Map</a>\n"
+"  </li>\n"
+"\n"
+"</ul>\n"
+msgstr ""
+
+#: templates/index.html:5
+msgid "Welcome!"
+msgstr ""
+
+#: templates/index.html:13 templates/index.html.py:20
+msgid "Welcome to CAPRA's GeoNode!"
+msgstr "Welcome to CAPRA's GeoNode... in Spanish!"
+
+#: templates/index.html:21
+msgid ""
+"\n"
+"<p>The GeoNode is a data clearing house for CAPRA. Currently a prototype, "
+"it \n"
+"provides tools for the distribution and composition of hazard and risk map "
+"data.\n"
+"Its purpose is to inform decisions about future data management developments "
+"for\n"
+"CAPRA.</p>\n"
+msgstr ""
+
+#: templates/index.html:28
+msgid "GeoNode featured map"
+msgstr ""
+
+#: templates/maps/embed.html:4
+msgid "Map Viewer"
+msgstr ""
