@@ -1,6 +1,7 @@
 # Django settings for GeoNode project.
 from utils import path_extrapolate
-from django.utils.translation import ugettext as _
+
+_ = lambda x: x
 
 DEBUG = True
 SITENAME = "CAPRA GeoNode"
