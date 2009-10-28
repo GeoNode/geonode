@@ -211,23 +211,27 @@ background:#FFFFFF url(img/language-es.png) no-repeat scroll 0 0;
 padding-left:8px;
  }
 
-a#english{ 
+#ja-search form { display: inline; }
+
+#ja-search .english button { 
 width:74px;
 height: 30px;
 background: #FFF url(img/english.jpg) no-repeat scroll 0 0;
+border: none;
 display: block;
 float:left;
  }
 
-a#spanish{ 
+#ja-search .spanish button { 
 width:62px;
 height: 30px;
 background: #FFF url(img/spanish.jpg) no-repeat scroll 0 0;
+border: none;
 display: block;
 float:left;
  }
 
-div#app-header a#spanish, div#app-header a#english{ 
+div#app-header button#spanish, div#app-header button#english{ 
 float:right;
 }
 
