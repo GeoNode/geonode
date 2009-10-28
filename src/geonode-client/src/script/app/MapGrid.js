@@ -41,7 +41,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
 
             var tpl = new Ext.Template('<p><b>' + this.mapAbstractLabelText + ':</b> {abstract}</p>'+
                                        '<p><b>' + this.mapTagsLabelText + ':</b> {tags} </p>' +
-                                       '<p><a href="map.html?map={id}">' + this.mapLinkLabelText + '</a></p>');
+                                       '<p><a href="/maps/{id}.html">' + this.mapLinkLabelText + '</a></p>');
 
             this.expander = new Ext.grid.RowExpander({
                 tpl: tpl});
@@ -68,7 +68,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
                 handler: function() {
                     var rec = mapGrid.getSelectionModel().getSelected();
                     if (rec)
-                        location.href = "map.html?" + Ext.urlEncode({map: rec.id});
+                        location.href = "/maps/" + rec.id + ".html";
                 }
             }),
             new Ext.Button({
@@ -92,7 +92,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
             "rowdblclick": function(grid, rowIndex, evt) {
                 var rec = grid.store.getAt(rowIndex);
                 if (rec != null) {
-                    location.href = "map.html?" + Ext.urlEncode({map: rec.id});
+                    location.href = "/maps/" + rec.id + ".html?";
                 }
             }
         });
