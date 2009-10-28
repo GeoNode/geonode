@@ -70,8 +70,7 @@
 
 .x-menu-group-item .icon-point,
 .x-btn .icon-point {
-    background-image: url(img/geosilk/bullet_orange.png) !important;
-    background-position: center center;
+    background: transparent url(img/geosilk/bullet_orange.png) no-repeat center center !important;
     margin: 0px;
     height: 16px;
     width: 16px;
@@ -79,8 +78,7 @@
 
 .x-menu-group-item .icon-line,
 .x-btn .icon-line {
-    background-image: url(img/geosilk/line_orange.png);
-    background-position: center center;
+    background: transparent url(img/geosilk/line_orange.png) no-repeat center center !important;
     margin: 0px;
     height: 16px;
     width: 16px;
@@ -88,8 +86,7 @@
 
 .x-menu-group-item .icon-polygon,
 .x-btn .icon-polygon {
-    background-image: url(img/geosilk/shape_square_orange.png);
-    background-position: center center;
+    background: transparent url(img/geosilk/shape_square_orange.png) center center !important;
     margin: 0px;
     height: 16px;
     width: 16px;
