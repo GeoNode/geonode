@@ -139,7 +139,7 @@ NAVBAR = \
 # Determines whether the minified or the "raw" JavaScript files are included.
 # Only applies in development mode. (That is, when DEBUG==True)
 #MINIFIED_RESOURCES = False
-MINIFIED_RESOURCES = True
+MINIFIED_RESOURCES = False
 
 INSTALLED_APPS = (
     'django.contrib.auth',

@@ -6,6 +6,10 @@ from utils import path_extrapolate
 from django.contrib import admin
 admin.autodiscover()
 
+js_info_dict = {
+    'packages': ('geonode',),
+}
+
 urlpatterns = patterns('',
     # Example:
     # (r'^geonode/', include('geonode.foo.urls')),
@@ -28,7 +32,8 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-    (r'^i18n/', include('django.conf.urls.i18n'))
+    (r'^i18n/', include('django.conf.urls.i18n')),
+    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
 )
 
 #
