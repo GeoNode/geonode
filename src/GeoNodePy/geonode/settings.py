@@ -73,6 +73,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
+# This isn't required for running the geonode site, but it when running sites that inherit the geonode.settings module.
+LOCALE_PATHS = (
+    path_extrapolate('geonode/locale'),
+)
+
 ROOT_URLCONF = 'geonode.urls'
 
 TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
