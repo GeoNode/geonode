@@ -47,8 +47,14 @@
 
                 </div>
                 <div class="clearfix" id="ja-search">
-                    <a title="CAPRA"  href="#" id="spanish"> </a>
-                    <a title="CAPRA" href="#" id="english"></a> 
+                    <form class="spanish" name="es" action="/i18n/setlang/" method="post">
+                        <input type="hidden" name="language" value="es"></input>
+                        <button type="submit"></button>
+                    </form>
+                    <form class="english" name="en" action="/i18n/setlang/" method="post">
+                        <input type="hidden" name="language" value="en"></input>
+                        <button type="submit"></button>
+                    </form>
                     <a title="CAPRA" id="home" href="http://ecapra.org/en/index.php"></a>
                 </div>
             </div>
