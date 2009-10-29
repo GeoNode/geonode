@@ -76,6 +76,7 @@ MIDDLEWARE_CLASSES = (
 # This isn't required for running the geonode site, but it when running sites that inherit the geonode.settings module.
 LOCALE_PATHS = (
     path_extrapolate('geonode/locale'),
+    path_extrapolate('geonode/maps/locale'),
 )
 
 ROOT_URLCONF = 'geonode.urls'
