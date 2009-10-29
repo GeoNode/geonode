@@ -18,12 +18,7 @@ urlpatterns = patterns('',
     (r'^curated/$', 'geonode.views.curated'),
     (r'^(?P<page>data|developer|help)/?$', 'geonode.views.static'),
     (r'^lang\.js$', 'geonode.views.lang'),
-    (r'^maps/$', 'geonode.maps.views.maps'),
-    (r'^maps/new$', 'geonode.maps.views.newmap'),
-    (r'^maps/(?P<mapid>\d+)$', 'geonode.maps.views.maps'),
-    (r'^maps/(?P<mapid>\d+).html$', 'geonode.maps.views.view'),
-    (r'^maps/embed/$', 'geonode.maps.views.embed'),
-    (r'^maps/embed/(?P<mapid>\d+)$', 'geonode.maps.views.embed'),
+    (r'^maps/', include('geonode.maps.urls')),
     (r'^proxy/', 'geonode.proxy.views.proxy'),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
