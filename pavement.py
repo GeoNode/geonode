@@ -151,7 +151,7 @@ def setup_geoserver(options):
         call_task('setup_gs_data')
     if not (path('src') / gs).exists():
         call_task('checkout_geoserver')
-    with pushd('src/geonode-geoserver-ext'):
+    with pushd('src/geoserver-geonode-ext'):
         sh("mvn install")
 
 @task
@@ -163,7 +163,7 @@ def rebuild_gs(options):
 
 @task
 def rebuild_gs_ext(options):
-    with pushd('src/geonode-geoserver-ext'):
+    with pushd('src/geoserver-geonode-ext'):
         sh("mvn clean")
         sh("mvn install")
 
@@ -172,7 +172,7 @@ def rebuild_gs_ext(options):
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     info('to start node: django-admin runserver --settings=geonode.settings\n'\
-         'to start geoserver: cd src/geonode-geoserver-ext/; mvn jetty:run-war') #@@ replace with something real
+         'to start geoserver: cd src/geoserver-geonode-ext/; mvn jetty:run-war') #@@ replace with something real
 
 
 @task
@@ -239,7 +239,7 @@ def package_client(options):
 @needs('build_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
-    path('src/geonode-geoserver-ext/target/geoserver-geonode-dev.war').copy(options.deploy.out_dir)
+    path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war').copy(options.deploy.out_dir)
 
 
 deploy_req_txt = """
