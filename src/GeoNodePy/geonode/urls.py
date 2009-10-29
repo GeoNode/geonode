@@ -7,7 +7,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 js_info_dict = {
-    'packages': ('geonode',),
+    'packages': ('geonode.maps',),
 }
 
 urlpatterns = patterns('',

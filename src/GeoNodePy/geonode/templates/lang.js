@@ -35,7 +35,10 @@ if(window.GeoExplorer){
     saveFailTitle:  gettext("Error While Saving"),
     saveFailMessage:  gettext("Sorry, your map could not be saved."),
     unknownMapTitle:  gettext("Unknown Map"),
-    unknownMapMessage:  gettext("Sorry, the map that you are trying to load does not exist.  Creating a new map instead.")
+    unknownMapMessage:  gettext("Sorry, the map that you are trying to load does not exist.  Creating a new map instead."),
+      switchTo3DActionText: gettext("Switch to Google Earth 3D Viewer"),
+      publishActionText: gettext('Publish Map')
+
   });
 }
 
@@ -58,19 +61,39 @@ if(window.DataPage){
     mapAbstractLabelText:  gettext("Abstract"),
     mapGridText :  gettext("Map"),
     ameLabelText:  gettext("AME File"),
-    scenarioLabelText:  gettext("Scenario"),
+    scenarioLabelText:  gettext("Hazard"),
     countryLabelText:  gettext("Country"),
     singularFile:  gettext("File"),
-    pluralFiles:  gettext("Files")
-  }
-  );
+    pluralFiles:  gettext("Files"),
+    noAssociatedLayerFilesText: 'No associated layer tiles.',
+    associatedLayerFilesText: "Associated layer files (as GeoTiff): "
+  });
 }
+
+
+if(window.MapGrid){
+    Ext.apply(MapGrid.prototype, {
+        mapGridText : gettext("Map"),
+        createMapText : gettext("Create Map"),
+        openMapText : gettext("Open Map"),
+        exportMapText: gettext("Export Map"),
+        mapTitleLabelText: gettext("Title"),
+        mapAbstractLabelText: gettext("Abstract"),
+        mapContactLabelText: gettext("Contact"),
+        mapTagsLabelText: gettext("Tags"),
+        mapLinkLabelText: gettext("View this Map")
+    });
+}
+
+
 
 if(GeoExplorer && GeoExplorer.CapabilitiesGrid){
   Ext.apply(GeoExplorer.CapabilitiesGrid.prototype, {
     nameHeaderText :  gettext("Name"),
     titleHeaderText :  gettext("Title"),
-    queryableHeaderText :  gettext("Queryable")
+    queryableHeaderText :  gettext("Queryable"),
+    layerSelectionLabel: gettext("View available data from: "), 
+    layerAdditionLabel: gettext("or add a new server")
   });
 }
 
@@ -89,6 +112,14 @@ if (ExportWizard) {
 }
 
 
+if (GeoExplorer && GeoExplorer.NewSourceWindow) {
+    Ext.apply(GeoExplorer.NewSourceWindow.prototype, {
+        sourceLoadFailureMessage: 
+        gettext('GeoExplorer was unable to read the capabilities document provided. Please verify the service URL and try again.')
+    });
+}
+
+
 if(GeoExplorer && GeoExplorer.CapabilitiesRowExpander){
   Ext.apply(GeoExplorer.CapabilitiesRowExpander.prototype, {
     abstractText:  gettext("Abstract:"),
@@ -98,6 +129,7 @@ if(GeoExplorer && GeoExplorer.CapabilitiesRowExpander){
     attributionText:  gettext("Provided by:"),
     metadataEmptyText:  gettext("No metadata URLs are defined for this layer."),
     keywordEmptyText:  gettext("No keywords are listed for this layer."),
-    attributionEmptyText:  gettext("No attribution information is provided for this layer.")
+      attributionEmptyText:  gettext("No attribution information is provided for this layer."),
+    publishActionText: 'Publish Map'
   });
 }
