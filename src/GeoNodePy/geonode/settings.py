@@ -81,6 +81,7 @@ LOCALE_PATHS = (
 ROOT_URLCONF = 'geonode.urls'
 
 TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
+                path_extrapolate('geonode/maps/templates'), \
                 path_extrapolate('django/contrib/admin/templates', 'django'),
                
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
