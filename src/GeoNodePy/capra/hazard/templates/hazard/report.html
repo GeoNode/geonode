@@ -1,9 +1,9 @@
 <div class="report">
-  <p> The area of interest overlaps the following areas:</p>
+  <p> The area of interest is {{ geom_data }} and overlaps the following areas:</p>
   <ul>
     {% for info in result.political %}
     {% if info.municipality %}
-    <li> {{info.municipality}}, {{info.country}} </li>
+    <li> {{info.municipality}}, {{info.region}}, {{info.country}} </li>
     {% endif %}
     {% endfor %}
   </ul>
@@ -17,6 +17,8 @@
         <th>Max</th>
         <th>Mean</th>
         <th>Std. Dev</th>
+        <th>Author</th>
+        <th>Data Entered</th>
       </tr>
       {% for period, stats in layers %}
       <tr class="{% cycle 'odd' 'even' %}">
@@ -25,6 +27,8 @@
         <td>{{ stats.max.0|floatformat }}</td>
         <td>{{ stats.mean.0|floatformat }}</td>
         <td>{{ stats.stddev.0|floatformat }}</td>
+        <th>[Data author]</th>
+        <th>[Data date]</th>
       </tr>
       {% endfor %}
     </table>
