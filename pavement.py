@@ -120,7 +120,7 @@ gs_data = "gs-data"
 #@@ Move svn urls out to a config file
 
 @task
-def checkout_geoserver(options):
+def install_geoserver(options):
     """Fetch GeoServer sources from SVN in order to compile our extension."""
     with pushd('src'):
         svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
