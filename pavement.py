@@ -154,18 +154,18 @@ def setup_geoserver(options):
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn install")
 
-@task
-def rebuild_gs(options):
-    with pushd('src/geoserver-build'):
-        sh("svn up")
-        sh("mvn clean")
-        sh("mvn install")
+#@task
+#def rebuild_gs(options):
+#    with pushd('src/geoserver-build'):
+#        sh("svn up")
+#        sh("mvn clean")
+#        sh("mvn install")
 
-@task
-def rebuild_gs_ext(options):
-    with pushd('src/geoserver-geonode-ext'):
-        sh("mvn clean")
-        sh("mvn install")
+#@task
+#def rebuild_gs_ext(options):
+#    with pushd('src/geoserver-geonode-ext'):
+#        sh("mvn clean")
+#        sh("mvn install")
 
 @task
 @needs(['install_deps','setup_geoserver', 'build_js'])
