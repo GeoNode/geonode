@@ -818,7 +818,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
      * Activate the application.  Call after application is configured.
      */
     activate: function() {
-
         if (this.mapid) {
             this.fireevent('idchange', this.mapid);
         }
@@ -830,7 +829,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         Ext.QuickTips.init();
         
         this.fireEvent("ready");
-
     },
 
     /** private: method[addLayers]
@@ -872,8 +870,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     Ext.data.Record.AUTO_ID++;
                     record = store.getAt(id).copy(Ext.data.Record.AUTO_ID);
                     layer = record.get("layer").clone();
-                    record.set("layer", null);
-                    record.set("layer", layer);
+                    record.data.layer = layer;
                     
                     // set layer max extent from capabilities
                     // TODO: make this SRS independent
@@ -911,7 +908,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         records.push(record);
                     }
                 }
-                
+
             }
             
             this.layers.add(records);

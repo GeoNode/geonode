@@ -230,13 +230,12 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 menu: {
                     minWidth: 10,
                     items: [
-                        new Ext.menu.Adapter(
-                            new MyHazard.LayerGroupOpacitySlider({
-                                layers: layers,
-                                vertical: true,
-                                height: 150
-                            })
-                    )]
+                        new MyHazard.LayerGroupOpacitySlider({
+                            layers: layers,
+                            vertical: true,
+                            height: 150
+                        })
+                    ]
                 }
             })
         ];
@@ -299,6 +298,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     },
 
     activate: function(){
+        Ext.QuickTips.init();
         //populate the map and layer tree according to the
         //hazard configuration
 

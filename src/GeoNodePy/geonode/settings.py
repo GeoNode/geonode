@@ -159,7 +159,7 @@ GEONODE_CLIENT_LOCATION = "http://capra.opengeo.org/geonode-client"
 if DEBUG:
     if MINIFIED_RESOURCES: 
         MEDIA_LOCATIONS = {
-            "ext_base": "http://extjs.cachefly.net/ext-2.2.1/",
+            "ext_base": "http://extjs.cachefly.net/ext-3.0.0/",
             "ol_theme": "/static/ol/theme/default/style.css",
             "ol_script":"/static/ol/OpenLayers.js",
             "gx_themes":"/static/gx/theme/",
@@ -170,7 +170,7 @@ if DEBUG:
         }                
     else:
         MEDIA_LOCATIONS = {
-            "ext_base": "http://extjs.cachefly.net/ext-2.2.1/",
+            "ext_base": "http://extjs.cachefly.net/ext-3.0.0/",
             "ol_theme": "/static/externals/openlayers/theme/default/style.css",
             "ol_script":"/static/externals/openlayers/lib/OpenLayers.js",
             "gx_themes":"/static/externals/geoext/resources/",
@@ -181,7 +181,7 @@ if DEBUG:
         }
 else:
     MEDIA_LOCATIONS = {
-        "ext_base": "http://extjs.cachefly.net/ext-2.2.1/",
+        "ext_base": "http://extjs.cachefly.net/ext-3.0.0/",
         "ol_theme":  GEONODE_CLIENT_LOCATION + "/geonode-client/ol/theme/default/style.css",
         "ol_script": GEONODE_CLIENT_LOCATION + "/geonode-client/ol/OpenLayers.js",
         "gx_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/gx/theme/",

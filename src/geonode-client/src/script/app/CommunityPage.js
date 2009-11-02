@@ -65,8 +65,8 @@ var CommunityPage = Ext.extend(Page, {
      */
     createLayout: function() {
 
-	// create layer store
-	this.layers = new GeoExt.data.LayerStore({});
+        // create layer store
+        this.layers = new GeoExt.data.LayerStore({});
     },
 
     /**
@@ -74,12 +74,12 @@ var CommunityPage = Ext.extend(Page, {
      * Activate the application.  Call after application is configured.
      */
     activate: function() {
-	this.initPanel();
+        this.initPanel();
 
-	// initialize tooltips
-	Ext.QuickTips.init();
+        // initialize tooltips
+        Ext.QuickTips.init();
 
-	this.fireEvent("ready");
+        this.fireEvent("ready");
     },
 
 
@@ -107,7 +107,6 @@ var CommunityPage = Ext.extend(Page, {
     initPanel: function() {
 
         var mapGrid = new MapGrid({
-            id: "map-browser",
             store : new Ext.data.JsonStore({
                 url: this.restURL(),
                 root: 'maps',
@@ -123,9 +122,7 @@ var CommunityPage = Ext.extend(Page, {
                 autoLoad: true,
                 listeners : {
                     "load" : function(store){
-                        store.filterBy(function(record){
-                            return !record.get("endorsed");
-                        });
+                        store.filter("endorsed", false);
                     }
                 }
             })

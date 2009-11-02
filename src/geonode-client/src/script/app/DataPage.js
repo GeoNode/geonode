@@ -198,7 +198,7 @@ var DataPage = Ext.extend(Page, {
         
         // risk store 
         var riskStore = new Ext.data.SimpleStore({
-            fields: this.capabilities.fields
+            recordType: this.capabilities.recordType
         });
 
         this.capabilities.each(function(record) {
@@ -206,7 +206,7 @@ var DataPage = Ext.extend(Page, {
         });
 	    // overlay store 
         var overlayStore = new Ext.data.SimpleStore({
-            fields: this.capabilities.fields
+            recordType: this.capabilities.recordType
         });
         
         this.capabilities.each(function(record) {
@@ -215,7 +215,7 @@ var DataPage = Ext.extend(Page, {
        
         // base store 
         var baseStore = new Ext.data.SimpleStore({ 
-            fields: this.capabilities.fields
+            recordType: this.capabilities.recordType
         });
         this.capabilities.each(function(record) { 
             if (record.get("prefix") == "base") baseStore.add([record]);
