@@ -20,9 +20,17 @@ def index(request):
 def report(request, format): 
     params = extract_params(request)
     result = request_rest_process("hazard", params)
-
     if format == 'html':
         data_for_report = {}
+        
+        geometry = params.get("geometry")
+        if geometry.get("type") == "Point":
+            geom_data = (geometry.get("coordinates")[0], geometry.get("coordinates")[1]) 
+        elif geometry.get("type") == "Line":
+            geom_data = "[Distance]"
+        elif geometry.get("type") == "Polygon":
+            geom_data = "[Area]"
+
         statistics = result['statistics']
         for layer, stats in statistics.items():
             period = Period.objects.get(typename=layer)
@@ -33,7 +41,7 @@ def report(request, format):
             else:
                 data_for_report[hazard] = [(period.length,stats)]
         return render_to_response("hazard/report.html",
-            context_instance=RequestContext(request, {"data": data_for_report}, [resource_urls])
+            context_instance=RequestContext(request, {"data": data_for_report, "geom_data": geom_data}, [resource_urls])
         )
     elif format == 'pdf':
         return render_pdf_response(result)
