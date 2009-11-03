@@ -125,6 +125,7 @@ def build_map_config(map):
         server_mapping[servers[i]] = str(i)
 
     config = {
+        'id': map.id,
         'about': {
             'title': map.title,
             'contact': map.contact,
