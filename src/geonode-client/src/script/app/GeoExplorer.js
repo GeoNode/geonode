@@ -653,9 +653,10 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         });
 
         var permalink = function(id) {
+            // this should really be a template
             return window.location.protocol + "//" +
                 window.location.host +
-                window.location.pathname + "?" + Ext.urlEncode({map: id});
+                "/maps/" + id + ".html"; 
         };
 
         this.on("idchange", function(id) {
@@ -1597,12 +1598,13 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                 method: 'POST',
                 jsonData: config,
                 success: function(response, options) {
-                    var id = response.getResponseHeader["Location"];
+                    var id = response.getResponseHeader("Location");
                     // trim whitespace to avoid Safari issue where the trailing newline is included
                     id = id.replace(/^\s*/,'');
                     id = id.replace(/\s*$/,'');
+                    id = id.match(/[\d]*$/)[0];
                     this.fireEvent("idchange", id);
-                    this.mapID = id;
+                    this.mapID = id; //id is url, not mapID
                 }, 
                 failure: failure, 
                 scope: this
