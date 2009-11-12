@@ -76,6 +76,10 @@ def install_deps(options):
 
 @task
 def bundle_deps(options):
+    """
+    Create a pybundle of all python dependencies.  If created, this
+    will be the default for installing python deps.
+    """
     pip_bundle("-r shared/core-libs.txt %s" %bundle)
 
 @task
@@ -188,6 +192,9 @@ def build(options):
 @task
 @needs(['concat_js','capra_js'])
 def build_js(options):
+    """
+    Concatenate and compress application client javascript
+    """
     info('GeoNode Client Javascript is done building')
 
 
