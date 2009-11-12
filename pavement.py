@@ -130,14 +130,6 @@ gs_data = "gs-data"
 #@@ Move svn urls out to a config file
 
 @task
-@needs('checkout_geoserver')
-def install_geoserver(options):
-    """Fetch GeoServer sources from SVN in order to compile our extension."""
-    with pushd(path('src') / gs):
-        sh('mvn install')
-        sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.1-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
-
-@task
 def setup_gs_data(options):
     """Fetch a data directory to use with GeoServer for testing."""
     from urlgrabber.grabber import urlgrab
@@ -153,32 +145,11 @@ def setup_gs_data(options):
         unzip_file(dst_url, gs_data)
 
 @task
-def checkout_geoserver(options):
-    if not (path('src') / gs).exists():
-        with pushd('src'):
-            svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
-
-@task
-@needs('checkout_geoserver')
+@needs(['setup_gs_data'])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
-    if not path(gs_data).exists():
-        call_task('setup_gs_data')
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn install")
-
-#@task
-#def rebuild_gs(options):
-#    with pushd('src/geoserver-build'):
-#        sh("svn up")
-#        sh("mvn clean")
-#        sh("mvn install")
-
-#@task
-#def rebuild_gs_ext(options):
-#    with pushd('src/geoserver-geonode-ext'):
-#        sh("mvn clean")
-#        sh("mvn install")
 
 @task
 @needs(['install_deps','setup_geoserver', 'build_js'])

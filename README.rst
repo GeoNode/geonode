@@ -74,7 +74,7 @@ GeoServer used for http://capra.opengeo.org/ is::
 
     http://capra.opengeo.org/geoserver/
 
-The default value is ``http://localhost:8889/geoserver/``.  The GeoServer module
+The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
 in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
 instance at that port with the following commands::
    
@@ -84,7 +84,7 @@ instance at that port with the following commands::
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
   
-    GEOSERVER_BASE_URL="http://localhost:8889/geoserver/"
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
 to indicate the GeoServer URL that you want to use. 
 
