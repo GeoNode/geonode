@@ -8,6 +8,7 @@ from django.template import RequestContext
 try:
     import json
 except ImportError:
+    print "using simplejson instead of json"
     import simplejson as json
 
 DEFAULT_MAP_CONFIG = {

@@ -86,7 +86,7 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
                 path_extrapolate('django/contrib/admin/templates', 'django'),
                
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8889/geoserver/"
+GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 GEOSERVER_CREDENTIALS = "admin", "geoserver"
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 
