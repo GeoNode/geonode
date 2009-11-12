@@ -8,6 +8,7 @@ from setuptools import find_packages
 import shutil
 import functools
 import os
+import sys
 import paver.doctools
 import paver.misctasks
 import pkg_resources
@@ -20,10 +21,10 @@ try:
 except ImportError, e:
     info("VirtualEnv must be installed to enable 'paver bootstrap'. If you need this command, run: pip install virtualenv")
 
-
+assert sys.version_info[0] >= 2 and sys.version_info[1] >= 6, SystemError("GeoNode Build require python 2.6.2 or better")
 
 #build_dir = path('./build/')
-build_dir = path('./package')
+build_dir = path('./package') #@@ confusing rename
 
 options(
     minilib=Bunch(extra_files=['virtual', 'doctools', 'misctasks']),
