@@ -180,7 +180,8 @@ def setup_geoserver(options):
 @needs(['install_deps','setup_geoserver', 'build_js'])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info('to start node: django-admin runserver --settings=geonode.settings\n'\
+    info('If this is your first build: django-admin.py syncdb --settings=geonode.settings\n'\
+         'to start node: django-admin.py runserver --settings=geonode.settings\n'\
          'to start geoserver: cd src/geoserver-geonode-ext/; mvn jetty:run-war') #@@ replace with something real
 
 
