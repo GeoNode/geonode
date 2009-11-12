@@ -24,7 +24,7 @@ except ImportError, e:
 assert sys.version_info[0] >= 2 and sys.version_info[1] >= 6, SystemError("GeoNode Build require python 2.6.2 or better")
 
 #build_dir = path('./build/')
-build_dir = path('./package') #@@ confusing rename
+build_dir = path('./package') #@@ confusing, rename
 
 options(
     minilib=Bunch(extra_files=['virtual', 'doctools', 'misctasks']),
