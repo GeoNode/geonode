@@ -6,6 +6,7 @@ from paver.path25 import pushd
 from paver.setuputils import setup, find_package_data
 from setuptools import find_packages
 import shutil
+import functools
 import os
 import paver.doctools
 import paver.misctasks
@@ -19,6 +20,8 @@ try:
 except ImportError, e:
     info("VirtualEnv must be installed to enable 'paver bootstrap'. If you need this command, run: pip install virtualenv")
 
+
+
 #build_dir = path('./build/')
 build_dir = path('./package')
 
@@ -30,7 +33,7 @@ options(
       sourcedir=""
       ),
     virtualenv=Bunch(
-      packages_to_install=['pip'],
+      packages_to_install=['pip', 'urlgrabber', 'jstools'],
       dest_dir='./',
       install_paver=True,
       script_name='bootstrap.py',
@@ -51,6 +54,8 @@ options(
 venv = os.environ.get('VIRTUAL_ENV')
 bundle = path('shared/geonode.pybundle')
 
+dl_cache = "--download-cache=./build"
+
 @task
 def install_deps(options):
     """Installs all the python deps from a requirments file"""
@@ -63,14 +68,14 @@ def install_deps(options):
             corelibs = "core-libs-win.txt"
         else:
             corelibs = "core-libs.txt"
-        sh("pip install -r shared/%s" % corelibs)
+        pip_install("-r shared/%s" % corelibs)
 
 # put bundle on atlas or capra
 # download it, then install
 
 @task
 def bundle_deps(options):
-    sh("pip bundle -r shared/core-libs.txt %s" %bundle)
+    pip_bundle("-r shared/core-libs.txt %s" %bundle)
 
 @task
 @needs(['download_bundle'])
@@ -80,7 +85,7 @@ def install_bundle(options):
     """ %bundle
     
     info('install the bundle')
-    sh("pip install %s" %bundle)    
+    pip_install(bundle)
 
 dlname = 'geonode.bundle'
 
@@ -120,13 +125,12 @@ gs_data = "gs-data"
 #@@ Move svn urls out to a config file
 
 @task
+@needs('checkout_geoserver')
 def install_geoserver(options):
     """Fetch GeoServer sources from SVN in order to compile our extension."""
-    with pushd('src'):
-        svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
-        with pushd(gs):
-            sh('mvn install')
-            sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.1-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
+    with pushd(path('src') / gs):
+        sh('mvn install')
+        sh("mvn install:install-file -DgroupId=org.geoserver -DartifactId=geoserver -Dversion=2.1-SNAPSHOT -Dpackaging=war -Dfile=web/app/target/geoserver.war")
 
 @task
 def setup_gs_data(options):
@@ -143,14 +147,18 @@ def setup_gs_data(options):
         path(gs_data).rmtree()
         unzip_file(dst_url, gs_data)
 
+@task
+def checkout_geoserver(options):
+    if not (path('src') / gs).exists():
+        with pushd('src'):
+            svn.checkout("http://svn.codehaus.org/geoserver/trunk/src",  gs)
 
 @task
+@needs('checkout_geoserver')
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     if not path(gs_data).exists():
         call_task('setup_gs_data')
-    if not (path('src') / gs).exists():
-        call_task('checkout_geoserver')
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn install")
 
@@ -262,7 +270,7 @@ def package_webapp(options):
         
     req_file = options.deploy.req_file
     req_file.write_text(deploy_req_txt)
-    sh("pip bundle -r %s %s/geonode-webapp.pybundle" %(req_file, options.deploy.out_dir))
+    pip_bundle("-r %s %s/geonode-webapp.pybundle" %(req_file, options.deploy.out_dir))
 
 
 
@@ -295,6 +303,16 @@ def unzip_file(src, dest):
 def sdist():
     """Overrides sdist to make sure that our setup.py is generated."""
 
+def pip(*args):
+    try:
+        pkg_resources.require('pip>=0.6')
+    except :
+        error("**ATTENTION**: Update your 'pip' to at least 0.6")
+        raise
+    sh("pip " + " ".join(args))
+
+pip_install = functools.partial(pip, 'install', dl_cache)
+pip_bundle = functools.partial(pip, 'bundle', dl_cache)
 
 if locals().has_key('bootstrap'):
     @task
