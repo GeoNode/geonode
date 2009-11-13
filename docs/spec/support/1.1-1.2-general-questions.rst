@@ -1,0 +1,9 @@
+===================
+ General Questions
+===================
+
+0. Are these "two applications" (2.1) to be standalone websites or part of the current CAPRA GeoNode?
+ - tabs
+ - domain specific
+
+0. Hosting? how long, etc.

@@ -1,0 +1,115 @@
+=========================
+ Styling Functional Spec
+=========================
+
+Overview
+========
+
+Once data is uploaded to a geonode, users need a way to specify what
+it should look like when served as WMS.  The styling interface will
+give geonode users the ability to create, edit, and apply "Styled
+Layer Descriptor" documents.
+
+Initial effort will be to provide basic styling for raster and vector
+data.  
+
+
+User Stories
+============
+
+0. X from ERN has uploaded the data (as per fspec 1.3) and would like to
+   have it display in a fashion better suited for communicating data
+   about risk and hazard (relative to the default grey and black).
+
+
+Goals/Non-Goals
+===============
+
+* styling for raster and vector
+* support multiple style per layer
+
+Basic Assumptions
+=================
+
+A vector SLD will be connected to a layer.
+
+(A raster SLD could be copied from on layer to another?)
+
+
+Feature Set
+===========
+
+Views
+-----
+
+* Styler(see below)
+
+* Styles Dashboard
+  An interface to available styles. Basic info and links to a managmenent and 
+  information page for the style.
+
+* Component to show styles available for a layer
+ - in the composer
+
+* Component as part of layer view/management allowing access to
+  creating new styles and editing or deleting exising ones.  Should
+  also allow download of styles.
+
+* Component for copying a style.
+
+
+Styler
+~~~~~~
+
+Styling "modal" interface for a layer accessed with a known layer.
+
+* Choose a template 
+ - existing style (similar hazard)
+
+* UI for each basic type of layer
+ - raster 
+ - vector
+
+* Focus on colors and transparency
+ * Fill Color
+ * Fill Transparency
+ * Raster
+   TBD (gradients? color ranges?) 
+ * Line Style
+  - stroke (color, thickness)
+  - thickness
+  - color
+
+* Basic metadata entry
+ - title
+ - description
+ - (eventually webbish annotations: ratings, etc)
+
+.. note::
+
+   Not sure if this is valid, but it seemed like it might be for
+   raster data across periods of hazards.
+
+
+Flow
+----
+
+0. User (trusted) clicks "create new style" on some selected layer
+   somewhere in the UI.
+
+0. Styler opens
+  - is either the raster or vector ui depending on the layer
+
+0. User styles and saves
+
+.. todo::
+
+   How does it open? 
+   - a new panel than can be closed returning to the layer interface
+   - ???
+
+
+
+
+
+
