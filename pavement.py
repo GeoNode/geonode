@@ -298,7 +298,7 @@ def unzip_file(src, dest):
 @task
 def checkup_spec(options):
     parser = options.config.parser
-    svn.checkup(parser.get('doc', 'spec_url'), path('docs'))
+    svn.checkup(parser.get('doc', 'spec_url'), path('docs') / 'spec')
 
 def pip(*args):
     try:
