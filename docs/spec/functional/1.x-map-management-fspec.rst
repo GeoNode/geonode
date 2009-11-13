@@ -1,0 +1,68 @@
+================================
+ Map Management Functional Spec
+================================
+
+Overview
+========
+
+In version 1.0 of the geonode, the current technology limits map
+management to the creation of maps.  It is not possible to edit or
+delete an exisiting map.
+
+In 1.5 we would like to expand the map management to cover the full
+complement of CRUD capabilities.
+
+User Stories
+============
+
+0. Oscar needs to present several views of data uploaded into the
+   geonode for a presentation of the outcomes of the CAPRA project. He
+   needs to collaborate with experts from GFDRR and ERN to create
+   these views.  He has established a workflow where ERN will upload,
+   style and compose a series of maps, then he and other GFDRR experts
+   will review them, choose the ones that tell the story they want,
+   and modify them to work in the presenation.  They will delete the
+   maps that that do not use.
+
+   (this usecase implies a possible later feature of "map groups")
+
+
+Goals/Non-Goals
+===============
+
+Goals
+-----
+
+0. Basic CRUD for maps
+
+0. stable URLs to allow for viewing and editing maps
+
+Prereqs
+-------
+
+0. Basic user management to allow for meaningful permission management
+
+Non
+---
+
+0. anything beyond basic user management
+
+
+Feature Set
+===========
+
+Beyond what is currently available
+
+* Stable URL for editing and vieing
+* Base layer chooser 
+
+
+
+
+
+
+
+
+
+
+

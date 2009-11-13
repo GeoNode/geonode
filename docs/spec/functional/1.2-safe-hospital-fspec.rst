@@ -1,0 +1,157 @@
+==============
+Safe Hospitals
+==============
+
+
+Overview
+========
+
+Safe hospitals will be a spatial visualization of the Hospital Safety
+Index.  This visualization will build atop the myHazard viewer and
+allow users to browse and print reports based on the HSI as well as
+the hazard data.
+
+The main difference between the myHazard viewer and the Safe Hospital
+viewer is that the latter will load with a vector layer of points
+representing hospitals.  These hospitals icons will be clickable.
+Clicking will display a popup with basic information about the
+facility and links to more indepth hazard and HSI reports.
+
+
+Timeline
+========
+
+Early 2010 (TBA)
+
+
+User Stories
+============
+
+Users for this project are decision makers: government officials,
+possible donors.  The tool provides a way to visualize the work
+already done for the Safe Hospital Initiative.
+
+0. Maria, a public health official of a participating country wants to
+see what hospitals for her country have HSI records.  She goes to the
+safe hospital application, zooms to her country, and explores
+available hospitals.  One hospital does not have an HSI record, she
+follows link to PAHO site and adds one.
+
+0. Bob, an administrator at an NGO, has been charged with investing a
+large sum of money into public health and disaster risk management in
+South and Central America.  He has heard of the Safe Hospital
+Initiative and is interested in learning what kind of coverage and
+data the project has created to assess whether they are a sensible
+investment.
+
+.. note::
+
+   `What is the Hospital Safety Index? <http://www.paho.org/english/DD/PED/SafeHospitalsChecklist.htm>`_
+
+
+
+Goals/Non-Goals
+===============
+
+Goals
+~~~~~
+
+* Provide an interface to see at-a-glance which hospitals are missing
+  HSI reports.
+
+* Give users access to HSI reports as well as hazard reports for hospitals.
+
+Non-Goals
+~~~~~~~~~
+
+* providing a technological solution for updating PAHO's records.
+  (should be dealt with separately)
+
+
+
+Feature Set
+===========
+
+Building off the myHazard application base:
+
+* No hazard switcher
+ - all hazard reports will be done as all active
+
+.. note::
+  
+  Question in with stu and oscar about this.
+
+* Base Layer Switcher
+
+* Map Panel
+ * Vector layer of hospitals (always active)
+  - Hospitals represented by crosses
+    - Red if we have data
+    - Gray if we do not
+    Clicking hospital icon opens a report summary.
+
+.. todo::
+  
+  Hospital layer design.
+
+* Report summary
+  A popup window including
+  - A link to the HSI report, served by PAHO
+  - A summary hazard report
+  - A link to a hazard report PDF
+
+.. note::
+
+  Contingent on actual data situation at PAHO
+
+
+Flow
+====
+
+0. Opens onto a map viewer with a base layer, a base layer switcher
+   and hospitals marked by "red cross" markers.
+
+0. Clicking a marker opens a popup with:
+
+  - basic information about the point from hospital data
+    - Hospital name
+    - # of beds
+    - Contact information
+
+.. note::
+
+  Contingent on what PAHO has available. 
+
+  - A link to the hazard report for the hospital's location, covering
+    EVERY risk layer shown in the MyHazard application
+
+  - IF THE REPORT IS AVAILABLE: a link to the hospital report
+    corresponding to that point, which is served by PAHO.
+
+  - IF THE REPORT IS NOT AVAILABLE: a link to a page, hosted by PAHO,
+    which instructs users about how to create the hospital report.
+ 
+
+Data
+====
+
+A shp file for the hospitals and basic information and some yet to be
+specified format of data for the HSI reports (api, dump, ???).
+
+.. note::
+
+   Oscar will connect us directly to PAHO to refine details at some
+   point.
+
+.. note::
+
+   Stu is interested in us estimating Uploading workflow that would be
+   focused entirely on providing a way for PAHO to update the
+   hospitals shapefile that powers this map.
+
+   (custom editing interface?)
+
+
+
+
+
