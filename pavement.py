@@ -9,6 +9,7 @@ import shutil
 import functools
 import os
 import sys
+import ConfigParser
 import paver.doctools
 import paver.misctasks
 import pkg_resources
@@ -21,23 +22,26 @@ try:
 except ImportError, e:
     info("VirtualEnv must be installed to enable 'paver bootstrap'. If you need this command, run: pip install virtualenv")
 
-assert sys.version_info[0] >= 2 and sys.version_info[1] >= 6, SystemError("GeoNode Build require python 2.6.2 or better")
+assert sys.version_info[0] >= 2 \
+       and sys.version_info[1] >= 6, \
+       SystemError("GeoNode Build require python 2.6.2 or better")
 
-#build_dir = path('./build/')
-build_dir = path('./package') #@@ confusing, rename
 
 options(
+    config=Bunch(ini=path('shared/build.ini'),
+                 package_dir = path('./package')),
     minilib=Bunch(extra_files=['virtual', 'doctools', 'misctasks']),
     sphinx=Bunch(
       docroot='docs',
       builddir="_build",
-      sourcedir=""
+      sourcedir="./"
       ),
     virtualenv=Bunch(
       packages_to_install=['pip', 'urlgrabber', 'jstools'],
       dest_dir='./',
       install_paver=True,
       script_name='bootstrap.py',
+      no_site_packages=True,
       paver_command_line='post_bootstrap'
       ),
     deploy=Bunch(
@@ -45,17 +49,31 @@ options(
       req_file=path('shared/deploy-libs.txt'),
       packages_to_install=['pip'],
       dest_dir='./',
-      out_dir=build_dir,
       install_paver=True,
-      script_name=build_dir / 'bootstrap.py',
+      no_site_packages=True,
       paver_command_line='post_bootstrap'      
     )
 )
+
+
 
 venv = os.environ.get('VIRTUAL_ENV')
 bundle = path('shared/geonode.pybundle')
 
 dl_cache = "--download-cache=./build"
+
+@task
+def auto(options):
+    cp = ConfigParser.ConfigParser()
+    cp.read(options.config.ini)
+    options.config.parser = cp
+
+    # set a few vars from the config ns
+    package_dir = options.deploy.out_dir = options.config.package_dir
+    options.deploy.script_name=package_dir / 'bootstrap.py'
+
+    # set windows dependent opts
+    platform_options(options)
 
 @task
 def install_deps(options):
@@ -64,12 +82,12 @@ def install_deps(options):
         info('using to install python deps bundle')
         call_task('install_bundle')
     else:
-        info('installing from requirements file')
-        if sys.platform == 'win32':
-            corelibs = "core-libs-win.txt"
-        else:
-            corelibs = "core-libs.txt"
-        pip_install("-r shared/%s" % corelibs)
+        info('Installing from requirements file. '\
+             'Use "paver bundle_deps" to create an install bundle')
+        pip_install("-r shared/%s" % options.config.corelibs)
+        if options.config.platform == "win32":
+            info("You will need to install 'PIL' and 'ReportLab' "\
+                 "separately to do PDF generation")
 
 # put bundle on atlas or capra
 # download it, then install
@@ -117,11 +135,7 @@ def install_25_deps(options):
 @task
 def post_bootstrap(options):
     """installs the current package"""
-    if sys.platform == 'win32':
-        bin = "Scripts"
-    else:
-        bin = "bin"
-    pip = path(bin) / "pip"
+    pip = path(options.config.bin) / "pip"
     sh('%s install -e %s' %(pip, path("src/GeoNodePy")))
 
 gs = "geoserver-build"
@@ -134,7 +148,7 @@ def setup_gs_data(options):
     """Fetch a data directory to use with GeoServer for testing."""
     from urlgrabber.grabber import urlgrab
     from urlgrabber.progress import text_progress_meter
-    src_url = "http://capra.opengeo.org/dev-data/geonode-geoserver-data.zip"
+    src_url = options.config.parser.get('geoserver', 'gs_data_url')
     shared = path("./shared")
     if not shared.exists():
         shared.mkdir()
@@ -197,12 +211,15 @@ def capra_js(options):
        sh("jsbuild -o capra-client/ all.cfg") 
 
 @task
-def build_dir(options):
+def package_dir(options):
+    """
+    Adds a packaging directory
+    """
     if not options.deploy.out_dir.exists():
-        options.deploy.out_dir.mkdir()
+        options.config.package_dir.mkdir()
 
 @task
-@needs('build_dir', 'concat_js', 'capra_js')
+@needs('package_dir', 'concat_js', 'capra_js')
 def package_client(options):
     """
     Package compressed client resources (JavaScript, CSS, images).
@@ -224,7 +241,7 @@ def package_client(options):
 
 
 @task
-@needs('build_dir', 'setup_geoserver')
+@needs('package_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
     path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war').copy(options.deploy.out_dir)
@@ -238,7 +255,7 @@ deploy_req_txt = """
 
 
 @task
-@needs('build_dir')
+@needs('package_dir')
 def package_webapp(options):
     """Package (Python, Django) web application and dependencies."""
     with pushd('src/GeoNodePy'):
@@ -279,9 +296,9 @@ def unzip_file(src, dest):
 
 
 @task
-@needs('generate_setup', 'minilib', 'setuptools.command.sdist')
-def sdist():
-    """Overrides sdist to make sure that our setup.py is generated."""
+def checkup_spec(options):
+    parser = options.config.parser
+    svn.checkup(parser.get('doc', 'spec_url'), path('docs'))
 
 def pip(*args):
     try:
@@ -296,8 +313,39 @@ pip_bundle = functools.partial(pip, 'bundle', dl_cache)
 
 if locals().has_key('bootstrap'):
     @task
-    @needs('build_dir')
+    @needs('package_dir')
     def package_bootstrap(options):
         """Create a bootstrap script for deployment"""
         options.virtualenv = options.deploy
         call_task("paver.virtual.bootstrap")
+
+
+@task
+def install_sphinx_conditionally(options):
+    """if no sphinx, install it"""
+    try:
+        import sphinx
+    except ImportError:
+        sh("%s install sphinx" %(options.config.bin / 'pip'))
+
+        # have to reload doctools so it will realize sphinx is now
+        # available
+        sys.modules['paver.doctools'] = reload(sys.modules['paver.doctools'])
+
+@task
+@needs('install_sphinx_conditionally', 'checkup_spec')
+def html(options):
+    call_task('paver.doctools.html')
+
+def platform_options(options):
+    "Platform specific options"
+    plat = options.config.platform = sys.platform
+    if plat == 'win32':
+        corelibs = "py-base-libs.txt"
+        scripts = "Scripts"
+    else:
+        scripts = "bin"
+        corelibs = "core-libs.txt"
+        
+    options.config.bin = path(scripts)
+    options.config.corelibs = corelibs
