@@ -294,7 +294,6 @@ def unzip_file(src, dest):
             out.write(zip.read(name))
             out.close()
 
-
 @task
 def checkup_spec(options):
     parser = options.config.parser
@@ -332,10 +331,21 @@ def install_sphinx_conditionally(options):
         # available
         sys.modules['paver.doctools'] = reload(sys.modules['paver.doctools'])
 
+
 @task
 @needs('install_sphinx_conditionally', 'checkup_spec')
 def html(options):
     call_task('paver.doctools.html')
+
+
+@task
+@needs('html')
+def nodedocs_html(options):
+    index = path('docs/_build/html/index.html')
+    if sys.platform == 'darwin':
+        sh('open %s' %index)
+    else:
+        info('launcher for platform not registered')
 
 def platform_options(options):
     "Platform specific options"
