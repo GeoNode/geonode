@@ -72,13 +72,6 @@
       <version>${geotools.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-geotiff</artifactId>
-      <version>${geotools.version}</version>
-      <scope>test</scope>
-    </dependency>
-        
   </dependencies>
   <properties>
     <geotools.version>2.6-SNAPSHOT</geotools.version>
