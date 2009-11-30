@@ -3,7 +3,7 @@
 #point is somewhere close to the intersection point for NY, PA, and NJ
 #radius is in the same units than the point's CRS. That is, meters 
 {
-    "radius": 10000,
+    "radius": 100000,
     "geometry": {
         "type": "Point", 
         "coordinates": [-67796.40797432658, 793950.9721003223], 
