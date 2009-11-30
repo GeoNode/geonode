@@ -26,7 +26,7 @@ def report(request, format):
         geometry = params.get("geometry")
         if geometry.get("type") == "Point":
             geom_data = (geometry.get("coordinates")[0], geometry.get("coordinates")[1]) 
-        elif geometry.get("type") == "Line":
+        elif geometry.get("type") == "Line" or geometry.get("type") == "LineString":
             geom_data = "[Distance]"
         elif geometry.get("type") == "Polygon":
             geom_data = "[Area]"
