@@ -10,6 +10,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -64,9 +65,14 @@ import org.opengis.referencing.operation.NoninvertibleTransformException;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.ProgressListener;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
@@ -129,7 +135,43 @@ final class HazardStatistics extends AbstractProcess {
         results.put(HazardStatisticsFactory.RESULT_POLITICAL.key, politicalData);
         results.put(HazardStatisticsFactory.RESULT_BUFER.key, bufferedGeometry);
 
+        List<Double> coordinates = coordinates(inputGeometry);
+        if (coordinates != null)
+            results.put(HazardStatisticsFactory.RESULT_POSITION.key, coordinates);
+        Double length = length(inputGeometry);
+        if (length != null)
+            results.put(HazardStatisticsFactory.RESULT_LENGTH.key, length);
+        Double area = area(inputGeometry);
+        if (area != null)
+            results.put(HazardStatisticsFactory.RESULT_AREA.key, area);
+
+
         return results;
+    }
+
+    private List<Double> coordinates(Geometry geom) {
+        if (geom instanceof Point) {
+            Coordinate c = geom.getCoordinate();
+            return Arrays.asList(new Double[]{c.x, c.y});
+        } else {
+            return null;
+        }
+    }
+
+    private Double length(Geometry geom) {
+        if (geom instanceof LineString || geom instanceof MultiLineString) {
+            return geom.getLength();
+        } else {
+            return null;
+        }
+    }
+    
+    private Double area(Geometry geom) {
+        if (geom instanceof Polygon || geom instanceof MultiPolygon) {
+            return geom.getArea();
+        } else {
+            return null;
+        }
     }
 
     private List<Map<String, Object>> getPoliticalLayerIntersectionInfo(

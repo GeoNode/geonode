@@ -196,6 +196,9 @@ public class ProcessRestlet extends Restlet {
             results.put("statistics", stats);
             results.put("political", political);
             results.put("buffer", buffer);
+            results.put("position", processOutputs.get(HazardStatisticsFactory.RESULT_POSITION.key));
+            results.put("length", processOutputs.get(HazardStatisticsFactory.RESULT_LENGTH.key));
+            results.put("area", processOutputs.get(HazardStatisticsFactory.RESULT_AREA.key));
             convertedOutputs = GeoJSONParser.fromObject(results);
         }
         return convertedOutputs;

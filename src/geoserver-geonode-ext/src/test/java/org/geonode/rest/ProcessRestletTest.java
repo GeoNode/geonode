@@ -84,6 +84,12 @@ public class ProcessRestletTest extends GeoServerTestSupport {
         assertTrue(result.containsKey("statistics"));
         assertTrue(result.containsKey("political"));
         assertTrue(result.containsKey("buffer"));
+        assertTrue(result.containsKey("position"));
+        assertTrue(result.get("position") instanceof JSONArray);
+        assertTrue(result.containsKey("length"));
+        assertTrue(result.get("length") instanceof JSONNull);
+        assertTrue(result.containsKey("area"));
+        assertTrue(result.get("area") instanceof JSONNull);
     }
 
     public void testRequestOneCoverageWithPoint() throws Exception {
@@ -166,6 +172,13 @@ public class ProcessRestletTest extends GeoServerTestSupport {
         assertTrue(parsedBuffer instanceof Polygon);
         Object userData = ((Polygon) parsedBuffer).getUserData();
         assertTrue(userData instanceof CoordinateReferenceSystem);
+
+        assertTrue(result.containsKey("position"));
+        assertTrue(result.get("position") instanceof JSONNull);
+        assertTrue(result.containsKey("length"));
+        result.getDouble("length"); // Will throw an exception if the entry is not a number
+        assertTrue(result.containsKey("area"));
+        assertTrue(result.get("area") instanceof JSONNull);
 
         final CoordinateReferenceSystem reqCrs = CRS.decode("EPSG:26986", true);
         assertTrue(CRS.equalsIgnoreMetadata(reqCrs, ((Polygon) parsedBuffer).getUserData()));
