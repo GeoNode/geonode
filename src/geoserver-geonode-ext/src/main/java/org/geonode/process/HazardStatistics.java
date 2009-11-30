@@ -4,6 +4,9 @@ import static org.geonode.process.HazardStatisticsFactory.DATALAYER;
 import static org.geonode.process.HazardStatisticsFactory.GEOMERTY;
 import static org.geonode.process.HazardStatisticsFactory.RADIUS;
 
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,8 +14,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.media.jai.Histogram;
+import javax.media.jai.ROI;
+import javax.media.jai.ROIShape;
 
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -27,8 +34,10 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.LiteShape;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.Parameter;
 import org.geotools.process.Process;
@@ -36,6 +45,8 @@ import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.impl.AbstractProcess;
 import org.geotools.referencing.CRS;
+import org.geotools.util.logging.Logging;
+import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
@@ -48,13 +59,20 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.NoninvertibleTransformException;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.ProgressListener;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 final class HazardStatistics extends AbstractProcess {
+
+    public static final Logger LOGGER = Logging.getLogger("org.geonode.process");
 
     protected HazardStatistics(final ProcessFactory factory) {
         super(factory);
@@ -210,20 +228,111 @@ final class HazardStatistics extends AbstractProcess {
             throw new ProcessException(e);
         }
 
+        final ROI regionOfInterest = getRegionOfInterest(geophysics, requestGeometry);
+
         final OperationJAI op = new OperationJAI("Histogram");
         ParameterValueGroup params = op.getParameters();
         params.parameter("Source").setValue(geophysics);
-
+        if (regionOfInterest != null) {
+            params.parameter("ROI").setValue(regionOfInterest);
+        }
         GridCoverage2D coverage = (GridCoverage2D) op.doOperation(params, null);
         Histogram histogram = (Histogram) coverage.getProperty("histogram");
 
         Map<String, double[]> stats = new HashMap<String, double[]>();
-        stats.put("min", histogram.getLowValue());
-        stats.put("max", histogram.getHighValue());
-        stats.put("mean", histogram.getMean());
-        stats.put("stddev", histogram.getStandardDeviation());
+        double[] lowValue = histogram.getLowValue();
+        double[] highValue = histogram.getHighValue();
+        double[] mean = histogram.getMean();
+        double[] standardDeviation = histogram.getStandardDeviation();
+
+        stats.put("min", lowValue);
+        stats.put("max", highValue);
+
+        /*
+         * how many different sample values have been computed (per band)? if zero, the region of
+         * interest was too small
+         */
+        final int[] numBins = histogram.getTotals();
+        if (0 == numBins[0]) {
+            /*
+             * If the ROI was too small for one band, it was for all of them
+             */
+            stats.put("mean", null);
+            stats.put("stddev", null);
+        } else {
+            stats.put("mean", mean);
+            stats.put("stddev", standardDeviation);
+        }
 
         return stats;
+    }
+
+    /**
+     * Creates a ROI (Region of Interest) for the histogram operation based on the coverage grid
+     * dimensions and the buffered geometry {@code spatialRoi}
+     * <p>
+     * Precondition: {@code coverage} and {@code spatialRoi} CRS's shall match.
+     * </p>
+     * 
+     * @param coverage
+     * @param spatialRoi
+     * @return
+     */
+    private ROI getRegionOfInterest(final GridCoverage2D coverage, final Geometry spatialRoi) {
+        LOGGER.entering(getClass().getSimpleName(), "getRegionOfInterest");
+
+        final MathTransform2D worldToGrid = coverage.getGridGeometry().getCRSToGrid2D();
+
+        /*
+         * The region of interest in the coverage's grid space
+         */
+        final Geometry gridRoi;
+        try {
+            gridRoi = JTS.transform(spatialRoi, worldToGrid);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        /*
+         * The coverage's grid dimension as a Polygon
+         */
+        final Polygon gridRangeGeom;
+        final Polygon spatialRangeGeom;
+        {
+            final GridEnvelope gridRange = coverage.getGridGeometry().getGridRange();
+            Envelope2D envelope2d = coverage.getGridGeometry().getEnvelope2D();
+            gridRangeGeom = JTS.toGeometry(new Envelope(gridRange.getLow(0), gridRange.getHigh(0),
+                    gridRange.getLow(1), gridRange.getHigh(1)));
+            spatialRangeGeom = JTS.toGeometry(new Envelope(envelope2d.getMinX(), envelope2d
+                    .getMaxX(), envelope2d.getMinY(), envelope2d.getMaxY()));
+        }
+
+        /*
+         * The intersection between the coverage grid range and the region of interest in grid space
+         */
+        PrecisionModel precisionModel = new PrecisionModel(1D);
+        final Geometry finalRoiGeom = new GeometryFactory(precisionModel).createGeometry(gridRoi
+                .intersection(gridRangeGeom));
+
+        LOGGER.fine("Coverage envelope:                " + spatialRangeGeom);
+        LOGGER.fine("Region of interest:               " + spatialRoi);
+        LOGGER.fine("Coverage grid range:              " + gridRangeGeom);
+        LOGGER.fine("Region of interest in grid space: " + gridRoi);
+        LOGGER.fine("Region of interest intersection:  " + finalRoiGeom);
+
+        final Shape roiShape;
+        {
+            final boolean generalize = false;
+            final AffineTransform at = null;
+            roiShape = new Area(new LiteShape(finalRoiGeom, at, generalize));
+        }
+
+        final ROI regionOfInterest = new ROIShape(roiShape);
+
+        if (LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.exiting(getClass().getSimpleName(), "getRegionOfInterest", regionOfInterest);
+        }
+        return regionOfInterest;
     }
 
     private Geometry transformBufferToLayerCrs(final Geometry bufferedGeometry,
@@ -299,7 +408,7 @@ final class HazardStatistics extends AbstractProcess {
      * @throws IOException
      *             Any errors that occur loading the coverage.
      */
-    public GridCoverage2D getGridCoverage(final AbstractGridCoverage2DReader reader,
+    private GridCoverage2D getGridCoverage(final AbstractGridCoverage2DReader reader,
             final ReferencedEnvelope env) throws IOException {
 
         GeneralEnvelope requestEnvelope = new GeneralEnvelope(env);

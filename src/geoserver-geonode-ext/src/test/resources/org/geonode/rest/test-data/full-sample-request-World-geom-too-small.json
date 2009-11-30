@@ -1,10 +1,10 @@
-#Fully functioning test request, including input geometry other than point, crs information, and political Layer
-#Coverage is in EPSG:4326
+#Fully functioning test request, BUT the buffered geometry is too small to gather the statistics for the coverage. I.e., covers
+#less than a coverage's pixel area. @see testBufferedInputGeometryTooSmall()
 #request geometry is in EPSG:26986 ("NAD83 / Massachusetts Mainland")
 #request geometry starts somewhere close to the intersection point for NY, PA, and NJ and follows the border between NY and PA
 #radius is in the same units than the point's CRS. That is, meters 
 {
-    "radius": 100000,
+    "radius": 100,
     "geometry": {
         "type": "LineString", 
         "coordinates": [[-67796.40797432658, 793950.9721003223], [-67800.38444209867, 793978.9081472255]], 

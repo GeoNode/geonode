@@ -17,6 +17,7 @@ import net.sf.json.test.JSONAssert;
 
 import org.apache.commons.io.IOUtils;
 import org.geonode.geojson.GeoJSONParser;
+import org.geonode.process.HazardStatisticsFactory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.TestData;
@@ -39,6 +40,7 @@ public class ProcessRestletTest extends GeoServerTestSupport {
     static {
         GeoTools.getDefaultHints().put(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
         ProcessRestlet.LOGGER.setLevel(Level.FINER);
+        HazardStatisticsFactory.LOGGER.setLevel(Level.FINER);
     }
 
     /**
@@ -143,7 +145,7 @@ public class ProcessRestletTest extends GeoServerTestSupport {
             final InputStream in = post(RESTLET_PATH, jsonRequest);
             resultStr = IOUtils.toString(in, "UTF-8");
         }
-        System.out.println(resultStr);
+        // System.out.println(resultStr);
 
         JSONObject result = JSONObject.fromObject(resultStr);
 
@@ -235,6 +237,37 @@ public class ProcessRestletTest extends GeoServerTestSupport {
         assertTrue(statistics.get("wcs:DEM") instanceof JSONNull);
     }
 
+    /**
+     * If the buffered input geometry is too small to gather the statistics, though it does
+     * intersect the coverage, the resulting statistics is an array with null values.
+     * 
+     * @throws Exception
+     */
+    public void testBufferedInputGeometryTooSmall() throws Exception {
+        String jsonRequest = loadTestData("full-sample-request-World-geom-too-small.json");
+
+        final String resultStr;
+        {
+            final InputStream in = post(RESTLET_PATH, jsonRequest);
+            resultStr = IOUtils.toString(in, "UTF-8");
+        }
+        System.out.println(resultStr);
+
+        JSONObject result = JSONObject.fromObject(resultStr);
+
+        JSONObject statistics = (JSONObject) result.get("statistics");
+
+        assertEquals(1, statistics.size());
+
+        JSONObject worldStats = (JSONObject) ((JSONObject) result.get("statistics"))
+                .get("wcs:World");
+
+        assertTrue(worldStats.get("min") instanceof JSONArray);
+        assertTrue(worldStats.get("max") instanceof JSONArray);
+        assertTrue(worldStats.get("mean") instanceof JSONNull);
+        assertTrue(worldStats.get("stddev") instanceof JSONNull);
+    }
+
     public void testRequestTwoCoveragesWithPoint() throws Exception {
         String jsonRequest = loadTestData("sample-request-DEM-BlueMarble-point.json");
 
@@ -277,7 +310,7 @@ public class ProcessRestletTest extends GeoServerTestSupport {
             final InputStream in = post(RESTLET_PATH, jsonRequest);
             resultStr = IOUtils.toString(in, "UTF-8");
         }
-        System.out.println(resultStr);
+        // System.out.println(resultStr);
 
         JSONObject result = JSONObject.fromObject(resultStr);
         assertTrue(result.get("political") instanceof JSONArray);
