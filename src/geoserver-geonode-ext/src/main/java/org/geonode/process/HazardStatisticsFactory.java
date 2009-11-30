@@ -108,6 +108,19 @@ public class HazardStatisticsFactory extends SingleProcessFactory {
             Geometry.class, Text.text("Buffer"), Text
                     .text("The area the statistics are generated for"));
 
+    public static final Parameter<List> RESULT_POSITION = new Parameter<List>("position",
+            List.class, Text.text("Position"), Text.text("The coordinates of the input geometry; " +
+                "null if it wasn't a point."));
+
+    public static final Parameter<Double> RESULT_LENGTH = new Parameter<Double>("length",
+            Double.class, Text.text("Length"), Text.text("The length of the input geometry; " + 
+                " null if it wasn't a line."));
+
+    public static final Parameter<Double> RESULT_AREA = new Parameter<Double>("area", 
+            Double.class, Text.text("Area"), Text.text("The area of the input geometry; " + 
+                "null if it wasn't a polygon."));
+
+
     /**
      * Map used to describe operation results.
      */
@@ -117,6 +130,9 @@ public class HazardStatisticsFactory extends SingleProcessFactory {
         resultInfo.put(RESULT_STATISTICS.key, RESULT_STATISTICS);
         resultInfo.put(RESULT_POLITICAL.key, RESULT_POLITICAL);
         resultInfo.put(RESULT_BUFER.key, RESULT_BUFER);
+        resultInfo.put(RESULT_POSITION.key, RESULT_POSITION);
+        resultInfo.put(RESULT_LENGTH.key, RESULT_LENGTH);
+        resultInfo.put(RESULT_AREA.key, RESULT_AREA);
     }
 
     public HazardStatisticsFactory() {
