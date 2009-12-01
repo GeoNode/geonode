@@ -21,7 +21,9 @@ def report(request, format):
     params = extract_params(request)
     result = request_rest_process("hazard", params)
     if format == 'html':
-        data_for_report = {}
+        from pprint import pprint
+        pprint(result.get('political'))
+        data_for_report = {'political': result.get('political', None)}
         
         geometry = params.get("geometry")
         if geometry.get("type") == "Point":
@@ -31,15 +33,16 @@ def report(request, format):
         elif geometry.get("type") == "Polygon":
             geom_data = "[Area]"
 
-        statistics = result['statistics']
-        for layer, stats in statistics.items():
+        statistics = dict()
+        for layer, stats in result['statistics'].items():
             period = Period.objects.get(typename=layer)
             hazard = period.hazard.name
             if data_for_report.get(hazard):            
-               data_for_report[hazard].append((period.length,stats))
-               data_for_report[hazard].sort() #ensure nice ordering
+                statistics[hazard].append((period.length,stats))
+                statistics[hazard].sort() #ensure nice ordering
             else:
-                data_for_report[hazard] = [(period.length,stats)]
+                statistics[hazard] = [(period.length,stats)]
+        data_for_report['statistics'] = statistics
         return render_to_response("hazard/report.html",
             context_instance=RequestContext(request, {"data": data_for_report, "geom_data": geom_data}, [resource_urls])
         )
@@ -76,7 +79,7 @@ def radius_for(scale):
     Given a scale denominator for the viewport, produce the proper buffer radius
     for the report process. 
     """
-    return 12
+    return 0.012
 
 def request_rest_process(process, params): 
     """
