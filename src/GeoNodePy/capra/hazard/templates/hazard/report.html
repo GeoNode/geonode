@@ -1,14 +1,18 @@
 <div class="report">
   <p> The area of interest is {{ geom_data }} and overlaps the following areas:</p>
   <ul>
-    {% for info in result.political %}
-    {% if info.municipality %}
-    <li> {{info.municipality}}, {{info.region}}, {{info.country}} </li>
-    {% endif %}
+    {% for region in data.political %}
+    <li>
+    {% for fieldname, value in region.items %}
+    {{fieldname|title}}: {{value}} {% if not forloop.last %},{% endif %}
+    {% endfor %}
+    </li>
+    {% empty %}
+    No information available for this region.
     {% endfor %}
   </ul>
   <ul>
-    {% for hazard, layers in data.items %}
+    {% for hazard, layers in data.statistics.items %}
     <h3>{{hazard}}</h3>
     <table>
       <tr>

@@ -339,7 +339,9 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         var request = {
             geometry: json.read(geojson.write(geom)),
             scale: this.mapPanel.map.getScale(),
-            datalayers: []
+            datalayers: [],
+            politicalLayer: 'base:distrits',
+            politicalLayerAttributes: ['CANTON', 'DISTRITO', 'PROVINCIA']
         };
 
         request.geometry.crs = { 
