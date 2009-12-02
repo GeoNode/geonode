@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
-from geonode.urls import urlpatterns
+from geonode.urls import js_info_dict, urlpatterns
 
 js_info_dict["packages"] = js_info_dict["packages"] + ("capra.hazard",)
 
