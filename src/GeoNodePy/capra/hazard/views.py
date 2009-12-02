@@ -93,3 +93,6 @@ def request_rest_process(process, params):
     if (response.status is not 200):
         raise Exception("REST process responded with\nStatus: {0}\nResponse:\n{1}".format(response.status, content))
     return json.loads(content)
+
+def lang(request): 
+    return render_to_response('hazard/lang.js', mimetype="text/javascript")

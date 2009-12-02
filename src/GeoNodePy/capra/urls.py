@@ -4,6 +4,7 @@ from geonode.urls import urlpatterns
 
 urlpatterns += patterns('capra.hazard.views',
     (r'^hazard/report(.(?P<format>html|pdf))?', 'report'),
+    (r'^hazard/lang.js', 'lang'),
     (r'^hazard/', 'index'),
 )
 
