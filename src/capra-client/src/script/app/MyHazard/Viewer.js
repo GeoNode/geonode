@@ -8,7 +8,18 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     hazardConfig: null,
 
     pdfButtonText: "UT: PDF Report",
-    
+    reportSwitcherTip: "UT: Tooltip here",
+    pointReporterTip: "UT: Point reporter",
+    lineReporterTip: "UT: Line reporter",
+    polygonReporterTip: "UT: Polygon reporter",
+    navActionTipText: "UT: Pan map",
+    zoomInActionText: "UT: Zoom in",
+    zoomOutActionText: "UT: Zoom out",
+    zoomSliderTipText: "UT: Zoom level",
+    transparencyMenuText: "UT: Set layer transparency",
+    reportFailureMessage: "UT: Failure while retrieving report...",
+    reportPopupTitle: "UT: MyHazard Report",
+
     constructor: function (config) {
         this.initialConfig = config;
         Ext.apply(this, this.initialConfig);
@@ -120,7 +131,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         var activeIndex = 0;
         var reportSplit = new Ext.SplitButton({
             iconCls: "icon-point",
-            tooltip: "TODO: Tooltip here",
+            tooltip: this.reportSwitcherTip, 
             enableToggle: true,
             toggleGroup: toolGroup, // Ext doesn't respect this, registered with ButtonToggleMgr below
             allowDepress: false, // Ext doesn't respect this, handler deals with it
@@ -150,7 +161,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 items: [
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
-                            text: "TODO: Point reporter",
+                            text: this.pointReporterTip,
                             iconCls: "icon-point",
                             map: this.map,
                             toggleGroup: toolGroup,
@@ -161,7 +172,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                         })),
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
-                            text: "TODO: Line reporter",
+                            text: this.lineReporterTip,
                             iconCls: "icon-line",
                             map: this.map,
                             toggleGroup: toolGroup,
@@ -172,7 +183,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                         })),
                     new Ext.menu.CheckItem(
                         new GeoExt.Action({
-                            text: "TODO: Polygon reporter",
+                            text: this.polygonReporterTip,
                             iconCls: "icon-polygon",
                             map: this.map,
                             toggleGroup: toolGroup,
@@ -366,7 +377,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             success: function(response, options) {
                 this.popup = new GeoExt.Popup({
                     feature: new OpenLayers.Feature.Vector(geom),
-                    title: "UT:MyHazard Report",
+                    title: this.reportPopupTitle, 
                     html: response.responseText,
                     maximizable: true,
                     height: 350,
@@ -386,7 +397,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 this.popup.show();
             },
             failure: function() {
-                alert("Failure while retrieving report...");
+                alert(this.reportFailureMessage);
             },
             scope: this
         });
@@ -450,7 +461,6 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         });
 
         var mapOverlay = new Ext.Panel({
-            // title: "Overlay",
             cls: 'map-overlay',
             items: [
                 scaleLinePanel,
