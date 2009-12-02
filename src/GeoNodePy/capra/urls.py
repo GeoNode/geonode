@@ -2,6 +2,8 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from geonode.urls import urlpatterns
 
+js_info_dict["packages"] = js_info_dict["packages"] + ("capra.hazard",)
+
 urlpatterns += patterns('capra.hazard.views',
     (r'^hazard/report(.(?P<format>html|pdf))?', 'report'),
     (r'^hazard/lang.js', 'lang'),
