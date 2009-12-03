@@ -92,7 +92,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         var baseLayers = [
             new OpenLayers.Layer.WMS(
                 "Global Imagery",
-                "http://sigma.openplans.org/geoserver/wms",
+                "http://maps.opengeo.org/geowebcache/service/wms",
                 {layers: 'bluemarble'}
             ),
             new OpenLayers.Layer.Google(
