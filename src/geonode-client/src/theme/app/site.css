@@ -207,9 +207,15 @@ background:#FFFFFF url(img/language-es.png) no-repeat scroll 0 0;
  }
 
 
-#ja-search{ 
-padding-left:8px;
- }
+#ja-search { 
+    padding-left:8px;
+}
+
+#ja-search .fullscreen {
+    align: right;
+}
+
+
 
 #ja-search form { display: inline; }
 
@@ -231,8 +237,8 @@ display: block;
 float:left;
  }
 
-div#app-header button#spanish, div#app-header button#english{ 
-float:right;
+div#app-header #ja-search button { 
+    float:right;
 }
 
 #home{ 
