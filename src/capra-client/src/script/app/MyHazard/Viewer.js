@@ -16,7 +16,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     zoomInActionText: "UT: Zoom in",
     zoomOutActionText: "UT: Zoom out",
     zoomSliderTipText: "UT: Zoom level",
-    transparencyMenuText: "UT: Set layer transparency",
+    opacitySliderText: "UT: Opacity",
     reportFailureMessage: "UT: Failure while retrieving report...",
     reportPopupTitle: "UT: MyHazard Report",
 
@@ -128,84 +128,6 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
 
         var toolGroup = "toolGroup";
 
-        var activeIndex = 0;
-        var reportSplit = new Ext.SplitButton({
-            iconCls: "icon-point",
-            tooltip: this.reportSwitcherTip, 
-            enableToggle: true,
-            toggleGroup: toolGroup, // Ext doesn't respect this, registered with ButtonToggleMgr below
-            allowDepress: false, // Ext doesn't respect this, handler deals with it
-            handler: function(button, event) {
-                // allowDepress should deal with this first condition
-                if(!button.pressed) {
-                    button.toggle();
-                } else {
-                    button.menu.items.itemAt(activeIndex).setChecked(true);
-                }
-            },
-            listeners: {
-                toggle: function(button, pressed) {
-                    // toggleGroup should handle this
-                    if(!pressed) {
-                        button.menu.items.each(function(i) {
-                            i.setChecked(false);
-                        });
-                    }
-                },
-                render: function(button) {
-                    // toggleGroup should handle this
-                    Ext.ButtonToggleMgr.register(button);
-                }
-            },
-            menu: new Ext.menu.Menu({
-                items: [
-                    new Ext.menu.CheckItem(
-                        new GeoExt.Action({
-                            text: this.pointReporterTip,
-                            iconCls: "icon-point",
-                            map: this.map,
-                            toggleGroup: toolGroup,
-                            group: toolGroup,
-                            allowDepress: false,
-                            map: this.map,
-                            control: this.createReporter(OpenLayers.Handler.Point)
-                        })),
-                    new Ext.menu.CheckItem(
-                        new GeoExt.Action({
-                            text: this.lineReporterTip,
-                            iconCls: "icon-line",
-                            map: this.map,
-                            toggleGroup: toolGroup,
-                            group: toolGroup,
-                            allowDepress: false,
-                            map: this.map,
-                            control: this.createReporter(OpenLayers.Handler.Path)
-                        })),
-                    new Ext.menu.CheckItem(
-                        new GeoExt.Action({
-                            text: this.polygonReporterTip,
-                            iconCls: "icon-polygon",
-                            map: this.map,
-                            toggleGroup: toolGroup,
-                            group: toolGroup,
-                            allowDepress: false,
-                            map: this.map,
-                            control: this.createReporter(OpenLayers.Handler.Polygon)
-                        }))
-                ]                
-            })
-        });
-
-        reportSplit.menu.items.each(function(item, index) {
-            item.on({checkchange: function(item, checked) {
-                reportSplit.toggle(checked);
-                if(checked) {
-                    activeIndex = index;
-                    reportSplit.setIconClass(item.iconCls);
-                }
-            }});
-        });
-        
         var tools = [
             new GeoExt.Action({
                 tooltip: this.navActionTipText,
@@ -217,41 +139,40 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 map: this.map,
                 toggleGroup: toolGroup
             }),
-            reportSplit,
             "-",
-            new Ext.Button({
-                handler: function(){
-                    this.map.zoomIn();
-                },
-                tooltip: this.zoomInActionText,
-                iconCls: "icon-zoom-in",
-                scope: this
+            new GeoExt.Action({
+                tooltip: this.pointReporterTip,
+                iconCls: "icon-point",
+                map: this.map,
+                toggleGroup: toolGroup,
+                group: toolGroup,
+                allowDepress: false,
+                map: this.map,
+                control: this.createReporter(OpenLayers.Handler.Point)
             }),
-            new Ext.Button({
-		    tooltip: this.zoomOutActionText,
-                handler: function(){
-                    this.map.zoomOut();
-                },
-                iconCls: "icon-zoom-out",
-                scope: this
+            new GeoExt.Action({
+                tooltip: this.lineReporterTip,
+                iconCls: "icon-line",
+                map: this.map,
+                toggleGroup: toolGroup,
+                group: toolGroup,
+                allowDepress: false,
+                map: this.map,
+                control: this.createReporter(OpenLayers.Handler.Line)
             }),
-            new Ext.Button({
-                tooltip: this.transparencyMenuText,
-                iconCls: "icon-visibility",
-                menu: {
-                    minWidth: 10,
-                    items: [
-                        new MyHazard.LayerGroupOpacitySlider({
-                            layers: layers,
-                            vertical: true,
-                            height: 150
-                        })
-                    ]
-                }
+            new GeoExt.Action({
+                tooltip: this.polygonReporterTip,
+                iconCls: "icon-polygon",
+                map: this.map,
+                toggleGroup: toolGroup,
+                group: toolGroup,
+                allowDepress: false,
+                map: this.map,
+                control: this.createReporter(OpenLayers.Handler.Polygon)
             })
         ];
 
-        treeConfig = [];
+        var treeConfig = [];
 
         for(var i = 0; i < layers.length; i++){
             treeConfig.push({
@@ -282,13 +203,29 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             isTarget: false
         });
 
+        var opacitySlider = new Ext.Toolbar({
+            items: [
+                new Ext.Toolbar.Button({
+                    disabled: true,
+                    disabledClass: '',
+                    iconCls: 'icon-visibility'
+                }),
+                new MyHazard.LayerGroupOpacitySlider({
+                    layers: layers,
+                    width: 210,
+                    vertical: false
+                })
+            ]
+        });
+
         this.sidebar = new Ext.tree.TreePanel({
             region: "west",
             width: 250,
-            tbar: tools,
             loader: new Ext.tree.TreeLoader({
                 applyLoader: false
             }),
+            tbar: tools,
+            bbar: opacitySlider,
             enableDD: true,
             rootVisible: false,
             root: {
@@ -296,7 +233,6 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 children: treeConfig
             }
         });
-        
 
         this.appPanel = new Ext.Panel({
             renderTo: "app",
