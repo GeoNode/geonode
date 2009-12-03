@@ -241,6 +241,20 @@ div#app-header #ja-search button {
     float:right;
 }
 
+div#app-header #ja-search .spanish button { 
+    width: 16px;
+    height: 12px;
+    margin: 2px;
+    background: url(img/es.gif) no-repeat scroll 0 0;
+}
+
+div#app-header #ja-search .english button { 
+    width: 16px;
+    height: 12px;
+    margin: 2px;
+    background: url(img/gb.gif) no-repeat scroll 0 0;
+}
+
 #home{ 
 display: block;
 float:left;
