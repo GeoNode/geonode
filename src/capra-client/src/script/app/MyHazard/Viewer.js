@@ -233,12 +233,25 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             }
         });
 
-        this.appPanel = new Ext.Panel({
-            renderTo: "app",
+        var header = new Ext.Panel({
+            region: "north",
+            autoHeight: true
+        });
+
+        header.on('render', function() {
+            header.getEl().appendChild(Ext.get('app-header'));
+        });
+
+        this.appPanel = new Ext.Viewport({
+            // renderTo: "app",
             width: 950,
             height: 400,
             layout: "border",
-            items: [this.sidebar, this.mapPanel]
+            items: [
+                header, 
+                this.sidebar,
+                this.mapPanel
+            ]
         });
 
     },

@@ -1,4 +1,4 @@
-{% extends "page_layout.html" %}
+{% extends "fullscreen.html" %}
 {% load i18n %}
 {% load navbar %}
 
@@ -13,16 +13,10 @@
 
         var hazardConfig = {{config|safe}};
         Ext.onReady(function() {
-                app = new MyHazard.Viewer({
-                    GEONODE_WMS: "{{GEOSERVER_BASE_URL|safe}}wms",
-                    hazardConfig: hazardConfig
-                });
+            app = new MyHazard.Viewer({
+                GEONODE_WMS: "{{GEOSERVER_BASE_URL|safe}}wms",
+                hazardConfig: hazardConfig
+            });
         });
     </script>
-{% endblock %}
-
-{% block nav %} {% navbar hazard %} {% endblock %}
-
-{% block main %}
-<div id="app"></div>
 {% endblock %}

@@ -781,18 +781,19 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             activeItem: 0
         });
 
+        var header = new Ext.Panel({
+            region: "north",
+            autoHeight: true
+        });
+
+        header.on('render', function() {
+            header.getEl().appendChild(Ext.get('app-header'));
+        });
+
         var viewport = new Ext.Viewport({
             layout: "border",
             items: [
-                {
-                    region: "north",
-                    html: "<div id='app-header'>" + 
-                        "<a href='#' id='spanish'></a>" + 
-                        "<a href='#' id='english'></a>" + 
-                        "<a id='banner' href='" + this.homeUrl + "'>" + 
-                        "</div>",
-                    autoHeight: true
-                }, 
+                header, 
                 {
                     region: "center",
                     layout: "fit",
