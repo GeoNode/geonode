@@ -8,10 +8,8 @@ if(window.MyHazard && window.MyHazard.Viewer){
       lineReporterTip: gettext("Line reporter"),
       polygonReporterTip: gettext("Polygon reporter"),
       navActionTipText: gettext("Pan map"),
-      zoomInActionText: gettext("Zoom in"),
-      zoomOutActionText: gettext("Zoom out"),
       zoomSliderTipText: gettext("Zoom level"),
-      transparencyMenuText: gettext("Set layer transparency"),
+      transparencyButtonText: gettext("Set layer transparency"),
       reportFailureMessage: gettext("Failure while retrieving report..."),
       reportPopupTitle: gettext("MyHazard Report")
   });

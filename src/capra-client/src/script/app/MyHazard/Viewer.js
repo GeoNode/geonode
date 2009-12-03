@@ -13,10 +13,8 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     lineReporterTip: "UT: Line reporter",
     polygonReporterTip: "UT: Polygon reporter",
     navActionTipText: "UT: Pan map",
-    zoomInActionText: "UT: Zoom in",
-    zoomOutActionText: "UT: Zoom out",
     zoomSliderTipText: "UT: Zoom level",
-    opacitySliderText: "UT: Opacity",
+    transparencyButtonText: "UT: Transparency",
     reportFailureMessage: "UT: Failure while retrieving report...",
     reportPopupTitle: "UT: MyHazard Report",
 
@@ -206,6 +204,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
         var opacitySlider = new Ext.Toolbar({
             items: [
                 new Ext.Toolbar.Button({
+                    tooltip: this.transparencyButtonText,
                     disabled: true,
                     disabledClass: '',
                     iconCls: 'icon-visibility'
