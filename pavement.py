@@ -260,9 +260,6 @@ def package_webapp(options):
     """Package (Python, Django) web application and dependencies."""
     with pushd('src/GeoNodePy'):
         sh('python setup.py egg_info sdist')
-
-    import pkg_resources
-    pkg_resources.get_distribution('GeoNodePy')        
         
     req_file = options.deploy.req_file
     req_file.write_text(deploy_req_txt)
