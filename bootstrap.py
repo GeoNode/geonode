@@ -1129,6 +1129,7 @@ def after_install(options, home_dir):
     subprocess.call([join(bin_dir, 'easy_install'), 'pip'])
     subprocess.call([join(bin_dir, 'easy_install'), 'urlgrabber'])
     subprocess.call([join(bin_dir, 'easy_install'), 'jstools'])
+    subprocess.call([join(bin_dir, 'easy_install'), 'virtualenv'])
     subprocess.call([join(bin_dir, 'paver'),'post_bootstrap'])
 
 ##file site.py
