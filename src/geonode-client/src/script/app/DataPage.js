@@ -194,7 +194,8 @@ var DataPage = Ext.extend(Page, {
      */
     initPanel: function(){
         var riskExpander = new GeoExplorer.CapabilitiesRowExpander({ows: this.ows});
-        var overlayExpander = new GeoExplorer.CapabilitiesRowExpander({ows: this.ows});
+        var hazardExpander = new GeoExplorer.CapabilitiesRowExpander({ows: this.ows});
+        var baseExpander = new GeoExplorer.CapabilitiesRowExpander({ows: this.ows});
         
         // risk store 
         var riskStore = new Ext.data.SimpleStore({
@@ -205,12 +206,12 @@ var DataPage = Ext.extend(Page, {
             if (record.get("prefix") == "risk") riskStore.add([record]);
         });
 	    // overlay store 
-        var overlayStore = new Ext.data.SimpleStore({
+        var hazardStore = new Ext.data.SimpleStore({
             recordType: this.capabilities.recordType
         });
         
         this.capabilities.each(function(record) {
-            if (record.get("prefix") == "overlay") overlayStore.add([record]);
+            if (record.get("prefix") == "hazard") overlayStore.add([record]);
         });
        
         // base store 
@@ -294,16 +295,16 @@ var DataPage = Ext.extend(Page, {
                 sm: new Ext.grid.RowSelectionModel({singleSelect:true})
         });
 
-        this.overlayCapGrid = new Ext.grid.GridPanel({
+        this.hazardCapGrid = new Ext.grid.GridPanel({
             renderTo:"overlay-layer-browser",	    
             // title: this.dataGridText,
-            store: overlayStore,
+            store: hazardStore,
             autoScroll: true,
             height:200,
             alignToGrid: this.alignToGrid,
-            plugins: overlayExpander,
+            plugins: hazardExpander,
             cm: new Ext.grid.ColumnModel([
-                overlayExpander,
+                hazardExpander,
                 {id: "title", header: this.dataTitleHeaderText, dataIndex: "title", sortable: true},
                 {header: this.dataNameHeaderText, dataIndex: "name", width: 180, sortable: true}
             ]),
@@ -321,7 +322,7 @@ var DataPage = Ext.extend(Page, {
             height:200,
             alignToGrid: this.alignToGrid,
             cm: new Ext.grid.ColumnModel([
-                overlayExpander,
+                baseExpander,
                 {id: "title", header: this.dataTitleHeaderText, dataIndex: "title", sortable: true},
                 {header: this.dataNameHeaderText, dataIndex: "name", width: 180, sortable: true}
             ]),
