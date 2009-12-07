@@ -1,4 +1,4 @@
-from capra.hazard.models import Hazard, Period
+from capra.hazard.models import Hazard, Period, Layer
 from django.contrib import admin
 
 class PeriodInline(admin.TabularInline):

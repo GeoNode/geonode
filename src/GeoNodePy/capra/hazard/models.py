@@ -1,6 +1,5 @@
 from django.db import models
-
-# Create your models here.
+from geonode.maps.models import Layer
 
 class Hazard(models.Model): 
     name = models.CharField(max_length=128)
@@ -10,5 +9,5 @@ class Hazard(models.Model):
 
 class Period(models.Model):
     hazard = models.ForeignKey(Hazard)
-    typename = models.CharField(max_length=128)
+    layer = models.OneToOneField(Layer)
     length = models.IntegerField()

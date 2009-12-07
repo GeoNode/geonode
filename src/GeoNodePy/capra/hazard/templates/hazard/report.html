@@ -31,7 +31,13 @@
         <td>{{ stats.max.0|floatformat }}</td>
         <td>{{ stats.mean.0|floatformat }}</td>
         <td>{{ stats.stddev.0|floatformat }}</td>
-        <th>[Data author]</th>
+        <th>
+            {% if stats.url %}
+                <a href="{{ stats.url|safe }}">{{ stats.author }}</a>
+            {% else %}
+                {{ stats.author }}
+            {% endif %}
+        </th>
         <th>[Data date]</th>
       </tr>
       {% endfor %}

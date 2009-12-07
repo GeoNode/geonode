@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from capra.hazard.models import Hazard, Period
 from capra.hazard.reports import render_pdf_response
+from geonode.maps.models import Layer
 from geonode.maps.context_processors import resource_urls
 from httplib2 import Http
 import json 
@@ -10,7 +11,7 @@ import json
 def index(request): 
     hazards = Hazard.objects.all()
     def periods(hazard): 
-        return [{'typename': p.typename, 'length': p.length} for p in hazard.period_set.all()]
+        return [{'typename': p.layer.typename, 'length': p.length} for p in hazard.period_set.all()]
     config = [{'hazard': x.name, 'periods': periods(x)} for x in hazards]
     config = json.dumps(config)
     return render_to_response("hazard/index.html",
@@ -21,8 +22,6 @@ def report(request, format):
     params = extract_params(request)
     result = request_rest_process("hazard", params)
     if format == 'html':
-        from pprint import pprint
-        pprint(result.get('political'))
         data_for_report = {'political': result.get('political', None)}
         
         geometry = params.get("geometry")
@@ -35,13 +34,19 @@ def report(request, format):
 
         statistics = dict()
         for layer, stats in result['statistics'].items():
-            period = Period.objects.get(typename=layer)
+            layer_record = Layer.objects.get(typename=layer)
+            period = Period.objects.get(layer=layer_record)
             hazard = period.hazard.name
             if data_for_report.get(hazard):            
                 statistics[hazard].append((period.length,stats))
                 statistics[hazard].sort() #ensure nice ordering
             else:
                 statistics[hazard] = [(period.length,stats)]
+                md = layer_record.metadata()
+                if md: 
+                    stats['author'] = md.get('title', None)
+                if md:
+                    stats['url'] = md.get('url', None)
         data_for_report['statistics'] = statistics
         return render_to_response("hazard/report.html",
             context_instance=RequestContext(request, {"data": data_for_report, "geom_data": geom_data}, [resource_urls])
