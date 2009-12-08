@@ -16,7 +16,6 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
     mapTitleLabelText: "UT:Title",
     mapAbstractLabelText: "UT:Abstract",
     mapContactLabelText: "UT:Contact",
-    mapTagsLabelText: "UT:Tags",
     mapLinkLabelText: "UT:View this Map",
 
     initComponent: function(){
@@ -30,7 +29,6 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
             fields: [
                 {name: 'id', mapping: 'id'},
                 {name: "title", mapping: "config.about.title"},
-                {name: "tags", mapping: "config.about.tags"},
                 {name: "abstract", mapping: "config.about.abstract"},
                 {name: "contact", mapping: "config.about.contact"}
             ],
@@ -40,7 +38,6 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
         if(!this.expander){
 
             var tpl = new Ext.Template('<p><b>' + this.mapAbstractLabelText + ':</b> {abstract}</p>'+
-                                       '<p><b>' + this.mapTagsLabelText + ':</b> {tags} </p>' +
                                        '<p><a href="/maps/{id}.html">' + this.mapLinkLabelText + '</a></p>');
 
             this.expander = new Ext.grid.RowExpander({
