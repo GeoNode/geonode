@@ -114,7 +114,6 @@ var CommunityPage = Ext.extend(Page, {
                 fields: [
                     {name: 'id', mapping: 'id'},
                     {name: "title", mapping: "config.about.title"},
-                    {name: "tags", mapping: "config.about.tags"},
                     {name: "abstract", mapping: "config.about.abstract"},
                     {name: "contact", mapping: "config.about.contact"},
                     {name: "endorsed", mapping: "config.about.endorsed"}

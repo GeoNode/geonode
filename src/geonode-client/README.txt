@@ -18,7 +18,6 @@ Map Management
       "title": 'The Map\'s Title',
       "abstract": 'An informative summary of the map\'s content',
       "contact": 'Information about getting in touch with the map\'s creator',
-      "tags": 'any tags annotating the map',
       "featured": false
     },
     wms: {

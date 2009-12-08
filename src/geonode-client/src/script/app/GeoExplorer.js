@@ -160,7 +160,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     metaDataMapTitle: 'UT:Title',
     metaDataMapContact: 'UT:Contact',
     metaDataMapAbstract: 'UT:Abstract',
-    metaDataMapTags: 'UT:Tags',
     metaDataMapId: "UT:Permalink",
     saveMapText: "UT: Save Map",
     permalinkLabel: 'UT: Permalink',
@@ -633,17 +632,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             }
         });
 
-        var tagField = new Ext.form.TextField({
-            width: '95%',
-            disabled: true,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                    this.about.tags = newValue;
-                },
-                scope: this
-            }
-        });
-
         var linkField = new Ext.form.TextField({
             width: '95%',
             disabled: true,
@@ -677,8 +665,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     contactField,
                     new Ext.form.Label({html: this.metaDataMapAbstract}),
                     abstractField,
-                    new Ext.form.Label({html: this.metaDataMapTags}), 
-                    tagField,
                     new Ext.form.Label({html: this.metaDataMapId}), 
                     linkField
                     ],
@@ -691,7 +677,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             titleField.setValue(this.about.title);
             contactField.setValue(this.about.contact);
             abstractField.setValue(this.about["abstract"]);
-            tagField.setValue(this.about.tags);
             if (!this.mapID) {
                 linkField.setValue(this.noPermalinkText);
             } else {

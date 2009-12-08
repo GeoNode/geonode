@@ -28,7 +28,6 @@ if(window.GeoExplorer){
     metaDataMapTitle:  gettext("Title"),
     metaDataMapContact:  gettext("Contact"),
     metaDataMapAbstract:  gettext("Abstract"),
-    metaDataMapTags:  gettext("Tags"),
     metaDataMapId:  gettext("Permalink"),
     saveMapText:  gettext("Save Map"),
     noPermalinkText:  gettext("This map has not yet been saved."),
@@ -80,7 +79,6 @@ if(window.MapGrid){
         mapTitleLabelText: gettext("Title"),
         mapAbstractLabelText: gettext("Abstract"),
         mapContactLabelText: gettext("Contact"),
-        mapTagsLabelText: gettext("Tags"),
         mapLinkLabelText: gettext("View this Map")
     });
 }
