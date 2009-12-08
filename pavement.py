@@ -37,7 +37,7 @@ options(
       sourcedir="./"
       ),
     virtualenv=Bunch(
-      packages_to_install=['pip', 'urlgrabber', 'jstools', 'virtualenv'],
+      packages_to_install=['http://bitbucket.org/ianb/pip/get/2cb1db7b2baf.gz#egg=pip', 'urlgrabber', 'jstools', 'virtualenv'],
       dest_dir='./',
       install_paver=True,
       script_name='bootstrap.py',
