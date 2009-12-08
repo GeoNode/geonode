@@ -5,13 +5,13 @@ options()
 
 @task
 def auto(options):
+    # read in config file for artifact locations
     pass
 
 wsgi_config = \
 """
 
 """
-
 
 @task
 def post_bootstrap(options):
@@ -20,9 +20,13 @@ def post_bootstrap(options):
     else:
         bin = "bin"
     pip = path(bin) / "pip"
-    sh('%s install geonode-webapp.pybundle' %pip)
+    cmd = '%s install geonode-webapp.pybundle' %pip
+    if sys.platform == 'darwin':
+        cmd = "ARCHFLAGS='-arch i386' " + cmd
+    sh(cmd)
     info("Python dependencies are now installed")
     #@@ output config???
+
 
 @task
 def place_artifacts(options):
