@@ -302,7 +302,7 @@ def pip(*args):
         raise
     if sys.platform == "darwin":
         # remove this block to support ppc
-        cmd = "ARCHFLAGS='-arch=i386' " + cmd
+        cmd = "ARCHFLAGS='-arch i386' " + cmd
     sh(cmd + " ".join(args))
 
 pip_install = functools.partial(pip, 'install', dl_cache)
