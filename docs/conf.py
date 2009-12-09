@@ -65,7 +65,7 @@ release = '0.5'
 
 # List of directories, relative to source directory, that shouldn't be searched
 # for source files.
-exclude_trees = ['_build', '_templates']
+exclude_trees = ['_build', '_templates', 'spec/support', 'spec/reporting-technical']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
