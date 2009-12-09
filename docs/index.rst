@@ -11,7 +11,8 @@ Contents:
    todo
    spec/functional/index
    spec/technical/index
-
+   spec/index
+   spec/product-roadmap
 
 Indices and tables
 ------------------
