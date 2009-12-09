@@ -24,7 +24,7 @@ except ImportError, e:
 
 assert sys.version_info[0] >= 2 \
        and sys.version_info[1] >= 6, \
-       SystemError("GeoNode Build require python 2.6.2 or better")
+       SystemError("GeoNode Build requires python 2.6.2 or better")
 
 
 options(
@@ -54,8 +54,6 @@ options(
       paver_command_line='post_bootstrap'      
     )
 )
-
-
 
 venv = os.environ.get('VIRTUAL_ENV')
 bundle = path('shared/geonode.pybundle')
@@ -296,12 +294,16 @@ def checkup_spec(options):
     svn.checkup(parser.get('doc', 'spec_url'), path('docs') / 'spec')
 
 def pip(*args):
+    cmd = 'pip '
     try:
         pkg_resources.require('pip>=0.6')
     except :
         error("**ATTENTION**: Update your 'pip' to at least 0.6")
         raise
-    sh("pip " + " ".join(args))
+    if sys.platform == "darwin":
+        # remove this block to support ppc
+        cmd = "ARCHFLAGS='-arch=i386' " + cmd
+    sh(cmd + " ".join(args))
 
 pip_install = functools.partial(pip, 'install', dl_cache)
 pip_bundle = functools.partial(pip, 'bundle', dl_cache)
