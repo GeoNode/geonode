@@ -19,14 +19,12 @@ def post_bootstrap(options):
         bin = "Scripts"
     else:
         bin = "bin"
-    pip = path(bin) / "pip"
-    cmd = '%s install geonode-webapp.pybundle' %pip
+    cmd = '%s install geonode-webapp.pybundle' %(path(bin) / "pip")
     if sys.platform == 'darwin':
         cmd = "ARCHFLAGS='-arch i386' " + cmd
     sh(cmd)
     info("Python dependencies are now installed")
     #@@ output config???
-
 
 @task
 def place_artifacts(options):
