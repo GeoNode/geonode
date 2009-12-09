@@ -1,4 +1,4 @@
-svn+http://svn.repoze.org/thirdparty/PIL/trunk#egg=PIL
+PIL
 http://www.reportlab.org/ftp/ReportLab_2_3.tar.gz#egg=reportlab
 -r py-base-libs.txt
 
