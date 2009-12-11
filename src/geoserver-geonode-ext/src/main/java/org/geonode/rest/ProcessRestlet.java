@@ -211,7 +211,9 @@ public class ProcessRestlet extends Restlet {
      * @param attributes
      * @return
      */
-    private Map<String, Object> convertProcessInputs(final JSONObject request) {
+    private Map<String, Object> convertProcessInputs(final JSONObject request) 
+    throws ProcessException 
+    {
         // might be null
         final FeatureSource<FeatureType, Feature> politicalLayer = parsePoliticalLayerName(request);
         // might be empty iif politicalLayerName is null
@@ -276,7 +278,7 @@ public class ProcessRestlet extends Restlet {
     }
 
     @SuppressWarnings("unchecked")
-    private List<String> parsePoliticalLayerAtts(final JSONObject request) {
+    private List<String> parsePoliticalLayerAtts(final JSONObject request) throws ProcessException {
 
         final String politicalLayerName = (String) request.get(POLITICAL_LAYER_PARAM);
 
@@ -306,11 +308,19 @@ public class ProcessRestlet extends Restlet {
         final LayerInfo politicalLayer = catalog.getLayerByName(politicalLayerName);
 
         final FeatureTypeInfo resource = (FeatureTypeInfo) politicalLayer.getResource();
-        final List<AttributeTypeInfo> ftattributes = resource.getAttributes();
+        final List<AttributeTypeInfo> ftattributes;
+
+        try {
+            ftattributes = resource.attributes();
+        } catch (IOException ioe) {
+            throw new ProcessException(ioe);
+        }
+
         Set<String> attnames = new HashSet<String>();
         for (AttributeTypeInfo att : ftattributes) {
             attnames.add(att.getName());
         }
+
         for (String attname : politicalLayerAttribtues) {
             if (!attnames.contains(attname)) {
                 throw new IllegalArgumentException("Configured political layer attribute '"
