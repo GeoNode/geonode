@@ -84,3 +84,5 @@ class MapLayer(models.Model):
 
     def __unicode__(self):
         return '%s?layers=%s' % (self.ows_url, self.name)
+
+

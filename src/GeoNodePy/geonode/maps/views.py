@@ -14,7 +14,6 @@ except ImportError:
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
     "proxy": "/proxy/?url=",
-
     "about": {
         "title": "GeoNode Default Map",
         "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the 'Save Map' button above to contribute your map to the GeoNode community.",
@@ -33,7 +32,6 @@ DEFAULT_MAP_CONFIG = {
         "zoom": settings.DEFAULT_MAP_ZOOM
     }
 }
-
 
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
@@ -78,12 +76,14 @@ def maps(request, mapid=None):
         response['Location'] = map.id
         return response
 
+
 def newmap(request):
     return render_to_response('maps/view.html', 
             context_instance = RequestContext(request, 
                 { 'config': json.dumps(DEFAULT_MAP_CONFIG) },
                 [resource_urls]
             ))
+
 
 def view(request, mapid):
     """  
@@ -98,6 +98,7 @@ def view(request, mapid):
                     [resource_urls]
                 ))
 
+
 def embed(request, mapid=None):
     if mapid is None:
         config = DEFAULT_MAP_CONFIG
@@ -111,11 +112,9 @@ def embed(request, mapid=None):
     ))
 
 
-
 def data(request):
     context = RequestContext(request,[resource_urls])
     return render_to_response('data.html', context_instance=context)
-
 
 def build_map_config(map):
     layers = map.layer_set.all()
@@ -155,5 +154,3 @@ def view_js(request, mapid):
     map = Map.objects.get(pk=mapid)
     config = build_map_config(map)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
-   
-

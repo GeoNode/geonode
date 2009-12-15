@@ -1,23 +1,25 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
-
-Replace these with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
+from geonode.maps.models import Map
+from geonode.maps.views import build_map_config
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
+class MapTest(TestCase):
+    fixtures = ['testdata.json']
+
+    default_abstract = "This is a demonstration of GeoNode, an application \
+for assembling and publishing web based maps.  After adding layers to the map, \
+use the 'Save Map' button above to contribute your map to the GeoNode \
+community." 
+
+    default_title = "GeoNode Default Map"
+
+    def test_map_json(self):
         """
-        Tests that 1 + 1 always equals 2.
+        Make some assertions about the data structure produced for
+        serialization to a JSON map configuration
         """
-        self.failUnlessEqual(1 + 1, 2)
-
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
-
->>> 1 + 1 == 2
-True
-"""}
-
+        map = Map.objects.get(id=1)
+        cfg = build_map_config(map)
+        self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
+        self.assertEquals(cfg['about']['title'], MapTest.default_title)
+        layernames = [x['name'] for x in cfg['map']['layers']]
+        self.assertEquals(layernames, ['base:CA', 'base:nic_admin'])
