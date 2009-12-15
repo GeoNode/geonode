@@ -16,6 +16,9 @@ import pkg_resources
 from shutil import copy, copytree, move
 import sys
 import zipfile
+import subprocess
+from xml.etree import ElementTree
+
 
 try:
     from paver.virtual import bootstrap
@@ -29,7 +32,7 @@ assert sys.version_info[0] >= 2 \
 
 options(
     config=Bunch(ini=path('shared/build.ini'),
-                 package_dir = path('./package')),
+                 package_dir = path('shared/package')),
     minilib=Bunch(extra_files=['virtual', 'doctools', 'misctasks']),
     sphinx=Bunch(
       docroot='docs',
@@ -45,8 +48,8 @@ options(
       paver_command_line='post_bootstrap'
       ),
     deploy=Bunch(
-      pavement=path('shared/deployment_pavement.py'),
-      req_file=path('shared/deploy-libs.txt'),
+      pavement=path('shared/package/pavement.py'),
+      req_file=path('shared/package/deploy-libs.txt'),
       packages_to_install=['pip'],
       dest_dir='./',
       install_paver=True,
@@ -263,12 +266,65 @@ def package_webapp(options):
     req_file.write_text(deploy_req_txt)
     pip_bundle("-r %s %s/geonode-webapp.pybundle" %(req_file, options.deploy.out_dir))
 
-
-
 @task
 @needs('package_geoserver','package_webapp', 'package_client', 'package_bootstrap')
 def package_all(options):
     info('all is packaged, ready to deploy')
+
+_svn_info = None
+def get_svn_info(format='xml'):
+    global _svn_info
+    if _svn_info is None:
+        _svn_info = subprocess.Popen(["svn", "info", "--xml"], stdout=subprocess.PIPE).communicate()[0]
+    return ElementTree.fromstring(_svn_info)[0]
+
+def create_version_name(svn_version=True):
+    # we'll use the geonodepy version as our "official" version number
+    # for now
+    slug = "GeoNode-%s" %pkg_resources.get_distribution('GeoNodePy').version
+    svninfo = get_svn_info()
+    if svn_version:
+        # this assumes releaser know what branch is being released
+        revision = svninfo.get('revision')
+        slug += "rev" + revision
+    return slug
+        
+@task
+@cmdopts([
+    ('name=', 'n', 'Release number or name'),
+    ('no_svn', 'D', 'Do not append svn version number as part of name '),
+    ('append_to=', 'a', 'append to release name'),
+    ('skip_packaging', 'y', 'Do not call package_all when creating a releas'),
+])
+def make_release(options):
+    """
+    Creates a tarball to use for building the system elsewhere
+    (production, distribution, etc)
+
+    This part of the build is svn specific...
+    """
+    if not hasattr(options, 'skip_packaging'):
+        call_task("package_all")
+    if hasattr(options, 'name'):
+        pkgname = options.name
+    else:
+        pkgname = create_version_name(not getattr(options, 'no_svn', False))
+        if hasattr(options, 'append_to'):
+            pkgname += options.append_to
+            
+    svninfo = get_svn_info()
+    with pushd('shared'):
+        out_pkg = path(pkgname)
+        out_pkg.rmtree()
+        path('./package').copytree(out_pkg)
+        infofile = out_pkg / "version.txt"
+        infofile.write_text("%s@%s" %(svninfo[0].text,
+                                      svninfo.get('revision')))
+        
+        sh('tar --exclude .svn -cvzf %s.tar.gz %s' %(out_pkg, out_pkg))
+        out_pkg.rmtree()
+        info("%s.tar.gz screated" %out_pkg.abspath())
+                            
 
 
 def unzip_file(src, dest):
@@ -300,8 +356,9 @@ def pip(*args):
     except :
         error("**ATTENTION**: Update your 'pip' to at least 0.6")
         raise
+    #@@ set in "platform_options"?
+    # remove this block to support ppc
     if sys.platform == "darwin":
-        # remove this block to support ppc
         cmd = "ARCHFLAGS='-arch i386' " + cmd
     sh(cmd + " ".join(args))
 
