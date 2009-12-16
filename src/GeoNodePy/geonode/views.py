@@ -2,32 +2,9 @@ from django.conf import settings
 from geonode.maps.models import Map
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from geonode.maps.views import build_map_config
+from geonode.maps.views import build_map_config, DEFAULT_MAP_CONFIG
 from geonode.maps.context_processors import resource_urls
 import random
-
-DEFAULT_MAP_CONFIG = {
-    "alignToGrid": True,
-    "proxy": "/proxy/?url=",
-
-    "about": {
-        "title": "GeoNode Demo Map",
-        "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the 'Save Map' button above to contribute your map to the GeoNode community.",
-        "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>."
-    },
-    "wms": {
-        "geonode": "%swms" % settings.GEOSERVER_BASE_URL
-    },
-    "map": {
-        "layers": [ {
-            "name": settings.DEFAULT_MAP_BASE_LAYER,
-            "wms": "geonode",
-            "group": "background"
-        } ],
-        "center": settings.DEFAULT_MAP_CENTER,
-        "zoom": settings.DEFAULT_MAP_ZOOM
-    }
-}
 
 def index(request): 
     featured = Map.objects.filter(featured=True)
