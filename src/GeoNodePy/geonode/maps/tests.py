@@ -1,6 +1,7 @@
 from django.test import TestCase
 from geonode.maps.models import Map
-from geonode.maps.views import build_map_config
+from geonode.maps.views import build_map_config, DEFAULT_MAP_CONFIG
+import json
 
 class MapTest(TestCase):
     fixtures = ['testdata.json']
@@ -12,7 +13,7 @@ community."
 
     default_title = "GeoNode Default Map"
 
-    def test_map_json(self):
+    def test_map2json(self):
         """
         Make some assertions about the data structure produced for
         serialization to a JSON map configuration
@@ -23,3 +24,14 @@ community."
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
         layernames = [x['name'] for x in cfg['map']['layers']]
         self.assertEquals(layernames, ['base:CA', 'base:nic_admin'])
+
+    def test_json2map(self):
+        from geonode.maps.views import read_json_map
+
+        self.assertEquals(Map.objects.count(), 3)
+        map = read_json_map(json.dumps(DEFAULT_MAP_CONFIG))
+        self.assertEquals(Map.objects.count(), 4)
+
+        # just testing that the map was created, no assertion needed since 
+        # get() throws an exception if nothing matches
+        Map.objects.get(id=map.id)
