@@ -42,39 +42,52 @@ def maps(request, mapid=None):
         config = build_map_config(map)
         return HttpResponse(json.dumps(config))
     elif request.method == 'POST':
-        try:
-            conf = json.loads(request.raw_post_data)
-            title = conf['about']['title']
-            abstract = conf['about']['abstract']
-            contact = conf['about']['contact']
-            zoom = conf['map']['zoom']
-            center_lon = conf['map']['center'][0]
-            center_lat = conf['map']['center'][1]
-        except (KeyError, ValueError):
-            return HttpResponse("The server could not understand your request.", status=400, mimetype="text/plain")
+        try: 
+            map = read_json_map(request.raw_post_data)
+            response = HttpResponse('', status=201)
+            response['Location'] = map.id
+            return response
+        except:
+            return HttpResponse(
+                "The server could not understand your request.",
+                status=400, 
+                mimetype="text/plain"
+            )
 
-        featured = False
-        if 'featured' in conf['about']:
-            featured = conf['about']['featured']
+def read_json_map(json_text):
+    conf = json.loads(json_text)
+    title = conf['about']['title']
+    abstract = conf['about']['abstract']
+    contact = conf['about']['contact']
+    zoom = conf['map']['zoom']
+    center_lon = conf['map']['center'][0]
+    center_lat = conf['map']['center'][1]
 
-        map = Map.objects.create(title=title, abstract=abstract, contact=contact, zoom=zoom, center_lon=center_lon, center_lat=center_lat, featured=featured)
-        map.save()
+    featured = conf['about'].get('featured', False)
 
-        if 'wms' in conf and 'layers' in conf['map']:
-            services = conf['wms']
-            layers = conf['map']['layers']
-            ordering = 0
-            for l in layers:
-                if 'wms' in l and l['wms'] in services:
-                    name = l['name']
-                    group = l['group']
-                    ows = services[l['wms']]
-                    map.layer_set.create(name=name, group=group, ows_url=ows, stack_order=ordering)
-                    ordering = ordering + 1
+    map = Map.objects.create(
+        title=title, 
+        abstract=abstract, 
+        contact=contact, 
+        zoom=zoom, 
+        center_lon=center_lon, 
+        center_lat=center_lat, 
+        featured=featured
+    )
 
-        response = HttpResponse('', status=201)
-        response['Location'] = map.id
-        return response
+    if 'wms' in conf and 'layers' in conf['map']:
+        services = conf['wms']
+        layers = conf['map']['layers']
+        ordering = 0
+        for l in layers:
+            if 'wms' in l and l['wms'] in services:
+                name = l['name']
+                group = l['group']
+                ows = services[l['wms']]
+                map.layer_set.create(name=name, group=group, ows_url=ows, stack_order=ordering)
+                ordering = ordering + 1
+
+    return map
 
 
 def newmap(request):
