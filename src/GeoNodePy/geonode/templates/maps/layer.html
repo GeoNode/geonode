@@ -1,0 +1,21 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block main %}
+<div id="description">
+    <h3>
+        {% blocktrans with layer.typename as layername%} 
+            Layer details for {{ layername }} 
+        {% endblocktrans %}
+    </h3>
+</div>
+
+{% if layer.metadata.logo %} 
+    <img src="{{layer.metadata.logo.url}}">
+{% endif %}
+{% if layer.metadata.url %} 
+    <a href="{{layer.metadata.url}}">{{layer.metadata.title}}</a>
+{% else %} 
+    {{ layer.metadata.title }}
+{% endif %}
+{% endblock %}
