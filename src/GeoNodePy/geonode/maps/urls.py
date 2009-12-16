@@ -1,5 +1,4 @@
-from django.conf.urls.defaults import *
-from django.conf import settings
+from django.conf.urls.defaults import patterns
 
 js_info_dict = {
     'packages': ('geonode.maps',),
