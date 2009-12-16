@@ -1,7 +1,7 @@
-from geonode.maps.models import Map
+from geonode.maps.models import Map, Layer
 from geonode.maps.context_processors import resource_urls
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
 
@@ -129,6 +129,7 @@ def data(request):
     context = RequestContext(request,[resource_urls])
     return render_to_response('data.html', context_instance=context)
 
+
 def build_map_config(map):
     layers = map.layer_set.all()
     servers = list(set(l.ows_url for l in layers))
@@ -167,3 +168,11 @@ def view_js(request, mapid):
     map = Map.objects.get(pk=mapid)
     config = build_map_config(map)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
+
+def layer_detail(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
+    print layer
+    return render_to_response(
+        'maps/layer.html', 
+        RequestContext(request, {"layer": layer}, [resource_urls])
+    )
