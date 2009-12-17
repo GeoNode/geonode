@@ -47,26 +47,27 @@ var DataPage = Ext.extend(Page, {
      *     prepares the application for use.
      */
     load: function() {
-	GeoExplorer.util.dispatch(
-	    [
-            // create layout as soon as Ext says ready
-            function(done) {
-                Ext.onReady(function() {
-                this.createLayout();
-                done();
-                }, this);
-            },
-            // load capabilities immediately
-            function(done) {
-                this.initCapabilities();
-                this.capabilities.load({
-                    callback: function(){this.describeLayers(done);},
-                    scope: this
-                });
-            }
-	    ],
-	    // activate app when the above are both done
-	    this.activate, this);
+        gxp.util.dispatch([
+                // create layout as soon as Ext says ready
+                function(done) {
+                    Ext.onReady(function() {
+                    this.createLayout();
+                    done();
+                    }, this);
+                },
+                // load capabilities immediately
+                function(done) {
+                    this.initCapabilities();
+                    this.capabilities.load({
+                        callback: function(){this.describeLayers(done);},
+                        scope: this
+                    });
+                }
+            ],
+            // activate app when the above are both done
+            this.activate,
+            this
+        );
     },
     
     describeLayers: function(done){

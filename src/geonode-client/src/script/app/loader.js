@@ -17,7 +17,6 @@
         "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js",
         "/static/src/script/app/GeoExplorer/GroupContainer.js",
         "/static/src/script/app/GeoExplorer/GoogleEarthPanel.js",
-        "/static/src/script/app/GeoExplorer/util.js",
         "/static/src/script/app/GeoExplorer/NewSourceWindow.js"
     );
 

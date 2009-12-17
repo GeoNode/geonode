@@ -23,19 +23,18 @@ var Page = Ext.extend(Ext.util.Observable, {
      *     prepares the application for use.
      */
     load: function() {
-	GeoExplorer.util.dispatch(
-	    [
-		// create layout as soon as Ext says ready
-		function(done) {
-		    Ext.onReady(function() {
-                        this.createLayout();
-                        done();
-		    }, this);
-                } 
-            ],
-	    // activate app when the above are both done
-	    this.activate, this
-	);
+        gxp.util.dispatch([
+            // create layout as soon as Ext says ready
+            function(done) {
+                Ext.onReady(function() {
+                    this.createLayout();
+                    done();
+                }, this);
+            }],
+            // activate app when the above are both done
+            this.activate,
+            this
+        );
     },
    
     /**
