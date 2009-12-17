@@ -244,13 +244,15 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     return function(done){
                         this.addSource(this.wms[id], id, done, done);
                     }; 
-                })(id));
+                })(id)
+            );
         }
  
-        GeoExplorer.util.dispatch(
+        gxp.util.dispatch(
             dispatchQueue,
             this.activate, 
-            this);
+            this
+        );
     },
     
     /** private: method[addSource]
