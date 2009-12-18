@@ -44,7 +44,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             }
         ];
  
-        GeoExplorer.util.dispatch(
+        gxp.util.dispatch(
             dispatchQueue,
             this.activate, 
             this);
