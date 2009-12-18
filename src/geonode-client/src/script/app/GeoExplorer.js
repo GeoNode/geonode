@@ -2,51 +2,6 @@
  * Copyright (c) 2009 The Open Planning Project
  */
 
-
-/* Accordion layout bug fix see
-
-  http://extjs.com/forum/showthread.php?p=81255
-
- */
-
-
-Ext.layout.Accordion.prototype.setActiveItem = function(item){
-        item = this.container.getComponent(item);
-        if(this.activeItem != item){
-            this.activeItem = item;
-        }
-};
-
-Ext.layout.Accordion.prototype.renderItem = function(c){
-    if(this.animate === false){
-        c.animCollapse = false;
-    }
-    c.collapsible = true;
-    if(this.autoWidth){
-        c.autoWidth = true;
-    }
-    if(this.titleCollapse){
-        c.titleCollapse = true;
-    }
-    if(this.hideCollapseTool){
-        c.hideCollapseTool = true;
-    }
-    if(this.collapseFirst !== undefined){
-        c.collapseFirst = this.collapseFirst;
-    }
-    if(!this.activeItem && !c.collapsed){
-        this.activeItem = c;
-    }else if(this.activeItem != c){
-        c.collapsed = true;
-    }
-    Ext.layout.Accordion.superclass.renderItem.apply(this, arguments);
-    c.header.addClass('x-accordion-hd');
-    c.on('beforeexpand', this.beforeExpand, this);
-};
-
-
-
-
 /**
  * Constructor: GeoExplorer
  * Create a new GeoExplorer application.
