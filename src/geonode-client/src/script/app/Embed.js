@@ -20,7 +20,6 @@ Embed = Ext.extend(GeoExplorer, {
      * Create the various parts that compose the layout.
      */
     createLayout: function() {
-        
         // create the map
         // TODO: check this.initialConfig.map for any map options
         this.map = new OpenLayers.Map({
@@ -45,7 +44,7 @@ Embed = Ext.extend(GeoExplorer, {
             "preaddlayer" : function(evt){
                 if(evt.layer.mergeNewParams){
                     var maxExtent = evt.layer.maxExtent;
-                    evt.layer.mergeNewParams({
+                    if (maxExtent) evt.layer.mergeNewParams({
                         transparent: true,
                         format: "image/png",
                         tiled: true,
@@ -109,64 +108,5 @@ Embed = Ext.extend(GeoExplorer, {
                 items: (toolbar ? [toolbar] : []).concat([this.mapPanel])
             }
         });    
-    },
-
-    /**
-     * api: method[createTools]
-     * Create the various parts that compose the layout.
-     */
-    createTools: function() {
-        var tools = Embed.superclass.createTools.apply(this, arguments);
-
-        var menu = new Ext.menu.Menu();
-
-        var updateLayerSwitcher = function() {
-            menu.removeAll();
-            menu.getEl().addClass("gx-layer-menu");
-            menu.getEl().applyStyles({
-                width: '',
-                height: ''
-            });
-            menu.add(
-                {
-                    iconCls: "gx-layer-visibility",
-                    text: "Layer",
-                    canActivate: false
-                },
-                "-");
-            this.mapPanel.layers.each(function(record) {
-                var layer = record.get("layer");
-                if(layer.displayInLayerSwitcher) {
-                    var item = new Ext.menu.CheckItem({
-                        text: record.get("title"),
-                        checked: record.get("layer").getVisibility(),
-                        group: record.get("group"),
-                        listeners: {
-                            checkchange: function(item, checked) {
-                                record.get("layer").setVisibility(checked);
-                            }
-                        }
-                    });
-                    if (menu.items.getCount() > 2) {
-                        menu.insert(2, item);
-                    } else {
-                        menu.add(item);
-                    }
-                }
-            });
-        };
-
-        this.mapPanel.layers.on("add", updateLayerSwitcher, this);
-
-        var layerChooser = new Ext.Button({
-            tooltip: this.layerContainerText,
-            iconCls: 'icon-layer-switcher',
-            menu: menu
-        });
-
-        tools.unshift("-");
-        tools.unshift(layerChooser);
-
-        return tools;
     }
 });
