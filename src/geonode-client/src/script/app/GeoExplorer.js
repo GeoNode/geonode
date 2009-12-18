@@ -167,6 +167,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         }
         
         this.popupCache = {};
+        this.backgroundQueue = [];
 
         this.load();        
     },
@@ -178,6 +179,25 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
      *     prepares the application for use.
      */
     load: function() {
+        function mungeSourcePlugin(conf) {
+            var ptype = "service" in conf ? "gx-" + conf.service + "source" : "gx-wmssource";
+            var pluginConfig = { "ptype": ptype };
+            Ext.apply(pluginConfig, conf)
+            delete pluginConfig.service;
+            delete pluginConfig.layers;
+            return pluginConfig;
+        }
+
+        function backgroundLayerAdder(source, conf) {
+            return function(done) {
+                source.on({
+                    "ready": done, 
+                    "scope": this
+                });
+                source.init(this);
+            }
+        }
+
         this.layerSources = new Ext.data.SimpleStore({
             fields: ["identifier", "name", "store", "url"],
             data: []
@@ -203,6 +223,14 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     }; 
                 })(id)
             );
+        }
+
+        for (var i = 0, len = this.backgroundLayers.length; i < len; i++) {
+            var conf = this.backgroundLayers[i];
+            var pluginConf = mungeSourcePlugin(conf);
+            var source = Ext.ComponentMgr.createPlugin(pluginConf, "gx-wmssource");
+            this.backgroundQueue.push({"source": source, "conf": conf});
+            dispatchQueue.push(backgroundLayerAdder(source, conf));
         }
  
         gxp.util.dispatch(
@@ -895,51 +923,34 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             }
         }
 
-        if (this.backgroundLayers) {
-            this.addBackgroundLayers();
-        }
-    },
-
-    addBackgroundLayers: function() {
-        function backgroundLayerAdder(conf) {
-            return function(source) {
-                for (var i = 0, len = conf.layers.length; i < len; i++) {
-                    var layerConf = conf.layers[i];
-                    if ((typeof layerConf) === "string") layerConf = {name: layerConf};
-                    layerConf.isBaseLayer = true;
-                    var layer = source.createLayerRecord(layerConf);
-                    layer.set('group', 'background');
-                    this.layers.insert(0, [layer]); 
-                }
+        var bglayers = []
+        var visible = true;
+        for (var i = 0, len = this.backgroundQueue.length; i < len; i++) {
+            var source = this.backgroundQueue[i].source;
+            var layers = this.backgroundQueue[i].conf.layers;
+            for (var j = 0, jlen = layers.length; j < jlen; j++) {
+                var conf = layers[j];
+                if ((typeof conf) === "string") conf = {"name": conf};
+                conf.isBaseLayer = true;
+                var layer = source.createLayerRecord(conf);
+                layer.set("group", "background");
+                layer.get("layer").setVisibility(visible);
+                console.log(layer.get("layer").getVisibility());
+                visible = false;
+                bglayers.push(layer);
             }
         }
 
-        this.layers.add([
-            new this.layers.recordType({
-                title: this.backgroundDisabledText,
-                layer: new OpenLayers.Layer(this.backgroundDisabledText),
-                group: 'background',
-                queryable: 'false'
-            })
-        ]);
+        bglayers.push(new this.layers.recordType({
+            title: this.backgroundDisabledText,
+            layer: new OpenLayers.Layer(this.backgroundDisabledText, {
+                'visibility': false
+            }),
+            group: "background",
+            queryable: 'false'
+        }));
 
-
-        for (var i = 0, len = this.backgroundLayers.length; i < len; i++) {
-            var conf = this.backgroundLayers[i];
-            var ptype = 'service' in conf ? "gx-" + conf.service + "source" : "gx-wmssource";
-            var pluginConfig = {ptype: ptype};
-
-            Ext.apply(pluginConfig, conf);
-            delete pluginConfig.service;
-            delete pluginConfig.layers;
-
-            var source = Ext.ComponentMgr.createPlugin(pluginConfig, ptype);
-            source.on({
-                'ready': backgroundLayerAdder(conf),
-                'scope': this
-            });
-            source.init(this);
-        }
+        this.layers.insert(0, bglayers); 
     },
 
     /**
