@@ -137,6 +137,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     zoomToLayerExtentText : "UT:Zoom to Layer Extent",
     removeLayerActionTipText : "UT:Remove Layer",
     layerContainerText : "UT:Map Layers",
+    backgroundContainerText : "UT:Background",
+    backgroundDisabledText: "UT: No background",
     layersPanelText : "UT:Layers",
     layersContainerText : "UT:Data",
     legendPanelText : "UT:Legend",
@@ -225,7 +227,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             fields: ["identifier", "name", "store", "url"],
             data: []
         });
-        
+
         var dispatchQueue = [
             // create layout as soon as Ext says ready
             function(done) {
@@ -453,7 +455,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             "preaddlayer" : function(evt){
                 if(evt.layer.mergeNewParams){
                     var maxExtent = evt.layer.maxExtent;
-                    evt.layer.mergeNewParams({
+                    if (maxExtent) evt.layer.mergeNewParams({
                         transparent: true,
                         format: "image/png",
                         tiled: true,
@@ -528,14 +530,39 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                 removeLayerAction.enable();
             }
         };
+
+        var bgSubTree = new GeoExt.tree.BaseLayerContainer({
+            text: this.backgroundContainerText, 
+            layerStore: this.layers, 
+            loader: {
+                filter: function(record) {
+                    return record.get('group') === 'background';
+                }
+            }
+        });
+
+        var fgSubTree = new GeoExt.tree.OverlayLayerContainer({
+            text: this.layerContainerText,
+            layerStore: this.layers,
+            loader: {
+                filter: function(record) {
+                    return record.get('group') !== 'background';
+                }
+            }
+        });
         
         var layerTree = new Ext.tree.TreePanel({
             border: false,
             rootVisible: false,
-            root: new GeoExt.tree.LayerContainer({
-                text: this.layerContainerText,
-                layerStore: this.layers
-            }),
+            loader: {
+                applyLoader: false
+            },
+            root: {
+                children: [
+                    fgSubTree,
+                    bgSubTree
+                ]
+            },
             enableDD: true,
             selModel: new Ext.tree.DefaultSelectionModel({
                 listeners: {
@@ -911,10 +938,54 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             } else {
                 this.map.zoomToMaxExtent();
             }
-            
+        }
+
+        if (this.backgroundLayers) {
+            this.addBackgroundLayers();
         }
     },
 
+    addBackgroundLayers: function() {
+        function backgroundLayerAdder(conf) {
+            return function(source) {
+                for (var i = 0, len = conf.layers.length; i < len; i++) {
+                    var layerConf = conf.layers[i];
+                    if ((typeof layerConf) === "string") layerConf = {name: layerConf};
+                    layerConf.isBaseLayer = true;
+                    var layer = source.createLayerRecord(layerConf);
+                    layer.set('group', 'background');
+                    this.layers.insert(0, [layer]); 
+                }
+            }
+        }
+
+        this.layers.add([
+            new this.layers.recordType({
+                title: this.backgroundDisabledText,
+                layer: new OpenLayers.Layer(this.backgroundDisabledText),
+                group: 'background',
+                queryable: 'false'
+            })
+        ]);
+
+
+        for (var i = 0, len = this.backgroundLayers.length; i < len; i++) {
+            var conf = this.backgroundLayers[i];
+            var ptype = 'service' in conf ? "gx-" + conf.service + "source" : "gx-wmssource";
+            var pluginConfig = {ptype: ptype};
+
+            Ext.apply(pluginConfig, conf);
+            delete pluginConfig.service;
+            delete pluginConfig.layers;
+
+            var source = Ext.ComponentMgr.createPlugin(pluginConfig, ptype);
+            source.on({
+                'ready': backgroundLayerAdder(conf),
+                'scope': this
+            });
+            source.init(this);
+        }
+    },
 
     /**
      * Method: initCapGrid

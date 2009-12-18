@@ -25,8 +25,7 @@ DEFAULT_MAP_CONFIG = {
     "map": {
         "layers": [ {
             "name": settings.DEFAULT_MAP_BASE_LAYER,
-            "wms": "capra",
-            "group": "background"
+            "wms": "capra"
         } ],
         "center": settings.DEFAULT_MAP_CENTER,
         "zoom": settings.DEFAULT_MAP_ZOOM
@@ -93,7 +92,7 @@ def read_json_map(json_text):
 def newmap(request):
     return render_to_response('maps/view.html', 
             context_instance = RequestContext(request, 
-                { 'config': json.dumps(DEFAULT_MAP_CONFIG) },
+                { 'config': json.dumps(DEFAULT_MAP_CONFIG), 'bg': json.dumps(settings.MAP_BASELAYERS) },
                 [resource_urls]
             ))
 
@@ -107,7 +106,7 @@ def view(request, mapid):
     config = build_map_config(map)
     return render_to_response('maps/view.html',
                 context_instance = RequestContext(request, 
-                    { 'config': json.dumps(config) },
+                    { 'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS)},
                     [resource_urls]
                 ))
 
@@ -120,7 +119,7 @@ def embed(request, mapid=None):
         config = build_map_config(map)
     return render_to_response('maps/embed.html', 
         context_instance = RequestContext(request, 
-            { 'config': json.dumps(config) },
+            { 'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS)},
             [resource_urls]
     ))
 

@@ -91,10 +91,29 @@ GEOSERVER_CREDENTIALS = "admin", "geoserver"
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 
 #Default settings for map composing application.
-DEFAULT_MAP_BASE_LAYER = "base:CA"
+DEFAULT_MAP_BASE_LAYER = "base:nic_admin"
 DEFAULT_MAP_CENTER = [-84.7, 12.8]
 DEFAULT_MAP_ZOOM = 7
 
+MAP_BASELAYERS = [{
+        'service': "wms",
+        'url': "http://maps.opengeo.org/geowebcache/service/wms?request=GetCapabilities",
+        'layers': [
+            'bluemarble'
+        ]}, {
+        'service': "wms",
+        'url': "%swms?request=GetCapabilities" % GEOSERVER_BASE_URL,
+        'layers': [
+            'base:CA'
+        ]}
+        #, {
+        #'service': 'google',
+        #'layers': [
+        #    'G_PHYSICAL_MAP', 
+        #    'G_NORMAL_MAP', 
+        #    'G_SATELLITE_MAP'
+        #]}
+    ]
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')

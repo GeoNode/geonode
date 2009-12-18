@@ -36,6 +36,7 @@ Ext.onReady(function() {
     };
 
     Ext.apply(config, {% if config %}{{config|safe}}{%else%} {%endif%});
+    Ext.apply(config, {"backgroundLayers": {{ bg|safe }}});
     app = new GeoExplorer(config);
 });
 </script>
