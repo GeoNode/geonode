@@ -204,7 +204,7 @@ var DataPage = Ext.extend(Page, {
         });
 
         this.capabilities.each(function(record) {
-            if (record.get("prefix") == "risk") riskStore.add([record]);
+            if (record.get("name").match(/^risk:/)) riskStore.add([record]);
         });
 	    // overlay store 
         var hazardStore = new Ext.data.SimpleStore({
@@ -212,7 +212,7 @@ var DataPage = Ext.extend(Page, {
         });
         
         this.capabilities.each(function(record) {
-            if (record.get("prefix") == "hazard") overlayStore.add([record]);
+            if (record.get("name").match(/^hazard:/)) overlayStore.add([record]);
         });
        
         // base store 
@@ -220,7 +220,7 @@ var DataPage = Ext.extend(Page, {
             recordType: this.capabilities.recordType
         });
         this.capabilities.each(function(record) { 
-            if (record.get("prefix") == "base") baseStore.add([record]);
+            if (record.get("name").match(/^base/)) baseStore.add([record]);
         });
 
         // get the url for out.json file 
