@@ -139,7 +139,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     widthLabel: 'UT: Width',
 
     constructor: function(config) {
-
         var query = Ext.urlDecode(document.location.search.substr(1));
         var queryConfig = Ext.util.JSON.decode(query.q);
         
@@ -179,31 +178,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
      *     prepares the application for use.
      */
     load: function() {
-        var proxy = this.proxy
-        function mungeSourcePlugin(conf) {
-            var ptype = "service" in conf ? "gx-" + conf.service + "source" : "gx-wmssource";
-            var pluginConfig = { "ptype": ptype };
-            Ext.apply(pluginConfig, conf)
-
-            if ("url" in pluginConfig && pluginConfig.url.startsWith("http")) {
-                pluginConfig.url = proxy + escape(pluginConfig.url);
-            }
-
-            delete pluginConfig.service;
-            delete pluginConfig.layers;
-            return pluginConfig;
-        }
-
-        function backgroundLayerAdder(source, conf) {
-            return function(done) {
-                source.on({
-                    "ready": done, 
-                    "scope": this
-                });
-                source.init(this);
-            }
-        }
-
         this.layerSources = new Ext.data.SimpleStore({
             fields: ["identifier", "name", "store", "url"],
             data: []
@@ -231,21 +205,81 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             );
         }
 
+        dispatchQueue = dispatchQueue.concat(this.getBackgroundLoaders());
+
+        gxp.util.dispatch(dispatchQueue, this.activate, this);
+    },
+
+    getBackgroundLoaders: function () {
+        var loaders = [];
+
+        var proxy = this.proxy;
+        function mungeSourcePlugin(conf) {
+            var ptype =
+                "service" in conf ? "gx-" + conf.service + "source" : "gx-wmssource";
+            var pluginConfig = { "ptype": ptype };
+            Ext.apply(pluginConfig, conf);
+
+            if ("url" in pluginConfig && pluginConfig.url.startsWith("http")) {
+                pluginConfig.url = proxy + escape(pluginConfig.url);
+            }
+
+            delete pluginConfig.service;
+            delete pluginConfig.layers;
+            return pluginConfig;
+        }
+
+        function backgroundLayerAdder(source, conf) {
+            return function(done) {
+                source.on({
+                    "ready": done,
+                    "scope": this
+                });
+                source.init(this);
+            }
+        }
+
         for (var i = 0, len = this.backgroundLayers.length; i < len; i++) {
             var conf = this.backgroundLayers[i];
             var pluginConf = mungeSourcePlugin(conf);
             var source = Ext.ComponentMgr.createPlugin(pluginConf, "gx-wmssource");
             this.backgroundQueue.push({"source": source, "conf": conf});
-            dispatchQueue.push(backgroundLayerAdder(source, conf));
+            loaders.push(backgroundLayerAdder(source, conf));
         }
- 
-        gxp.util.dispatch(
-            dispatchQueue,
-            this.activate, 
-            this
-        );
+
+        return loaders;
     },
-    
+
+    getBackgroundLayers: function () {
+        var bglayers = []
+        var visible = true;
+        for (var i = 0, len = this.backgroundQueue.length; i < len; i++) {
+            var source = this.backgroundQueue[i].source;
+            var layers = this.backgroundQueue[i].conf.layers;
+            for (var j = 0, jlen = layers.length; j < jlen; j++) {
+                var conf = layers[j];
+                if ((typeof conf) === "string") conf = {"name": conf};
+                conf.isBaseLayer = true;
+                var layer = source.createLayerRecord(conf);
+                layer.set("group", "background");
+                layer.get("layer").setVisibility(visible);
+                visible = false;
+                bglayers.push(layer);
+            }
+        }
+
+        bglayers.push(new this.layers.recordType({
+            title: this.backgroundDisabledText,
+            layer: new OpenLayers.Layer(this.backgroundDisabledText, {
+                'visibility': false
+            }),
+            group: "background",
+            queryable: 'false'
+        }));
+
+        return bglayers;
+    },
+
     /** private: method[addSource]
      * Add a new WMS server to GeoExplorer. The id parameter is optional,
      * and will be given a default if not specified; success and fail 
@@ -256,13 +290,13 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         scope = scope || this;
         success = OpenLayers.Function.bind(success, scope);
         fail = OpenLayers.Function.bind(fail, scope);
-        
+
         id = id || OpenLayers.Util.createUniqueID("source");
         var capsURL = this.createWMSCapabilitiesURL(url);
         var store = new GeoExt.data.WMSCapabilitiesStore();
 
         OpenLayers.Request.GET({
-            proxy: this.proxy, 
+            proxy: this.proxy,
             url: capsURL,
             success: function(request){
                 var store = new GeoExt.data.WMSCapabilitiesStore({
@@ -929,33 +963,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             }
         }
 
-        var bglayers = []
-        var visible = true;
-        for (var i = 0, len = this.backgroundQueue.length; i < len; i++) {
-            var source = this.backgroundQueue[i].source;
-            var layers = this.backgroundQueue[i].conf.layers;
-            for (var j = 0, jlen = layers.length; j < jlen; j++) {
-                var conf = layers[j];
-                if ((typeof conf) === "string") conf = {"name": conf};
-                conf.isBaseLayer = true;
-                var layer = source.createLayerRecord(conf);
-                layer.set("group", "background");
-                layer.get("layer").setVisibility(visible);
-                visible = false;
-                bglayers.push(layer);
-            }
-        }
-
-        bglayers.push(new this.layers.recordType({
-            title: this.backgroundDisabledText,
-            layer: new OpenLayers.Layer(this.backgroundDisabledText, {
-                'visibility': false
-            }),
-            group: "background",
-            queryable: 'false'
-        }));
-
-        this.layers.insert(0, bglayers); 
+        this.layers.insert(0, this.getBackgroundLayers()); 
     },
 
     /**
