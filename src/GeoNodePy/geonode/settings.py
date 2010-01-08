@@ -1,5 +1,6 @@
 # Django settings for GeoNode project.
 from utils import path_extrapolate
+from urllib import urlencode
 
 _ = lambda x: x
 
@@ -95,14 +96,17 @@ DEFAULT_MAP_BASE_LAYER = "base:nic_admin"
 DEFAULT_MAP_CENTER = [-84.7, 12.8]
 DEFAULT_MAP_ZOOM = 7
 
+def proxify(url):
+    return "/proxy?%s" % urlencode({"url": url})
+
 MAP_BASELAYERS = [{
         'service': "wms",
-        'url': "http://maps.opengeo.org/geowebcache/service/wms?request=GetCapabilities",
+        'url': proxify("http://maps.opengeo.org/geowebcache/service/wms?request=GetCapabilities"),
         'layers': [
             'bluemarble'
         ]}, {
         'service': "wms",
-        'url': "%swms?request=GetCapabilities" % GEOSERVER_BASE_URL,
+        'url': proxify("%swms?request=GetCapabilities" % GEOSERVER_BASE_URL),
         'layers': [
             'base:CA'
         ]}
