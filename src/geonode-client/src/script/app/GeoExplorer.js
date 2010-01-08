@@ -935,7 +935,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                 var layer = source.createLayerRecord(conf);
                 layer.set("group", "background");
                 layer.get("layer").setVisibility(visible);
-                console.log(layer.get("layer").getVisibility());
                 visible = false;
                 bglayers.push(layer);
             }
