@@ -179,10 +179,16 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
      *     prepares the application for use.
      */
     load: function() {
+        var proxy = this.proxy
         function mungeSourcePlugin(conf) {
             var ptype = "service" in conf ? "gx-" + conf.service + "source" : "gx-wmssource";
             var pluginConfig = { "ptype": ptype };
             Ext.apply(pluginConfig, conf)
+
+            if ("url" in pluginConfig && pluginConfig.url.startsWith("http")) {
+                pluginConfig.url = proxy + escape(pluginConfig.url);
+            }
+
             delete pluginConfig.service;
             delete pluginConfig.layers;
             return pluginConfig;
