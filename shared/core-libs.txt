@@ -1,5 +1,5 @@
 PIL
-http://www.reportlab.org/ftp/ReportLab_2_3.tar.gz#egg=reportlab
+http://www.reportlab.com/ftp/ReportLab_2_3.tar.gz#egg=reportlab
 -r py-base-libs.txt
 
 
