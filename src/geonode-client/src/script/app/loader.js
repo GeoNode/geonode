@@ -13,6 +13,7 @@
         "/static/src/script/app/CommunityPage.js",
         "/static/src/script/app/IndexPage.js",
         "/static/src/script/app/MapGrid.js",
+        "/static/src/script/app/GeoExplorer/BackgroundLayerManager.js",
         "/static/src/script/app/GeoExplorer/CapabilitiesGrid.js",
         "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js",
         "/static/src/script/app/GeoExplorer/GroupContainer.js",

@@ -6,6 +6,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     appPanel: null,
     sidebar: null,
     hazardConfig: null,
+    backgroundManager: null,
 
     pdfButtonText: "UT: PDF Report",
     reportSwitcherTip: "UT: Tooltip here",
@@ -25,6 +26,11 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             "ready"
         );
 
+        this.backgroundManager = new GeoExplorer.BackgroundLayerManager({
+            proxy: this.proxy,
+            backgroundLayers: config.backgroundLayers
+        });
+
         this.load();
     },
 
@@ -43,6 +49,10 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 done();
             }
         ];
+
+        dispatchQueue = dispatchQueue.concat(
+            this.backgroundManager.getBackgroundLoaders()
+        );
  
         gxp.util.dispatch(
             dispatchQueue,
@@ -83,28 +93,16 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
 
     createLayout: function(){
         this.map = new OpenLayers.Map(
-            {allOverlays: false,
+            {allOverlays: true,
+             maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
              controls: [new OpenLayers.Control.Navigation(),
                        new OpenLayers.Control.PanPanel(),
                        new OpenLayers.Control.ZoomPanel()]
             });
 
-        var baseLayers = [
-            new OpenLayers.Layer.WMS(
-                "Global Imagery",
-                "http://maps.opengeo.org/geowebcache/service/wms",
-                {layers: 'bluemarble'}
-            ),
-            new OpenLayers.Layer.Google(
-                "Google Hybrid", 
-                {numZoomLevels: 20,
-                 type: G_HYBRID_MAP}
-            )
-        ];
-
         var layers = this.createLayers();
 
-        this.map.addLayers(layers.concat(baseLayers));
+        this.map.addLayers(layers);
 
         this.mapPanel = new GeoExt.MapPanel({
             region: "center",
@@ -194,12 +192,15 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             });
         }
 
-        treeConfig.push({
-            nodeType: "gx_baselayercontainer",
-            draggable: false,
-            allowDrop: false,
-            isTarget: false
-        });
+        treeConfig.push(new GeoExt.tree.BaseLayerContainer({
+            text: this.backgroundContainerText, 
+            layerStore: this.layers, 
+            loader: {
+                filter: function(record) {
+                    return record.get('group') === 'background';
+                }
+            }
+        }));
 
         var opacitySlider = new Ext.Toolbar({
             items: [
@@ -258,6 +259,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
 
     activate: function(){
         Ext.QuickTips.init();
+        this.mapPanel.layers.insert(0, this.backgroundManager.getBackgroundLayers());
         //populate the map and layer tree according to the
         //hazard configuration
 
