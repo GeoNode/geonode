@@ -96,7 +96,16 @@ def newmap(request):
                 [resource_urls]
             ))
 
-
+def mapinfo(request,mapid): 
+    map = Map.objects.get(pk=mapid) 
+    return render_to_response("maps/mapinfo.html", 
+            context_instance = RequestContext(request,
+                { 'config': json.dumps(DEFAULT_MAP_CONFIG), 
+                  'bg': json.dumps(settings.MAP_BASELAYERS),
+                  'map': map },
+                [resource_urls]))
+            
+            
 def view(request, mapid):
     """  
     The view that returns the map composer opened to
