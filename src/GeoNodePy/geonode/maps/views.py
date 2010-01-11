@@ -1,4 +1,4 @@
-from geonode.maps.models import Map, Layer
+from geonode.maps.models import Map, Layer, MapLayer
 from geonode.maps.context_processors import resource_urls
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
@@ -97,12 +97,14 @@ def newmap(request):
             ))
 
 def mapinfo(request,mapid): 
-    map = Map.objects.get(pk=mapid) 
+    map = get_object_or_404(Map,pk=mapid) 
+    layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", 
             context_instance = RequestContext(request,
                 { 'config': json.dumps(DEFAULT_MAP_CONFIG), 
                   'bg': json.dumps(settings.MAP_BASELAYERS),
-                  'map': map },
+                  'map': map, 
+                  'layers': layers,},
                 [resource_urls]))
             
             
