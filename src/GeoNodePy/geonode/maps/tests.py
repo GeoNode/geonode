@@ -1,5 +1,6 @@
 from django.test import TestCase
 from geonode.maps.models import Map
+from django.test.client import Client
 from geonode.maps.views import build_map_config, DEFAULT_MAP_CONFIG
 import json
 
@@ -35,3 +36,9 @@ community."
         # just testing that the map was created, no assertion needed since 
         # get() throws an exception if nothing matches
         Map.objects.get(id=map.id)
+
+    def test_mapifo(self): 
+        map = Map.objects.get(id="1") 
+        c = Client() 
+        response = c.get("/maps/information/%s" % map.id)
+        self.assertEquals(response.status_code,200) 

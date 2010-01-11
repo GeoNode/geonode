@@ -10,6 +10,9 @@ urlpatterns += patterns('capra.hazard.views',
     (r'^hazard/', 'index'),
 )
 
+urlpatterns += patterns('capra.safehospitals.views', 
+        (r'^safehospitals/', 'index'), 
+        ) 
 
 if settings.DEBUG:
     import os
