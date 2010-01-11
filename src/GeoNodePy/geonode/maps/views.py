@@ -81,7 +81,7 @@ def read_json_map(json_text):
         for l in layers:
             if 'wms' in l and l['wms'] in services:
                 name = l['name']
-                group = l['group']
+                group = l.get('group', '')
                 ows = services[l['wms']]
                 map.layer_set.create(name=name, group=group, ows_url=ows, stack_order=ordering)
                 ordering = ordering + 1

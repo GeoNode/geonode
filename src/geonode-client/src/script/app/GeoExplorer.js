@@ -1585,16 +1585,15 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             config.wms[record.get("identifier")] = record.get("url");
         });
         
-        this.layers.each(function(layerRecord){
+        this.layers.each(function(layerRecord) {
             var layer = layerRecord.get('layer');
-            if (layer.displayInLayerSwitcher) {
+            var index = this.layerSources.find("identifier", layerRecord.get("source_id"))
+            if (layer.displayInLayerSwitcher && index >= 0) {
                 // Get the source of this layer.
-                var index = this.layerSources.find("identifier", layerRecord.get("source_id"));
                 var source = this.layerSources.getAt(index);
                 
                 if (source === null) {
                     OpenLayers.Console.error("Could not find source for layer '" + layerRecord.get("name") + "'");
-                    
                     // Return; error gracefully. (This is debatable.)
                     return;
                 }
@@ -1621,32 +1620,21 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             }).show();
         };
 
-//        if (this.mapID) {
-//            Ext.Ajax.request({
-//                url: "/geoserver/rest/json/" + this.mapID,
-//                method: 'PUT',
-//                jsonData: config,
-//                failure: failure, 
-//                scope: this
-//            });
-//        } else {
-
-            Ext.Ajax.request({
-                url: this.rest,
-                method: 'POST',
-                jsonData: config,
-                success: function(response, options) {
-                    var id = response.getResponseHeader("Location");
-                    // trim whitespace to avoid Safari issue where the trailing newline is included
-                    id = id.replace(/^\s*/,'');
-                    id = id.replace(/\s*$/,'');
-                    id = id.match(/[\d]*$/)[0];
-                    this.fireEvent("idchange", id);
-                    this.mapID = id; //id is url, not mapID
-                }, 
-                failure: failure, 
-                scope: this
-            });
-//         }
+        Ext.Ajax.request({
+            url: this.rest,
+            method: 'POST',
+            jsonData: config,
+            success: function(response, options) {
+                var id = response.getResponseHeader("Location");
+                // trim whitespace to avoid Safari issue where the trailing newline is included
+                id = id.replace(/^\s*/,'');
+                id = id.replace(/\s*$/,'');
+                id = id.match(/[\d]*$/)[0];
+                this.fireEvent("idchange", id);
+                this.mapID = id; //id is url, not mapID
+            }, 
+            failure: failure, 
+            scope: this
+        });
     }
 });
