@@ -91,7 +91,7 @@ pattern = re.compile("hazard")
 if not pattern.search(NAVBAR['meta']['visible']):
     NAVBAR['meta']['visible'] += "\nhazard" #Why is this a string not a list?
 
-INSTALLED_APPS += ('capra.hazard','capra.safehospitals',)
+INSTALLED_APPS += ('capra.hazard',)
 
 TEMPLATE_DIRS = (path_extrapolate("capra/hazard/templates"),path_extrapolate("capra/safehospitals/templates"),) + TEMPLATE_DIRS 
 
