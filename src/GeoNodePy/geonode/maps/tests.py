@@ -40,5 +40,5 @@ community."
     def test_mapifo(self): 
         map = Map.objects.get(id="1") 
         c = Client() 
-        response = c.get("/maps/information/%s" % map.id)
+        response = c.get("/maps/detail/%s" % map.id)
         self.assertEquals(response.status_code,200) 
