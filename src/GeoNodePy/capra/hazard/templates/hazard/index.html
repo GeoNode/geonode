@@ -15,7 +15,9 @@
         Ext.onReady(function() {
             app = new MyHazard.Viewer({
                 GEONODE_WMS: "{{GEOSERVER_BASE_URL|safe}}wms",
-                hazardConfig: hazardConfig
+                hazardConfig: hazardConfig,
+                proxy: "/proxy?url=",
+                backgroundLayers: {{bg|safe}}
             });
         });
     </script>

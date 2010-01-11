@@ -15,7 +15,10 @@ def index(request):
     config = [{'hazard': x.name, 'periods': periods(x)} for x in hazards]
     config = json.dumps(config)
     return render_to_response("hazard/index.html",
-        context_instance=RequestContext(request, {'config': config}, [resource_urls])
+            context_instance=RequestContext(request, {
+                    'config': config, 
+                    'bg': json.dumps(settings.MAP_BASELAYERS)
+                }, [resource_urls])
     )
 
 def report(request, format): 
