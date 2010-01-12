@@ -77,9 +77,12 @@ GeoExplorer.BackgroundLayerManager = Ext.extend(Ext.util.Observable, {
                 var conf = layers[j];
                 if ((typeof conf) === "string") conf = {"name": conf};
                 conf.isBaseLayer = true;
+                conf.visibility = visible;
+
                 var layer = source.createLayerRecord(conf);
                 layer.set("group", "background");
-                layer.get("layer").setVisibility(visible);
+                layer.get("layer").visibility = visibility; // visibility from config is not respected for Google layers
+
                 visible = false;
                 bglayers.push(layer);
             }

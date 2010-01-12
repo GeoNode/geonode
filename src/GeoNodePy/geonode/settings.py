@@ -97,6 +97,10 @@ DEFAULT_MAP_CENTER = [-84.7, 12.8]
 DEFAULT_MAP_ZOOM = 7
 
 MAP_BASELAYERS = [{
+        'service': 'google',
+        'layers': [
+            'G_SATELLITE_MAP'
+        ]}, {
         'service': "wms",
         'url': "http://maps.opengeo.org/geowebcache/service/wms?request=GetCapabilities",
         'layers': [
@@ -107,13 +111,6 @@ MAP_BASELAYERS = [{
         'layers': [
             'base:CA'
         ]}
-        #, {
-        #'service': 'google',
-        #'layers': [
-        #    'G_PHYSICAL_MAP', 
-        #    'G_NORMAL_MAP', 
-        #    'G_SATELLITE_MAP'
-        #]}
     ]
 
 # NAVBAR expects a dict of dicts or a path to an ini file
