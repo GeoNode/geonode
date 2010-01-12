@@ -92,13 +92,22 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     },
 
     createLayout: function(){
-        this.map = new OpenLayers.Map(
-            {allOverlays: true,
-             maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
-             controls: [new OpenLayers.Control.Navigation(),
-                       new OpenLayers.Control.PanPanel(),
-                       new OpenLayers.Control.ZoomPanel()]
-            });
+        this.map = new OpenLayers.Map({
+            allOverlays: true,
+            projection: new OpenLayers.Projection("EPSG:900913"),
+            displayProjection: new OpenLayers.Projection("EPSG:4326"),
+            units: "m",
+            maxResolution: 156543.0339,
+            maxExtent: new OpenLayers.Bounds(
+                -20037508.34, -20037508.34,
+                 20037508.34,  20037508.34
+            ),
+            controls: [
+                new OpenLayers.Control.Navigation(),
+                new OpenLayers.Control.PanPanel(),
+                new OpenLayers.Control.ZoomPanel()
+            ]
+        });
 
         var layers = this.createLayers();
 
@@ -106,7 +115,10 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
 
         this.mapPanel = new GeoExt.MapPanel({
             region: "center",
-            center: new OpenLayers.LonLat(-87, 13),
+            center: new OpenLayers.LonLat(-87, 13).transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                new OpenLayers.Projection("EPSG:900913")
+            ),
             zoom: 5,
             map: this.map,
             items: [
