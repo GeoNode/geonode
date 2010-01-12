@@ -24,8 +24,18 @@ Embed = Ext.extend(GeoExplorer, {
         // TODO: check this.initialConfig.map for any map options
         this.map = new OpenLayers.Map({
             allOverlays: true,
-            controls: [new OpenLayers.Control.PanPanel(),
-                       new OpenLayers.Control.ZoomPanel()]
+            projection: new OpenLayers.Projection("EPSG:900913"),
+            displayProjection: new OpenLayers.Projection("EPSG:4326"),
+            units: "m",
+            maxResolution: 156543.0339,
+            maxExtent: new OpenLayers.Bounds(
+                -20037508.34, -20037508.34,
+                 20037508.34,  20037508.34
+            ),
+            controls: [
+                new OpenLayers.Control.PanPanel(),
+                new OpenLayers.Control.ZoomPanel()
+            ]
         });
 
         //** Remove this code when OpenLayers #2069 is closed **
@@ -58,13 +68,18 @@ Embed = Ext.extend(GeoExplorer, {
 
         // place map in panel
         var mapConfig = this.initialConfig.map || {};
+        var center = mapConfig.center && 
+            new OpenLayers.LonLat(mapConfig.center[0], mapConfig.center[1]).transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                new OpenLayers.Projection("EPSG:900913")
+            ); 
         this.mapPanel = new GeoExt.MapPanel({
             layout: "anchor",
             border: true,
             region: "center",
             map: this.map,
             // TODO: update the OpenLayers.Map constructor to accept an initial center
-            center: mapConfig.center && new OpenLayers.LonLat(mapConfig.center[0], mapConfig.center[1]),
+            center: center,
             // TODO: update the OpenLayers.Map constructor to accept an initial zoom
             zoom: mapConfig.zoom,
             items: [
