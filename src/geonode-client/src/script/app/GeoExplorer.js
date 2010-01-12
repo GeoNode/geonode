@@ -397,10 +397,20 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         // TODO: check this.initialConfig.map for any map options
         this.map = new OpenLayers.Map({
             allOverlays: true,
-            controls: [new OpenLayers.Control.Navigation(),
-                       new OpenLayers.Control.PanPanel(),
-                       new OpenLayers.Control.ZoomPanel(),
-                       new OpenLayers.Control.Attribution()]
+            projection: new OpenLayers.Projection("EPSG:900913"),
+            displayProjection: new OpenLayers.Projection("EPSG:4326"),
+            units: "m",
+            maxResolution: 156543.0339,
+            maxExtent: new OpenLayers.Bounds(
+                -20037508.34, -20037508.34,
+                 20037508.34,  20037508.34
+            ),
+            controls: [
+                new OpenLayers.Control.Navigation(),
+                new OpenLayers.Control.PanPanel(),
+                new OpenLayers.Control.ZoomPanel(),
+                new OpenLayers.Control.Attribution()
+            ]
         });
 
         //** Remove this code when OpenLayers #2069 is closed **
@@ -433,12 +443,17 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
 
         // place map in panel
         var mapConfig = this.initialConfig.map || {};
+        var center = mapConfig.center && 
+            new OpenLayers.LonLat(mapConfig.center[0], mapConfig.center[1]).transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                new OpenLayers.Projection("EPSG:900913")
+            ); 
         this.mapPanel = new GeoExt.MapPanel({
             layout: "anchor",
             border: true,
             map: this.map,
             // TODO: update the OpenLayers.Map constructor to accept an initial center
-            center: mapConfig.center && new OpenLayers.LonLat(mapConfig.center[0], mapConfig.center[1]),
+            center: center,
             // TODO: update the OpenLayers.Map constructor to accept an initial zoom
             zoom: mapConfig.zoom,
             items: [
@@ -855,12 +870,16 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     // set layer max extent from capabilities
                     // TODO: make this SRS independent
                     layer.restrictedExtent = OpenLayers.Bounds.fromArray(record.get("llbbox"));
+                    layer.restrictedExtent.transform(
+                        new OpenLayers.Projection("EPSG:4326"),
+                        new OpenLayers.Projection("EPSG:900913")
+                    );
                     
-                    if (this.alignToGrid) {
-                        layer.maxExtent = new OpenLayers.Bounds(-180, -90, 180, 90);
-                    } else {
+                    //if (this.alignToGrid) {
+                    //    layer.maxExtent = new OpenLayers.Bounds(-180, -90, 180, 90);
+                    //} else {
                         layer.maxExtent = layer.restrictedExtent;
-                    }
+                    //}
 
 
                     // set layer visibility from config
