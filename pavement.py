@@ -13,8 +13,7 @@ import ConfigParser
 import paver.doctools
 import paver.misctasks
 import pkg_resources
-from shutil import copy, copytree, move
-import sys
+from shutil import move
 import zipfile
 import subprocess
 from xml.etree import ElementTree
@@ -23,7 +22,8 @@ from xml.etree import ElementTree
 try:
     from paver.virtual import bootstrap
 except ImportError, e:
-    info("VirtualEnv must be installed to enable 'paver bootstrap'. If you need this command, run: pip install virtualenv")
+    info("VirtualEnv must be installed to enable 'paver bootstrap'. If you " + 
+         "need this command, run: pip install virtualenv")
 
 assert sys.version_info[0] >= 2 \
        and sys.version_info[1] >= 6, \
@@ -31,30 +31,37 @@ assert sys.version_info[0] >= 2 \
 
 
 options(
-    config=Bunch(ini=path('shared/build.ini'),
-                 package_dir = path('shared/package')),
+    config=Bunch(
+        ini=path('shared/build.ini'),
+        package_dir = path('shared/package')
+    ),
     minilib=Bunch(extra_files=['virtual', 'doctools', 'misctasks']),
     sphinx=Bunch(
-      docroot='docs',
-      builddir="_build",
-      sourcedir="./"
-      ),
+        docroot='docs',
+        builddir="_build",
+        sourcedir="./"
+    ),
     virtualenv=Bunch(
-      packages_to_install=['http://bitbucket.org/ianb/pip/get/2cb1db7b2baf.gz#egg=pip', 'urlgrabber', 'jstools', 'virtualenv'],
-      dest_dir='./',
-      install_paver=True,
-      script_name='bootstrap.py',
-      no_site_packages=True,
-      paver_command_line='post_bootstrap'
-      ),
+        packages_to_install=[
+            'http://bitbucket.org/ianb/pip/get/2cb1db7b2baf.gz#egg=pip',
+            'urlgrabber',
+            'jstools',
+            'virtualenv'
+        ],
+        dest_dir='./',
+        install_paver=True,
+        script_name='bootstrap.py',
+        no_site_packages=True,
+        paver_command_line='post_bootstrap'
+    ),
     deploy=Bunch(
-      pavement=path('shared/package/pavement.py'),
-      req_file=path('shared/package/deploy-libs.txt'),
-      packages_to_install=['pip'],
-      dest_dir='./',
-      install_paver=True,
-      no_site_packages=True,
-      paver_command_line='post_bootstrap'      
+        pavement=path('shared/package/pavement.py'),
+        req_file=path('shared/package/deploy-libs.txt'),
+        packages_to_install=['pip'],
+        dest_dir='./',
+        install_paver=True,
+        no_site_packages=True,
+        paver_command_line='post_bootstrap'      
     )
 )
 
@@ -78,7 +85,7 @@ def auto(options):
 
 @task
 def install_deps(options):
-    """Installs all the python deps from a requirments file"""
+    """Installs all the python deps from a requirements file"""
     if bundle.exists():
         info('using to install python deps bundle')
         call_task('install_bundle')
@@ -90,23 +97,20 @@ def install_deps(options):
             info("You will need to install 'PIL' and 'ReportLab' "\
                  "separately to do PDF generation")
 
-# put bundle on atlas or capra
-# download it, then install
-
 @task
 def bundle_deps(options):
     """
     Create a pybundle of all python dependencies.  If created, this
     will be the default for installing python deps.
     """
-    pip_bundle("-r shared/core-libs.txt %s" %bundle)
+    pip_bundle("-r shared/core-libs.txt %s" % bundle)
 
 @task
 @needs(['download_bundle'])
 def install_bundle(options):
     """
     Installs a bundle of dependencies located at %s.
-    """ %bundle
+    """ % bundle
     
     info('install the bundle')
     pip_install(bundle)
@@ -117,16 +121,15 @@ dlname = 'geonode.bundle'
 def download_bundle(options):
     """
     Downloads zipped bundle of python dependencies to %s. Does not overwrite.
-    """ %bundle
+    """ % bundle
     
     bpath = bundle.abspath()
     if not bundle.exists():
         with pushd('shared'):
-            #sh('wget http://capra.opengeo.org/repo/%s.zip' %bundle.name)
-            sh('wget http://capra.opengeo.org/repo/%s.zip' %dlname)
+            sh('wget http://capra.opengeo.org/repo/%s.zip' % dlname)
             path(dlname + '.zip').copy(bpath)
     else:
-        info("Skipping download. 'rm bundle  %s' if you need a fresh download. " %bundle)
+        info("Skipping download. 'rm bundle  %s' if you need a fresh download. " % bundle)
 
 @task
 def install_25_deps(options):
@@ -139,10 +142,9 @@ def post_bootstrap(options):
     pip = path(options.config.bin) / "pip"
     sh('%s install -e %s' %(pip, path("src/GeoNodePy")))
 
-gs = "geoserver-build"
 gs_data = "gs-data"
 
-#@@ Move svn urls out to a config file
+#TODO Move svn urls out to a config file
 
 @task
 def setup_gs_data(options):
@@ -172,8 +174,8 @@ def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     info('If this is your first build: django-admin.py syncdb --settings=geonode.settings\n'\
          'to start node: django-admin.py runserver --settings=geonode.settings\n'\
-         'to start geoserver: cd src/geoserver-geonode-ext/; mvn jetty:run-war') #@@ replace with something real
-
+         'to start geoserver: cd src/geoserver-geonode-ext/; mvn jetty:run-war') 
+    #TODO replace with something real
 
 @task
 @needs(['concat_js','capra_js'])
@@ -211,6 +213,7 @@ def capra_js(options):
        path("capra-client/").makedirs()
        sh("jsbuild -o capra-client/ all.cfg") 
 
+
 @task
 def package_dir(options):
     """
@@ -218,6 +221,7 @@ def package_dir(options):
     """
     if not options.deploy.out_dir.exists():
         options.config.package_dir.mkdir()
+
 
 @task
 @needs('package_dir', 'concat_js', 'capra_js')
@@ -252,7 +256,7 @@ deploy_req_txt = """
 # NOTE... this file is generated
 -r %(venv)s/shared/core-libs.txt
 -e %(venv)s/src/GeoNodePy
-""" %locals()
+""" % locals()
 
 
 @task
@@ -266,17 +270,22 @@ def package_webapp(options):
     req_file.write_text(deploy_req_txt)
     pip_bundle("-r %s %s/geonode-webapp.pybundle" %(req_file, options.deploy.out_dir))
 
+
 @task
 @needs('package_geoserver','package_webapp', 'package_client', 'package_bootstrap')
 def package_all(options):
     info('all is packaged, ready to deploy')
 
+
 _svn_info = None
+
+
 def get_svn_info(format='xml'):
     global _svn_info
     if _svn_info is None:
         _svn_info = subprocess.Popen(["svn", "info", "--xml"], stdout=subprocess.PIPE).communicate()[0]
     return ElementTree.fromstring(_svn_info)[0]
+
 
 def create_version_name(svn_version=True):
     # we'll use the geonodepy version as our "official" version number
@@ -288,6 +297,7 @@ def create_version_name(svn_version=True):
         revision = svninfo.get('revision')
         slug += "rev" + revision
     return slug
+
         
 @task
 @cmdopts([
@@ -326,7 +336,6 @@ def make_release(options):
         info("%s.tar.gz screated" %out_pkg.abspath())
                             
 
-
 def unzip_file(src, dest):
     zip = zipfile.ZipFile(src)
     if not path(dest).exists():
@@ -344,10 +353,12 @@ def unzip_file(src, dest):
             out.write(zip.read(name))
             out.close()
 
+
 @task
 def checkup_spec(options):
     parser = options.config.parser
     svn.checkup(parser.get('doc', 'spec_url'), path('docs') / 'spec')
+
 
 def pip(*args):
     cmd = 'pip '
@@ -361,6 +372,7 @@ def pip(*args):
     if sys.platform == "darwin":
         cmd = "ARCHFLAGS='-arch i386' " + cmd
     sh(cmd + " ".join(args))
+
 
 pip_install = functools.partial(pip, 'install', dl_cache)
 pip_bundle = functools.partial(pip, 'bundle', dl_cache)
@@ -401,6 +413,7 @@ def nodedocs_html(options):
         sh('open %s' %index)
     else:
         info('launcher for platform not registered')
+
 
 def platform_options(options):
     "Platform specific options"
