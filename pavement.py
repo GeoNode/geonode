@@ -19,12 +19,6 @@ import subprocess
 from xml.etree import ElementTree
 
 
-try:
-    from paver.virtual import bootstrap
-except ImportError, e:
-    info("VirtualEnv must be installed to enable 'paver bootstrap'. If you " + 
-         "need this command, run: pip install virtualenv")
-
 assert sys.version_info[0] >= 2 and sys.version_info[1] >= 6, \
        SystemError("GeoNode Build requires python 2.6.2 or better")
 
@@ -204,11 +198,11 @@ def concat_js(options):
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
        os.makedirs("geonode-client/gx")
-       sh("svn export ../externals/geoext/resources geonode-client/gx/theme")
+       svn.export("../externals/geoext/resources", "geonode-client/gx/theme")
        os.makedirs("geonode-client/ol") #need to split this off b/c of dumb hard coded OL paths
-       sh("svn export ../externals/openlayers/theme geonode-client/ol/theme")
+       svn.export("../externals/openlayers/theme", "geonode-client/ol/theme")
        os.makedirs("geonode-client/gn")
-       sh("svn export ../src/theme/ geonode-client/gn/theme/")
+       svn.export("../src/theme/", "geonode-client/gn/theme/")
 
        sh("jsbuild -o geonode-client/ all.cfg") 
        move("geonode-client/OpenLayers.js","geonode-client/ol/")
@@ -282,23 +276,13 @@ def package_all(options):
     info('all is packaged, ready to deploy')
 
 
-_svn_info = None
-
-def get_svn_info():
-    global _svn_info
-    if _svn_info is None:
-        _svn_info = subprocess.Popen(["svn", "info", "--xml"], stdout=subprocess.PIPE).communicate()[0]
-    return ElementTree.fromstring(_svn_info)[0]
-
-
 def create_version_name(svn_version=True):
     # we'll use the geonodepy version as our "official" version number
     # for now
     slug = "GeoNode-%s" %pkg_resources.get_distribution('GeoNodePy').version
-    svninfo = get_svn_info()
     if svn_version:
         # this assumes releaser know what branch is being released
-        revision = svninfo.get('revision')
+        revision = svn.info()['revision']
         slug += "rev" + revision
     return slug
 
@@ -326,16 +310,14 @@ def make_release(options):
         if hasattr(options, 'append_to'):
             pkgname += options.append_to
             
-    svninfo = get_svn_info()
+    svninfo = svn.info()
     with pushd('shared'):
         out_pkg = path(pkgname)
         out_pkg.rmtree()
         path('./package').copytree(out_pkg)
         infofile = out_pkg / "version.txt"
-        infofile.write_text("%s@%s" %(svninfo[0].text,
-                                      svninfo.get('revision')))
-        
-        sh('tar --exclude .svn -cvzf %s.tar.gz %s' %(out_pkg, out_pkg))
+        infofile.write_text("%s@%s" % (svninfo["url"], svninfo["revision"]))
+        sh('tar --exclude .svn -cvzf %s.tar.gz %s' % (out_pkg, out_pkg))
         out_pkg.rmtree()
         info("%s.tar.gz created" %out_pkg.abspath())
                             
@@ -365,29 +347,36 @@ def checkup_spec(options):
 
 
 def pip(*args):
-    cmd = 'pip '
     try:
         pkg_resources.require('pip>=0.6')
     except :
         error("**ATTENTION**: Update your 'pip' to at least 0.6")
         raise
     #@@ set in "platform_options"?
+
+    cmd = options.config.bin / 'pip'
     # remove this block to support ppc
     if sys.platform == "darwin":
         cmd = "ARCHFLAGS='-arch i386' " + cmd
-    sh(cmd + " ".join(args))
+    sh(cmd + " " + " ".join(args))
 
 
 pip_install = functools.partial(pip, 'install', dl_cache)
 pip_bundle = functools.partial(pip, 'bundle', dl_cache)
 
-if locals().has_key('bootstrap'):
-    @task
-    @needs('package_dir')
-    def package_bootstrap(options):
-        """Create a bootstrap script for deployment"""
+
+@task
+@needs('package_dir')
+def package_bootstrap(options):
+    """Create a bootstrap script for deployment"""
+
+    try:
+        from paver.virtual import bootstrap
         options.virtualenv = options.deploy
         call_task("paver.virtual.bootstrap")
+    except ImportError, e:
+        info("VirtualEnv must be installed to enable 'paver bootstrap'. If you " + 
+             "need this command, run: pip install virtualenv")
 
 
 @task
@@ -396,7 +385,7 @@ def install_sphinx_conditionally(options):
     try:
         import sphinx
     except ImportError:
-        sh("%s install sphinx" %(options.config.bin / 'pip'))
+        sh("%s install sphinx" % (options.config.bin / 'pip'))
 
         # have to reload doctools so it will realize sphinx is now
         # available
