@@ -12,6 +12,7 @@ import paver.misctasks
 import pkg_resources
 from shutil import move
 import zipfile
+import tarfile
 
 
 assert sys.version_info[0] >= 2 and sys.version_info[1] >= 6, \
@@ -305,6 +306,9 @@ def make_release(options):
         pkgname = create_version_name(not getattr(options, 'no_svn', False))
         if hasattr(options, 'append_to'):
             pkgname += options.append_to
+
+    def excludable(f):
+        return f.find(".svn") != -1
             
     svninfo = svn.info()
     with pushd('shared'):
@@ -313,9 +317,16 @@ def make_release(options):
         path('./package').copytree(out_pkg)
         infofile = out_pkg / "version.txt"
         infofile.write_text("%s@%s" % (svninfo["url"], svninfo["revision"]))
-        sh('tar --exclude .svn -cvzf %s.tar.gz %s' % (out_pkg, out_pkg))
+
+        tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
+        with pushd(out_pkg):
+            for file in path(".").walkfiles():
+                if not excludable(file):
+                    tar.add(file)
+        tar.close()
+
         out_pkg.rmtree()
-        info("%s.tar.gz created" %out_pkg.abspath())
+        info("%s.tar.gz created" % out_pkg.abspath())
                             
 
 def unzip_file(src, dest):
