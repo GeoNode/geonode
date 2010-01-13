@@ -3,9 +3,6 @@ from paver import svn
 from paver.easy import *
 from paver.easy import options
 from paver.path25 import pushd
-from paver.setuputils import setup, find_package_data
-from setuptools import find_packages
-import shutil
 import functools
 import os
 import sys
@@ -15,8 +12,6 @@ import paver.misctasks
 import pkg_resources
 from shutil import move
 import zipfile
-import subprocess
-from xml.etree import ElementTree
 
 
 assert sys.version_info[0] >= 2 and sys.version_info[1] >= 6, \
@@ -298,9 +293,10 @@ def make_release(options):
     """
     Creates a tarball to use for building the system elsewhere
     (production, distribution, etc)
-
-    This part of the build is svn specific...
     """
+
+    # This part of the build is svn specific...
+
     if not hasattr(options, 'skip_packaging'):
         call_task("package_all")
     if hasattr(options, 'name'):
