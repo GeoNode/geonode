@@ -267,7 +267,7 @@ def package_webapp(options):
         
     req_file = options.deploy.req_file
     req_file.write_text(deploy_req_txt)
-    pip_bundle("-r %s %s/geonode-webapp.pybundle" %(req_file, options.deploy.out_dir))
+    pip_bundle("-r %s %s/geonode-webapp.pybundle" % (req_file, options.deploy.out_dir))
 
 
 @task
@@ -352,14 +352,14 @@ def pip(*args):
     except :
         error("**ATTENTION**: Update your 'pip' to at least 0.6")
         raise
-    #@@ set in "platform_options"?
 
-    cmd = options.config.bin / 'pip'
-    # remove this block to support ppc
-    if sys.platform == "darwin":
-        cmd = "ARCHFLAGS='-arch i386' " + cmd
-    sh(cmd + " " + " ".join(args))
+    full_path_pip = options.config.bin / 'pip'
 
+    sh("%(env)s %(cmd)s %(args)s" % {
+        "env": options.config.pip_flags, 
+        "cmd": full_path_pip,
+        "args": " ".join(args)
+    })
 
 pip_install = functools.partial(pip, 'install', dl_cache)
 pip_bundle = functools.partial(pip, 'bundle', dl_cache)
@@ -398,25 +398,21 @@ def html(options):
     call_task('paver.doctools.html')
 
 
-@task
-@needs('html')
-def nodedocs_html(options):
-    index = path('docs/_build/html/index.html')
-    if sys.platform == 'darwin':
-        sh('open %s' %index)
-    else:
-        info('launcher for platform not registered')
-
-
 def platform_options(options):
     "Platform specific options"
-    plat = options.config.platform = sys.platform
-    if plat == 'win32':
+    options.config.platform = sys.platform
+    
+    # defaults:
+    pip_flags = ""
+    scripts = "bin"
+    corelibs = "core-libs.txt"
+
+    if sys.platform == "win32":
         corelibs = "py-base-libs.txt"
         scripts = "Scripts"
-    else:
-        scripts = "bin"
-        corelibs = "core-libs.txt"
+    elif sys.platform == "darwin":
+        pip_flags = "ARCHFLAGS='-arch i386'"
         
     options.config.bin = path(scripts)
     options.config.corelibs = corelibs
+    options.config.pip_flags = pip_flags
