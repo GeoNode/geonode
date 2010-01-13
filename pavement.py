@@ -25,8 +25,7 @@ except ImportError, e:
     info("VirtualEnv must be installed to enable 'paver bootstrap'. If you " + 
          "need this command, run: pip install virtualenv")
 
-assert sys.version_info[0] >= 2 \
-       and sys.version_info[1] >= 6, \
+assert sys.version_info[0] >= 2 and sys.version_info[1] >= 6, \
        SystemError("GeoNode Build requires python 2.6.2 or better")
 
 
@@ -67,8 +66,16 @@ options(
 
 venv = os.environ.get('VIRTUAL_ENV')
 bundle = path('shared/geonode.pybundle')
-
 dl_cache = "--download-cache=./build"
+dlname = 'geonode.bundle'
+gs_data = "gs-data"
+
+deploy_req_txt = """
+# NOTE... this file is generated
+-r %(venv)s/shared/core-libs.txt
+-e %(venv)s/src/GeoNodePy
+""" % locals()
+
 
 @task
 def auto(options):
@@ -97,6 +104,7 @@ def install_deps(options):
             info("You will need to install 'PIL' and 'ReportLab' "\
                  "separately to do PDF generation")
 
+
 @task
 def bundle_deps(options):
     """
@@ -104,6 +112,7 @@ def bundle_deps(options):
     will be the default for installing python deps.
     """
     pip_bundle("-r shared/core-libs.txt %s" % bundle)
+
 
 @task
 @needs(['download_bundle'])
@@ -115,7 +124,6 @@ def install_bundle(options):
     info('install the bundle')
     pip_install(bundle)
 
-dlname = 'geonode.bundle'
 
 @task
 def download_bundle(options):
@@ -131,10 +139,12 @@ def download_bundle(options):
     else:
         info("Skipping download. 'rm bundle  %s' if you need a fresh download. " % bundle)
 
+
 @task
 def install_25_deps(options):
     """Fetch python 2_5-specific dependencies (not maintained)"""
     pass
+
     
 @task
 def post_bootstrap(options):
@@ -142,7 +152,6 @@ def post_bootstrap(options):
     pip = path(options.config.bin) / "pip"
     sh('%s install -e %s' %(pip, path("src/GeoNodePy")))
 
-gs_data = "gs-data"
 
 #TODO Move svn urls out to a config file
 
@@ -161,12 +170,14 @@ def setup_gs_data(options):
         path(gs_data).rmtree()
         unzip_file(dst_url, gs_data)
 
+
 @task
 @needs(['setup_gs_data'])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn install")
+
 
 @task
 @needs(['install_deps','setup_geoserver', 'build_js'])
@@ -176,6 +187,7 @@ def build(options):
          'to start node: django-admin.py runserver --settings=geonode.settings\n'\
          'to start geoserver: cd src/geoserver-geonode-ext/; mvn jetty:run-war') 
     #TODO replace with something real
+
 
 @task
 @needs(['concat_js','capra_js'])
@@ -252,13 +264,6 @@ def package_geoserver(options):
     path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war').copy(options.deploy.out_dir)
 
 
-deploy_req_txt = """
-# NOTE... this file is generated
--r %(venv)s/shared/core-libs.txt
--e %(venv)s/src/GeoNodePy
-""" % locals()
-
-
 @task
 @needs('package_dir')
 def package_webapp(options):
@@ -279,8 +284,7 @@ def package_all(options):
 
 _svn_info = None
 
-
-def get_svn_info(format='xml'):
+def get_svn_info():
     global _svn_info
     if _svn_info is None:
         _svn_info = subprocess.Popen(["svn", "info", "--xml"], stdout=subprocess.PIPE).communicate()[0]
@@ -304,7 +308,7 @@ def create_version_name(svn_version=True):
     ('name=', 'n', 'Release number or name'),
     ('no_svn', 'D', 'Do not append svn version number as part of name '),
     ('append_to=', 'a', 'append to release name'),
-    ('skip_packaging', 'y', 'Do not call package_all when creating a releas'),
+    ('skip_packaging', 'y', 'Do not call package_all when creating a release'),
 ])
 def make_release(options):
     """
@@ -333,7 +337,7 @@ def make_release(options):
         
         sh('tar --exclude .svn -cvzf %s.tar.gz %s' %(out_pkg, out_pkg))
         out_pkg.rmtree()
-        info("%s.tar.gz screated" %out_pkg.abspath())
+        info("%s.tar.gz created" %out_pkg.abspath())
                             
 
 def unzip_file(src, dest):
