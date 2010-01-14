@@ -17,6 +17,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     zoomSliderTipText: "UT: Zoom level",
     transparencyButtonText: "UT: Transparency",
     reportFailureMessage: "UT: Failure while retrieving report...",
+    reportEmptyDataSetMessage: "UT: Please select some layers before requesting a report.",
     reportPopupTitle: "UT: MyHazard Report",
 
     constructor: function (config) {
@@ -336,41 +337,44 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
 
         this.clearPopup();
 
-        request = json.write(request);
+        if (request.datalayers.length === 0) {
+            alert(this.reportEmptyDataSetMessage);
+        } else {
+            request = json.write(request);
 
-        Ext.Ajax.request({
-            url: this.reportService + '.html',
-            xmlData: request,
-            method: "POST",
-            success: function(response, options) {
-                this.popup = new GeoExt.Popup({
-                    feature: new OpenLayers.Feature.Vector(geom),
-                    title: this.reportPopupTitle, 
-                    html: response.responseText,
-                    maximizable: true,
-                    height: 400,
-                    width: 350,
-                    autoScroll: true,
-                    map: this.mapPanel,
-                    bbar: [
-                        '<a class="download pdf" href="' + this.reportService + '.pdf?' + 
-                        Ext.urlEncode({ q: request }) + '"> ' +
-                        this.pdfButtonText + '</a>'
-                    ],
-                    listeners: {
-                       hide: this.clearPopup,
-                       scope: this
-                    }
-                });
-                this.mapPanel.add(this.popup);
-                this.popup.show();
-            },
-            failure: function(response) {
-                console.log(response);
-                alert(this.reportFailureMessage);
-            },
-            scope: this
-        });
+            Ext.Ajax.request({
+                url: this.reportService + '.html',
+                xmlData: request,
+                method: "POST",
+                success: function(response, options) {
+                    this.popup = new GeoExt.Popup({
+                        feature: new OpenLayers.Feature.Vector(geom),
+                        title: this.reportPopupTitle, 
+                        html: response.responseText,
+                        maximizable: true,
+                        height: 400,
+                        width: 350,
+                        autoScroll: true,
+                        map: this.mapPanel,
+                        bbar: [
+                            '<a class="download pdf" href="' + this.reportService + '.pdf?' + 
+                            Ext.urlEncode({ q: request }) + '"> ' +
+                            this.pdfButtonText + '</a>'
+                        ],
+                        listeners: {
+                           hide: this.clearPopup,
+                           scope: this
+                        }
+                    });
+                    this.mapPanel.add(this.popup);
+                    this.popup.show();
+                },
+                failure: function(response) {
+                    alert(this.reportFailureMessage);
+                },
+                scope: this
+            });
+        }
     },
 
 
@@ -437,7 +441,6 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 zoomSelectorWrapper
             ]
         });
-
 
         mapOverlay.on("afterlayout", function(){
             scaleLinePanel.body.dom.style.position = 'relative';
