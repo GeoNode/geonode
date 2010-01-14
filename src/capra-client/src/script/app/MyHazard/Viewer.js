@@ -342,8 +342,9 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                     title: this.reportPopupTitle, 
                     html: response.responseText,
                     maximizable: true,
-                    height: 350,
-                    width: 275,
+                    height: 400,
+                    width: 350,
+                    autoScroll: true,
                     map: this.mapPanel,
                     bbar: [
                         '<a class="download pdf" href="' + this.reportService + '.pdf?' + 
