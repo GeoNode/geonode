@@ -320,7 +320,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
 
         request.geometry.crs = { 
             "type": "name",
-            "properties": { "name": "EPSG:4326" }
+            "properties": { "name": "EPSG:900913" }
         };
 
         this.mapPanel.layers.each(function(rec) {
