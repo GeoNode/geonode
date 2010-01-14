@@ -63,29 +63,29 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     createLayers: function(){
         var layers = [];
         var hazard;
-        for(var i = 0; i < this.hazardConfig.length; i++){
+        for (var i = 0; i < this.hazardConfig.length; i++) {
             hazard = this.hazardConfig[i];
 
             var periods = hazard.periods;
-            periods.sort(function(period){return period.length;});
+            periods.sort(function (period) { return period.length; });
             var layersParam = [];
-            for(var j = 0; j < periods.length; j++){
+            for(var j = 0; j < periods.length; j++) {
                 layersParam.push(periods[j].typename);
             }
             
             layers.unshift(new OpenLayers.Layer.WMS(hazard.hazard,
- 	                             this.GEONODE_WMS, {
- 	                                 layers: layersParam,
- 	                                 transparent: true,
- 	                                 format: "image/gif"
- 	                             }, {
- 	                                 isBaseLayer: false,
- 	                                 buffer: 0, 
- 	                                 // exclude this layer from layer container nodes
- 	                                 displayInLayerSwitcher: false,
- 	                                 visibility: false
- 	                             }));
-            
+                this.GEONODE_WMS, {
+                    layers: layersParam,
+                    transparent: true,
+                    format: "image/gif"
+                }, {
+                    isBaseLayer: false,
+                    buffer: 0, 
+                    // exclude this layer from layer container nodes
+                    displayInLayerSwitcher: false,
+                    visibility: false
+                }
+            ));
         }
 
         return layers;
@@ -324,10 +324,16 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
 
         this.mapPanel.layers.each(function(rec) {
             var layer = rec.get("layer");
-            if (!layer.displayInLayerSwitcher && layer.params) {
-                request.datalayers = request.datalayers.concat(layer.params.LAYERS);
+            if (layer.getVisibility()) {
+                for (var i = 0; i < this.hazardConfig.length; i++) {
+                    if (layer.name === this.hazardConfig[i].hazard) {
+                        request.datalayers = request.datalayers.concat(layer.params.LAYERS);
+                        break;
+                    }
+                }
             }
-        });
+        }, this);
+
         this.clearPopup();
 
         request = json.write(request);
@@ -359,7 +365,8 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 this.mapPanel.add(this.popup);
                 this.popup.show();
             },
-            failure: function() {
+            failure: function(response) {
+                console.log(response);
                 alert(this.reportFailureMessage);
             },
             scope: this
