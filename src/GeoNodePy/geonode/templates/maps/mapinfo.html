@@ -1,0 +1,41 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block header_append %} 
+<style type="text/css"> 
+    strong { font-weight: bold } 
+</style> 
+
+{% endblock %} 
+
+{% block main %}
+    <h3>
+        Map of {{map.title}}
+    </h3>
+      <ul>
+        <li><p><strong>Abstract:</strong> {{map.abstract}}</p>
+         </li>
+         <li><strong>Keywords:</strong> </li>
+         <li><strong>Citation:</strong> </li>
+         <li><strong>Contact:</strong> {% autoescape off %}{{map.contact}}{% endautoescape %}</p> 
+        </li>  
+{% endblock %} 
+{% block sidebar %} 
+        <div id="sidebar"> 
+            <h3>Download</h3>
+            <a href="#"> Download all layers included in this map</a> 
+        <h3>Layers </h3>
+        <p>This map uses the following layers </p>
+        <ul>
+            {% for layer in layers %}
+            <li><a href="#">{{layer.name}}</a></li> 
+            {% endfor %}  
+         </ul>    
+        <h3>Manage</h3>
+        <ul>
+            <li><a href="{% url geonode.maps.views.view map.id %}">Edit map or metadata</a></li> 
+            <li><a href="#">Delate map</a></li>
+            <li><a href="#">Duplicate map</a></li>
+         </ul>      
+    </div> 
+{% endblock %}
