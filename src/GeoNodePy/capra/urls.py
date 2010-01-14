@@ -9,12 +9,13 @@ urlpatterns += patterns('capra.hazard.views',
     (r'^hazard/lang.js', 'lang'),
     (r'^hazard/', 'index'),
 )
-'''
-Remove when hospital app is finished
+
+#Remove when hospital app is finished
+
 urlpatterns += patterns('capra.safehospitals.views', 
         (r'^safehospitals/', 'index'), 
         ) 
-'''
+
 if settings.DEBUG:
     import os
     def here(*x): 
