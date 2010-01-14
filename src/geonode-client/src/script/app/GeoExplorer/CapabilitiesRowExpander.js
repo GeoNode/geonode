@@ -5,13 +5,13 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
     ows: null,
 
     abstractText: "UT:Abstract:",
-    downloadText : "UT:Download:",
-    metadataText: "UT:Metadata Links:",
-    keywordText: "UT:Keywords:",
-    attributionText: "UT:Provided by:",
-    metadataEmptyText: 'UT: No metadata URLs are defined for this layer.',
-    keywordEmptyText: "UT: No keywords are listed for this layer.",
     attributionEmptyText: "UT: No attribution information is provided for this layer.",
+    attributionText: "UT:Provided by:",
+    downloadText : "UT:Download:",
+    keywordEmptyText: "UT: No keywords are listed for this layer.",
+    keywordText: "UT:Keywords:",
+    metadataEmptyText: 'UT: No metadata URLs are defined for this layer.',
+    metadataText: "UT:Metadata Links:",
 
     constructor: function (config) {
         config.tpl = new Ext.Template('<p><b>' + this.abstractText + '</b> {abstract}</p>' +

@@ -15,20 +15,20 @@ var DataPage = Ext.extend(Page, {
      */
     capGrid: null,
     
-    dataGridText : "UT:Data",
-    mapGridText : "UT:Map",
-    dataNameHeaderText : "UT:Name",
-    dataTitleHeaderText : "UT:Title",
-    dataQueryableHeaderText : "UT:Queryable",
-    createMapText : "UT:Create Map",
-    openMapText : "UT:Open Map",
-    mapTitleLabelText: "UT:Title",
-    mapAbstractLabelText: "UT:Abstract",
     ameLabelText: 'UT: AME File',
-    scenarioLabelText: 'UT: Scenario',
     countryLabelText: 'UT: Country',
-    singularFile: 'UT: File',
+    createMapText : "UT:Create Map",
+    dataGridText : "UT:Data",
+    dataNameHeaderText : "UT:Name",
+    dataQueryableHeaderText : "UT:Queryable",
+    dataTitleHeaderText : "UT:Title",
+    mapAbstractLabelText: "UT:Abstract",
+    mapGridText : "UT:Map",
+    mapTitleLabelText: "UT:Title",
+    openMapText : "UT:Open Map",
     pluralFiles: 'UT: Files',
+    scenarioLabelText: 'UT: Scenario',
+    singularFile: 'UT: File',
 
     constructor: function(config) {
 	

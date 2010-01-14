@@ -2,14 +2,14 @@ var ExportWizard = Ext.extend(Ext.Window, {
 
     exportDialogMessage: '<p> UT: Your map is ready to be published to the web! </p>' +
             '<p> Simply copy the following HTML to embed the map in your website: </p>',
-    publishActionText: 'UT:Publish Map',
     heightLabel: 'UT: Height',
-    widthLabel: 'UT: Width',
+    largeSizeLabel: 'UT: Large',
     mapSizeLabel: 'UT: Map Size',
     miniSizeLabel: 'UT: Mini',
-    smallSizeLabel: 'UT: Small',
-    largeSizeLabel: 'UT: Large',
     premiumSizeLabel: 'UT: Premium',
+    publishActionText: 'UT:Publish Map',
+    smallSizeLabel: 'UT: Small',
+    widthLabel: 'UT: Width',
 
     initComponent: function(config) {
         var description = new Ext.Panel({

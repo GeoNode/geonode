@@ -9,14 +9,14 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
     renderTo: "map-browser",
     height: 300,
 
-    mapGridText : "UT:Map",
     createMapText : "UT:Create Map",
-    openMapText : "UT:Open Map",
     exportMapText: "UT: Export Map",
-    mapTitleLabelText: "UT:Title",
     mapAbstractLabelText: "UT:Abstract",
     mapContactLabelText: "UT:Contact",
+    mapGridText : "UT:Map",
     mapLinkLabelText: "UT:View this Map",
+    mapTitleLabelText: "UT:Title",
+    openMapText : "UT:Open Map",
 
     initComponent: function(){
 
@@ -40,8 +40,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
             var tpl = new Ext.Template('<p><b>' + this.mapAbstractLabelText + ':</b> {abstract}</p>'+
                                        '<p><a href="/maps/{id}.html">' + this.mapLinkLabelText + '</a></p>');
 
-            this.expander = new Ext.grid.RowExpander({
-                tpl: tpl});
+            this.expander = new Ext.grid.RowExpander({tpl: tpl});
         }
 
         if(!this.plugins){
