@@ -8,17 +8,17 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
     hazardConfig: null,
     backgroundManager: null,
 
-    pdfButtonText: "UT: PDF Report",
-    reportSwitcherTip: "UT: Tooltip here",
-    pointReporterTip: "UT: Point reporter",
     lineReporterTip: "UT: Line reporter",
-    polygonReporterTip: "UT: Polygon reporter",
     navActionTipText: "UT: Pan map",
-    zoomSliderTipText: "UT: Zoom level",
-    transparencyButtonText: "UT: Transparency",
-    reportFailureMessage: "UT: Failure while retrieving report...",
+    pdfButtonText: "UT: PDF Report",
+    pointReporterTip: "UT: Point reporter",
+    polygonReporterTip: "UT: Polygon reporter",
     reportEmptyDataSetMessage: "UT: Please select some layers before requesting a report.",
+    reportFailureMessage: "UT: Failure while retrieving report...",
     reportPopupTitle: "UT: MyHazard Report",
+    reportSwitcherTip: "UT: Tooltip here",
+    transparencyButtonText: "UT: Transparency",
+    zoomSliderTipText: "UT: Zoom level",
 
     constructor: function (config) {
         this.initialConfig = config;
