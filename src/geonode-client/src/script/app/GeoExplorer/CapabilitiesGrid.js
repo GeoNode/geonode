@@ -54,8 +54,8 @@ GeoExplorer.CapabilitiesGrid = Ext.extend(Ext.grid.GridPanel, {
 
 
     nameHeaderText : "UT:Name",
-    titleHeaderText : "UT:Title",
     queryableHeaderText : "UT:Queryable",
+    titleHeaderText : "UT:Title",
 
 
     /** api: method[initComponent]
