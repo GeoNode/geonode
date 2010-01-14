@@ -166,7 +166,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
                 group: toolGroup,
                 allowDepress: false,
                 map: this.map,
-                control: this.createReporter(OpenLayers.Handler.Line)
+                control: this.createReporter(OpenLayers.Handler.Path)
             }),
             new GeoExt.Action({
                 tooltip: this.polygonReporterTip,
