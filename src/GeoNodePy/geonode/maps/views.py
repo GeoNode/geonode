@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
+from django.utils.html import escape
 
 try:
     import json
@@ -16,8 +17,8 @@ DEFAULT_MAP_CONFIG = {
     "proxy": "/proxy/?url=",
     "about": {
         "title": "GeoNode Default Map",
-        "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the 'Save Map' button above to contribute your map to the GeoNode community.",
-        "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>."
+        "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
+        "contact": "For more information, contact OpenGeo at http://opengeo.org/"
     },
     "wms": {
         "capra": "%swms" % settings.GEOSERVER_BASE_URL
@@ -151,11 +152,11 @@ def build_map_config(map):
     config = {
         'id': map.id,
         'about': {
-            'title': map.title,
-            'contact': map.contact,
-            'abstract': map.abstract,
+            'title':    escape(map.title),
+            'contact':  escape(map.contact),
+            'abstract': escape(map.abstract),
             'endorsed': map.endorsed
-            },
+        },
         'map': { 
             'layers': [],
             'center': [map.center_lon, map.center_lat],
