@@ -1528,8 +1528,10 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
      *{Object} An object that represents the app's current configuration.
      */ 
     extractConfiguration: function() {
-
-        var center = this.map.getCenter();        
+        var center = this.map.getCenter().transform(
+            new OpenLayers.Projection("EPSG:900913"),
+            new OpenLayers.Projection("EPSG:4326")
+        );        
         var config = {
             wms: {},
             map: {
