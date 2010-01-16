@@ -132,6 +132,9 @@
           </systemProperties>
 
           <webApp>${project.build.directory}/geoserver-geonode-dev</webApp>
+          
+          <!-- configure the container                 -->
+          <jettyConfig>jetty.xml</jettyConfig>
         </configuration>
       </plugin>
 
