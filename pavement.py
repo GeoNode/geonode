@@ -168,14 +168,32 @@ def setup_geoserver(options):
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn install")
 
+@task
+def setup_geonetwork(options):
+    """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
+    from urlgrabber.grabber import urlgrab
+    from urlgrabber.progress import text_progress_meter
+    src_url = options.config.parser.get('geonetwork', 'geonetwork_war_url')
+    """ where to download the war files. If changed change also src/geoserver-geonode-ext/jetty.xml accordingly"""
+    webapps = path("./webapps")
+    if not webapps.exists():
+        webapps.mkdir()
+    dst_url = webapps / "geonetwork.war"
+    if not dst_url.exists() or getattr(options, 'clean', False):
+        urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
+    src_url = options.config.parser.get('geonetwork', 'intermap_war_url')
+    dst_url = webapps / "intermap.war"
+    if not dst_url.exists() or getattr(options, 'clean', False):
+        urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
+
 
 @task
-@needs(['install_deps','setup_geoserver', 'build_js'])
+@needs(['install_deps','setup_geoserver', 'build_js', 'setup_geonetwork'])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     info('If this is your first build: django-admin.py syncdb --settings=geonode.settings\n'\
          'to start node: django-admin.py runserver --settings=geonode.settings\n'\
-         'to start geoserver: cd src/geoserver-geonode-ext/; mvn jetty:run-war') 
+         'to start geoserver and geonetwork: cd src/geoserver-geonode-ext/; export MAVEN_OPTS=-Xmx512m;  mvn jetty:run-war') 
     #TODO replace with something real
 
 
