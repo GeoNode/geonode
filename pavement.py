@@ -10,6 +10,7 @@ import ConfigParser
 import paver.doctools
 import paver.misctasks
 import pkg_resources
+import subprocess
 from shutil import move
 import zipfile
 import tarfile
@@ -422,6 +423,26 @@ def install_sphinx_conditionally(options):
 def html(options):
     call_task('paver.doctools.html')
 
+@task 
+def host(options):
+    jettylog = open("jetty.log", "w")
+    djangolog = open("django.log", "w")
+    with pushd("src/geoserver-geonode-ext"):
+        os.environ["MAVEN_OPTS"] = "-Xmx512M"
+        mvn = subprocess.Popen(
+                ["mvn", "jetty:run-war"],
+                stdout=jettylog,
+                stderr=jettylog
+              )
+    django = subprocess.Popen([
+            "django-admin.py", 
+            "runserver",
+            "--settings=capra.settings"
+        ],  
+        stdout=djangolog,
+        stderr=djangolog
+    )
+    django.wait()
 
 def platform_options(options):
     "Platform specific options"
