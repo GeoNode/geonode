@@ -117,13 +117,6 @@
           <scanIntervalSeconds>30</scanIntervalSeconds>
           <contextPath>/geoserver</contextPath>
           
-          <connectors>
-            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>8001</port>
-              <maxIdleTime>10000</maxIdleTime>
-            </connector>
-          </connectors>
-
           <systemProperties>
             <systemProperty>
               <name>GEOSERVER_DATA_DIR</name>
