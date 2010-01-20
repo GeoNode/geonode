@@ -189,7 +189,13 @@ def setup_geonetwork(options):
 
 
 @task
-@needs(['install_deps','setup_geoserver', 'build_js', 'setup_geonetwork'])
+@needs([
+    'install_deps',
+    'setup_geoserver', 
+    'build_js', 
+    'setup_geonetwork',
+    'sync_django_db'
+])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     info('If this is your first build: django-admin.py syncdb --settings=geonode.settings\n'\
@@ -233,6 +239,12 @@ def capra_js(options):
        path("capra-client").rmtree()
        path("capra-client/").makedirs()
        sh("jsbuild -o capra-client/ all.cfg") 
+
+@task
+def sync_django_db(options):
+    if not path("development.db").exists():
+        sh("django-admin.py syncdb --settings=capra.settings --noinput")
+        sh("django-admin.py loaddata --settings=capra.settings hazard.json")
 
 
 @task
