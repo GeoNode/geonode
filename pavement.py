@@ -1,4 +1,5 @@
 from __future__ import with_statement
+
 from paver import svn
 from paver.easy import *
 from paver.easy import options
@@ -6,6 +7,8 @@ from paver.path25 import pushd
 import functools
 import os
 import sys
+import time
+import socket
 import ConfigParser
 import paver.doctools
 import paver.misctasks
@@ -14,6 +17,7 @@ import subprocess
 from shutil import move
 import zipfile
 import tarfile
+import urllib
 
 
 assert sys.version_info[0] >= 2 and sys.version_info[1] >= 6, \
@@ -442,10 +446,10 @@ def host(options):
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = "-Xmx512M"
         mvn = subprocess.Popen(
-                ["mvn", "jetty:run-war"],
-                stdout=jettylog,
-                stderr=jettylog
-              )
+            ["mvn", "jetty:run"],
+            stdout=jettylog,
+            stderr=jettylog
+        )
     django = subprocess.Popen([
             "django-admin.py", 
             "runserver",
@@ -454,7 +458,26 @@ def host(options):
         stdout=djangolog,
         stderr=djangolog
     )
-    django.wait()
+
+    def jetty_is_up():
+        try:
+            urllib.urlopen("http://localhost:8001/geoserver/web/")
+            return True
+        except Exception, e:
+            return False
+
+    info("Jetty is starting up, please wait...")
+    socket.setdefaulttimeout(1)
+    while not jetty_is_up():
+        time.sleep(2)
+
+    info("Development GeoNode is running at http://localhost:8000/")
+    info("Press CTRL-C to shut down")
+
+    try: 
+        django.wait()
+    except KeyBoardInterrupt:
+        sys.exit()
 
 def platform_options(options):
     "Platform specific options"
