@@ -868,18 +868,14 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     
                     // set layer max extent from capabilities
                     // TODO: make this SRS independent
-                    layer.restrictedExtent = OpenLayers.Bounds.fromArray(record.get("llbbox"));
+                    layer.restrictedExtent = 
+                        OpenLayers.Bounds.fromArray(record.get("llbbox"));
                     layer.restrictedExtent.transform(
                         new OpenLayers.Projection("EPSG:4326"),
                         new OpenLayers.Projection("EPSG:900913")
                     );
                     
-                    //if (this.alignToGrid) {
-                    //    layer.maxExtent = new OpenLayers.Bounds(-180, -90, 180, 90);
-                    //} else {
-                        layer.maxExtent = layer.restrictedExtent;
-                    //}
-
+                    layer.maxExtent = layer.restrictedExtent;
 
                     // set layer visibility from config
                     layer.visibility = ("visibility" in conf) ? conf.visibility : true;
