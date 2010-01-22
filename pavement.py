@@ -476,7 +476,7 @@ def host(options):
 
     try: 
         django.wait()
-    except KeyBoardInterrupt:
+    except KeyboardInterrupt:
         sys.exit()
 
 def platform_options(options):
