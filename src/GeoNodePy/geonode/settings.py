@@ -98,6 +98,7 @@ DEFAULT_MAP_ZOOM = 7
 
 MAP_BASELAYERS = [{
         'service': 'google',
+        'apiKey' : GOOGLE_API_KEY,
         'layers': [
             'G_SATELLITE_MAP'
         ]}, {
