@@ -4,7 +4,7 @@ from urllib import urlencode
 
 _ = lambda x: x
 
-DEBUG = True
+DEBUG = False
 SITENAME = "CAPRA GeoNode"
 TEMPLATE_DEBUG = DEBUG
 
@@ -173,7 +173,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
 )
 
-GEONODE_CLIENT_LOCATION = "http://capra.opengeo.org/geonode-client"
+GEONODE_CLIENT_LOCATION = "http://geonode.capra.opengeo.org/geonode-client"
 
 if DEBUG:
     if MINIFIED_RESOURCES: 
