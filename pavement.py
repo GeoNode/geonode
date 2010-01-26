@@ -302,7 +302,13 @@ def package_webapp(options):
 
 
 @task
-@needs('package_geoserver','package_webapp', 'package_client', 'package_bootstrap')
+@needs(
+    'build',
+    'package_geoserver',
+    'package_webapp',
+    'package_client',
+    'package_bootstrap'
+)
 def package_all(options):
     info('all is packaged, ready to deploy')
 
