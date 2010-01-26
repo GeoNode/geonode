@@ -4,7 +4,7 @@ from urllib import urlencode
 
 _ = lambda x: x
 
-DEBUG = False
+DEBUG = True
 SITENAME = "CAPRA GeoNode"
 TEMPLATE_DEBUG = DEBUG
 
