@@ -19,7 +19,6 @@ urlpatterns = patterns('',
     (r'^(?P<page>data|developer|help)/?$', 'geonode.views.static'),
     (r'^lang\.js$', 'geonode.views.lang'),
     (r'^maps/', include('geonode.maps.urls')),
-    #(r'^map/', include('geonode.
     (r'^proxy/', 'geonode.proxy.views.proxy'),
     (r'^data/(?P<layername>.*)', 'geonode.maps.views.layer_detail'),
 
