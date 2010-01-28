@@ -97,7 +97,7 @@ def newmap(request):
                 [resource_urls]
             ))
 
-def mapinfo(request,mapid): 
+def mapdetail(request,mapid): 
     map = get_object_or_404(Map,pk=mapid) 
     layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", 
