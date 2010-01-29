@@ -528,6 +528,10 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                 }
             }
         });
+
+        var treeRoot = new Ext.tree.TreeNode();
+        treeRoot.appendChild(fgSubTree);
+        treeRoot.appendChild(bgSubTree);
         
         var layerTree = new Ext.tree.TreePanel({
             border: false,
@@ -535,12 +539,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             loader: {
                 applyLoader: false
             },
-            root: {
-                children: [
-                    fgSubTree,
-                    bgSubTree
-                ]
-            },
+            root: treeRoot,
             enableDD: true,
             selModel: new Ext.tree.DefaultSelectionModel({
                 listeners: {
