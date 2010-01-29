@@ -458,7 +458,7 @@ def host(options):
         )
     django = subprocess.Popen([
             "django-admin.py", 
-            "runserver",
+            "runserver_plus",
             "--settings=capra.settings"
         ],  
         stdout=djangolog,

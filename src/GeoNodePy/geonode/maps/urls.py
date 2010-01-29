@@ -14,4 +14,6 @@ urlpatterns = patterns('geonode.maps.views',
   
     # map information page
     (r'^detail/(?P<mapid>\d+)$', 'mapdetail'),
+    (r'^download/(?P<mapid>\d+)$', 'download'),
+   
 )

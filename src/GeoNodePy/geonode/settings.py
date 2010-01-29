@@ -168,6 +168,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'django_extensions',
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
