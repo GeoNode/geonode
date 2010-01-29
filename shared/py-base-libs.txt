@@ -1,3 +1,5 @@
 Django
 simplejson # needed for python2.5
+werkzeug
+django-extensions
 httplib2

@@ -41,7 +41,6 @@ class LayerManager(models.Manager):
 class Layer(models.Model):
     wms = get_layers("%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL)
     objects = LayerManager()
-    
     typename = models.CharField(max_length=128)
 
     def metadata(self): 

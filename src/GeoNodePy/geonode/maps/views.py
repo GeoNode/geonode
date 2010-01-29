@@ -98,6 +98,9 @@ def newmap(request):
             ))
 
 def mapdetail(request,mapid): 
+    '''
+    The view that show details of each map
+    '''
     map = get_object_or_404(Map,pk=mapid) 
     layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", 
@@ -107,8 +110,36 @@ def mapdetail(request,mapid):
                   'map': map, 
                   'layers': layers,},
                 [resource_urls]))
-            
-            
+import urllib2
+def getLayers(layers): 
+    tmp = "/tmp"
+    def slug(string): 
+        string = string.replace(":","")
+        string = string.replace("-","")
+        return string
+    def buildURL(name): 
+        #url = "%s/wfs?request=getfeature&service=wfs&version=1.1.0&typename=%s&outputFormat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL,name)
+        url = "http://localhost:8001/geoserver/wfs?request=getfeature&service=wfs&version=1.1.0&typename=%s&outputFormat=SHAPE-ZIP"
+        return url 
+    for layer in layers:
+        try:
+            url = urllib2.urlopen(buildURL(str(layer.name)))
+            shapefile = url.read()
+            file = open("%s/%s.zip" % (tmp,slug(str(layer.name))),'wb') 
+            file.write(shapefile)
+            file.close
+        except IOError: 
+            print "something went wrong" 
+     
+def download(request,mapid):
+    '''
+    The view that downloads all of the files associated with each map 
+    '''
+    map = get_object_or_404(Map,pk=mapid)
+    layers = MapLayer.objects.filter(map=map)
+    getLayers(layers)
+    return HttpResponse("it works \n")
+
 def view(request, mapid):
     """  
     The view that returns the map composer opened to
