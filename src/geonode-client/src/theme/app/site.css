@@ -64,7 +64,16 @@ div#header {
 
 div#header h1 { 
   font-size:0;
-  visibility: none;
+  text-indent: -999em;
+  font-size: 0;
+}
+
+div#header a {
+  display: block;
+  width: 440px;
+  height: 100%;
+  text-indent: -999em;
+  font-size: 0;
 }
 
 
