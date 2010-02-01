@@ -9,7 +9,7 @@ class MapTest(TestCase):
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
-use the 'Save Map' button above to contribute your map to the GeoNode \
+use the &#39;Save Map&#39; button above to contribute your map to the GeoNode \
 community." 
 
     default_title = "GeoNode Default Map"

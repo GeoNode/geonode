@@ -485,6 +485,12 @@ def host(options):
     except KeyboardInterrupt:
         sys.exit()
 
+
+@task
+def test(options):
+    sh("django-admin.py test --settings=capra.settings")
+
+
 def platform_options(options):
     "Platform specific options"
     options.config.platform = sys.platform
