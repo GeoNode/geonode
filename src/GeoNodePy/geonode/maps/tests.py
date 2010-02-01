@@ -37,7 +37,7 @@ community."
         # get() throws an exception if nothing matches
         Map.objects.get(id=map.id)
 
-    def test_mapifo(self): 
+    def test_mapdetails(self): 
         map = Map.objects.get(id="1") 
         c = Client() 
         response = c.get("/maps/detail/%s" % map.id)
