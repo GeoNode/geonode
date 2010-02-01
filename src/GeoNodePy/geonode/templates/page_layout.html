@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load navbar %}
+{% load geonode_media %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
     <head>
@@ -30,7 +31,7 @@
         <script src="{{MEDIA_LOCATIONS.ux_script}}"></script> 
         <script src="{{MEDIA_LOCATIONS.app_script}}"></script> 
 
-        <link rel="stylesheet" type="text/css" href="{{MEDIA_LOCATIONS.app_themes}}site.css" />
+        <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" />
 
         <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
         <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
