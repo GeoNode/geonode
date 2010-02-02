@@ -179,7 +179,8 @@ def setup_geonetwork(options):
     from urlgrabber.grabber import urlgrab
     from urlgrabber.progress import text_progress_meter
     src_url = options.config.parser.get('geonetwork', 'geonetwork_war_url')
-    """ where to download the war files. If changed change also src/geoserver-geonode-ext/jetty.xml accordingly"""
+    # where to download the war files. If changed change also
+    # src/geoserver-geonode-ext/jetty.xml accordingly
     webapps = path("./webapps")
     if not webapps.exists():
         webapps.mkdir()
