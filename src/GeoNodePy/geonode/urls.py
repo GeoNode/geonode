@@ -22,15 +22,10 @@ urlpatterns = patterns('',
     (r'^proxy/', 'geonode.proxy.views.proxy'),
     (r'^data/(?P<layername>.*)', 'geonode.maps.views.layer_detail'),
 
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+    (r'^accounts/login', 'django.contrib.auth.views.login')
 )
 
 #
