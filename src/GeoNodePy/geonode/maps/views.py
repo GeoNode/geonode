@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.html import escape
+import urllib2
 
 try:
     import json
@@ -92,10 +93,8 @@ def read_json_map(json_text):
 
 def newmap(request):
     return render_to_response('maps/view.html', 
-            context_instance = RequestContext(request, 
                 { 'config': json.dumps(DEFAULT_MAP_CONFIG), 'bg': json.dumps(settings.MAP_BASELAYERS) },
-                [resource_urls]
-            ))
+            )
 
 def mapdetail(request,mapid): 
     '''
@@ -104,13 +103,12 @@ def mapdetail(request,mapid):
     map = get_object_or_404(Map,pk=mapid) 
     layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", 
-            context_instance = RequestContext(request,
+            
                 { 'config': json.dumps(DEFAULT_MAP_CONFIG), 
                   'bg': json.dumps(settings.MAP_BASELAYERS),
                   'map': map, 
-                  'layers': layers,},
-                [resource_urls]))
-import urllib2
+                  'layers': layers,})
+
 def getLayers(layers): 
     tmp = "/tmp"
     def slug(string): 
@@ -118,8 +116,7 @@ def getLayers(layers):
         string = string.replace("-","")
         return string
     def buildURL(name): 
-        #url = "%s/wfs?request=getfeature&service=wfs&version=1.1.0&typename=%s&outputFormat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL,name)
-        url = "http://localhost:8001/geoserver/wfs?request=getfeature&service=wfs&version=1.1.0&typename=%s&outputFormat=SHAPE-ZIP"
+        url = "%swfs?request=getfeature&service=wfs&version=1.1.0&typename=%s&outputFormat=SHAPE-ZIP" % (setttings.GEOSERVER_URL,name)
         return url 
     for layer in layers:
         try:
@@ -138,7 +135,7 @@ def download(request,mapid):
     map = get_object_or_404(Map,pk=mapid)
     layers = MapLayer.objects.filter(map=map)
     getLayers(layers)
-    return HttpResponse("it works \n")
+    return HttpResponse("%s \n" % layers)
 
 def view(request, mapid):
     """  
@@ -148,10 +145,10 @@ def view(request, mapid):
     map = Map.objects.get(pk=mapid)
     config = build_map_config(map)
     return render_to_response('maps/view.html',
-                context_instance = RequestContext(request, 
-                    { 'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS)},
-                    [resource_urls]
-                ))
+                    { 'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS),
+					  'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY
+					}
+                )
 
 
 def embed(request, mapid=None):
@@ -161,15 +158,12 @@ def embed(request, mapid=None):
         map = Map.objects.get(pk=mapid)
         config = build_map_config(map)
     return render_to_response('maps/embed.html', 
-        context_instance = RequestContext(request, 
-            { 'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS)},
-            [resource_urls]
-    ))
+            { 'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS)}
+    )
 
 
 def data(request):
-    context = RequestContext(request,[resource_urls])
-    return render_to_response('data.html', context_instance=context)
+    return render_to_response('data.html', {'GEOSERVER_BASE_URL':settings.GEOSERVER_BASE_URL})
 
 
 def build_map_config(map):
@@ -216,5 +210,5 @@ def layer_detail(request, layername):
     print layer
     return render_to_response(
         'maps/layer.html', 
-        RequestContext(request, {"layer": layer}, [resource_urls])
+        {"layer": layer}
     )

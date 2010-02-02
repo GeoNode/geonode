@@ -14,7 +14,5 @@ except ImportError:
 
 def index(request):
     return render_to_response('safehospitals/index.html', 
-            context_instance=RequestContext(
-                { 'config': 'config', 'bg': json.dumps(settings.MAP_BASELAYERS)},
-                request, [resource_urls])
+                { 'config': 'config', 'bg': json.dumps(settings.MAP_BASELAYERS)}
             ) 

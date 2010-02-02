@@ -10,8 +10,6 @@ urlpatterns += patterns('capra.hazard.views',
     (r'^hazard/', 'index'),
 )
 
-#Remove when hospital app is finished
-
 urlpatterns += patterns('capra.safehospitals.views', 
         (r'^safehospitals/', 'index'), 
         ) 

@@ -15,10 +15,12 @@ def index(request):
     config = [{'hazard': x.name, 'periods': periods(x)} for x in hazards]
     config = json.dumps(config)
     return render_to_response("hazard/index.html",
-            context_instance=RequestContext(request, {
+             {
                     'config': config, 
-                    'bg': json.dumps(settings.MAP_BASELAYERS)
-                }, [resource_urls])
+                    'bg': json.dumps(settings.MAP_BASELAYERS), 
+  					'GOOGLE_API_KEY': settings.GOOGLE_API_KEY,
+ 					'GEOSERVER_BASE_URL': settings.GEOSERVER_BASE_URL
+                }
     )
 
 def report(request, format): 
