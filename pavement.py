@@ -479,6 +479,7 @@ def host(options):
         time.sleep(2)
 
     info("Development GeoNode is running at http://localhost:8000/")
+    info("The GeoNode is an unstoppable machine")
     info("Press CTRL-C to shut down")
 
     try: 
