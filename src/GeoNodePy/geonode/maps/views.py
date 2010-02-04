@@ -209,8 +209,4 @@ def view_js(request, mapid):
 
 def layer_detail(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
-    print layer
-    return render_to_response(
-        'maps/layer.html', 
-        {"layer": layer}
-    )
+    return render_to_response('maps/layer.html', {"layer": layer})
