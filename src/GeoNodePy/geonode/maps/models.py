@@ -1,32 +1,14 @@
 from django.conf import settings
 from django.db import models
 from urllib import urlopen
+from owslib.wms import WebMapService
 from xml.etree import ElementTree
 
 def get_layers(wms_url):
+    """Retrieve layers from a given WMS URL"""
     try:
-        xlink = "{http://www.w3.org/1999/xlink}"
-        dom = ElementTree.parse(urlopen(wms_url))
-        layers = dict()
-        for layer in dom.findall("//Layer"):
-            if layer.find("Name") is None:
-                continue
-            atts = dict()
-            attribution = layer.find("Attribution")
-            if attribution is not None: 
-                if attribution.find("Title") is not None:
-                    atts['title'] = attribution.find("Title").text
-                if attribution.find("OnlineResource") is not None:
-                    atts['url'] = attribution.find("OnlineResource").get(xlink + 'href')
-                if attribution.find("LogoURL") is not None:
-                    logo = attribution.find("LogoURL")
-                    atts['logo'] = {
-                        'url': logo.find("OnlineResource").get(xlink + 'href'),
-                        'size': (logo.get('width'), logo.get('height')),
-                        'format': logo.find("Format").text
-                    }
-            layers[layer.find("Name").text] = atts
-        return layers
+        wms = WebMapService(wms_url)
+        return wms.contents
     except Exception, e:
         # TODO: Error logging
         return {}
@@ -42,6 +24,21 @@ class Layer(models.Model):
     wms = get_layers("%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL)
     objects = LayerManager()
     typename = models.CharField(max_length=128)
+
+    def download_links(self):
+        """Returns a list of (mimetype, URL) tuples for downloads of this data
+        in various formats."""
+        return [
+            ("SHAPE-ZIP", "%s/wfs?request=GetFeature&typename=%s&format=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)),
+            ("application/vnd.google-earth.kml+xml", "%s/wms?request=GetMap&layers=%s&format=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)),
+            ("application/pdf", "%s/wms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
+        ]
+
+    def maps(self):
+        """Return a list of all the maps that use this layer"""
+        #return [{'absolute_url':'b', 'title': 'd'}]
+        local_wms = "%swms" % settings.GEOSERVER_BASE_URL
+        return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename)])
 
     def metadata(self): 
         if not self.typename in self.__class__.wms:

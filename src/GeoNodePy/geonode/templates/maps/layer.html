@@ -1,21 +1,32 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block main %}
-<div id="description">
-    <h3>
-        {% blocktrans with layer.typename as layername%} 
-            Layer details for {{ layername }} 
-        {% endblocktrans %}
-    </h3>
-</div>
+{% block title %} {{ layer.typename }} {% endblock %}
 
-{% if layer.metadata.logo %} 
-    <img src="{{layer.metadata.logo.url}}">
-{% endif %}
-{% if layer.metadata.url %} 
-    <a href="{{layer.metadata.url}}">{{layer.metadata.title}}</a>
-{% else %} 
-    {{ layer.metadata.title }}
-{% endif %}
+{% block main %}
+<div id="description"> <h3> {{ layer.typename }} </h3> </div>
+<p> <strong>{% trans "Abstract" %}</strong> {{ layer.metadata.abstract }} </p>
+<p> <strong>{% trans "Type" %}</strong> </p>
+<p> <strong>{% trans "Keywords" %}</strong> {{ layer.metadata.keywords|join:", " }}</p>
+<p> <strong>{% trans "Citation" %}</strong> 
+    {% if layer.metadata.attribution %} {{ layer.metadata.attribution }} {% endif %} 
+</p>
+<p> <strong>{% trans "Contact" %}</strong>
+    {% if layer.metadata.attribution %} {{ layer.metadata.attribution }} {% endif %}
+</p>
+<p> <strong>{% trans "Attributes" %}</strong> {{ layer.metadata.schema }} </p>
+<p> <strong>{% trans "Native SRS" %}</strong> {{ layer.metadata.srs }} </p>
+{% endblock %}
+
+{% block sidebar %}
+    <h3> Download </h3>
+    {% for type, link in layer.download_links %}
+        <a href="{{link}}">{{type}}</a>
+    {% endfor %}
+    <h3> Maps </h3>
+    {% for map in layer.maps %} 
+        <a href="{{map.get_absolute_url}}">{{map.title}}</a>
+    {% endfor %}
+    <h3> Styles </h3>
+    <h3> Manage </h3>
 {% endblock %}
