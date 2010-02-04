@@ -17,7 +17,7 @@
         <script type="text/javascript" src="{% geonode_media "ext_base" %}ext-all-debug.js"></script>
 
         <!-- OpenLayers resources -->
-        <link rel="stylesheet" type="text/css" href="{% geonode_media  "ol_theme" }" />
+        <link rel="stylesheet" type="text/css" href="{% geonode_media "ol_theme" %}" />
         <script src="{% geonode_media "ol_script" %}"></script>
 
         <!-- GeoExt resources -->
@@ -39,6 +39,7 @@
         <script type="text/javascript">
             Ext.BLANK_IMAGE_URL = "{% geonode_media "ext_base" %}resources/images/default/s.gif";
         </script>
+
         {% block header_append %}
         {% endblock %}
     </head>
