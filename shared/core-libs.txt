@@ -1,6 +1,6 @@
 PIL
 http://www.reportlab.com/ftp/ReportLab_2_3.tar.gz#egg=reportlab
-owslib=0.3.1
+owslib>=0.3.1
 -r py-base-libs.txt
 
 
