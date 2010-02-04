@@ -4,6 +4,7 @@
         "/static/src/script/app/GeoExplorer.js",
         "/static/src/script/app/Lang.js",
         "/static/src/script/app/Embed.js",
+        "/static/src/script/app/LayerPreview.js",
         "/static/src/script/app/ExportWizard.js",
         "/static/src/script/app/Page.js",
         "/static/src/script/app/DeveloperPage.js",

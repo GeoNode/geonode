@@ -1,17 +1,10 @@
 from geonode.maps.models import Map, Layer, MapLayer
-from geonode.maps.context_processors import resource_urls
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
-from django.template import RequestContext
 from django.utils.html import escape
+import json
 import urllib2
-
-try:
-    import json
-except ImportError:
-    print "using simplejson instead of json"
-    import simplejson as json
 
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
@@ -118,7 +111,7 @@ def getLayers(layers):
         string = string.replace("-","")
         return string
     def buildURL(name): 
-        url = "%swfs?request=getfeature&service=wfs&version=1.1.0&typename=%s&outputFormat=SHAPE-ZIP" % (setttings.GEOSERVER_URL,name)
+        url = "%swfs?request=getfeature&service=wfs&version=1.1.0&typename=%s&outputFormat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL,name)
         return url 
     for layer in layers:
         try:
@@ -209,4 +202,8 @@ def view_js(request, mapid):
 
 def layer_detail(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
-    return render_to_response('maps/layer.html', {"layer": layer})
+    return render_to_response('maps/layer.html', {
+        "layer": layer,
+        "background": settings.MAP_BASELAYERS,
+        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
+    })

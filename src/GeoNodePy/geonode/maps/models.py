@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.db import models
-from urllib import urlopen
 from owslib.wms import WebMapService
-from xml.etree import ElementTree
 
 def get_layers(wms_url):
     """Retrieve layers from a given WMS URL"""
@@ -28,17 +26,27 @@ class Layer(models.Model):
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
+        #TODO: This function is just a stub
         return [
-            ("SHAPE-ZIP", "%s/wfs?request=GetFeature&typename=%s&format=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)),
-            ("application/vnd.google-earth.kml+xml", "%s/wms?request=GetMap&layers=%s&format=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)),
-            ("application/pdf", "%s/wms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
+            ("SHAPE-ZIP", "%swfs?request=GetFeature&typename=%s&format=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)),
+            ("application/vnd.google-earth.kml+xml", "%swms?request=GetMap&layers=%s&format=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)),
+            ("application/pdf", "%swms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
         ]
+
+    def metadata_links(self):
+        """Returns a list of (type, URL) tuples for known metadata documents
+        about this data"""
+        #TODO: This function is just a stub
+        return [("GeoNode Listing", ".")]
 
     def maps(self):
         """Return a list of all the maps that use this layer"""
-        #return [{'absolute_url':'b', 'title': 'd'}]
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
-        return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename)])
+        return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename).select_related()])
+
+    def styles(self):
+        """Return a list of known styles applicable to this layer"""
+        return self.metadata().styles
 
     def metadata(self): 
         if not self.typename in self.__class__.wms:
