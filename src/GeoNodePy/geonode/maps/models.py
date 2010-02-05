@@ -2,24 +2,16 @@ from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
 
-def get_layers(wms_url):
-    """Retrieve layers from a given WMS URL"""
-    try:
-        wms = WebMapService(wms_url)
-        return wms.contents
-    except Exception, e:
-        # TODO: Error logging
-        return {}
-
 class LayerManager(models.Manager):
     def slurp(self):
         wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
-        wms = get_layers(wms_url)
-        for name, layer in wms.iteritems():
-            self.model(typename=name).save()
+        wms = WebMapService(wms_url)
+        for name, layer in wms.items():
+            if name is not None:
+                self.model(typename=name).save()
 
 class Layer(models.Model):
-    wms = get_layers("%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL)
+    wms = WebMapService("%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL)
     objects = LayerManager()
     typename = models.CharField(max_length=128)
 
@@ -49,9 +41,9 @@ class Layer(models.Model):
         return self.metadata().styles
 
     def metadata(self): 
-        if not self.typename in self.__class__.wms:
+        if not self.typename in self.__class__.wms.contents:
             wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
-            self.__class__.wms = get_layers(wms_url)
+            self.__class__.wms = WebMapService(wms_url)
         return self.__class__.wms[self.typename]
 
     def __str__(self):
