@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
 
-__wms__ = None
+_wms = None
 
 class LayerManager(models.Manager):
     def slurp(self):
@@ -43,11 +43,11 @@ class Layer(models.Model):
         return self.metadata().styles
 
     def metadata(self): 
-        global __wms__
-        if (__wms__ is None) or (self.typename not in __wms__.contents):
+        global _wms
+        if (_wms is None) or (self.typename not in _wms.contents):
             wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
-            __wms__ = WebMapService(wms_url)
-        return __wms__[self.typename]
+            _wms = WebMapService(wms_url)
+        return _wms[self.typename]
 
     def __str__(self):
         return "%s Layer" % self.typename
