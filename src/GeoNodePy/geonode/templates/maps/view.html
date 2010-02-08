@@ -1,4 +1,5 @@
 {% extends "fullscreen.html" %}
+{% load geonode_media %}
 {% load i18n %}
 
 {% block title %}
@@ -10,10 +11,16 @@ Map Viewer
 Google Earth resources
 Note: We should change this key on final deploy!
 {% endcomment %} 
-
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 <script type="text/javascript">
     google.load("earth", "1");
+</script>
+
+<script src="{% geonode_media "PrintPreview_script" %}"></script>
+<link rel="stylesheet" type="text/css" href="{% geonode_media "PrintPreview_themes" %}css/printpreview.css" />
+<script src="/proxy?url={{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
+<script type="text/javascript">
+printCapabilities.createURL = "/proxy/?url=" + printCapabilities.createURL;
 </script>
 
 <script type="text/javascript">

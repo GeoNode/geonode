@@ -53,6 +53,12 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     mapPanel: null,
     
     /**
+     * Property: legendPanel
+     * {GeoExt.LegendPanel} the legend for the main viewport's map
+     */
+    legendPanel: null,
+    
+    /**
      * Property: toolbar
      * {Ext.Toolbar} the toolbar for the main viewport
      */
@@ -124,6 +130,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     noPermalinkText: "UT: This map has not yet been saved.",
     permalinkLabel: 'UT: Permalink',
     premiumSizeLabel: 'UT: Premium',
+    printTipText: "UT:Print Map",
     publishActionText: 'UT:Publish Map',
     removeLayerActionText: "UT:Remove Layer",
     removeLayerActionTipText: "UT:Remove Layer",
@@ -592,7 +599,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             ]
         });
 
-        var legendContainer = new GeoExt.LegendPanel({
+        this.legendPanel = new GeoExt.LegendPanel({
             title: this.legendPanelText,
             border: false,
             region: 'south',
@@ -693,7 +700,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
 
         var layersTabPanel = new Ext.TabPanel({
             //region: 'center',
-            items: [layersContainer, legendContainer],
+            deferredRender: false,
+            items: [layersContainer, this.legendPanel],
             activeTab: 0
         });
 
@@ -1140,10 +1148,33 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     createTools: function() {
 
         var toolGroup = "toolGroup";
+        
+        var printButton = new Ext.Button({
+            tooltip: this.printTipText,
+            iconCls: "icon-print",
+            handler: function() {
+                var printWindow = new Ext.Window({
+                    items: new GeoExt.ux.PrintPreview({
+                        bodyStyle: "padding:5px",
+                        printProvider: {
+                            capabilities: printCapabilities,
+                            listeners: {
+                                "print": function() {printWindow.close();}
+                            }
+                        },
+                        includeLegend: true,
+                        sourceMap: this.mapPanel,
+                        legend: this.legendPanel
+                    })
+                });
+                printWindow.show();
+            },
+            scope: this
+        });
 
         // create a navigation control
         var navAction = new GeoExt.Action({
-		tooltip: this.navActionTipText,
+            tooltip: this.navActionTipText,
             iconCls: "icon-pan",
             enableToggle: true,
             pressed: true,
@@ -1337,6 +1368,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             measureSplit,
             "-",
 		     */
+            printButton,
             new Ext.Button({
                 tooltip: this.saveMapText,
                 handler: this.saveMap,

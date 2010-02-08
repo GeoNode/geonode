@@ -225,6 +225,8 @@ def concat_js(options):
        path("geonode-client").rmtree()
        os.makedirs("geonode-client/gx")
        svn.export("../externals/geoext/resources", "geonode-client/gx/theme")
+       os.makedirs("geonode-client/PrintPreview")
+       svn.export("../externals/PrintPreview/resources", "geonode-client/PrintPreview/theme")
        os.makedirs("geonode-client/ol") #need to split this off b/c of dumb hard coded OL paths
        svn.export("../externals/openlayers/theme", "geonode-client/ol/theme")
        os.makedirs("geonode-client/gn")
