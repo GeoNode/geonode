@@ -49,6 +49,9 @@ class Layer(models.Model):
             _wms = WebMapService(wms_url)
         return _wms[self.typename]
 
+    def get_absolute_url(self):
+        return "/data/%s" % self.typename
+
     def __str__(self):
         return "%s Layer" % self.typename
 
