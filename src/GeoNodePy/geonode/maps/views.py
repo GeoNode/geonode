@@ -87,7 +87,9 @@ def read_json_map(json_text):
 def newmap(request):
     return render_to_response('maps/view.html', 
                 { 'config': json.dumps(DEFAULT_MAP_CONFIG), 'bg': json.dumps(settings.MAP_BASELAYERS),
-				  'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY
+				  'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+				  'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
+				  
 				},
             )
 
@@ -141,7 +143,8 @@ def view(request, mapid):
     config = build_map_config(map)
     return render_to_response('maps/view.html',
                     { 'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS),
-					  'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY
+					  'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+					  'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
 					}
                 )
 
