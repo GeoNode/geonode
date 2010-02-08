@@ -106,6 +106,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     capGridDoneText: "UT:Done",
     capGridText: "UT:Available Layers",
     exportDialogMessage: '<p> UT: Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
+    googleUnsupportedTitleText: 'UT:Unsupported Layer',
+    googleUnsupportedText: 'UT:The Google Background Layer will not be printed.',
     heightLabel: 'UT: Height',
     infoButtonText: "UT:Get Feature Info",
     largeSizeLabel: 'UT:Large',
@@ -131,6 +133,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     permalinkLabel: 'UT: Permalink',
     premiumSizeLabel: 'UT: Premium',
     printTipText: "UT:Print Map",
+    printWindowTitleText: "UT:Print Preview",
     publishActionText: 'UT:Publish Map',
     removeLayerActionText: "UT:Remove Layer",
     removeLayerActionTipText: "UT:Remove Layer",
@@ -1154,11 +1157,26 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             iconCls: "icon-print",
             handler: function() {
                 var printWindow = new Ext.Window({
+                    title: this.printWindowTitleText,
+                    modal: true,
+                    border: false,
                     items: new GeoExt.ux.PrintPreview({
                         bodyStyle: "padding:5px",
                         printProvider: {
                             capabilities: printCapabilities,
                             listeners: {
+                                "beforeprint": function() {
+                                    // The print module does not like array params.
+                                    //TODO Remove when http://trac.geoext.org/ticket/216 is fixed.
+                                    printWindow.items.get(0).printMapPanel.layers.each(function(l){
+                                        var params = l.get("layer").params;
+                                        for(var p in params) {
+                                            if (params[p] instanceof Array) {
+                                                params[p] = params[p].join(",");
+                                            }
+                                        }
+                                    })
+                                },
                                 "print": function() {printWindow.close();}
                             }
                         },
@@ -1167,7 +1185,13 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         legend: this.legendPanel
                     })
                 });
-                printWindow.show();
+                printWindow.show().center();
+                //TODO When http://trac.openlayers.org/ticket/2473 is fixed, this should go into
+                // a preaddlayer listener of the PrintMapPanel's map config, which also has to
+                // take care to not add a google layer
+                if(this.mapPanel.map.baseLayer instanceof OpenLayers.Layer.Google) {
+                    Ext.Msg.alert(this.googleUnsupportedTitleText, this.googleUnsupportedText);
+                }
             },
             scope: this
         });
