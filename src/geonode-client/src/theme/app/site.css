@@ -190,9 +190,18 @@ margin-bottom:.75em;
  }
 
 
-p, ul#sitenav, ol { 
+p, ul#sitenav, ol, div#sidebar ul, div#main ul { /* This needs more breadth in the ul list*/ 
 margin-bottom: 2em;
 }
+
+div#sidebar ul, div#main ul { 
+  list-style-type: disc;
+}
+
+div#sidebar ol, div#main ol { 
+  list-style-type: decimal;
+}
+
 
 code { 
 font-family: "Courier New", Monospace;
