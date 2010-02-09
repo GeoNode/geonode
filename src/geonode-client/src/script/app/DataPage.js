@@ -1,4 +1,3 @@
-
 var DataPage = Ext.extend(Page, {
     
     /**
@@ -32,10 +31,10 @@ var DataPage = Ext.extend(Page, {
 
     constructor: function(config) {
 	
-	// pass on any proxy config to OpenLayers
-	if(this.proxy) {
-	    OpenLayers.ProxyHost = this.proxy;
-	}
+        // pass on any proxy config to OpenLayers
+        if(this.proxy) {
+            OpenLayers.ProxyHost = this.proxy;
+        }
 
         Page.prototype.constructor.apply(this, arguments);
     },
@@ -231,10 +230,11 @@ var DataPage = Ext.extend(Page, {
 
         // get the url for out.json file 
         if (this.proxy) {
-                base_url = this.ows.replace(/wms$/, '');
-                base_url = base_url + "www/out.json";  
-                json_url = this.proxy + encodeURIComponent(base_url) ;    
-            };
+            base_url = this.ows.replace(/wms$/, '');
+            base_url = base_url + "www/out.json";  
+            json_url = this.proxy + encodeURIComponent(base_url) ;    
+        };
+
         var ameStore = new Ext.data.GroupingStore({
             proxy: new Ext.data.HttpProxy({url: json_url}),
             reader: new Ext.data.JsonReader({fields: ['rel_tifs','path','scenario','country']}),

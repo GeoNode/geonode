@@ -14,18 +14,7 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
     metadataText: "UT:Metadata Links:",
 
     constructor: function (config) {
-        config.tpl = new Ext.Template('<p><b>' + this.abstractText + '</b> {abstract}</p>' +
-            '<p><b>' + this.attributionText + '</b> {attribution:this.attributionLink}</p>'  +
-            '<p><b>' + this.metadataText + '</b> {metadataURLs:this.metadataLinks}</p>'  +
-            '<p><b>' + this.keywordText + '</b> {keywords:this.keywordList}</p>'  +
-            '<p><b>' + this.downloadText + '</b> ' +
-            '<a class="download pdf" href="{name:this.pdfUrl}">PDF</a>, ' +
-            '<a class="download kml" href="{name:this.kmlUrl}">KML</a>, ' +
-            '<a class="download geotiff" href="{name:this.geoTiffUrl}">GeoTIFF</a>' +
-            '<span class="{owsType:this.showWFS}">, '  +
-                '<a class="download shp" href="{name:this.shpUrl}">SHP (ZIP)</a>'  +
-            '</span>' +
-            '</p>');
+        config.tpl = config.tpl || this.getDefaultTemplate();
 
         var expander, templateLib;
         expander = this;
@@ -40,6 +29,31 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
         Ext.apply(config.tpl, templateLib);
 
         GeoExplorer.CapabilitiesRowExpander.superclass.constructor.call(this, config);
+    },
+
+    /**
+     * Get the default template for use when none is provided.  This is a
+     * function and not just a variable on the prototype to ensure that 
+     *   * changes made to the template instance are localized to one instance
+     *       of the expander
+     *   * i18n values are applied properly at instantiation time, not 
+     *       definition time
+     */
+    getDefaultTemplate: function() {
+        return new Ext.Template(
+            '<p><b>' + this.abstractText + '</b> {abstract}</p>' +
+            '<p><b>' + this.attributionText + '</b> {attribution:this.attributionLink}</p>'  +
+            '<p><b>' + this.metadataText + '</b> {metadataURLs:this.metadataLinks}</p>'  +
+            '<p><b>' + this.keywordText + '</b> {keywords:this.keywordList}</p>'  +
+            '<p><b>' + this.downloadText + '</b> ' +
+            '<a class="download pdf" href="{name:this.pdfUrl}">PDF</a>, ' +
+            '<a class="download kml" href="{name:this.kmlUrl}">KML</a>, ' +
+            '<a class="download geotiff" href="{name:this.geoTiffUrl}">GeoTIFF</a>' +
+            '<span class="{owsType:this.showWFS}">, '  +
+            '<a class="download shp" href="{name:this.shpUrl}">SHP (ZIP)</a>'  +
+            '</span>' +
+            '</p>'
+        );
     },
 
     templateLibrary: {

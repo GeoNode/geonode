@@ -1,0 +1,43 @@
+{% extends "page_layout.html" %}
+{% load geonode_media %} 
+{% load i18n %}
+
+{% block title %} CAPRA Data {% endblock %} 
+
+{% block header_append %} 
+<script src="{% geonode_media "capra_script" %}" type="text/javascript"></script>
+<script type="text/javascript">
+    Ext.onReady(function() {
+        new capra.DataGrid({ 
+            ows: "{{GEOSERVER_BASE_URL}}wms",
+            proxy: "/proxy/",
+            renderTo: 'layer_data', 
+            categories: {{ typemap|safe }}
+        });
+        new capra.AMEGrid({
+            ows: "{{GEOSERVER_BASE_URL}}wms",
+            proxy: "/proxy/",
+            renderTo: 'ame_data'
+        });
+    });
+</script>
+{% endblock %}
+
+{% block main %} 
+<div id="layer_data"></div>
+<div id="ame_data"></div>
+{% endblock %}
+
+{% block sidebar %}
+<h2>{% trans "Browse Capra's Data" %}</h2>
+{% blocktrans %}
+<p>Here you can browse the data hosted by CAPRA.</p>
+<p>Click the <b>+</b> on any row to show layer metadata or download in PDF, KML, GeoTIFF, or SHP.</p>
+{% endblocktrans %}
+
+<h3>{% trans "For Developers" %}</h3>
+{% blocktrans %} 
+If you are interested in information about accessing this information through OGC services, click 
+{% endblocktrans %}
+<a href="{% url geonode.views.static "developer" %}">{% trans "here" %}</a>.
+{% endblock %} 

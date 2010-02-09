@@ -71,13 +71,11 @@ ROOT_URLCONF = 'capra.urls'
 ##     # Always use forward slashes, even on Windows.
 ##     # Don't forget to use absolute paths, not relative paths.
 ## )
-## 
-## INSTALLED_APPS = (
-##     'django.contrib.auth',
-##     'django.contrib.contenttypes',
-##     'django.contrib.sessions',
-##     'django.contrib.sites',
-## )
+
+
+TEMPLATE_DIRS = (path_extrapolate('capra/templates'),) + TEMPLATE_DIRS
+
+INSTALLED_APPS = INSTALLED_APPS + ('capra.layertypes',)
 
 NAVBAR['hazard'] = {'id': '%sLink',
     'item_class': '',
