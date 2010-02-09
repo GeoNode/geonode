@@ -461,7 +461,7 @@ def host(options):
         )
     django = subprocess.Popen([
             "django-admin.py", 
-            "runserver_plus",
+            "runserver",
             "--settings=capra.settings"
         ],  
         stdout=djangolog,
@@ -475,6 +475,7 @@ def host(options):
         except Exception, e:
             return False
 
+    info("Logging servlet output to jetty.log and django output to django.log...")
     info("Jetty is starting up, please wait...")
     socket.setdefaulttimeout(1)
     while not jetty_is_up():

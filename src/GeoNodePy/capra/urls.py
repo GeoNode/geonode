@@ -1,8 +1,12 @@
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns
 from django.conf import settings
 from geonode.urls import js_info_dict, urlpatterns
 
 js_info_dict["packages"] = js_info_dict["packages"] + ("capra.hazard",)
+
+urlpatterns = patterns('',
+    (r'^data$', 'capra.layertypes.views.data')
+) + urlpatterns
 
 urlpatterns += patterns('capra.hazard.views',
     (r'^hazard/report(.(?P<format>html|pdf))?', 'report'),
@@ -11,8 +15,8 @@ urlpatterns += patterns('capra.hazard.views',
 )
 
 urlpatterns += patterns('capra.safehospitals.views', 
-        (r'^safehospitals/', 'index'), 
-        ) 
+    (r'^safehospitals/', 'index'), 
+) 
 
 if settings.DEBUG:
     import os

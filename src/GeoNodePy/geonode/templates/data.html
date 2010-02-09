@@ -6,11 +6,10 @@
 {% block header_append %}
 <script type="text/javascript">
 Ext.onReady(function(){
-    var app = new DataPage({
+    var app = new GeoNode.DataGrid({
+        renderTo: 'layer_data',
         ows: "{{GEOSERVER_BASE_URL}}wms",
-        proxy: "/proxy/?url=",
-        url: '/geoserver',
-        ame_link_prefix: 'http://capra.opengeo.org/dev/'
+        proxy: "/proxy/"
     });
 });
 </script> 
@@ -21,43 +20,16 @@ Ext.onReady(function(){
 {% endblock %}
 
 {% block main %}
-<div id="risk-description">
-  <h3>{% trans "Risk Data" %}</h3>
-  <div>{% blocktrans %} A list of risk data layers available for download. {% endblocktrans %}</div>
-</div>
-<div id="data">
-  <div id="risk-layer-browser"></div>
-</div>
-<div id="hazard-description">
-  <h3>{%trans "Hazard Data"%}</h3>
-  <div>{% blocktrans %} A list of hazard layers available for download. {% endblocktrans %}</div>
-</div>
-<div id="data">
-  <div id="hazard-layer-browser"></div>
-</div>
-<div id="overlay"> 
-    <div id="overlay-layer-browser"> </div>
-</div>
-
-<div id="ame-description">
-    <h3>{%trans "AME Hazard Data"%}</h3>
-    <div>{% blocktrans %} A list of AME files available for download. {% endblocktrans %}</div>
-</div>
-<div id="data">
-    <div id="ame-layer-browser"></div>
-</div>
-<div id="base-description">
-  <h3>{% trans "Base Data" %}</h3>
-  <div>{% blocktrans %} A list of base layers available for download. {% endblocktrans %}</div>
-</div>
-<div id="data">
-  <div id="base-layer-browser"></div>
-</div>
+   <h2>
+   {% trans "Available Data Layers" %}
+   </h2>
+   <div id="layer_data"></div>
 {% endblock %}
+
 {% block sidebar %}
-<h2>{% trans "Browse Capra's Data" %}</h2>
+<h2>{% trans "Browse Data" %}</h2>
 {% blocktrans %}
-<p>Here you can browse the data hosted by CAPRA.</p>
+<p>Here you can browse this GeoNode's data.</p>
 <p>Click the <b>+</b> on any row to show layer metadata or download in PDF, KML, GeoTIFF, or SHP.</p>
 {% endblocktrans %}
 
