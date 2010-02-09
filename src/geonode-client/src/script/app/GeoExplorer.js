@@ -1162,6 +1162,26 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     border: false,
                     items: new GeoExt.ux.PrintPreview({
                         bodyStyle: "padding:5px",
+                        printMapPanel: {
+                            map: {
+                                controls: [
+                                    new OpenLayers.Control.Navigation(),
+                                    new OpenLayers.Control.PanPanel(),
+                                    new OpenLayers.Control.ZoomPanel(),
+                                    new OpenLayers.Control.Attribution()
+                                ]
+                            },
+                            items: [{
+                                xtype: "gx_zoomslider",
+                                vertical: true,
+                                height: 100,
+                                aggressive: true,
+                                //TODO investigate why baseLayer's maxZoomLevel does not match
+                                // numZoomLevels (in PrintMapPanel), or change ZoomSlider to be
+                                // smarter when setting maxValue. 
+                                maxValue: printCapabilities.scales.length - 1
+                            }]
+                        },
                         printProvider: {
                             capabilities: printCapabilities,
                             listeners: {
