@@ -9,7 +9,7 @@ class LayerManager(models.Manager):
         wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
         wms = WebMapService(wms_url)
         for name, layer in wms.items():
-            if name is not None:
+            if name is not None and self.filter(typename=name).count() == 0:
                 self.model(typename=name).save()
 
 
