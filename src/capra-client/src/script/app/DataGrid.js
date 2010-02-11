@@ -5,6 +5,7 @@ capra.DataGrid = Ext.extend(Ext.util.Observable, {
     dataNameHeaderText: "UT:Name",
     dataDetailText: "UT: More information about this layer",
     layerTitleSuffix: " Layers (UT)",
+    uncategorizedLabel: "UT: Uncategorized",
 
     /**
      * A store containing the WMS capabilities for the server
@@ -72,28 +73,6 @@ capra.DataGrid = Ext.extend(Ext.util.Observable, {
         var categories = this.categories || {};
         var clusters = {};
         var clusternames = [];
-
-        function toTitleCase(s) {
-            return s.replace(/\b[a-z]/g, function(c) {
-                return c.toUpperCase()
-            });
-        }
-
-        this.capabilities.each(function(rec) {
-            var name = rec.get('name');
-            if (name in categories) {
-                var categoryName = categories[name];
-                if (!(categoryName in clusters)) {
-                    clusternames.push(categoryName);
-                    clusters[categoryName] = new Ext.data.Store({
-                        recordType: this.capabilities.recordType
-                    });
-                }
-                clusters[categoryName].add(rec);
-            }
-        }, this);
-
-        var grids = [];
         var expanderTemplate = 
             '<p><b>' + GeoExplorer.CapabilitiesRowExpander.prototype.abstractText + '</b> {abstract}</p>' +
             '<p><b>' + GeoExplorer.CapabilitiesRowExpander.prototype.attributionText + '</b> {attribution:this.attributionLink}</p>'  +
@@ -109,15 +88,21 @@ capra.DataGrid = Ext.extend(Ext.util.Observable, {
             '</p>' +
             '<p><a href="/data/{name}">' + this.dataDetailText + '</a></p>';
 
-        for (var i = 0, len = clusternames.length; i < len; i++) {
-            var name = clusternames[i];
+
+        function toTitleCase(s) {
+            return s.replace(/\b[a-z]/g, function(c) {
+                return c.toUpperCase()
+            });
+        }
+
+        function createGrid(header, store) {
             var expander = new GeoExplorer.CapabilitiesRowExpander({
                 ows: this.ows,
                 tpl: new Ext.Template(expanderTemplate)
             });
-            var grid = new Ext.grid.GridPanel({
-                store: clusters[name],
-                title: toTitleCase(name) + this.layerTitleSuffix,
+            return new Ext.grid.GridPanel({
+                store: store,
+                title: header,
                 plugins: [expander],
                 colModel: new Ext.grid.ColumnModel([
                     expander, 
@@ -137,6 +122,37 @@ capra.DataGrid = Ext.extend(Ext.util.Observable, {
                 sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
                 height: 200
             });
+        }
+
+        this.capabilities.filterBy(function(rec) {
+            var name = rec.get('name');
+            if (name in categories) {
+                var categoryName = categories[name];
+                if (!(categoryName in clusters)) {
+                    clusternames.push(categoryName);
+                    clusters[categoryName] = new Ext.data.Store({
+                        recordType: this.capabilities.recordType
+                    });
+                }
+                clusters[categoryName].add(rec);
+                return false;
+            } else {
+                return true;
+            }
+        }, this);
+
+        var grids = [];
+        for (var i = 0, len = clusternames.length; i < len; i++) {
+            var name = clusternames[i];
+            var header = toTitleCase(name) + this.layerTitleSuffix;
+            var grid = createGrid(header, clusters[name])
+            grids.push(grid, new Ext.Panel({border: false, height: 20}));
+        }
+
+        if (this.capabilities.getCount() > 0) {
+            var name = this.uncategorizedLabel;
+            var header = toTitleCase(name) + this.layerTitleSuffix;
+            var grid = createGrid(header, this.capabilities);
             grids.push(grid, new Ext.Panel({border: false, height: 20}));
         }
 
