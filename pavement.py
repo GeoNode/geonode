@@ -203,10 +203,7 @@ def setup_geonetwork(options):
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info('If this is your first build: django-admin.py syncdb --settings=geonode.settings\n'\
-         'to start node: django-admin.py runserver --settings=geonode.settings\n'\
-         'to start geoserver and geonetwork: cd src/geoserver-geonode-ext/; export MAVEN_OPTS=-Xmx512m;  mvn jetty:run-war') 
-    #TODO replace with something real
+    info("""GeoNode development environment successfully set up; use "paver host" to start up the server.""") 
 
 
 @task
