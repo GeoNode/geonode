@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import include, patterns
+from django.conf.urls.defaults import *
 from django.conf import settings
 from utils import path_extrapolate
 
