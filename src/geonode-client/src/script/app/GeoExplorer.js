@@ -106,8 +106,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     capGridDoneText: "UT:Done",
     capGridText: "UT:Available Layers",
     exportDialogMessage: '<p> UT: Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
-    googleUnsupportedTitleText: 'UT:Unsupported Layer',
-    googleUnsupportedText: 'UT:The Google Background Layer will not be printed.',
     heightLabel: 'UT: Height',
     infoButtonText: "UT:Get Feature Info",
     largeSizeLabel: 'UT:Large',
@@ -145,6 +143,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     switchTo3DActionText: "UT:Switch to Google Earth 3D Viewer",
     unknownMapMessage: 'UT: The map that you are trying to load does not exist.  Creating a new map instead.',
     unknownMapTitle: 'UT: Unknown Map',
+    unsupportedLayersTitleText: 'UT:Unsupported Layers',
+    unsupportedLayersText: 'UT:The following layers cannot be printed:',
     widthLabel: 'UT: Width',
     zoomInActionText: "UT:Zoom In",
     zoomOutActionText: "UT:Zoom Out",
@@ -1156,12 +1156,15 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             tooltip: this.printTipText,
             iconCls: "icon-print",
             handler: function() {
+                var unsupportedLayers = [];
                 var printWindow = new Ext.Window({
                     title: this.printWindowTitleText,
                     modal: true,
                     border: false,
                     items: new GeoExt.ux.PrintPreview({
                         bodyStyle: "padding:5px",
+                        mapTitle: this.about["title"],
+                        comment: this.about["abstract"],
                         printMapPanel: {
                             map: {
                                 controls: [
@@ -1169,17 +1172,30 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                                     new OpenLayers.Control.PanPanel(),
                                     new OpenLayers.Control.ZoomPanel(),
                                     new OpenLayers.Control.Attribution()
-                                ]
+                                ],
+                                eventListeners: {
+                                    "preaddlayer": function(evt) {
+                                        //TODO remove this when
+                                        // http://trac.openlayers.org/ticket/2473 is fixed.
+                                        // BEGIN REMOVE
+                                        if(evt.layer.CLASS_NAME === "OpenLayers.Layer" && evt.layer.minZoomLevel !== undefined) {
+                                            unsupportedLayers.push(evt.layer.name);
+                                            return false;
+                                        }
+                                        // END REMOVE
+                                        if(evt.layer instanceof OpenLayers.Layer.Google) {
+                                            unsupportedLayers.push(evt.layer.name);
+                                            return false;
+                                        }
+                                    },
+                                    scope: this
+                                }
                             },
                             items: [{
                                 xtype: "gx_zoomslider",
                                 vertical: true,
                                 height: 100,
-                                aggressive: true,
-                                //TODO investigate why baseLayer's maxZoomLevel does not match
-                                // numZoomLevels (in PrintMapPanel), or change ZoomSlider to be
-                                // smarter when setting maxValue. 
-                                maxValue: printCapabilities.scales.length - 1
+                                aggressive: true
                             }]
                         },
                         printProvider: {
@@ -1206,12 +1222,10 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     })
                 });
                 printWindow.show().center();
-                //TODO When http://trac.openlayers.org/ticket/2473 is fixed, this should go into
-                // a preaddlayer listener of the PrintMapPanel's map config, which also has to
-                // take care to not add a google layer
-                if(this.mapPanel.map.baseLayer instanceof OpenLayers.Layer.Google) {
-                    Ext.Msg.alert(this.googleUnsupportedTitleText, this.googleUnsupportedText);
-                }
+                unsupportedLayers.length &&
+                    Ext.Msg.alert(this.unsupportedLayersTitleText, this.unsupportedLayersText +
+                        "<ul><li>" + unsupportedLayers.join("</li><li>") + "</li></ul>");
+
             },
             scope: this
         });
