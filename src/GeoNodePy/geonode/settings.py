@@ -160,7 +160,7 @@ NAVBAR = \
 # Determines whether the minified or the "raw" JavaScript files are included.
 # Only applies in development mode. (That is, when DEBUG==True)
 #MINIFIED_RESOURCES = False
-MINIFIED_RESOURCES = False
+MINIFIED_RESOURCES = True
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -185,7 +185,7 @@ if DEBUG:
             "gx_themes":"/static/gx/theme/",
             "gx_script":"/static/gx/GeoExt.js",
             "PrintPreview_script":"/static/PrintPreview/PrintPreview.js",
-            "PrintPreview_themes": "/static/PrintPreview/resources/",
+            "PrintPreview_themes": "/static/PrintPreview/theme/",
             "gxp_script":"/static/gxp.js",
             "app_themes": "/static/gn/theme/app/",
             "app_script":"/static/gn/GeoNode.js",
@@ -199,7 +199,7 @@ if DEBUG:
             "gx_themes":"/static/externals/geoext/resources/",
             "gx_script":"/static/externals/geoext/lib/GeoExt.js",
             "PrintPreview_script":"/static/externals/PrintPreview/lib/GeoExt.ux/PrintPreview.js",
-            "PrintPreview_themes": "/static/externals/PrintPreview/resources/",
+            "PrintPreview_themes": "/static/externals/PrintPreview/theme/",
             "gxp_script":"/static/externals/gxp/src/script/loader.js",
             "app_themes": "/static/src/theme/app/",
             "app_script":"/static/src/script/app/loader.js",
