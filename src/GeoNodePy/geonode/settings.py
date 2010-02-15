@@ -199,7 +199,7 @@ if DEBUG:
             "gx_themes":"/static/externals/geoext/resources/",
             "gx_script":"/static/externals/geoext/lib/GeoExt.js",
             "PrintPreview_script":"/static/externals/PrintPreview/lib/GeoExt.ux/PrintPreview.js",
-            "PrintPreview_themes": "/static/externals/PrintPreview/theme/",
+            "PrintPreview_themes": "/static/externals/PrintPreview/resources/",
             "gxp_script":"/static/externals/gxp/src/script/loader.js",
             "app_themes": "/static/src/theme/app/",
             "app_script":"/static/src/script/app/loader.js",
