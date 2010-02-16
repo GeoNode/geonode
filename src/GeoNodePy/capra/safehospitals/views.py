@@ -1,6 +1,5 @@
 # Create your views here.
 from django.shortcuts import render_to_response 
-from geonode.maps.context_processors import resource_urls
 from django.template import RequestContext
 from django.conf import settings
 
@@ -13,6 +12,7 @@ except ImportError:
 
 
 def index(request):
-    return render_to_response('safehospitals/index.html', 
-                { 'config': 'config', 'bg': json.dumps(settings.MAP_BASELAYERS)}
-            ) 
+    return render_to_response('safehospitals/index.html', RequestContext(request, {
+        'config': 'config',
+        'bg': json.dumps(settings.MAP_BASELAYERS)
+    }))
