@@ -97,15 +97,15 @@ DEFAULT_MAP_CENTER = [-84.7, 12.8]
 DEFAULT_MAP_ZOOM = 7
 
 MAP_BASELAYERS = [{
-        'service': 'google',
-        'apiKey' : GOOGLE_API_KEY,
-        'layers': [
-            'G_SATELLITE_MAP'
-        ]}, {
         'service': "wms",
         'url': "http://maps.opengeo.org/geowebcache/service/wms?request=GetCapabilities",
         'layers': [
             'bluemarble'
+        ]}, {
+        'service': 'google',
+        'apiKey' : GOOGLE_API_KEY,
+        'layers': [
+            'G_SATELLITE_MAP'
         ]}, {
         'service': "wms",
         'url': "%swms?request=GetCapabilities" % GEOSERVER_BASE_URL,

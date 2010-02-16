@@ -1149,7 +1149,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     },
 
     createTools: function() {
-
         var toolGroup = "toolGroup";
         
         var printButton = new Ext.Button({
@@ -1403,7 +1402,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             scope: this
         });
 
-        
         var tools = [
 		     /*
 		       ======== UNSUPPORTED TOOLS ==========
