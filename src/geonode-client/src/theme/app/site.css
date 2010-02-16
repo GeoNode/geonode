@@ -94,6 +94,10 @@ div#lang {
   margin-top: 30px;
 }
 
+strong {
+    font-weight: bold;
+}
+
 ul#sitenav { 
 margin-bottom:20px;
 background: url(img/menu.png) no-repeat;
