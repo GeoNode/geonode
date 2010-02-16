@@ -2,6 +2,7 @@ from geonode.maps.models import Map, Layer, MapLayer
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
+from django.template import RequestContext
 from django.utils.html import escape
 import json
 import urllib2
@@ -85,13 +86,12 @@ def read_json_map(json_text):
 
 
 def newmap(request):
-    return render_to_response('maps/view.html', 
-                { 'config': json.dumps(DEFAULT_MAP_CONFIG), 'bg': json.dumps(settings.MAP_BASELAYERS),
-				  'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-				  'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
-				  
-				},
-            )
+    return render_to_response('maps/view.html', RequestContext(request, {
+        'config': json.dumps(DEFAULT_MAP_CONFIG), 
+        'bg': json.dumps(settings.MAP_BASELAYERS),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
+    }))
 
 def mapdetail(request,mapid): 
     '''
@@ -99,12 +99,12 @@ def mapdetail(request,mapid):
     '''
     map = get_object_or_404(Map,pk=mapid) 
     layers = MapLayer.objects.filter(map=map.id) 
-    return render_to_response("maps/mapinfo.html", 
-            
-                { 'config': json.dumps(DEFAULT_MAP_CONFIG), 
-                  'bg': json.dumps(settings.MAP_BASELAYERS),
-                  'map': map, 
-                  'layers': layers,})
+    return render_to_response("maps/mapinfo.html", RequestContext(request, {
+        'config': json.dumps(DEFAULT_MAP_CONFIG), 
+        'bg': json.dumps(settings.MAP_BASELAYERS),
+        'map': map, 
+        'layers': layers
+    }))
 
 def getLayers(layers): 
     tmp = "/tmp"
@@ -141,12 +141,11 @@ def view(request, mapid):
     """
     map = Map.objects.get(pk=mapid)
     config = build_map_config(map)
-    return render_to_response('maps/view.html',
-                    { 'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS),
-					  'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-					  'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
-					}
-                )
+    return render_to_response('maps/view.html', RequestContext(request, {
+        'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
+    }))
 
 
 def embed(request, mapid=None):
@@ -155,13 +154,16 @@ def embed(request, mapid=None):
     else:
         map = Map.objects.get(pk=mapid)
         config = build_map_config(map)
-    return render_to_response('maps/embed.html', 
-            { 'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS)}
-    )
+    return render_to_response('maps/embed.html', RequestContext(request, {
+        'config': json.dumps(config),
+        'bg': json.dumps(settings.MAP_BASELAYERS)
+    }))
 
 
 def data(request):
-    return render_to_response('data.html', {'GEOSERVER_BASE_URL':settings.GEOSERVER_BASE_URL})
+    return render_to_response('data.html', RequestContext(request, {
+        'GEOSERVER_BASE_URL':settings.GEOSERVER_BASE_URL
+    }))
 
 
 def build_map_config(map):
@@ -205,8 +207,8 @@ def view_js(request, mapid):
 
 def layer_detail(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
-    return render_to_response('maps/layer.html', {
+    return render_to_response('maps/layer.html', RequestContext(request, {
         "layer": layer,
         "background": settings.MAP_BASELAYERS,
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
-    })
+    }))

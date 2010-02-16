@@ -14,14 +14,10 @@ def index(request):
         return [{'typename': p.layer.typename, 'length': p.length} for p in hazard.period_set.all()]
     config = [{'hazard': x.name, 'periods': periods(x)} for x in hazards]
     config = json.dumps(config)
-    return render_to_response("hazard/index.html",
-             {
-                    'config': config, 
-                    'bg': json.dumps(settings.MAP_BASELAYERS), 
-  					'GOOGLE_API_KEY': settings.GOOGLE_API_KEY,
- 					'GEOSERVER_BASE_URL': settings.GEOSERVER_BASE_URL
-                }
-    )
+    return render_to_response("hazard/index.html", RequestContext(request, {
+        'config': config, 
+        'bg': json.dumps(settings.MAP_BASELAYERS)
+    }))
 
 def report(request, format): 
     params = extract_params(request)
@@ -53,9 +49,10 @@ def report(request, format):
                 if md:
                     stats['url'] = md.get('url', None)
         data_for_report['statistics'] = statistics
-        return render_to_response("hazard/report.html",
-            context_instance=RequestContext(request, {"data": data_for_report, "geom_data": geom_data}, [resource_urls])
-        )
+        return render_to_response("hazard/report.html", RequestContext(request, {
+            "data": data_for_report,
+            "geom_data": geom_data
+        }))
     elif format == 'pdf':
         return render_pdf_response(result)
     else:
