@@ -75,7 +75,7 @@ LayerPreview = Ext.extend(GeoExplorer, {
             ); 
         this.mapPanel = new GeoExt.MapPanel({
             layout: "anchor",
-            border: true,
+            border: false,
             region: "center",
             map: this.map,
             // TODO: update the OpenLayers.Map constructor to accept an initial center
@@ -99,7 +99,7 @@ LayerPreview = Ext.extend(GeoExplorer, {
         this.layers = this.mapPanel.layers;
         
         var toolbar;
-        if(this.useToolbar){
+        if(this.useToolbar) {
             toolbar = new Ext.Toolbar({
                 xtype: "toolbar",
                 region: "north",
@@ -110,19 +110,20 @@ LayerPreview = Ext.extend(GeoExplorer, {
             this.on("ready", function() {
                 toolbar.enable();
             });
-        } else {
-            this.mapPanel.map.addControl(new OpenLayers.Control.Navigation());
         }
-        
+
+        this.mapPanel.map.addControl(new OpenLayers.Control.Navigation());
+
         var viewport = new Ext.Panel({
             renderTo: this.renderTo,
             height: this.height,
             layout: "fit",
             hideBorders: true,
+            tbar: toolbar, 
             items: {
                 layout: "border",
                 deferredRender: false,
-                items: (toolbar ? [toolbar] : []).concat([this.mapPanel])
+                items: [this.mapPanel]
             }
         });    
     },
@@ -137,5 +138,29 @@ LayerPreview = Ext.extend(GeoExplorer, {
         if (layerIndex != -1) {
             this.layers.getAt(layerIndex).get("layer").mergeNewParams({"styles": stylename});
         }
+    },
+
+    createTools: function() {
+        var backgroundTree = new GeoExt.tree.BaseLayerContainer({
+            text: this.backgroundContainerText, 
+            layerStore: this.layers, 
+            loader: {
+                filter: function(record) {
+                    return record.get('group') === 'background';
+                }
+            }
+        });
+
+        return [{
+            text: this.backgroundContainerText, 
+            menu: new Ext.menu.Menu({
+                items: [new Ext.tree.TreePanel({
+                    border: false,
+                    rootVisible: false,
+                    loader: { applyLoader: false },
+                    root: backgroundTree
+                })]
+            })
+        }];
     }
 });

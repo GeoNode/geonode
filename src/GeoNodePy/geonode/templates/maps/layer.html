@@ -12,7 +12,6 @@
                  * is fixed.
                  */
                 alignToGrid: true,
-                useToolbar: false,
                 proxy: "/proxy/?url=",
 
                 /* The URL to a REST map configuration service.  This service 
@@ -30,7 +29,7 @@
                 },
                 backgroundLayers: {{ background|safe }},
                 renderTo: "preview_map",
-                height: 300
+                height: 350
             };
 
             app = new LayerPreview(config);
