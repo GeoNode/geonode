@@ -43,17 +43,19 @@
 
 {% block main %}
 <div id="description"> <h3> {{ layer.typename }} </h3> </div>
-<p> <strong>{% trans "Abstract" %}:</strong> {{ layer.metadata.abstract }} </p>
-<p> <strong>{% trans "Type" %}:</strong> </p>
+<p> <strong>{% trans "Abstract" %}:</strong> {{ layer.metadata.abstract|default:_("No abstract for this layer.") }} </p>
+<p> <strong>{% trans "Type" %}:</strong> {% trans "No layer type specified." %} </p>
 <p> <strong>{% trans "Keywords" %}:</strong> {{ layer.metadata.keywords|join:", " }}</p>
 <p> <strong>{% trans "Citation" %}:</strong> 
-    {% if layer.metadata.attribution %} {{ layer.metadata.attribution }} {% endif %} 
+    {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
 </p>
 <p> <strong>{% trans "Contact" %}:</strong>
-    {% if layer.metadata.attribution %} {{ layer.metadata.attribution }} {% endif %}
+    {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
 </p>
-<p> <strong>{% trans "Attributes" %}:</strong> {{ layer.metadata.schema }} </p>
-<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0 }} </p>
+<p> <strong>{% trans "Attributes" %}:</strong> 
+    {{ layer.metadata.schema|default:_("No schema available for this layer.") }}
+</p>
+<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
 <div id="preview_map"></div>
 {% endblock %}
 
