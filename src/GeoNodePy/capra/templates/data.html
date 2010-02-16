@@ -1,5 +1,6 @@
 {% extends "page_layout.html" %}
 {% load geonode_media %} 
+{% load navbar %}
 {% load i18n %}
 
 {% block title %} CAPRA Data {% endblock %} 
@@ -22,6 +23,8 @@
     });
 </script>
 {% endblock %}
+
+{% block nav %} {% navbar data %} {% endblock %}
 
 {% block main %} 
 <div id="layer_data"></div>
