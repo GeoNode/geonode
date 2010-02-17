@@ -265,6 +265,8 @@ form {
 }
 
 .olControlScaleLine {
+    display: block;
+    position: relative;
     font-family: tahoma,arial,helvetica,sans-serif;
 }
 
