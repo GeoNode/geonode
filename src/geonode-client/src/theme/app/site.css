@@ -340,7 +340,10 @@ left: .4em;
 right: 220px;
 text-size: smaller;
 }
-
+.login-widget{ 
+float: right;
+background: #fff;
+}
 
 /* UTILITY CLASSES */
 
