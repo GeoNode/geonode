@@ -72,8 +72,7 @@ Install
   python bootstrap.py
   . bin/activate
   paver build
-  django-admin.py syncdb --settings=geonode.settings 
-  django-admin.py runserver --settings=geonode.settings 
+  paver host 
 
 Options
 =======

@@ -98,7 +98,7 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 GEOSERVER_CREDENTIALS = "admin", "geoserver"
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
-
+LOGIN_REDIRECT_URL = "/"
 #Default settings for map composing application.
 DEFAULT_MAP_BASE_LAYER = "base:nic_admin"
 DEFAULT_MAP_CENTER = [-84.7, 12.8]

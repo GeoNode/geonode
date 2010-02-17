@@ -47,7 +47,6 @@
         <div id="container" class="selfclear">
             <div class="clearfix" id="ja-topbar">
                 <div id="ja-pathway">
-
                 </div>
                 <div class="clearfix" id="ja-search">
                     <form class="spanish" name="es" action="/i18n/setlang/" method="post">
@@ -61,7 +60,20 @@
                     <a title="CAPRA" id="home" href="http://ecapra.org/en/index.php"></a>
                 </div>
             </div>
-             <div id="header"><a href="{% url geonode.views.index %}">CAPRA Home</a></div>
+						<div class="login-widget"> 
+							{% if user.is_authenticated %}
+							<p> welcome {{user}}<a href="/accounts/logout">Logout</a></p>
+							{% else %}
+
+						<form action="/accounts/login" method="post"> 
+							<input type="text" name="username" />
+							<input type="password" name="password" />
+							<input type="submit" value="Login" />
+						</form>
+							{% endif %}
+						</div>
+             <div id="header"><a href="{% url geonode.views.index %}">CAPRA Home</a>
+			</div>
             {% block nav %}
             {% navbar master %}
             {% endblock %}
