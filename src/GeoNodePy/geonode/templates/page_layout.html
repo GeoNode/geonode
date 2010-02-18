@@ -62,7 +62,7 @@
             </div>
 						<div class="login-widget"> 
 							{% if user.is_authenticated %}
-							<p> welcome {{user}}<a href="/accounts/logout">Logout</a></p>
+							<p>{{user}} | <a href="/accounts/logout">Logout</a></p>
 							{% else %}
 
 						<form action="/accounts/login" method="post"> 
