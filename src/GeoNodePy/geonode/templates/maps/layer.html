@@ -66,6 +66,11 @@
             <a href="{{link}}">{{type}}</a>
         {% endfor %}
     </p>
+	{% if user.is_authenticated %}
+		<p><a href="">Remove Layer</a></p>
+	{% else %}
+	
+	{% endif %}
     <p> <strong>{% trans "Metadata" %}: </strong>
         {% for type, link in layer.metadata_links %}
             <a href="{{link}}">{{type}}</a>

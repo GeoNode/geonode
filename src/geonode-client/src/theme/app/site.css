@@ -341,10 +341,14 @@ right: 220px;
 text-size: smaller;
 }
 .login-widget{ 
+margin-top: 30px;
+margin-right: 10px;
 float: right;
-background: #fff;
+color: #fff;
 }
-
+.login-widget a { 
+	color: #fff;
+	}
 /* UTILITY CLASSES */
 
 .selfclear:after {
