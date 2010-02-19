@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block title %} {{ layer.typename }} {% endblock %}
+{% block title %} {{ layer.metadata.title|default:layer.typename }} {% endblock %}
 
 {% block header_append %}
     <script type="text/javascript">
@@ -23,9 +23,7 @@
                     "capra": "{{ GEOSERVER_BASE_URL }}wms"
                 },
                 map: {
-                    "layers": [{"wms": "capra", "name": "{{layer.typename}}"}],
-                    "center": [-84.7, 12.8], 
-                    "zoom": 7
+                    "layers": [{"wms": "capra", "name": "{{layer.typename}}"}]
                 },
                 backgroundLayers: {{ background|safe }},
                 renderTo: "preview_map",
@@ -42,7 +40,7 @@
 {% endblock %}
 
 {% block main %}
-<div id="description"> <h3> {{ layer.typename }} </h3> </div>
+<div id="description"> <h3> {{ layer.metadata.title|default:layer.typename }} </h3> </div>
 <p> <strong>{% trans "Abstract" %}:</strong> {{ layer.metadata.abstract|default:_("No abstract for this layer.") }} </p>
 <p> <strong>{% trans "Type" %}:</strong> {% trans "No layer type specified." %} </p>
 <p> <strong>{% trans "Keywords" %}:</strong> {{ layer.metadata.keywords|join:", " }}</p>
@@ -97,7 +95,7 @@
         <h3> {% trans "Manage" %} </h3>
         {% trans "In the future, we will provide tools to" %}:
         <ul>
-            <li> {% trans "Edit metadata" %} </li>
+            <li> <a href="{% url geonode.maps.views.update_layer layer.typename %}"> {% trans "Edit metadata" %} </a> </li>
             <li> {% trans "Delete layer" %} </li>
             <li> {% trans "Upload a new version of this data" %} </li>
         </ul>
