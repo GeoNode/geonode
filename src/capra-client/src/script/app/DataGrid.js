@@ -70,6 +70,7 @@ capra.DataGrid = Ext.extend(Ext.util.Observable, {
     },
 
     doLayout: function() {
+        var me = this; // alias for i18n retrieval
         var categories = this.categories || {};
         var clusters = {};
         var clusternames = [];
@@ -108,11 +109,11 @@ capra.DataGrid = Ext.extend(Ext.util.Observable, {
                     expander, 
                     {
                         id: "title", 
-                        header: this.dataTitleHeaderText,
+                        header: me.dataTitleHeaderText,
                         dataIndex: "title",
                         sortable: true
                     }, {
-                        header: this.dataNameHeaderText,
+                        header: me.dataNameHeaderText,
                         dataIndex: "name", 
                         width: 180,
                         sortable: true
