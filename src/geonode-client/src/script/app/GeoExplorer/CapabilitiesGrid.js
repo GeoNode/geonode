@@ -126,16 +126,16 @@ GeoExplorer.CapabilitiesGrid = Ext.extend(Ext.grid.GridPanel, {
              * only.  This will have to be made more generic for apps that use
              * other srs.
              */
-            layer.restrictedExtent = 
-                OpenLayers.Bounds.fromArray(record.get("llbbox"));
+            var proj = new OpenLayers.Projection("EPSG:900913");
+            var nativeBounds = record.get("bbox")[proj.getCode()];
+            var llbounds = record.get("llbbox") || [-180, -90, 180, 90];
+            var bounds = 
+                (nativeBounds && OpenLayers.Bounds.fromArray(nativeBounds.bbox)) ||
+                (OpenLayers.Bounds.fromArray(llbounds).transform(new OpenLayers.Projection("EPSG:4326"), proj));
 
-            layer.restrictedExtent.transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                new OpenLayers.Projection("EPSG:900913")
-            );
+            layer.restrictedExtent = bounds;
+            layer.maxExtent = bounds;
 
-            layer.maxExtent = layer.restrictedExtent;
-            
             newRecords.push(record);
         }
 
