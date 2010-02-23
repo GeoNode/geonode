@@ -256,6 +256,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         {name: "queryable", type: "boolean"},
                         {name: "formats"},
                         {name: "styles"},
+                        {name: "bbox"},
                         {name: "llbbox"},
                         {name: "minScale"},
                         {name: "maxScale"},
