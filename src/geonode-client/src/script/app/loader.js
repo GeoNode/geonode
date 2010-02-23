@@ -11,6 +11,7 @@
         "/static/src/script/app/DeveloperPage.js",
         "/static/src/script/app/DataPage.js",
         "/static/src/script/app/HelpPage.js",
+        "/static/src/script/app/MapBrowser.js",
         "/static/src/script/app/CuratedPage.js",
         "/static/src/script/app/CommunityPage.js",
         "/static/src/script/app/IndexPage.js",
