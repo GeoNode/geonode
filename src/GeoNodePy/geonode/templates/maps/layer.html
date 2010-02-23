@@ -26,8 +26,11 @@
                     "layers": [{"wms": "capra", "name": "{{layer.typename}}"}]
                 },
                 backgroundLayers: {{ background|safe }},
-                renderTo: "preview_map",
-                height: 350
+                view: {
+                    type: Ext.Panel,
+                    renderTo: "preview_map",
+                    height: 350
+                }
             };
 
             app = new LayerPreview(config);

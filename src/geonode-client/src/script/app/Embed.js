@@ -99,7 +99,7 @@ Embed = Ext.extend(GeoExplorer, {
         this.layers = this.mapPanel.layers;
         
         var toolbar;
-        if(this.useToolbar){
+        if (this.useToolbar) {
             toolbar = new Ext.Toolbar({
                 xtype: "toolbar",
                 region: "north",
@@ -110,18 +110,22 @@ Embed = Ext.extend(GeoExplorer, {
             this.on("ready", function() {
                 toolbar.enable();
             });
-        } else {
-            this.mapPanel.map.addControl(new OpenLayers.Control.Navigation());
         }
-        
-        var viewport = new Ext.Viewport({
-            layout: "fit",
-            hideBorders: true,
-            items: {
-                layout: "border",
-                deferredRender: false,
-                items: (toolbar ? [toolbar] : []).concat([this.mapPanel])
-            }
-        });    
+
+        this.mapPanel.map.addControl(new OpenLayers.Control.Navigation());
+
+        var viewportConfig = Ext.applyIf({
+                layout: "fit",
+                hideBorders: true,
+                tbar: toolbar,
+                items: {
+                    layout: "border",
+                    deferredRender: false,
+                    items: [this.mapPanel]
+                }
+            }, this.view
+        );
+
+        var viewport = new this.view.type(viewportConfig);
     }
 });
