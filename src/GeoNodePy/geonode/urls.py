@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     (r'^lang\.js$', 'geonode.views.lang'),
     (r'^maps/', include('geonode.maps.urls')),
     (r'^proxy/', 'geonode.proxy.views.proxy'),
-    (r'^data/(?P<layername>.*)', 'geonode.maps.views.layer_detail'),
+    (r'^data/(?P<layername>.*)$', 'geonode.maps.views.layerController'),
 
     (r'^admin/', include(admin.site.urls)),
     (r'^i18n/', include('django.conf.urls.i18n')),

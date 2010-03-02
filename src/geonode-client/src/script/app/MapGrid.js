@@ -50,7 +50,11 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
         if(!this.cm){
             this.cm = new Ext.grid.ColumnModel([
                 this.expander,
-                {id: 'title', header: this.mapTitleLabelText, dataIndex: 'title', sortable: true},
+                {id: 'title', header: this.mapTitleLabelText, dataIndex: 'title', sortable: true, 
+				renderer: function(value,metaData,record) { 
+					return "<a href='/maps/" + record.get('id') +  "'>" + value + "</a>" ; } 
+				
+				},
                 {id: 'contact', header: this.mapContactLabelText, dataIndex: 'contact', width: 250, sortable: true}
             ])
         }
