@@ -49,6 +49,11 @@ def maps(request, mapid=None):
                 mimetype="text/plain"
             )
 
+def mapJSON(request,mapid):
+	map = Map.objects.get(pk=mapid)
+	config = build_map_config(map)
+	return HttpResponse(json.dumps(config))
+
 def read_json_map(json_text):
     conf = json.loads(json_text)
     title = conf['about']['title']
@@ -106,33 +111,6 @@ def mapdetail(request,mapid):
         'layers': layers
     }))
 
-def getLayers(layers): 
-    tmp = "/tmp"
-    def slug(string): 
-        string = string.replace(":","")
-        string = string.replace("-","")
-        return string
-    def buildURL(name): 
-        url = "%swfs?request=getfeature&service=wfs&version=1.1.0&typename=%s&outputFormat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL,name)
-        return url 
-    for layer in layers:
-        try:
-            url = urllib2.urlopen(buildURL(str(layer.name)))
-            shapefile = url.read()
-            file = open("%s/%s.zip" % (tmp,slug(str(layer.name))),'wb') 
-            file.write(shapefile)
-            file.close
-        except IOError: 
-            print "something went wrong" 
-     
-def download(request,mapid):
-    '''
-    The view that downloads all of the files associated with each map 
-    '''
-    map = get_object_or_404(Map,pk=mapid)
-    layers = MapLayer.objects.filter(map=map)
-    getLayers(layers)
-    return HttpResponse("%s \n" % layers)
 
 def view(request, mapid):
     """  
@@ -205,10 +183,30 @@ def view_js(request, mapid):
     config = build_map_config(map)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
-def layer_detail(request, layername):
-    layer = get_object_or_404(Layer, typename=layername)
-    return render_to_response('maps/layer.html', RequestContext(request, {
-        "layer": layer,
-        "background": settings.MAP_BASELAYERS,
-        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
-    }))
+def layerController(request, layername):
+	layer = get_object_or_404(Layer, typename=layername)
+	if (request.META['QUERY_STRING'] == "remove"):
+		if request.user.is_authenticated():
+			if (request.method == 'GET'):
+				return render_to_response('maps/layer_remove.html',RequestContext(request, {
+					"layer": layer
+				}))
+			if (request.method == 'POST'):
+				# remove layer from django models 
+				layer.delete()
+				# remove layer from geoserver catalog 
+				# 
+				return HttpResponse("removed layer %s" % layer.typename)
+			else:
+				 return HttpResponse("Not allowed",status=405) 
+		else:  
+			return HttpResponse("Not allowed",status=405) 
+	if (request.META['QUERY_STRING'] == "replace"):
+		return HttpResponse("replace layer")
+	else: 
+		return render_to_response('maps/layer.html', RequestContext(request, {
+			"layer": layer,
+			"background": settings.MAP_BASELAYERS,
+			"GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
+		}))
+		
