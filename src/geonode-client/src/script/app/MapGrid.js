@@ -56,7 +56,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
 				
 				},
                 {id: 'contact', header: this.mapContactLabelText, dataIndex: 'contact', width: 250, sortable: true}
-            ])
+            ]);
         }
 
         var mapGrid = this;
@@ -86,7 +86,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
                     location.href = "map.html"
                 }
             }) */
-        ],
+        ];
 
         this.listeners = Ext.applyIf(this.listeners || {}, {
             "rowdblclick": function(grid, rowIndex, evt) {
