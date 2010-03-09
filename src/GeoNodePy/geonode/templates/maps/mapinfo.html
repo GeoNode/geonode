@@ -31,8 +31,8 @@
         <h3>Manage</h3>
         <ul>
             <li><a href="{% url geonode.maps.views.view map.id %}">Edit map or metadata</a></li> 
-            <li><a href="#">Delate map</a></li>
-            <li><a href="#">Duplicate map</a></li>
+            <li><a href="#">Delete map</a></li>
+            <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">Duplicate map</a></li>
          </ul>      
     </div> 
 {% endblock %}
