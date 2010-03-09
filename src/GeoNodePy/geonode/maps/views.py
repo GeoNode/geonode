@@ -1,5 +1,8 @@
 from geonode.maps.models import Map, Layer, MapLayer
-from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.db import transaction
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
@@ -113,7 +116,25 @@ def newmap(request):
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
+
+@login_required
+def deletemap(request, mapid):
+    '''
+    '''
+    # XXX transaction?
+    map = get_object_or_404(Map,pk=mapid) 
+    is_featured = map.featured
+    layers = MapLayer.objects.filter(map=map.id) 
     
+    map.delete()
+    for layer in layers:
+        layer.delete()
+
+    if is_featured:
+        return HttpResponseRedirect(reverse('geonode.views.curated'))
+    else:
+        return HttpResponseRedirect(reverse('geonode.views.community'))
+
 def mapdetail(request,mapid): 
     '''
     The view that show details of each map

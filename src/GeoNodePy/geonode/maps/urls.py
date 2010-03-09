@@ -12,6 +12,7 @@ urlpatterns = patterns('geonode.maps.views',
     (r'^embed/$', 'embed'),
     (r'^(?P<mapid>\d+)/embed$', 'embed'),
   	(r'^(?P<mapid>\d+)/data$', 'mapJSON'),
+  	(r'^(?P<mapid>\d+)/delete$', 'deletemap'),
     # map information page
     (r'^detail/(?P<mapid>\d+)$', 'mapdetail'),
    
