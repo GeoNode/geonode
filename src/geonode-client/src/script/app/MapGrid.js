@@ -38,7 +38,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
         if(!this.expander){
 
             var tpl = new Ext.Template('<p><b>' + this.mapAbstractLabelText + ':</b> {abstract}</p>'+
-                                       '<p><a href="/maps/{id}.html">' + this.mapLinkLabelText + '</a></p>');
+                                       '<p><a href="/maps/{id}">' + this.mapLinkLabelText + '</a></p>');
 
             this.expander = new Ext.grid.RowExpander({tpl: tpl});
         }

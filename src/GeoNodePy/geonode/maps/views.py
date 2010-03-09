@@ -194,7 +194,6 @@ def layerController(request, layername):
 			if (request.method == 'POST'):
 				# remove layer from django models 
 				layer.delete()
-				
 				# remove layer from geoserver catalog 
 				# 
 				return HttpResponse("removed layer %s" % layer.typename)
