@@ -32,6 +32,11 @@
       <artifactId>printing</artifactId>
       <version>${geoserver.version}</version>
     </dependency>
+     <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>restconfig</artifactId>
+      <version>${geoserver.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>web-app</artifactId>
