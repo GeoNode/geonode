@@ -148,6 +148,15 @@ def mapdetail(request,mapid):
         'layers': layers
     }))
 
+def map_controller(request, mapid):
+    '''
+    main view for map resources, dispatches to correct 
+    view based on method and query args. 
+    '''
+    if 'remove' in request.GET: 
+        return deletemap(request, mapid)
+    else:
+        return mapdetail(request, mapid)
 
 def view(request, mapid):
     """  
@@ -161,7 +170,6 @@ def view(request, mapid):
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
-
 
 def embed(request, mapid=None):
     if mapid is None:
