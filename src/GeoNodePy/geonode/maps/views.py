@@ -228,26 +228,30 @@ def view_js(request, mapid):
     config = build_map_config(map)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
+def _removeLayer(request,layer):
+	if request.user.is_authenticated():
+		if (request.method == 'GET'):
+			return render_to_response('maps/layer_remove.html',RequestContext(request, {
+				"layer": layer
+				}))
+		if (request.method == 'POST'):
+			layer.delete()
+			# remove layer from GeoServer catalog. 
+			return HttpResponse(" %s" % mapLayer.name)
+		else:
+			 return HttpResponse("Not allowed",status=405) 
+	else:  
+		return HttpResponse("Not allowed",status=405)
+			
+def _updateLayer(request,layer):		
+	return HttpResponse("replace layer")
+			
 def layerController(request, layername):
 	layer = get_object_or_404(Layer, typename=layername)
 	if (request.META['QUERY_STRING'] == "remove"):
-		if request.user.is_authenticated():
-			if (request.method == 'GET'):
-				return render_to_response('maps/layer_remove.html',RequestContext(request, {
-					"layer": layer
-				}))
-			if (request.method == 'POST'):
-				# remove layer from django models 
-				layer.delete()
-				# remove layer from geoserver catalog 
-				# 
-				return HttpResponse("removed layer %s" % layer.typename)
-			else:
-				 return HttpResponse("Not allowed",status=405) 
-		else:  
-			return HttpResponse("Not allowed",status=405) 
+		return _removeLayer(request,layer)
 	if (request.META['QUERY_STRING'] == "replace"):
-		return HttpResponse("replace layer")
+		return _updateLayer(request,layer)
 	else: 
 		return render_to_response('maps/layer.html', RequestContext(request, {
 			"layer": layer,

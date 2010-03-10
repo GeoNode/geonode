@@ -17,7 +17,7 @@
         </iframe>
         
         {% endblock %} 
-{% block sidebar %} 
+		{% block sidebar %} 
         <div id="sidebar"> 
             <h3>Download</h3>
             <a href="#"> Download all layers included in this map</a> 
@@ -35,4 +35,4 @@
             <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">Duplicate map</a></li>
          </ul>      
     </div> 
-{% endblock %}
+	{% endblock %}
