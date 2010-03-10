@@ -1,7 +1,6 @@
 # Django settings for GeoNode project.
 from utils import path_extrapolate
 from urllib import urlencode
-import os
 
 _ = lambda x: x
 
@@ -15,11 +14,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-# '../' relative to this file
-PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-
 DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = os.path.join(PROJECT_ROOT, 'development.db')
+DATABASE_NAME = 'development.db'
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Not used with sqlite3.
