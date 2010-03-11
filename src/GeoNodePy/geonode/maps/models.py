@@ -1,20 +1,30 @@
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
+from geoserver.catalog import Catalog
 
 _wms = None
 
 class LayerManager(models.Manager):
     def slurp(self):
-        wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
-        wms = WebMapService(wms_url)
-        for name, layer in wms.items():
-            if name is not None and self.filter(typename=name).count() == 0:
-                self.model(typename=name).save()
-
+		url = "%srest" % settings.GEOSERVER_BASE_URL 
+		cat = Catalog(url,"admin","geoserver")
+		stores = cat.getStores()
+		for store in stores:
+			resources = store.getResources()
+			for resource in resources:
+				if resource.name is not None and self.filter(typename=resource.name).count() == 0:
+					self.model(workspace=store.workspace.name,
+						store=store.name,
+						storeType=store.resourceType,
+						typename=resource.name
+					).save()
 
 class Layer(models.Model):
     objects = LayerManager()
+    workspace = models.CharField(max_length=128)
+    store = models.CharField(max_length=128)
+    storeType = models.CharField(max_length=128)
     typename = models.CharField(max_length=128)
 
     def download_links(self):
@@ -51,7 +61,7 @@ class Layer(models.Model):
 
     def get_absolute_url(self):
         return "/data/%s" % self.typename
-
+	
     def __str__(self):
         return "%s Layer" % self.typename
 
