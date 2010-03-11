@@ -2,7 +2,7 @@ PIL
 http://www.reportlab.com/ftp/ReportLab_2_3.tar.gz#egg=reportlab
 owslib>=0.3.1
 -r py-base-libs.txt
-
+-e git://github.com/iwillig/gsconfig.py.git#egg=gsconfig.py
 
 
 
