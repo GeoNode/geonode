@@ -30,6 +30,11 @@ class Layer(models.Model):
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128)
 
+
+    def delete(self, *args, **kwargs): 
+        import pdb; pdb.set_trace()
+        super(Layer, self).save(*args, **kwargs)
+
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
