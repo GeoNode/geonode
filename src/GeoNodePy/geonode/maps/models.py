@@ -7,20 +7,19 @@ _wms = None
 
 class LayerManager(models.Manager):
     def slurp(self):
-		url = "%srest" % settings.GEOSERVER_BASE_URL 
-		cat = Catalog(url,"admin","geoserver")
-		stores = cat.getStores()
-		for store in stores:
-			resources = store.getResources()
-			for resource in resources:
-				if resource.name is not None and self.filter(name=resource.name).count() == 0:
-					typename = "%s:%s" % (store.workspace.name,resource.name)
-					self.model(workspace=store.workspace.name,
-						store=store.name,
-						storeType=store.resourceType,
-						name=resource.name,
-						typename=typename
-					).save()
+        url = "%srest" % settings.GEOSERVER_BASE_URL 
+        cat = Catalog(url,"admin","geoserver")
+        stores = cat.getStores()
+        for store in stores:
+            resources = store.getResources()
+            for resource in resources:
+                if resource.name is not None and self.filter(name=resource.name).count() == 0:
+                    typename = "%s:%s" % (store.workspace.name,resource.name)
+                    self.model(workspace=store.workspace.name,
+                               store=store.name,
+                               storeType=store.resourceType,
+			       name=resource.name,
+			       typename=typename).save()
 
 
 class Layer(models.Model):
