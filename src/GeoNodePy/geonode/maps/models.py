@@ -13,18 +13,22 @@ class LayerManager(models.Manager):
 		for store in stores:
 			resources = store.getResources()
 			for resource in resources:
-				if resource.name is not None and self.filter(typename=resource.name).count() == 0:
+				if resource.name is not None and self.filter(name=resource.name).count() == 0:
+					typename = "%s:%s" % (store.workspace.name,resource.name)
 					self.model(workspace=store.workspace.name,
 						store=store.name,
 						storeType=store.resourceType,
-						typename=resource.name
+						name=resource.name,
+						typename=typename
 					).save()
+
 
 class Layer(models.Model):
     objects = LayerManager()
     workspace = models.CharField(max_length=128)
     store = models.CharField(max_length=128)
     storeType = models.CharField(max_length=128)
+    name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128)
 
     def download_links(self):
@@ -61,7 +65,8 @@ class Layer(models.Model):
 
     def get_absolute_url(self):
         return "/data/%s" % self.typename
-	
+
+
     def __str__(self):
         return "%s Layer" % self.typename
 
