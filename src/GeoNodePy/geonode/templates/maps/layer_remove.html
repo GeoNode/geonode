@@ -1,0 +1,22 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {{ layer.typename }} {% endblock %}
+
+{% block header_append %}
+{% endblock %}
+
+{% block main %}
+
+<p>{% trans "Are you sure you want to remove" noop %}<strong>{{layer.typename}}</strong>?</p>
+<p>{% trans "This action effects the follow maps" noop %}</p>
+<ol>
+	{% for map in layer.maps %}
+	<li>{{map.title}}</li>
+	{% endfor %}
+<ol>
+<form action="/data/{{layer.typename}}?remove" method="POST">
+	<input type="hidden" value="{{layer.typename}}" /> 
+	<input type="submit" value="Yes, I am sure!" />
+</form>
+{% endblock %}
