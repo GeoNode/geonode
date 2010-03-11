@@ -235,7 +235,6 @@ def _removeLayer(request,layer):
                 "layer": layer
             }))
         if (request.method == 'POST'):
-            import pdb; pdb.set_trace()
             layer.delete()
             return HttpResponseRedirect("/data")
         else:
