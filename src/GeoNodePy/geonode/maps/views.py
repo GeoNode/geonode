@@ -229,33 +229,33 @@ def view_js(request, mapid):
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def _removeLayer(request,layer):
-	if request.user.is_authenticated():
-		if (request.method == 'GET'):
-			return render_to_response('maps/layer_remove.html',RequestContext(request, {
-				"layer": layer
-				}))
-		if (request.method == 'POST'):
-			import pdb; pdb.set_trace()
-			layer.delete()
-			return HttpResponseRedirect("/data")
-		else:
-			 return HttpResponse("Not allowed",status=405) 
-	else:  
-		return HttpResponse("Not allowed",status=405)
-			
+    if request.user.is_authenticated():
+        if (request.method == 'GET'):
+            return render_to_response('maps/layer_remove.html',RequestContext(request, {
+                "layer": layer
+            }))
+        if (request.method == 'POST'):
+            import pdb; pdb.set_trace()
+            layer.delete()
+            return HttpResponseRedirect("/data")
+        else:
+            return HttpResponse("Not allowed",status=405) 
+    else:  
+        return HttpResponse("Not allowed",status=405)
+
 def _updateLayer(request,layer):		
 	return HttpResponse("replace layer")
 			
 def layerController(request, layername):
-	layer = get_object_or_404(Layer, typename=layername)
-	if (request.META['QUERY_STRING'] == "remove"):
-		return _removeLayer(request,layer)
-	if (request.META['QUERY_STRING'] == "replace"):
-		return _updateLayer(request,layer)
-	else: 
-		return render_to_response('maps/layer.html', RequestContext(request, {
-			"layer": layer,
-			"background": settings.MAP_BASELAYERS,
-			"GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
-		}))
+    layer = get_object_or_404(Layer, typename=layername)
+    if (request.META['QUERY_STRING'] == "remove"):
+        return _removeLayer(request,layer)
+    if (request.META['QUERY_STRING'] == "replace"):
+        return _updateLayer(request,layer)
+    else: 
+        return render_to_response('maps/layer.html', RequestContext(request, {
+            "layer": layer,
+            "background": settings.MAP_BASELAYERS,
+            "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
+	    }))
 		
