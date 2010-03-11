@@ -235,9 +235,9 @@ def _removeLayer(request,layer):
 				"layer": layer
 				}))
 		if (request.method == 'POST'):
+			import pdb; pdb.set_trace()
 			layer.delete()
-			# remove layer from GeoServer catalog. 
-			return HttpResponse(" %s" % mapLayer.name)
+			return HttpResponseRedirect("/data")
 		else:
 			 return HttpResponse("Not allowed",status=405) 
 	else:  
