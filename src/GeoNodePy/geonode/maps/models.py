@@ -2,13 +2,16 @@ from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
 from geoserver.catalog import Catalog
+import httplib2
 
 _wms = None
+_user = settings.GEOSERVER_CREDENTIALS[0]
+_password = settings.GEOSERVER_CREDENTIALS[1]
 
 class LayerManager(models.Manager):
     def slurp(self):
         url = "%srest" % settings.GEOSERVER_BASE_URL 
-        cat = Catalog(url,"admin","geoserver")
+        cat = Catalog(url,_user,_password)
         stores = cat.getStores()
         for store in stores:
             resources = store.getResources()
@@ -23,6 +26,7 @@ class LayerManager(models.Manager):
 
 
 class Layer(models.Model):
+
     objects = LayerManager()
     workspace = models.CharField(max_length=128)
     store = models.CharField(max_length=128)
@@ -32,8 +36,31 @@ class Layer(models.Model):
 
 
     def delete(self, *args, **kwargs): 
-        import pdb; pdb.set_trace()
-        super(Layer, self).save(*args, **kwargs)
+        '''
+        Override default method to remove a layer. This 
+        removes the layer from the GeoServer Catalog as
+        removing it from the Django models
+        '''
+        # GEOSERVER_CREDENTIALS 
+        HTTP = httplib2.Http(".cache")
+        HTTP.add_credentials(_user,_password)
+          
+        def _getFeatureUrl(self): 
+            if self.storeType == "dataStore":
+                return "%srest/workspaces/%s/datastores/%s/featuretypes/%s" % (settings.GEOSERVER_BASE_URL ,
+                        self.workspace,self.store,self.name)
+            if self.storeType == "coverageStore":
+                return "%srest/workspaces/%s/coveragestores/%s" % (settings.GEOSERVER_BASE_URL,self.workspace,self.name)
+        try:
+            print("removing layer from GeoNode") 
+            layerURL = "%srest/layers/%s" % (settings.GEOSERVER_BASE_URL,self.name)
+            HTTP.request(layerURL,"DELETE")     
+            HTTP.request(_getFeatureUrl(self),"DELETE")
+            super(Layer, self).delete(*args, **kwargs)
+        except ValueError:
+            raise NameError("Unable to remove Layer from the GeoNode")
+
+
 
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
