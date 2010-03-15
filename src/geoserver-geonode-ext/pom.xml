@@ -19,6 +19,10 @@
       <id>org.mapfish</id>
       <url>http://dev.mapfish.org/maven/repository</url>
     </repository>
+    <repository>
+      <id>osgeo</id>
+      <url>http://download.osgeo.org/webdav/geotools</url>
+    </repository>
   </repositories>
 
   <dependencies>
