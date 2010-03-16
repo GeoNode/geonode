@@ -1,0 +1,28 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+{% load navbar %}
+
+{% block title %} {% trans "Replace AME Data" noop %} {% endblock %}
+
+{% block main %}
+<h3>{% trans "Replace File" noop %}</h3>
+<form action="{% url capra.files.views.dispatch file.id %}?replace" method="POST" enctype="multipart/form-data">
+  {{form.as_p}}
+  <br/>
+  <input type="submit" />
+</form>
+{% endblock %}
+
+{% block sidebar %}
+{% blocktrans with file.filename as filename %}
+<h3>Instructions</h3>
+<p>This form allows you to replace the AME file {{filename}}</p>
+<h3>Warning</h3>
+<p>The current file will no longer be available after submitting this form.</p>
+{% endblocktrans %}
+
+<p><a href="{% url capra.files.views.dispatch file.id %}">
+  {% trans "Return to viewing details" noop %}
+</a></p>
+
+{% endblock %}

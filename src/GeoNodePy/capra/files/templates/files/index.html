@@ -1,0 +1,74 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+{% load navbar %}
+
+{% block title %} {% trans "Browse Files" %} {% endblock %}
+
+
+{% block header_append %}
+
+<script type="text/javascript">
+Ext.onReady(function(){
+  var file_info_url = "{% url capra.files.views.index_json %}";
+  var ame_link_prefix = '';
+  var ameLabelText = 'UT: Name';
+  var countryLabelText = 'UT: Country';
+  var pluralFiles= 'UT: Files';
+  var scenarioLabelText = 'UT: Scenario';
+  var singularFile = 'UT: File';
+
+
+  var ame_detail = '<p>UT: <b>Download:</b> <a class = "download ame" href="{download_url}">{filename}</a></p>'
+                 + '<p><a href="{edit_url}">UT: More Information about this file</a>';
+
+  var ameExpander = new Ext.grid.RowExpander({
+      tpl: new Ext.Template(ame_detail)
+  });
+  
+  var ameStore = new Ext.data.GroupingStore({
+      proxy: new Ext.data.HttpProxy({url: file_info_url}),
+      reader: new Ext.data.JsonReader({fields: ['name','download_url', 'edit_url', 'filename', 'scenario','country']}),
+      groupField: 'scenario',
+      sortInfo: {field: 'scenario', direction: 'ASC'},
+      groupOnSort: true,
+      autoLoad: true
+  });
+  
+  var ameGrid = new Ext.grid.GridPanel({
+      renderTo: 'file_list',
+      store: ameStore,
+      plugins: [ameExpander],
+      columns: [
+          ameExpander,
+          {header: ameLabelText, dataIndex: 'name' },
+          {header: scenarioLabelText, dataIndex: 'scenario'},
+          {header: countryLabelText, dataIndex: 'country'}
+      ],
+      height: 200,
+      view: new Ext.grid.GroupingView({
+          forceFit:true,
+          // custom grouping text template to display the number of items per group
+          groupTextTpl: '{text} ({[values.rs.length]} ' +
+              '{[values.rs.length > 1 ? "' + singularFile + 
+              '" : "' + pluralFiles +'"]})'
+      }),
+      viewConfig: {autoFill: true}
+  });
+});
+</script> 
+{% endblock %}
+
+
+{% block main %}
+<div id="file_list"></div>
+{% endblock %}
+
+{% block sidebar %}
+<h3>{% trans "Browse AME Files" %}</h3>
+{% blocktrans %}
+<p>
+  Click here to{% endblocktrans %}
+  <a href="{%url capra.files.views.upload %}">{% trans "upload a new file" %}</a>
+</p>
+
+{% endblock %}

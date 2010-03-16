@@ -18,6 +18,10 @@ urlpatterns += patterns('capra.safehospitals.views',
     (r'^safehospitals/', 'index'), 
 ) 
 
+urlpatterns += patterns('',
+    (r'^files/', include('capra.files.urls')),
+)
+
 if settings.DEBUG:
     import os
     def here(*x): 

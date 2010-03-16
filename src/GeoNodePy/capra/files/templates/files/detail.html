@@ -1,0 +1,30 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+{% load navbar %}
+
+{% block title %} {% trans "AME Data" noop %} {% endblock %}
+
+{% block main %}
+  <div id="description"><h3>{{file.name}}</h3></div>
+  <p><strong>Scenario:</strong> {{file.scenario}}</p>
+  <p><strong>Country:</strong> {{file.country}}</p>
+  <p><strong>File:</strong> {{file.filename}}</p>
+
+{% endblock %}
+
+{% block sidebar %}
+<h3>Download</h3>
+
+<p><a class = "download ame" href="{{ file.download_url }}">{{file.filename}}</a></p>
+
+<h3>Manage</h3>
+{% if not request.user.is_anonymous %}
+<ul>
+  <li><a href="{% url capra.files.views.dispatch file.id %}?remove">{% trans "Remove" noop %}</a></li>
+  <li><a href="{% url capra.files.views.edit file.id %}">{% trans "Edit Metadata" noop %}</a></li>
+  <li><a href="{% url capra.files.views.dispatch file.id %}?replace">{% trans "Replace File" noop %}</a></li>
+</ul>
+{%else %}
+<a href="{% url login %}">Login</a> for additional options.
+{% endif %}
+{% endblock %}
