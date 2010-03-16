@@ -1,0 +1,19 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+{% load navbar %}
+
+{% block title %} {% trans "Upload AME Data" noop %} {% endblock %}
+
+{% block main %}
+<h3>{% trans "Upload AME Data" noop %}</h3>
+<form action="{% url capra.files.views.upload %}" method="POST" enctype="multipart/form-data">
+  {{form.as_p}}
+  <br/>
+  <input type="submit" />
+</form>
+{% endblock %}
+
+{% block sidebar %}
+<h3>Instructions</h3>
+<p>Choose a local AME file to upload using the form to the left.  Please include relevant metadata describing the contents of the file.</p>
+{% endblock %}

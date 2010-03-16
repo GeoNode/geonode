@@ -15,11 +15,6 @@
             renderTo: 'layer_data', 
             categories: {{ typemap|safe }}
         });
-        new capra.AMEGrid({
-            ows: "{{GEOSERVER_BASE_URL}}wms",
-            proxy: "/proxy/",
-            renderTo: 'ame_data'
-        });
     });
 </script>
 {% endblock %}

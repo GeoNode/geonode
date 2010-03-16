@@ -1,0 +1,26 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+{% load navbar %}
+
+{% block title %} {% trans "Upload AME Data" noop %} {% endblock %}
+
+{% block main %}
+<h3>{% trans "Edit AME Metadata" noop %}</h3>
+<form action="{% url capra.files.views.edit file.id %}" method="POST" >
+  {{form.as_p}}
+  <br/>
+  <input type="submit" />
+</form>
+{% endblock %}
+
+{% block sidebar %}
+{% blocktrans with file.filename as filename %}
+<h3>Instructions</h3>
+<p>This form allows you to modify the metadata associated with the AME file {{filename}}
+</p>
+{% endblocktrans %}
+
+<p><a href="{% url capra.files.views.dispatch file.id %}">
+  {% trans "Return to viewing details" noop %}
+</a></p>
+{% endblock %}
