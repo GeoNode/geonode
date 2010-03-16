@@ -102,7 +102,7 @@ if (GeoExplorer && GeoExplorer.CapabilitiesGrid) {
 
 if (ExportWizard) {
     Ext.apply(ExportWizard.prototype, {
-        exportDialogMessage: gettext('<p> UT: Your map is ready to be published to the web! </p> <p> Simply copy the following HTML to embed the map in your website: </p>'),
+        exportDialogMessage: gettext('<p>Your map is ready to be published to the web! </p> <p> Simply copy the following HTML to embed the map in your website: </p>'),
         heightLabel: gettext("Height"),
         largeSizeLabel: gettext("Large"),
         mapSizeLabel: gettext("Map Size"),
@@ -127,3 +127,4 @@ if (GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
         metadataText: gettext("Metadata Links:")
     });
 }
+
