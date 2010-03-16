@@ -333,6 +333,10 @@ a.download.shp{
   background-image: url(img/geosilk/page_white_vector.png)
 }
 
+a.download.ame{
+    background-image: url(img/silk/page_white.png)
+}
+
 .olControlAttribution{ 
 color:gray;
 bottom: .5em;
