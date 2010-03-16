@@ -162,6 +162,7 @@ def setup_gs_data(options):
     dst_url = shared / "geonode-geoserver-data.zip"
     if not dst_url.exists() or getattr(options, 'clean', False):
         urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
+    if not path(gs_data).exists():
         path(gs_data).rmtree()
         unzip_file(dst_url, gs_data)
 
@@ -487,6 +488,11 @@ def host(options):
     try: 
         django.wait()
     except KeyboardInterrupt:
+        info("Shutting down...")
+        django.terminate()
+        mvn.terminate()
+        django.wait()
+        mvn.wait()
         sys.exit()
 
 
