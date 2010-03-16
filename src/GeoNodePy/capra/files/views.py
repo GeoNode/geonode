@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext
 from django import forms
 from capra.files.models import AMEFile
 
@@ -16,7 +17,7 @@ def index(request):
     """
     index of general files uploaded to the geonode
     """
-    return render_to_response('files/index.html')
+    return render_to_response('files/index.html', RequestContext(request))
 
 def index_json(request):
     """
@@ -56,7 +57,7 @@ def upload(request):
     else:
         form = UploadFileForm()
 
-    return render_to_response('files/upload.html', {'form': form})
+    return render_to_response('files/upload.html', RequestContext(request, {'form': form}))
 
 def dispatch(request, id):
     """
@@ -74,7 +75,7 @@ def detail(request, fileid):
     view that handles viewing a file's details
     """
     f = get_object_or_404(AMEFile, pk=fileid)
-    return render_to_response('files/detail.html', {'file': f})
+    return render_to_response('files/detail.html', RequestContext(request, {'file': f}))
 
 class EditFileForm(forms.ModelForm):
     class Meta:
@@ -95,7 +96,7 @@ def edit(request, id):
     elif request.method == 'GET':
         form = EditFileForm(instance=obj)
     
-    return render_to_response('files/edit.html', {'form': form, 'file': obj})
+    return render_to_response('files/edit.html', RequestContext(request, {'form': form, 'file': obj}))
 
 
 class ReplaceFileForm(forms.ModelForm):
@@ -117,7 +118,7 @@ def replace(request, id):
     elif request.method == 'GET':
         form = ReplaceFileForm(instance=obj)
 
-    return render_to_response('files/replace.html', {'form': form, 'file': obj})
+    return render_to_response('files/replace.html', RequestContext(request, {'form': form, 'file': obj}))
 
 @login_required
 def delete(request, fileid):
