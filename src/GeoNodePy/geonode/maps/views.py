@@ -108,7 +108,15 @@ def newmap(request):
         config = build_map_config(map)
         del config['id']
     else:
-        config = DEFAULT_MAP_CONFIG
+        query = request.META['QUERY_STRING']
+        if query.startswith("layer"):
+            layer_name = request.GET['layer']
+            layer = Layer.objects.get(name=layer_name)
+            config = DEFAULT_MAP_CONFIG
+            config['map']['layers'].append({'name': "%s:%s" % (layer.workspace,layer.name), 
+                                            'wms' : 'capra'})
+        else:
+            config = DEFAULT_MAP_CONFIG
 
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config), 
@@ -236,7 +244,7 @@ def _removeLayer(request,layer):
             }))
         if (request.method == 'POST'):
             layer.delete()
-            return HttpResponseRedirect("/data")
+            return HttpResponseRedirect(reverse("geonode.views.data"))
         else:
             return HttpResponse("Not allowed",status=405) 
     else:  
