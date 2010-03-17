@@ -26,7 +26,10 @@ class LayerManager(models.Manager):
 
 
 class Layer(models.Model):
-
+    """
+    XXX docs strings
+    """
+    
     objects = LayerManager()
     workspace = models.CharField(max_length=128)
     store = models.CharField(max_length=128)
