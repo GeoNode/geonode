@@ -72,8 +72,6 @@
             <a href="{{link}}">{{type}}</a>
         {% endfor %}
     </p>
-    <h3>{% trans "Create a new map" %}</h3> 
-    <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.name}}">Create new map</a></p> 
     <h3>{% trans "Maps" %} </h3>
     <p>{% trans "The following maps use this data set" %}:
         <ul>
@@ -81,6 +79,7 @@
             <li> <a href="{{map.get_absolute_url}}">{{map.title}}</a> </li>
             {% endfor %}
         </ul>
+        <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.name}}">Create new map</a></p> 
     </p>
 
     <h3> {% trans "Styles" %} </h3>

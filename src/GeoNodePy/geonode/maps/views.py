@@ -117,13 +117,13 @@ def newmap(request):
                                             'wms' : 'capra'})
         else:
             config = DEFAULT_MAP_CONFIG
-
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config), 
         'bg': json.dumps(settings.MAP_BASELAYERS),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
+
 
 @login_required
 def deletemap(request, mapid):
@@ -133,11 +133,10 @@ def deletemap(request, mapid):
     map = get_object_or_404(Map,pk=mapid) 
     is_featured = map.featured
     layers = MapLayer.objects.filter(map=map.id) 
-    
+     
     map.delete()
     for layer in layers:
         layer.delete()
-
     if is_featured:
         return HttpResponseRedirect(reverse('geonode.views.curated'))
     else:
@@ -195,7 +194,6 @@ def data(request):
     return render_to_response('data.html', RequestContext(request, {
         'GEOSERVER_BASE_URL':settings.GEOSERVER_BASE_URL
     }))
-
 
 def build_map_config(map):
     layers = map.layer_set.all()
