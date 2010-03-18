@@ -12,9 +12,9 @@ class LayerManager(models.Manager):
     def slurp(self):
         url = "%srest" % settings.GEOSERVER_BASE_URL 
         cat = Catalog(url,_user,_password)
-        stores = cat.getStores()
+        stores = cat.get_stores()
         for store in stores:
-            resources = store.getResources()
+            resources = store.get_resources()
             for resource in resources:
                 if resource.name is not None and self.filter(name=resource.name).count() == 0:
                     typename = "%s:%s" % (store.workspace.name,resource.name)
