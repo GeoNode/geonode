@@ -20,7 +20,7 @@ class LayerManager(models.Manager):
                     typename = "%s:%s" % (store.workspace.name,resource.name)
                     self.model(workspace=store.workspace.name,
                                store=store.name,
-                               storeType=store.resourceType,
+                               storeType=store.resource_type,
 			       name=resource.name,
 			       typename=typename).save()
 
