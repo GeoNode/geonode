@@ -5,8 +5,7 @@ from geoserver.catalog import Catalog
 import httplib2
 
 _wms = None
-_user = settings.GEOSERVER_CREDENTIALS[0]
-_password = settings.GEOSERVER_CREDENTIALS[1]
+_user, _password = settings.GEOSERVER_CREDENTIALS
 
 class LayerManager(models.Manager):
     def slurp(self):
@@ -18,11 +17,13 @@ class LayerManager(models.Manager):
             for resource in resources:
                 if resource.name is not None and self.filter(name=resource.name).count() == 0:
                     typename = "%s:%s" % (store.workspace.name,resource.name)
-                    self.model(workspace=store.workspace.name,
-                               store=store.name,
-                               storeType=store.resource_type,
-			       name=resource.name,
-			       typename=typename).save()
+                    self.model(
+                        workspace=store.workspace.name,
+                        store=store.name,
+                        storeType=store.resource_type,
+                        name=resource.name,
+                        typename=typename
+                    ).save()
 
 
 class Layer(models.Model):
@@ -39,19 +40,17 @@ class Layer(models.Model):
 
 
     def delete(self, *args, **kwargs): 
-        '''
+        """
         Override default method to remove a layer. This 
         removes the layer from the GeoServer Catalog as
         removing it from the Django models
-        '''
+        """
         # GEOSERVER_CREDENTIALS 
         HTTP = httplib2.Http(".cache")
         HTTP.add_credentials(_user,_password)
-          
         def _getFeatureUrl(self): 
             if self.storeType == "dataStore":
-                return "%srest/workspaces/%s/datastores/%s/featuretypes/%s" % (settings.GEOSERVER_BASE_URL ,
-                        self.workspace,self.store,self.name)
+                return "%srest/workspaces/%s/datastores/%s/featuretypes/%s" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store, self.name)
             if self.storeType == "coverageStore":
                 return "%srest/workspaces/%s/coveragestores/%s" % (settings.GEOSERVER_BASE_URL,self.workspace,self.name)
         try:
@@ -62,8 +61,6 @@ class Layer(models.Model):
             super(Layer, self).delete(*args, **kwargs)
         except ValueError:
             raise NameError("Unable to remove Layer from the GeoNode")
-
-
 
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
@@ -99,7 +96,6 @@ class Layer(models.Model):
 
     def get_absolute_url(self):
         return "/data/%s" % self.typename
-
 
     def __str__(self):
         return "%s Layer" % self.typename
