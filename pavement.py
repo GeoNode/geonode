@@ -246,11 +246,11 @@ def capra_js(options):
        path("capra-client/").makedirs()
        sh("jsbuild -o capra-client/ all.cfg") 
 
+
 @task
 def sync_django_db(options):
     if not path("development.db").exists():
         sh("django-admin.py syncdb --settings=capra.settings --noinput")
-        sh("django-admin.py loaddata --settings=capra.settings hazard.json")
 
 
 @task
