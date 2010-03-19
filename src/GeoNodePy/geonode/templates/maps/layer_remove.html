@@ -10,19 +10,22 @@
 
 <h3>{% trans "Are you sure you want to remove" noop %} <strong>{{layer.typename}}</strong>?</h3>
 
-
 <form action="/data/{{layer.typename}}?remove" method="POST">
 	<input type="hidden" value="{{layer.typename}}" /> 
 	<input type="submit" value="{% trans "Yes I am sure" noop %}" />
+    <button>{% trans "No, don't remove it" %}</button>
 </form>
+
 {% endblock %}
 
 
 {% block sidebar %}
-<h3>{% trans "This action effects the follow maps" noop %}</h3>
-<ol>
+<h3>{% trans "This action affects the following maps:" noop %}</h3>
+<ul>
 	{% for map in layer.maps %}
 	<li>{{map.title}}</li>
+    {% empty %}
+    <li> {% trans "No maps are using this layer." %} </li>
 	{% endfor %}
-<ol>
+<ul>
 {% endblock %}
