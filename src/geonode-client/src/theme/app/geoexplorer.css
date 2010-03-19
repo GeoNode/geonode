@@ -239,18 +239,6 @@ div.overlay-scaleline {
     font-size:0px;
 }
 
-label {
-    display: block;
-    font-size: 11px;
-    font-weight: bold;
-    font-family: tahoma,arial,helvetica,sans-serif;
-    padding-top: 4px
-}
-
-form {
-    padding-left: 4px;
-}
-
 .olControlZoomPanel .olControlZoomInItemInactive {
     background-position:15px -240px;
 }
