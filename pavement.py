@@ -56,6 +56,9 @@ options(
         install_paver=True,
         no_site_packages=True,
         paver_command_line='post_bootstrap'      
+    ),
+    host=Bunch(
+    	bind='localhost'
     )
 )
 
@@ -447,12 +450,15 @@ def install_sphinx_conditionally(options):
 def html(options):
     call_task('paver.doctools.html')
 
-@task 
+@task
+@cmdopts([
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
+])
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
     with pushd("src/geoserver-geonode-ext"):
-        os.environ["MAVEN_OPTS"] = "-Xmx512M"
+        os.environ["MAVEN_OPTS"] = "-Xmx512M -Djetty.host=" + options.host.bind
         mvn = subprocess.Popen(
             ["mvn", "jetty:run"],
             stdout=jettylog,
@@ -461,7 +467,8 @@ def host(options):
     django = subprocess.Popen([
             "django-admin.py", 
             "runserver",
-            "--settings=capra.settings"
+            "--settings=capra.settings",
+            options.host.bind + ":8000"
         ],  
         stdout=djangolog,
         stderr=djangolog
@@ -469,7 +476,7 @@ def host(options):
 
     def jetty_is_up():
         try:
-            urllib.urlopen("http://localhost:8001/geoserver/web/")
+            urllib.urlopen("http://" + options.host.bind + ":8001/geoserver/web/")
             return True
         except Exception, e:
             return False
@@ -481,7 +488,7 @@ def host(options):
         time.sleep(2)
 
     sh("django-admin.py updatelayers --settings=capra.settings")
-    info("Development GeoNode is running at http://localhost:8000/")
+    info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
     info("The GeoNode is an unstoppable machine")
     info("Press CTRL-C to shut down")
 
