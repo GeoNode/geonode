@@ -94,32 +94,24 @@ extensions, respectively.
 To test the application in different browsers in VirtualBox guests, the following
 needs to be done before running ``paver host``:
 
-* Set a hostname (e.g. myhost.local) for your host in :file:`/etc/hosts` (on
-  Linux) or in System  Preferences > Sharing > Edit... > Local Hostname
-  (on Mac OSX >= 10.6).
+* Start the guest in VirtualBox. Set the network adapter mode to
+  "Host-only adapter". Then set it back to "NAT".
 
-* Check if you can ping 10.0.2.2. If not, issue the following command (assuming
-  a Linux or Mac OSX 10.x host)::
+* On the host, do ifconfig and write down the IP address of the vboxnet0 adapter.
 
-   $ sudo ifconfig vboxnet0 10.0.2.2 netmask 255.255.0.0
-
-* In your gest OS (assuming Windows), open
-  :file:`C:\WINDOWS\SYSTEM32\drivers\etc\hosts` and add the hostname you have
-  configured on your host. To do so, add the following line::
-
-   10.0.2.2    myhost myhost.local
-
-* Edit src/geonode/settings.py and change the line::
+* Edit src/GeoNodePy/geonode/settings.py and change the line::
 
 GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
-to use the host you have configured above::
+to use the IP address you have written down above::
 
-GEOSERVER_BASE_URL="http://myhost.local:8001/geoserver/"
+GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver/"
 
 * To start the web server, run::
 
-   $ paver host -b 10.0.2.2
+   $ paver host -b 192.168.56.1
+
+* Now GeoNode is available in your browser at http://192.168.56.1:8000/
 
 For Java Developers
 -------------------
