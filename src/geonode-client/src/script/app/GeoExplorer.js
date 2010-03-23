@@ -467,17 +467,16 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             // TODO: update the OpenLayers.Map constructor to accept an initial zoom
             zoom: mapConfig.zoom,
             items: [
-                {
-                    xtype: "gx_zoomslider",
+                new GeoExt.ZoomSlider({
                     vertical: true,
                     height: 100,
                     plugins: new GeoExt.ZoomSliderTip({
-			template: "<div>"+this.zoomSliderTipText+": {zoom}<div>"
+                        template: "<div>"+this.zoomSliderTipText+": {zoom}<div>"
                     })
-                },
-                this.createMapOverlay()
+                })
             ]
         });
+        this.mapPanel.add(this.createMapOverlay());
         
         // create layer store
         this.layers = this.mapPanel.layers;
@@ -594,7 +593,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         var layersContainer = new Ext.Panel({
             autoScroll: true,
             border: false,
-            region: 'center',
             title: this.layersContainerText,
             items: [layerTree],
             tbar: [
@@ -606,9 +604,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         this.legendPanel = new GeoExt.LegendPanel({
             title: this.legendPanelText,
             border: false,
-            region: 'south',
-            height: 200,
-            collapsible: true,
+            hideMode: "offsets",
             split: true,
             autoScroll: true,
             ascending: false,
@@ -619,6 +615,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         var titleField = new Ext.form.TextField({
             width: '95%',
             disabled: true,
+            fieldLabel: this.metaDataMapTitle,
             listeners: {
                 'change': function(field, newValue, oldValue) {
                     this.about.title = newValue;
@@ -630,6 +627,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         var contactField = new Ext.form.TextField({
             width: '95%',
             disabled: true,
+            fieldLabel: this.metaDataMapContact,
             listeners: {
                 'change': function(field, newValue, oldValue) {
                     this.about.contact = newValue;
@@ -641,6 +639,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         var abstractField = new Ext.form.TextArea({
             width: '95%',
             disabled: true,
+            fieldLabel: this.metaDataMapAbstract,
             listeners: {
                 'change': function(field, newValue, oldValue) {
                      this.about["abstract"] = newValue;
@@ -652,6 +651,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         var linkField = new Ext.form.TextField({
             width: '95%',
             disabled: true,
+            fieldLabel: this.metaDataMapId,
             listeners: {
                 scope: this
             }
@@ -669,22 +669,18 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         }, this);
 
         var metaDataPanel = new Ext.FormPanel({
-            border: false,
+            bodyStyle: {padding: "5px"},
             //region: 'north',
-            split: true,
             autoScroll: true,
             //collapsed: true,
             collapsible: true,
-            layout: new Ext.layout.ContainerLayout(),
-            items: [new Ext.form.Label({html: this.metaDataMapTitle}), 
-                    titleField,
-                    new Ext.form.Label({html: this.metaDataMapContact}),
-                    contactField,
-                    new Ext.form.Label({html: this.metaDataMapAbstract}),
-                    abstractField,
-                    new Ext.form.Label({html: this.metaDataMapId}), 
-                    linkField
-                    ],
+            labelAlign: "top",
+            items: [
+                titleField,
+                contactField,
+                abstractField,
+                linkField
+            ],
             title: this.metaDataHeader,
             height: 250
         });
@@ -703,7 +699,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         }, this);
 
         var layersTabPanel = new Ext.TabPanel({
-            //region: 'center',
+            border: false,
             deferredRender: false,
             items: [layersContainer, this.legendPanel],
             activeTab: 0
@@ -716,11 +712,9 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             items: [layersTabPanel]
         });
 
-        var westPanel = new Ext.Panel({
-            border: true,
+        var westPanel = new Ext.Container({
             layout: "accordion",
             layoutConfig: {
-                titleCollapse: false,
                 animate:true
             },
             region: "west",
@@ -735,8 +729,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         });
 
         this.toolbar = new Ext.Toolbar({
-            xtype: "toolbar",
-            region: "north",
             disabled: true,
             items: this.createTools()
         });
@@ -799,17 +791,17 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                 header, 
                 {
                     region: "center",
+                    xtype: "container",
                     layout: "fit",
                     hideBorders: true,
-                    height: 200,
                     items: {
                         layout: "border",
                         deferredRender: false,
+                        tbar: this.toolbar,
                         items: [
-                            this.toolbar,
                             this.mapPanelContainer,
                             westPanel
-                            ]
+                        ]
                     }
                 }
             ]
@@ -1072,65 +1064,86 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         this.capGrid.show();
     },
 
+    /** private: method[createMapOverlay]
+     * Builds the :class:`Ext.Panel` containing components to be overlaid on the
+     * map, setting up the special configuration for its layout and 
+     * map-friendliness.
+     */
     createMapOverlay: function() {
-        var scaleLinePanel = new Ext.Panel({
-            cls: 'olControlScaleLine overlay-element overlay-scaleline',
-            border: false
+        var scaleLinePanel = new Ext.BoxComponent({
+            width: 100,
+            height: 42,
+            autoEl: {
+                tag: "div",
+                cls: "olControlScaleLine overlay-element overlay-scaleline"
+            }
         });
 
         scaleLinePanel.on('render', function(){
             var scaleLine = new OpenLayers.Control.ScaleLine({
-                div: scaleLinePanel.body.dom
+                div: scaleLinePanel.getEl().dom
             });
 
-            this.map.addControl(scaleLine);
+            this.mapPanel.map.addControl(scaleLine);
             scaleLine.activate();
         }, this);
 
         var zoomStore = new GeoExt.data.ScaleStore({
-            map: this.map
+            map: this.mapPanel.map
         });
 
         var zoomSelector = new Ext.form.ComboBox({
-		emptyText: this.zoomSelectorText,
+            emptyText: 'Zoom level',
             tpl: '<tpl for="."><div class="x-combo-list-item">1 : {[parseInt(values.scale)]}</div></tpl>',
             editable: false,
             triggerAction: 'all',
             mode: 'local',
             store: zoomStore,
+            anchor: "100%",
+            hideLabel: true
+        });
+
+        zoomSelector.on({
+            click: function(evt) {
+                evt.stopEvent();
+            },
+            mousedown: function(evt) {
+                evt.stopEvent();
+            },
+            select: function(combo, record, index) {
+                this.mapPanel.map.zoomTo(record.data.level);
+            },
+            scope: this
+        })
+
+        var zoomSelectorWrapper = new Ext.Container({
+            items: [zoomSelector],
+            cls: 'overlay-element overlay-scalechooser',
+            layout: "form",
             width: 110
         });
 
-        zoomSelector.on('click', function(evt){evt.stopEvent();});
-        zoomSelector.on('mousedown', function(evt){evt.stopEvent();});
-
-        zoomSelector.on('select', function(combo, record, index) {
-                this.map.zoomTo(record.data.level);
-            },
-            this);
-
-        var zoomSelectorWrapper = new Ext.Panel({
-            items: [zoomSelector],
-            cls: 'overlay-element overlay-scalechooser',
-            border: false });
-
-        this.map.events.register('zoomend', this, function() {
-            var scale = zoomStore.queryBy(function(record){
-                return this.map.getZoom() == record.data.level;
-            });
+        this.mapPanel.map.events.register('zoomend', this, function() {
+            var scale = zoomStore.queryBy(function(record) {
+                return this.mapPanel.map.getZoom() == record.data.level;
+            }, this);
 
             if (scale.length > 0) {
                 scale = scale.items[0];
                 zoomSelector.setValue("1 : " + parseInt(scale.data.scale, 10));
             } else {
-                if (!zoomSelector.rendered) return;
+                if (!zoomSelector.rendered) {
+                    return;
+                }
                 zoomSelector.clearValue();
             }
         });
 
         var mapOverlay = new Ext.Panel({
-            // title: "Overlay",
-            cls: 'map-overlay',
+            cls: "map-overlay",
+            layout: "hbox",
+            autoHeight: true,
+            width: 225,
             items: [
                 scaleLinePanel,
                 zoomSelectorWrapper
@@ -1139,8 +1152,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
 
 
         mapOverlay.on("afterlayout", function(){
-            scaleLinePanel.body.dom.style.position = 'relative';
-            scaleLinePanel.body.dom.style.display = 'inline';
+            scaleLinePanel.getEl().dom.style.position = 'relative';
+            scaleLinePanel.getEl().dom.style.display = 'inline';
 
             mapOverlay.getEl().on("click", function(x){x.stopEvent();});
             mapOverlay.getEl().on("mousedown", function(x){x.stopEvent();});
@@ -1161,67 +1174,69 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     title: this.printWindowTitleText,
                     modal: true,
                     border: false,
-                    items: new GeoExt.ux.PrintPreview({
-                        bodyStyle: "padding:5px",
-                        mapTitle: this.about["title"],
-                        comment: this.about["abstract"],
-                        printMapPanel: {
-                            map: {
-                                controls: [
-                                    new OpenLayers.Control.Navigation(),
-                                    new OpenLayers.Control.PanPanel(),
-                                    new OpenLayers.Control.ZoomPanel(),
-                                    new OpenLayers.Control.Attribution()
-                                ],
-                                eventListeners: {
-                                    "preaddlayer": function(evt) {
-                                        //TODO remove this when
-                                        // http://trac.openlayers.org/ticket/2473 is fixed.
-                                        // BEGIN REMOVE
-                                        if(evt.layer.CLASS_NAME === "OpenLayers.Layer" && evt.layer.minZoomLevel !== undefined) {
-                                            unsupportedLayers.push(evt.layer.name);
-                                            return false;
-                                        }
-                                        // END REMOVE
-                                        if(evt.layer instanceof OpenLayers.Layer.Google) {
-                                            unsupportedLayers.push(evt.layer.name);
-                                            return false;
-                                        }
-                                    },
-                                    scope: this
-                                }
-                            },
-                            items: [{
-                                xtype: "gx_zoomslider",
-                                vertical: true,
-                                height: 100,
-                                aggressive: true
-                            }]
-                        },
-                        printProvider: {
-                            capabilities: printCapabilities,
-                            listeners: {
-                                "beforeprint": function() {
-                                    // The print module does not like array params.
-                                    //TODO Remove when http://trac.geoext.org/ticket/216 is fixed.
-                                    printWindow.items.get(0).printMapPanel.layers.each(function(l){
-                                        var params = l.get("layer").params;
-                                        for(var p in params) {
-                                            if (params[p] instanceof Array) {
-                                                params[p] = params[p].join(",");
-                                            }
-                                        }
-                                    })
+                    resizable: false
+                });
+                printWindow.add(new GeoExt.ux.PrintPreview({
+                    mapTitle: this.about["title"],
+                    comment: this.about["abstract"],
+                    printMapPanel: {
+                        map: {
+                            controls: [
+                                new OpenLayers.Control.Navigation(),
+                                new OpenLayers.Control.PanPanel(),
+                                new OpenLayers.Control.ZoomPanel(),
+                                new OpenLayers.Control.Attribution()
+                            ],
+                            eventListeners: {
+                                "preaddlayer": function(evt) {
+                                    if(evt.layer instanceof OpenLayers.Layer.Google) {
+                                        unsupportedLayers.push(evt.layer.name);
+                                        return false;
+                                    }
                                 },
-                                "print": function() {printWindow.close();}
+                                scope: this
                             }
                         },
-                        includeLegend: true,
-                        sourceMap: this.mapPanel,
-                        legend: this.legendPanel
-                    })
-                });
-                printWindow.show().center();
+                        items: [{
+                            xtype: "gx_zoomslider",
+                            vertical: true,
+                            height: 100,
+                            aggressive: true
+                        }]
+                    },
+                    printProvider: {
+                        capabilities: printCapabilities,
+                        listeners: {
+                            "beforeprint": function() {
+                                // The print module does not like array params.
+                                //TODO Remove when http://trac.geoext.org/ticket/216 is fixed.
+                                printWindow.items.get(0).printMapPanel.layers.each(function(l){
+                                    var params = l.get("layer").params;
+                                    for(var p in params) {
+                                        if (params[p] instanceof Array) {
+                                            params[p] = params[p].join(",");
+                                        }
+                                    }
+                                })
+                            },
+                            "print": function() {printWindow.close();}
+                        }
+                    },
+                    includeLegend: true,
+                    sourceMap: this.mapPanel,
+                    legend: this.legendPanel
+                }));
+                printWindow.show();
+                
+                // measure the window content width by it's toolbar
+                printWindow.setWidth(0);
+                var el = printWindow.items.get(0).items.get(0).el;
+                el.setStyle("overflow", "scroll");
+                var w = el.dom.scrollWidth;
+                el.setStyle("overflow", "");
+                printWindow.setWidth(w + 20);
+                printWindow.center();
+                
                 unsupportedLayers.length &&
                     Ext.Msg.alert(this.unsupportedLayersTitleText, this.unsupportedLayersText +
                         "<ul><li>" + unsupportedLayers.join("</li><li>") + "</li></ul>");
@@ -1425,13 +1440,13 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             measureSplit,
             "-",
 		     */
-            printButton,
             new Ext.Button({
                 tooltip: this.saveMapText,
                 handler: this.saveMap,
                 scope: this,
                 iconCls: "icon-save"
             }),
+            printButton,
             new Ext.Button({
                 handler: function(){
                     this.map.zoomIn();

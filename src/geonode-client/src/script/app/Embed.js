@@ -90,10 +90,10 @@ Embed = Ext.extend(GeoExplorer, {
                     plugins: new GeoExt.ZoomSliderTip({
                         template: "<div>"+this.zoomLevelText+"</div>"
                     })
-                },
-                this.createMapOverlay()
+                }
             ]
         });
+        this.mapPanel.add(this.createMapOverlay());
         
         // create layer store
         this.layers = this.mapPanel.layers;
