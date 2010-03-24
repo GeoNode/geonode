@@ -15,3 +15,13 @@ if (window.MyHazard && window.MyHazard.Viewer) {
         zoomSliderTipText: gettext("Zoom level")
     });
 }
+
+if (capra.DataGrid) {
+    Ext.apply(capra.DataGrid.prototype, {
+        dataTitleHeaderText: gettext("Title"),
+        dataNameHeaderText: gettext("Name"),
+        dataDetailText: gettext("More information about this layer"),
+        layerTitleSuffix: gettext("Layers"),
+        uncategorizedLabel: gettext("Uncategorized")
+    });
+}
