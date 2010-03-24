@@ -33,6 +33,8 @@ if (window.GeoExplorer) {
         noPermalinkText: gettext("This map has not yet been saved."),
         permalinkLabel: gettext("Permalink"),
         premiumSizeLabel: gettext("Premium"),
+        printTipText: gettext("Print Map"),
+        printWindowTitleText: gettext("Print Preview"),
         publishActionText: gettext("Publish Map"),
         removeLayerActionText: gettext("Remove Layer"),
         removeLayerActionTipText: gettext("Remove Layer"),
@@ -128,3 +130,14 @@ if (GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
     });
 }
 
+if (GeoExt.ux.PrintPreview) {
+    Ext.apply(GeoExt.ux.PrintPreview.prototype, {
+        paperSizeText: gettext("Paper size:"),
+        resolutionText: gettext("Resolution:"),
+        printText: gettext("Print"),
+        emptyTitleText: gettext("Enter map title here."),
+        includeLegendText: gettext("Include legend?"),
+        emptyCommentText: gettext("Enter comments here."),
+        creatingPdfText: gettext("Creating PDF...")
+    });
+}
