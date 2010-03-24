@@ -55,7 +55,7 @@ textarea.x-form-field {
     background-image: url(img/silk/add.png);
 }
 
-.x-btn .icon-removelayers {
+.x-btn .icon-removelayers, .x-menu-item .icon-removelayers {
     background-image: url(img/silk/delete.png);
 }
 
@@ -166,7 +166,7 @@ background-color:white;
     background-image: url(img/silk/arrow_right.png);
 }
 
-.x-btn .icon-zoom-visible { 
+.x-btn .icon-zoom-visible, .x-menu-item .icon-zoom-visible { 
     background-image: url(img/silk/arrow_out.png);
 }
 
