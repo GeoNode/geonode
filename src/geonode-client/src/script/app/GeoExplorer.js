@@ -520,7 +520,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         };
 
         var bgSubTree = new GeoExt.tree.BaseLayerContainer({
-            text: this.backgroundContainerText, 
+            text: this.backgroundContainerText,
+            allowDrag: false,
             layerStore: this.layers, 
             loader: {
                 filter: function(record) {
@@ -531,6 +532,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
 
         var fgSubTree = new GeoExt.tree.OverlayLayerContainer({
             text: this.layerContainerText,
+            allowDrag: false,
             layerStore: this.layers,
             loader: {
                 filter: function(record) {
@@ -539,7 +541,9 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             }
         });
 
-        var treeRoot = new Ext.tree.TreeNode();
+        var treeRoot = new Ext.tree.TreeNode({
+            allowDrop: false
+        });
         treeRoot.appendChild(fgSubTree);
         treeRoot.appendChild(bgSubTree);
         
@@ -566,10 +570,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         c.showAt(e.getXY());
                     }
                 },
-                // TODO: remove this when http://www.geoext.org/trac/geoext/ticket/112 is closed
-                startdrag: function(tree, node, evt) {
-                    node.getUI().checkbox.checked = node.attributes.checked;
-                },                
                 scope: this
             },
             contextMenu: new Ext.menu.Menu({
