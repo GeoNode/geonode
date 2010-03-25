@@ -1267,8 +1267,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                                     }
                                 })
                             },
-                            "print": function() {printWindow.close();},
-                            "printexception": function() {printWindow.close();}
+                            "print": function() {printWindow.close();}
                         }
                     },
                     includeLegend: true,
