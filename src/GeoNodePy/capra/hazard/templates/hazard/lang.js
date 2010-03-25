@@ -16,12 +16,25 @@ if (window.MyHazard && window.MyHazard.Viewer) {
     });
 }
 
-if (capra.DataGrid) {
+if (capra && capra.DataGrid) {
     Ext.apply(capra.DataGrid.prototype, {
         dataTitleHeaderText: gettext("Title"),
         dataNameHeaderText: gettext("Name"),
         dataDetailText: gettext("More information about this layer"),
         layerTitleSuffix: gettext("Layers"),
         uncategorizedLabel: gettext("Uncategorized")
+    });
+}
+
+if (capra && capra.AMEGrid) {
+    Ext.apply(capra.AMEGrid.prototype, {
+        gridTitleText: gettext('AME Data'),
+        countryLabelText: gettext('Country'),
+        scenarioLabelText: gettext('Scenario'),
+        ameLabelText: gettext('Name'),
+        singularFileText: gettext('File'),
+        pluralFilesText: gettext('Files'),
+        downloadText: gettext('Download'),
+        fileDetailsText: gettext('More Information about this file')
     });
 }
