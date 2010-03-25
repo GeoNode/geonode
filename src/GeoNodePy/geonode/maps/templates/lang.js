@@ -111,7 +111,7 @@ if (GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
     });
 }
 
-if (GeoExt.ux.PrintPreview) {
+if (GeoExt && GeoExt.ux && GeoExt.ux.PrintPreview) {
     Ext.apply(GeoExt.ux.PrintPreview.prototype, {
         paperSizeText: gettext("Paper size:"),
         resolutionText: gettext("Resolution:"),
