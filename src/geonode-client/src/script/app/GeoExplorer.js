@@ -105,6 +105,9 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     capGridAddLayersText: "UT:Add Layers",
     capGridDoneText: "UT:Done",
     capGridText: "UT:Available Layers",
+    connErrorTitleText: "UT:Connection Error",
+    connErrorText: "UT:The server returned an error",
+    connErrorDetailsText: "UT:Details...",
     exportDialogMessage: '<p> UT: Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
     heightLabel: 'UT: Height',
     infoButtonText: "UT:Get Feature Info",
@@ -139,6 +142,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     saveFailTitle: "UT: Error While Saving",
     saveMapText: "UT: Save Map",
     smallSizeLabel: 'UT: Small',
+    styleLayerText: 'UT: Edit Layer Style',
+    styleLayerTipText: 'UT: Change the symbolization of the layer',
     sourceLoadFailureMessage: 'UT: Error contacting server.\n Please check the url and try again.',
     switchTo3DActionText: "UT:Switch to Google Earth 3D Viewer",
     unknownMapMessage: 'UT: The map that you are trying to load does not exist.  Creating a new map instead.',
@@ -174,6 +179,41 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
              */
             "idchange"
         ]);
+        
+        Ext.util.Observable.observeClass(Ext.data.Connection);
+        Ext.data.Connection.on({
+            "requestexception": function(conn, response, options) {
+                Ext.Msg.show({
+                    title: this.connErrorTitleText,
+                    msg: this.connErrorText +
+                        ": " + response.status + " " + response.statusText,
+                    icon: Ext.MessageBox.ERROR,
+                    buttons: {ok: this.connErrorDetailsText, cancel: true},
+                    fn: function(result) {
+                        if(result == "ok") {
+                            var details = new Ext.Window({
+                                title: response.status + " " + response.statusText,
+                                width: 400,
+                                height: 300,
+                                items: {
+                                    xtype: "container",
+                                    cls: "error-details",
+                                    html: response.responseText
+                                },
+                                autoScroll: true,
+                                buttons: [{
+                                    text: "OK",
+                                    handler: function() {details.close()}
+                                }]
+                            });
+                            details.show();
+                            this.close();
+                        }
+                    }
+                });
+            },
+            scope: this
+        });
         
         // pass on any proxy config to OpenLayers
         if(this.proxy) {
@@ -507,6 +547,14 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     removeLayerAction.disable();
                 }
             }
+        });
+        
+        var styleLayerAction = new Ext.Action({
+            text: this.styleLayerText,
+            iconCls: "icon-stylelayers",
+            disabled: true,
+            tooltip: this.styleLayersTipText,
+            handler: function() {}
         });
 
         var updateRemoveLayerAction = function() {
@@ -1205,7 +1253,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         }]
                     },
                     printProvider: {
-                        capabilities: printCapabilities,
+                        capabilities: window.printCapabilities,
                         listeners: {
                             "beforeprint": function() {
                                 // The print module does not like array params.
@@ -1219,7 +1267,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                                     }
                                 })
                             },
-                            "print": function() {printWindow.close();}
+                            "print": function() {printWindow.close();},
+                            "printexception": function() {printWindow.close();}
                         }
                     },
                     includeLegend: true,
@@ -1234,7 +1283,9 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                 el.setStyle("overflow", "scroll");
                 var w = el.dom.scrollWidth;
                 el.setStyle("overflow", "");
-                printWindow.setWidth(w + 20);
+                printWindow.setWidth(
+                    Math.max(printWindow.items.get(0).printMapPanel.getWidth(),
+                    w + 20));
                 printWindow.center();
                 
                 unsupportedLayers.length &&
@@ -1446,7 +1497,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                 scope: this,
                 iconCls: "icon-save"
             }),
-            printButton,
+            window.printCapabilities ? printButton : "",
             new Ext.Button({
                 handler: function(){
                     this.map.zoomIn();
