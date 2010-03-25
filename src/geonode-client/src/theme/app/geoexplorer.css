@@ -1,6 +1,10 @@
 /* fixes scrollbar issue in FF on OSX */
 textarea.x-form-field {
-    padding: 1px 3px;
+    padding: 1px 1px 1px 3px;
+}
+/* workaround for combo box lists disappearing in windows in Ext 3.2-beta */
+.x-combo-list {
+    z-index: 10000 !important;
 }
 
 /* don't wrap lines on any tooltips */
