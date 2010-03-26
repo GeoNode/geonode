@@ -52,7 +52,7 @@ import org.restlet.resource.StringRepresentation;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Handles a POST request contaning a geometry, buffer radius, and data layers for which to create
+ * Handles a POST request containing a geometry, buffer radius, and data layers for which to create
  * and return a set of statistics in JSON format by intersecting the layers with a buffered geometry
  * out of the provided input geometry and radius.
  * <p>
