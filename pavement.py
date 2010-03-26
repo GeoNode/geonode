@@ -175,7 +175,7 @@ def setup_gs_data(options):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     with pushd('src/geoserver-geonode-ext'):
-        sh("mvn install")
+        sh("mvn clean install")
 
 @task
 def setup_geonetwork(options):
