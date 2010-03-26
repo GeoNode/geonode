@@ -1,4 +1,4 @@
-package org.geonode.rest;
+package org.geonode.rest.coveragestats;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import net.sf.json.test.JSONAssert;
 
 import org.apache.commons.io.IOUtils;
 import org.geonode.geojson.GeoJSONParser;
-import org.geonode.process.HazardStatisticsFactory;
+import org.geonode.process.coveragestats.HazardStatisticsFactory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.TestData;

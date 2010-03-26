@@ -1,8 +1,8 @@
-package org.geonode.process;
+package org.geonode.process.coveragestats;
 
-import static org.geonode.process.HazardStatisticsFactory.DATALAYER;
-import static org.geonode.process.HazardStatisticsFactory.GEOMERTY;
-import static org.geonode.process.HazardStatisticsFactory.RADIUS;
+import static org.geonode.process.coveragestats.HazardStatisticsFactory.DATALAYER;
+import static org.geonode.process.coveragestats.HazardStatisticsFactory.GEOMERTY;
+import static org.geonode.process.coveragestats.HazardStatisticsFactory.RADIUS;
 
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;

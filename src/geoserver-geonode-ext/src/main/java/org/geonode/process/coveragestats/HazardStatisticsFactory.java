@@ -14,7 +14,7 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geonode.process;
+package org.geonode.process.coveragestats;
 
 import java.util.Collections;
 import java.util.List;

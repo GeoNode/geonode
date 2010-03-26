@@ -1,4 +1,4 @@
-package org.geonode.process;
+package org.geonode.process.bacthdownload;
 
 public class MapMetadata {
     private String title;

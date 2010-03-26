@@ -14,16 +14,13 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geonode.process;
+package org.geonode.process.bacthdownload;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.data.FeatureSource;
 import org.geotools.data.Parameter;
 import org.geotools.feature.NameImpl;
 import org.geotools.process.Process;
@@ -31,8 +28,6 @@ import org.geotools.process.impl.SingleProcessFactory;
 import org.geotools.text.Text;
 import org.geotools.util.logging.Logging;
 import org.opengis.util.InternationalString;
-
-import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * <p>
