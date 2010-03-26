@@ -1,4 +1,3 @@
-
 var MapBrowser = Ext.extend(Page, {
     /**
      * Property: capabilities
