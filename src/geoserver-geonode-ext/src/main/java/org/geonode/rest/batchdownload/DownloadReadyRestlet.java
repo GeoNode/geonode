@@ -10,6 +10,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
+import org.geotools.util.logging.Logging;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -21,14 +22,15 @@ import org.restlet.resource.Representation;
 
 public class DownloadReadyRestlet extends Restlet {
     private Catalog catalog;
-    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geonode.rest");
+
+    private static Logger LOGGER = Logging.getLogger(DownloadReadyRestlet.class);
 
     public DownloadReadyRestlet(final Catalog catalog) {
         this.catalog = catalog;
     }
 
     public void handle(Request request, Response response) {
-        if (!request.getMethod().equals(Method.POST)) {
+        if (!request.getMethod().equals(Method.GET)) {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             return;
         }

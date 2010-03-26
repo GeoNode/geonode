@@ -9,6 +9,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
+import org.geotools.util.logging.Logging;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -20,7 +21,8 @@ import org.restlet.resource.StringRepresentation;
 
 public class DownloadStatusRestlet extends Restlet {
     private Catalog catalog;
-    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geonode.rest");
+
+    private static Logger LOGGER = Logging.getLogger(DownloadStatusRestlet.class);
 
     public DownloadStatusRestlet(final Catalog catalog) {
         this.catalog = catalog;
@@ -54,8 +56,8 @@ public class DownloadStatusRestlet extends Restlet {
         responseData.put("process", processData);
 
         final String jsonStr = responseData.toString(0);
-        final Representation representation =
-            new StringRepresentation(jsonStr, MediaType.APPLICATION_JSON);
+        final Representation representation = new StringRepresentation(jsonStr,
+                MediaType.APPLICATION_JSON);
 
         response.setEntity(representation);
     }

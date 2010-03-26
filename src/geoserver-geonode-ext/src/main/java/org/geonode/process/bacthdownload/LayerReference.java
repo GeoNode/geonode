@@ -2,11 +2,15 @@ package org.geonode.process.bacthdownload;
 
 public class LayerReference {
     private String name;
+
     private String service;
+
     private String metadataURL;
+
     private String serviceURL;
 
-    public LayerReference() {}
+    public LayerReference() {
+    }
 
     public LayerReference(String name, String service, String metadataURL, String serviceURL) {
         this.name = name;
