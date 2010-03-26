@@ -145,14 +145,13 @@ final class HazardStatistics extends AbstractProcess {
         if (area != null)
             results.put(HazardStatisticsFactory.RESULT_AREA.key, area);
 
-
         return results;
     }
 
     private List<Double> coordinates(Geometry geom) {
         if (geom instanceof Point) {
             Coordinate c = geom.getCoordinate();
-            return Arrays.asList(new Double[]{c.x, c.y});
+            return Arrays.asList(new Double[] { c.x, c.y });
         } else {
             return null;
         }
@@ -165,7 +164,7 @@ final class HazardStatistics extends AbstractProcess {
             return null;
         }
     }
-    
+
     private Double area(Geometry geom) {
         if (geom instanceof Polygon || geom instanceof MultiPolygon) {
             return geom.getArea();

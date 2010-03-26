@@ -50,17 +50,17 @@ public class BatchDownloadFactory extends SingleProcessFactory {
     private static final String PROCESS_NAME = "Download";
 
     /** Map metadata to include in download bundle. Optional. */
-    public static final Parameter<MapMetadata> MAP_METADATA = new Parameter<MapMetadata>(
-            "map", MapMetadata.class, Text.text("Map Metadata"), Text.text("Map metadata to " +
-                "include in download bundle"), false, 0, 1, null, null);
+    public static final Parameter<MapMetadata> MAP_METADATA = new Parameter<MapMetadata>("map",
+            MapMetadata.class, Text.text("Map Metadata"), Text.text("Map metadata to "
+                    + "include in download bundle"), false, 0, 1, null, null);
 
     /** Service info about layers to download. Cardinality is 1..* */
     public static final Parameter<LayerReference> LAYERS = new Parameter<LayerReference>("LAYERS",
-            LayerReference.class, Text.text("Map Layers"), Text.text("Service info for layers " +
-                "to include in the download."), true, 1, -1, null, null);
+            LayerReference.class, Text.text("Map Layers"), Text.text("Service info for layers "
+                    + "to include in the download."), true, 1, -1, null, null);
 
-    /** Locale identifier for status reports.  Optional. */
-    public static final Parameter<String> LOCALE = new Parameter<String>("locale", String.class, 
+    /** Locale identifier for status reports. Optional. */
+    public static final Parameter<String> LOCALE = new Parameter<String>("locale", String.class,
             Text.text("Locale"), Text.text("Locale identifier for status reports"), false, 0, 1,
             null, null);
 
@@ -68,7 +68,7 @@ public class BatchDownloadFactory extends SingleProcessFactory {
      * Map used for getParameterInfo; used to describe operation requirements for user interface
      * creation.
      */
-    private static final Map<String, Parameter<?>> prameterInfo; 
+    private static final Map<String, Parameter<?>> prameterInfo;
 
     static {
         Map<String, Parameter<?>> temp = new TreeMap<String, Parameter<?>>();
@@ -78,8 +78,8 @@ public class BatchDownloadFactory extends SingleProcessFactory {
         prameterInfo = Collections.unmodifiableMap(temp);
     }
 
-    public static final Parameter<Byte[]> RESULT_ZIP = new Parameter<Byte[]>("zip",
-            Byte[].class, Text.text("ZIP"), 
+    public static final Parameter<Byte[]> RESULT_ZIP = new Parameter<Byte[]>("zip", Byte[].class,
+            Text.text("ZIP"),
             Text.text("A zip archive containing the requested datasets and metadata documents."));
 
     /**
@@ -87,7 +87,7 @@ public class BatchDownloadFactory extends SingleProcessFactory {
      */
     static final Map<String, Parameter<?>> resultInfo;
 
-    static { 
+    static {
         Map<String, Parameter<?>> temp = new TreeMap<String, Parameter<?>>();
         temp.put(RESULT_ZIP.key, RESULT_ZIP);
         resultInfo = Collections.unmodifiableMap(temp);

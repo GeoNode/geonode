@@ -59,8 +59,8 @@ final class BatchDownload extends AbstractProcess {
             }
 
             if (!"localhost".equals(url.getHost())) {
-                throw new IllegalArgumentException("Layers for download must be local; remove " +
-                        url + " and try again.");
+                throw new IllegalArgumentException("Layers for download must be local; remove "
+                        + url + " and try again.");
             }
         }
     }
