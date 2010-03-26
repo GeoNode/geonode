@@ -1,4 +1,4 @@
-package org.geonode.rest;
+package org.geonode.rest.coveragestats;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +23,7 @@ import net.sf.json.JSONSerializer;
 import org.apache.commons.io.IOUtils;
 import org.geonode.geojson.GeoJSONParser;
 import org.geonode.geojson.GeoJSONSerializer;
-import org.geonode.process.HazardStatisticsFactory;
+import org.geonode.process.coveragestats.HazardStatisticsFactory;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;

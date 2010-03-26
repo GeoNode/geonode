@@ -1,16 +1,15 @@
-package org.geonode.rest;
-
-import org.geoserver.catalog.Catalog;
+package org.geonode.rest.batchdownload;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sf.json.JSONArray;
+
 import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+
 import org.apache.commons.io.IOUtils;
-import org.geotools.process.ProcessException;
+import org.geoserver.catalog.Catalog;
+import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -18,7 +17,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.Restlet;
 
 public class DownloadStatusRestlet extends Restlet {
     private Catalog catalog;

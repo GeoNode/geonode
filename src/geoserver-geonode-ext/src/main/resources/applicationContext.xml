@@ -33,19 +33,19 @@
     </property>
   </bean>
 
-  <bean id="processRestlet" class="org.geonode.rest.ProcessRestlet">
+  <bean id="processRestlet" class="org.geonode.rest.coveragestats.ProcessRestlet">
     <!-- the GeoServer catalog -->
     <constructor-arg ref="catalog" />
   </bean>
-  <bean id="downloadLauncherRestlet" class="org.geonode.rest.DownloadLauncherRestlet">
+  <bean id="downloadLauncherRestlet" class="org.geonode.rest.batchdownload.DownloadLauncherRestlet">
     <!-- the GeoServer catalog -->
     <constructor-arg ref="catalog" />
   </bean>
-  <bean id="downloadStatusRestlet" class="org.geonode.rest.DownloadStatusRestlet">
+  <bean id="downloadStatusRestlet" class="org.geonode.rest.batchdownload.DownloadStatusRestlet">
     <!-- the GeoServer catalog -->
     <constructor-arg ref="catalog" />
   </bean>
-  <bean id="downloadReadyRestlet" class="org.geonode.rest.DownloadReadyRestlet">
+  <bean id="downloadReadyRestlet" class="org.geonode.rest.batchdownload.DownloadReadyRestlet">
     <!-- the GeoServer catalog -->
     <constructor-arg ref="catalog" />
   </bean>
