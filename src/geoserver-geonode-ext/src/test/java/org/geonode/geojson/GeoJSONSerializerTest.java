@@ -2,12 +2,9 @@ package org.geonode.geojson;
 
 import java.io.StringWriter;
 
+import junit.framework.TestCase;
 import net.sf.json.JSONObject;
 import net.sf.json.test.JSONAssert;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
@@ -17,7 +14,7 @@ import com.vividsolutions.jts.io.WKTReader;
  * defined in <a href="http://geojson.org/geojson-spec.html#geojson-objects">the GeoJSON spec</a>.
  * 
  */
-public class GeoJSONSerializerTest {
+public class GeoJSONSerializerTest extends TestCase {
 
     private static final WKTReader wkt = new WKTReader();
 
@@ -25,17 +22,16 @@ public class GeoJSONSerializerTest {
 
     private StringWriter writer;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
         writer = new StringWriter();
         serializer = new GeoJSONSerializer(writer);
     }
 
-    @After
+    @Override
     public void tearDown() throws Exception {
     }
 
-    @Test
     public void testPoint() throws Exception {
         Geometry point = wkt.read("POINT(10 20)");
         serializer.writeGeometry(point);
@@ -47,7 +43,6 @@ public class GeoJSONSerializerTest {
         JSONAssert.assertEquals(expected, actual);
     }
 
-    @Test
     public void testLineString() throws Exception {
         Geometry lineString = wkt.read("LINESTRING(10 20, 20 30, 30 40)");
         serializer.writeGeometry(lineString);
@@ -59,7 +54,6 @@ public class GeoJSONSerializerTest {
         JSONAssert.assertEquals(expected, actual);
     }
 
-    @Test
     public void testLinePolygonSimple() throws Exception {
         Geometry polygon = wkt.read("POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))");
         serializer.writeGeometry(polygon);
@@ -71,7 +65,6 @@ public class GeoJSONSerializerTest {
         JSONAssert.assertEquals(expected, actual);
     }
 
-    @Test
     public void testLinePolygonWithHoles() throws Exception {
         Geometry polygonWithHoles = wkt
                 .read("POLYGON((0 0, 0 10, 10 10, 10 0, 0 0),(2 2, 2 3, 3 3, 3 2, 2 2),(6 6, 6 7, 7 7, 7 6, 6 6) )");
@@ -84,7 +77,6 @@ public class GeoJSONSerializerTest {
         JSONAssert.assertEquals(expected, jsonStr);
     }
 
-    @Test
     public void testMultiPoint() throws Exception {
         Geometry point = wkt.read("MULTIPOINT(10 20, 30 40)");
         serializer.writeGeometry(point);
@@ -96,7 +88,6 @@ public class GeoJSONSerializerTest {
         JSONAssert.assertEquals(expected, actual);
     }
 
-    @Test
     public void testMultiLineString() throws Exception {
         Geometry lineString = wkt
                 .read("MULTILINESTRING((10 20, 20 30, 30 40), (0 0, 1 1, 2 2, 3 3))");
@@ -109,7 +100,6 @@ public class GeoJSONSerializerTest {
         JSONAssert.assertEquals(expected, actual);
     }
 
-    @Test
     public void testMultiPolygon() throws Exception {
         Geometry multiPolygon = wkt
                 .read("MULTIPOLYGON(((0 0, 0 1, 1 1, 1 0, 0 0)), ((0 0, 0 10, 10 10, 10 0, 0 0),(2 2, 2 3, 3 3, 3 2, 2 2),(6 6, 6 7, 7 7, 7 6, 6 6)))");
@@ -123,7 +113,6 @@ public class GeoJSONSerializerTest {
         JSONAssert.assertEquals(expected, jsonStr);
     }
 
-    @Test
     public void testGeometryCollection() throws Exception {
         Geometry geometryCollection = wkt.read("GEOMETRYCOLLECTION("
                 + //

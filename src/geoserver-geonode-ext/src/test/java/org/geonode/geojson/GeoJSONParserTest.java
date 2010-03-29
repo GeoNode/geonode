@@ -1,11 +1,8 @@
 package org.geonode.geojson;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.StringWriter;
 
+import junit.framework.TestCase;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -14,9 +11,6 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -34,7 +28,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 
-public class GeoJSONParserTest {
+public class GeoJSONParserTest extends TestCase {
 
     private static final WKTReader wkt = new WKTReader();
 
@@ -45,16 +39,15 @@ public class GeoJSONParserTest {
      */
     private GeoJSONConfig config = new GeoJSONConfig();
 
-    @Before
+    @Override
     public void setUp() throws Exception {
         parser = new GeoJSONParser(config);
     }
 
-    @After
+    @Override
     public void tearDown() throws Exception {
     }
 
-    @Test
     public void testPoint() throws Exception {
         Point origPoint = (Point) wkt.read("POINT(120 0)");
 
@@ -65,7 +58,6 @@ public class GeoJSONParserTest {
         assertTrue(newPoint.equals(origPoint));
     }
 
-    @Test
     public void testLineString() throws Exception {
         LineString origLine = (LineString) wkt
                 .read("LINESTRING(20.2 10.1, 12.4 1, 12.4 5.5, 14 42)");
@@ -77,7 +69,6 @@ public class GeoJSONParserTest {
         assertTrue(newLine.equals(origLine));
     }
 
-    @Test
     public void testPolygon() throws Exception {
         Polygon origPoly = (Polygon) wkt.read("POLYGON((0 1, 1.2 0.12, 1.4 1, 0 1))");
 
@@ -88,7 +79,6 @@ public class GeoJSONParserTest {
         assertTrue(newPoly.equals(origPoly));
     }
 
-    @Test
     public void testMultiPoint() throws Exception {
         MultiPoint origPoints = (MultiPoint) wkt.read("MULTIPOINT(142 142, 202 128, 84 8)");
 
@@ -99,7 +89,6 @@ public class GeoJSONParserTest {
         assertTrue(newPoints.equals(origPoints));
     }
 
-    @Test
     public void testMultiLineString() throws Exception {
         MultiLineString origMLS = (MultiLineString) wkt
                 .read("MULTILINESTRING((0 0, 1 2), (3 2, 4 2))");
@@ -111,7 +100,6 @@ public class GeoJSONParserTest {
         assertTrue(newMLS.equals(origMLS));
     }
 
-    @Test
     public void testMultiPolygon() throws Exception {
         MultiPolygon origMultiPoly = (MultiPolygon) wkt
                 .read("MULTIPOLYGON(((0 0, 1 1, 1 2, 0 2, 0 0)), ((10 10, 10 14, 5 12, 10 10)))");
@@ -123,7 +111,6 @@ public class GeoJSONParserTest {
         assertTrue(newMultiPoly.equals(origMultiPoly));
     }
 
-    @Test
     public void testGeometryCollection() throws Exception {
         GeometryCollection origCollection = (GeometryCollection) wkt
                 .read("GEOMETRYCOLLECTION(POINT(1 1.4), LINESTRING(32 64, 192 160), POINT(2 2))");
@@ -141,7 +128,6 @@ public class GeoJSONParserTest {
         }
     }
 
-    @Test
     public void testParseNamedCrsUnknownAuthority() throws Exception {
         // GeoJSON CRS's can't live as standalone objects, they're identified as the "crs" property
         // of a container object
@@ -155,7 +141,6 @@ public class GeoJSONParserTest {
         }
     }
 
-    @Test
     public void testParseNamedCrs() throws Exception {
         // GeoJSON CRS's can't live as standalone objects, they're identified as the "crs" property
         // of a container object
@@ -172,7 +157,6 @@ public class GeoJSONParserTest {
         assertTrue(CRS.equalsIgnoreMetadata(expected, ((Point) parsed).getUserData()));
     }
 
-    @Test
     public void testParseLinkedCrsIsUnsupported() throws Exception {
         // GeoJSON CRS's can't live as standalone objects, they're identified as the "crs" property
         // of a container object.
@@ -191,7 +175,6 @@ public class GeoJSONParserTest {
     // Note: GeoJSONParser does not presently convert arbitrary JSON objects to Java objects
     // Thus the 'properties' attribute is simply carried over as JSON.
     // TODO: Generalize feature conversion to allow for more sophisticated object conversion.
-    @Test
     public void testFeature() throws JSONException {
         GeometryFactory gf = new GeometryFactory();
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
