@@ -553,7 +553,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             text: this.styleLayerText,
             iconCls: "icon-stylelayers",
             disabled: true,
-            tooltip: this.styleLayersTipText,
+            tooltip: this.styleLayerTipText,
             handler: function() {}
         });
 
@@ -1222,8 +1222,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     title: this.printWindowTitleText,
                     modal: true,
                     border: false,
-                    resizable: false,
-                    width: 350 // auto width breaks on chrome
+                    resizable: false
                 });
                 printWindow.add(new GeoExt.ux.PrintPreview({
                     mapTitle: this.about["title"],
@@ -1279,10 +1278,13 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                 
                 // measure the window content width by it's toolbar
                 printWindow.setWidth(0);
-                var el = printWindow.items.get(0).items.get(0).el;
-                el.setStyle("overflow", "scroll");
-                var w = el.dom.scrollWidth;
-                el.setStyle("overflow", "");
+                var tb = printWindow.items.get(0).items.get(0);
+                var w = 0;
+                tb.items.each(function(item){
+                    if(item.getEl()) {
+                        w += item.getWidth();
+                    }
+                });
                 printWindow.setWidth(
                     Math.max(printWindow.items.get(0).printMapPanel.getWidth(),
                     w + 20));
