@@ -99,13 +99,42 @@ class Layer(models.Model):
             _wms = WebMapService(wms_url)
         return _wms[self.typename]
 
+    def _set_title(self, title):
+        self.resource.title = title
+
+    def _get_title(self):
+        return self.resource.title
+
+    title = property(_get_title, _set_title)
+
+    def _set_abstract(self, abstract):
+        self.resource.abstract = abstract
+
+    def _get_abstract(self):
+        return self.resource.abstract
+
+    abstract = property(_get_abstract, _set_abstract)
+
+    def _set_keywords(self, keywords):
+        self.resource.keywords = keywords
+
+    def _get_keywords(self):
+        return self.resource.keywords
+
+    keywords = property(_get_keywords, _set_keywords)
+
     @property
     def resource(self):
-        url = "%srest" % settings.GEOSERVER_BASE_URL 
-        cat = Layer.objects.gs_catalog
-        ws = cat.get_workspace(self.workspace)
-        store = cat.get_store(self.store, ws)
-        return cat.get_resource(self.name, store)
+        if not hasattr(self, "_resource_cache"):
+            cat = Layer.objects.gs_catalog
+            ws = cat.get_workspace(self.workspace)
+            store = cat.get_store(self.store, ws)
+            self._resource_cache = cat.get_resource(self.name, store)
+        return self._resource_cache
+
+    def save(self):
+        models.Model.save(self)
+        Layer.objects.gs_catalog.save(self.resource)
 
     def get_absolute_url(self):
         return "/data/%s" % self.typename
