@@ -251,11 +251,10 @@ def _describe_layer(request, layer):
             form = LayerDescriptionForm(request.POST)
             if form.is_valid():
                 f = form.cleaned_data
-                resource = layer.resource
-                resource.title = f['title']
-                resource.abstract = f['abstract']
-                resource.keywords = f['keywords'].split(", ")
-                Layer.objects.gs_catalog.save(resource)
+                layer.title = f['title']
+                layer.abstract = f['abstract']
+                layer.keywords = f['keywords'].split(", ")
+                layer.save()
                 return HttpResponseRedirect("/data/" + layer.typename)
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
