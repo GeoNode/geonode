@@ -1,14 +1,13 @@
 from geonode.maps.models import Map, Layer, MapLayer
+from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.html import escape
 import json
-import urllib2
 
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
@@ -234,6 +233,37 @@ def view_js(request, mapid):
     config = build_map_config(map)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
+class LayerDescriptionForm(forms.Form):
+    title = forms.CharField(300)
+    abstract = forms.CharField(1000, widget=forms.Textarea)
+    keywords = forms.CharField(500)
+
+def _describe_layer(request, layer):
+    if request.user.is_authenticated():
+        if request.method == "GET":
+            resource = layer.resource
+            form = LayerDescriptionForm({
+                "title": resource.title,
+                "abstract": resource.abstract,
+                "keywords": ", ".join(resource.keywords)
+            })
+        elif request.method == "POST":
+            form = LayerDescriptionForm(request.POST)
+            if form.is_valid():
+                f = form.cleaned_data
+                resource = layer.resource
+                resource.title = f['title']
+                resource.abstract = f['abstract']
+                resource.keywords = f['keywords'].split(", ")
+                Layer.objects.gs_catalog.save(resource)
+                return HttpResponseRedirect("/data/" + layer.typename)
+        return render_to_response("maps/layer_describe.html", RequestContext(request, {
+            "layer": layer,
+            "form": form
+        }))
+    else: 
+        return HttpResponse("Not allowed", status=403)
+
 def _removeLayer(request,layer):
     if request.user.is_authenticated():
         if (request.method == 'GET'):
@@ -244,15 +274,17 @@ def _removeLayer(request,layer):
             layer.delete()
             return HttpResponseRedirect(reverse("geonode.views.data"))
         else:
-            return HttpResponse("Not allowed",status=405) 
+            return HttpResponse("Not allowed",status=403) 
     else:  
-        return HttpResponse("Not allowed",status=405)
+        return HttpResponse("Not allowed",status=403)
 
 def _updateLayer(request,layer):		
 	return HttpResponse("replace layer")
 			
 def layerController(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
+    if (request.META['QUERY_STRING'] == "describe"):
+        return _describe_layer(request,layer)
     if (request.META['QUERY_STRING'] == "remove"):
         return _removeLayer(request,layer)
     if (request.META['QUERY_STRING'] == "replace"):
@@ -263,4 +295,3 @@ def layerController(request, layername):
             "background": settings.MAP_BASELAYERS,
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
-		

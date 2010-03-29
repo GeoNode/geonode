@@ -8,11 +8,16 @@ _wms = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
 class LayerManager(models.Manager):
+    
+    def __init__(self):
+        models.Manager.__init__(self)
+        url = "%srest" % settings.GEOSERVER_BASE_URL
+        user, password = settings.GEOSERVER_CREDENTIALS
+        self.gs_catalog = Catalog(url, user, password)
+
     def slurp(self):
-        url = "%srest" % settings.GEOSERVER_BASE_URL 
-        cat = Catalog(url,_user,_password)
-        stores = cat.get_stores()
-        for store in stores:
+        cat = self.gs_catalog
+        for store in cat.get_stores():
             resources = store.get_resources()
             for resource in resources:
                 if resource.name is not None and self.filter(name=resource.name).count() == 0:
@@ -93,6 +98,14 @@ class Layer(models.Model):
             wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
             _wms = WebMapService(wms_url)
         return _wms[self.typename]
+
+    @property
+    def resource(self):
+        url = "%srest" % settings.GEOSERVER_BASE_URL 
+        cat = Layer.objects.gs_catalog
+        ws = cat.get_workspace(self.workspace)
+        store = cat.get_store(self.store, ws)
+        return cat.get_resource(self.name, store)
 
     def get_absolute_url(self):
         return "/data/%s" % self.typename

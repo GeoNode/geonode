@@ -1,0 +1,12 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {{ layer.typename }} {% endblock %}
+
+{% block main %}
+  <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
+  <form action="/data/{{layer.typename}}?describe" method="POST">
+      {{ form.as_p }}
+      <input type="submit" value="{% trans "Update" %}"/>
+  </form>
+{% endblock %}
