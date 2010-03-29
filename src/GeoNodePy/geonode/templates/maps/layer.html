@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block title %} {{ layer.metadata.title|default:layer.typename }} {% endblock %}
+{% block title %} {{ layer.resource.title|default:layer.typename }} {% endblock %}
 
 {% block header_append %}
     <script type="text/javascript">
@@ -43,10 +43,10 @@
 {% endblock %}
 
 {% block main %}
-<div id="description"> <h3> {{ layer.metadata.title|default:layer.typename }} </h3> </div>
-<p> <strong>{% trans "Abstract" %}:</strong> {{ layer.metadata.abstract|default:_("No abstract for this layer.") }} </p>
+<div id="description"> <h3> {{ layer.resource.title|default:layer.typename }} </h3> </div>
+<p> <strong>{% trans "Abstract" %}:</strong> {{ layer.resource.abstract|default:_("No abstract for this layer.") }} </p>
 <p> <strong>{% trans "Type" %}:</strong> {% trans "No layer type specified." %} </p>
-<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.metadata.keywords|join:", " }}</p>
+<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.resource.keywords|join:", " }}</p>
 <p> <strong>{% trans "Citation" %}:</strong> 
     {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
 </p>
@@ -54,7 +54,7 @@
     {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
 </p>
 <p> <strong>{% trans "Attributes" %}:</strong> 
-    {{ layer.metadata.schema|default:_("No schema available for this layer.") }}
+    {{ layer.resource.attributes|join:", " }}
 </p>
 <p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
 <div id="preview_map"></div>
@@ -94,8 +94,9 @@
         <h3> {% trans "Manage" %} </h3>
         <ul>
 			{% if user.is_authenticated %}
-				<li><a href="?remove">{% trans "Remove" %}</a></li>
+                <li><a href="?describe">{% trans "Update the description of this data" %}</a></li>
             	<li><a href="?update">{% trans "Upload a new version of this data" %}</a></li>
+				<li><a href="?remove">{% trans "Remove" %}</a></li>
 			{% else %}
 				<li>Please authenticate to update or remove layers</li>
 			{% endif %}
