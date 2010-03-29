@@ -2,37 +2,35 @@
 {% load i18n %}
 
 {% block main %}
-    <h3>
-        Map of {{map.title}}
-    </h3>
-      <ul>
-        <li><p><strong>Abstract:</strong> {{map.abstract}}</p>
-         </li>
-         <li><strong>Keywords:</strong> </li>
-         <li><strong>Citation:</strong> </li>
-         <li><strong>Contact:</strong> {% autoescape off %}{{map.contact}}{% endautoescape %}</p> 
-        </li>  
-        <iframe src="/maps/{{map.id}}/embed" width="550px" height="400px"> 
-            <p>Your broswer does not support iframes</p>
-        </iframe>
-        
-        {% endblock %} 
-		{% block sidebar %} 
-        <div id="sidebar"> 
-            <h3>Download</h3>
-            <a href="#"> Download all layers included in this map</a> 
-        <h3>Layers </h3>
-        <p>This map uses the following layers </p>
-        <ul>
-            {% for layer in layers %}
-            <li><a href="/data/{{layer.name}}">{{layer.name}}</a></li> 
-            {% endfor %}  
-         </ul>    
-        <h3>Manage</h3>
-        <ul>
-            <li><a href="{% url geonode.maps.views.view map.id %}">Edit map or metadata</a></li> 
-            <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">Delete map</a></li>
-            <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">Duplicate map</a></li>
-         </ul>      
-    </div> 
-	{% endblock %}
+<h3>
+  Map of {{map.title}}
+</h3>
+<p><strong>Abstract:</strong> {{map.abstract}}</p>
+<p><strong>Keywords:</strong> </p>
+<p><strong>Citation:</strong> </p>
+<p><strong>Contact:</strong> {% autoescape off %}{{map.contact}}{% endautoescape %}</p> 
+
+<iframe src="/maps/{{map.id}}/embed" width="550px" height="400px"> 
+  <p>Your broswer does not support iframes</p>
+</iframe>
+
+{% endblock %} 
+{% block sidebar %} 
+<div id="sidebar"> 
+  <h3>Download</h3>
+  <p><a href="#"> Download all layers included in this map</a></p>
+  <h3>Layers </h3>
+  <p>This map uses the following layers </p>
+  <ul>
+    {% for layer in layers %}
+    <li><a href="/data/{{layer.name}}">{{layer.name}}</a></li> 
+    {% endfor %}  
+  </ul>    
+  <h3>Manage</h3>
+  <ul>
+    <li><a href="{% url geonode.maps.views.view map.id %}">Edit map or metadata</a></li> 
+    <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">Delete map</a></li>
+    <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">Duplicate map</a></li>
+  </ul>      
+</div> 
+{% endblock %}
