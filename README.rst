@@ -32,6 +32,7 @@ Directory Structure
 
 Build Requirements
 ==================
+
 Before starting work on the GeoNode, you will need to have the following
 software installed and in your PATH:
 
@@ -74,6 +75,14 @@ Install
   paver build
   paver host 
 
+After paver build sets up the basic Django application, you can run::
+
+  django-admin.py createsuperuser --settings=capra.settings
+
+to create an admin user account.  The administrative control panel is not
+linked from the main site, but can be accessed at http://localhost:8000/admin/.
+. 
+
 Options
 =======
 
@@ -101,11 +110,11 @@ needs to be done before running ``paver host``:
 
 * Edit src/GeoNodePy/geonode/settings.py and change the line::
 
-GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
-to use the IP address you have written down above::
+  to use the IP address you have written down above::
 
-GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver/"
+    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver/"
 
 * To start the web server, run::
 
