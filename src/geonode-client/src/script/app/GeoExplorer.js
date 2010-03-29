@@ -1222,7 +1222,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     title: this.printWindowTitleText,
                     modal: true,
                     border: false,
-                    resizable: false
+                    resizable: false,
+                    width: 350 // auto width breaks on chrome
                 });
                 printWindow.add(new GeoExt.ux.PrintPreview({
                     mapTitle: this.about["title"],
