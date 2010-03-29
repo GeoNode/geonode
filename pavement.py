@@ -224,6 +224,8 @@ def concat_js(options):
     """Compress the JavaScript resources used by the base GeoNode site."""
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
+       os.makedirs("geonode-client")
+       svn.export("../externals/ext", "geonode-client/ext")
        os.makedirs("geonode-client/gx")
        svn.export("../externals/geoext/resources", "geonode-client/gx/theme")
        os.makedirs("geonode-client/PrintPreview")
