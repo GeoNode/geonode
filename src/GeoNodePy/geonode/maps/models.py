@@ -22,13 +22,15 @@ class LayerManager(models.Manager):
             for resource in resources:
                 if resource.name is not None and self.filter(name=resource.name).count() == 0:
                     typename = "%s:%s" % (store.workspace.name,resource.name)
-                    self.model(
-                        workspace=store.workspace.name,
-                        store=store.name,
-                        storeType=store.resource_type,
-                        name=resource.name,
-                        typename=typename
-                    ).save()
+                    models.Model.save(
+                        self.model(
+                            workspace=store.workspace.name,
+                            store=store.name,
+                            storeType=store.resource_type,
+                            name=resource.name,
+                            typename=typename
+                        )
+                    )
 
 
 class Layer(models.Model):
@@ -131,6 +133,13 @@ class Layer(models.Model):
             store = cat.get_store(self.store, ws)
             self._resource_cache = cat.get_resource(self.name, store)
         return self._resource_cache
+
+    @property
+    def publishing(self):
+        if not hasattr(self, "_publishing_cache"):
+            cat = Layer.objects.gs_catalog
+            self._publishing_cache = cat.get_layer(self.name)
+        return self._publishing_cache
 
     def save(self):
         models.Model.save(self)
