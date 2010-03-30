@@ -53,7 +53,7 @@ capra.AMEGrid = Ext.extend(Ext.util.Observable, {
                 {header: this.scenarioLabelText, dataIndex: 'scenario'},
                 {header: this.countryLabelText, dataIndex: 'country'}
             ],
-            height: 200,
+            height: 400,
             view: new Ext.grid.GroupingView({
                 forceFit:true,
                 // custom grouping text template to display the number of items per group
