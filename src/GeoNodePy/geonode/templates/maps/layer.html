@@ -45,7 +45,7 @@
 {% block main %}
 <div id="description"> <h3> {{ layer.resource.title|default:layer.typename }} </h3> </div>
 <p> <strong>{% trans "Abstract" %}:</strong> {{ layer.resource.abstract|default:_("No abstract for this layer.") }} </p>
-<p> <strong>{% trans "Type" %}:</strong> {% trans "No layer type specified." %} </p>
+<p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>
 <p> <strong>{% trans "Keywords" %}:</strong> {{ layer.resource.keywords|join:", " }}</p>
 <p> <strong>{% trans "Citation" %}:</strong> 
     {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
@@ -54,7 +54,7 @@
     {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
 </p>
 <p> <strong>{% trans "Attributes" %}:</strong> 
-    {{ layer.resource.attributes|join:", " }}
+    {{ layer.attribute_names|join:", " }}
 </p>
 <p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
 <div id="preview_map"></div>
@@ -85,9 +85,9 @@
     <h3> {% trans "Styles" %} </h3>
     <p> {% trans "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style." %}
     <br/>
-    <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/> {{ layer.publishing.default_style.name }} <br/>
-        {% for style in layer.publishing.styles %} 
-            <input type="radio" name="style" value="{{style.name}}"/> {{ style.name }} <br/>
+    <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/> {{ layer.default_style.name|title }} <br/>
+        {% for style in layer.styles %} 
+            <input type="radio" name="style" value="{{style.name}}"/> {{ style.name|title }} <br/>
         {% endfor %}
     </p>
 
