@@ -68,18 +68,24 @@
         {% endfor %}
     </p>
     <p> <strong>{% trans "Metadata" %}: </strong>
-        {% for type, link in layer.metadata_links %}
-            <a href="{{link}}">{{type}}</a>
+        {% for mimetype, mdtype, link in layer.metadata_links %}
+            <a href="{{link}}">{{mdtype}}</a>
+        {% empty %}
+            <em> {% trans "No metadata links provided for this data." noop %} </em>
         {% endfor %}
     </p>
     <h3>{% trans "Maps" %} </h3>
+    {% if layer.maps %}
     <p>{% trans "The following maps use this data set" %}:
         <ul>
             {% for map in layer.maps %} 
             <li> <a href="{{map.get_absolute_url}}">{{map.title}}</a> </li>
             {% endfor %}
         </ul>
-        <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.name}}">Create new map</a></p> 
+    {% else %}
+        <p> {% trans "This layer is not currently used in any maps." %} </p>
+    {% endif %}
+    <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.name}}">Create new map</a></p> 
     </p>
 
     <h3> {% trans "Styles" %} </h3>

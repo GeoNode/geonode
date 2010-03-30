@@ -74,9 +74,9 @@ class Layer(models.Model):
         in various formats."""
         #TODO: This function is just a stub
         return [
-            ("SHAPE-ZIP", "%swfs?request=GetFeature&typename=%s&format=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)),
-            ("application/vnd.google-earth.kml+xml", "%swms?request=GetMap&layers=%s&format=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)),
-            ("application/pdf", "%swms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
+            ("SHAPE-ZIP", "%swfs?request=GetFeature&typename=%s&outputformat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)),
+            # ("application/vnd.google-earth.kml+xml", "%swms?request=GetMap&layers=%s&outputformat=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)) 
+            #, ("application/pdf", "%swms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
         ]
 
     def metadata_links(self):
@@ -126,6 +126,14 @@ class Layer(models.Model):
         return self.resource.abstract
 
     abstract = property(_get_abstract, _set_abstract)
+
+    def _set_metadatalinks(self, links):
+        self.resource.metadata_links = links
+
+    def _get_metadatalinks(self):
+        return self.resource.metadata_links
+
+    metadata_links = property(_get_metadatalinks, _set_metadatalinks)
 
     def _set_keywords(self, keywords):
         self.resource.keywords = keywords
