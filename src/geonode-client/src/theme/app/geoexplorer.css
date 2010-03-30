@@ -329,3 +329,7 @@ div.overlay-scaleline {
     display: block;
 }
 
+.error-details {
+    font: 8pt courier,courier new,monospace;
+    padding: 5px;
+}

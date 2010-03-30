@@ -114,6 +114,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     largeSizeLabel: 'UT:Large',
     layerAdditionLabel: "UT: or add a new server.",
     layerContainerText: "UT:Map Layers",
+    layerPropertiesText: 'UT: Layer Properties',
+    layerPropertiesTipText: 'UT: Change layer metadata, format and style',
     layerSelectionLabel: "UT:View available data from:",
     layersContainerText: "UT:Data",
     layersPanelText: "UT:Layers",
@@ -142,8 +144,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     saveFailTitle: "UT: Error While Saving",
     saveMapText: "UT: Save Map",
     smallSizeLabel: 'UT: Small',
-    styleLayerText: 'UT: Edit Layer Style',
-    styleLayerTipText: 'UT: Change the symbolization of the layer',
     sourceLoadFailureMessage: 'UT: Error contacting server.\n Please check the url and try again.',
     switchTo3DActionText: "UT:Switch to Google Earth 3D Viewer",
     unknownMapMessage: 'UT: The map that you are trying to load does not exist.  Creating a new map instead.',
@@ -549,22 +549,50 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             }
         });
         
-        var styleLayerAction = new Ext.Action({
-            text: this.styleLayerText,
-            iconCls: "icon-stylelayers",
+        var prop;
+        var layerPropertiesAction = new Ext.Action({
+            text: this.layerPropertiesText,
+            iconCls: "icon-layerproperties",
             disabled: true,
-            tooltip: this.styleLayerTipText,
-            handler: function() {}
+            tooltip: this.layerPropertiesTipText,
+            handler: function() {
+                var node = layerTree.getSelectionModel().getSelectedNode();
+                if (node && node.layer) {
+                    var layer = node.layer;
+                    var store = node.layerStore;
+                    var record = store.getAt(store.findBy(function(record){
+                        return record.get("layer") === layer;
+                    }));
+                    if (prop) {
+                        prop.close();
+                    }
+                    prop = new Ext.Window({
+                        title: "Properties: " + record.get("title"),
+                        width: 250,
+                        height: 250,
+                        layout: "fit",
+                        items: [{
+                            xtype: "gx_wmslayerpanel",
+                            layerRecord: record,
+                            defaults: {
+                                style: "padding: 10px"
+                            }
+                        }]
+                    });
+                    prop.show();
+                }
+            }
         });
 
-        var updateRemoveLayerAction = function() {
+        var updateLayerAction = function(sm, node) {
             // allow removal if more than one non-vector layer
             var count = this.mapPanel.layers.queryBy(function(r) {
                 return !(r.get("layer") instanceof OpenLayers.Layer.Vector);
             }).getCount();
-            if(count > 1) {
-                removeLayerAction.enable();
-            }
+            removeLayerAction.setDisabled(count <= 1);
+            // allow changing properties for WMS layers only
+            layerPropertiesAction.setDisabled(
+                !(node.layer instanceof OpenLayers.Layer.WMS));
         };
 
         var bgSubTree = new GeoExt.tree.BaseLayerContainer({
@@ -605,7 +633,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             enableDD: true,
             selModel: new Ext.tree.DefaultSelectionModel({
                 listeners: {
-                    beforeselect: updateRemoveLayerAction,
+                    beforeselect: updateLayerAction,
                     scope: this
                 }
             }),
@@ -633,7 +661,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         },
                         scope: this
                     },
-                    removeLayerAction
+                    removeLayerAction,
+                    layerPropertiesAction
                 ]
             })
         });
@@ -800,14 +829,14 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             addLayerButton.disable();
             removeLayerAction.disable();
             layerTree.getSelectionModel().un(
-                "beforeselect", updateRemoveLayerAction, this);
+                "beforeselect", updateLayerAction, this);
         }, this);
         
         this.googleEarthPanel.on("hide", function() {
             addLayerButton.enable();
             removeLayerAction.enable();
             layerTree.getSelectionModel().on(
-                "beforeselect", updateRemoveLayerAction, this);
+                "beforeselect", updateLayerAction, this);
         }, this);
         
         this.mapPanelContainer = new Ext.Panel({
