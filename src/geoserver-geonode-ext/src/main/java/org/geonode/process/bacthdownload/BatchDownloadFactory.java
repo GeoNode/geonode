@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import org.geonode.process.control.AsyncProcess;
 import org.geotools.data.Parameter;
 import org.geotools.feature.NameImpl;
-import org.geotools.process.Process;
 import org.geotools.process.impl.SingleProcessFactory;
 import org.geotools.text.Text;
 import org.geotools.util.logging.Logging;
@@ -59,11 +59,6 @@ public class BatchDownloadFactory extends SingleProcessFactory {
             LayerReference.class, Text.text("Map Layers"), Text.text("Service info for layers "
                     + "to include in the download."), true, 1, -1, null, null);
 
-    /** Locale identifier for status reports. Optional. */
-    public static final Parameter<String> LOCALE = new Parameter<String>("locale", String.class,
-            Text.text("Locale"), Text.text("Locale identifier for status reports"), false, 0, 1,
-            null, null);
-
     /**
      * Map used for getParameterInfo; used to describe operation requirements for user interface
      * creation.
@@ -74,7 +69,6 @@ public class BatchDownloadFactory extends SingleProcessFactory {
         Map<String, Parameter<?>> temp = new TreeMap<String, Parameter<?>>();
         temp.put(MAP_METADATA.key, MAP_METADATA);
         temp.put(LAYERS.key, LAYERS);
-        temp.put(LOCALE.key, LOCALE);
         prameterInfo = Collections.unmodifiableMap(temp);
     }
 
@@ -134,7 +128,7 @@ public class BatchDownloadFactory extends SingleProcessFactory {
     }
 
     @Override
-    public Process create() throws IllegalArgumentException {
-        throw new UnsupportedOperationException(); // todo: Implement
+    public AsyncProcess create() throws IllegalArgumentException {
+        return new BatchDownload();
     }
 }
