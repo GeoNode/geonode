@@ -30,6 +30,8 @@ final class BatchDownload extends AsyncProcess {
     protected Map<String, Object> executeInternal(final Map<String, Object> input,
             final ProgressListener monitor) throws ProcessException {
 
+        monitor.started();
+        
         final MapMetadata mapDetails = (MapMetadata) input.get(MAP_METADATA.key);
         final List<LayerReference> layers = (List<LayerReference>) input.get(LAYERS.key);
 
