@@ -113,8 +113,7 @@ capra.DataGrid = Ext.extend(Ext.util.Observable, {
                         dataIndex: "title",
                         sortable: true,
                         renderer: function(value,metaData,record) { 
-                            console.log(record);
-			    return "<a href='/data/" + record.get('name') +  "'>" + value + "</a>" ; }
+                     	    return "<a href='/data/" + record.get('name') +  "'>" + value + "</a>" ; }
                     }, {
                         header: me.dataNameHeaderText,
                         dataIndex: "name", 
