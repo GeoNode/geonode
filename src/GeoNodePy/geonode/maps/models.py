@@ -90,16 +90,26 @@ class Layer(models.Model):
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
         return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename).select_related()])
 
-    def styles(self):
-        """Return a list of known styles applicable to this layer"""
-        return self.metadata().styles
-
     def metadata(self): 
         global _wms
         if (_wms is None) or (self.typename not in _wms.contents):
             wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
             _wms = WebMapService(wms_url)
         return _wms[self.typename]
+
+    @property
+    def attribute_names(self):
+        if self.resource.resource_type == "featureType":
+            return self.resource.attributes
+        elif self.resource.resource_type == "coverage":
+            return [dim.name for dim in self.resource.dimensions]
+
+    @property
+    def display_type(self):
+        return ({
+            "dataStore" : "Vector Data",
+            "coverageStore": "Raster Data",
+        }).get(self.storeType, "Data")
 
     def _set_title(self, title):
         self.resource.title = title
@@ -134,6 +144,22 @@ class Layer(models.Model):
             self._resource_cache = cat.get_resource(self.name, store)
         return self._resource_cache
 
+    def _get_default_style(self):
+        return self.publishing.default_style
+
+    def _set_default_style(self, style):
+        self.publishing.default_style = style
+
+    default_style = property(_get_default_style, _set_default_style)
+
+    def _get_styles(self):
+        return self.publishing.styles
+
+    def _set_styles(self, styles):
+        self.publishing.styles = styles
+
+    styles = property(_get_styles, _set_styles)
+
     @property
     def publishing(self):
         if not hasattr(self, "_publishing_cache"):
@@ -143,7 +169,10 @@ class Layer(models.Model):
 
     def save(self):
         models.Model.save(self)
-        Layer.objects.gs_catalog.save(self.resource)
+        if hasattr(self, "_resource_cache"):
+            Layer.objects.gs_catalog.save(self._resource_cache)
+        if hasattr(self, "_publishing_cache"):
+            Layer.objects.gs_catalog.save(self._publishing_cache)
 
     def get_absolute_url(self):
         return "/data/%s" % self.typename
