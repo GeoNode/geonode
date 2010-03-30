@@ -2,14 +2,38 @@ package org.geonode.rest.batchdownload;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
+import org.geonode.process.bacthdownload.BatchDownloadFactory;
+import org.geonode.process.bacthdownload.LayerReference;
+import org.geonode.process.bacthdownload.MapMetadata;
+import org.geonode.process.control.AsyncProcess;
+import org.geonode.process.control.DefaultProcessController;
+import org.geonode.process.control.ProcessStatus;
+import org.geonode.process.coveragestats.HazardStatisticsFactory;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.data.FeatureSource;
+import org.geotools.factory.Hints;
+import org.geotools.process.ProcessException;
+import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -19,15 +43,56 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
+/**
+ * 
+ * Expects a JSON object with the following structure: <code>
+ * <pre>
+ *  {  map : { 
+ *           name: "map name"
+ *           author: "author name" 
+ *           } 
+ *    layers: 
+ *        [
+ *          {
+ *              name:"<layerName>",
+ *              service: "<WFS|WCS>",
+ *              metadataURL: <csw request for the layer metadata?>, 
+ *              serviceURL:"<serviceURL>" //eg, "http://geonode.org/geoserver/wfs" 
+ *          } ,...
+ *        ]
+ *  } 
+ * </pre>
+ * </code>
+ * 
+ * Upon successful process launching returns a JSON object with the following structure: <code>
+ * <pre>
+ * {
+ *   process:{
+ *        id: <processId>
+ *        status: <WAITING|RUNNING|FINISHED|FAILED|CANCELLED>
+ *        statusMessage: "<status message>"
+ *   }     
+ * }
+ * </pre>
+ * </code>
+ * 
+ * @author Gabriel Roldan
+ * @version $Id$
+ */
 public class DownloadLauncherRestlet extends Restlet {
-    private Catalog catalog;
 
     private static Logger LOGGER = Logging.getLogger(DownloadLauncherRestlet.class);
 
-    public DownloadLauncherRestlet(final Catalog catalog) {
+    private final Catalog catalog;
+
+    private final DefaultProcessController controller;
+
+    public DownloadLauncherRestlet(final Catalog catalog, final DefaultProcessController controller) {
         this.catalog = catalog;
+        this.controller = controller;
     }
 
+    @Override
     public void handle(Request request, Response response) {
         if (!request.getMethod().equals(Method.POST)) {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -45,12 +110,33 @@ public class DownloadLauncherRestlet extends Restlet {
             return;
         }
 
-        JSONObject jsonRequest = JSONObject.fromObject(requestContent);
+        JSONObject jsonRequest;
+        try {
+            jsonRequest = JSONObject.fromObject(requestContent);
+        } catch (JSONException e) {
+            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            return;
+        }
 
-        final JSONObject responseData = new JSONObject();
-        responseData.put("id", 12);
-        responseData.put("status", "WAITING");
-        responseData.put("statusMessage", "Process is waiting...");
+        final JSONObject responseData;
+        try {
+            responseData = execute(jsonRequest);
+        } catch (ProcessException e) {
+            final String message = "Process failed: " + e.getMessage();
+            response.setStatus(Status.SERVER_ERROR_INTERNAL, message);
+            LOGGER.log(Level.SEVERE, message, e);
+            return;
+        } catch (IllegalArgumentException e) {
+            final String message = "Process can't be executed: " + e.getMessage();
+            response.setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, message);
+            LOGGER.log(Level.INFO, message, e);
+            return;
+        } catch (RuntimeException e) {
+            final String message = "Unexpected exception: " + e.getMessage();
+            response.setStatus(Status.SERVER_ERROR_INTERNAL, message);
+            LOGGER.log(Level.SEVERE, message, e);
+            return;
+        }
 
         final String jsonStr = responseData.toString(0);
         final Representation representation = new StringRepresentation(jsonStr,
@@ -58,4 +144,173 @@ public class DownloadLauncherRestlet extends Restlet {
 
         response.setEntity(representation);
     }
+
+    private JSONObject execute(final JSONObject jsonRequest) throws ProcessException {
+
+        final Map<String, Object> processInputs = convertProcessInputs(jsonRequest);
+
+        final AsyncProcess process = new BatchDownloadFactory().create();
+
+        final Long processId = controller.submitAsync(process, processInputs);
+
+        JSONObject convertedOutputs = new JSONObject();
+        convertedOutputs.element("id", processId.longValue());
+        ProcessStatus status = controller.getStatus(processId);
+        convertedOutputs.element("status", status.toString());
+        float progress = controller.getProgress(processId);
+        convertedOutputs.element("progress", progress);
+
+        return convertedOutputs;
+    }
+
+    /**
+     * Converts REST process inputs given as JSON objects to the actual {@link BatchDownloadFactory
+     * process} inputs.
+     * 
+     * @param attributes
+     * @return
+     */
+    private Map<String, Object> convertProcessInputs(final JSONObject request)
+            throws ProcessException {
+
+        Map<String, Object> processInputs;
+        try {
+            JSONObject map = request.getJSONObject("map");
+            final MapMetadata mapDetails = convertMapMetadataParam(map);
+            JSONArray layersParam = request.getJSONArray("layers");
+            final List<LayerReference> layers = convertLayersParam(layersParam);
+
+            processInputs = new HashMap<String, Object>();
+            processInputs.put(BatchDownloadFactory.MAP_METADATA.key, mapDetails);
+            processInputs.put(HazardStatisticsFactory.RADIUS.key, layers);
+        } catch (JSONException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
+        return processInputs;
+    }
+
+    /**
+     * 
+     * @param obj
+     * @return
+     * @throws JSONException
+     *             if a required json object property is not found
+     */
+    private MapMetadata convertMapMetadataParam(final JSONObject obj) throws JSONException {
+        String name = obj.getString("name");
+        if (name.length() == 0) {
+            throw new IllegalArgumentException("Map name is empty");
+        }
+        String author = obj.getString("author");
+        if (author.length() == 0) {
+            throw new IllegalArgumentException("author name is empty");
+        }
+        MapMetadata mmd = new MapMetadata(name, author);
+        return mmd;
+    }
+
+    private List<LayerReference> convertLayersParam(final JSONArray obj) {
+        if (obj == null || obj.size() == 0) {
+            throw new IllegalArgumentException("no layers provided");
+        }
+
+        final int size = obj.size();
+        List<LayerReference> layers = new ArrayList<LayerReference>(size);
+
+        for (int layerN = 0; layerN < size; layerN++) {
+            JSONObject layerParam = obj.getJSONObject(layerN);
+            LayerReference layer = parseLayerReference(layerParam);
+            layers.add(layer);
+        }
+        return layers;
+    }
+
+    private LayerReference parseLayerReference(final JSONObject layerParam) {
+        final String layerName = layerParam.getString("name");
+        final String service = layerParam.getString("service");
+        final String serviceURL = layerParam.getString("serviceURL");
+
+        final URL metadataURL;
+
+        if (layerParam.containsKey("metadataURL")) {
+            final String metadataURLParam = layerParam.getString("metadataURL");
+            if (metadataURLParam.length() > 0) {
+                try {
+                    metadataURL = new URL(metadataURLParam);
+                } catch (MalformedURLException e) {
+                    throw new IllegalArgumentException("invalid format for metadataURL: '"
+                            + metadataURLParam + "'");
+                }
+            } else {
+                metadataURL = null;
+            }
+        } else {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("metadataURL not provided for " + layerParam);
+            }
+            metadataURL = null;
+        }
+
+        LayerReference layer;
+        if ("WFS".equals(service)) {
+            FeatureSource<FeatureType, Feature> source = getFeatureSource(serviceURL, layerName);
+            layer = new LayerReference(source);
+        } else if ("WCS".equals(service)) {
+            AbstractGridCoverage2DReader source = getCoverageReader(serviceURL, layerName);
+            layer = new LayerReference(source);
+        } else {
+            throw new IllegalArgumentException("Invalid service name for layer '" + layerName
+                    + "'. Expected one of WFS,WCS. Was '" + service + "'");
+        }
+
+        layer.setMetadataURL(metadataURL);
+
+        return layer;
+    }
+
+    private AbstractGridCoverage2DReader getCoverageReader(final String serviceURL,
+            final String layerName) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Ignoring serviceURL '" + serviceURL
+                    + "'. Process only supports references to local resources by now.");
+        }
+
+        final CoverageInfo coverageInfo = catalog.getCoverageByName(layerName);
+        if (coverageInfo == null) {
+            throw new IllegalArgumentException("Coverage '" + layerName + "' does not exist");
+        }
+        AbstractGridCoverage2DReader reader;
+        try {
+            reader = (AbstractGridCoverage2DReader) coverageInfo.getGridCoverageReader(
+                    new NullProgressListener(), (Hints) null);
+        } catch (IOException e) {
+            throw new RuntimeException("Error retrieveing coverage '" + layerName + "': "
+                    + e.getMessage(), e);
+        }
+        return reader;
+    }
+
+    @SuppressWarnings("unchecked")
+    private FeatureSource<FeatureType, Feature> getFeatureSource(final String serviceURL,
+            final String layerName) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Ignoring serviceURL '" + serviceURL
+                    + "'. Process only supports references to local resources by now.");
+        }
+
+        final FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName(layerName);
+        if (typeInfo == null) {
+            throw new IllegalArgumentException("Feature Type '" + layerName + "' does not exist");
+        }
+        FeatureSource<FeatureType, Feature> source;
+        try {
+            source = (FeatureSource<FeatureType, Feature>) typeInfo.getFeatureSource(
+                    new NullProgressListener(), (Hints) null);
+        } catch (IOException e) {
+            throw new RuntimeException("Error retrieveing feature type '" + layerName + "': "
+                    + e.getMessage(), e);
+        }
+        return source;
+    }
+
 }
