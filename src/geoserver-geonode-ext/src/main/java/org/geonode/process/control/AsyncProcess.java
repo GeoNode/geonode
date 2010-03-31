@@ -2,12 +2,23 @@ package org.geonode.process.control;
 
 import java.util.Map;
 
+import org.geonode.process.storage.StorageManager;
+import org.geotools.data.Parameter;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
+import org.geotools.text.Text;
 import org.geotools.util.NullProgressListener;
 import org.opengis.util.ProgressListener;
 
 public abstract class AsyncProcess implements Process {
+
+    /**
+     * By lack of a better way to pass context/collaborator objects to a process, we use this
+     * special input parameter.
+     */
+    public static final Parameter<StorageManager> STORAGE_MANAGER = new Parameter<StorageManager>(
+            "StorageManager", StorageManager.class, Text.text("Storage Manager"), Text
+                    .text("Storage Manager"));
 
     private ProcessStatus status;
 

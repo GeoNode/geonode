@@ -1,7 +1,7 @@
-package org.geonode.process.bacthdownload;
+package org.geonode.process.batchdownload;
 
-import static org.geonode.process.bacthdownload.BatchDownloadFactory.LAYERS;
-import static org.geonode.process.bacthdownload.BatchDownloadFactory.MAP_METADATA;
+import static org.geonode.process.batchdownload.BatchDownloadFactory.LAYERS;
+import static org.geonode.process.batchdownload.BatchDownloadFactory.MAP_METADATA;
 
 import java.util.HashMap;
 import java.util.List;

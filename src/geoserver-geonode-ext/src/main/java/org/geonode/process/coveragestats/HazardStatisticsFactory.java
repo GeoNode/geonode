@@ -50,9 +50,9 @@ public class HazardStatisticsFactory extends SingleProcessFactory {
 
     public static final Logger LOGGER = Logging.getLogger("org.geonode.process");
 
-    private static final String PROCESS_NAMESPACE = "hazard";
+    private static final String PROCESS_NAMESPACE = "geonode";
 
-    private static final String PROCESS_NAME = "Statistics";
+    private static final String PROCESS_NAME = "CoverageStatistics";
 
     /** Geometry for operation. Required. */
     public static final Parameter<Geometry> GEOMERTY = new Parameter<Geometry>("geometry",
