@@ -1,0 +1,108 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+{% load geonode_media %}
+
+{% block title %} {% trans "Upload Layer" noop %} {% endblock %}
+
+{% block header_append %}
+<link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}upload.css" />
+{% endblock %}
+
+{% block main %}
+<h3> {% trans "Upload Layer Data" noop %} </h3>
+
+<form action="{% url geonode.maps.views.upload_layer %}" method="POST" enctype="multipart/form-data" >
+
+  {% if errors %}
+    <div id="errors">
+      {% for error in errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+    <label for="base_file">Data File</label>
+    <input type="file" id="base_file" name="base_file" size="50">
+
+
+    <div id="shapefile_expander" class="nodisplay">
+        <p>{% trans "If you are uploading a shapefile, please locate the following additional files" noop %}</p>
+      <div>
+        <label id="dbf_file_label" for="dbf_file" >dbf file</label>
+        <input type="file" id="dbf_file" name="dbf_file" class="shapefile-input" disabled="disabled" size="50" />
+      </div>
+      <div>
+        <label id="shx_file_label" for="shx_file" >shx file</label>
+        <input type="file" id="shx_file" name="shx_file" class="shapefile-input" disabled="disabled" size="50" />
+      </div>
+      <div>
+        <label id="prj_file_label" for="prj_file" >prj file</label>
+        <input type="file" id="prj_file" name="prj_file" class="shapefile-input" disabled="disabled" size="50" /> (optional)
+      </div>
+    </div>
+    <div>
+      <input id="upload_button" type="submit" value="{% trans "Upload Data" noop %}"/>
+    </div>
+</form>
+
+<script type="text/javascript">
+Ext.onReady(function(){
+
+  var enable_shapefile_form = function(base_filename) {
+    var expander = Ext.get('shapefile_expander');
+    expander.select('.shapefile-input').each(function(el) {
+      el.dom.disabled = '';
+    });
+    expander.select('label').each(function(el) {
+      var extension = el.id.substr(0, 3);
+      el.update(base_filename + '.' + extension)
+    });
+    if (expander.hasClass('nodisplay')) {
+      expander.removeClass('nodisplay');
+    }
+  };
+  
+  var disable_shapefile_form = function() {
+    var expander = Ext.get('shapefile_expander');
+    expander.select('.shapefile-input').each(function(el) {
+      el.dom.disabled = 'disabled';
+    });
+    if (!expander.hasClass('nodisplay')) {
+      expander.addClass('nodisplay');
+    }
+  };
+
+  var check_shapefile = function() {
+    var main_filename = Ext.get("base_file").getValue();
+    if (main_filename.search(/\.shp$/i) != -1) {
+      var base_filename = main_filename.substr(0, main_filename.length-4);
+      enable_shapefile_form(base_filename);
+    }
+    else {
+      disable_shapefile_form();
+    }
+  };
+  Ext.get("base_file").addListener("change", check_shapefile);
+  check_shapefile();
+});
+</script>
+
+{% endblock %}
+
+
+{% block sidebar %}
+<h3>{%trans "Instructions" noop %}</h3>
+
+<p>{% trans "Select a layer data file and submit the form to begin the transfer." noop %}</p>
+
+<h3>{% trans "Supported Formats" noop %}</h3>
+
+<ul>
+  <li>Shapefile</li>
+  <li>GeoTIFF</li>
+<ul>
+<br/>  
+{% blocktrans %}
+<p>Note: If you are uploading a shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
+{% endblocktrans %}
+{% endblock %}
