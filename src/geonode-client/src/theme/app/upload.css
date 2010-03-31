@@ -1,0 +1,31 @@
+#shapefile_expander {
+    border: 1px solid #aaaaaa;
+    background: #f0f0ff;
+    padding: 1.5em;
+    margin-top: 2em;
+    width: 80%;
+}
+
+#base_file {
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 1em;
+}
+
+.shapefile-input {
+}
+
+#upload_button {
+    margin-top: 2em;
+    display: block;
+}
+
+#errors {
+    background: #ff0000;
+    color: #ffffff;
+    padding: 1em;
+    width: 80%;
+}

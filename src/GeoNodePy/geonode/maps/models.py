@@ -15,6 +15,7 @@ class LayerManager(models.Manager):
         user, password = settings.GEOSERVER_CREDENTIALS
         self.gs_catalog = Catalog(url, user, password)
 
+
     def slurp(self):
         cat = self.gs_catalog
         for store in cat.get_stores():
@@ -175,8 +176,8 @@ class Layer(models.Model):
             self._publishing_cache = cat.get_layer(self.name)
         return self._publishing_cache
 
-    def save(self):
-        models.Model.save(self)
+    def save(self, *args, **kw):
+        models.Model.save(self, *args, **kw)
         if hasattr(self, "_resource_cache"):
             Layer.objects.gs_catalog.save(self._resource_cache)
         if hasattr(self, "_publishing_cache"):

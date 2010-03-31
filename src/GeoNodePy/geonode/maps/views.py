@@ -1,4 +1,5 @@
 from geonode.maps.models import Map, Layer, MapLayer
+import geoserver
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -7,6 +8,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.html import escape
+from django.utils.translation import ugettext as _
 import json
 
 DEFAULT_MAP_CONFIG = {
@@ -271,7 +273,7 @@ def _removeLayer(request,layer):
             }))
         if (request.method == 'POST'):
             layer.delete()
-            return HttpResponseRedirect(reverse("geonode.views.data"))
+            return HttpResponseRedirect(reverse("geonode.views.static", args=('data', )))
         else:
             return HttpResponse("Not allowed",status=403) 
     else:  
@@ -294,3 +296,95 @@ def layerController(request, layername):
             "background": settings.MAP_BASELAYERS,
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
+
+def upload_layer(request):
+    if request.method == 'GET':
+        return render_to_response('maps/layer_upload.html',
+                                  RequestContext(request, {}))
+    elif request.method == 'POST':
+        layer, errors = _handle_layer_upload(request)
+
+        if errors: 
+            return render_to_response('maps/layer_upload.html',
+                                      RequestContext(request, {'errors': errors}))
+        else: 
+            return HttpResponseRedirect('%s?describe' % reverse('geonode.maps.views.layerController', 
+                                                                 args=(layer.typename,)))
+
+
+def _handle_layer_upload(request, name=None):
+
+    _user, _password = settings.GEOSERVER_CREDENTIALS
+    url = "%srest" % settings.GEOSERVER_BASE_URL 
+    
+    base_file = request.FILES.get('base_file');
+    if not base_file:
+        return [_("You must specify a layer data file to upload.")]
+    
+    if name is None:
+        # XXX overwite check
+        name = base_file.name[0:-4]
+    
+    if not name:
+        return[_("Unable to determine layer name.")]
+
+
+    # shapefile upload
+    elif base_file.name.lower().endswith('.shp'):
+        dbf_file = request.FILES.get('dbf_file')
+        shx_file = request.FILES.get('shx_file')
+        prj_file = request.FILES.get('prj_file')
+        
+        errors = []
+        if not dbf_file: 
+            errors.append(_("You must specify a .dbf file when uploading a shapefile."))
+        if not shx_file: 
+            errors.append(_("You must specify a .shx file when uploading a shapefile."))
+
+        if errors:
+            return None, errors
+        
+        # ... bundle the files together and send them along
+        cfg = {
+            'shp': base_file,
+            'dbf': dbf_file,
+            'shx': shx_file
+        }
+        if prj_file:
+            cfg['prj'] = prj_file
+
+        
+        try:
+            cat = Layer.objects.gs_catalog
+            cat.create_featurestore(name, cfg)
+        except geoserver.catalog.UploadError:
+            errors.append(_("An error occurred while loading the data."))
+        except geoserver.catalog.ConflictingDataError:
+            errors.append(_("There is already a layer with the given name."))
+        
+    # any other type of upload
+    else:
+        try:
+            # ... we attempt to let geoserver figure it out ? 
+            cat = Layer.objects.gs_catalog
+            cat.create_coveragestore(name, base_file)
+        except geoserver.catalog.UploadError:
+            errors.append(_("An error occurred while loading the data."))
+        except geoserver.catalog.ConflictingDataError:
+            errors.append(_("There is already a layer with the given name."))
+
+    if len(errors) == 0: 
+        try:
+            info = cat.get_resource(name)
+            typename = info.store.workspace.name + ':' + info.name
+            layer = Layer.objects.create(name=info.name, 
+                                         store=info.store.name,
+                                         storeType=info.store.resource_type,
+                                         typename=typename,
+                                         workspace=info.store.workspace.name)
+            layer.save()
+            return layer, errors
+        except:
+            errors.append(_("An error occurred creating the layer."))
+
+    return None, errors
