@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-package org.geonode.process.bacthdownload.shp;
+package org.geonode.process.batchdownload.shp;
 
 import java.io.File;
 import java.io.FileNotFoundException;
