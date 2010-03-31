@@ -297,6 +297,7 @@ def layerController(request, layername):
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
 
+@login_required
 def upload_layer(request):
     if request.method == 'GET':
         return render_to_response('maps/layer_upload.html',
@@ -314,9 +315,6 @@ def upload_layer(request):
 
 def _handle_layer_upload(request, name=None):
 
-    _user, _password = settings.GEOSERVER_CREDENTIALS
-    url = "%srest" % settings.GEOSERVER_BASE_URL 
-    
     base_file = request.FILES.get('base_file');
     if not base_file:
         return [_("You must specify a layer data file to upload.")]
