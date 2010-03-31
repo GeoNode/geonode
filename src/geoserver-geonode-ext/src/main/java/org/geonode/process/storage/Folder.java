@@ -1,6 +1,9 @@
 package org.geonode.process.storage;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 public interface Folder {
 
@@ -54,4 +57,10 @@ public interface Folder {
     public boolean exists();
 
     public boolean create() throws IOException;
+
+    public File getFile() throws IOException;
+
+    public URL getURL() throws IOException;
+
+    public URI getURI() throws IOException;
 }

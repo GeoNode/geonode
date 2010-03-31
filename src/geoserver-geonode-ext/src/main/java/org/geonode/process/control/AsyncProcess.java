@@ -22,6 +22,8 @@ public abstract class AsyncProcess implements Process {
 
     private ProcessStatus status;
 
+    private StorageManager storageManager;
+
     public AsyncProcess() {
         status = ProcessStatus.WAITING;
     }
@@ -48,6 +50,7 @@ public abstract class AsyncProcess implements Process {
             monitor = new NullProgressListener();
         }
         status = ProcessStatus.RUNNING;
+        storageManager = (StorageManager) input.get(STORAGE_MANAGER.key);
         try {
             Map<String, Object> result = executeInternal(input, monitor);
             if (monitor.isCanceled()) {
@@ -73,5 +76,9 @@ public abstract class AsyncProcess implements Process {
 
     public final ProcessStatus getStatus() {
         return status;
+    }
+
+    protected StorageManager getStorageManager() {
+        return storageManager;
     }
 }

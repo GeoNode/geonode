@@ -7,8 +7,12 @@ import static org.restlet.data.Status.SUCCESS_OK;
 import javax.xml.namespace.QName;
 
 import junit.framework.Test;
+import net.sf.json.JSONObject;
 
+import org.geonode.process.control.ProcessController;
+import org.geonode.process.control.ProcessStatus;
 import org.geoserver.data.test.MockData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerTestSupport;
 import org.restlet.data.Status;
 
@@ -73,8 +77,23 @@ public class DownloadLauncherRestletTest extends GeoServerTestSupport {
                 + layerName
                 + "', service:'WFS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}]}";
 
-        testRequest(jsonRequest, SUCCESS_OK);
+        MockHttpServletResponse response = testRequest(jsonRequest, SUCCESS_OK);
+        String outputStreamContent = response.getOutputStreamContent();
+        assertNotNull(outputStreamContent);
+        JSONObject jsonResponse = JSONObject.fromObject(outputStreamContent);
+        assertTrue(jsonResponse.containsKey("id"));
+        assertNotNull(jsonResponse.getString("id"));
 
+        final Long processId = Long.valueOf(jsonResponse.getString("id"));
+
+        ProcessController controller = (ProcessController) GeoServerExtensions
+                .bean("processController");
+
+        // wait for the process to finish....
+        ProcessStatus status = controller.getStatus(processId);
+        while (!controller.isDone(processId)) {
+            Thread.sleep(500);
+        }
     }
 
     public MockHttpServletResponse testRequest(final String jsonRequest,

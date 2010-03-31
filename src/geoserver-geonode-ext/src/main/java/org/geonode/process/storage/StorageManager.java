@@ -67,4 +67,11 @@ public class StorageManager {
         Resource file = baseDir.createResource(name);
         return file;
     }
+
+    public Folder createTempFolder() throws IOException {
+        FileSystemFolder baseDir = getBaseDir();
+        String folderName = Math.abs(random.nextLong()) + ".tmp";
+        Folder folder = baseDir.createFolder(folderName);
+        return folder;
+    }
 }

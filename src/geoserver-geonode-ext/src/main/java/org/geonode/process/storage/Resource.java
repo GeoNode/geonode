@@ -1,8 +1,11 @@
 package org.geonode.process.storage;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URL;
 
 /**
  * Represents a handle to a physical storage unit such as a file in a file system.
@@ -51,4 +54,10 @@ public interface Resource {
     public void delete() throws IOException;
 
     public Folder getParent();
+
+    public File getFile() throws IOException;
+
+    public URL getURL() throws IOException;
+
+    public URI getURI() throws IOException;
 }

@@ -1,5 +1,9 @@
 package org.geonode.process.control;
 
+import static org.geonode.process.control.ProcessStatus.CANCELLED;
+import static org.geonode.process.control.ProcessStatus.FAILED;
+import static org.geonode.process.control.ProcessStatus.FINISHED;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +25,7 @@ import org.geotools.process.ProcessExecutor;
 import org.geotools.process.Progress;
 import org.geotools.util.logging.Logging;
 
-public class DefaultProcessController {
+public class DefaultProcessController implements ProcessController {
 
     private static final Logger LOGGER = Logging.getLogger(DefaultProcessController.class);
 
@@ -87,7 +91,7 @@ public class DefaultProcessController {
                         if (progress.isDone()) {
                             LOGGER.info("Evicting process " + processInfo.getId() + ". Status: "
                                     + processInfo.getProcess().getStatus());
-                            entries.remove();
+                            ////entries.remove();
                         }
                     }
                 }
@@ -104,11 +108,23 @@ public class DefaultProcessController {
         evictorExecutor.shutdownNow();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.geonode.process.control.ProcessController#submit(org.geotools.process.Process,
+     * java.util.Map)
+     */
     public Progress submit(final Process process, final Map<String, Object> input) {
         Progress progress = processExecutor.submit(process, input);
         return progress;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.geonode.process.control.ProcessController#submitAsync(org.geonode.process.control.
+     * AsyncProcess, java.util.Map)
+     */
     public Long submitAsync(final AsyncProcess process, final Map<String, Object> input) {
 
         final Long processId = newProcessId();
@@ -135,13 +151,26 @@ public class DefaultProcessController {
         return Long.valueOf(nextId);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.geonode.process.control.ProcessController#getStatus(java.lang.Long)
+     */
     public ProcessStatus getStatus(final Long processId) throws NoSuchElementException {
         ProcessInfo info = asyncProcesses.get(processId);
+        if (info == null) {
+            throw new NoSuchElementException("Process " + processId + " does not exist");
+        }
         AsyncProcess process = info.getProcess();
         ProcessStatus status = process.getStatus();
         return status;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.geonode.process.control.ProcessController#getProgress(java.lang.Long)
+     */
     public float getProgress(final Long processId) {
         ProcessInfo info = asyncProcesses.get(processId);
         Progress progress = info.getProgress();
@@ -149,6 +178,11 @@ public class DefaultProcessController {
         return prog;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.geonode.process.control.ProcessController#kill(java.lang.Long)
+     */
     public boolean kill(final Long processId) {
         ProcessInfo info = asyncProcesses.get(processId);
         boolean cancel = false;
@@ -161,5 +195,10 @@ public class DefaultProcessController {
             cancel = progress.cancel(mayInterruptIfRunning);
         }
         return cancel;
+    }
+
+    public boolean isDone(Long processId) {
+        ProcessStatus status = getStatus(processId);
+        return status == CANCELLED || status == FAILED || status == FINISHED;
     }
 }
