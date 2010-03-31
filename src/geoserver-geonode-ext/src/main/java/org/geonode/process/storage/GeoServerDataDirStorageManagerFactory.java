@@ -2,11 +2,15 @@ package org.geonode.process.storage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.springframework.core.io.Resource;
+import org.geotools.util.logging.Logging;
 
 public class GeoServerDataDirStorageManagerFactory implements StorageManagerFactory {
+
+    private static final Logger LOGGER = Logging
+            .getLogger(GeoServerDataDirStorageManagerFactory.class);
 
     private GeoServerResourceLoader resourceLoader;
 
@@ -14,23 +18,22 @@ public class GeoServerDataDirStorageManagerFactory implements StorageManagerFact
 
     public GeoServerDataDirStorageManagerFactory(final GeoServerResourceLoader resourceLoader,
             final String baseDirName) {
+        LOGGER.info("Initializing GeoServer data directory based Process storage manager factory");
         this.resourceLoader = resourceLoader;
         this.processesTemptDir = baseDirName;
 
-        Resource resource = resourceLoader.getResource(processesTemptDir);
-        if (!resource.exists()) {
-            File baseDir;
-            try {
-                baseDir = resource.getFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            baseDir.mkdirs();
-            if (!baseDir.exists()) {
-                throw new IllegalStateException("Couldn't create directory "
-                        + baseDir.getAbsolutePath());
-            }
+        File resource;
+        try {
+            resource = resourceLoader.findOrCreateDirectory(processesTemptDir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        if (resource == null || !resource.exists()) {
+            throw new IllegalStateException("Directory " + baseDirName
+                    + " was not created indide GeoServer data directory");
+        }
+        LOGGER.info("GeoServer data directory based Process storage"
+                + " manager factory initialized to " + resource.getAbsolutePath());
     }
 
     public StorageManager newStorageManager(final String name) throws IOException {

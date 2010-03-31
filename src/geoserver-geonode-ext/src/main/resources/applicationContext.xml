@@ -57,9 +57,24 @@
     </constructor-arg>
   </bean>
 
+  <bean id="processStorageManagerFactory" class="org.geonode.process.storage.GeoServerDataDirStorageManagerFactory">
+    <description>A storage manager is a process collaborator that abstracts out the process from the place where it can
+      store temporary files. This one uses a directory inside the GeoServer data directory as the temp directory</description>
+    <constructor-arg ref="resourceLoader">
+      <description>The GeoServerResourceLoader (defined in geoserver's main module) where to get the data directory
+        location from</description>
+    </constructor-arg>
+    <constructor-arg value="process_tmp_dir">
+      <description>The name of the directory inside the geoserver data dir to use as the root for processes' temp data</description>
+    </constructor-arg>
+  </bean>
+
   <bean id="processController" class="org.geonode.process.control.DefaultProcessController">
     <description>Global process manager to issue, query and kill asynchronous processes</description>
     <constructor-arg ref="processExecutor" />
+    <constructor-arg ref="processStorageManagerFactory">
+      <description>factory to create storage managers for each submitted async process</description>
+    </constructor-arg>
     <constructor-arg value="10">
       <description>process eviction period in seconds. Instructs the controller to evict finished processes every a
         specified period of time</description>

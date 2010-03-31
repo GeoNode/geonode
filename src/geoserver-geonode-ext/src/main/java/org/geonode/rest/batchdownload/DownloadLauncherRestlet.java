@@ -16,9 +16,9 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
-import org.geonode.process.bacthdownload.BatchDownloadFactory;
-import org.geonode.process.bacthdownload.LayerReference;
-import org.geonode.process.bacthdownload.MapMetadata;
+import org.geonode.process.batchdownload.BatchDownloadFactory;
+import org.geonode.process.batchdownload.LayerReference;
+import org.geonode.process.batchdownload.MapMetadata;
 import org.geonode.process.control.AsyncProcess;
 import org.geonode.process.control.DefaultProcessController;
 import org.geonode.process.control.ProcessStatus;
@@ -29,11 +29,14 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.Hints;
+import org.geotools.feature.NameImpl;
 import org.geotools.process.ProcessException;
+import org.geotools.process.Processors;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -82,6 +85,8 @@ import org.restlet.resource.StringRepresentation;
 public class DownloadLauncherRestlet extends Restlet {
 
     private static Logger LOGGER = Logging.getLogger(DownloadLauncherRestlet.class);
+
+    private static final Name PROCESS_NAME = new NameImpl("geonode", "BatchDownload");
 
     private final Catalog catalog;
 
@@ -149,7 +154,10 @@ public class DownloadLauncherRestlet extends Restlet {
 
         final Map<String, Object> processInputs = convertProcessInputs(jsonRequest);
 
-        final AsyncProcess process = new BatchDownloadFactory().create();
+        final AsyncProcess process = (AsyncProcess) Processors.createProcess(PROCESS_NAME);
+        if (process == null) {
+            throw new IllegalStateException("Process factory not found for " + PROCESS_NAME);
+        }
 
         final Long processId = controller.submitAsync(process, processInputs);
 

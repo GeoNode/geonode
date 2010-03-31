@@ -14,7 +14,7 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geonode.process.bacthdownload;
+package org.geonode.process.batchdownload;
 
 import java.util.Collections;
 import java.util.Map;
@@ -45,9 +45,9 @@ public class BatchDownloadFactory extends SingleProcessFactory {
 
     public static final Logger LOGGER = Logging.getLogger("org.geonode.process");
 
-    private static final String PROCESS_NAMESPACE = "batch";
+    private static final String PROCESS_NAMESPACE = "geonode";
 
-    private static final String PROCESS_NAME = "Download";
+    private static final String PROCESS_NAME = "BatchDownload";
 
     /** Map metadata to include in download bundle. Optional. */
     public static final Parameter<MapMetadata> MAP_METADATA = new Parameter<MapMetadata>("map",

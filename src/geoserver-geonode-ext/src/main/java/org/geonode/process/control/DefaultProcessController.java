@@ -1,5 +1,6 @@
 package org.geonode.process.control;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
+import org.geonode.process.storage.StorageManager;
+import org.geonode.process.storage.StorageManagerFactory;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessExecutor;
 import org.geotools.process.Progress;
@@ -24,11 +27,13 @@ public class DefaultProcessController {
 
     private static AtomicLong idSequence = new AtomicLong();
 
-    private ProcessExecutor processExecutor;
-
     private final Map<Long, ProcessInfo> asyncProcesses;
 
-    private ScheduledExecutorService evictorExecutor;
+    private final ScheduledExecutorService evictorExecutor;
+
+    private final ProcessExecutor processExecutor;
+
+    private final StorageManagerFactory storageManagerFactory;
 
     private static class ProcessInfo {
         private final Long id;
@@ -60,9 +65,12 @@ public class DefaultProcessController {
         }
     }
 
-    public DefaultProcessController(final ProcessExecutor executor, final int evictPeriodSeconds) {
+    public DefaultProcessController(final ProcessExecutor executor,
+            final StorageManagerFactory storageManagerFactory, final int evictPeriodSeconds) {
+
         LOGGER.info("Initializing process controller...");
         this.processExecutor = executor;
+        this.storageManagerFactory = storageManagerFactory;
         this.asyncProcesses = Collections.synchronizedMap(new HashMap<Long, ProcessInfo>());
         evictorExecutor = Executors.newScheduledThreadPool(1);
 
@@ -102,9 +110,21 @@ public class DefaultProcessController {
     }
 
     public Long submitAsync(final AsyncProcess process, final Map<String, Object> input) {
-        Progress progress = processExecutor.submit(process, input);
+
+        final Long processId = newProcessId();
+        final StorageManager storageManager;
+        try {
+            storageManager = storageManagerFactory.newStorageManager(String.valueOf(processId));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Map<String, Object> processInputs = new HashMap<String, Object>(input);
+        processInputs.put(AsyncProcess.STORAGE_MANAGER.key, storageManager);
+
+        Progress progress = processExecutor.submit(process, processInputs);
         long submitionTime = System.currentTimeMillis();
-        Long processId = newProcessId();
+
         ProcessInfo processInfo = new ProcessInfo(processId, process, progress, submitionTime);
         asyncProcesses.put(processId, processInfo);
         return processId;
