@@ -41,9 +41,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryDescriptor;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.opengis.util.ProgressListener;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -64,13 +62,11 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author ported to gs 1.6.x by Saul Farber, MassGIS, saul.farber@state.ma.us
  * @author adapted to this by groldan
  */
-public class ShapeZipFeatureCollectionWriter implements ApplicationContextAware {
+public class ShapeZipFeatureCollectionWriter {
 
     private static final Logger LOGGER = Logging.getLogger(ShapeZipFeatureCollectionWriter.class);
 
     private String outputFileName;
-
-    private ApplicationContext applicationContext;
 
     /**
      * Tuple used when fanning out a collection with generic geometry types to multiple outputs
@@ -94,12 +90,13 @@ public class ShapeZipFeatureCollectionWriter implements ApplicationContextAware 
     }
 
     /**
+     * @param monitor
      * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
      */
     @SuppressWarnings("unchecked")
-    protected void write(FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
-            ZipOutputStream zipOut, Charset defaultCharset, File tempDir) throws IOException,
-            ServiceException {
+    public void write(FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
+            ZipOutputStream zipOut, Charset defaultCharset, File tempDir, ProgressListener monitor)
+            throws IOException, ServiceException {
 
         // if an emtpy result out of feature type with unknown geometry is created, the
         // zip file will be empty and the zip output stream will break
@@ -479,10 +476,6 @@ public class ShapeZipFeatureCollectionWriter implements ApplicationContextAware 
         }
 
         return sfds;
-    }
-
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
     }
 
 }

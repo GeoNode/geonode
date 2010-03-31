@@ -3,15 +3,30 @@ package org.geonode.process.batchdownload;
 import static org.geonode.process.batchdownload.BatchDownloadFactory.LAYERS;
 import static org.geonode.process.batchdownload.BatchDownloadFactory.MAP_METADATA;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.zip.ZipOutputStream;
 
+import org.geonode.process.batchdownload.shp.ShapeZipFeatureCollectionWriter;
 import org.geonode.process.control.AsyncProcess;
+import org.geonode.process.storage.Folder;
+import org.geonode.process.storage.Resource;
+import org.geonode.process.storage.StorageManager;
+import org.geotools.data.FeatureSource;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
+import org.geotools.text.Text;
+import org.geotools.util.SubProgressListener;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.util.ProgressListener;
 
 final class BatchDownload extends AsyncProcess {
@@ -31,7 +46,9 @@ final class BatchDownload extends AsyncProcess {
             final ProgressListener monitor) throws ProcessException {
 
         monitor.started();
-        
+        if (null == getStorageManager()) {
+            throw new IllegalStateException("No StorageManager has been provided");
+        }
         final MapMetadata mapDetails = (MapMetadata) input.get(MAP_METADATA.key);
         final List<LayerReference> layers = (List<LayerReference>) input.get(LAYERS.key);
 
@@ -45,7 +62,16 @@ final class BatchDownload extends AsyncProcess {
             return null;
         }
 
+        Resource zipFileHandle = buildZippFile(mapDetails, layers, monitor);
+
+        if (monitor.isCanceled()) {
+            return null;
+        }
+
         Map<String, Object> results = new HashMap<String, Object>();
+        results.put(BatchDownloadFactory.RESULT_ZIP.key, zipFileHandle);
+
+        monitor.complete();
         return results;
     }
 
@@ -61,4 +87,108 @@ final class BatchDownload extends AsyncProcess {
                     + LAYERS.key + " argument?.");
         }
     }
+
+    private Resource buildZippFile(final MapMetadata mapDetails, final List<LayerReference> layers,
+            final ProgressListener monitor) throws ProcessException {
+
+        final StorageManager storageManager = getStorageManager();
+        final int nLayers = layers.size();
+
+        final String mapName = mapDetails.getTitle();
+        final Resource zipFile = getTargetFileHandle(mapName, storageManager);
+        final ZipOutputStream zipOut;
+        {
+            OutputStream outputStream;
+            try {
+                outputStream = zipFile.getOutputStream();
+            } catch (IOException e) {
+                throw new ProcessException("Unable to get a handle to the target file", e);
+            }
+            zipOut = new ZipOutputStream(outputStream);
+        }
+        try {
+            final float layerProgressAmount = 100F / nLayers;
+            LayerReference layerRef;
+            ProgressListener layerMonitor;
+            for (int layerN = 0; layerN < nLayers; layerN++) {
+                layerRef = layers.get(layerN);
+                layerMonitor = new SubProgressListener(monitor, layerProgressAmount);
+                zipLayer(layerRef, zipOut, layerMonitor);
+            }
+        } finally {
+            try {
+                zipOut.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return zipFile;
+    }
+
+    private Resource getTargetFileHandle(final String mapName, final StorageManager storageManager) {
+
+        String fileName = mapName + ".zip";// TODO: replace strange characters?
+        Resource zipFileHandle;
+        try {
+            zipFileHandle = storageManager.createFile(fileName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return zipFileHandle;
+    }
+
+    private void zipLayer(final LayerReference layerRef, final ZipOutputStream zipOut,
+            final ProgressListener monitor) throws ProcessException {
+
+        monitor.started();
+        monitor.setTask(Text.text("Compressing layer " + layerRef.getName()));
+
+        try {
+            switch (layerRef.getKind()) {
+            case VECTOR:
+                zipVectorLayer(layerRef, zipOut, monitor);
+                break;
+            case RASTER:
+                zipRasterLayer(layerRef, zipOut, monitor);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown layer type");
+            }
+        } catch (IOException e) {
+            throw new ProcessException(e);
+        }
+
+        monitor.complete();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void zipVectorLayer(LayerReference layerRef, ZipOutputStream zipOut,
+            ProgressListener monitor) throws IOException {
+
+        FeatureSource<SimpleFeatureType, SimpleFeature> vectorSource;
+        vectorSource = (FeatureSource<SimpleFeatureType, SimpleFeature>) layerRef.getVectorSource();
+
+        FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
+        featureCollection = vectorSource.getFeatures();
+
+        Charset defaultCharset = Charset.forName("UTF-8");
+
+        Folder tmpDir = getStorageManager().createTempFolder();
+        try {
+            File tempDir = tmpDir.getFile();
+
+            ShapeZipFeatureCollectionWriter shapeArchiver = new ShapeZipFeatureCollectionWriter();
+            shapeArchiver.write(featureCollection, zipOut, defaultCharset, tempDir, monitor);
+        } finally {
+            tmpDir.delete();
+        }
+    }
+
+    private void zipRasterLayer(LayerReference layerRef, ZipOutputStream zipOut,
+            ProgressListener monitor) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

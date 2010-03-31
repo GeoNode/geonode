@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.geonode.process.control.AsyncProcess;
+import org.geonode.process.storage.Resource;
 import org.geotools.data.Parameter;
 import org.geotools.feature.NameImpl;
 import org.geotools.process.impl.SingleProcessFactory;
@@ -72,8 +73,8 @@ public class BatchDownloadFactory extends SingleProcessFactory {
         prameterInfo = Collections.unmodifiableMap(temp);
     }
 
-    public static final Parameter<Byte[]> RESULT_ZIP = new Parameter<Byte[]>("zip", Byte[].class,
-            Text.text("ZIP"),
+    public static final Parameter<Resource> RESULT_ZIP = new Parameter<Resource>("ZippedFile",
+            Resource.class, Text.text("Handle to the zipped layers"),
             Text.text("A zip archive containing the requested datasets and metadata documents."));
 
     /**

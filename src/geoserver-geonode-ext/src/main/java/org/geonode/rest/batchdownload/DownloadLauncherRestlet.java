@@ -20,9 +20,8 @@ import org.geonode.process.batchdownload.BatchDownloadFactory;
 import org.geonode.process.batchdownload.LayerReference;
 import org.geonode.process.batchdownload.MapMetadata;
 import org.geonode.process.control.AsyncProcess;
-import org.geonode.process.control.DefaultProcessController;
+import org.geonode.process.control.ProcessController;
 import org.geonode.process.control.ProcessStatus;
-import org.geonode.process.coveragestats.HazardStatisticsFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -90,9 +89,9 @@ public class DownloadLauncherRestlet extends Restlet {
 
     private final Catalog catalog;
 
-    private final DefaultProcessController controller;
+    private final ProcessController controller;
 
-    public DownloadLauncherRestlet(final Catalog catalog, final DefaultProcessController controller) {
+    public DownloadLauncherRestlet(final Catalog catalog, final ProcessController controller) {
         this.catalog = catalog;
         this.controller = controller;
     }
@@ -190,7 +189,7 @@ public class DownloadLauncherRestlet extends Restlet {
 
             processInputs = new HashMap<String, Object>();
             processInputs.put(BatchDownloadFactory.MAP_METADATA.key, mapDetails);
-            processInputs.put(HazardStatisticsFactory.RADIUS.key, layers);
+            processInputs.put(BatchDownloadFactory.LAYERS.key, layers);
         } catch (JSONException e) {
             throw new IllegalArgumentException(e.getMessage(), e);
         }
@@ -262,10 +261,10 @@ public class DownloadLauncherRestlet extends Restlet {
         LayerReference layer;
         if ("WFS".equals(service)) {
             FeatureSource<FeatureType, Feature> source = getFeatureSource(serviceURL, layerName);
-            layer = new LayerReference(source);
+            layer = new LayerReference(layerName, source);
         } else if ("WCS".equals(service)) {
             AbstractGridCoverage2DReader source = getCoverageReader(serviceURL, layerName);
-            layer = new LayerReference(source);
+            layer = new LayerReference(layerName, source);
         } else {
             throw new IllegalArgumentException("Invalid service name for layer '" + layerName
                     + "'. Expected one of WFS,WCS. Was '" + service + "'");

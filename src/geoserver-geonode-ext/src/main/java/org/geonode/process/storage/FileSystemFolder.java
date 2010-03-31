@@ -2,6 +2,8 @@ package org.geonode.process.storage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 
@@ -21,7 +23,7 @@ class FileSystemFolder implements Folder {
         this.directory = new File(parent.getFile(), directory);
     }
 
-    File getFile() {
+    public File getFile() {
         return directory;
     }
 
@@ -87,6 +89,14 @@ class FileSystemFolder implements Folder {
 
     public void delete() throws IOException {
         FileUtils.deleteDirectory(directory);
+    }
+
+    public URI getURI() throws IOException {
+        return getFile().toURI();
+    }
+
+    public URL getURL() throws IOException {
+        return getURI().toURL();
     }
 
 }

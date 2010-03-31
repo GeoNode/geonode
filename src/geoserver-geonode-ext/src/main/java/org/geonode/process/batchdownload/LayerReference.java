@@ -16,6 +16,8 @@ public class LayerReference {
 
     private final Kind kind;
 
+    private final String name;
+
     private final FeatureSource<FeatureType, Feature> vectorSource;
 
     private final AbstractGridCoverage2DReader rasterSource;
@@ -26,14 +28,16 @@ public class LayerReference {
 
     private URL defaultStyleURL;
 
-    public LayerReference(FeatureSource<FeatureType, Feature> source) {
+    public LayerReference(String name, FeatureSource<FeatureType, Feature> source) {
         kind = Kind.VECTOR;
+        this.name = name;
         vectorSource = source;
         rasterSource = null;
     }
 
-    public LayerReference(AbstractGridCoverage2DReader source) {
+    public LayerReference(String name, AbstractGridCoverage2DReader source) {
         kind = Kind.RASTER;
+        this.name = name;
         vectorSource = null;
         rasterSource = source;
     }
@@ -42,7 +46,7 @@ public class LayerReference {
         return kind;
     }
 
-    public FeatureSource<FeatureType, Feature> getVectorSource() {
+    public FeatureSource<? extends FeatureType, ? extends Feature> getVectorSource() {
         return vectorSource;
     }
 
@@ -64,5 +68,9 @@ public class LayerReference {
 
     public URL getDefaultStyleURL() {
         return defaultStyleURL;
+    }
+
+    public String getName() {
+        return name;
     }
 }
