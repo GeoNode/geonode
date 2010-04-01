@@ -4,13 +4,22 @@ import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 import static org.restlet.data.Status.CLIENT_ERROR_EXPECTATION_FAILED;
 import static org.restlet.data.Status.SUCCESS_OK;
 
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 import javax.xml.namespace.QName;
 
 import junit.framework.Test;
 import net.sf.json.JSONObject;
 
+import org.geonode.process.batchdownload.BatchDownloadFactory;
 import org.geonode.process.control.ProcessController;
 import org.geonode.process.control.ProcessStatus;
+import org.geonode.process.storage.Resource;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerTestSupport;
@@ -90,10 +99,96 @@ public class DownloadLauncherRestletTest extends GeoServerTestSupport {
                 .bean("processController");
 
         // wait for the process to finish....
-        ProcessStatus status = controller.getStatus(processId);
         while (!controller.isDone(processId)) {
-            Thread.sleep(500);
+            Thread.sleep(100);
         }
+        ProcessStatus status = controller.getStatus(processId);
+        assertEquals(ProcessStatus.FINISHED, status);
+    }
+
+    public void testRasterLayer() throws Exception {
+        String jsonRequest;
+        String layerName = RASTER_LAYER.getPrefix() + ":" + RASTER_LAYER.getLocalPart();
+        jsonRequest = "{map:{name:'fake Map', author:'myself'}, "
+                + " layers:[{name:'"
+                + layerName
+                + "', service:'WCS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}]}";
+
+        MockHttpServletResponse response = testRequest(jsonRequest, SUCCESS_OK);
+        String outputStreamContent = response.getOutputStreamContent();
+        assertNotNull(outputStreamContent);
+        JSONObject jsonResponse = JSONObject.fromObject(outputStreamContent);
+        assertTrue(jsonResponse.containsKey("id"));
+        assertNotNull(jsonResponse.getString("id"));
+
+        final Long processId = Long.valueOf(jsonResponse.getString("id"));
+
+        ProcessController controller = (ProcessController) GeoServerExtensions
+                .bean("processController");
+
+        // wait for the process to finish....
+        while (!controller.isDone(processId)) {
+            Thread.sleep(100);
+        }
+        ProcessStatus status = controller.getStatus(processId);
+        assertEquals(ProcessStatus.FINISHED, status);
+    }
+
+    public void testVectorAndRasterLayer() throws Exception {
+        String jsonRequest;
+        String vectorLayerName = VECTOR_LAYER.getPrefix() + ":" + VECTOR_LAYER.getLocalPart();
+        String rasterLayerName = RASTER_LAYER.getPrefix() + ":" + RASTER_LAYER.getLocalPart();
+        jsonRequest = "{map:{name:'fake Map', author:'myself'}, "
+                + " layers:[{name:'"
+                + rasterLayerName
+                + "', service:'WCS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'},"
+                + "{name:'"
+                + vectorLayerName
+                + "', service:'WFS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}"
+                + "]}";
+
+        MockHttpServletResponse response = testRequest(jsonRequest, SUCCESS_OK);
+        String outputStreamContent = response.getOutputStreamContent();
+        assertNotNull(outputStreamContent);
+        JSONObject jsonResponse = JSONObject.fromObject(outputStreamContent);
+        assertTrue(jsonResponse.containsKey("id"));
+        assertNotNull(jsonResponse.getString("id"));
+
+        final Long processId = Long.valueOf(jsonResponse.getString("id"));
+
+        ProcessController controller = (ProcessController) GeoServerExtensions
+                .bean("processController");
+
+        // wait for the process to finish....
+        while (!controller.isDone(processId)) {
+            Thread.sleep(100);
+        }
+        ProcessStatus status = controller.getStatus(processId);
+        assertEquals(ProcessStatus.FINISHED, status);
+
+        Map<String, Object> result = controller.getResult(processId);
+        Resource zipRes = (Resource) result.get(BatchDownloadFactory.RESULT_ZIP.key);
+        assertNotNull(zipRes);
+
+        Set<String> expectedFiles = new HashSet<String>();
+        expectedFiles.add(VECTOR_LAYER.getLocalPart() + ".shp");
+        expectedFiles.add(VECTOR_LAYER.getLocalPart() + ".cst");
+        expectedFiles.add(VECTOR_LAYER.getLocalPart() + ".prj");
+        expectedFiles.add(VECTOR_LAYER.getLocalPart() + ".dbf");
+        expectedFiles.add(VECTOR_LAYER.getLocalPart() + ".shx");
+        // TODO: change this expectation once we normalize the raster file name
+        expectedFiles.add(RASTER_LAYER.getPrefix() + ":" + RASTER_LAYER.getLocalPart() + ".tiff");
+
+        Set<String> archivedFiles = new HashSet<String>();
+
+        InputStream inputStream = zipRes.getInputStream();
+        ZipInputStream zipIn = new ZipInputStream(inputStream);
+        ZipEntry nextEntry;
+        while ((nextEntry = zipIn.getNextEntry()) != null) {
+            archivedFiles.add(nextEntry.getName());
+        }
+
+        assertEquals(expectedFiles, archivedFiles);
     }
 
     public MockHttpServletResponse testRequest(final String jsonRequest,
