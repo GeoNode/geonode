@@ -4,14 +4,7 @@
 
 {% block title %} {% trans "Upload Layer" noop %} {% endblock %}
 
-{% block header_append %}
-<link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}upload.css" />
-{% endblock %}
-
 {% block main %}
-<h3> {% trans "Upload Layer Data" noop %} </h3>
-
-<form action="{% url geonode.maps.views.upload_layer %}" method="POST" enctype="multipart/form-data" >
 
   {% if errors %}
     <div id="errors">
@@ -20,71 +13,130 @@
       {% endfor %}
     </div>
   {% endif %}
-  
-    <label for="base_file">Data File</label>
-    <input type="file" id="base_file" name="base_file" size="50">
 
-
-    <div id="shapefile_expander" class="nodisplay">
-        <p>{% trans "If you are uploading a shapefile, please locate the following additional files" noop %}</p>
-      <div>
-        <label id="dbf_file_label" for="dbf_file" >dbf file</label>
-        <input type="file" id="dbf_file" name="dbf_file" class="shapefile-input" disabled="disabled" size="50" />
-      </div>
-      <div>
-        <label id="shx_file_label" for="shx_file" >shx file</label>
-        <input type="file" id="shx_file" name="shx_file" class="shapefile-input" disabled="disabled" size="50" />
-      </div>
-      <div>
-        <label id="prj_file_label" for="prj_file" >prj file</label>
-        <input type="file" id="prj_file" name="prj_file" class="shapefile-input" disabled="disabled" size="50" /> (optional)
-      </div>
-    </div>
-    <div>
-      <input id="upload_button" type="submit" value="{% trans "Upload Data" noop %}"/>
-    </div>
-</form>
+  <div id="upload_form">
+  </div>
 
 <script type="text/javascript">
 Ext.onReady(function(){
-
-  var enable_shapefile_form = function(base_filename) {
-    var expander = Ext.get('shapefile_expander');
-    expander.select('.shapefile-input').each(function(el) {
-      el.dom.disabled = '';
-    });
-    expander.select('label').each(function(el) {
-      var extension = el.id.substr(0, 3);
-      el.update(base_filename + '.' + extension)
-    });
-    if (expander.hasClass('nodisplay')) {
-      expander.removeClass('nodisplay');
-    }
-  };
   
-  var disable_shapefile_form = function() {
-    var expander = Ext.get('shapefile_expander');
-    expander.select('.shapefile-input').each(function(el) {
-      el.dom.disabled = 'disabled';
-    });
-    if (!expander.hasClass('nodisplay')) {
-      expander.addClass('nodisplay');
-    }
-  };
+  var form_target = "{% url geonode.maps.views.upload_layer %}";
 
-  var check_shapefile = function() {
-    var main_filename = Ext.get("base_file").getValue();
-    if (main_filename.search(/\.shp$/i) != -1) {
-      var base_filename = main_filename.substr(0, main_filename.length-4);
-      enable_shapefile_form(base_filename);
-    }
-    else {
-      disable_shapefile_form();
-    }
-  };
-  Ext.get("base_file").addListener("change", check_shapefile);
-  check_shapefile();
-});
+  var base_file = new Ext.ux.form.FileUploadField({
+      id: 'base_file',
+      emptyText: 'Select a layer data file',
+      fieldLabel: 'File',
+      name: 'base_file',
+      allowBlank: false
+  });
+
+  var dbf_file = new Ext.ux.form.FileUploadField({
+      id: 'dbf_file',
+      emptyText: 'Select a .dbf data file',
+      fieldLabel: 'DBF',
+      name: 'dbf_file',
+      allowBlank: false
+  });
+
+  var shx_file = new Ext.ux.form.FileUploadField({
+      id: 'shx_file',
+      emptyText: 'Select a .shx data file',
+      fieldLabel: 'SHX',
+      name: 'shx_file',
+      allowBlank: false
+  });
+
+  var prj_file = new Ext.ux.form.FileUploadField({
+      id: 'prj_file',
+      emptyText: 'Select a .prj data file (optional)',
+      fieldLabel: 'PRJ',
+      name: 'prj_file',
+      allowBlank: true
+
+  });
+
+  var fp = new Ext.FormPanel({
+    renderTo: 'upload_form',
+    fileUpload: true,
+    width: 500,
+    frame: true,
+    title: 'Upload Layer Data',
+    autoHeight: true,
+    bodyStyle: 'padding: 10px 10px 0 10px;',
+    labelWidth: 50,
+    defaults: {
+        anchor: '95%',
+        msgTarget: 'side'
+    },
+    items: [base_file, dbf_file, shx_file, prj_file],
+    buttons: [{
+        text: 'Upload',
+        handler: function(){
+            if(fp.getForm().isValid()) {
+              fp.getForm().submit({
+                  url: form_target,
+                  waitMsg: 'Uploading your data...',
+                  success: function(fp, o) {
+                      document.location = o.result.redirect_to;
+                  },
+                  failure: function(fp, o) {
+                      error_message = '<ul>';
+                      for (var i = 0; i < o.result.errors.length; i++) {
+                          error_message += '<li>' + o.result.errors[i] + '</li>'
+                      }
+                      error_message += '</ul>'
+                      
+                      Ext.Msg.show({
+                          title: "Error",
+                          msg: error_message,
+                          minWidth: 200,
+                          modal: true,
+                          icon: Ext.Msg.ERROR,
+                          buttons: Ext.Msg.OK
+                      });
+                  }
+                  
+              });
+            }
+          }
+      }]
+    });
+
+    var disable_shapefile_inputs = function() {
+        dbf_file.disable();
+        dbf_file.el.parent('.x-form-item').hide();
+        shx_file.disable();
+        shx_file.el.parent('.x-form-item').hide();
+        prj_file.disable();
+        prj_file.el.parent('.x-form-item').hide();      
+    };
+
+    var enable_shapefile_inputs = function() {
+        dbf_file.enable();
+        dbf_file.el.parent('.x-form-item').show();
+        shx_file.enable();
+        shx_file.el.parent('.x-form-item').show();
+        prj_file.enable();
+        prj_file.el.parent('.x-form-item').show();
+    };
+  
+    var check_shapefile = function() {
+        var main_filename = base_file.getValue();
+        if (main_filename.search(/\.shp$/i) != -1) {
+            enable_shapefile_inputs();
+        }
+        else {
+            disable_shapefile_inputs();
+        }
+    };
+  
+    base_file.addListener('fileselected', function() {
+      check_shapefile();
+    })
+    disable_shapefile_inputs();
+  });
+  
+  
 </script>
 
 {% endblock %}
