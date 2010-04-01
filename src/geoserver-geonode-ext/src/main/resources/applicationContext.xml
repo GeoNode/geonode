@@ -92,10 +92,9 @@
   </bean>
   <bean id="downloadStatusRestlet" class="org.geonode.rest.batchdownload.DownloadStatusRestlet">
     <!-- the GeoServer catalog -->
-    <constructor-arg ref="catalog" />
+    <constructor-arg ref="processController" />
   </bean>
   <bean id="downloadReadyRestlet" class="org.geonode.rest.batchdownload.DownloadReadyRestlet">
-    <!-- the GeoServer catalog -->
-    <constructor-arg ref="catalog" />
+    <constructor-arg ref="processController" />
   </bean>
 </beans>

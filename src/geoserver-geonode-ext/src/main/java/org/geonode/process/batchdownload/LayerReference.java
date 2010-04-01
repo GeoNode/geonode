@@ -18,7 +18,7 @@ public class LayerReference {
 
     private final String name;
 
-    private final FeatureSource<FeatureType, Feature> vectorSource;
+    private final FeatureSource<? extends FeatureType, ? extends Feature> vectorSource;
 
     private final AbstractGridCoverage2DReader rasterSource;
 
@@ -28,7 +28,8 @@ public class LayerReference {
 
     private URL defaultStyleURL;
 
-    public LayerReference(String name, FeatureSource<FeatureType, Feature> source) {
+    public LayerReference(String name,
+            FeatureSource<? extends FeatureType, ? extends Feature> source) {
         kind = Kind.VECTOR;
         this.name = name;
         vectorSource = source;

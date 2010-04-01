@@ -152,9 +152,7 @@ public class DefaultProcessController implements ProcessController {
         return Long.valueOf(nextId);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.geonode.process.control.ProcessController#getStatus(java.lang.Long)
      */
     public ProcessStatus getStatus(final Long processId) throws NoSuchElementException {
@@ -184,7 +182,7 @@ public class DefaultProcessController implements ProcessController {
             IllegalStateException {
         ProcessInfo info = asyncProcesses.get(processId);
         if (info == null) {
-            throw new NoSuchElementException("Process " + processId + " does not exist");
+            throw new IllegalArgumentException("Process " + processId + " does not exist");
         }
         ProcessStatus status = info.getProcess().getStatus();
         if (FINISHED != status) {

@@ -1,0 +1,40 @@
+package org.geonode.rest.batchdownload;
+
+import javax.xml.namespace.QName;
+
+import org.geoserver.data.test.MockData;
+
+class BatchDownloadTestData {
+
+    public static final QName VECTOR_LAYER = MockData.DIVIDED_ROUTES;
+
+    public static final QName RASTER_LAYER = MockData.TASMANIA_DEM;
+
+    public static final String RESTLET_BASE_PATH = "/rest/process/batchDownload";
+
+    public static final String RASTER_LAYER_NAME = RASTER_LAYER.getPrefix() + ":"
+            + RASTER_LAYER.getLocalPart();
+
+    public static final String VECTOR_LAYER_NAME = VECTOR_LAYER.getPrefix() + ":"
+            + VECTOR_LAYER.getLocalPart();
+
+    public static final String VECTOR_LAYER_REQUEST_NO_METADATA = "{map:{name:'fake Map', author:'myself'}, "
+            + " layers:[{name:'"
+            + VECTOR_LAYER_NAME
+            + "', service:'WFS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}]}";
+
+    public static final String RASTER_LAYER_REQUEST_NO_METADATA = "{map:{name:'fake Map', author:'myself'}, "
+            + " layers:[{name:'"
+            + RASTER_LAYER_NAME
+            + "', service:'WCS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}]}";
+
+    public static final String VECTOR_AND_RASTER_REQUEST_NO_METADATA = "{map:{name:'fake Map', author:'myself'}, "
+            + " layers:[{name:'"
+            + VECTOR_LAYER_NAME
+            + "', service:'WFS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'},"
+            + "{name:'"
+            + RASTER_LAYER_NAME
+            + "', service:'WCS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}"
+            + "]}";
+
+}

@@ -1,7 +1,6 @@
 package org.geonode.process.control;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.geotools.process.Process;
 import org.geotools.process.Progress;
@@ -12,7 +11,7 @@ public interface ProcessController {
 
     Long submitAsync(final AsyncProcess process, final Map<String, Object> input);
 
-    ProcessStatus getStatus(final Long processId) throws NoSuchElementException;
+    ProcessStatus getStatus(final Long processId) throws IllegalArgumentException;
 
     float getProgress(final Long processId);
 
