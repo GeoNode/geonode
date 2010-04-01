@@ -20,6 +20,17 @@ import org.restlet.data.Status;
 import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
 
+/**
+ * Serves out the resulting zip file for a finished batch download process.
+ * <p>
+ * Input: HTTP GET request to {@code <restlet end point>/<process id>}. For example: {@code
+ * http://localhost:8080/geoserver/rest/process/batchdownload/download/1001}
+ * </p>
+ * <p>
+ * Output: ZIP file
+ * </p>
+ * 
+ */
 public class DownloadReadyRestlet extends Restlet {
 
     private final ProcessController controller;

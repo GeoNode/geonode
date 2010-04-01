@@ -47,7 +47,9 @@ import org.restlet.resource.StringRepresentation;
 
 /**
  * 
- * Expects a JSON object with the following structure: <code>
+ * Expects a JSON object with the following structure:
+ * <p>
+ * <code>
  * <pre>
  *  {  map : { 
  *           name: "map name"
@@ -56,10 +58,10 @@ import org.restlet.resource.StringRepresentation;
  *    layers: 
  *        [
  *          {
- *              name:"<layerName>",
- *              service: "<WFS|WCS>",
- *              metadataURL: <csw request for the layer metadata?>, 
- *              serviceURL:"<serviceURL>" //eg, "http://geonode.org/geoserver/wfs" 
+ *              name:"&lt;layerName&gt;",
+ *              service: "&lt;WFS|WCS&gt;,
+ *              metadataURL: "&lt;csw request for the layer metadata?&gt;", 
+ *              serviceURL:"&lt;serviceURL&gt;" //eg, "http://geonode.org/geoserver/wfs" 
  *          } ,...
  *        ]
  *  } 
@@ -70,13 +72,14 @@ import org.restlet.resource.StringRepresentation;
  * <pre>
  * {
  *   process:{
- *        id: <processId>
- *        status: <WAITING|RUNNING|FINISHED|FAILED|CANCELLED>
- *        statusMessage: "<status message>"
+ *        id: &lt;processId&gt;
+ *        status: &lt;WAITING|RUNNING|FINISHED|FAILED|CANCELLED&gt;
+ *        statusMessage: "&lt;status message&gt;"
  *   }     
  * }
  * </pre>
  * </code>
+ * </p>
  * 
  * @author Gabriel Roldan
  * @version $Id$
