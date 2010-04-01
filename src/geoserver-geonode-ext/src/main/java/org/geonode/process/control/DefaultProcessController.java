@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -155,10 +154,10 @@ public class DefaultProcessController implements ProcessController {
     /**
      * @see org.geonode.process.control.ProcessController#getStatus(java.lang.Long)
      */
-    public ProcessStatus getStatus(final Long processId) throws NoSuchElementException {
+    public ProcessStatus getStatus(final Long processId) throws IllegalArgumentException {
         ProcessInfo info = asyncProcesses.get(processId);
         if (info == null) {
-            throw new NoSuchElementException("Process " + processId + " does not exist");
+            throw new IllegalArgumentException("Process " + processId + " does not exist");
         }
         AsyncProcess process = info.getProcess();
         ProcessStatus status = process.getStatus();
@@ -203,12 +202,10 @@ public class DefaultProcessController implements ProcessController {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.geonode.process.control.ProcessController#kill(java.lang.Long)
      */
-    public boolean kill(final Long processId) {
+    public boolean kill(final Long processId) throws IllegalArgumentException {
         ProcessInfo info = asyncProcesses.get(processId);
         boolean cancel = false;
         if (info != null) {
@@ -222,6 +219,9 @@ public class DefaultProcessController implements ProcessController {
         return cancel;
     }
 
+    /**
+     * @see org.geonode.process.control.ProcessController#isDone(java.lang.Long)
+     */
     public boolean isDone(Long processId) {
         ProcessStatus status = getStatus(processId);
         return status == CANCELLED || status == FAILED || status == FINISHED;
