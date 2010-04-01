@@ -16,6 +16,19 @@ public interface ProcessController {
 
     float getProgress(final Long processId);
 
+    /**
+     * Returns the result of a {@link ProcessStatus#FINISHED FINISHED} process
+     * 
+     * @param processId
+     * @return
+     * @throws IllegalArgumentException
+     *             if process {@code processId} does not exist
+     * @throws IllegalStateException
+     *             if process has not finished normally or is still running
+     */
+    Map<String, Object> getResult(final Long processId) throws IllegalArgumentException,
+            IllegalStateException;
+
     boolean kill(final Long processId);
 
     boolean isDone(Long processId);
