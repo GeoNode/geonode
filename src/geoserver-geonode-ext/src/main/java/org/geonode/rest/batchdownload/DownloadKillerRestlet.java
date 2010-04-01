@@ -9,8 +9,16 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * 
- *
+ * Kills an ongoing batch download process.
+ * <p>
+ * Input: HTTP GET request to {@code <restlet end point>/<process id>}. For example: {@code
+ * http://localhost:8080/geoserver/rest/process/batchdownload/kill/1001}.
+ * </p>
+ * <p>
+ * Output: no content. Response status will be {@code 200 (OK)} if the process were running and has
+ * been killed, or {@code 204 (SUCCESS NO CONTENT)} if the process has already finished at the time
+ * the kill signal was sent.
+ * </p>
  */
 public class DownloadKillerRestlet extends Restlet {
 

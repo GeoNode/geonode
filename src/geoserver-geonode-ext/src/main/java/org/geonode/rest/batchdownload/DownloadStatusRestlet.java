@@ -1,12 +1,9 @@
 package org.geonode.rest.batchdownload;
 
-import java.util.logging.Logger;
-
 import net.sf.json.JSONObject;
 
 import org.geonode.process.control.ProcessController;
 import org.geonode.process.control.ProcessStatus;
-import org.geotools.util.logging.Logging;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -18,12 +15,28 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 /**
+ * Returns the status code and progress percentage of a launched process.
+ * <p>
+ * Input: HTTP GET request to {@code <restlet end point>/<process id>}. For example: {@code
+ * http://localhost:8080/geoserver/rest/process/batchdownload/status/1001}
+ * </p>
+ * <p>
+ * Output: JSON object with the following structure:
+ * <pre>
+ * <code>
+ * {
+ *   process: {
+ *     id: &lt;processId&gt;,
+ *     status: "&lt;WAITING|RUNNING|FINISHED|FAILED&gt;",
+ *     progress: &lt;percentage (0f - 100f)&gt;
+ *   }
+ * }
+ * </code>
+ * </pre>
+ * </p>
  * 
- *
  */
 public class DownloadStatusRestlet extends Restlet {
-
-    private static Logger LOGGER = Logging.getLogger(DownloadStatusRestlet.class);
 
     private final ProcessController controller;
 
@@ -49,8 +62,10 @@ public class DownloadStatusRestlet extends Restlet {
         }
 
         ProcessStatus status;
+        float progress;
         try {
             status = controller.getStatus(processId);
+            progress = controller.getProgress(processId);
         } catch (IllegalArgumentException e) {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, e.getMessage());
             return;
@@ -58,10 +73,11 @@ public class DownloadStatusRestlet extends Restlet {
 
         final JSONObject responseData = new JSONObject();
         final JSONObject processData = new JSONObject();
-        processData.put("id", 12);
+        processData.put("id", processId);
         processData.put("status", status.toString());
-        processData.put("processing", "topp:states");
-        processData.put("totalLayers", 12);
+        processData.put("progress", progress);
+        // processData.put("processing", "topp:states");
+        // processData.put("totalLayers", 12);
         responseData.put("process", processData);
 
         final String jsonStr = responseData.toString(0);
