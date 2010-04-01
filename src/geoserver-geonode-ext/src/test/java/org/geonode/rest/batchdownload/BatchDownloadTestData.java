@@ -18,17 +18,20 @@ class BatchDownloadTestData {
     public static final String VECTOR_LAYER_NAME = VECTOR_LAYER.getPrefix() + ":"
             + VECTOR_LAYER.getLocalPart();
 
-    public static final String VECTOR_LAYER_REQUEST_NO_METADATA = "{map:{name:'fake Map', author:'myself'}, "
+    public static final String VECTOR_LAYER_REQUEST_NO_METADATA = "{"
+            + "map:{title:'fake Map', abstract:'test request for a vector layer', author:'myself'}, "
             + " layers:[{name:'"
             + VECTOR_LAYER_NAME
             + "', service:'WFS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}]}";
 
-    public static final String RASTER_LAYER_REQUEST_NO_METADATA = "{map:{name:'fake Map', author:'myself'}, "
+    public static final String RASTER_LAYER_REQUEST_NO_METADATA = "{"
+            + "map:{title:'fake Map', abstract:'Test request for a raster layer', author:'myself'}, "
             + " layers:[{name:'"
             + RASTER_LAYER_NAME
             + "', service:'WCS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}]}";
 
-    public static final String VECTOR_AND_RASTER_REQUEST_NO_METADATA = "{map:{name:'fake Map', author:'myself'}, "
+    public static final String VECTOR_AND_RASTER_REQUEST_NO_METADATA = "{"
+            + "map:{title:'fake Map', abstract: 'test request containing a raster and a vector layer', author:'myself'}, "
             + " layers:[{name:'"
             + VECTOR_LAYER_NAME
             + "', service:'WFS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'},"
