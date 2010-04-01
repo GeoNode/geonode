@@ -29,6 +29,12 @@
           </key>
           <value>downloadReadyRestlet</value>
         </entry>
+        <entry>
+          <key>
+            <value>/process/batchDownload/kill</value>
+          </key>
+          <value>downloadKillerRestlet</value>
+        </entry>
       </map>
     </property>
   </bean>
@@ -95,6 +101,9 @@
     <constructor-arg ref="processController" />
   </bean>
   <bean id="downloadReadyRestlet" class="org.geonode.rest.batchdownload.DownloadReadyRestlet">
+    <constructor-arg ref="processController" />
+  </bean>
+  <bean id="downloadKillerRestlet" class="org.geonode.rest.batchdownload.DownloadKillerRestlet">
     <constructor-arg ref="processController" />
   </bean>
 </beans>
