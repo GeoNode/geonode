@@ -218,12 +218,12 @@ public class DownloadLauncherRestlet extends Restlet {
         if (title.length() == 0) {
             throw new IllegalArgumentException("Map name is empty");
         }
-        String _abstract = obj.containsKey("abstract")? obj.getString("abstract") : null;
+        String _abstract = obj.containsKey("abstract") ? obj.getString("abstract") : null;
         String author = obj.getString("author");
         if (author.length() == 0) {
             throw new IllegalArgumentException("author name is empty");
         }
-        MapMetadata mmd = new MapMetadata(title, author);
+        MapMetadata mmd = new MapMetadata(title, _abstract, author);
         return mmd;
     }
 

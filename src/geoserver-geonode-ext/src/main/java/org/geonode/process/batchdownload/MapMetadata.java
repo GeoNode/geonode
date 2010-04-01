@@ -1,28 +1,28 @@
 package org.geonode.process.batchdownload;
 
 public class MapMetadata {
+
     private String title;
 
     private String author;
 
+    private String abstractInfo;
+
     public MapMetadata() {
     }
 
-    public MapMetadata(String title, String author) {
+    public MapMetadata(String title, String abstractInfo, String author) {
         this.title = title;
         this.author = author;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+        this.abstractInfo = abstractInfo;
     }
 
     public String getTitle() {
         return this.title;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public String getAbstract() {
+        return abstractInfo;
     }
 
     public String getAuthor() {
