@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -91,7 +92,7 @@ public class DefaultProcessController implements ProcessController {
                         if (progress.isDone()) {
                             LOGGER.info("Evicting process " + processInfo.getId() + ". Status: "
                                     + processInfo.getProcess().getStatus());
-                            ////entries.remove();
+                            // //entries.remove();
                         }
                     }
                 }
@@ -166,9 +167,7 @@ public class DefaultProcessController implements ProcessController {
         return status;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.geonode.process.control.ProcessController#getProgress(java.lang.Long)
      */
     public float getProgress(final Long processId) {
@@ -176,6 +175,34 @@ public class DefaultProcessController implements ProcessController {
         Progress progress = info.getProgress();
         float prog = progress.getProgress();
         return prog;
+    }
+
+    /**
+     * @see org.geonode.process.control.ProcessController#getResult(java.lang.Long)
+     */
+    public Map<String, Object> getResult(final Long processId) throws IllegalArgumentException,
+            IllegalStateException {
+        ProcessInfo info = asyncProcesses.get(processId);
+        if (info == null) {
+            throw new NoSuchElementException("Process " + processId + " does not exist");
+        }
+        ProcessStatus status = info.getProcess().getStatus();
+        if (FINISHED != status) {
+            throw new IllegalStateException("Process " + processId
+                    + " is either not yet finished or has finished anormally. Current status: "
+                    + status);
+        }
+        Map<String, Object> result;
+        try {
+            // status is FINISHED, so this future.get() shouln't block at all
+            Progress future = info.getProgress();
+            result = future.get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 
     /*
