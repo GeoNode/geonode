@@ -52,7 +52,8 @@ import org.restlet.resource.StringRepresentation;
  * <code>
  * <pre>
  *  {  map : { 
- *           name: "map name"
+ *           title: "human readable title",
+ *           abstract: "abstract information",
  *           author: "author name" 
  *           } 
  *    layers: 
@@ -102,14 +103,17 @@ public class DownloadLauncherRestlet extends Restlet {
     @Override
     public void handle(Request request, Response response) {
         if (!request.getMethod().equals(Method.POST)) {
-            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED,
+                    "POST method is required to launch a batch download process");
             return;
         }
 
+        LOGGER.info("Reading JSON request...");
         final String requestContent;
         try {
             final InputStream inStream = request.getEntity().getStream();
             requestContent = IOUtils.toString(inStream);
+            LOGGER.info("Plain request: " + requestContent);
         } catch (IOException e) {
             final String message = "Process failed: " + e.getMessage();
             response.setStatus(Status.SERVER_ERROR_INTERNAL, message);
@@ -117,6 +121,7 @@ public class DownloadLauncherRestlet extends Restlet {
             return;
         }
 
+        LOGGER.info("Parsing JSON request...");
         JSONObject jsonRequest;
         try {
             jsonRequest = JSONObject.fromObject(requestContent);
@@ -125,6 +130,7 @@ public class DownloadLauncherRestlet extends Restlet {
             return;
         }
 
+        LOGGER.info("Launch request parsed, validating inputs and launching process...");
         final JSONObject responseData;
         try {
             responseData = execute(jsonRequest);
@@ -136,7 +142,7 @@ public class DownloadLauncherRestlet extends Restlet {
         } catch (IllegalArgumentException e) {
             final String message = "Process can't be executed: " + e.getMessage();
             response.setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, message);
-            LOGGER.log(Level.INFO, message, e);
+            LOGGER.log(Level.SEVERE, message, e);
             return;
         } catch (RuntimeException e) {
             final String message = "Unexpected exception: " + e.getMessage();
@@ -146,6 +152,7 @@ public class DownloadLauncherRestlet extends Restlet {
         }
 
         final String jsonStr = responseData.toString(0);
+        LOGGER.info("Process launched, response is " + jsonStr);
         final Representation representation = new StringRepresentation(jsonStr,
                 MediaType.APPLICATION_JSON);
 
@@ -207,15 +214,16 @@ public class DownloadLauncherRestlet extends Restlet {
      *             if a required json object property is not found
      */
     private MapMetadata convertMapMetadataParam(final JSONObject obj) throws JSONException {
-        String name = obj.getString("name");
-        if (name.length() == 0) {
+        String title = obj.getString("title");
+        if (title.length() == 0) {
             throw new IllegalArgumentException("Map name is empty");
         }
+        String _abstract = obj.containsKey("abstract")? obj.getString("abstract") : null;
         String author = obj.getString("author");
         if (author.length() == 0) {
             throw new IllegalArgumentException("author name is empty");
         }
-        MapMetadata mmd = new MapMetadata(name, author);
+        MapMetadata mmd = new MapMetadata(title, author);
         return mmd;
     }
 
