@@ -10,6 +10,7 @@ from django.template import RequestContext
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
 import json
+import math
 
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
@@ -113,9 +114,17 @@ def newmap(request):
         if query.startswith("layer"):
             layer_name = request.GET['layer']
             layer = Layer.objects.get(name=layer_name)
+            
+            bbox = layer.resource.latlon_bbox
+            
             config = DEFAULT_MAP_CONFIG
             config['map']['layers'] = [{'name': "%s:%s" % (layer.workspace,layer.name), 
                                             'wms' : 'capra'}]
+            config['map']['center'] = ((float(bbox[0]) + float(bbox[1])) / 2, (float(bbox[2]) + float(bbox[3])) / 2)
+
+            width_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
+            height_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
+            config['map']['zoom'] = math.floor(min(width_zoom, height_zoom))                                  
         else:
             config = DEFAULT_MAP_CONFIG
     return render_to_response('maps/view.html', RequestContext(request, {
