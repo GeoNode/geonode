@@ -330,10 +330,11 @@ def _handle_layer_upload(request, name=None):
             proposed_name = "%s_%d" % (name, count)
             count = count + 1
         name = proposed_name
+
+    errors = []
     
     if not name:
         return[_("Unable to determine layer name.")]
-
 
     # shapefile upload
     elif base_file.name.lower().endswith('.shp'):
@@ -341,7 +342,6 @@ def _handle_layer_upload(request, name=None):
         shx_file = request.FILES.get('shx_file')
         prj_file = request.FILES.get('prj_file')
         
-        errors = []
         if not dbf_file: 
             errors.append(_("You must specify a .dbf file when uploading a shapefile."))
         if not shx_file: 
