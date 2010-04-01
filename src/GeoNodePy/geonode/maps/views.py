@@ -237,8 +237,8 @@ def view_js(request, mapid):
 
 class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)
-    abstract = forms.CharField(1000, widget=forms.Textarea)
-    keywords = forms.CharField(500)
+    abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
+    keywords = forms.CharField(500, required=False)
 
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
@@ -320,8 +320,16 @@ def _handle_layer_upload(request, name=None):
         return [_("You must specify a layer data file to upload.")]
     
     if name is None:
-        # XXX overwite check
+        # XXX Give feedback instead of just replacing name
+        # XXX We need a better way to remove xml-unsafe characters
         name = base_file.name[0:-4]
+        name = name.replace(" ", "_")
+        proposed_name = name
+        count = 1
+        while Layer.objects.filter(name=proposed_name).count() > 0:
+            proposed_name = "%s_%d" % (name, count)
+            count = count + 1
+        name = proposed_name
     
     if not name:
         return[_("Unable to determine layer name.")]
