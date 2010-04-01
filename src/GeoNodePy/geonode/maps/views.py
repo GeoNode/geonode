@@ -114,8 +114,8 @@ def newmap(request):
             layer_name = request.GET['layer']
             layer = Layer.objects.get(name=layer_name)
             config = DEFAULT_MAP_CONFIG
-            config['map']['layers'].append({'name': "%s:%s" % (layer.workspace,layer.name), 
-                                            'wms' : 'capra'})
+            config['map']['layers'] = [{'name': "%s:%s" % (layer.workspace,layer.name), 
+                                            'wms' : 'capra'}]
         else:
             config = DEFAULT_MAP_CONFIG
     return render_to_response('maps/view.html', RequestContext(request, {
