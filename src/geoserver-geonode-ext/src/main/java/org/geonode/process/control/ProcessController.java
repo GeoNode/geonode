@@ -11,6 +11,13 @@ public interface ProcessController {
 
     Long submitAsync(final AsyncProcess process, final Map<String, Object> input);
 
+    /**
+     * 
+     * @param processId
+     * @return
+     * @throws IllegalArgumentException
+     *             if process does not exist
+     */
     ProcessStatus getStatus(final Long processId) throws IllegalArgumentException;
 
     float getProgress(final Long processId);
@@ -28,8 +35,24 @@ public interface ProcessController {
     Map<String, Object> getResult(final Long processId) throws IllegalArgumentException,
             IllegalStateException;
 
-    boolean kill(final Long processId);
+    /**
+     * 
+     * @param processId
+     * @return {@code true} if process was running and successfully killed, {@code false} if process
+     *         was already terminated
+     * @throws IllegalArgumentException
+     *             if process does not exist
+     */
+    boolean kill(final Long processId) throws IllegalArgumentException;
 
-    boolean isDone(Long processId);
+    /**
+     * 
+     * @param processId
+     * @return {@code true} if process is no longer running, no matter the reason (success, failure,
+     *         cancellation), {@code false} if process is waiting for execution or running
+     * @throws IllegalArgumentException
+     *             if process does not exist
+     */
+    boolean isDone(Long processId) throws IllegalArgumentException;
 
 }
