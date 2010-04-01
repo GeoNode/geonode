@@ -13,11 +13,14 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
 
+import org.geonode.process.batchdownload.geotiff.ZippedGeoTiffCoverageWriter;
 import org.geonode.process.batchdownload.shp.ShapeZipFeatureCollectionWriter;
 import org.geonode.process.control.AsyncProcess;
 import org.geonode.process.storage.Folder;
 import org.geonode.process.storage.Resource;
 import org.geonode.process.storage.StorageManager;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.process.Process;
@@ -115,6 +118,12 @@ final class BatchDownload extends AsyncProcess {
                 layerMonitor = new SubProgressListener(monitor, layerProgressAmount);
                 zipLayer(layerRef, zipOut, layerMonitor);
             }
+            try {
+                zipOut.finish();
+                zipOut.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         } finally {
             try {
                 zipOut.close();
@@ -163,8 +172,8 @@ final class BatchDownload extends AsyncProcess {
     }
 
     @SuppressWarnings("unchecked")
-    private void zipVectorLayer(LayerReference layerRef, ZipOutputStream zipOut,
-            ProgressListener monitor) throws IOException {
+    private void zipVectorLayer(final LayerReference layerRef, final ZipOutputStream zipOut,
+            final ProgressListener monitor) throws IOException {
 
         FeatureSource<SimpleFeatureType, SimpleFeature> vectorSource;
         vectorSource = (FeatureSource<SimpleFeatureType, SimpleFeature>) layerRef.getVectorSource();
@@ -185,10 +194,17 @@ final class BatchDownload extends AsyncProcess {
         }
     }
 
-    private void zipRasterLayer(LayerReference layerRef, ZipOutputStream zipOut,
-            ProgressListener monitor) {
-        // TODO Auto-generated method stub
+    private void zipRasterLayer(final LayerReference layerRef, final ZipOutputStream zipOut,
+            final ProgressListener monitor) throws IOException {
 
+        final AbstractGridCoverage2DReader reader = layerRef.getRasterSource();
+
+        // read coverage
+        final GridCoverage2D coverage2d = reader.read(null);
+
+        ZippedGeoTiffCoverageWriter writer = new ZippedGeoTiffCoverageWriter();
+
+        String name = layerRef.getName();
+        writer.write(name, coverage2d, zipOut, monitor);
     }
-
 }
