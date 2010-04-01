@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
-import org.geoserver.catalog.Catalog;
+import org.geonode.process.control.ProcessController;
 import org.geotools.util.logging.Logging;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
@@ -20,12 +20,13 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 public class DownloadStatusRestlet extends Restlet {
-    private Catalog catalog;
 
     private static Logger LOGGER = Logging.getLogger(DownloadStatusRestlet.class);
 
-    public DownloadStatusRestlet(final Catalog catalog) {
-        this.catalog = catalog;
+    private final ProcessController controller;
+
+    public DownloadStatusRestlet(final ProcessController controller) {
+        this.controller = controller;
     }
 
     public void handle(Request request, Response response) {

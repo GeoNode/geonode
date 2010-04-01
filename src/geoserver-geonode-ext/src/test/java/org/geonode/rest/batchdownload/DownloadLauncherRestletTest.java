@@ -1,5 +1,11 @@
 package org.geonode.rest.batchdownload;
 
+import static org.geonode.rest.batchdownload.BatchDownloadTestData.RASTER_LAYER;
+import static org.geonode.rest.batchdownload.BatchDownloadTestData.RASTER_LAYER_REQUEST_NO_METADATA;
+import static org.geonode.rest.batchdownload.BatchDownloadTestData.RESTLET_BASE_PATH;
+import static org.geonode.rest.batchdownload.BatchDownloadTestData.VECTOR_AND_RASTER_REQUEST_NO_METADATA;
+import static org.geonode.rest.batchdownload.BatchDownloadTestData.VECTOR_LAYER;
+import static org.geonode.rest.batchdownload.BatchDownloadTestData.VECTOR_LAYER_REQUEST_NO_METADATA;
 import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 import static org.restlet.data.Status.CLIENT_ERROR_EXPECTATION_FAILED;
 import static org.restlet.data.Status.SUCCESS_OK;
@@ -10,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import javax.xml.namespace.QName;
 
 import junit.framework.Test;
 import net.sf.json.JSONObject;
@@ -29,11 +33,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DownloadLauncherRestletTest extends GeoServerTestSupport {
 
-    private static final String RESTLET_PATH = "/rest/process/batchDownload/launch";
-
-    private static final QName VECTOR_LAYER = MockData.DIVIDED_ROUTES;
-
-    private static final QName RASTER_LAYER = MockData.TASMANIA_DEM;
+    private static final String RESTLET_PATH = RESTLET_BASE_PATH + "/launch";
 
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -80,11 +80,7 @@ public class DownloadLauncherRestletTest extends GeoServerTestSupport {
 
     public void testVectorLayer() throws Exception {
         String jsonRequest;
-        String layerName = VECTOR_LAYER.getPrefix() + ":" + VECTOR_LAYER.getLocalPart();
-        jsonRequest = "{map:{name:'fake Map', author:'myself'}, "
-                + " layers:[{name:'"
-                + layerName
-                + "', service:'WFS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}]}";
+        jsonRequest = VECTOR_LAYER_REQUEST_NO_METADATA;
 
         MockHttpServletResponse response = testRequest(jsonRequest, SUCCESS_OK);
         String outputStreamContent = response.getOutputStreamContent();
@@ -107,12 +103,7 @@ public class DownloadLauncherRestletTest extends GeoServerTestSupport {
     }
 
     public void testRasterLayer() throws Exception {
-        String jsonRequest;
-        String layerName = RASTER_LAYER.getPrefix() + ":" + RASTER_LAYER.getLocalPart();
-        jsonRequest = "{map:{name:'fake Map', author:'myself'}, "
-                + " layers:[{name:'"
-                + layerName
-                + "', service:'WCS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}]}";
+        String jsonRequest = RASTER_LAYER_REQUEST_NO_METADATA;
 
         MockHttpServletResponse response = testRequest(jsonRequest, SUCCESS_OK);
         String outputStreamContent = response.getOutputStreamContent();
@@ -135,17 +126,7 @@ public class DownloadLauncherRestletTest extends GeoServerTestSupport {
     }
 
     public void testVectorAndRasterLayer() throws Exception {
-        String jsonRequest;
-        String vectorLayerName = VECTOR_LAYER.getPrefix() + ":" + VECTOR_LAYER.getLocalPart();
-        String rasterLayerName = RASTER_LAYER.getPrefix() + ":" + RASTER_LAYER.getLocalPart();
-        jsonRequest = "{map:{name:'fake Map', author:'myself'}, "
-                + " layers:[{name:'"
-                + rasterLayerName
-                + "', service:'WCS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'},"
-                + "{name:'"
-                + vectorLayerName
-                + "', service:'WFS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}"
-                + "]}";
+        String jsonRequest = VECTOR_AND_RASTER_REQUEST_NO_METADATA;
 
         MockHttpServletResponse response = testRequest(jsonRequest, SUCCESS_OK);
         String outputStreamContent = response.getOutputStreamContent();
