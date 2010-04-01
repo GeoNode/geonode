@@ -107,7 +107,7 @@ public class DownloadReadyRestletTest extends GeoServerTestSupport {
 
     private Long issueProcessAndWaitForTermination() throws Exception {
         Map<String, Object> processInputs = new HashMap<String, Object>();
-        MapMetadata mapMetadata = new MapMetadata("test map", "groldan");
+        MapMetadata mapMetadata = new MapMetadata("test map", "sample abstract info", "groldan");
         List<LayerReference> layers = new ArrayList<LayerReference>(1);
         layers.add(vectorLayer());
         layers.add(rasterLayer());
