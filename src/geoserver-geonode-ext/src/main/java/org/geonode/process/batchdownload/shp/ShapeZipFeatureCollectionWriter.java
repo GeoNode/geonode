@@ -5,9 +5,11 @@
 package org.geonode.process.batchdownload.shp;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
@@ -18,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.geoserver.data.util.IOUtils;
@@ -94,9 +97,9 @@ public class ShapeZipFeatureCollectionWriter {
      * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
      */
     @SuppressWarnings("unchecked")
-    public void write(FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
+    public boolean write(FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
             ZipOutputStream zipOut, Charset defaultCharset, File tempDir, ProgressListener monitor)
-            throws IOException, ServiceException {
+            throws IOException {
 
         // if an emtpy result out of feature type with unknown geometry is created, the
         // zip file will be empty and the zip output stream will break
@@ -110,42 +113,26 @@ public class ShapeZipFeatureCollectionWriter {
                 .getBinding();
         if (GeometryCollection.class.equals(geomType) || Geometry.class.equals(geomType)) {
             // in this case we fan out the output to multiple shapefiles
-            shapefileCreated |= writeCollectionToShapefiles(featureCollection, tempDir,
-                    defaultCharset);
+            shapefileCreated = writeCollectionToShapefiles(featureCollection, tempDir,
+                    defaultCharset, monitor);
         } else {
             // simple case, only one and supported type
-            writeCollectionToShapefile(featureCollection, tempDir, defaultCharset);
+            writeCollectionToShapefile(featureCollection, tempDir, defaultCharset, monitor);
             shapefileCreated = true;
         }
 
-        // take care of the case the output is completely empty
-        if (!shapefileCreated) {
-            FeatureCollection<SimpleFeatureType, SimpleFeature> fc;
-            fc = remapCollectionSchema(featureCollection, Point.class);
-            writeCollectionToShapefile(fc, tempDir, defaultCharset);
-            createEmptyZipWarning(tempDir);
+        if (shapefileCreated) {
+            // zip all the files produced
+            final FilenameFilter filter = new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".shp") || name.endsWith(".shx") || name.endsWith(".dbf")
+                            || name.endsWith(".prj") || name.endsWith(".cst");
+                }
+            };
+            zipDirectory(tempDir, zipOut, filter);
         }
 
-        // zip all the files produced
-        final FilenameFilter filter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".shp") || name.endsWith(".shx") || name.endsWith(".dbf")
-                        || name.endsWith(".prj") || name.endsWith(".cst");
-            }
-        };
-        IOUtils.zipDirectory(tempDir, zipOut, filter);
-    }
-
-    private void createEmptyZipWarning(File tempDir) throws IOException {
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new File(tempDir, "README.TXT"));
-            pw
-                    .print("The query result is empty, and the geometric type of the features is unknwon:"
-                            + "an empty point shapefile has been created to fill the zip file");
-        } finally {
-            pw.close();
-        }
+        return shapefileCreated;
     }
 
     /**
@@ -155,9 +142,11 @@ public class ShapeZipFeatureCollectionWriter {
      *            the featurecollection to write
      * @param tempDir
      *            the temp directory into which it should be written
+     * @param monitor
      */
     private void writeCollectionToShapefile(FeatureCollection<SimpleFeatureType, SimpleFeature> c,
-            File tempDir, Charset charset) {
+            File tempDir, Charset charset, ProgressListener monitor) {
+        monitor.started();
         c = remapCollectionSchema(c, null);
 
         SimpleFeatureType schema = c.getSchema();
@@ -190,7 +179,9 @@ public class ShapeZipFeatureCollectionWriter {
                     remapped, fstore.getSchema());
             fstore.addFeatures(retyped);
 
+            monitor.complete();
         } catch (IOException ioe) {
+            monitor.exceptionOccurred(ioe);
             LOGGER.log(Level.WARNING, "Error while writing featuretype '" + schema.getTypeName()
                     + "' to shapefile.", ioe);
             throw new ServiceException(ioe);
@@ -307,10 +298,13 @@ public class ShapeZipFeatureCollectionWriter {
      *            the featurecollection to write
      * @param tempDir
      *            the temp directory into which it should be written
+     * @param monitor
      * @return true if a shapefile has been created, false otherwise
      */
     private boolean writeCollectionToShapefiles(
-            FeatureCollection<SimpleFeatureType, SimpleFeature> c, File tempDir, Charset charset) {
+            FeatureCollection<SimpleFeatureType, SimpleFeature> c, File tempDir, Charset charset,
+            ProgressListener monitor) {
+        monitor.started();
         c = remapCollectionSchema(c, null);
         SimpleFeatureType schema = c.getSchema();
 
@@ -342,7 +336,9 @@ public class ShapeZipFeatureCollectionWriter {
                 shapefileCreated = true;
             }
 
+            monitor.complete();
         } catch (IOException ioe) {
+            monitor.exceptionOccurred(ioe);
             LOGGER.log(Level.WARNING, "Error while writing featuretype '" + schema.getTypeName()
                     + "' to shapefile.", ioe);
             throw new ServiceException(ioe);
@@ -442,7 +438,7 @@ public class ShapeZipFeatureCollectionWriter {
     private ShapefileDataStore buildStore(File tempDir, Charset charset, SimpleFeatureType schema)
             throws MalformedURLException, FileNotFoundException, IOException {
         File file = new File(tempDir, schema.getTypeName() + ".shp");
-        ShapefileDataStore sfds = new ShapefileDataStore(file.toURL());
+        ShapefileDataStore sfds = new ShapefileDataStore(file.toURI().toURL());
 
         // handle shapefile encoding
         // and dump the charset into a .cst file, for debugging and control purposes
@@ -478,4 +474,39 @@ public class ShapeZipFeatureCollectionWriter {
         return sfds;
     }
 
+    public static void zipDirectory(File directory, ZipOutputStream zipout,
+            final FilenameFilter filter) throws IOException, FileNotFoundException {
+        zipDirectory(directory, "", zipout, filter);
+    }
+
+    /**
+     * See {@link #zipDirectory(File, ZipOutputStream, FilenameFilter)}, this version handles the
+     * prefix needed to recursively zip data preserving the relative path of each
+     */
+    private static void zipDirectory(File directory, String prefix, ZipOutputStream zipout,
+            final FilenameFilter filter) throws IOException, FileNotFoundException {
+        File[] files = directory.listFiles(filter);
+        for (File file : files) {
+            if (file.exists()) {
+                if (file.isDirectory()) {
+                    // recurse and append
+                    zipDirectory(file, prefix + file.getName() + "/", zipout, filter);
+                } else {
+                    ZipEntry entry = new ZipEntry(prefix + file.getName());
+                    zipout.putNextEntry(entry);
+
+                    // copy file by reading 4k at a time (faster than buffered reading)
+                    InputStream in = new FileInputStream(file);
+                    int c;
+                    byte[] buffer = new byte[4 * 1024];
+                    while (-1 != (c = in.read(buffer))) {
+                        zipout.write(buffer, 0, c);
+                    }
+                    zipout.closeEntry();
+                    in.close();
+                }
+            }
+        }
+        zipout.flush();
+    }
 }
