@@ -297,20 +297,32 @@ def layerController(request, layername):
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
 
+
+GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
+Please try again, or contact and administrator if the problem continues.")
+
 @login_required
 def upload_layer(request):
     if request.method == 'GET':
         return render_to_response('maps/layer_upload.html',
                                   RequestContext(request, {}))
     elif request.method == 'POST':
-        layer, errors = _handle_layer_upload(request)
+        try:
+            layer, errors = _handle_layer_upload(request)
+        except:
+            errors = [GENERIC_UPLOAD_ERROR] 
+        
+        result = {}
+        if len(errors) > 0:
+            result['success'] = False
+            result['errors'] = errors
+        else:
+            result['success'] = True
+            result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
 
-        if errors: 
-            return render_to_response('maps/layer_upload.html',
-                                      RequestContext(request, {'errors': errors}))
-        else: 
-            return HttpResponseRedirect('%s?describe' % reverse('geonode.maps.views.layerController', 
-                                                                 args=(layer.typename,)))
+        result = json.dumps(result)
+        return render_to_response('json_html.html',
+                                  RequestContext(request, {'json': result}))
 
 
 def _handle_layer_upload(request, name=None):
@@ -391,6 +403,6 @@ def _handle_layer_upload(request, name=None):
             layer.save()
             return layer, errors
         except:
-            errors.append(_("An error occurred creating the layer."))
+            errors.append(GENERIC_UPLOAD_ERROR)
 
     return None, errors

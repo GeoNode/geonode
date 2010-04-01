@@ -213,7 +213,7 @@ if DEBUG:
             "gxp_script":"/static/externals/gxp/src/script/loader.js",
             "app_themes": "/static/src/theme/app/",
             "app_script":"/static/src/script/app/loader.js",
-            "ux_script":"/static/src/script/ux/RowExpander.js",
+            "ux_script":"/static/src/script/ux/loader.js",
         }
 else:
     MEDIA_LOCATIONS = {
