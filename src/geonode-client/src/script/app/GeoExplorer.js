@@ -579,6 +579,11 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                             }
                         }]
                     });
+                    prop.items.get(0).add(new gxp.WMSStylesDialog({
+                        title: "Styles",
+                        layerRecord: record,
+                        autoScroll: true
+                    }));
                     prop.show();
                 }
             }
