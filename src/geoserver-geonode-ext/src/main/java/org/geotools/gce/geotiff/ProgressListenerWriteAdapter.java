@@ -9,8 +9,24 @@ public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
 
     private final ProgressListener monitor;
 
+    /**
+     * Indicates whether the {@link #writeAborted(ImageWriter)} method was called externally, or as
+     * a consecuence of checking on {@link ProgressListener#isCanceled() monitor.isCAnceled()} and
+     * hence we need to call {@link ImageWriter#abort()}
+     */
+    private boolean selfAbort;
+
     public ProgressListenerWriteAdapter(final ProgressListener monitor) {
         this.monitor = monitor;
+    }
+
+    private boolean checkCancelled(ImageWriter writer) {
+        if (monitor.isCanceled()) {
+            selfAbort = true;
+            writer.abort();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -20,14 +36,17 @@ public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
     public void imageStarted(ImageWriter source, int imageIndex) {
         System.err.println("image started");
         monitor.started();
+        checkCancelled(source);
     }
 
     /**
      * @see javax.imageio.event.IIOWriteProgressListener#imageComplete(javax.imageio.ImageWriter)
      */
     public void imageComplete(ImageWriter source) {
-        System.err.println("image complete");
-        monitor.complete();
+        if (!checkCancelled(source)) {
+            System.err.println("image complete");
+            monitor.complete();
+        }
     }
 
     /**
@@ -35,7 +54,9 @@ public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
      */
     public void writeAborted(ImageWriter source) {
         System.err.println("image aborted");
-        monitor.setCanceled(true);
+        if (!selfAbort) {
+            monitor.setCanceled(true);
+        }
     }
 
     /**
@@ -43,8 +64,10 @@ public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
      *      float)
      */
     public void imageProgress(ImageWriter source, float percentageDone) {
-        System.err.println("image progrss: " + percentageDone);
-        monitor.progress(percentageDone);
+        if (!checkCancelled(source)) {
+            System.err.println("image progrss: " + percentageDone);
+            monitor.progress(percentageDone);
+        }
     }
 
     /**

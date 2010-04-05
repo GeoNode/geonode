@@ -76,7 +76,8 @@ import org.opengis.util.ProgressListener;
  * 
  * @author Simone Giannecchini, GeoSolutions SAS
  * @source $URL:
- *         http://svn.geotools.org/geotools/trunk/gt/plugin/geotiff/src/org/geotools/gce/geotiff/GeoTiffWriter.java $
+ *         http://svn.geotools.org/geotools/trunk/gt/plugin/geotiff/src/org/geotools/gce/geotiff
+ *         /GeoTiffWriter.java $
  */
 @SuppressWarnings("deprecation")
 public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter implements
@@ -117,28 +118,25 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
 
         } else if (destination instanceof OutputStream) {
 
-            this.outStream = ImageIO
-                    .createImageOutputStream((OutputStream) destination);
+            this.outStream = ImageIO.createImageOutputStream((OutputStream) destination);
 
         } else if (destination instanceof ImageOutputStream)
             this.outStream = (ImageOutputStream) destination;
         else
-            throw new IllegalArgumentException(
-                    "The provided destination canno be used!");
+            throw new IllegalArgumentException("The provided destination canno be used!");
         // //
         //
         // managing hints
         //
         // //
         if (this.hints == null)
-            this.hints= new Hints();    
+            this.hints = new Hints();
         if (hints != null) {
             // prevent the use from reordering axes
             hints.remove(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER);
             this.hints.add(hints);
-            this.hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,
-                Boolean.TRUE));
-            
+            this.hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE));
+
         }
 
     }
@@ -153,26 +151,24 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
     }
 
     /**
-     * @see org.opengis.coverage.grid.GridCoverageWriter#write(org.opengis.coverage.grid.GridCoverage, org.opengis.parameter.GeneralParameterValue[])
-     */
-    public void write(final GridCoverage gc,
-            final GeneralParameterValue[] params)
-            throws IllegalArgumentException, IOException,
-            IndexOutOfBoundsException {
-        write(gc, params, null);
-    }
-    
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.opengis.coverage.grid.GridCoverageWriter#write(org.opengis.coverage.grid.GridCoverage,
      *      org.opengis.parameter.GeneralParameterValue[])
      */
+    public void write(final GridCoverage gc, final GeneralParameterValue[] params)
+            throws IllegalArgumentException, IOException, IndexOutOfBoundsException {
+        write(gc, params, null);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.opengis.coverage.grid.GridCoverageWriter#write(org.opengis.coverage.grid.GridCoverage,
+     * org.opengis.parameter.GeneralParameterValue[])
+     */
     @SuppressWarnings("unchecked")
-    public void write(final GridCoverage gc,
-            final GeneralParameterValue[] params,
-            final ProgressListener monitor)
-            throws IllegalArgumentException, IOException,
+    public void write(final GridCoverage gc, final GeneralParameterValue[] params,
+            final ProgressListener monitor) throws IllegalArgumentException, IOException,
             IndexOutOfBoundsException {
 
         GeoToolsWriteParams gtParams = null;
@@ -187,7 +183,8 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
                 final int length = params.length;
                 for (int i = 0; i < length; i++) {
                     param = (Parameter) params[i];
-                    if (param.getDescriptor().getName().equals(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName())) {
+                    if (param.getDescriptor().getName().equals(
+                            AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName())) {
                         gtParams = (GeoToolsWriteParams) param.getValue();
                     }
                 }
@@ -209,7 +206,7 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
         final AffineTransform tr = (AffineTransform) gg.getGridToCRS2D();
         final CoordinateReferenceSystem crs = gg.getCoordinateReferenceSystem2D();
         final double inNoData = getCandidateNoData(gc);
-        
+
         // /////////////////////////////////////////////////////////////////////
         //
         // we handle just projected and geographic crs
@@ -218,16 +215,18 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
         if (crs instanceof ProjectedCRS || crs instanceof GeographicCRS) {
 
             // creating geotiff metadata
-            final CRS2GeoTiffMetadataAdapter adapter = (CRS2GeoTiffMetadataAdapter) CRS2GeoTiffMetadataAdapter.get(crs);
+            final CRS2GeoTiffMetadataAdapter adapter = (CRS2GeoTiffMetadataAdapter) CRS2GeoTiffMetadataAdapter
+                    .get(crs);
             final GeoTiffIIOMetadataEncoder metadata = adapter.parseCoordinateReferenceSystem();
-            if (!Double.isNaN(inNoData)) 
+            if (!Double.isNaN(inNoData))
                 metadata.setNoData(inNoData);
-            
+
             // setting georeferencing
             setGeoReference(crs, metadata, tr, range);
 
             // writing ALWAYS the geophysics vew of the data
-            writeImage(((GridCoverage2D) gc).geophysics(true).getRenderedImage(), this.outStream, metadata, gtParams, monitor);
+            writeImage(((GridCoverage2D) gc).geophysics(true).getRenderedImage(), this.outStream,
+                    metadata, gtParams, monitor);
 
         } else
             throw new GeoTiffException(
@@ -237,37 +236,33 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
     }
 
     /**
-     * This method is used to set the tie point and the scale parameters for the
-     * GeoTiff file we are writing or the ModelTransformation in case a more
-     * general {@link AffineTransform} is needed to represent the raster space
-     * to model space transform.
+     * This method is used to set the tie point and the scale parameters for the GeoTiff file we are
+     * writing or the ModelTransformation in case a more general {@link AffineTransform} is needed
+     * to represent the raster space to model space transform.
      * 
      * <p>
-     * This method works regardles of the nature fo the crs without making any
-     * assumptions on the order or the direction of the axes, but checking them
-     * from the supplied CRS.
+     * This method works regardles of the nature fo the crs without making any assumptions on the
+     * order or the direction of the axes, but checking them from the supplied CRS.
      * 
      * @see {@link http://lists.maptools.org/pipermail/geotiff/2006-January/000213.html}
-     * @see {@http://lists.maptools.org/pipermail/geotiff/2006-January/000212.html}
+     * @see      {@http://lists.maptools.org/pipermail/geotiff/2006-January/000212.html
+     * }
      * @param crs
-     *            The {@link CoordinateReferenceSystem} of the
-     *            {@link GridCoverage2D} to encode.
+     *            The {@link CoordinateReferenceSystem} of the {@link GridCoverage2D} to encode.
      * @param metadata
      *            where to set the georeferencing information.
      * @param range
      *            that describes the raster space for this geotiff.
      * @param rasterToModel
-     *            describes the {@link AffineTransform} between raster space and
-     *            model space.
+     *            describes the {@link AffineTransform} between raster space and model space.
      * 
      * @throws IndexOutOfBoundsException
      * @throws IOException
      * @throws TransformException
      */
     private void setGeoReference(final CoordinateReferenceSystem crs,
-            final GeoTiffIIOMetadataEncoder metadata,
-            final AffineTransform rasterToModel, GridEnvelope2D range)
-            throws IndexOutOfBoundsException, IOException {
+            final GeoTiffIIOMetadataEncoder metadata, final AffineTransform rasterToModel,
+            GridEnvelope2D range) throws IndexOutOfBoundsException, IOException {
 
         // /////////////////////////////////////////////////////////////////////
         //
@@ -285,8 +280,7 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
             //
             // //
             modifiedRasterToModel = new AffineTransform(rasterToModel);
-            modifiedRasterToModel.concatenate(AffineTransform
-                    .getTranslateInstance(minx, miny));
+            modifiedRasterToModel.concatenate(AffineTransform.getTranslateInstance(minx, miny));
         } else
             modifiedRasterToModel = rasterToModel;
 
@@ -329,34 +323,27 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
         //
         // /////////////////////////////////////////////////////////////////////
         // tie points
-        if (!(Double.isInfinite(rotation) || Double.isNaN(rotation) || Math
-                .abs(rotation) > 1E-6)) {
-            final double tiePointLongitude = (lonFirst) ? modifiedRasterToModel
-                    .getTranslateX() : modifiedRasterToModel.getTranslateY();
-            final double tiePointLatitude = (lonFirst) ? modifiedRasterToModel
-                    .getTranslateY() : modifiedRasterToModel.getTranslateX();
-            metadata.setModelTiePoint(0, 0, 0, tiePointLongitude,
-                    tiePointLatitude, 0);
+        if (!(Double.isInfinite(rotation) || Double.isNaN(rotation) || Math.abs(rotation) > 1E-6)) {
+            final double tiePointLongitude = (lonFirst) ? modifiedRasterToModel.getTranslateX()
+                    : modifiedRasterToModel.getTranslateY();
+            final double tiePointLatitude = (lonFirst) ? modifiedRasterToModel.getTranslateY()
+                    : modifiedRasterToModel.getTranslateX();
+            metadata.setModelTiePoint(0, 0, 0, tiePointLongitude, tiePointLatitude, 0);
             // scale
-            final double scaleModelToRasterLongitude = (lonFirst) ? Math
-                    .abs(modifiedRasterToModel.getScaleX()) : Math.abs(modifiedRasterToModel
-                    .getShearY());
-            final double scaleModelToRasterLatitude = (lonFirst) ? Math
-                    .abs(modifiedRasterToModel.getScaleY()) : Math.abs(modifiedRasterToModel
-                    .getShearX());
-            metadata.setModelPixelScale(scaleModelToRasterLongitude,
-                    scaleModelToRasterLatitude, 0);
+            final double scaleModelToRasterLongitude = (lonFirst) ? Math.abs(modifiedRasterToModel
+                    .getScaleX()) : Math.abs(modifiedRasterToModel.getShearY());
+            final double scaleModelToRasterLatitude = (lonFirst) ? Math.abs(modifiedRasterToModel
+                    .getScaleY()) : Math.abs(modifiedRasterToModel.getShearX());
+            metadata.setModelPixelScale(scaleModelToRasterLongitude, scaleModelToRasterLatitude, 0);
             // Alternative code, not yet enabled in order to avoid breaking
             // code.
             // The following code is insensitive to axis order and rotations in
             // the 'coord' space (not in the 'grid' space, otherwise we would
             // not take the inverse of the matrix).
             /*
-             * final AffineTransform coordToGrid = gridToCoord.createInverse();
-             * final double scaleModelToRasterLongitude = 1 /
-             * XAffineTransform.getScaleX0(coordToGrid); final double
-             * scaleModelToRasterLatitude = 1 /
-             * XAffineTransform.getScaleY0(coordToGrid);
+             * final AffineTransform coordToGrid = gridToCoord.createInverse(); final double
+             * scaleModelToRasterLongitude = 1 / XAffineTransform.getScaleX0(coordToGrid); final
+             * double scaleModelToRasterLatitude = 1 / XAffineTransform.getScaleY0(coordToGrid);
              */
         } else {
 
@@ -366,21 +353,19 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
     }
 
     /**
-     * Writes the provided rendered image to the provided image output stream
-     * using the supplied geotiff metadata.
+     * Writes the provided rendered image to the provided image output stream using the supplied
+     * geotiff metadata.
      * 
      * @param gtParams
      */
-    private boolean writeImage(final RenderedImage image,
-            final ImageOutputStream outputStream,
-            final GeoTiffIIOMetadataEncoder geoTIFFMetadata,
-            GeoToolsWriteParams gtParams,
+    private boolean writeImage(final RenderedImage image, final ImageOutputStream outputStream,
+            final GeoTiffIIOMetadataEncoder geoTIFFMetadata, GeoToolsWriteParams gtParams,
             final ProgressListener monitor) throws IOException {
         if (image == null || outputStream == null) {
             throw new NullPointerException("Some input parameters are null");
         }
         final ImageWriteParam params = gtParams.getAdaptee();
-        
+
         //
         // GETTING READER AND METADATA
         //
@@ -388,52 +373,50 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
         if (monitor != null) {
             writer.addIIOWriteProgressListener(new ProgressListenerWriteAdapter(monitor));
         }
-        final IIOMetadata metadata = createGeoTiffIIOMetadata(writer,ImageTypeSpecifier.createFromRenderedImage(image),geoTIFFMetadata, params);
+        final IIOMetadata metadata = createGeoTiffIIOMetadata(writer, ImageTypeSpecifier
+                .createFromRenderedImage(image), geoTIFFMetadata, params);
 
-
-        try{
+        try {
 
             //
             // IMAGEWRITE
             //          
             writer.setOutput(outputStream);
-            writer.write(writer.getDefaultStreamMetadata(params), new IIOImage(image, null, metadata), params);
+            writer.write(writer.getDefaultStreamMetadata(params), new IIOImage(image, null,
+                    metadata), params);
 
-
-
-        }finally{
+        } finally {
             //
             // release resources
             //
-            try{
-                if(outputStream!=null)
+            try {
+                if (outputStream != null)
                     outputStream.flush();
-            }catch (Throwable e) {
+            } catch (Throwable e) {
                 // eat me
             }
-            
-            try{
-                if (!(destination instanceof ImageOutputStream)&&outputStream!=null)
+
+            try {
+                if (!(destination instanceof ImageOutputStream) && outputStream != null)
                     outputStream.close();
-            }catch (Throwable e) {
+            } catch (Throwable e) {
                 // eat me
             }
-            
-            try{
-                if (writer!=null)
+
+            try {
+                if (writer != null)
                     writer.dispose();
-            }catch (Throwable e) {
+            } catch (Throwable e) {
                 // eat me
-            }           
+            }
         }
 
         return true;
     }
 
     /**
-     * Creates image metadata which complies to the GeoTIFFWritingUtilities
-     * specification for the given image writer, image type and
-     * GeoTIFFWritingUtilities metadata.
+     * Creates image metadata which complies to the GeoTIFFWritingUtilities specification for the
+     * given image writer, image type and GeoTIFFWritingUtilities metadata.
      * 
      * @param writer
      *            the image writer, must not be null
@@ -446,14 +429,11 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
      * @throws IIOException
      *             if the metadata cannot be created
      */
-    public final static IIOMetadata createGeoTiffIIOMetadata(
-            ImageWriter writer, ImageTypeSpecifier type,
-            GeoTiffIIOMetadataEncoder geoTIFFMetadata, ImageWriteParam params)
-            throws IIOException {
-        IIOMetadata imageMetadata = writer
-                .getDefaultImageMetadata(type, params);
-        imageMetadata = writer
-                .convertImageMetadata(imageMetadata, type, params);
+    public final static IIOMetadata createGeoTiffIIOMetadata(ImageWriter writer,
+            ImageTypeSpecifier type, GeoTiffIIOMetadataEncoder geoTIFFMetadata,
+            ImageWriteParam params) throws IIOException {
+        IIOMetadata imageMetadata = writer.getDefaultImageMetadata(type, params);
+        imageMetadata = writer.convertImageMetadata(imageMetadata, type, params);
         org.w3c.dom.Element w3cElement = (org.w3c.dom.Element) imageMetadata
                 .getAsTree(GeoTiffConstants.GEOTIFF_IIO_METADATA_FORMAT_NAME);
         final Element element = new DOMBuilder().build(w3cElement);
@@ -466,42 +446,36 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
         final Document document = new Document(element);
 
         try {
-            final org.w3c.dom.Document w3cDoc = new DOMOutputter()
-                    .output(document);
-            final IIOMetadata iioMetadata = new TIFFImageMetadata(
-                    TIFFImageMetadata.parseIFD(w3cDoc.getDocumentElement()
-                            .getFirstChild()));
+            final org.w3c.dom.Document w3cDoc = new DOMOutputter().output(document);
+            final IIOMetadata iioMetadata = new TIFFImageMetadata(TIFFImageMetadata.parseIFD(w3cDoc
+                    .getDocumentElement().getFirstChild()));
             imageMetadata = iioMetadata;
         } catch (JDOMException e) {
-            throw new IIOException(
-                    "Failed to set GeoTIFFWritingUtilities specific tags.", e);
+            throw new IIOException("Failed to set GeoTIFFWritingUtilities specific tags.", e);
         } catch (IIOInvalidTreeException e) {
-            throw new IIOException(
-                    "Failed to set GeoTIFFWritingUtilities specific tags.", e);
+            throw new IIOException("Failed to set GeoTIFFWritingUtilities specific tags.", e);
         }
 
         return imageMetadata;
     }
-    
+
     static double getCandidateNoData(GridCoverage gc) {
-            // no data management
-            final GridSampleDimension sd = (GridSampleDimension) gc
-                    .getSampleDimension(0);
-            final List<Category> categories = sd.getCategories();
-            double inNoData = Double.NaN;
-            if (categories != null) {
-                Category candidate;
-                final String noDataName = Vocabulary.format(VocabularyKeys.NODATA);
-                for (Category category : categories) {
-                    candidate = category;
-                    final String name = candidate.getName().toString();
-                    if (name.equalsIgnoreCase("No Data")
-                            || name.equalsIgnoreCase(noDataName)) {
-                        inNoData = candidate.getRange().getMaximum();
-                        break;
-                    }
+        // no data management
+        final GridSampleDimension sd = (GridSampleDimension) gc.getSampleDimension(0);
+        final List<Category> categories = sd.getCategories();
+        double inNoData = Double.NaN;
+        if (categories != null) {
+            Category candidate;
+            final String noDataName = Vocabulary.format(VocabularyKeys.NODATA);
+            for (Category category : categories) {
+                candidate = category;
+                final String name = candidate.getName().toString();
+                if (name.equalsIgnoreCase("No Data") || name.equalsIgnoreCase(noDataName)) {
+                    inNoData = candidate.getRange().getMaximum();
+                    break;
                 }
             }
-            return inNoData;
         }
+        return inNoData;
+    }
 }
