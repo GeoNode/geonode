@@ -1,9 +1,15 @@
 package org.geonode.rest.batchdownload;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import net.sf.json.JSONObject;
 
 import org.geonode.process.control.ProcessController;
 import org.geonode.process.control.ProcessStatus;
+import org.geotools.util.logging.Logging;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -22,6 +28,7 @@ import org.restlet.resource.StringRepresentation;
  * </p>
  * <p>
  * Output: JSON object with the following structure:
+ * 
  * <pre>
  * <code>
  * {
@@ -33,10 +40,13 @@ import org.restlet.resource.StringRepresentation;
  * }
  * </code>
  * </pre>
+ * 
  * </p>
  * 
  */
 public class DownloadStatusRestlet extends Restlet {
+
+    private static final Logger LOGGER = Logging.getLogger(DownloadStatusRestlet.class);
 
     private final ProcessController controller;
 
@@ -63,9 +73,22 @@ public class DownloadStatusRestlet extends Restlet {
 
         ProcessStatus status;
         float progress;
+        String errorMessage = null;
         try {
             status = controller.getStatus(processId);
             progress = controller.getProgress(processId);
+            if (status == ProcessStatus.FAILED) {
+                Throwable error = controller.getReasonForFailure(processId);
+                if (error != null) {
+                    errorMessage = error.getMessage();
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        error.printStackTrace(new PrintStream(out));
+                        String stackTrace = out.toString();
+                        errorMessage += "\n" + stackTrace;
+                    }
+                }
+            }
         } catch (IllegalArgumentException e) {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, e.getMessage());
             return;
@@ -76,8 +99,7 @@ public class DownloadStatusRestlet extends Restlet {
         processData.put("id", processId);
         processData.put("status", status.toString());
         processData.put("progress", progress);
-        // processData.put("processing", "topp:states");
-        // processData.put("totalLayers", 12);
+        processData.put("reasonForFailure", errorMessage);
         responseData.put("process", processData);
 
         final String jsonStr = responseData.toString(0);

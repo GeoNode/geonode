@@ -11,6 +11,8 @@ import static org.restlet.data.Status.CLIENT_ERROR_EXPECTATION_FAILED;
 import static org.restlet.data.Status.SUCCESS_OK;
 
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -21,12 +23,17 @@ import junit.framework.Test;
 import net.sf.json.JSONObject;
 
 import org.geonode.process.batchdownload.BatchDownloadFactory;
+import org.geonode.process.batchdownload.LayerReference;
+import org.geonode.process.batchdownload.MapMetadata;
+import org.geonode.process.control.AsyncProcess;
 import org.geonode.process.control.ProcessController;
 import org.geonode.process.control.ProcessStatus;
 import org.geonode.process.storage.Resource;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerTestSupport;
+import org.geotools.arcsde.ArcSDERasterFormatFactory;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.restlet.data.Status;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -116,6 +123,30 @@ public class DownloadLauncherRestletTest extends GeoServerTestSupport {
 
         ProcessController controller = (ProcessController) GeoServerExtensions
                 .bean("processController");
+
+        // wait for the process to finish....
+        while (!controller.isDone(processId)) {
+            Thread.sleep(100);
+        }
+        ProcessStatus status = controller.getStatus(processId);
+        assertEquals(ProcessStatus.FINISHED, status);
+    }
+
+    public void testArcSDERasterLayer() throws Exception {
+        ProcessController controller = (ProcessController) GeoServerExtensions
+                .bean("processController");
+
+        AbstractGridCoverage2DReader reader = new ArcSDERasterFormatFactory().createFormat()
+                .getReader("sde://sde:geo123@arcy.opengeo.org:5151/#SDE.BH_30MHS_RD");
+        LayerReference layerReference = new LayerReference("SDE.BH_30MHS_RD", reader);
+        MapMetadata map = new MapMetadata("title", "abstract", "groldan");
+        Map<String, Object> input = new HashMap<String, Object>();
+        input.put(BatchDownloadFactory.MAP_METADATA.key, map);
+        input.put(BatchDownloadFactory.LAYERS.key, Collections.singletonList(layerReference));
+
+        AsyncProcess process = new BatchDownloadFactory().create();
+
+        Long processId = controller.submitAsync(process, input);
 
         // wait for the process to finish....
         while (!controller.isDone(processId)) {
