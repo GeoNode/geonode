@@ -36,7 +36,6 @@ public interface ProcessController {
             IllegalStateException;
 
     /**
-     * Cancels a process if running, and disposes it if it exists not matter its state.
      * 
      * @param processId
      * @return {@code true} if process was running and successfully killed, {@code false} if process
@@ -55,13 +54,5 @@ public interface ProcessController {
      *             if process does not exist
      */
     boolean isDone(Long processId) throws IllegalArgumentException;
-
-    /**
-     * 
-     * @param processId
-     * @return
-     * @throws IllegalArgumentException
-     */
-    Throwable getReasonForFailure(Long processId) throws IllegalArgumentException;
 
 }
