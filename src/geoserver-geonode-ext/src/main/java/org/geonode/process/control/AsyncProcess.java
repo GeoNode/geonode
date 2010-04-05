@@ -1,16 +1,23 @@
 package org.geonode.process.control;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.geonode.process.storage.Folder;
+import org.geonode.process.storage.Resource;
 import org.geonode.process.storage.StorageManager;
 import org.geotools.data.Parameter;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
 import org.geotools.text.Text;
 import org.geotools.util.NullProgressListener;
+import org.geotools.util.logging.Logging;
 import org.opengis.util.ProgressListener;
 
 public abstract class AsyncProcess implements Process {
+
+    private static final Logger LOGGER = Logging.getLogger(AsyncProcess.class);
 
     /**
      * By lack of a better way to pass context/collaborator objects to a process, we use this
@@ -55,6 +62,7 @@ public abstract class AsyncProcess implements Process {
             Map<String, Object> result = executeInternal(input, monitor);
             if (monitor.isCanceled()) {
                 status = ProcessStatus.CANCELLED;
+                dispose();
             } else {
                 status = ProcessStatus.FINISHED;
                 monitor.complete();
@@ -63,10 +71,19 @@ public abstract class AsyncProcess implements Process {
         } catch (ProcessException e) {
             status = ProcessStatus.FAILED;
             monitor.exceptionOccurred(e);
+            dispose();
             throw e;
         } catch (RuntimeException e) {
             status = ProcessStatus.FAILED;
             monitor.exceptionOccurred(e);
+            dispose();
+            throw e;
+        } catch (Error e) {
+            // This is really fatal. Though commonly it's bad practice to catch up Errors, not doing
+            // so might lead to processes marked running indefinitely
+            status = ProcessStatus.FAILED;
+            monitor.exceptionOccurred(e);
+            dispose();
             throw e;
         }
     }
@@ -80,5 +97,30 @@ public abstract class AsyncProcess implements Process {
 
     protected StorageManager getStorageManager() {
         return storageManager;
+    }
+
+    /**
+     * To be called when the process nor its results are no longer needed, including any
+     * {@link Resource} or {@link Folder} used either for temporary storage or to hold the process'
+     * result.
+     */
+    public final void dispose() {
+        try {
+            disposeInternal();
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.WARNING, "Process failed to dispose all its held resources", e);
+        }
+        StorageManager storageManager = getStorageManager();
+        if (storageManager != null) {
+            storageManager.dispose();
+        }
+    }
+
+    /**
+     * Subclasses should override if they need to dispose any other resource than the ones disposed
+     * at {@link #dispose()}
+     */
+    protected void disposeInternal() {
+        // nothing to do, override as needed
     }
 }

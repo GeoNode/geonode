@@ -108,20 +108,24 @@ public class DownloadLauncherRestlet extends Restlet {
             return;
         }
 
-        LOGGER.info("Reading JSON request...");
+        LOGGER.fine("Reading JSON request...");
         final String requestContent;
         try {
             final InputStream inStream = request.getEntity().getStream();
             requestContent = IOUtils.toString(inStream);
-            LOGGER.info("Plain request: " + requestContent);
+            if (LOGGER.isLoggable(Level.FINER)) {
+                LOGGER.finer("Plain request: " + requestContent);
+            }
         } catch (IOException e) {
+            if (LOGGER.isLoggable(Level.FINER)) {
+                LOGGER.log(Level.FINER, "Bad request", e);
+            }
             final String message = "Process failed: " + e.getMessage();
             response.setStatus(Status.SERVER_ERROR_INTERNAL, message);
-            LOGGER.log(Level.SEVERE, message, e);
             return;
         }
 
-        LOGGER.info("Parsing JSON request...");
+        LOGGER.finest("Parsing JSON request...");
         JSONObject jsonRequest;
         try {
             jsonRequest = JSONObject.fromObject(requestContent);
@@ -130,29 +134,31 @@ public class DownloadLauncherRestlet extends Restlet {
             return;
         }
 
-        LOGGER.info("Launch request parsed, validating inputs and launching process...");
+        LOGGER.finest("Launch request parsed, validating inputs and launching process...");
         final JSONObject responseData;
         try {
             responseData = execute(jsonRequest);
         } catch (ProcessException e) {
             final String message = "Process failed: " + e.getMessage();
             response.setStatus(Status.SERVER_ERROR_INTERNAL, message);
-            LOGGER.log(Level.SEVERE, message, e);
+            LOGGER.log(Level.INFO, message, e);
             return;
         } catch (IllegalArgumentException e) {
             final String message = "Process can't be executed: " + e.getMessage();
             response.setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, message);
-            LOGGER.log(Level.SEVERE, message, e);
+            LOGGER.log(Level.INFO, message, e);
             return;
         } catch (RuntimeException e) {
             final String message = "Unexpected exception: " + e.getMessage();
             response.setStatus(Status.SERVER_ERROR_INTERNAL, message);
-            LOGGER.log(Level.SEVERE, message, e);
+            LOGGER.log(Level.WARNING, message, e);
             return;
         }
 
         final String jsonStr = responseData.toString(0);
-        LOGGER.info("Process launched, response is " + jsonStr);
+        if (LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.finer("Process launched, response is " + jsonStr);
+        }
         final Representation representation = new StringRepresentation(jsonStr,
                 MediaType.APPLICATION_JSON);
 
