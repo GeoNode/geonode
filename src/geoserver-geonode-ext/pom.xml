@@ -96,33 +96,6 @@
     <geoserver.version>2.0.2-SNAPSHOT</geoserver.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
-  <profiles>
-    <profile>
-      <id>arcsde</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>arcsde</artifactId>
-          <version>${geoserver.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>sdeLibs</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.esri</groupId>
-          <artifactId>jsde_sdk</artifactId>
-          <version>${sde.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>com.esri</groupId>
-          <artifactId>jpe_sdk</artifactId>
-          <version>${sde.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-   </profiles>
   <build>
     <plugins>
       <plugin>

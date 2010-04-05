@@ -10,7 +10,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
 
@@ -95,8 +94,6 @@ final class BatchDownload extends AsyncProcess {
     private Resource buildZippFile(final MapMetadata mapDetails, final List<LayerReference> layers,
             final ProgressListener monitor) throws ProcessException {
 
-        LOGGER.fine("Building zip file for map " + mapDetails.getTitle());
-
         final StorageManager storageManager = getStorageManager();
         final int nLayers = layers.size();
 
@@ -125,13 +122,13 @@ final class BatchDownload extends AsyncProcess {
                 zipOut.finish();
                 zipOut.flush();
             } catch (IOException e) {
-                throw new ProcessException(e);
+                throw new RuntimeException(e);
             }
         } finally {
             try {
                 zipOut.close();
             } catch (IOException e) {
-                LOGGER.info("Error closing zip file: " + e.getMessage());
+                throw new RuntimeException(e);
             }
         }
 
@@ -155,9 +152,6 @@ final class BatchDownload extends AsyncProcess {
 
         monitor.started();
         monitor.setTask(Text.text("Compressing layer " + layerRef.getName()));
-        if (LOGGER.isLoggable(Level.FINER)) {
-            LOGGER.finer("Compressing layer " + layerRef.getName());
-        }
 
         try {
             switch (layerRef.getKind()) {
@@ -184,13 +178,11 @@ final class BatchDownload extends AsyncProcess {
         FeatureSource<SimpleFeatureType, SimpleFeature> vectorSource;
         vectorSource = (FeatureSource<SimpleFeatureType, SimpleFeature>) layerRef.getVectorSource();
 
-        LOGGER.finest("Obtaining layer's feature collection...");
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
         featureCollection = vectorSource.getFeatures();
 
         Charset defaultCharset = Charset.forName("UTF-8");
 
-        LOGGER.finest("Creating temp folder to hold layer's shapefiles...");
         Folder tmpDir = getStorageManager().createTempFolder();
         try {
             File tempDir = tmpDir.getFile();

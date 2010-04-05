@@ -24,9 +24,6 @@ class FileResource implements Resource {
         this.file = file;
     }
 
-    /**
-     * @see org.geonode.process.storage.Resource#getInputStream()
-     */
     public InputStream getInputStream() throws IOException {
         if (isOpen()) {
             throw new IOException("Stream already open");
@@ -36,9 +33,6 @@ class FileResource implements Resource {
         return inputStream;
     }
 
-    /**
-     * @see org.geonode.process.storage.Resource#getOutputStream()
-     */
     public OutputStream getOutputStream() throws IOException {
         if (isOpen()) {
             throw new IOException("Stream already open");
@@ -48,18 +42,12 @@ class FileResource implements Resource {
         return outputStream;
     }
 
-    /**
-     * @see org.geonode.process.storage.Resource#isOpen()
-     */
     public boolean isOpen() {
         boolean inOpen = inputStream != null && inputStream.isOpen();
         boolean outOpen = outputStream != null && outputStream.isOpen();
         return inOpen || outOpen;
     }
 
-    /**
-     * @see org.geonode.process.storage.Resource#delete()
-     */
     public void delete() throws IOException {
         if (isOpen()) {
             throw new IOException("Resource is open");
@@ -69,36 +57,19 @@ class FileResource implements Resource {
         }
     }
 
-    /**
-     * @see org.geonode.process.storage.Resource#getParent()
-     */
     public Folder getParent() {
         return parent;
     }
 
-    /**
-     * @see org.geonode.process.storage.Resource#getFile()
-     */
-    public File getFile() {
+    public File getFile() throws IOException {
         return file;
     }
 
-    /**
-     * @see org.geonode.process.storage.Resource#getURI()
-     */
-    public URI getURI() {
+    public URI getURI() throws IOException {
         return getFile().toURI();
     }
 
-    /**
-     * @see org.geonode.process.storage.Resource#getURL()
-     */
     public URL getURL() throws IOException {
         return getURI().toURL();
-    }
-
-    public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append("[").append(
-                getFile().getAbsolutePath()).append("]").toString();
     }
 }
