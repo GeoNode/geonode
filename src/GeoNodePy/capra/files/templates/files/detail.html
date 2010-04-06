@@ -22,7 +22,7 @@
 <ul>
   <li><a href="{% url capra.files.views.dispatch file.id %}?remove">{% trans "Remove" noop %}</a></li>
   <li><a href="{% url capra.files.views.edit file.id %}">{% trans "Edit Metadata" noop %}</a></li>
-  <li><a href="{% url capra.files.views.dispatch file.id %}?replace">{% trans "Replace File" noop %}</a></li>
+  <li><a href="{% url capra.files.views.dispatch file.id %}?update">{% trans "Replace File" noop %}</a></li>
 </ul>
 {%else %}
 <a href="{% url login %}">Login</a> for additional options.

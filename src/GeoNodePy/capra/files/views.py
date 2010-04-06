@@ -4,8 +4,10 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from django.utils.translation import ugettext as _
 from django import forms
 from capra.files.models import AMEFile
+import json
 
 try:
     import json
@@ -44,20 +46,34 @@ class UploadFileForm(forms.ModelForm):
     class Meta:
         model = AMEFile
 
+GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
+Please try again, or contact and administrator if the problem continues.")
+
 @login_required
 def upload(request):
     """
     view that handles uploading a new file
     """
     if request.method == 'POST':  
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('capra.files.views.index'))
+        try:
+            form = UploadFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                result = {'redirect_to': reverse('capra.files.views.index'), 
+                          'success': True}
+            else: 
+                errors = []
+                for fieldname, error in form.errors:
+                    field = getattr(form, fieldname)
+                    errors.append('%s: %s' % (field.label, error))
+                result = {'errors': errors, 'success': False}
+        except: 
+            result = {'errors': [GENERIC_UPLOAD_ERROR], 'success': False}
+        result = json.dumps(result)
+        return render_to_response('json_html.html', {'json': result})
     else:
         form = UploadFileForm()
-
-    return render_to_response('files/upload.html', RequestContext(request, {'form': form}))
+        return render_to_response('files/upload.html', RequestContext(request, {'form': form}))
 
 def dispatch(request, id):
     """
@@ -65,7 +81,7 @@ def dispatch(request, id):
     """
     if 'remove' in request.GET: 
         return delete(request, id)
-    elif 'replace' in request.GET:
+    elif 'update' in request.GET:
         return replace(request, id)
     else:
         return detail(request, id)
@@ -108,17 +124,28 @@ class ReplaceFileForm(forms.ModelForm):
 def replace(request, id):
     obj = get_object_or_404(AMEFile, pk=id)
     if request.method == 'POST':
-        form = ReplaceFileForm(request.POST, request.FILES, instance=obj)
-        if form.is_valid():
-            # remove the old file which is being replaced.
-            if obj.file: 
-                obj.file.delete()
-            form.save()
-            return HttpResponseRedirect(reverse('capra.files.views.dispatch', args=[obj.id]))            
-    elif request.method == 'GET':
+        try:
+            form = ReplaceFileForm(request.POST, request.FILES, instance=obj)
+            if form.is_valid():
+                # remove the old file which is being replaced.
+                if obj.file: 
+                    obj.file.delete()
+                form.save()
+                result = {'redirect_to': reverse('capra.files.views.index'), 
+                          'success': True}
+            else: 
+                errors = []
+                for fieldname, error in form.errors:
+                    field = getattr(form, fieldname)
+                    errors.append('%s: %s' % (field.label, error))
+                result = {'errors': errors, 'success': False}
+        except: 
+            result = {'errors': [GENERIC_UPLOAD_ERROR], 'success': False}
+        result = json.dumps(result)
+        return render_to_response('json_html.html', {'json': result})
+    else:
         form = ReplaceFileForm(instance=obj)
-
-    return render_to_response('files/replace.html', RequestContext(request, {'form': form, 'file': obj}))
+        return render_to_response('files/replace.html', RequestContext(request, {'form': form, 'file': obj}))
 
 @login_required
 def delete(request, fileid):
