@@ -24,32 +24,32 @@ Ext.onReady(function(){
 
   var base_file = new Ext.ux.form.FileUploadField({
       id: 'base_file',
-      emptyText: 'Select a layer data file',
-      fieldLabel: 'File',
+      emptyText: gettext('Select a layer data file'),
+      fieldLabel: gettext('File'),
       name: 'base_file',
       allowBlank: false
   });
 
   var dbf_file = new Ext.ux.form.FileUploadField({
       id: 'dbf_file',
-      emptyText: 'Select a .dbf data file',
-      fieldLabel: 'DBF',
+      emptyText: gettext('Select a .dbf data file'),
+      fieldLabel: gettext('DBF'),
       name: 'dbf_file',
       allowBlank: false
   });
 
   var shx_file = new Ext.ux.form.FileUploadField({
       id: 'shx_file',
-      emptyText: 'Select a .shx data file',
-      fieldLabel: 'SHX',
+      emptyText: gettext('Select a .shx data file'),
+      fieldLabel: gettext('SHX'),
       name: 'shx_file',
       allowBlank: false
   });
 
   var prj_file = new Ext.ux.form.FileUploadField({
       id: 'prj_file',
-      emptyText: 'Select a .prj data file (optional)',
-      fieldLabel: 'PRJ',
+      emptyText: gettext('Select a .prj data file (optional)'),
+      fieldLabel: gettext('PRJ'),
       name: 'prj_file',
       allowBlank: true
 
@@ -60,7 +60,7 @@ Ext.onReady(function(){
     fileUpload: true,
     width: 500,
     frame: true,
-    title: 'Upload Layer Data',
+    title: gettext('Upload Layer Data'),
     autoHeight: true,
     bodyStyle: 'padding: 10px 10px 0 10px;',
     labelWidth: 50,
@@ -70,12 +70,12 @@ Ext.onReady(function(){
     },
     items: [base_file, dbf_file, shx_file, prj_file],
     buttons: [{
-        text: 'Upload',
+        text: gettext('Upload'),
         handler: function(){
             if(fp.getForm().isValid()) {
               fp.getForm().submit({
                   url: form_target,
-                  waitMsg: 'Uploading your data...',
+                  waitMsg: gettext('Uploading your data...'),
                   success: function(fp, o) {
                       document.location = o.result.redirect_to;
                   },
@@ -87,7 +87,7 @@ Ext.onReady(function(){
                       error_message += '</ul>'
                       
                       Ext.Msg.show({
-                          title: "Error",
+                          title: gettext("Error"),
                           msg: error_message,
                           minWidth: 200,
                           modal: true,
