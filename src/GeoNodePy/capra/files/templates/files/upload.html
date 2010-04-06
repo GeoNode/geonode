@@ -16,8 +16,8 @@ Ext.onReady(function(){
 
   var base_file = new Ext.ux.form.FileUploadField({
       id: 'ame_file',
-      emptyText: 'Select an AME data file',
-      fieldLabel: 'File',
+      emptyText: gettext('Select an AME data file'),
+      fieldLabel: gettext('File'),
       name: 'file',
       allowBlank: false
   });
@@ -25,24 +25,24 @@ Ext.onReady(function(){
   var title_input = new Ext.form.TextField({
     id: 'title',
     name: 'title',
-    fieldLabel: 'Title',
-    emptyText: '(optional) if no title is given, the filename is used.',
+    fieldLabel: gettext('Title'),
+    emptyText: gettext('If no title is given, the filename is used. (optional)'),
     allowBlank: true, 
   });
   
   var scenario_input = new Ext.form.TextField({
     id: 'scenario',
     name: 'scenario',
-    fieldLabel: 'Scenario',
-    emptyText: 'Enter hazard scenario',
+    fieldLabel: gettext('Scenario'),
+    emptyText: gettext('Enter hazard scenario'),
     allowBlank: false    
   });
   
   var country_input = new Ext.form.TextField({
     id: 'country',
     name: 'country',
-    fieldLabel: 'Country',
-    emptyText: 'Enter hazard country',
+    fieldLabel: gettext('Country'),
+    emptyText: gettext('Enter hazard country'),
     allowBlank: false    
   });
   
@@ -51,7 +51,7 @@ Ext.onReady(function(){
     fileUpload: true,
     width: 500,
     frame: true,
-    title: 'Upload AME Data',
+    title: gettext('Upload AME Data'),
     autoHeight: true,
     bodyStyle: 'padding: 10px 10px 0 10px;',
     labelWidth: 50,
@@ -61,13 +61,13 @@ Ext.onReady(function(){
     },
     items: [base_file, title_input, scenario_input, country_input],
     buttons: [{
-        text: 'Upload',
+        text: gettext('Upload'),
         handler: function(){
             if(fp.getForm().isValid()) {
               fp.getForm().submit({
                   submitEmptyText: false,
                   url: form_target,
-                  waitMsg: 'Uploading your data...',
+                  waitMsg: gettext('Uploading your data...'),
                   success: function(fp, o) {
                       document.location = o.result.redirect_to;
                   },
@@ -79,7 +79,7 @@ Ext.onReady(function(){
                       error_message += '</ul>'
                       
                       Ext.Msg.show({
-                          title: "Error",
+                          title: gettext("Error"),
                           msg: error_message,
                           minWidth: 200,
                           modal: true,
