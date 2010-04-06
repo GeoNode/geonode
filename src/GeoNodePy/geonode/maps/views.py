@@ -1,5 +1,6 @@
 from geonode.maps.models import Map, Layer, MapLayer
 import geoserver
+from geoserver.resource import FeatureType, Coverage
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -287,9 +288,6 @@ def _removeLayer(request,layer):
             return HttpResponse("Not allowed",status=403) 
     else:  
         return HttpResponse("Not allowed",status=403)
-
-def _updateLayer(request,layer):		
-	return HttpResponse("replace layer")
 			
 def layerController(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -297,7 +295,7 @@ def layerController(request, layername):
         return _describe_layer(request,layer)
     if (request.META['QUERY_STRING'] == "remove"):
         return _removeLayer(request,layer)
-    if (request.META['QUERY_STRING'] == "replace"):
+    if (request.META['QUERY_STRING'] == "update"):
         return _updateLayer(request,layer)
     else: 
         return render_to_response('maps/layer.html', RequestContext(request, {
@@ -334,13 +332,46 @@ def upload_layer(request):
                                   RequestContext(request, {'json': result}))
 
 
-def _handle_layer_upload(request, name=None):
+@login_required
+def _updateLayer(request, layer):
+    if request.method == 'GET':
+        cat = Layer.objects.gs_catalog
+        info = cat.get_resource(layer.name)
+        is_featuretype = info.resource_type == FeatureType.resource_type
+        
+        return render_to_response('maps/layer_replace.html',
+                                  RequestContext(request, {'layer': layer,
+                                                           'is_featuretype': is_featuretype}))
+    elif request.method == 'POST':
+        try:
+            layer, errors = _handle_layer_upload(request, layer=layer)
+        except:
+            errors = [GENERIC_UPLOAD_ERROR] 
+
+        result = {}
+        if len(errors) > 0:
+            result['success'] = False
+            result['errors'] = errors
+        else:
+            result['success'] = True
+            result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
+
+    result = json.dumps(result)
+    return render_to_response('json_html.html',
+                              RequestContext(request, {'json': result}))
+
+def _handle_layer_upload(request, layer=None):
+    """
+    handle upload of layer data. if specified, the layer given is 
+    overwritten, otherwise a new layer is created.
+    """
 
     base_file = request.FILES.get('base_file');
     if not base_file:
         return [_("You must specify a layer data file to upload.")]
     
-    if name is None:
+    if layer is None:
+        overwrite = False
         # XXX Give feedback instead of just replacing name
         # XXX We need a better way to remove xml-unsafe characters
         name = base_file.name[0:-4]
@@ -351,14 +382,26 @@ def _handle_layer_upload(request, name=None):
             proposed_name = "%s_%d" % (name, count)
             count = count + 1
         name = proposed_name
+    else:
+        overwrite = True
+        name = layer.name
 
     errors = []
+    cat = Layer.objects.gs_catalog
     
     if not name:
         return[_("Unable to determine layer name.")]
 
     # shapefile upload
     elif base_file.name.lower().endswith('.shp'):
+        # check that we are uploading the same resource 
+        # type as the existing resource.
+        if layer is not None:
+            info = cat.get_resource(name)
+            if info.resource_type != FeatureType.resource_type:
+                return [_("This resource may only be replaced with raster data.")]
+        
+        create_store = cat.create_featurestore
         dbf_file = request.FILES.get('dbf_file')
         shx_file = request.FILES.get('shx_file')
         prj_file = request.FILES.get('prj_file')
@@ -380,38 +423,41 @@ def _handle_layer_upload(request, name=None):
         if prj_file:
             cfg['prj'] = prj_file
 
-        
-        try:
-            cat = Layer.objects.gs_catalog
-            cat.create_featurestore(name, cfg)
-        except geoserver.catalog.UploadError:
-            errors.append(_("An error occurred while loading the data."))
-        except geoserver.catalog.ConflictingDataError:
-            errors.append(_("There is already a layer with the given name."))
-        
+
     # any other type of upload
     else:
-        try:
-            # ... we attempt to let geoserver figure it out ? 
-            cat = Layer.objects.gs_catalog
-            cat.create_coveragestore(name, base_file)
-        except geoserver.catalog.UploadError:
-            errors.append(_("An error occurred while loading the data."))
-        except geoserver.catalog.ConflictingDataError:
-            errors.append(_("There is already a layer with the given name."))
+        if layer is not None:
+            info = cat.get_resource(name)
+            if info.resource_type != Coverage.resource_type:
+                return [_("This resource may only be replaced with shapefile data.")]
 
-    if len(errors) == 0: 
+        # ... we attempt to let geoserver figure it out, guessing it is coverage 
+        create_store = cat.create_coveragestore
+        cfg = base_file
+
+    try:
+        create_store(name, cfg, overwrite=overwrite)
+    except geoserver.catalog.UploadError:
+        errors.append(_("An error occurred while loading the data."))
+    except geoserver.catalog.ConflictingDataError:
+        errors.append(_("There is already a layer with the given name."))
+
+
+    # if we successfully created the store in geoserver...
+    if len(errors) == 0 and layer is None:
         try:
             info = cat.get_resource(name)
             typename = info.store.workspace.name + ':' + info.name
+            
+            # if we created a new store, create a new layer
             layer = Layer.objects.create(name=info.name, 
                                          store=info.store.name,
                                          storeType=info.store.resource_type,
                                          typename=typename,
                                          workspace=info.store.workspace.name)
             layer.save()
-            return layer, errors
         except:
+            layer = None
             errors.append(GENERIC_UPLOAD_ERROR)
 
-    return None, errors
+    return layer, errors
