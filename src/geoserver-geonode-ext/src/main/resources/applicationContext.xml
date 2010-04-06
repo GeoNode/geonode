@@ -81,9 +81,13 @@
     <constructor-arg ref="processStorageManagerFactory">
       <description>factory to create storage managers for each submitted async process</description>
     </constructor-arg>
+    <constructor-arg value="5">
+      <description>process eviction check period in seconds. Instructs the controller to check for process eviction
+        every X seconds</description>
+    </constructor-arg>
     <constructor-arg value="10">
-      <description>process eviction period in seconds. Instructs the controller to evict finished processes every a
-        specified period of time</description>
+      <description>Process eviction timeout. Instructs the controller to remove dead processes (and any data they may be
+        holding) X MINUTES</description>
     </constructor-arg>
   </bean>
 

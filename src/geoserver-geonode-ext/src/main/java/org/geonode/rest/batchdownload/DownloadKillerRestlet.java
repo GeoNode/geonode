@@ -17,7 +17,7 @@ import org.restlet.data.Status;
  * <p>
  * Output: no content. Response status will be {@code 200 (OK)} if the process were running and has
  * been killed, or {@code 204 (SUCCESS NO CONTENT)} if the process has already finished at the time
- * the kill signal was sent.
+ * the kill signal was sent. {@code 404 NOT FOUND} will be returned if the process didn't exist.
  * </p>
  */
 public class DownloadKillerRestlet extends Restlet {
