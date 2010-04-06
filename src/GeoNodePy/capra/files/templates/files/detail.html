@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load navbar %}
 
-{% block title %} {% trans "AME Data" noop %} {% endblock %}
+{% block title %} {% trans "AME Data"  %} {% endblock %}
 
 {% block main %}
   <div id="description"><h3>{{file.name}}</h3></div>
@@ -20,9 +20,9 @@
 <h3>Manage</h3>
 {% if not request.user.is_anonymous %}
 <ul>
-  <li><a href="{% url capra.files.views.dispatch file.id %}?remove">{% trans "Remove" noop %}</a></li>
-  <li><a href="{% url capra.files.views.edit file.id %}">{% trans "Edit Metadata" noop %}</a></li>
-  <li><a href="{% url capra.files.views.dispatch file.id %}?update">{% trans "Replace File" noop %}</a></li>
+  <li><a href="{% url capra.files.views.dispatch file.id %}?remove">{% trans "Remove"  %}</a></li>
+  <li><a href="{% url capra.files.views.edit file.id %}">{% trans "Edit Metadata"  %}</a></li>
+  <li><a href="{% url capra.files.views.dispatch file.id %}?update">{% trans "Replace File"  %}</a></li>
 </ul>
 {%else %}
 <a href="{% url login %}">Login</a> for additional options.
