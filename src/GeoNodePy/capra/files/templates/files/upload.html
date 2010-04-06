@@ -5,12 +5,98 @@
 {% block title %} {% trans "Upload AME Data" noop %} {% endblock %}
 
 {% block main %}
-<h3>{% trans "Upload AME Data" noop %}</h3>
-<form action="{% url capra.files.views.upload %}" method="POST" enctype="multipart/form-data">
-  {{form.as_p}}
-  <br/>
-  <input type="submit" />
-</form>
+
+  <div id="upload_form">
+  </div>
+
+<script type="text/javascript">
+Ext.onReady(function(){
+  
+  var form_target = "{% url capra.files.views.upload %}"
+
+  var base_file = new Ext.ux.form.FileUploadField({
+      id: 'ame_file',
+      emptyText: 'Select an AME data file',
+      fieldLabel: 'File',
+      name: 'file',
+      allowBlank: false
+  });
+
+  var title_input = new Ext.form.TextField({
+    id: 'title',
+    name: 'title',
+    fieldLabel: 'Title',
+    emptyText: '(optional) if no title is given, the filename is used.',
+    allowBlank: true, 
+  });
+  
+  var scenario_input = new Ext.form.TextField({
+    id: 'scenario',
+    name: 'scenario',
+    fieldLabel: 'Scenario',
+    emptyText: 'Enter hazard scenario',
+    allowBlank: false    
+  });
+  
+  var country_input = new Ext.form.TextField({
+    id: 'country',
+    name: 'country',
+    fieldLabel: 'Country',
+    emptyText: 'Enter hazard country',
+    allowBlank: false    
+  });
+  
+  var fp = new Ext.FormPanel({
+    renderTo: 'upload_form',
+    fileUpload: true,
+    width: 500,
+    frame: true,
+    title: 'Upload AME Data',
+    autoHeight: true,
+    bodyStyle: 'padding: 10px 10px 0 10px;',
+    labelWidth: 50,
+    defaults: {
+        anchor: '95%',
+        msgTarget: 'side'
+    },
+    items: [base_file, title_input, scenario_input, country_input],
+    buttons: [{
+        text: 'Upload',
+        handler: function(){
+            if(fp.getForm().isValid()) {
+              fp.getForm().submit({
+                  submitEmptyText: false,
+                  url: form_target,
+                  waitMsg: 'Uploading your data...',
+                  success: function(fp, o) {
+                      document.location = o.result.redirect_to;
+                  },
+                  failure: function(fp, o) {
+                      error_message = '<ul>';
+                      for (var i = 0; i < o.result.errors.length; i++) {
+                          error_message += '<li>' + o.result.errors[i] + '</li>'
+                      }
+                      error_message += '</ul>'
+                      
+                      Ext.Msg.show({
+                          title: "Error",
+                          msg: error_message,
+                          minWidth: 200,
+                          modal: true,
+                          icon: Ext.Msg.ERROR,
+                          buttons: Ext.Msg.OK
+                      });
+                  }
+                  
+              });
+            }
+          }
+      }]
+    });
+
+  });
+</script>
+
 {% endblock %}
 
 {% block sidebar %}
