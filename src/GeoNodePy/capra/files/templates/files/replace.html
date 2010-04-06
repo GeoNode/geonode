@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load navbar %}
 
-{% block title %} {% trans "Replace AME Data" noop %} {% endblock %}
+{% block title %} {% trans "Replace AME Data"  %} {% endblock %}
 
 {% block main %}
 
@@ -90,7 +90,7 @@ Ext.onReady(function(){
 {% endblocktrans %}
 
 <p><a href="{% url capra.files.views.dispatch file.id %}">
-  {% trans "Return to viewing details" noop %}
+  {% trans "Return to viewing details"  %}
 </a></p>
 
 {% endblock %}

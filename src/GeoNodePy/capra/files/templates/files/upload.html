@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load navbar %}
 
-{% block title %} {% trans "Upload AME Data" noop %} {% endblock %}
+{% block title %} {% trans "Upload AME Data"  %} {% endblock %}
 
 {% block main %}
 
@@ -100,6 +100,6 @@ Ext.onReady(function(){
 {% endblock %}
 
 {% block sidebar %}
-<h3>Instructions</h3>
-<p>Choose a local AME file to upload using the form to the left.  Please include relevant metadata describing the contents of the file.</p>
+<h3>{% trans "Instructions" %}</h3>
+<p>{% trans "Choose a local AME file to upload using the form to the left.  Please include relevant metadata describing the contents of the file." %}</p>
 {% endblock %}

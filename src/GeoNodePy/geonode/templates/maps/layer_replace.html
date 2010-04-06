@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load geonode_media %}
 
-{% block title %} {% trans "Update Layer" noop %} {% endblock %}
+{% block title %} {% trans "Update Layer"  %} {% endblock %}
 
 {% block main %}
 
@@ -139,18 +139,18 @@ Ext.onReady(function(){
 
 
 {% block sidebar %}
-<h3>{%trans "Update Layer" noop %} "{{layer.name}}"</h3>
-<p>{% trans "This form allows you to update the data for this layer." noop %}</p>
-<p>{% trans "Updated data must be the same format as the data already in place, e.g. " noop %}
+<h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
+<p>{% trans "This form allows you to update the data for this layer."  %}</p>
+<p>{% trans "Updated data must be the same format as the data already in place, e.g. "  %}
   {% if is_featuretype %}
   a Shapefile.
   {% else %}
   a GeoTIFF.
   {% endif %}
   </p>
-<p>{% trans "Select a layer data file and submit the form to begin the transfer." noop %}</p>
+<p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
 
-<h3>{% trans "This action affects the following maps:" noop %}</h3>
+<h3>{% trans "This action affects the following maps:"  %}</h3>
 <p>
 <ul>
 	{% for map in layer.maps %}
@@ -162,7 +162,7 @@ Ext.onReady(function(){
 </p>
 <p></p>
 
-<h3>{% trans "Supported Formats" noop %}</h3>
+<h3>{% trans "Supported Formats"  %}</h3>
 
 <ul>
   {% if is_featuretype %}

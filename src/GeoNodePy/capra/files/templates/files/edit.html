@@ -2,10 +2,10 @@
 {% load i18n %}
 {% load navbar %}
 
-{% block title %} {% trans "Upload AME Data" noop %} {% endblock %}
+{% block title %} {% trans "Upload AME Data"  %} {% endblock %}
 
 {% block main %}
-<h3>{% trans "Edit AME Metadata" noop %}</h3>
+<h3>{% trans "Edit AME Metadata"  %}</h3>
 <form action="{% url capra.files.views.edit file.id %}" method="POST" >
   {{form.as_p}}
   <br/>
@@ -21,6 +21,6 @@
 {% endblocktrans %}
 
 <p><a href="{% url capra.files.views.dispatch file.id %}">
-  {% trans "Return to viewing details" noop %}
+  {% trans "Return to viewing details"  %}
 </a></p>
 {% endblock %}
