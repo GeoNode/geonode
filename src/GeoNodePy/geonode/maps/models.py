@@ -3,6 +3,7 @@ from django.db import models
 from owslib.wms import WebMapService
 from geoserver.catalog import Catalog
 import httplib2
+import math
 
 _wms = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -73,12 +74,36 @@ class Layer(models.Model):
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
-        #TODO: This function is just a stub
-        return [
-            ("SHAPE-ZIP", "%swfs?request=GetFeature&typename=%s&outputformat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)),
-            # ("application/vnd.google-earth.kml+xml", "%swms?request=GetMap&layers=%s&outputformat=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)) 
-            #, ("application/pdf", "%swms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
-        ]
+ 
+        # import pdb; pdb.set_trace();
+
+        bbox = self.resource.latlon_bbox
+
+        dx = float(bbox[1]) - float(bbox[0])
+        dy = float(bbox[3]) - float(bbox[2])
+
+        dataAspect = dx / dy
+
+        height = 550
+        width = int(height * dataAspect)
+
+        # bbox: this.adjustBounds(widthAdjust, heightAdjust, values.llbbox).toString(),
+
+        srs = bbox[4]
+        bboxString = "%s,%s,%s,%s" % (bbox[0], bbox[2], bbox[1], bbox[3])
+
+        links = []        
+
+        if self.resource.resource_type == "featureType":
+            links.append(("SHAPE-ZIP", "%swfs?request=GetFeature&typename=%s&outputformat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)))
+        elif self.resource.resource_type == "coverage":
+            links.append(("GeoTiff", "%swms?request=GetMap&layers=%s&Format=image/geotiff&height=%s&width=%s&srs=%s&bbox=%s" % (settings.GEOSERVER_BASE_URL, self.typename, height, width, srs, bboxString)))
+
+        # ("application/vnd.google-earth.kml+xml", "%swms?request=GetMap&layers=%s&outputformat=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)) 
+        # ("application/pdf", "%swms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
+
+        print(links)
+        return links
 
     def metadata_links(self):
         """Returns a list of (type, URL) tuples for known metadata documents
