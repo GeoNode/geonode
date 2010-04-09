@@ -67,25 +67,6 @@ if (window.Embed) {
   });
 }
 
-if (window.DataPage) {
-    Ext.apply(DataPage.prototype, {
-        ameLabelText: gettext("AME File"),
-        countryLabelText: gettext("Country"),
-        createMapText : gettext("Create Map"),
-        dataGridText : gettext("Data"),
-        dataNameHeaderText : gettext("Name"),
-        dataQueryableHeaderText : gettext("Queryable"),
-        dataTitleHeaderText : gettext("Title"),
-        mapAbstractLabelText: gettext("Abstract"),
-        mapGridText : gettext("Map"),
-        mapTitleLabelText: gettext("Title"),
-        openMapText : gettext("Open Map"),
-        pluralFiles: gettext("Files"),
-        scenarioLabelText: gettext("Scenario"),
-        singularFile: gettext("File")
-    });
-}
-
 if (window.MapGrid) {
     Ext.apply(MapGrid.prototype, {
         createMapText : gettext("Create Map"),
