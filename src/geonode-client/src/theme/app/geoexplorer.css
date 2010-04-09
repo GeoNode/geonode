@@ -107,6 +107,7 @@
 
 div.report { 
     background-color: white;
+    height: 100%;
 }
 
 div.report table, div.report td, div.report th { 
