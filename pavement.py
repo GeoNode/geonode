@@ -297,6 +297,13 @@ def package_geoserver(options):
 
 
 @task
+@needs('package_dir', 'setup_geonetwork')
+def package_geonetwork(options):
+    """Package GeoNetwork WAR file for deployment."""
+    path('webapps/geonetwork.war').copy(options.deploy.out_dir)
+
+
+@task
 @needs('package_dir')
 def package_webapp(options):
     """Package (Python, Django) web application and dependencies."""
@@ -312,6 +319,7 @@ def package_webapp(options):
 @needs(
     'build',
     'package_geoserver',
+    'package_geonetwork',
     'package_webapp',
     'package_client',
     'package_bootstrap'
