@@ -7,14 +7,32 @@
 {% block header_append %}
 <script type="text/javascript">
 Ext.onReady(function(){
-  var app = new CommunityPage({
-  /* The URL to a REST map configuration service.  This service 
-  * provides listing and, with an authenticated user, saving of 
-  * maps on the server for sharing and editing.
-  */
-  rest: "{%url geonode.maps.views.maps %}",
-  proxy: "/proxy/?url="
+  
+  var rest_url = "{%url geonode.maps.views.maps %}";
+
+  var filterStore = function(store) {
+    store.filter("endorsed", false);
+  };
+
+  var mapGrid = new MapGrid({
+      store : new Ext.data.JsonStore({
+          url: rest_url,
+          root: 'maps',
+          id: 'id',
+          fields: [
+              {name: 'id', mapping: 'id'},
+              {name: "title", mapping: "config.about.title"},
+              {name: "abstract", mapping: "config.about.abstract"},
+              {name: "contact", mapping: "config.about.contact"},
+              {name: "endorsed", mapping: "config.about.endorsed"}
+          ],
+          autoLoad: true,
+          listeners : {
+              "load" : filterStore
+          }
+      })
   });
+
 });
 </script> 
 {% endblock %}
