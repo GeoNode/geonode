@@ -45,9 +45,9 @@ def report(request, format):
                 statistics[hazard] = [(period.length,stats)]
                 md = layer_record.metadata()
                 if md: 
-                    stats['author'] = md.get('title', None)
+                    stats['author'] = getattr(md,'title',None)
                 if md:
-                    stats['url'] = md.get('url', None)
+                    stats['url'] = getattr(md, 'url', None)
         data_for_report['statistics'] = statistics
         return render_to_response("hazard/report.html", RequestContext(request, {
             "data": data_for_report,
