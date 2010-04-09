@@ -6,13 +6,14 @@
   Map of {{map.title}}
 </h3>
 <p><strong>Abstract:</strong> {{map.abstract}}</p>
-<p><strong>Keywords:</strong> </p>
-<p><strong>Citation:</strong> </p>
-<p><strong>Contact:</strong> {% autoescape off %}{{map.contact}}{% endautoescape %}</p> 
 
 <iframe src="/maps/{{map.id}}/embed" width="550px" height="400px"> 
   <p>Your broswer does not support iframes</p>
 </iframe>
+
+<p><strong>Keywords:</strong> </p>
+<p><strong>Citation:</strong> </p>
+<p><strong>Contact:</strong> {% autoescape off %}{{map.contact}}{% endautoescape %}</p> 
 
 {% endblock %} 
 {% block sidebar %} 
