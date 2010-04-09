@@ -10,7 +10,7 @@
     var rest_url = "{%url geonode.maps.views.maps %}"; 
 
     var filterStore = function(store) {
-      store.filter("endorsed", true);
+      return store.filter("endorsed", true);
     };
 
     var mapGrid = new MapGrid({
