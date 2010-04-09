@@ -75,8 +75,6 @@ class Layer(models.Model):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
  
-        # import pdb; pdb.set_trace();
-
         bbox = self.resource.latlon_bbox
 
         dx = float(bbox[1]) - float(bbox[0])
@@ -102,7 +100,6 @@ class Layer(models.Model):
         # ("application/vnd.google-earth.kml+xml", "%swms?request=GetMap&layers=%s&outputformat=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)) 
         # ("application/pdf", "%swms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
 
-        print(links)
         return links
 
     def metadata_links(self):
