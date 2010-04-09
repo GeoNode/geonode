@@ -45,6 +45,9 @@
 {% block main %}
 <div id="description"> <h3> {{ layer.resource.title|default:layer.typename }} </h3> </div>
 <p> <strong>{% trans "Abstract" %}:</strong> {{ layer.resource.abstract|default:_("No abstract for this layer.") }} </p>
+
+<div id="preview_map"></div>
+
 <p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>
 <p> <strong>{% trans "Keywords" %}:</strong> {{ layer.resource.keywords|join:", " }}</p>
 <p> <strong>{% trans "Citation" %}:</strong> 
@@ -57,7 +60,7 @@
     {{ layer.attribute_names|join:", " }}
 </p>
 <p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
-<div id="preview_map"></div>
+
 {% endblock %}
 
 {% block sidebar %}
