@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
 
 import org.geonode.process.batchdownload.geotiff.ZippedGeoTiffCoverageWriter;
-import org.geonode.process.batchdownload.shp.ShapeZipFeatureCollectionWriter;
+import org.geonode.process.batchdownload.shp.ShapeZipWriter;
 import org.geonode.process.control.AsyncProcess;
 import org.geonode.process.storage.Folder;
 import org.geonode.process.storage.Resource;
@@ -23,7 +23,7 @@ import org.geonode.process.storage.StorageManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
-import org.geotools.feature.FeatureCollection;
+import org.geotools.data.Query;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
 import org.geotools.text.Text;
@@ -185,8 +185,6 @@ final class BatchDownload extends AsyncProcess {
         vectorSource = (FeatureSource<SimpleFeatureType, SimpleFeature>) layerRef.getVectorSource();
 
         LOGGER.finest("Obtaining layer's feature collection...");
-        FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
-        featureCollection = vectorSource.getFeatures();
 
         Charset defaultCharset = Charset.forName("UTF-8");
 
@@ -195,8 +193,8 @@ final class BatchDownload extends AsyncProcess {
         try {
             File tempDir = tmpDir.getFile();
 
-            ShapeZipFeatureCollectionWriter shapeArchiver = new ShapeZipFeatureCollectionWriter();
-            shapeArchiver.write(featureCollection, zipOut, defaultCharset, tempDir, monitor);
+            ShapeZipWriter shapeArchiver = new ShapeZipWriter();
+            shapeArchiver.write(vectorSource, Query.ALL, zipOut, defaultCharset, tempDir, monitor);
         } finally {
             tmpDir.delete();
         }
