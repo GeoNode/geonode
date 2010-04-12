@@ -231,12 +231,6 @@ public class ShapeZipWriter {
                     writer.write();
                     progress += featureProgressPercent;
                     monitor.progress(progress);
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
                 }
             } finally {
                 features.close();
