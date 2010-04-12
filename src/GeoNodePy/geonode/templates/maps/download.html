@@ -1,0 +1,54 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block header_append %} 
+<script  type="text/javascript">
+   
+    Ext.onReady(function() { 
+        var download = new Ext.Button({
+            handler: function() { 
+                        Ext.Ajax.request({
+                            url : "/geoserver/rest/process/batchDownload/launch/",
+                            params: {% autoescape off %} {{map.json}} {% endautoescape %} ,
+                            method : 'POST',
+                            success : function () { alert("everything went well")}, 
+                            failure : function () { Ext.MessageBox.alert("Something went wrong")} 
+                        }); 
+            },
+            text:'Download data',
+            renderTo: "download"
+        });
+        var check = new Ext.Button({ 
+            handler: function() {
+                alert('canncel download'); 
+            },
+            text: 'Check Download',
+            renderTo: "check"        
+        }); 
+        var canncel = new Ext.Button({ 
+            handler: function() { alert('canncel download'); },
+            text: 'Canncel download',
+            renderTo: "canncel"
+        });
+    });
+
+</script>
+{% endblock %} 
+
+{% block main %}
+    <h3>Download {{map.title}}</h3>
+    <hr />
+    <ol>
+      {% for layer in map.layers %} 
+      <li> {{layer.name}} </li>
+    {% endfor %} 
+     </ol>
+    <!--Need to use java library here -->
+    <table id="download-control"> 
+      <tr>
+        <td><div id="download"></div></td>
+        <td><div id="canncel"></div></td> 
+        <td><div id="check"></div></td> 
+      </tr> 
+    </table>
+{% endblock %}
