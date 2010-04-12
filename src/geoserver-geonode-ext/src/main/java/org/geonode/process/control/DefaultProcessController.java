@@ -7,6 +7,7 @@ import static org.geonode.process.control.ProcessStatus.FINISHED;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geonode.process.storage.StorageManager;
@@ -26,9 +28,10 @@ import org.geotools.process.Process;
 import org.geotools.process.ProcessExecutor;
 import org.geotools.process.Progress;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
-public class DefaultProcessController implements ProcessController {
+public class DefaultProcessController implements ProcessController, DisposableBean {
 
     private static final Logger LOGGER = Logging.getLogger(DefaultProcessController.class);
 
@@ -76,9 +79,37 @@ public class DefaultProcessController implements ProcessController {
                 + "s and process eviction timeout = " + processEvictionMinutes + "m");
     }
 
+    /**
+     * @see org.springframework.beans.factory.DisposableBean#destroy()
+     */
+    public void destroy() throws Exception {
+        LOGGER.info("Shutting down process controller....");
+
+        evictorExecutor.shutdownNow();
+        Set<Long> runningProcesses = new HashSet<Long>(asyncProcesses.keySet());
+        if (runningProcesses.size() > 0) {
+
+            for (Long processId : runningProcesses) {
+                try {
+                    LOGGER.info("Killing process " + processId
+                            + " as the controller is shutting down");
+                    kill(processId);
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Exception killing process " + processId
+                            + " while shutting down process controller. Continuing...", e);
+                }
+            }
+        }
+        LOGGER.info("Process controller shut down.");
+    }
+
     @Override
     protected void finalize() {
-        evictorExecutor.shutdownNow();
+        try {
+            destroy();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
