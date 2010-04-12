@@ -5,11 +5,9 @@
 package org.geonode.process.batchdownload.shp;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
@@ -20,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.geoserver.data.util.IOUtils;
@@ -129,7 +126,7 @@ public class ShapeZipFeatureCollectionWriter {
                             || name.endsWith(".prj") || name.endsWith(".cst");
                 }
             };
-            zipDirectory(tempDir, zipOut, filter);
+            IOUtils.zipDirectory(tempDir, zipOut, filter);
         }
 
         return shapefileCreated;
@@ -472,41 +469,5 @@ public class ShapeZipFeatureCollectionWriter {
         }
 
         return sfds;
-    }
-
-    public static void zipDirectory(File directory, ZipOutputStream zipout,
-            final FilenameFilter filter) throws IOException, FileNotFoundException {
-        zipDirectory(directory, "", zipout, filter);
-    }
-
-    /**
-     * See {@link #zipDirectory(File, ZipOutputStream, FilenameFilter)}, this version handles the
-     * prefix needed to recursively zip data preserving the relative path of each
-     */
-    private static void zipDirectory(File directory, String prefix, ZipOutputStream zipout,
-            final FilenameFilter filter) throws IOException, FileNotFoundException {
-        File[] files = directory.listFiles(filter);
-        for (File file : files) {
-            if (file.exists()) {
-                if (file.isDirectory()) {
-                    // recurse and append
-                    zipDirectory(file, prefix + file.getName() + "/", zipout, filter);
-                } else {
-                    ZipEntry entry = new ZipEntry(prefix + file.getName());
-                    zipout.putNextEntry(entry);
-
-                    // copy file by reading 4k at a time (faster than buffered reading)
-                    InputStream in = new FileInputStream(file);
-                    int c;
-                    byte[] buffer = new byte[4 * 1024];
-                    while (-1 != (c = in.read(buffer))) {
-                        zipout.write(buffer, 0, c);
-                    }
-                    zipout.closeEntry();
-                    in.close();
-                }
-            }
-        }
-        zipout.flush();
     }
 }
