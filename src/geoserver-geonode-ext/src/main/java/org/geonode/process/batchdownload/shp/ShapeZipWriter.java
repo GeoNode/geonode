@@ -84,6 +84,14 @@ public class ShapeZipWriter {
     }
 
     /**
+     * Performs the {@code query} against the provided {@code source} and writes down the resulting
+     * features as a shapefile (or collection of shapefiles, one per geometry type), into the
+     * provided {@link ZipOutputStream}, reporting progress to {@code monitor} and using {@code
+     * tempDir} to temporary store the shapefiles before being compressed to the output stream.
+     * 
+     * @param source
+     * @param query
+     * @param
      * @param monitor
      * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
      */
@@ -100,7 +108,11 @@ public class ShapeZipWriter {
         monitor.setTask(Text.text("Querying " + schema.getTypeName()));
 
         final int featureCount = source.getCount(query);
-        final float featureProgressPercent = featureCount == -1 ? 0F : 100F / featureCount;
+        /**
+         * Max progress when writing the shapefiles to the temp dir is 50%, so that we guesstimate
+         * zipping the files out takes the other 50%
+         */
+        final float featureProgressPercent = featureCount == -1 ? 0F : 50F / featureCount;
 
         final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
         featureCollection = source.getFeatures(query);
@@ -108,10 +120,24 @@ public class ShapeZipWriter {
         monitor.setTask(Text.text("Compressing " + schema.getTypeName()));
 
         try {
-            boolean shapeFileCreated = doWrite(zipOut, defaultCharset, tempDir, monitor, schema,
+            boolean shapefileCreated = doWrite(zipOut, defaultCharset, tempDir, monitor, schema,
                     featureProgressPercent, featureCollection);
+
+            if (shapefileCreated) {
+                // zip all the files produced
+                String[] fileNameExtensions = { ".shp", ".shx", ".dbf", ".prj", ".cst" };
+                float progressStep = 50F / fileNameExtensions.length;
+                float progress = 50F;// start at 50%
+                for (String ext : fileNameExtensions) {
+                    FilenameFilter filter = filterFor(ext);
+                    IOUtils.zipDirectory(tempDir, zipOut, filter);
+                    progress += progressStep;
+                    monitor.progress(progress);
+                }
+            }
+
             monitor.complete();
-            return shapeFileCreated;
+            return shapefileCreated;
         } catch (IOException ioe) {
             monitor.exceptionOccurred(ioe);
             throw ioe;
@@ -119,6 +145,15 @@ public class ShapeZipWriter {
             monitor.exceptionOccurred(e);
             throw e;
         }
+    }
+
+    private FilenameFilter filterFor(final String ext) {
+        final FilenameFilter filter = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(ext);
+            }
+        };
+        return filter;
     }
 
     @SuppressWarnings("unchecked")
@@ -147,17 +182,6 @@ public class ShapeZipWriter {
             writeCollectionToShapefile(featureCollection, tempDir, defaultCharset, monitor,
                     featureProgressPercent);
             shapefileCreated = true;
-        }
-
-        if (shapefileCreated) {
-            // zip all the files produced
-            final FilenameFilter filter = new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".shp") || name.endsWith(".shx") || name.endsWith(".dbf")
-                            || name.endsWith(".prj") || name.endsWith(".cst");
-                }
-            };
-            IOUtils.zipDirectory(tempDir, zipOut, filter);
         }
 
         return shapefileCreated;
