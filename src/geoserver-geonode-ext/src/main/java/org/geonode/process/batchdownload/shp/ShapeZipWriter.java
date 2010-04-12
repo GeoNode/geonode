@@ -29,13 +29,16 @@ import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.response.RemappingFeatureCollection;
 import org.geoserver.wfs.response.ShapeZipOutputFormat;
 import org.geotools.data.DataStore;
-import org.geotools.data.FeatureStore;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureWriter;
+import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.text.Text;
+import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -62,9 +65,9 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author ported to gs 1.6.x by Saul Farber, MassGIS, saul.farber@state.ma.us
  * @author adapted to this by groldan
  */
-public class ShapeZipFeatureCollectionWriter {
+public class ShapeZipWriter {
 
-    private static final Logger LOGGER = Logging.getLogger(ShapeZipFeatureCollectionWriter.class);
+    private static final Logger LOGGER = Logging.getLogger(ShapeZipWriter.class);
 
     private String outputFileName;
 
@@ -80,7 +83,7 @@ public class ShapeZipFeatureCollectionWriter {
         FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
     }
 
-    public ShapeZipFeatureCollectionWriter() {
+    public ShapeZipWriter() {
 
     }
 
@@ -93,28 +96,65 @@ public class ShapeZipFeatureCollectionWriter {
      * @param monitor
      * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
      */
-    @SuppressWarnings("unchecked")
-    public boolean write(FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
+    public boolean write(FeatureSource<SimpleFeatureType, SimpleFeature> source, Query query,
             ZipOutputStream zipOut, Charset defaultCharset, File tempDir, ProgressListener monitor)
+            throws IOException {
+
+        if (monitor == null) {
+            monitor = new NullProgressListener();
+        }
+        final SimpleFeatureType schema = source.getSchema();
+
+        monitor.started();
+        monitor.setTask(Text.text("Querying " + schema.getTypeName()));
+
+        final int featureCount = source.getCount(query);
+        final float featureProgressPercent = featureCount == -1 ? 0F : 100F / featureCount;
+
+        final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
+        featureCollection = source.getFeatures(query);
+
+        monitor.setTask(Text.text("Compressing " + schema.getTypeName()));
+
+        try {
+            boolean shapeFileCreated = doWrite(zipOut, defaultCharset, tempDir, monitor, schema,
+                    featureProgressPercent, featureCollection);
+            monitor.complete();
+            return shapeFileCreated;
+        } catch (IOException ioe) {
+            monitor.exceptionOccurred(ioe);
+            throw ioe;
+        } catch (RuntimeException e) {
+            monitor.exceptionOccurred(e);
+            throw e;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean doWrite(ZipOutputStream zipOut, Charset defaultCharset, File tempDir,
+            ProgressListener monitor, final SimpleFeatureType schema,
+            final float featureProgressPercent,
+            final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection)
             throws IOException {
 
         // if an emtpy result out of feature type with unknown geometry is created, the
         // zip file will be empty and the zip output stream will break
         boolean shapefileCreated = false;
 
-        if (featureCollection.getSchema().getGeometryDescriptor() == null) {
-            throw new WFSException("Cannot write geometryless shapefiles, yet "
-                    + featureCollection.getSchema() + " has no geometry field");
+        final GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
+        if (geometryDescriptor == null) {
+            throw new WFSException("Cannot write geometryless shapefiles, yet " + schema
+                    + " has no geometry field");
         }
-        Class geomType = featureCollection.getSchema().getGeometryDescriptor().getType()
-                .getBinding();
+        Class geomType = geometryDescriptor.getType().getBinding();
         if (GeometryCollection.class.equals(geomType) || Geometry.class.equals(geomType)) {
             // in this case we fan out the output to multiple shapefiles
             shapefileCreated = writeCollectionToShapefiles(featureCollection, tempDir,
-                    defaultCharset, monitor);
+                    defaultCharset, monitor, featureProgressPercent);
         } else {
             // simple case, only one and supported type
-            writeCollectionToShapefile(featureCollection, tempDir, defaultCharset, monitor);
+            writeCollectionToShapefile(featureCollection, tempDir, defaultCharset, monitor,
+                    featureProgressPercent);
             shapefileCreated = true;
         }
 
@@ -140,11 +180,15 @@ public class ShapeZipFeatureCollectionWriter {
      * @param tempDir
      *            the temp directory into which it should be written
      * @param monitor
+     * @param featureProgressPercent
+     *            per feature progress percent to report to {@code monitor}
      */
     private void writeCollectionToShapefile(FeatureCollection<SimpleFeatureType, SimpleFeature> c,
-            File tempDir, Charset charset, ProgressListener monitor) {
-        monitor.started();
+            File tempDir, Charset charset, ProgressListener monitor,
+            final float featureProgressPercent) {
         c = remapCollectionSchema(c, null);
+
+        float progress = 0F;
 
         SimpleFeatureType schema = c.getSchema();
         if (schema.getTypeName().contains(".")) {
@@ -157,7 +201,7 @@ public class ShapeZipFeatureCollectionWriter {
             c = new RetypingFeatureCollection(c, renamed);
         }
 
-        FeatureStore<SimpleFeatureType, SimpleFeature> fstore = null;
+        FeatureWriter<SimpleFeatureType, SimpleFeature> writer = null;
         ShapefileDataStore dstore = null;
         try {
             // create attribute name mappings, to be compatible
@@ -166,19 +210,39 @@ public class ShapeZipFeatureCollectionWriter {
             // - field names have a max length of 10
             Map<String, String> attributeMappings = createAttributeMappings(c.getSchema());
             // wraps the original collection in a remapping wrapper
-            FeatureCollection remapped = new RemappingFeatureCollection(c, attributeMappings);
+            FeatureCollection<SimpleFeatureType, SimpleFeature> remapped;
+            remapped = new RemappingFeatureCollection(c, attributeMappings);
             SimpleFeatureType remappedSchema = (SimpleFeatureType) remapped.getSchema();
             dstore = buildStore(tempDir, charset, remappedSchema);
-            fstore = (FeatureStore<SimpleFeatureType, SimpleFeature>) dstore.getFeatureSource();
+            writer = dstore.getFeatureWriter(remappedSchema.getTypeName(), Transaction.AUTO_COMMIT);
+
             // we need retyping too, because the shapefile datastore
             // could have sorted fields in a different order
             FeatureCollection<SimpleFeatureType, SimpleFeature> retyped = new RetypingFeatureCollection(
-                    remapped, fstore.getSchema());
-            fstore.addFeatures(retyped);
-
-            monitor.complete();
+                    remapped, remappedSchema);
+            FeatureIterator<SimpleFeature> features = retyped.features();
+            try {
+                SimpleFeature sourceFeature;
+                SimpleFeature targetFeature;
+                while (features.hasNext()) {
+                    sourceFeature = features.next();
+                    targetFeature = writer.next();
+                    targetFeature.setAttributes(sourceFeature.getAttributes());
+                    writer.write();
+                    progress += featureProgressPercent;
+                    monitor.progress(progress);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            } finally {
+                features.close();
+                writer.close();
+            }
         } catch (IOException ioe) {
-            monitor.exceptionOccurred(ioe);
             LOGGER.log(Level.WARNING, "Error while writing featuretype '" + schema.getTypeName()
                     + "' to shapefile.", ioe);
             throw new ServiceException(ioe);
@@ -296,17 +360,20 @@ public class ShapeZipFeatureCollectionWriter {
      * @param tempDir
      *            the temp directory into which it should be written
      * @param monitor
+     * @param featureProgressPercent
+     *            per feature progress percent to report to {@code monitor}
      * @return true if a shapefile has been created, false otherwise
      */
+    @SuppressWarnings("unchecked")
     private boolean writeCollectionToShapefiles(
             FeatureCollection<SimpleFeatureType, SimpleFeature> c, File tempDir, Charset charset,
-            ProgressListener monitor) {
-        monitor.started();
+            ProgressListener monitor, final float featureProgressPercent) {
         c = remapCollectionSchema(c, null);
         SimpleFeatureType schema = c.getSchema();
 
         boolean shapefileCreated = false;
 
+        float progress = 0F;
         Map<Class, StoreWriter> writers = new HashMap<Class, StoreWriter>();
         FeatureIterator<SimpleFeature> it;
         try {
@@ -330,12 +397,11 @@ public class ShapeZipFeatureCollectionWriter {
                 }
                 fw.setDefaultGeometry(f.getDefaultGeometry());
                 writer.write();
+                progress += featureProgressPercent;
+                monitor.progress(progress);
                 shapefileCreated = true;
             }
-
-            monitor.complete();
         } catch (IOException ioe) {
-            monitor.exceptionOccurred(ioe);
             LOGGER.log(Level.WARNING, "Error while writing featuretype '" + schema.getTypeName()
                     + "' to shapefile.", ioe);
             throw new ServiceException(ioe);
@@ -353,8 +419,9 @@ public class ShapeZipFeatureCollectionWriter {
                 }
             }
             // if an exception occurred make the world aware of it
-            if (stored != null)
+            if (stored != null) {
                 throw new ServiceException(stored);
+            }
         }
 
         return shapefileCreated;
