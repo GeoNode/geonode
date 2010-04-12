@@ -27,7 +27,6 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.response.RemappingFeatureCollection;
-import org.geoserver.wfs.response.ShapeZipOutputFormat;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureWriter;
@@ -57,9 +56,8 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * 
- * This class returns a shapefile encoded results of the users's query.
- * 
- * Based on {@link ShapeZipOutputFormat} from geoserver
+ * Utility class to write the contents of a queried {@link FeatureSource} to a
+ * {@link ZipOutputStream}.
  * 
  * @author originally authored by Chris Holmes, The Open Planning Project, cholmes@openplans.org
  * @author ported to gs 1.6.x by Saul Farber, MassGIS, saul.farber@state.ma.us
@@ -68,8 +66,6 @@ import com.vividsolutions.jts.geom.Polygon;
 public class ShapeZipWriter {
 
     private static final Logger LOGGER = Logging.getLogger(ShapeZipWriter.class);
-
-    private String outputFileName;
 
     /**
      * Tuple used when fanning out a collection with generic geometry types to multiple outputs
@@ -85,11 +81,6 @@ public class ShapeZipWriter {
 
     public ShapeZipWriter() {
 
-    }
-
-    public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
-        return (String[][]) new String[][] { { "Content-Disposition",
-                "attachment; filename=" + outputFileName + ".zip" } };
     }
 
     /**
