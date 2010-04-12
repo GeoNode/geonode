@@ -2,9 +2,7 @@
 {% load i18n %}
 
 {% block main %}
-<h3>
-  Map of {{map.title}}
-</h3>
+<h3>Map of {{map.title}}</h3>
 <p><strong>Abstract:</strong> {{map.abstract}}</p>
 
 <iframe src="/maps/{{map.id}}/embed" width="550px" height="400px"> 
@@ -19,7 +17,7 @@
 {% block sidebar %} 
 <div id="sidebar"> 
   <h3>Download</h3>
-  <p><a href="#"> Download all layers included in this map</a></p>
+  <p><a href="{% url geonode.maps.views.map_download map.id %}"> Download all layers included in this map</a></p>
   <h3>Layers </h3>
   <p>This map uses the following layers </p>
   <ul>

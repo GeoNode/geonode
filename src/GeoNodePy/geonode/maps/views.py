@@ -136,6 +136,13 @@ def newmap(request):
     }))
 
 
+def map_download(request, mapid):
+    map = get_object_or_404(Map,pk=mapid)
+    return render_to_response('maps/download.html', RequestContext(request, {
+         "map" : map
+    }))
+
+
 @login_required
 def deletemap(request, mapid):
     '''

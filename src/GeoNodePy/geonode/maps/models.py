@@ -3,7 +3,7 @@ from django.db import models
 from owslib.wms import WebMapService
 from geoserver.catalog import Catalog
 import httplib2
-import math
+import  simplejson
 
 _wms = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -14,7 +14,7 @@ class LayerManager(models.Manager):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
         user, password = settings.GEOSERVER_CREDENTIALS
-        self.gs_catalog = Catalog(url, user, password)
+        self.gs_catalog = Catalog(url, _user, _password)
 
 
     def slurp(self):
@@ -54,7 +54,7 @@ class Layer(models.Model):
         removes the layer from the GeoServer Catalog as
         removing it from the Django models
         """
-        # GEOSERVER_CREDENTIALS 
+        # GEOSERVER_CREDENTIALS         
         HTTP = httplib2.Http(".cache")
         HTTP.add_credentials(_user,_password)
         def _getFeatureUrl(self): 
@@ -190,6 +190,13 @@ class Layer(models.Model):
         self.publishing.styles = styles
 
     styles = property(_get_styles, _set_styles)
+    
+    @property
+    def service_type(self):
+        if self.storeType == 'coverageStore':
+            return "WCS"
+        if self.storeType == 'dataStore':
+            return "WFS"
 
     @property
     def publishing(self):
@@ -227,6 +234,33 @@ class Map(models.Model):
 
     def __unicode__(self):
         return '%s by %s' % (self.title, self.contact)
+
+    @property
+    def layers(self):
+        layers = MapLayer.objects.filter(map=self.id)
+        return  [layer for layer in layers]
+
+    @property
+    def json(self):
+        map_layers = MapLayer.objects.filter(map=self.id)
+        layers = [] 
+        # don't like this
+        for map_layer in map_layers:
+            layers.append(Layer.objects.get(typename=map_layer.name))
+        map = { 
+            "map" : { 
+                "title" : self.title, 
+                "abstract" : self.abstract, 
+                }, 
+            "layers" : [ 
+                {
+                    "name" : layer.name, 
+                    "service" : layer.service_type, 
+                    "metadataURL" : layer.name,
+                    "serviceURL" : "http://localhost/%s" %layer.name,
+                } for layer in layers ] 
+            }
+        return simplejson.dumps(map)
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
