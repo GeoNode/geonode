@@ -38,6 +38,7 @@ if (window.GeoExplorer) {
         premiumSizeLabel: gettext("Premium"),
         printTipText: gettext("Print Map"),
         printWindowTitleText: gettext("Print Preview"),
+        propertiesText: gettext("Properties"),
         publishActionText: gettext("Publish Map"),
         removeLayerActionText: gettext("Remove Layer"),
         removeLayerActionTipText: gettext("Remove Layer"),

@@ -137,6 +137,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     premiumSizeLabel: 'UT: Premium',
     printTipText: "UT:Print Map",
     printWindowTitleText: "UT:Print Preview",
+    propertiesText: "UT:Properties",
     publishActionText: 'UT:Publish Map',
     removeLayerActionText: "UT:Remove Layer",
     removeLayerActionTipText: "UT:Remove Layer",
