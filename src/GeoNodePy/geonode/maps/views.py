@@ -13,6 +13,11 @@ from django.utils.html import escape
 from django.utils.translation import ugettext as _
 import json
 import math
+from django.conf import settings
+import httplib2 
+from urllib import urlencode
+
+_user, _password = settings.GEOSERVER_CREDENTIALS
 
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
@@ -136,12 +141,53 @@ def newmap(request):
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
 
+h = httplib2.Http()
+h.add_credentials(_user,_password)
 
+@login_required
 def map_download(request, mapid):
-    map = get_object_or_404(Map,pk=mapid)
+    """ 
+    Complicated request
+    XXX To do, remove layer status once progress id done 
+    """ 
+    mapObject = get_object_or_404(Map,pk=mapid)
+    map_status = dict()
+    if request.method == 'POST': 
+        url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
+        resp, content = h.request(url,'POST',body=mapObject.json)
+        if resp.status != 404 or 400: 
+            request.session["map_status"] = eval(content)
+            map_status = eval(content)
+            msg = "Downloading Map %s with process %s" % (mapObject.title,request.session["map_status"]["id"])
+        else: 
+            msg = "Something went wrong" 
+    if request.method == 'GET':
+        if "map_status" in request.session and type(request.session["map_status"]) == dict:
+            msg = "You already started downloading a map"
+        else: 
+            msg = "You should download a map" 
     return render_to_response('maps/download.html', RequestContext(request, {
-         "map" : map
+         "map_status" : map_status,
+         "map" : mapObject,
+         "msg" : msg
     }))
+
+def check_download(request):
+    try:
+        layer = request.session["map_status"] 
+        if type(layer) == dict:
+            url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL,layer["id"])
+            resp,content = h.request(url,'GET')
+            status= resp.status
+            if resp.status == 400:
+                import pdb; pdb.set_trace()
+                return HttpResponse(content="Something went wrong",status=status)
+        else: 
+            content = "Something Went wrong" 
+            status  = 400 
+    except ValueError:
+        print "No layer_status in your session"
+    return HttpResponse(content=content,status=status)
 
 
 @login_required

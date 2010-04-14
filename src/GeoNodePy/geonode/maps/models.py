@@ -261,13 +261,14 @@ class Map(models.Model):
         map = { 
             "map" : { 
                 "title" : self.title, 
-                "abstract" : self.abstract, 
+                "abstract" : self.abstract,
+                "author" : "The GeoNode Team",
                 }, 
             "layers" : [ 
                 {
-                    "name" : layer.name, 
+                    "name" : layer.typename, 
                     "service" : layer.service_type, 
-                    "metadataURL" : layer.name,
+                    "metadataURL" : "http://localhost/fake/url/{name}".format(name=layer.name),
                     "serviceURL" : "http://localhost/%s" %layer.name,
                 } for layer in layers ] 
             }

@@ -3,34 +3,39 @@
 
 {% block header_append %} 
 <script  type="text/javascript">
-   
-    Ext.onReady(function() { 
-        var download = new Ext.Button({
-            handler: function() { 
-                        Ext.Ajax.request({
-                            url : "/geoserver/rest/process/batchDownload/launch/",
-                            params: {% autoescape off %} {{map.json}} {% endautoescape %} ,
-                            method : 'POST',
-                            success : function () { alert("everything went well")}, 
-                            failure : function () { Ext.MessageBox.alert("Something went wrong")} 
-                        }); 
-            },
-            text:'Download data',
-            renderTo: "download"
-        });
-        var check = new Ext.Button({ 
-            handler: function() {
-                alert('canncel download'); 
-            },
-            text: 'Check Download',
-            renderTo: "check"        
-        }); 
-        var canncel = new Ext.Button({ 
-            handler: function() { alert('canncel download'); },
-            text: 'Canncel download',
-            renderTo: "canncel"
-        });
-    });
+        {% if map_status %} 
+        /// the map status has some information
+        var checkStatus = setInterval("update()",1000)
+
+        function update() { 
+            Ext.Ajax.request({ 
+                url : "{% url geonode.maps.views.check_download %}",
+                method: "GET",
+                success: function(result) { 
+                    var json = Ext.util.JSON.decode(result.responseText);
+                    var count = 0 
+                    if (json["process"]["status"] === "FINISHED"){ 
+                        document.getElementById("progressBar").innerHTML = "Finished";                         
+                        location.href = "http://localhost:8001/geoserver/rest/process/batchDownload/download/" +  json["process"]["id"] ; 
+                        clearInterval(checkStatus); 
+                        
+                    } 
+                    else { 
+                        document.getElementById("progressBar").innerHTML = json["process"]["progress"] ;
+                    } 
+                },
+                failure: function() { 
+                    console.log("something went wrong"); 
+                }});                 
+                
+        };
+        
+        window.onload = checkStatus; 
+
+        {% else %} 
+          // there is no information in the map_status
+        {% endif %} 
+    
 
 </script>
 {% endblock %} 
@@ -42,13 +47,13 @@
       {% for layer in map.layers %} 
       <li> {{layer.name}} </li>
     {% endfor %} 
-     </ol>
-    <!--Need to use java library here -->
-    <table id="download-control"> 
-      <tr>
-        <td><div id="download"></div></td>
-        <td><div id="canncel"></div></td> 
-        <td><div id="check"></div></td> 
-      </tr> 
-    </table>
+     </ol>     
+     {% if map_status %} 
+        <div id="progressBar"><p>This should be a progress bar</p></div>
+     {% else %} 
+     <form action="." method="POST"> 
+       <input type="submit" value="Start downloading this map" /> 
+     </form>
+     {% endif %} 
+
 {% endblock %}
