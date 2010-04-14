@@ -63,9 +63,18 @@ class Catalog(object):
         else:
             response = self.opener.open(request)
 
-        print layer.uuid
-        print response.read()
-#TODO: Parse response, check for error report
+        # print layer.uuid
+        # print response.read()
+        # TODO: Parse response, check for error report
+
+        return self.base + "srv/en/csw?" + urllib.urlencode({
+            "request": "GetRecordById",
+            "service": "CSW",
+            "version": "2.0.2",
+            "OutputSchema": "http://www.isotc211.org/2005/gmd",
+            "ElementSetName": "full",
+            "id": layer.uuid
+        })
 
     def update_from_layer(self, record, layer):
         pass

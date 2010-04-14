@@ -42,8 +42,9 @@ class LayerManager(models.Manager):
 
                 record = gn.get_by_uuid(layer.uuid)
                 if record is None:
-                    print "Creating record from layer: " + str(layer)
-                    gn.create_from_layer(layer)
+                    md_link = gn.create_from_layer(layer)
+                    layer.metadata_links = [("text/xml", "ISO19115", md_link)]
+                    layer.save()
                 else: 
                     gn.update(record, layer)
             finally:
@@ -117,12 +118,6 @@ class Layer(models.Model):
         # ("application/pdf", "%swms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
 
         return links
-
-    def metadata_links(self):
-        """Returns a list of (type, URL) tuples for known metadata documents
-        about this data"""
-        #TODO: This function is just a stub
-        return [("GeoNode Listing", ".")]
 
     def maps(self):
         """Return a list of all the maps that use this layer"""
