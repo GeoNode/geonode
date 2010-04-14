@@ -52,6 +52,9 @@ MEDIA_ROOT = ''
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = 'http://localhost:8001/geoserver/www/'
 
+# URL to use as the base for links into the GeoNode site
+SITE_URL = 'http://localhost:8000/'
+
 GEONODE_UPLOAD_PATH = path_extrapolate('../../gs-data/www')
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -98,7 +101,16 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
                
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
 GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
+
+# The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "admin", "geoserver"
+
+# The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
+GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
+
+# The username and password for a user with write access to GeoNetwork
+GEONETWORK_CREDENTIALS = "admin", "admin"
+
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 LOGIN_REDIRECT_URL = "/"
 #Default settings for map composing application.

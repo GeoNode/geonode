@@ -454,6 +454,14 @@ def _handle_layer_upload(request, layer=None):
     if len(errors) == 0 and layer is None:
         try:
             info = cat.get_resource(name)
+            if info.resource.latlon_bbox is None:
+                # If GeoServer couldn't figure out the projection, we just
+                # assume it's lat/lon to avoid a bad GeoServer configuration
+
+                info.resource.latlon_bbox = info.resource.native_bbox
+                info.resource.projection = "EPSG:4326"
+                cat.save(info)
+
             typename = info.store.workspace.name + ':' + info.name
             
             # if we created a new store, create a new layer

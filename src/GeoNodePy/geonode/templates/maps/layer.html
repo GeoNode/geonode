@@ -66,7 +66,7 @@
 {% block sidebar %}
     <h3> {% trans "Download" %} </h3>
     <p> <strong>{% trans "Data" %}: </strong>
-        {% for type, link in layer.download_links %}
+        {% for extension, type, link in layer.download_links %}
             <a href="{{link}}">{{type}}</a>
         {% endfor %}
     </p>
