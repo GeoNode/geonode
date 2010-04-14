@@ -2,8 +2,10 @@ from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
 from geoserver.catalog import Catalog
+from geonode.geonetwork import Catalog as GeoNetwork
 import httplib2
-import  simplejson
+import simplejson
+import uuid
 
 _wms = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -16,24 +18,37 @@ class LayerManager(models.Manager):
         user, password = settings.GEOSERVER_CREDENTIALS
         self.gs_catalog = Catalog(url, _user, _password)
 
-
     def slurp(self):
         cat = self.gs_catalog
-        for store in cat.get_stores():
-            resources = store.get_resources()
-            for resource in resources:
-                if resource.name is not None and self.filter(name=resource.name).count() == 0:
-                    typename = "%s:%s" % (store.workspace.name,resource.name)
-                    models.Model.save(
-                        self.model(
-                            workspace=store.workspace.name,
-                            store=store.name,
-                            storeType=store.resource_type,
-                            name=resource.name,
-                            typename=typename
-                        )
-                    )
+        gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
+        gn.login()
 
+        for resource in cat.get_resources():
+            try:
+                store = resource.store
+                workspace = store.workspace
+
+                layer, created = self.get_or_create(name=resource.name, defaults = {
+                    "workspace": workspace.name,
+                    "store": store.name,
+                    "storeType": store.resource_type,
+                    "typename": "%s:%s" % (workspace.name, resource.name),
+                    "uuid": str(uuid.uuid4())
+                })
+
+                if layer.uuid is None:
+                    layer.uuid = str(uuid.uuid4())
+                    layer.save()
+
+                record = gn.get_by_uuid(layer.uuid)
+                if record is None:
+                    print "Creating record from layer: " + str(layer)
+                    gn.create_from_layer(layer)
+                else: 
+                    gn.update(record, layer)
+            finally:
+                pass
+        gn.logout()
 
 class Layer(models.Model):
     """
@@ -45,6 +60,7 @@ class Layer(models.Model):
     store = models.CharField(max_length=128)
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
+    uuid = models.CharField(max_length=36)
     typename = models.CharField(max_length=128)
 
 
@@ -93,9 +109,9 @@ class Layer(models.Model):
         links = []        
 
         if self.resource.resource_type == "featureType":
-            links.append(("SHAPE-ZIP", "%swfs?request=GetFeature&typename=%s&outputformat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)))
+            links.append(("zip", "Zipped Shapefile", "%swfs?request=GetFeature&typename=%s&outputformat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)))
         elif self.resource.resource_type == "coverage":
-            links.append(("GeoTiff", "%swms?request=GetMap&layers=%s&Format=image/geotiff&height=%s&width=%s&srs=%s&bbox=%s" % (settings.GEOSERVER_BASE_URL, self.typename, height, width, srs, bboxString)))
+            links.append(("tiff", "GeoTiff", "%swms?request=GetMap&layers=%s&Format=image/geotiff&height=%s&width=%s&srs=%s&bbox=%s" % (settings.GEOSERVER_BASE_URL, self.typename, height, width, srs, bboxString)))
 
         # ("application/vnd.google-earth.kml+xml", "%swms?request=GetMap&layers=%s&outputformat=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)) 
         # ("application/pdf", "%swms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
@@ -213,7 +229,7 @@ class Layer(models.Model):
             Layer.objects.gs_catalog.save(self._publishing_cache)
 
     def get_absolute_url(self):
-        return "/data/%s" % self.typename
+        return "%sdata/%s" % (settings.SITENAME, self.typename)
 
     def __str__(self):
         return "%s Layer" % self.typename
