@@ -6,12 +6,14 @@ import static org.geonode.process.batchdownload.BatchDownloadFactory.MAP_METADAT
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.geonode.process.batchdownload.geotiff.ZippedGeoTiffCoverageWriter;
@@ -112,16 +114,16 @@ final class BatchDownload extends AsyncProcess {
             }
             zipOut = new ZipOutputStream(outputStream);
         }
+
         try {
-            final float layerProgressAmount = 100F / nLayers;
-            LayerReference layerRef;
-            ProgressListener layerMonitor;
-            for (int layerN = 0; layerN < nLayers; layerN++) {
-                layerRef = layers.get(layerN);
-                layerMonitor = new SubProgressListener(monitor, layerProgressAmount);
-                zipLayer(layerRef, zipOut, layerMonitor);
-            }
+            final float layersProgressAmount = 90F;
+            final float metadataProgressAmount = 10F;
+            ProgressListener layersMonitor = new SubProgressListener(monitor, layersProgressAmount);
+            zipLayers(zipOut, layers, layersMonitor);
             try {
+                ProgressListener mdMonitor;
+                mdMonitor = new SubProgressListener(monitor, metadataProgressAmount);
+                zipMetadata(zipOut, mapDetails, layers, mdMonitor);
                 zipOut.finish();
                 zipOut.flush();
             } catch (IOException e) {
@@ -136,6 +138,86 @@ final class BatchDownload extends AsyncProcess {
         }
 
         return zipFile;
+    }
+
+    private void zipMetadata(ZipOutputStream zipOut, MapMetadata mapDetails,
+            List<LayerReference> layers, ProgressListener monitor) throws IOException {
+
+        final float progressStep = 100F / (layers.size() + 1);
+
+        monitor.started();
+
+        byte[] mapMetadata = getMapMetadata(mapDetails);
+        if (monitor.isCanceled()) {
+            return;
+        }
+        writeMdEntry(zipOut, mapMetadata, "README.txt");
+        monitor.progress(progressStep);
+
+        for (LayerReference layer : layers) {
+            byte[] layerMetadata = getLayerMetadata(layer);
+            if (monitor.isCanceled()) {
+                return;
+            }
+            if (layerMetadata != null) {
+                String fileName = layer.getName().replaceAll("[^0-9a-zA-Z]", "_") + ".xml";
+                writeMdEntry(zipOut, layerMetadata, fileName);
+            }
+            monitor.progress(monitor.getProgress() + progressStep);
+        }
+        monitor.complete();
+    }
+
+    private void writeMdEntry(ZipOutputStream zipOut, byte[] contents, String fileName)
+            throws IOException {
+        ZipEntry entry = new ZipEntry(fileName);
+        zipOut.putNextEntry(entry);
+        zipOut.write(contents);
+        zipOut.closeEntry();
+    }
+
+    private byte[] getMapMetadata(MapMetadata mapDetails) {
+        StringBuilder writer = new StringBuilder();
+        writer.append("Map: ");
+        writer.append(mapDetails.getTitle()).append('\n');
+        writer.append("Author: ");
+        writer.append(mapDetails.getAuthor()).append('\n');
+        writer.append("Abstract: ");
+        writer.append(mapDetails.getAbstract()).append('\n');
+
+        return writer.toString().getBytes();
+    }
+
+    private byte[] getLayerMetadata(LayerReference layer) {
+
+        URL metadataURL = layer.getMetadataURL();
+        if (metadataURL == null) {
+            return null;
+        }
+        MetadataDownloader mddownloader = new MetadataDownloader();
+        try {
+            byte[] mdRecord = mddownloader.download(metadataURL);
+            return mdRecord;
+        } catch (IOException e) {
+            LOGGER.log(Level.INFO, "Error getting metadtata record for "
+                    + metadataURL.toExternalForm(), e);
+            return null;
+        }
+    }
+
+    private void zipLayers(final ZipOutputStream zipOut, final List<LayerReference> layers,
+            final ProgressListener monitor) throws ProcessException {
+
+        final int numLayers = layers.size();
+        final float layerProgressAmount = 100F / numLayers;
+
+        LayerReference layerRef;
+        ProgressListener layerMonitor;
+        for (int layerN = 0; layerN < numLayers; layerN++) {
+            layerRef = layers.get(layerN);
+            layerMonitor = new SubProgressListener(monitor, layerProgressAmount);
+            zipLayer(layerRef, zipOut, layerMonitor);
+        }
     }
 
     private Resource getTargetFileHandle(final String mapName, final StorageManager storageManager) {

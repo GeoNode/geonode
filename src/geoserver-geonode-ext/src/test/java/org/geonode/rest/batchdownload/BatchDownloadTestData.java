@@ -40,4 +40,18 @@ class BatchDownloadTestData {
             + "', service:'WCS', metadataURL:'', serviceURL='http://localhost/it/doesnt/matter/so/far'}"
             + "]}";
 
+    public static final String VECTOR_AND_RASTER_REQUEST_WITH_METADATA = "{"
+            + "map:{title:'fake Map', abstract: 'test request containing a raster and a vector layer', author:'myself'}, "
+            + " layers:[{name:'"
+            + VECTOR_LAYER_NAME
+            + "', service:'WFS', metadataURL:'"
+            + BatchDownloadTestData.class.getResource("test-data/vector_layer_metadata.xml")
+                    .toExternalForm()
+            + "', serviceURL='http://localhost/it/doesnt/matter/so/far'},"
+            + "{name:'"
+            + RASTER_LAYER_NAME
+            + "', service:'WCS', metadataURL:'"
+            + BatchDownloadTestData.class.getResource("test-data/raster_layer_metadata.xml")
+                    .toExternalForm() + "', serviceURL='http://localhost/it/doesnt/matter/so/far'}"
+            + "]}";
 }
