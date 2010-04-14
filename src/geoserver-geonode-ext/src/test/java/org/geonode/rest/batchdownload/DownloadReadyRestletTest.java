@@ -87,6 +87,7 @@ public class DownloadReadyRestletTest extends GeoServerTestSupport {
         final ZipInputStream zipIn = new ZipInputStream(responseStream);
 
         Set<String> expectedFiles = new HashSet<String>();
+        expectedFiles.add("README.txt");
         expectedFiles.add(VECTOR_LAYER.getLocalPart() + ".shp");
         expectedFiles.add(VECTOR_LAYER.getLocalPart() + ".cst");
         expectedFiles.add(VECTOR_LAYER.getLocalPart() + ".prj");
