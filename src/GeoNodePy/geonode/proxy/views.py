@@ -2,7 +2,8 @@ from django.http import HttpResponse
 from httplib import HTTPConnection
 from urlparse import urlsplit
 import httplib2
-
+import urllib
+import simplejson 
 def proxy(request):
     if 'url' not in request.GET:
         return HttpResponse('The proxy service requires a URL-encoded URL as a parameter.', status=400, content_type="text/plain")
@@ -23,7 +24,7 @@ def proxy(request):
 
 def geoserver(request):
     url = "http://localhost:8001{url}".format(url=request.environ["PATH_INFO"])
-    h = httplib2.Http()
-    h.add_credentials('admin', 'geoserver')
-    resp, content = h.request(url,request.method)
-    return HttpResponse(content) 
+    h = httplib2.Http()    
+    h.add_credentials("admin", "geoserver")
+    resp, content = h.request(url,request.method,body=request.raw_post_data)
+    return HttpResponse(content=content,status=resp.status)
