@@ -1,4 +1,5 @@
 from geonode.maps.models import Map, Layer, MapLayer
+from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 from django import forms
@@ -454,12 +455,12 @@ def _handle_layer_upload(request, layer=None):
     if len(errors) == 0 and layer is None:
         try:
             info = cat.get_resource(name)
-            if info.resource.latlon_bbox is None:
+            if info.latlon_bbox is None:
                 # If GeoServer couldn't figure out the projection, we just
                 # assume it's lat/lon to avoid a bad GeoServer configuration
 
-                info.resource.latlon_bbox = info.resource.native_bbox
-                info.resource.projection = "EPSG:4326"
+                info.latlon_bbox = info.resource.native_bbox
+                info.projection = "EPSG:4326"
                 cat.save(info)
 
             typename = info.store.workspace.name + ':' + info.name
@@ -470,6 +471,11 @@ def _handle_layer_upload(request, layer=None):
                                          storeType=info.store.resource_type,
                                          typename=typename,
                                          workspace=info.store.workspace.name)
+            gn = geonetwork.Catalog(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
+            gn.login()
+            md_link = gn.create_from_layer(layer)
+            gn.logout()
+            layer.metadata_links = [("text/xml", "ISO19115", md_link)]
             layer.save()
         except:
             layer = None
