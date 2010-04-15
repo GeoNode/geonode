@@ -352,8 +352,11 @@ def layerController(request, layername):
     if (request.META['QUERY_STRING'] == "update"):
         return _updateLayer(request,layer)
     else: 
+        metadata = layer.metadata_csw()
+
         return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
+            "metadata": metadata,
             "background": settings.MAP_BASELAYERS,
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
