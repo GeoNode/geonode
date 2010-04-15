@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
+from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.geonetwork import Catalog as GeoNetwork
 import httplib2
@@ -11,6 +12,7 @@ import uuid
 def _(x): return x
 
 _wms = None
+_csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
 class LayerManager(models.Manager):
@@ -153,12 +155,18 @@ class Layer(models.Model):
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
         return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename).select_related()])
 
-    def metadata(self): 
+    def metadata(self):
         global _wms
         if (_wms is None) or (self.typename not in _wms.contents):
             wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
             _wms = WebMapService(wms_url)
         return _wms[self.typename]
+
+    def metadata_csw(self):
+        csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+        csw = CatalogueServiceWeb(csw_url);
+        csw.getrecordbyid([self.uuid])
+        return csw.records[self.uuid]   
 
     @property
     def attribute_names(self):
