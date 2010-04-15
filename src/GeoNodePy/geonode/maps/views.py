@@ -498,24 +498,27 @@ def _handle_layer_upload(request, layer=None):
 
     # if we successfully created the store in geoserver...
     if len(errors) == 0 and layer is None:
+        gs_resource = None
+        csw_record = None
+        layer = None
         try:
-            info = cat.get_resource(name)
-            if info.latlon_bbox is None:
+            gs_resource = cat.get_resource(name)
+            if gs_resource.latlon_bbox is None:
                 # If GeoServer couldn't figure out the projection, we just
                 # assume it's lat/lon to avoid a bad GeoServer configuration
 
-                info.latlon_bbox = info.resource.native_bbox
-                info.projection = "EPSG:4326"
-                cat.save(info)
+                gs_resource.latlon_bbox = gs_resource.resource.native_bbox
+                gs_resource.projection = "EPSG:4326"
+                cat.save(gs_resource)
 
-            typename = info.store.workspace.name + ':' + info.name
+            typename = gs_resource.store.workspace.name + ':' + gs_resource.name
             
             # if we created a new store, create a new layer
-            layer = Layer.objects.create(name=info.name, 
-                                         store=info.store.name,
-                                         storeType=info.store.resource_type,
+            layer = Layer.objects.create(name=gs_resource.name, 
+                                         store=gs_resource.store.name,
+                                         storeType=gs_resource.store.resource_type,
                                          typename=typename,
-                                         workspace=info.store.workspace.name)
+                                         workspace=gs_resource.store.workspace.name)
             gn = geonetwork.Catalog(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
             gn.login()
             md_link = gn.create_from_layer(layer)
@@ -523,6 +526,25 @@ def _handle_layer_upload(request, layer=None):
             layer.metadata_links = [("text/xml", "ISO19115", md_link)]
             layer.save()
         except:
+            # Something went wrong, let's try and back out any changes
+            if gs_resource is not None:
+                store = gs_resource.store
+                try: 
+                    cat.delete(gs_resource)
+                except:
+                    pass
+
+                try: 
+                    cat.delete(store)
+                except:
+                    pass
+            if csw_record is not None:
+                try:
+                    gn.delete(csw_record)
+                except:
+                    pass
+            if layer is not None:
+                layer.delete()
             layer = None
             errors.append(GENERIC_UPLOAD_ERROR)
 
