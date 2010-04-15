@@ -460,6 +460,7 @@ def install_sphinx_conditionally(options):
 def html(options):
     call_task('paver.doctools.html')
 
+
 @task
 @cmdopts([
     ('bind=', 'b', 'IP address to bind to. Default is localhost.')

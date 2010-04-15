@@ -5,7 +5,10 @@ from geoserver.catalog import Catalog
 from geonode.geonetwork import Catalog as GeoNetwork
 import httplib2
 import simplejson
+import urllib
 import uuid
+
+def _(x): return x
 
 _wms = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -105,17 +108,43 @@ class Layer(models.Model):
         # bbox: this.adjustBounds(widthAdjust, heightAdjust, values.llbbox).toString(),
 
         srs = bbox[4]
-        bboxString = "%s,%s,%s,%s" % (bbox[0], bbox[2], bbox[1], bbox[3])
+        bbox_string = ",".join([bbox[0], bbox[2], bbox[1], bbox[3]])
 
         links = []        
 
         if self.resource.resource_type == "featureType":
-            links.append(("zip", "Zipped Shapefile", "%swfs?request=GetFeature&typename=%s&outputformat=SHAPE-ZIP" % (settings.GEOSERVER_BASE_URL, self.typename)))
-        elif self.resource.resource_type == "coverage":
-            links.append(("tiff", "GeoTiff", "%swms?request=GetMap&layers=%s&Format=image/geotiff&height=%s&width=%s&srs=%s&bbox=%s" % (settings.GEOSERVER_BASE_URL, self.typename, height, width, srs, bboxString)))
+            def wfs_link(mime):
+                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
+                    'service': 'WFS',
+                    'request': 'GetFeature',
+                    'typename': self.typename,
+                    'outputFormat': mime
+                })
+            types = [
+                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
+                ("gml", _("GML"), "gml")
+            ]
+            links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
 
-        # ("application/vnd.google-earth.kml+xml", "%swms?request=GetMap&layers=%s&outputformat=application/vnd.google-earth.kml+xml" % (settings.GEOSERVER_BASE_URL, self.typename)) 
-        # ("application/pdf", "%swms?request=GetMap&layers=%s&format=application/pdf" % (settings.GEOSERVER_BASE_URL, self.typename)),
+        def wms_link(mime):
+            return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
+                'service': 'WMS',
+                'request': 'GetMap',
+                'layers': self.typename,
+                'format': mime,
+                'height': height,
+                'width': width,
+                'srs': srs,
+                'bbox': bbox_string
+            })
+
+        types = [
+            ("tiff", _("GeoTiff"), "image/geotiff"),
+            ("pdf", _("PDF"), "application/pdf"),
+            ("png", _("PNG"), "image/png")
+        ]
+
+        links.extend((ext, name, wms_link(mime)) for ext, name, mime in types)
 
         return links
 
