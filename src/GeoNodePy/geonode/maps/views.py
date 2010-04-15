@@ -149,6 +149,7 @@ def map_download(request, mapid):
     """ 
     Complicated request
     XXX To do, remove layer status once progress id done 
+    This should be fix because 
     """ 
     mapObject = get_object_or_404(Map,pk=mapid)
     map_status = dict()
@@ -158,9 +159,8 @@ def map_download(request, mapid):
         if resp.status != 404 or 400: 
             request.session["map_status"] = eval(content)
             map_status = eval(content)
-            msg = "Downloading Map %s with process %s" % (mapObject.title,request.session["map_status"]["id"])
         else: 
-            msg = "Something went wrong" 
+            pass # XXX fix
     if request.method == 'GET':
         if "map_status" in request.session and type(request.session["map_status"]) == dict:
             msg = "You already started downloading a map"
@@ -168,8 +168,7 @@ def map_download(request, mapid):
             msg = "You should download a map" 
     return render_to_response('maps/download.html', RequestContext(request, {
          "map_status" : map_status,
-         "map" : mapObject,
-         "msg" : msg
+         "map" : mapObject
     }))
 
 def check_download(request):
