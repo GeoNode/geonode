@@ -16,6 +16,7 @@ import math
 from django.conf import settings
 import httplib2 
 from urllib import urlencode
+import uuid
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
@@ -518,7 +519,8 @@ def _handle_layer_upload(request, layer=None):
                                          store=gs_resource.store.name,
                                          storeType=gs_resource.store.resource_type,
                                          typename=typename,
-                                         workspace=gs_resource.store.workspace.name)
+                                         workspace=gs_resource.store.workspace.name,
+                                         uuid=str(uuid.uuid4()))
             gn = geonetwork.Catalog(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
             gn.login()
             md_link = gn.create_from_layer(layer)
