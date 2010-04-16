@@ -596,7 +596,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                 return !(r.get("layer") instanceof OpenLayers.Layer.Vector);
             }).getCount();
             removeLayerAction.setDisabled(count <= 1);
-            // allow changing properties for WMS layers only
+            // allow changing properties for WMS layers with styles in their
+            // capabilities doc only
             layerPropertiesAction.setDisabled(
                 !(node.layer instanceof OpenLayers.Layer.WMS));
         };
