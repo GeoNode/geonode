@@ -319,7 +319,7 @@ def _describe_layer(request, layer):
                 f = form.cleaned_data
                 layer.title = f['title']
                 layer.abstract = f['abstract']
-                layer.keywords = f['keywords'].split(", ")
+                layer.keywords = [kw for kw in f['keywords'].split(", ") if kw != '']
                 layer.save()
                 return HttpResponseRedirect("/data/" + layer.typename)
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
