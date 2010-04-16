@@ -181,9 +181,22 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             "idchange"
         ]);
         
+        // global request proxy and error handling
         Ext.util.Observable.observeClass(Ext.data.Connection);
         Ext.data.Connection.on({
+            "beforerequest": function(conn, options) {
+                if(this.proxy && options.url.indexOf(this.proxy) !== 0) {
+                    var url = Ext.urlAppend(options.url,
+                        Ext.urlEncode(options.params));
+                    delete options.params;
+                    options.url = this.proxy + encodeURIComponent(url);
+                }
+            },
             "requestexception": function(conn, response, options) {
+                if(options.failure) {
+                    // exceptions are handled elsewhere
+                    return;
+                }
                 Ext.Msg.show({
                     title: this.connErrorTitleText,
                     msg: this.connErrorText +
@@ -333,7 +346,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     url: url,
                     store: store,
                     identifier: id,
-                    name: extractedData.service.title || id
+                    name: (extractedData.service &&
+                        extractedData.service.title) || id
                 });
                 
                 this.layerSources.add(record);                              
@@ -419,10 +433,11 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
      * the service's WMS capabilities.
      */
     createWMSCapabilitiesURL: function(url) {
-        return this.createOWSUrl(url, {
-            SERVICE: 'WMS', 
-            REQUEST: 'GetCapabilities'
-        });
+        return url.toLowerCase().indexOf("getcapabilities") == -1 ?
+            this.createOWSUrl(url, {
+                SERVICE: 'WMS', 
+                REQUEST: 'GetCapabilities'
+            }) : url;
     },
 
     createOWSUrl: function(url, params) {
