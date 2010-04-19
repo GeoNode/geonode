@@ -511,7 +511,7 @@ def _handle_layer_upload(request, layer=None):
                 # If GeoServer couldn't figure out the projection, we just
                 # assume it's lat/lon to avoid a bad GeoServer configuration
 
-                gs_resource.latlon_bbox = gs_resource.resource.native_bbox
+                gs_resource.latlon_bbox = gs_resource.native_bbox
                 gs_resource.projection = "EPSG:4326"
                 cat.save(gs_resource)
 
@@ -534,10 +534,10 @@ def _handle_layer_upload(request, layer=None):
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
                 # no explicit link from the resource to the layer, bah
-                layer = cat.get_layer(gs_resource.name) 
+                gs_layer = cat.get_layer(gs_resource.name) 
                 store = gs_resource.store
                 try:
-                    cat.delete(layer)
+                    cat.delete(gs_layer)
                 except:
                     pass
 
