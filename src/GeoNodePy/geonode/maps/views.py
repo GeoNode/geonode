@@ -533,7 +533,14 @@ def _handle_layer_upload(request, layer=None):
         except:
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
+                # no explicit link from the resource to the layer, bah
+                layer = cat.get_layer(gs_resource.name) 
                 store = gs_resource.store
+                try:
+                    cat.delete(layer)
+                except:
+                    pass
+
                 try: 
                     cat.delete(gs_resource)
                 except:
