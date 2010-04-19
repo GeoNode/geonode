@@ -950,8 +950,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
 
                 var id = store.find("name", conf.name);
                 
-                var record;
-                var base;
+                var record, layer;
                 if (id >= 0) {
                     /**
                      * If the same layer is added twice, it will get replaced
