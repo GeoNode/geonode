@@ -261,7 +261,7 @@ class Layer(models.Model):
             Layer.objects.gs_catalog.save(self._publishing_cache)
 
     def get_absolute_url(self):
-        return "%sdata/%s" % (settings.SITENAME, self.typename)
+        return "%sdata/%s" % (settings.SITEURL,self.typename)
 
     def __str__(self):
         return "%s Layer" % self.typename
@@ -292,7 +292,6 @@ class Map(models.Model):
     def json(self):
         map_layers = MapLayer.objects.filter(map=self.id)
         layers = [] 
-        # don't like this
         for map_layer in map_layers:
             layers.append(Layer.objects.get(typename=map_layer.name))
         map = { 
@@ -321,6 +320,16 @@ class MapLayer(models.Model):
     group = models.CharField(max_length=200,blank=True)
     stack_order = models.IntegerField()
     map = models.ForeignKey(Map, related_name="layer_set")
+
+    @property
+    def local(self): 
+        link = ""
+        try:
+            layer = Layer.objects.get(typename=self.name)
+            link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),self.name)
+        except:
+            link = "<span>%s</span> " % self.name
+        return link
 
     class Meta:
         ordering = ["stack_order"]

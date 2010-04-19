@@ -5,23 +5,22 @@
 <script  type="text/javascript">
         {% if map_status %} 
         /// the map status has some information
-        var checkStatus = setInterval("update()",1000)
+        var checkStatus, progress, pb; 
 
         function update() { 
             Ext.Ajax.request({ 
                 url : "{% url geonode.maps.views.check_download %}",
-                method: "GET",
+                method: "GET",              
                 success: function(result) { 
                     var json = Ext.util.JSON.decode(result.responseText);
-                    var count = 0 
                     if (json["process"]["status"] === "FINISHED"){ 
-                        document.getElementById("progressBar").innerHTML = "Finished";                         
                         location.href = "http://localhost:8001/geoserver/rest/process/batchDownload/download/" +  json["process"]["id"] ; 
                         clearInterval(checkStatus); 
-                        
+                        pb.updateProgress(1,"Done....",true);
+                        location.href = "" +  json["process"]["id"] ; 
                     } 
                     else { 
-                        document.getElementById("progressBar").innerHTML = json["process"]["progress"] ;
+                        pb.updateProgress(json["process"]["progress"]/100,"Downloading...",true); 
                     } 
                 },
                 failure: function() { 
@@ -29,8 +28,16 @@
                 }});                 
                 
         };
-        
-        window.onload = checkStatus; 
+
+        Ext.onReady(function() {         
+            checkStatus = setInterval("update()",1000);
+            pb = new Ext.ProgressBar({
+                text:'Downloading...',
+                id:'pbar',
+                cls:'left-align',
+                renderTo:'pb'
+            });
+        });
 
         {% else %} 
           // there is no information in the map_status
@@ -49,7 +56,7 @@
     {% endfor %} 
      </ol>     
      {% if map_status %} 
-        <div id="progressBar"><p>This should be a progress bar</p></div>
+        <div id="pb"></div>
      {% else %} 
      <form action="." method="POST"> 
        <input type="submit" value="Start downloading this map" /> 
