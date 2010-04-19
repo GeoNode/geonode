@@ -293,7 +293,11 @@ class Map(models.Model):
         map_layers = MapLayer.objects.filter(map=self.id)
         layers = [] 
         for map_layer in map_layers:
-            layers.append(Layer.objects.get(typename=map_layer.name))
+            if map_layer.local() is True:   
+                layer =  Layer.objects.get(typename=map_layer.name)
+                layers.append(layer)
+            else: 
+                pass 
         map = { 
             "map" : { 
                 "title" : self.title, 
@@ -320,14 +324,21 @@ class MapLayer(models.Model):
     group = models.CharField(max_length=200,blank=True)
     stack_order = models.IntegerField()
     map = models.ForeignKey(Map, related_name="layer_set")
+    
+    def local(self): 
+        layer = Layer.objects.filter(typename=self.name)
+        if layer.count() == 0:
+            return False
+        else: 
+            return True
+            
 
     @property
-    def local(self): 
-        link = ""
-        try:
+    def local_link(self): 
+        if self.local() is True:
             layer = Layer.objects.get(typename=self.name)
             link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),self.name)
-        except:
+        else: 
             link = "<span>%s</span> " % self.name
         return link
 
