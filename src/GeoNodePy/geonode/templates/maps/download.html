@@ -4,23 +4,21 @@
 {% block header_append %} 
 <script  type="text/javascript">
         {% if map_status %} 
-        /// the map status has some information
-        var checkStatus, progress, pb; 
+        var checkStatus, progress, pb, process;
 
         function update() { 
             Ext.Ajax.request({ 
                 url : "{% url geonode.maps.views.check_download %}",
                 method: "GET",              
                 success: function(result) { 
-                    var json = Ext.util.JSON.decode(result.responseText);
-                    if (json["process"]["status"] === "FINISHED"){ 
-                        location.href = "http://localhost:8001/geoserver/rest/process/batchDownload/download/" +  json["process"]["id"] ; 
+                    process = Ext.util.JSON.decode(result.responseText);
+                    if (process["process"]["status"] === "FINISHED"){ 
+                        location.href = "{{site}}geoserver/rest/process/batchDownload/download/" +  process["process"]["id"] ; ; 
                         clearInterval(checkStatus); 
                         pb.updateProgress(1,"Done....",true);
-                        location.href = "" +  json["process"]["id"] ; 
                     } 
                     else { 
-                        pb.updateProgress(json["process"]["progress"]/100,"Downloading...",true); 
+                        pb.updateProgress(process["process"]["progress"]/100,"Downloading...",true); 
                     } 
                 },
                 failure: function() { 
@@ -37,6 +35,25 @@
                 cls:'left-align',
                 renderTo:'pb'
             });
+            cancel = new Ext.Button({ 
+                text: 'Cancel',
+                id: 'cancel',
+                renderTo: 'cancel',
+                handler: function() { 
+                    Ext.Ajax.request({ 
+                        url : "http://localhost:8000/geoserver/rest/process/batchDownload/kill/" + process["process"]["id"], 
+                        method: "GET",
+                        success: function(result) { 
+                            alert("You sucessfuly canceled the download"); 
+                            location.href = "{{site}}maps/{{map.id}}"; 
+                            clearInterval(checkStatus);
+                        },
+                        failure: function(result) { 
+                            console.log(result); 
+                            clearInterval(checkStatus); // break if something fails
+                        } 
+                    }) } }); 
+            
         });
 
         {% else %} 
@@ -52,10 +69,11 @@
     <hr />
     <ol>
       {% for layer in map.layers %} 
-      <li> {{layer.name}} </li>
+      <li>{% autoescape off %}{{layer.local_link}} {% endautoescape %} </li>
     {% endfor %} 
      </ol>     
      {% if map_status %} 
+        <div id="cancel"> </div>
         <div id="pb"></div>
      {% else %} 
      <form action="." method="POST"> 

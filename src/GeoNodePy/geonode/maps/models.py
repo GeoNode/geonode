@@ -289,11 +289,15 @@ class Map(models.Model):
         return  [layer for layer in layers]
 
     @property
+    def local_layers(self): 
+        return True
+
+    @property
     def json(self):
         map_layers = MapLayer.objects.filter(map=self.id)
         layers = [] 
         for map_layer in map_layers:
-            if map_layer.local() is True:   
+            if map_layer.local():   
                 layer =  Layer.objects.get(typename=map_layer.name)
                 layers.append(layer)
             else: 
@@ -335,7 +339,7 @@ class MapLayer(models.Model):
 
     @property
     def local_link(self): 
-        if self.local() is True:
+        if self.local():
             layer = Layer.objects.get(typename=self.name)
             link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),self.name)
         else: 

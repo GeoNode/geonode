@@ -169,7 +169,9 @@ def map_download(request, mapid):
             msg = "You should download a map" 
     return render_to_response('maps/download.html', RequestContext(request, {
          "map_status" : map_status,
-         "map" : mapObject
+         "map" : mapObject,
+         "geoserver" : settings.GEOSERVER_BASE_URL,
+         "site" : settings.SITEURL
     }))
 
 def check_download(request):

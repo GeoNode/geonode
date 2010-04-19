@@ -24,7 +24,6 @@ def proxy(request):
     response = HttpResponse(result.read(), status=result.status, content_type=result.getheader("Content-Type", "text/plain"))
     return response
 
-# http://localhost:8001/mapserver/ ? geoserver/
 
 @login_required
 def geoserver(request,path):
@@ -32,4 +31,10 @@ def geoserver(request,path):
     h = httplib2.Http()    
     h.add_credentials(*settings.GEOSERVER_CREDENTIALS)
     resp, content = h.request(url,request.method,body=request.raw_post_data)
-    return HttpResponse(content=content,status=resp.status)
+    if resp.status != 404:
+        if "content_type" in resp.keys():
+            return HttpResponse(content=content,status=resp.status,mimetype=resp["content-type"])
+        else: 
+            return HttpResponse(content=content,status=resp.status)
+    else: 
+        return HttpResponse(content="Something went wrong",status=404)
