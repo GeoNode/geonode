@@ -6,6 +6,7 @@ _ = lambda x: x
 
 DEBUG = True
 SITENAME = "CAPRA GeoNode"
+SITEURL = "http://localhost:8000/"
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -98,6 +99,8 @@ ROOT_URLCONF = 'geonode.urls'
 TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
                 path_extrapolate('geonode/maps/templates'), \
                 path_extrapolate('django/contrib/admin/templates', 'django'),
+
+
                
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
 GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
