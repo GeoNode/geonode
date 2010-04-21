@@ -598,8 +598,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         prop.close();
                     }
                     prop = new Ext.Window({
-                        title: "Properties: " + record.get("title"),
-                        width: 250,
+                        title: "Properties: " + record.get("layer").name,
+                        width: 280,
                         autoHeight: true,
                         items: [{
                             xtype: "gx_wmslayerpanel",
@@ -610,11 +610,20 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                                 autoHeight: true,
                                 hideMode: "offsets"
                             },
+                            buttons: [{
+                                text: "Cancel"
+                            }, {
+                                text: "Save"
+                            }],
                             listeners: {
                                 "tabchange": syncShadow
                             }
                         }]
                     });
+                    // make title read-only
+                    //TODO WMSLayerPanel should be easier to configure for this
+                    prop.items.get(0).items.get(0).items.get(0).items.get(0).setReadOnly(true);
+                    // add styles tab
                     prop.items.get(0).add(new gxp.WMSStylesDialog({
                         title: "Styles",
                         layerRecord: record,
