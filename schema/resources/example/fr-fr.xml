@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PT_LocaleContainer xmlns="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd ../../gmd/gmd.xsd http://www.isotc211.org/2005/gco ../../gco/gco.xsd http://www.opengis.net/gml/3.2 ../../gml/gml.xsd http://www.w3.org/1999/xlink ../../xlink/xlinks.xsd">
+	<!--==========================================-->
+	<!--===========Translation file Header ============-->
+	<!--===Text description===-->
+	<description>
+		<gco:CharacterString>France-France</gco:CharacterString>
+	</description>
+	<!--===Locale===-->
+	<locale>
+		<PT_Locale id="locale-fr">
+			<languageCode>
+				<LanguageCode codeList="../Codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="fra">French</LanguageCode>
+			</languageCode>
+			<country>
+				<Country codeList="../Codelist/ML_gmxCodelists.xml#Country" codeListValue="FR">FR</Country>
+			</country>
+			<characterEncoding>
+				<MD_CharacterSetCode codeList="../Codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">UTF 8</MD_CharacterSetCode>
+			</characterEncoding>
+		</PT_Locale>
+	</locale>
+	<!--===Dates [creation / revision]===-->
+	<date>
+		<CI_Date>
+			<date>
+				<gco:Date>2005-03-18</gco:Date>
+			</date>
+			<dateType>
+				<CI_DateTypeCode codeList="../Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" codeSpace="fra">création</CI_DateTypeCode>
+			</dateType>
+		</CI_Date>
+	</date>
+	<date>
+		<CI_Date>
+			<date>
+				<gco:Date>2006-02-03</gco:Date>
+			</date>
+			<dateType>
+				<CI_DateTypeCode codeList="../Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="../Codelist/ML_gmxCodelists.xml#CI_DateTypeCode_revision" codeSpace="fra">révision</CI_DateTypeCode>
+			</dateType>
+		</CI_Date>
+	</date>
+	<!--===Responsible party [author]===-->
+	<responsibleParty>
+		<CI_ResponsibleParty>
+			<organisationName>
+				<gco:CharacterString>french translation team</gco:CharacterString>
+			</organisationName>
+			<role>
+				<CI_RoleCode codeList="../Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author" codeSpace="fra">auteur</CI_RoleCode>
+			</role>
+		</CI_ResponsibleParty>
+	</responsibleParty>
+	<!--============================================================================-->
+	<!--============================================================================-->
+	<!--=========================== Translation items ===================================-->
+	<!--+++abstract : Brief narrative summary of the content of the resource+++-->
+	<localisedString>
+		<LocalisedCharacterString id="abstract-fr" locale="#fr-fr">Résumé succint du contenu du jeu de données</LocalisedCharacterString>
+	</localisedString>
+	<!--++++++-->
+	<localisedString/>
+	<!--++++++-->
+	<localisedString/>
+	<!--++++++-->
+	<localisedString/>
+	<!--++++++-->
+	<localisedString/>
+	<!--++++++-->
+	<localisedString/>
+	<!--=== EOF ===-->
+</PT_LocaleContainer>
