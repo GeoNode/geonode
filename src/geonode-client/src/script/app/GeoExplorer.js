@@ -625,6 +625,9 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     prop.items.get(0).items.get(0).items.get(0).items.each(function(i) {
                         i.setDisabled(true);
                     });
+                    prop.items.get(0).items.get(0).items.get(1).items.each(function(i) {
+                        i.setDisabled(true);
+                    });
                     // add styles tab
                     prop.items.get(0).add(new gxp.WMSStylesDialog({
                         title: "Styles",
