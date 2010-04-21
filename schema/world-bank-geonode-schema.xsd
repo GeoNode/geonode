@@ -31,7 +31,7 @@
 
 
 
-	<element name="schema" type="gnd:GeoNode_Schema"></element>
+	<element name="metadataDocument" type="gnd:GeoNode_Schema"></element>
 
 	<complexType name="GeoNode_Schema">
 		<sequence>
