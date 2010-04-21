@@ -7,30 +7,6 @@
 	</import>
 	<import schemaLocation="gmd/gmd.xsd" namespace="http://www.isotc211.org/2005/gmd"></import>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
 	<element name="metadataDocument" type="gnd:GeoNode_Schema"></element>
 
 	<complexType name="GeoNode_Schema">
@@ -96,3 +72,4 @@
 		</sequence>
 	</complexType>
 </schema>
+
