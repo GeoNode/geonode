@@ -620,9 +620,11 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                             }
                         }]
                     });
-                    // make title read-only
+                    // disable "About" fields to indicate that they're read-only
                     //TODO WMSLayerPanel should be easier to configure for this
-                    prop.items.get(0).items.get(0).items.get(0).items.get(0).setReadOnly(true);
+                    prop.items.get(0).items.get(0).items.get(0).items.each(function(i) {
+                        i.setDisabled(true);
+                    });
                     // add styles tab
                     prop.items.get(0).add(new gxp.WMSStylesDialog({
                         title: "Styles",
