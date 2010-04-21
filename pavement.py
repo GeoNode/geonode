@@ -228,6 +228,8 @@ def concat_js(options):
        svn.export("../externals/ext", "geonode-client/ext")
        os.makedirs("geonode-client/gx")
        svn.export("../externals/geoext/resources", "geonode-client/gx/theme")
+       os.makedirs("geonode-client/gxp")
+       svn.export("../externals/gxp/src/theme", "geonode-client/gxp/theme")
        os.makedirs("geonode-client/PrintPreview")
        svn.export("../externals/PrintPreview/resources", "geonode-client/PrintPreview/theme")
        os.makedirs("geonode-client/ol") #need to split this off b/c of dumb hard coded OL paths
@@ -238,6 +240,7 @@ def concat_js(options):
        sh("jsbuild -o geonode-client/ all.cfg") 
        move("geonode-client/OpenLayers.js","geonode-client/ol/")
        move("geonode-client/GeoExt.js","geonode-client/gx/")
+       move("geonode-client/gxp.js","geonode-client/gxp/")
        move("geonode-client/GeoNode.js","geonode-client/gn/")
        move("geonode-client/PrintPreview.js","geonode-client/PrintPreview/")
        move("geonode-client/ux.js","geonode-client/gn/")
