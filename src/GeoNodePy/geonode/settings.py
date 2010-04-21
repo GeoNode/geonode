@@ -227,7 +227,7 @@ if DEBUG:
             "PrintPreview_script":"/static/externals/PrintPreview/lib/GeoExt.ux/PrintPreview.js",
             "PrintPreview_themes": "/static/externals/PrintPreview/resources/",
             "gxp_script":"/static/externals/gxp/src/script/loader.js",
-            "gxp_theme":"/static/externals/gxp/theme/all.css",
+            "gxp_theme":"/static/externals/gxp/src/theme/all.css",
             "app_themes": "/static/src/theme/app/",
             "app_script":"/static/src/script/app/loader.js",
             "ux_script":"/static/src/script/ux/loader.js",
