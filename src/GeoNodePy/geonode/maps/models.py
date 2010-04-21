@@ -109,7 +109,7 @@ class Layer(models.Model):
 
         # bbox: this.adjustBounds(widthAdjust, heightAdjust, values.llbbox).toString(),
 
-        srs = bbox[4]
+        srs = 'EPSG:4326' # bbox[4] might be None
         bbox_string = ",".join([bbox[0], bbox[2], bbox[1], bbox[3]])
 
         links = []        
@@ -335,7 +335,6 @@ class MapLayer(models.Model):
             return False
         else: 
             return True
-            
 
     @property
     def local_link(self): 
