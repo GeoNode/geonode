@@ -229,6 +229,18 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             scope: this
         });
         
+        // set SLD defaults for symbolizer
+        OpenLayers.Renderer.defaultSymbolizer = {
+           fillColor: "#808080",
+           fillOpacity: 1,
+           strokeColor: "#000000",
+           strokeOpacity: 1,
+           strokeWidth: 1,
+           strokeDashstyle: "solid",
+           pointRadius: 3,
+           graphicName: "square"
+       };
+
         // pass on any proxy config to OpenLayers
         if(this.proxy) {
             OpenLayers.ProxyHost = this.proxy;
@@ -566,6 +578,9 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         });
         
         var prop;
+        var syncShadow = function() {
+            prop.syncShadow();
+        };
         var layerPropertiesAction = new Ext.Action({
             text: this.layerPropertiesText,
             iconCls: "icon-layerproperties",
@@ -585,20 +600,35 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     prop = new Ext.Window({
                         title: "Properties: " + record.get("title"),
                         width: 250,
-                        height: 250,
-                        layout: "fit",
+                        autoHeight: true,
                         items: [{
                             xtype: "gx_wmslayerpanel",
+                            autoHeight: true,
                             layerRecord: record,
                             defaults: {
-                                style: "padding: 10px"
+                                style: "padding: 10px;",
+                                autoHeight: true,
+                                hideMode: "offsets"
+                            },
+                            listeners: {
+                                "tabchange": syncShadow
                             }
                         }]
                     });
                     prop.items.get(0).add(new gxp.WMSStylesDialog({
                         title: "Styles",
                         layerRecord: record,
-                        autoScroll: true
+                        autoScroll: true,
+                        listeners: {
+                            "afterlayout": syncShadow
+                        },
+                        defaults: {
+                            defaults: {
+                                listeners: {
+                                    "afterlayout": syncShadow
+                                }
+                            }
+                        }
                     }));
                     prop.show();
                 }
