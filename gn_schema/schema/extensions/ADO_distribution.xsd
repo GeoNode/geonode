@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- UNCLASSIFIED -->
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Department of Defence (Department of Defence) -->
+<xs:schema targetNamespace="http://www.defence.gov.au/ADO_DM_MDP" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP" elementFormDefault="qualified" version="0.1">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>This schema is the ADO community profile equivalent of the ‘distribution.xsd’ schema.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="../gmd/gmd.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="../gco/gco.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<xs:complexType name="DP_Distribution_Type">
+		<xs:annotation>
+			<xs:documentation>Information about the distributor of and options for obtaining the dataset</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gmd:MD_Distribution_Type">
+				<xs:attribute ref="gco:isoType" use="required" fixed="gmd:MD_Distribution"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="DP_Distribution" type="ADO:DP_Distribution_Type" substitutionGroup="gmd:MD_Distribution"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="DP_Distribution_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="ADO:DP_Distribution"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+</xs:schema>

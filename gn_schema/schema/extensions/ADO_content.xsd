@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- UNCLASSIFIED -->
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Department of Defence (Department of Defence) -->
+<xs:schema targetNamespace="http://www.defence.gov.au/ADO_DM_MDP" xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="0.1">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>This schema is the ADO community profile equivalent of the ‘content.xsd’ schema.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="../gmd/gmd.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="../gco/gco.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<!-- ........................................................................ -->
+	<xs:element name="DP_BandwidthWavelengthCode" type="gco:CodeListValue_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="DP_BandwidthWavelengthCode_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="ADO:DP_BandwidthWavelengthCode"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="DP_RangeDimension_Type">
+		<xs:annotation>
+			<xs:documentation>Set of adjacent wavelengths in the electro-magnetic spectrum with a common characteristic, such as the visible band</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gmd:MD_RangeDimension_Type">
+				<xs:sequence>
+					<xs:element name="sequenceIdentifier" type="ADO:DP_BandwidthWavelengthCode_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute ref="gco:isoType" use="required" fixed="gmd:MD_RangeDimension"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="DP_RangeDimension" type="ADO:DP_RangeDimension_Type" substitutionGroup="gmd:MD_RangeDimension"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="DP_RangeDimension_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="ADO:DP_RangeDimension"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+</xs:schema>
