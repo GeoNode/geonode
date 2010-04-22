@@ -1,10 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- UNCLASSIFIED -->
-<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Department of Defence (Department of Defence) -->
-<xs:schema targetNamespace="http://www.defence.gov.au/ADO_DM_MDP" xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="0.1">
+<xs:schema
+  targetNamespace="http://geonode.org/0.1"
+  xmlns:geonode="http://geonode.org/0.1"
+  xmlns:gmd="http://www.isotc211.org/2005/gmd"
+  xmlns:gco="http://www.isotc211.org/2005/gco"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified"
+  version="0.1">
 	<!-- ================================= Annotation ================================ -->
 	<xs:annotation>
-		<xs:documentation>This schema is the ADO community profile equivalent of the ‘constraints.xsd’ schema.</xs:documentation>
+		<xs:documentation>This schema is the GeoNode community profile equivalent of the ‘constraints.xsd’ schema.</xs:documentation>
 	</xs:annotation>
 	<!-- ================================== Imports ================================== -->
 	<xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="../gmd/gmd.xsd"/>
@@ -21,7 +27,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_Constraints" type="ADO:DP_Constraints_Type" substitutionGroup="gmd:MD_Constraints"/>
+	<xs:element name="DP_Constraints" type="geonode:DP_Constraints_Type" substitutionGroup="gmd:MD_Constraints"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="DP_LegalConstraints_Type">
 		<xs:annotation>
@@ -32,7 +38,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_LegalConstraints" type="ADO:DP_LegalConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
+	<xs:element name="DP_LegalConstraints" type="geonode:DP_LegalConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="DP_SecurityConstraints_Type">
 		<xs:annotation>
@@ -43,7 +49,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_SecurityConstraints" type="ADO:DP_SecurityConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
+	<xs:element name="DP_SecurityConstraints" type="geonode:DP_SecurityConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
 	<!-- ........................................................................ -->
 	<xs:element name="DP_ClassificationCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:MD_ClassificationCode"/>
 	<!-- ........................................................................ -->

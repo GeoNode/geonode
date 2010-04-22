@@ -1,9 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- UNCLASSIFIED -->
-<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Department of Defence (Department of Defence) -->
-<xs:schema targetNamespace="http://www.defence.gov.au/ADO_DM_MDP" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:link="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP" elementFormDefault="qualified" version="0.1">
+<xs:schema
+  targetNamespace="http://geonode.org/0.1"
+  xmlns:sch="http://www.ascc.net/xml/schematron"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:link="http://www.w3.org/1999/xlink"
+  xmlns:gco="http://www.isotc211.org/2005/gco"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:gmd="http://www.isotc211.org/2005/gmd"
+  xmlns:geonode="http://geonode.org/0.1"
+  elementFormDefault="qualified"
+  version="0.1">
 	<xs:annotation>
-		<xs:documentation>This schema is the ADO community profile equivalent of the ‘citation.xsd’ schema.</xs:documentation>
+		<xs:documentation>This schema is the GeoNode community profile equivalent of the ‘citation.xsd’ schema.</xs:documentation>
 	</xs:annotation>
 	<!-- ================================== Imports ================================== -->
 	<xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="../gmd/gmd.xsd"/>
@@ -22,11 +30,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_ResponsibleParty" type="ADO:DP_ResponsibleParty_Type" substitutionGroup="gmd:CI_ResponsibleParty"/>
+	<xs:element name="DP_ResponsibleParty" type="geonode:DP_ResponsibleParty_Type" substitutionGroup="gmd:CI_ResponsibleParty"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="DP_ResponsibleParty_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="ADO:DP_ResponsibleParty"/>
+			<xs:element ref="geonode:DP_ResponsibleParty"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
@@ -43,11 +51,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_Contact" type="ADO:DP_Contact_Type" substitutionGroup="gmd:CI_Contact"/>
+	<xs:element name="DP_Contact" type="geonode:DP_Contact_Type" substitutionGroup="gmd:CI_Contact"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="DP_Contact_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="ADO:DP_Contact"/>
+			<xs:element ref="geonode:DP_Contact"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
