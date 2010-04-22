@@ -2,12 +2,12 @@
 
 <xsl:stylesheet   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" 
 						xmlns:gco="http://www.isotc211.org/2005/gco"
-						xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP"
+						xmlns:geonode="http://geonode.org/0.1"
 						xmlns:gmd="http://www.isotc211.org/2005/gmd">
 
-	<xsl:template match="ADO:DP_Metadata">
+	<xsl:template match="geonode:MD_Metadata">
 		<thumbnail>
-			<xsl:for-each select="gmd:identificationInfo/ADO:DP_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic">
+			<xsl:for-each select="gmd:identificationInfo/geonode:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic">
 				<xsl:choose>
 					<xsl:when test="gmd:fileDescription/gco:CharacterString = 'large_thumbnail' and gmd:fileName/gco:CharacterString != ''">
 						<large>
