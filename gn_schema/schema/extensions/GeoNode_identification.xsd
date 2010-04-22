@@ -18,36 +18,36 @@
 	<!-- ########################################################################### -->
 	<!-- ########################################################################### -->
 	<!-- ================================== Classes ================================= -->
-	<xs:complexType name="DP_Identification_Type">
+	<xs:complexType name="MD_Identification_Type">
 		<xs:annotation>
 			<xs:documentation>Basic information about data</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="gmd:AbstractMD_Identification_Type">
 				<xs:sequence>
-					<xs:element name="defencePurpose" type="geonode:DP_DefencePurposeCode_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="defencePurpose" type="geonode:MD_DefencePurposeCode_PropertyType" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:attribute ref="gco:isoType" use="required" fixed="gmd:AbstractMD_Identification"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_Identification" type="geonode:DP_Identification_Type" substitutionGroup="gmd:AbstractMD_Identification"/>
+	<xs:element name="MD_Identification" type="geonode:MD_Identification_Type" substitutionGroup="gmd:AbstractMD_Identification"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_Identification_PropertyType">
+	<xs:complexType name="MD_Identification_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_Identification"/>
+			<xs:element ref="geonode:MD_Identification"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
 	</xs:complexType>
 	<!-- =========================================================================== -->
-	<xs:complexType name="DP_DataIdentification_Type">
+	<xs:complexType name="MD_DataIdentification_Type">
 		<xs:complexContent>
 			<xs:extension base="gmd:MD_DataIdentification_Type">
 				<xs:sequence>
 					<xs:element name="resourceConstraints" type="gmd:MD_Constraints_PropertyType" minOccurs="1" maxOccurs="unbounded"/>
-					<xs:element name="defencePurpose" type="geonode:DP_DefencePurposeCode_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="defencePurpose" type="geonode:MD_DefencePurposeCode_PropertyType" maxOccurs="unbounded"/>
 					<xs:element name="productNumber" type="gco:CharacterString_PropertyType" minOccurs="0"/>
 					<xs:element name="stockNumber" type="gco:CharacterString_PropertyType" minOccurs="0"/>
 					<xs:element name="mapsheetNumber" type="gco:CharacterString_PropertyType" minOccurs="0"/>
@@ -57,27 +57,27 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_DataIdentification" type="geonode:DP_DataIdentification_Type" substitutionGroup="gmd:MD_DataIdentification"/>
+	<xs:element name="MD_DataIdentification" type="geonode:MD_DataIdentification_Type" substitutionGroup="gmd:MD_DataIdentification"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_DataIdentification_PropertyType">
+	<xs:complexType name="MD_DataIdentification_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_DataIdentification"/>
+			<xs:element ref="geonode:MD_DataIdentification"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
 	</xs:complexType>
 	<!-- =========================================================================== -->
 	<!-- ........................................................................ -->
-	<xs:element name="DP_DefencePurposeCode" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+	<xs:element name="MD_DefencePurposeCode" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_DefencePurposeCode_PropertyType">
+	<xs:complexType name="MD_DefencePurposeCode_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_DefencePurposeCode"/>
+			<xs:element ref="geonode:MD_DefencePurposeCode"/>
 		</xs:sequence>
 		<xs:attribute ref="gco:nilReason"/>
 	</xs:complexType>
 	<!-- =========================================================================== -->
 	<!-- ........................................................................ -->
-	<xs:element name="CI_CharacterSetCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:MD_CharacterSetCode"/>
+	<xs:element name="MD_CharacterSetCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:MD_CharacterSetCode"/>
 	<!-- ........................................................................ -->
 </xs:schema>

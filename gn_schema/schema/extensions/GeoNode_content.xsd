@@ -18,38 +18,7 @@
 	<!-- ########################################################################### -->
 	<!-- ########################################################################### -->
 	<!-- ================================== Classes ================================= -->
-	<!-- ........................................................................ -->
-	<xs:element name="DP_BandwidthWavelengthCode" type="gco:CodeListValue_Type"/>
-	<!-- ........................................................................ -->
-	<xs:complexType name="DP_BandwidthWavelengthCode_PropertyType">
-		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_BandwidthWavelengthCode"/>
-		</xs:sequence>
-		<xs:attribute ref="gco:nilReason"/>
-	</xs:complexType>
-	<!-- =========================================================================== -->
-	<xs:complexType name="DP_RangeDimension_Type">
-		<xs:annotation>
-			<xs:documentation>Set of adjacent wavelengths in the electro-magnetic spectrum with a common characteristic, such as the visible band</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="gmd:MD_RangeDimension_Type">
-				<xs:sequence>
-					<xs:element name="sequenceIdentifier" type="geonode:DP_BandwidthWavelengthCode_PropertyType" minOccurs="0"/>
-				</xs:sequence>
-				<xs:attribute ref="gco:isoType" use="required" fixed="gmd:MD_RangeDimension"/>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<!-- ........................................................................ -->
-	<xs:element name="DP_RangeDimension" type="geonode:DP_RangeDimension_Type" substitutionGroup="gmd:MD_RangeDimension"/>
-	<!-- ........................................................................ -->
-	<xs:complexType name="DP_RangeDimension_PropertyType">
-		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_RangeDimension"/>
-		</xs:sequence>
-		<xs:attributeGroup ref="gco:ObjectReference"/>
-		<xs:attribute ref="gco:nilReason"/>
-	</xs:complexType>
+
+
 	<!-- =========================================================================== -->
 </xs:schema>

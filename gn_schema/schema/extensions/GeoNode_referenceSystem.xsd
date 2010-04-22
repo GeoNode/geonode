@@ -18,7 +18,7 @@
 	<!-- ########################################################################### -->
 	<!-- ########################################################################### -->
 	<!-- ================================== Classes ================================= -->
-	<xs:complexType name="DP_ReferenceSystem_Type">
+	<xs:complexType name="MD_ReferenceSystem_Type">
 		<xs:complexContent>
 			<xs:extension base="gmd:MD_ReferenceSystem_Type">
 				<xs:attribute ref="gco:isoType" use="required" fixed="gmd:MD_ReferenceSystem"/>
@@ -26,11 +26,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_ReferenceSystem" type="geonode:DP_ReferenceSystem_Type" substitutionGroup="gmd:MD_ReferenceSystem"/>
+	<xs:element name="MD_ReferenceSystem" type="geonode:MD_ReferenceSystem_Type" substitutionGroup="gmd:MD_ReferenceSystem"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_ReferenceSystem_PropertyType">
+	<xs:complexType name="MD_ReferenceSystem_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_ReferenceSystem"/>
+			<xs:element ref="geonode:MD_ReferenceSystem"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
@@ -113,7 +113,7 @@
 	<!-- =========================================================================== -->
 	<xs:complexType name="MD_CRS_Type">
 		<xs:complexContent>
-			<xs:extension base="geonode:DP_ReferenceSystem_Type">
+			<xs:extension base="geonode:MD_ReferenceSystem_Type">
 				<xs:sequence>
 					<xs:element name="projection" type="gmd:RS_Identifier_PropertyType"/>
 					<xs:element name="ellipsoid" type="gmd:RS_Identifier_PropertyType" minOccurs="0"/>

@@ -20,7 +20,7 @@
 	<!-- ########################################################################### -->
 	<!-- ########################################################################### -->
 	<!-- ================================== Classes ================================= -->
-	<xs:complexType name="DP_ScopeDescription_Type">
+	<xs:complexType name="MD_ScopeDescription_Type">
 		<xs:annotation>
 			<xs:documentation>Description of the class of information covered by the information</xs:documentation>
 		</xs:annotation>
@@ -31,21 +31,21 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_ScopeDescription" type="geonode:DP_ScopeDescription_Type" substitutionGroup="gmd:MD_ScopeDescription"/>
+	<xs:element name="MD_ScopeDescription" type="geonode:MD_ScopeDescription_Type" substitutionGroup="gmd:MD_ScopeDescription"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_ScopeDescription_PropertyType">
+	<xs:complexType name="MD_ScopeDescription_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_ScopeDescription"/>
+			<xs:element ref="geonode:MD_ScopeDescription"/>
 		</xs:sequence>
 		<xs:attribute ref="gco:nilReason"/>
 	</xs:complexType>
 	<!-- =========================================================================== -->
 	<!-- ........................................................................ -->
-	<xs:element name="DP_FeatureCatalogueCode" type="gco:CodeListValue_Type"/>
+	<xs:element name="MD_FeatureCatalogueCode" type="gco:CodeListValue_Type"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_FeatureCatalogueCode_PropertyType">
+	<xs:complexType name="MD_FeatureCatalogueCode_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_FeatureCatalogueCode"/>
+			<xs:element ref="geonode:MD_FeatureCatalogueCode"/>
 		</xs:sequence>
 		<xs:attribute ref="gco:nilReason"/>
 	</xs:complexType>
