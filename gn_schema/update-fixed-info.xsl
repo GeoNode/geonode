@@ -5,7 +5,7 @@
 						xmlns:srv="http://www.isotc211.org/2005/srv"
 						xmlns:gco="http://www.isotc211.org/2005/gco"
 						xmlns:gmx="http://www.isotc211.org/2005/gmx"
-						xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP"
+						xmlns:geonode="http://geonode.org/0.1"
 						xmlns:gmd="http://www.isotc211.org/2005/gmd" exclude-result-prefixes="gmd">
 
 	<xsl:include href="../iso19139/convert/functions.xsl"/>
@@ -13,12 +13,12 @@
 	<!-- ================================================================= -->
 	
 	<xsl:template match="/root">
-		 <xsl:apply-templates select="ADO:DP_Metadata"/>
+		 <xsl:apply-templates select="geonode:MD_Metadata"/>
 	</xsl:template>
 
 	<!-- ================================================================= -->
 	
-	<xsl:template match="ADO:DP_Metadata">
+	<xsl:template match="geonode:MD_Metadata">
 		 <xsl:copy>
 		 		<xsl:copy-of select="@*"/>
 		 		<xsl:if test="not(gmd:fileIdentifier)">

@@ -5,7 +5,7 @@
 										xmlns:gco="http://www.isotc211.org/2005/gco"
 										xmlns:gml="http://www.opengis.net/gml"
 										xmlns:srv="http://www.isotc211.org/2005/srv"
-										xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP"
+										xmlns:geonode="http://geonode.org/0.1"
 										xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:param name="datadir"/>
 
@@ -27,7 +27,7 @@
 
 	<xsl:template match="/">
 		<Document>
-			<xsl:apply-templates select="ADO:DP_Metadata" mode="metadata"/>
+			<xsl:apply-templates select="geonode:MD_Metadata" mode="metadata"/>
 		</Document>
 	</xsl:template>
 	
@@ -37,7 +37,7 @@
 
 		<!-- === Data or Service Identification === -->		
 
-		<xsl:for-each select="gmd:identificationInfo/ADO:DP_DataIdentification|gmd:identificationInfo/srv:SV_ServiceIdentification">
+		<xsl:for-each select="gmd:identificationInfo/geonode:MD_DataIdentification|gmd:identificationInfo/srv:SV_ServiceIdentification">
 
 			<xsl:for-each select="gmd:citation/gmd:CI_Citation">
 				<xsl:for-each select="gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString">
@@ -58,11 +58,11 @@
 					<Field name="revisionDate" string="{string(.)}" store="true" index="true" token="false"/>
 				</xsl:for-each>
 
-				<xsl:for-each select="gmd:date/gmd:CI_Date[gmd:dateType/ADO:DP_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date|gmd:date/gmd:CI_Date[gmd:dateType/ADO:DP_DateTypeCode/@codeListValue='creation']/gmd:date/gco:DateTime">
+				<xsl:for-each select="gmd:date/gmd:CI_Date[gmd:dateType/geonode:MD_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date|gmd:date/gmd:CI_Date[gmd:dateType/geonode:MD_DateTypeCode/@codeListValue='creation']/gmd:date/gco:DateTime">
 					<Field name="createDate" string="{string(.)}" store="true" index="true" token="false"/>
 				</xsl:for-each>
 
-				<xsl:for-each select="gmd:date/gmd:CI_Date[gmd:dateType/ADO:DP_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date|gmd:date/gmd:CI_Date[gmd:dateType/ADO:DP_DateTypeCode/@codeListValue='publication']/gmd:date/gco:DateTime">
+				<xsl:for-each select="gmd:date/gmd:CI_Date[gmd:dateType/geonode:MD_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date|gmd:date/gmd:CI_Date[gmd:dateType/geonode:MD_DateTypeCode/@codeListValue='publication']/gmd:date/gco:DateTime">
 					<Field name="publicationDate" string="{string(.)}" store="true" index="true" token="false"/>
 				</xsl:for-each>
 
@@ -129,14 +129,14 @@
 	
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 	
-			<xsl:for-each select="gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString|gmd:pointOfContact/ADO:DP_ResponsibleParty/gmd:organisationName/gco:CharacterString">
+			<xsl:for-each select="gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString|gmd:pointOfContact/geonode:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString">
 				<Field name="orgName" string="{string(.)}" store="true" index="true" token="true"/>
 			</xsl:for-each>
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 	
 			<xsl:choose>
-				<xsl:when test="gmd:resourceConstraints/gmd:MD_SecurityConstraints|ADO:resourceConstraints/ADO:DP_SecurityConstraints">
+				<xsl:when test="gmd:resourceConstraints/gmd:MD_SecurityConstraints|geonode:resourceConstraints/geonode:MD_SecurityConstraints">
 					<Field name="secConstr" string="true" store="true" index="true" token="false"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -177,7 +177,7 @@
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 		<!-- === Distribution === -->		
 
-		<xsl:for-each select="gmd:distributionInfo/gmd:MD_Distribution|gmd:distributionInfo/ADO:DP_Distribution">
+		<xsl:for-each select="gmd:distributionInfo/gmd:MD_Distribution|gmd:distributionInfo/geonode:MD_Distribution">
 			<xsl:for-each select="gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString">
 				<Field name="format" string="{string(.)}" store="true" index="true" token="false"/>
 			</xsl:for-each>

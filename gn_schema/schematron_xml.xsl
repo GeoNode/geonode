@@ -5,14 +5,14 @@
                 xmlns:gmd="http://www.isotc211.org/2005/gmd"
                 xmlns:gco="http://www.isotc211.org/2005/gco"
                 xmlns:geonet="http://www.fao.org/geonetwork"
-                xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP"
+                xmlns:geonode="http://geonode.org/0.1"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 version="1.0"
                 gml:dummy-for-xmlns=""
                 gmd:dummy-for-xmlns=""
                 gco:dummy-for-xmlns=""
                 geonet:dummy-for-xmlns=""
-                ADO:dummy-for-xmlns=""
+                geonode:dummy-for-xmlns=""
                 xlink:dummy-for-xmlns="">
    <xsl:output method="xml"/>
    <xsl:template match="*|@*" mode="schematron-get-full-path">
@@ -409,7 +409,7 @@
       <xsl:apply-templates mode="M33"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M33"/>
-   <xsl:template match="ADO:DP_Metadata | gmd:MD_Metadata" priority="4000" mode="M34">
+   <xsl:template match="geonode:MD_Metadata | gmd:MD_Metadata" priority="4000" mode="M34">
       <xsl:choose>
          <xsl:when test="@xml:lang or gmd:language "/>
          <xsl:otherwise>
@@ -422,7 +422,7 @@
       <xsl:apply-templates mode="M34"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M34"/>
-   <xsl:template match="ADO:DP_Metadata | gmd:MD_Metadata" priority="4000" mode="M35">
+   <xsl:template match="geonode:MD_Metadata | gmd:MD_Metadata" priority="4000" mode="M35">
       <xsl:choose>
          <xsl:when test="gmd:dataSetURI or gmd:parentIdentifier"/>
          <xsl:otherwise>
@@ -453,7 +453,7 @@
       <xsl:apply-templates mode="M35"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M35"/>
-   <xsl:template match="//ADO:DP_Metadata" priority="4000" mode="M36">
+   <xsl:template match="//geonode:MD_Metadata" priority="4000" mode="M36">
       <xsl:choose>
          <xsl:when test="gmd:referenceSystemInfo"/>
          <xsl:otherwise>
@@ -466,7 +466,7 @@
       <xsl:apply-templates mode="M36"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M36"/>
-   <xsl:template match="//ADO:DP_Metadata" priority="4000" mode="M37">
+   <xsl:template match="//geonode:MD_Metadata" priority="4000" mode="M37">
       <xsl:choose>
          <xsl:when test="gmd:distributionInfo"/>
          <xsl:otherwise>
@@ -479,7 +479,7 @@
       <xsl:apply-templates mode="M37"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M37"/>
-   <xsl:template match="//ADO:DP_Metadata" priority="4000" mode="M38">
+   <xsl:template match="//geonode:MD_Metadata" priority="4000" mode="M38">
       <xsl:choose>
          <xsl:when test="gmd:dataQualityInfo"/>
          <xsl:otherwise>
@@ -492,9 +492,9 @@
       <xsl:apply-templates mode="M38"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M38"/>
-   <xsl:template match="//ADO:DP_DataIdentification" priority="4000" mode="M39">
+   <xsl:template match="//geonode:MD_DataIdentification" priority="4000" mode="M39">
       <xsl:choose>
-         <xsl:when test="ADO:resourceConstraints"/>
+         <xsl:when test="geonode:resourceConstraints"/>
          <xsl:otherwise>
             <geonet:errorFound ref="#_{geonet:element/@ref}">
                <geonet:pattern name="{name(.)}"/>
@@ -504,34 +504,8 @@
       </xsl:choose>
       <xsl:apply-templates mode="M39"/>
    </xsl:template>
-   <xsl:template match="text()" priority="-1" mode="M39"/>
-   <xsl:template match="//ADO:DP_Distributor" priority="4000" mode="M40">
-      <xsl:choose>
-         <xsl:when test="gmd:distributionFormat"/>
-         <xsl:otherwise>
-            <geonet:errorFound ref="#_{geonet:element/@ref}">
-               <geonet:pattern name="{name(.)}"/>
-               <geonet:diagnostics>distributionFormat is not present.</geonet:diagnostics>
-            </geonet:errorFound>
-         </xsl:otherwise>
-      </xsl:choose>
-      <xsl:apply-templates mode="M40"/>
-   </xsl:template>
-   <xsl:template match="text()" priority="-1" mode="M40"/>
-   <xsl:template match="//ADO:DP_Distributor" priority="4000" mode="M41">
-      <xsl:choose>
-         <xsl:when test="gmd:distributor"/>
-         <xsl:otherwise>
-            <geonet:errorFound ref="#_{geonet:element/@ref}">
-               <geonet:pattern name="{name(.)}"/>
-               <geonet:diagnostics>distributor is not present.</geonet:diagnostics>
-            </geonet:errorFound>
-         </xsl:otherwise>
-      </xsl:choose>
-      <xsl:apply-templates mode="M41"/>
-   </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M41"/>
-   <xsl:template match="//ADO:DP_ResponsibleParty" priority="4000" mode="M42">
+   <xsl:template match="//geonode:CI_ResponsibleParty" priority="4000" mode="M42">
       <xsl:choose>
          <xsl:when test="gmd:organisationName and normalize-space(gmd:organisationName)!=''"/>
          <xsl:otherwise>

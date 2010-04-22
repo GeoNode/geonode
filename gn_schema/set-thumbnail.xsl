@@ -2,18 +2,18 @@
 
 <xsl:stylesheet   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" 
 						xmlns:gco="http://www.isotc211.org/2005/gco"
-						xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP"
+						xmlns:geonode="http://geonode.org/0.1"
 						xmlns:gmd="http://www.isotc211.org/2005/gmd">
 
 	<!-- ================================================================= -->
 	
 	<xsl:template match="/root">
-		 <xsl:apply-templates select="ADO:DP_Metadata"/>
+		 <xsl:apply-templates select="geonode:MD_Metadata"/>
 	</xsl:template>
 
 	<!-- ================================================================= -->
 	
-	<xsl:template match="ADO:DP_Metadata">
+	<xsl:template match="geonode:MD_Metadata">
 		<xsl:copy>
 		 	<xsl:copy-of select="@*"/>
 			<xsl:apply-templates select="gmd:fileIdentifier"/>
@@ -35,9 +35,9 @@
 			<xsl:choose>
 				<xsl:when test="not(gmd:identificationInfo)">
 		 			<gmd:identificationInfo>
-						<ADO:DP_DataIdentification gco:isoType="gmd:MD_DataIdentification">
+						<geonode:MD_DataIdentification gco:isoType="gmd:MD_DataIdentification">
 							<xsl:call-template name="fill"/>
-						</ADO:DP_DataIdentification>
+						</geonode:MD_DataIdentification>
 					</gmd:identificationInfo>
 				</xsl:when>
 				
@@ -63,7 +63,7 @@
 
 	<!-- ================================================================= -->
 	
-	<xsl:template match="ADO:DP_DataIdentification">
+	<xsl:template match="geonode:MD_DataIdentification">
 		<xsl:copy>
 		 	<xsl:copy-of select="@*"/>
 			<xsl:apply-templates select="gmd:citation"/>
@@ -90,11 +90,11 @@
 			<xsl:apply-templates select="gmd:environmentDescription"/>
 			<xsl:apply-templates select="gmd:extent"/>
 			<xsl:apply-templates select="gmd:supplementalInformation"/>
-			<xsl:apply-templates select="ADO:resourceConstraints"/>
-			<xsl:apply-templates select="ADO:defencePurpose"/>
-			<xsl:apply-templates select="ADO:productNumber"/>
-			<xsl:apply-templates select="ADO:stockNumber"/>
-			<xsl:apply-templates select="ADO:mapsheetNumber"/>
+			<xsl:apply-templates select="geonode:resourceConstraints"/>
+			<xsl:apply-templates select="geonode:defencePurpose"/>
+			<xsl:apply-templates select="geonode:productNumber"/>
+			<xsl:apply-templates select="geonode:stockNumber"/>
+			<xsl:apply-templates select="geonode:mapsheetNumber"/>
 		</xsl:copy>
 	</xsl:template>
 
