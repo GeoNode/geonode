@@ -19,7 +19,7 @@
 	<!-- ########################################################################### -->
 	<!-- ########################################################################### -->
 	<!-- ================================== Classes ================================= -->
-	<xs:complexType name="DP_ResponsibleParty_Type">
+	<xs:complexType name="CI_ResponsibleParty_Type">
 		<xs:annotation>
 			<xs:documentation>Information about the metadata</xs:documentation>
 		</xs:annotation>
@@ -30,17 +30,17 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_ResponsibleParty" type="geonode:DP_ResponsibleParty_Type" substitutionGroup="gmd:CI_ResponsibleParty"/>
+	<xs:element name="CI_ResponsibleParty" type="geonode:CI_ResponsibleParty_Type" substitutionGroup="gmd:CI_ResponsibleParty"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_ResponsibleParty_PropertyType">
+	<xs:complexType name="CI_ResponsibleParty_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_ResponsibleParty"/>
+			<xs:element ref="geonode:CI_ResponsibleParty"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
 	</xs:complexType>
 	<!-- =========================================================================== -->
-	<xs:complexType name="DP_Contact_Type">
+	<xs:complexType name="CI_Contact_Type">
 		<xs:annotation>
 			<xs:documentation>Information about the metadata</xs:documentation>
 		</xs:annotation>
@@ -51,15 +51,15 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_Contact" type="geonode:DP_Contact_Type" substitutionGroup="gmd:CI_Contact"/>
+	<xs:element name="CI_Contact" type="geonode:CI_Contact_Type" substitutionGroup="gmd:CI_Contact"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_Contact_PropertyType">
+	<xs:complexType name="CI_Contact_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_Contact"/>
+			<xs:element ref="geonode:CI_Contact"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
 	</xs:complexType>
 	<!-- =========================================================================== -->
-	<xs:element name="DP_DateTypeCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:CI_DateTypeCode"/>
+	<xs:element name="CI_DateTypeCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:CI_DateTypeCode"/>
 </xs:schema>

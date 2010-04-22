@@ -18,7 +18,7 @@
 	<!-- ########################################################################### -->
 	<!-- ########################################################################### -->
 	<!-- ================================== Classes ================================= -->
-	<xs:complexType name="DP_Constraints_Type">
+	<xs:complexType name="MD_Constraints_Type">
 		<xs:annotation>
 			<xs:documentation>Handling restrictions imposed on the dataset because of national security, privacy, or other concerns</xs:documentation>
 		</xs:annotation>
@@ -27,9 +27,9 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_Constraints" type="geonode:DP_Constraints_Type" substitutionGroup="gmd:MD_Constraints"/>
+	<xs:element name="MD_Constraints" type="geonode:MD_Constraints_Type" substitutionGroup="gmd:MD_Constraints"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_LegalConstraints_Type">
+	<xs:complexType name="MD_LegalConstraints_Type">
 		<xs:annotation>
 			<xs:documentation>Restrictions and legal prerequisites for accessing and using the dataset.</xs:documentation>
 		</xs:annotation>
@@ -38,9 +38,9 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_LegalConstraints" type="geonode:DP_LegalConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
+	<xs:element name="MD_LegalConstraints" type="geonode:MD_LegalConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_SecurityConstraints_Type">
+	<xs:complexType name="MD_SecurityConstraints_Type">
 		<xs:annotation>
 			<xs:documentation>Handling restrictions imposed on the dataset because of national security, privacy, or other concerns</xs:documentation>
 		</xs:annotation>
@@ -49,10 +49,10 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_SecurityConstraints" type="geonode:DP_SecurityConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
+	<xs:element name="MD_SecurityConstraints" type="geonode:MD_SecurityConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_ClassificationCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:MD_ClassificationCode"/>
+	<xs:element name="MD_ClassificationCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:MD_ClassificationCode"/>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_UseRestrictionCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:MD_RestrictionCode"/>
+	<xs:element name="MD_UseRestrictionCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:MD_RestrictionCode"/>
 	<!-- ........................................................................ -->
 </xs:schema>

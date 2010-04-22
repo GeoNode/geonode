@@ -23,17 +23,17 @@
 			characterSet		C ISO/IEC 10646-1 not used and not defined by encoding (Can not be done can not access the XML declaration)
 			-->
 			<sch:pattern name="Encoding Set">
-				<sch:rule context="geonode:DP_Metadata | gmd:MD_Metadata">
+				<sch:rule context="geonode:MD_Metadata | gmd:MD_Metadata">
 					<sch:assert test="@xml:lang or gmd:language ">The without the presence of a xml:lang then the language should be present.</sch:assert>
 				</sch:rule>
 			</sch:pattern>
 			<!--
-			parentIdentifier		C If hierarchy level not equal to dataset
+			parentIdentifier	C If hierarchy level not equal to dataset
 			hierarchyLevel		C If hierarchy level not equal to dataset
 			hierarchyLevelName	C If hierarchy level not equal to dataset
 			-->
 			<sch:pattern name="Test the setting of the  dataset">
-				<sch:rule context="geonode:DP_Metadata | gmd:MD_Metadata">
+				<sch:rule context="geonode:MD_Metadata | gmd:MD_Metadata">
 					<sch:assert test="gmd:dataSetURI or gmd:parentIdentifier">The without the presence of a dataSet then parentIdentifiershould be present.</sch:assert>
 					<sch:assert test="gmd:dataSetURI or gmd:hierarchyLevel">The without the presence of a dataSet then hierarchyLevelshould be present.</sch:assert>
 					<sch:assert test="gmd:dataSetURI or gmd:hierarchyLevelName">The without the presence of a dataSet then hierarchyLevelNameshould be present.</sch:assert>
@@ -48,7 +48,7 @@
 	<!-- ########################################################################### -->
 	<!-- ########################################################################### -->
 	<!-- ================================== Classes ================================= -->
-	<xs:complexType name="DP_Metadata_Type">
+	<xs:complexType name="MD_Metadata_Type">
 		<xs:annotation>
 			<xs:documentation>Information about the metadata</xs:documentation>
 		</xs:annotation>
@@ -59,11 +59,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_Metadata" substitutionGroup="gmd:MD_Metadata" type="geonode:DP_Metadata_Type"/>
+	<xs:element name="MD_Metadata" substitutionGroup="gmd:MD_Metadata" type="geonode:MD_Metadata_Type"/>
 	<!-- ........................................................................ -->
-	<xs:complexType name="DP_Metadata_PropertyType">
+	<xs:complexType name="MD_Metadata_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_Metadata"/>
+			<xs:element ref="geonode:MD_Metadata"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>

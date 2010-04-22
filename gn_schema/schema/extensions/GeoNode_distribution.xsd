@@ -18,25 +18,6 @@
 	<!-- ########################################################################### -->
 	<!-- ########################################################################### -->
 	<!-- ================================== Classes ================================= -->
-	<xs:complexType name="DP_Distribution_Type">
-		<xs:annotation>
-			<xs:documentation>Information about the distributor of and options for obtaining the dataset</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="gmd:MD_Distribution_Type">
-				<xs:attribute ref="gco:isoType" use="required" fixed="gmd:MD_Distribution"/>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<!-- ........................................................................ -->
-	<xs:element name="DP_Distribution" type="geonode:DP_Distribution_Type" substitutionGroup="gmd:MD_Distribution"/>
-	<!-- ........................................................................ -->
-	<xs:complexType name="DP_Distribution_PropertyType">
-		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:DP_Distribution"/>
-		</xs:sequence>
-		<xs:attributeGroup ref="gco:ObjectReference"/>
-		<xs:attribute ref="gco:nilReason"/>
-	</xs:complexType>
+
 	<!-- =========================================================================== -->
 </xs:schema>
