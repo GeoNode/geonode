@@ -1,10 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- UNCLASSIFIED -->
-<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Department of Defence (Department of Defence) -->
-<xs:schema targetNamespace="http://www.defence.gov.au/ADO_DM_MDP" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP" elementFormDefault="qualified" version="0.1">
+<xs:schema
+  targetNamespace="http://geonode.org/0.1"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:gco="http://www.isotc211.org/2005/gco"
+  xmlns:gmd="http://www.isotc211.org/2005/gmd"
+  xmlns:geonode="http://geonode.org/0.1"
+  elementFormDefault="qualified"
+  version="0.1">
 	<!-- ================================= Annotation ================================ -->
 	<xs:annotation>
-		<xs:documentation>This schema is the ADO community profile equivalent of the ‘referenceSystem.xsd’ schema.</xs:documentation>
+		<xs:documentation>This schema is the GeoNode community profile equivalent of the ‘referenceSystem.xsd’ schema.</xs:documentation>
 	</xs:annotation>
 	<!-- ================================== Imports ================================== -->
 	<xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="../gmd/gmd.xsd"/>
@@ -20,11 +26,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="DP_ReferenceSystem" type="ADO:DP_ReferenceSystem_Type" substitutionGroup="gmd:MD_ReferenceSystem"/>
+	<xs:element name="DP_ReferenceSystem" type="geonode:DP_ReferenceSystem_Type" substitutionGroup="gmd:MD_ReferenceSystem"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="DP_ReferenceSystem_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="ADO:DP_ReferenceSystem"/>
+			<xs:element ref="geonode:DP_ReferenceSystem"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
@@ -38,11 +44,11 @@
 		</xs:sequence>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="MD_EllipsoidParamaters" type="ADO:MD_EllipsoidParamaters_Type"/>
+	<xs:element name="MD_EllipsoidParamaters" type="geonode:MD_EllipsoidParamaters_Type"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="MD_EllipsoidParamaters_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="ADO:MD_EllipsoidParamaters"/>
+			<xs:element ref="geonode:MD_EllipsoidParamaters"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
@@ -55,11 +61,11 @@
 		</xs:sequence>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="MD_ObliqueLineAzimuth" type="ADO:MD_ObliqueLineAzimuth_Type"/>
+	<xs:element name="MD_ObliqueLineAzimuth" type="geonode:MD_ObliqueLineAzimuth_Type"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="MD_ObliqueLineAzimuth_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="ADO:MD_ObliqueLineAzimuth"/>
+			<xs:element ref="geonode:MD_ObliqueLineAzimuth"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
@@ -72,11 +78,11 @@
 		</xs:sequence>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="MD_ObliqueLinePoint" type="ADO:MD_ObliqueLinePoint_Type"/>
+	<xs:element name="MD_ObliqueLinePoint" type="geonode:MD_ObliqueLinePoint_Type"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="MD_ObliqueLinePoint_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="ADO:MD_ObliqueLinePoint"/>
+			<xs:element ref="geonode:MD_ObliqueLinePoint"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
@@ -90,16 +96,16 @@
 			<xs:element name="latitudeOfProjectionOrigin" type="gco:Real_PropertyType" minOccurs="0"/>
 			<xs:element name="falseEasting" type="gco:Real_PropertyType" minOccurs="0"/>
 			<xs:element name="falseNorth" type="gco:Real_PropertyType" minOccurs="0"/>
-			<xs:element name="obliqueLineAzimuthParameter" type="ADO:MD_ObliqueLineAzimuth_PropertyType" minOccurs="0"/>
-			<xs:element name="obliqueLinePointParameter" type="ADO:MD_ObliqueLinePoint_PropertyType" minOccurs="0" maxOccurs="2"/>
+			<xs:element name="obliqueLineAzimuthParameter" type="geonode:MD_ObliqueLineAzimuth_PropertyType" minOccurs="0"/>
+			<xs:element name="obliqueLinePointParameter" type="geonode:MD_ObliqueLinePoint_PropertyType" minOccurs="0" maxOccurs="2"/>
 		</xs:sequence>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="MD_ProjectionParameters" type="ADO:MD_ProjectionParameters_Type"/>
+	<xs:element name="MD_ProjectionParameters" type="geonode:MD_ProjectionParameters_Type"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="MD_ProjectionParameters_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="ADO:MD_ProjectionParameters"/>
+			<xs:element ref="geonode:MD_ProjectionParameters"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
@@ -107,23 +113,23 @@
 	<!-- =========================================================================== -->
 	<xs:complexType name="MD_CRS_Type">
 		<xs:complexContent>
-			<xs:extension base="ADO:DP_ReferenceSystem_Type">
+			<xs:extension base="geonode:DP_ReferenceSystem_Type">
 				<xs:sequence>
 					<xs:element name="projection" type="gmd:RS_Identifier_PropertyType"/>
 					<xs:element name="ellipsoid" type="gmd:RS_Identifier_PropertyType" minOccurs="0"/>
 					<xs:element name="datum" type="gmd:RS_Identifier_PropertyType" minOccurs="0"/>
-					<xs:element name="ellipsoidParameters" type="ADO:MD_EllipsoidParamaters_PropertyType" minOccurs="0"/>
-					<xs:element name="projectionParameters" type="ADO:MD_ProjectionParameters_PropertyType" minOccurs="0"/>
+					<xs:element name="ellipsoidParameters" type="geonode:MD_EllipsoidParamaters_PropertyType" minOccurs="0"/>
+					<xs:element name="projectionParameters" type="geonode:MD_ProjectionParameters_PropertyType" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- ........................................................................ -->
-	<xs:element name="MD_CRS" type="ADO:MD_CRS_Type" substitutionGroup="gmd:MD_ReferenceSystem"/>
+	<xs:element name="MD_CRS" type="geonode:MD_CRS_Type" substitutionGroup="gmd:MD_ReferenceSystem"/>
 	<!-- ........................................................................ -->
 	<xs:complexType name="MD_CRS_PropertyType">
 		<xs:sequence minOccurs="0">
-			<xs:element ref="ADO:MD_CRS"/>
+			<xs:element ref="geonode:MD_CRS"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
 		<xs:attribute ref="gco:nilReason"/>
