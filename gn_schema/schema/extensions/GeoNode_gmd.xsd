@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xs:schema
   targetNamespace="http://geonode.org/0.1"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -19,7 +19,7 @@
 	<xs:include schemaLocation="./GeoNode_referenceSystem.xsd"/>
 	<xs:include schemaLocation="./GeoNode_content.xsd"/>
 	<xs:include schemaLocation="./GeoNode_distribution.xsd"/>
-	<xs:include schemaLocation="./ADO_citation.xsd"/>
+	<xs:include schemaLocation="./GeoNode_citation.xsd"/>
 	<!-- ########################################################################### -->
 	<!-- ########################################################################### -->
 	<!-- ================================== Classes ================================= -->
