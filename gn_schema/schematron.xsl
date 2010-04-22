@@ -5,14 +5,14 @@
                 xmlns:gmd="http://www.isotc211.org/2005/gmd"
                 xmlns:gco="http://www.isotc211.org/2005/gco"
                 xmlns:geonet="http://www.fao.org/geonetwork"
-                xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP"
+                xmlns:geonode="http://geonode.org/0.1"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 version="1.0"
                 gml:dummy-for-xmlns=""
                 gmd:dummy-for-xmlns=""
                 gco:dummy-for-xmlns=""
                 geonet:dummy-for-xmlns=""
-                ADO:dummy-for-xmlns=""
+                geonode:dummy-for-xmlns=""
                 xlink:dummy-for-xmlns="">
    <xsl:output method="html"/>
    <xsl:template match="*|@*" mode="schematron-get-full-path">
@@ -38,7 +38,7 @@
          <h2 title="Schematron contact-information is at the end of                   this page">
             <font color="#FF0080">Schematron</font> Report
       </h2>
-         <h1 title=" ">Schematron validation for ADO Profile of AS/NZS 19115(19139)</h1>
+         <h1 title=" ">Schematron validation for GeoNode Profile of AS/NZS 19115(19139)</h1>
          <div class="errors">
             <ul>
                <h3>ANZLIC Metadata Profile Version 1.1.1 Annex B Table 5 row 3 - fileIdentifier required</h3>
@@ -99,19 +99,19 @@
                <xsl:apply-templates select="/" mode="M34"/>
                <h3>Test the setting of the dataset</h3>
                <xsl:apply-templates select="/" mode="M35"/>
-               <h3>from gmdRedefined.xsd in the ADO - referenceSystemInfo required</h3>
+               <h3>from gmdRedefined.xsd in the GeoNode - referenceSystemInfo required</h3>
                <xsl:apply-templates select="/" mode="M36"/>
-               <h3>from gmdRedefined.xsd in the ADO - distributionInfo required</h3>
+               <h3>from gmdRedefined.xsd in the GeoNode - distributionInfo required</h3>
                <xsl:apply-templates select="/" mode="M37"/>
-               <h3>from gmdRedefined.xsd in the ADO - dataQualityInfo required</h3>
+               <h3>from gmdRedefined.xsd in the GeoNode - dataQualityInfo required</h3>
                <xsl:apply-templates select="/" mode="M38"/>
-               <h3>from gmdRedefined.xsd in the ADO - resourceConstraints required</h3>
+               <h3>from gmdRedefined.xsd in the GeoNode - resourceConstraints required</h3>
                <xsl:apply-templates select="/" mode="M39"/>
-               <h3>from gmdRedefined.xsd in the ADO - distributionFormat required</h3>
+               <h3>from gmdRedefined.xsd in the GeoNode - distributionFormat required</h3>
                <xsl:apply-templates select="/" mode="M40"/>
-               <h3>from gmdRedefined.xsd in the ADO - distributor required</h3>
+               <h3>from gmdRedefined.xsd in the GeoNode - distributor required</h3>
                <xsl:apply-templates select="/" mode="M41"/>
-               <h3>from gmdRedefined.xsd in the ADO - organisationName required</h3>
+               <h3>from gmdRedefined.xsd in the GeoNode - organisationName required</h3>
                <xsl:apply-templates select="/" mode="M42"/>
             </ul>
          </div>
@@ -538,7 +538,7 @@
       <xsl:apply-templates mode="M33"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M33"/>
-   <xsl:template match="ADO:DP_Metadata | gmd:MD_Metadata" priority="4000" mode="M34">
+   <xsl:template match="geonode:MD_Metadata | gmd:MD_Metadata" priority="4000" mode="M34">
       <xsl:choose>
          <xsl:when test="@xml:lang or gmd:language "/>
          <xsl:otherwise>
@@ -553,7 +553,7 @@
       <xsl:apply-templates mode="M34"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M34"/>
-   <xsl:template match="ADO:DP_Metadata | gmd:MD_Metadata" priority="4000" mode="M35">
+   <xsl:template match="geonode:MD_Metadata | gmd:MD_Metadata" priority="4000" mode="M35">
       <xsl:choose>
          <xsl:when test="gmd:dataSetURI or gmd:parentIdentifier"/>
          <xsl:otherwise>
@@ -590,7 +590,7 @@
       <xsl:apply-templates mode="M35"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M35"/>
-   <xsl:template match="//ADO:DP_Metadata" priority="4000" mode="M36">
+   <xsl:template match="//geonode:MD_Metadata" priority="4000" mode="M36">
       <xsl:choose>
          <xsl:when test="gmd:referenceSystemInfo"/>
          <xsl:otherwise>
@@ -605,7 +605,7 @@
       <xsl:apply-templates mode="M36"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M36"/>
-   <xsl:template match="//ADO:DP_Metadata" priority="4000" mode="M37">
+   <xsl:template match="//geonode:MD_Metadata" priority="4000" mode="M37">
       <xsl:choose>
          <xsl:when test="gmd:distributionInfo"/>
          <xsl:otherwise>
@@ -620,7 +620,7 @@
       <xsl:apply-templates mode="M37"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M37"/>
-   <xsl:template match="//ADO:DP_Metadata" priority="4000" mode="M38">
+   <xsl:template match="//geonode:MD_Metadata" priority="4000" mode="M38">
       <xsl:choose>
          <xsl:when test="gmd:dataQualityInfo"/>
          <xsl:otherwise>
@@ -635,9 +635,9 @@
       <xsl:apply-templates mode="M38"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M38"/>
-   <xsl:template match="//ADO:DP_DataIdentification" priority="4000" mode="M39">
+   <xsl:template match="//geonode:MD_DataIdentification" priority="4000" mode="M39">
       <xsl:choose>
-         <xsl:when test="ADO:resourceConstraints"/>
+         <xsl:when test="geonode:resourceConstraints"/>
          <xsl:otherwise>
             <li>
                <a href="schematron-out.html#{generate-id(.)}" target="out"
@@ -650,7 +650,7 @@
       <xsl:apply-templates mode="M39"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M39"/>
-   <xsl:template match="//ADO:DP_Distributor" priority="4000" mode="M40">
+   <xsl:template match="//geonode:MD_Distributor" priority="4000" mode="M40">
       <xsl:choose>
          <xsl:when test="gmd:distributionFormat"/>
          <xsl:otherwise>
@@ -665,7 +665,7 @@
       <xsl:apply-templates mode="M40"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M40"/>
-   <xsl:template match="//ADO:DP_Distributor" priority="4000" mode="M41">
+   <xsl:template match="//gmd:MD_Distributor" priority="4000" mode="M41">
       <xsl:choose>
          <xsl:when test="gmd:distributor"/>
          <xsl:otherwise>
@@ -680,7 +680,7 @@
       <xsl:apply-templates mode="M41"/>
    </xsl:template>
    <xsl:template match="text()" priority="-1" mode="M41"/>
-   <xsl:template match="//ADO:DP_ResponsibleParty" priority="4000" mode="M42">
+   <xsl:template match="//geonode:CI_ResponsibleParty" priority="4000" mode="M42">
       <xsl:choose>
          <xsl:when test="gmd:organisationName and normalize-space(gmd:organisationName)!=''"/>
          <xsl:otherwise>
