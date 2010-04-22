@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- UNCLASSIFIED -->
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Department of Defence (Department of Defence) -->
+<xs:schema targetNamespace="http://www.defence.gov.au/ADO_DM_MDP" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="0.1">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>This schema is the ADO community profile equivalent of the ‘gmd.xsd’ schema.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="../gmd/gmd.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="../gco/gco.xsd"/>
+	<!-- ########################################################################### -->
+	<xs:include schemaLocation="./ADO_metadataEntity.xsd"/>
+	<xs:include schemaLocation="./ADO_identification.xsd"/>
+	<xs:include schemaLocation="./ADO_constraints.xsd"/>
+	<xs:include schemaLocation="./ADO_maintenance.xsd"/>
+	<xs:include schemaLocation="./ADO_referenceSystem.xsd"/>
+	<xs:include schemaLocation="./ADO_content.xsd"/>
+	<xs:include schemaLocation="./ADO_distribution.xsd"/>
+	<xs:include schemaLocation="./ADO_citation.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+</xs:schema>
