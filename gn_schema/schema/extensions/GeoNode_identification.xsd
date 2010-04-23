@@ -76,8 +76,4 @@
 		</xs:sequence>
 		<xs:attribute ref="gco:nilReason"/>
 	</xs:complexType>
-	<!-- =========================================================================== -->
-	<!-- ........................................................................ -->
-	<xs:element name="MD_CharacterSetCode" type="gco:CodeListValue_Type" substitutionGroup="gmd:MD_CharacterSetCode"/>
-	<!-- ........................................................................ -->
 </xs:schema>

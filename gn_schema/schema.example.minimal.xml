@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<geonode:MD_Metadata gco:isoType="gmd:MD_Metadata" xmlns:geonode="http://geonode.org/0.1" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco"
+  xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://geonode.org/0.1 ./schema.xsd">
+
+  <gmd:fileIdentifier>
+    <gco:CharacterString>dc46a930-4d4e-4e44-a12e-680bbb8b9da7</gco:CharacterString>
+  </gmd:fileIdentifier>
+
+  <gmd:language>
+    <gco:CharacterString>eng</gco:CharacterString>
+  </gmd:language>
+
+  <gmd:characterSet>
+    <gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode" codeListValue="utf8" />
+  </gmd:characterSet>
+
+  <gmd:hierarchyLevelName>
+    <gco:CharacterString>dataset</gco:CharacterString>
+  </gmd:hierarchyLevelName>
+
+  <gmd:contact>
+    <geonode:CI_ResponsibleParty gco:isoType="gmd:CI_ResponsibleParty">
+      <gmd:individualName>
+        <gco:CharacterString>Sebastian Benthall</gco:CharacterString>
+      </gmd:individualName>
+      <gmd:organisationName>
+        <gco:CharacterString>OpenGeo</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:positionName>
+        <gco:CharacterString>Project Manager</gco:CharacterString>
+      </gmd:positionName>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode" codeListValue="pointOfContact" />
+      </gmd:role>
+      <!--
+      needed?
+      <gmd:contactInfo></gmd:contactInfo>
+        -->
+    </geonode:CI_ResponsibleParty>
+  </gmd:contact>
+
+  <gmd:dateStamp>
+    <gco:Date>2010-04-11</gco:Date>
+  </gmd:dateStamp>
+
+  <gmd:metadataStandardName>
+    <!-- should we mention the application profile here? -->
+    <gco:CharacterString>ISO 19115:2003/19139</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion>
+    <gco:CharacterString>1.0</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+
+  <!-- revisit: purpose of this element?
+  <gmd:dataSetURI></gmd:dataSetURI>
+   -->
+
+  <gmd:spatialRepresentationInfo></gmd:spatialRepresentationInfo>
+  <gmd:referenceSystemInfo>
+    <geonode:MD_ReferenceSystem gco:isoType="gmd:MD_ReferenceSystem">
+      <gmd:referenceSystemIdentifier>
+        <gmd:RS_Identifier>
+          <gmd:code>
+            <gco:CharacterString>EPSG:4326</gco:CharacterString>
+          </gmd:code>
+        </gmd:RS_Identifier>
+      </gmd:referenceSystemIdentifier>
+    </geonode:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
+
+  <gmd:identificationInfo>
+    <geonode:MD_DataIdentification gco:isoType="gmd:MD_DataIdentification">
+      <gmd:citation>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>Base Map</gco:CharacterString>
+          </gmd:title>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2010-04-23</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <geonode:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode" codeListValue="publication" />
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:edition>
+            <gco:CharacterString>First</gco:CharacterString>
+          </gmd:edition>
+          <gmd:presentationForm>
+            <gmd:CI_PresentationFormCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_PresentationFormCode" codeListValue="mapDigital" />
+          </gmd:presentationForm>
+        </gmd:CI_Citation>
+      </gmd:citation>
+      <gmd:abstract>
+        <gco:CharacterString>This is the base map for this GeoNode instance to create mash ups on top of</gco:CharacterString>
+      </gmd:abstract>
+    </geonode:MD_DataIdentification>
+  </gmd:identificationInfo>
+
+
+</geonode:MD_Metadata>
