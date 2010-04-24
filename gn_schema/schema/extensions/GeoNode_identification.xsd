@@ -25,7 +25,6 @@
 		<xs:complexContent>
 			<xs:extension base="gmd:AbstractMD_Identification_Type">
 				<xs:sequence>
-					<xs:element name="defencePurpose" type="geonode:MD_DefencePurposeCode_PropertyType" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:attribute ref="gco:isoType" use="required" fixed="gmd:AbstractMD_Identification"/>
 			</xs:extension>
@@ -46,11 +45,6 @@
 		<xs:complexContent>
 			<xs:extension base="gmd:MD_DataIdentification_Type">
 				<xs:sequence>
-					<xs:element name="resourceConstraints" type="gmd:MD_Constraints_PropertyType" minOccurs="1" maxOccurs="unbounded"/>
-					<xs:element name="defencePurpose" type="geonode:MD_DefencePurposeCode_PropertyType" maxOccurs="unbounded"/>
-					<xs:element name="productNumber" type="gco:CharacterString_PropertyType" minOccurs="0"/>
-					<xs:element name="stockNumber" type="gco:CharacterString_PropertyType" minOccurs="0"/>
-					<xs:element name="mapsheetNumber" type="gco:CharacterString_PropertyType" minOccurs="0"/>
 				</xs:sequence>
 				<xs:attribute ref="gco:isoType" use="required" fixed="gmd:MD_DataIdentification"/>
 			</xs:extension>
@@ -64,16 +58,6 @@
 			<xs:element ref="geonode:MD_DataIdentification"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="gco:ObjectReference"/>
-		<xs:attribute ref="gco:nilReason"/>
-	</xs:complexType>
-	<!-- =========================================================================== -->
-	<!-- ........................................................................ -->
-	<xs:element name="MD_DefencePurposeCode" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
-	<!-- ........................................................................ -->
-	<xs:complexType name="MD_DefencePurposeCode_PropertyType">
-		<xs:sequence minOccurs="0">
-			<xs:element ref="geonode:MD_DefencePurposeCode"/>
-		</xs:sequence>
 		<xs:attribute ref="gco:nilReason"/>
 	</xs:complexType>
 </xs:schema>
