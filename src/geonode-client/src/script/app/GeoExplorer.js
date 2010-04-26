@@ -229,6 +229,12 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             scope: this
         });
         
+        // limit combo boxes to the window they belong to - fixes issues with
+        // list shadow covering list items
+        Ext.form.ComboBox.prototype.getListParent = function() {
+            return this.el.up(".x-window") || document.body;
+        }
+        
         // set SLD defaults for symbolizer
         OpenLayers.Renderer.defaultSymbolizer = {
            fillColor: "#808080",
@@ -577,16 +583,21 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             }
         });
         
-        var prop;
-        var syncShadow = function() {
-            prop.syncShadow();
-        };
         var layerPropertiesAction = new Ext.Action({
             text: this.layerPropertiesText,
             iconCls: "icon-layerproperties",
             disabled: true,
             tooltip: this.layerPropertiesTipText,
             handler: function() {
+                var syncShadow = function() {
+                    prop.syncShadow();
+                };
+                var cancel = function() {
+                    var originalLayer = backupRecord.get("layer");
+                    layer.mergeNewParams(originalLayer.params);
+                    layer.setOpacity(originalLayer.opacity || 1);
+                    prop.close();
+                }
                 var node = layerTree.getSelectionModel().getSelectedNode();
                 if (node && node.layer) {
                     var layer = node.layer;
@@ -594,10 +605,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     var record = store.getAt(store.findBy(function(record){
                         return record.get("layer") === layer;
                     }));
-                    if (prop) {
-                        prop.close();
-                    }
-                    prop = new Ext.Window({
+                    var backupRecord = record.clone();
+                    var prop = new Ext.Window({
                         title: "Properties: " + record.get("layer").name,
                         width: 280,
                         autoHeight: true,
@@ -611,22 +620,24 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                                 hideMode: "offsets"
                             },
                             buttons: [{
-                                text: "Cancel"
+                                text: "Cancel",
+                                handler: cancel
                             }, {
-                                text: "Save"
+                                text: "Save",
+                                handler: function() {
+                                    prop.close();
+                                }
                             }],
                             listeners: {
                                 "tabchange": syncShadow
                             }
                         }]
                     });
-                    // disable "About" fields to indicate that they're read-only
+                    // disable the "About" tab's fields to indicate that they
+                    // are read-only
                     //TODO WMSLayerPanel should be easier to configure for this
-                    prop.items.get(0).items.get(0).items.get(0).items.each(function(i) {
-                        i.setDisabled(true);
-                    });
-                    prop.items.get(0).items.get(0).items.get(1).items.each(function(i) {
-                        i.setDisabled(true);
+                    prop.items.get(0).items.get(0).cascade(function(i) {
+                        i instanceof Ext.form.Field && i.setDisabled(true);
                     });
                     // add styles tab
                     prop.items.get(0).add(new gxp.WMSStylesDialog({
@@ -638,9 +649,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         },
                         defaults: {
                             defaults: {
-                                listeners: {
-                                    "afterlayout": syncShadow
-                                }
+                                bubbleEvents: ["add", "remove", "afterlayout"]
                             }
                         }
                     }));
