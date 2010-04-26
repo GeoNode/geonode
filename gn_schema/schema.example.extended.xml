@@ -35,8 +35,37 @@
     <geonode:CI_ResponsibleParty
       gco:isoType="gmd:CI_ResponsibleParty">
       <gmd:individualName>
+        <gco:CharacterString>Sebastian Benthall</gco:CharacterString>
+      </gmd:individualName>
+      <gmd:organisationName>
+        <gco:CharacterString>OpenGeo</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:positionName>
+        <gco:CharacterString>Project Manager</gco:CharacterString>
+      </gmd:positionName>
+      <gmd:role>
+        <gmd:CI_RoleCode
+          codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode"
+          codeListValue="pointOfContact">Point of Contact</gmd:CI_RoleCode>
+      </gmd:role>
+      <!--
+      needed?
+      <gmd:contactInfo></gmd:contactInfo>
+        -->
+    </geonode:CI_ResponsibleParty>
+  </gmd:contact>
+  <gmd:contact>
+    <geonode:CI_ResponsibleParty
+      gco:isoType="gmd:CI_ResponsibleParty">
+      <gmd:individualName>
         <gco:CharacterString>Gabriel Roldan</gco:CharacterString>
       </gmd:individualName>
+      <gmd:organisationName>
+        <gco:CharacterString>OpenGeo</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:positionName>
+        <gco:CharacterString>Sofware Developer</gco:CharacterString>
+      </gmd:positionName>
       <gmd:contactInfo>
         <geonode:CI_Contact
           gco:isoType="gmd:CI_Contact">
@@ -57,6 +86,12 @@
               </gmd:description>
             </gmd:CI_OnlineResource>
           </gmd:onlineResource>
+          <gmd:hoursOfService>
+            <gco:CharacterString>10am - 18pm</gco:CharacterString>
+          </gmd:hoursOfService>
+          <gmd:contactInstructions>
+            <gco:CharacterString>drop me an e-mail</gco:CharacterString>
+          </gmd:contactInstructions>
         </geonode:CI_Contact>
       </gmd:contactInfo>
       <gmd:role>
@@ -79,6 +114,27 @@
     <gco:CharacterString>1.0</gco:CharacterString>
   </gmd:metadataStandardVersion>
 
+  <!-- revisit: purpose of this element?
+  <gmd:dataSetURI></gmd:dataSetURI>
+   -->
+
+  <gmd:locale>
+    <!-- List of the 'locales' into which free text values can be translated -->
+    <gmd:PT_Locale
+      id="locale-es">
+      <gmd:languageCode>
+        <gmd:LanguageCode
+          codeList="http://www.isotc211.org/2005/resources/Codelist/ML_gmxCodelists.xml#LanguageCode"
+          codeListValue="esp">Español</gmd:LanguageCode>
+      </gmd:languageCode>
+      <gmd:characterEncoding>
+        <gmd:MD_CharacterSetCode
+          codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode"
+          codeListValue="utf8">UTF-8</gmd:MD_CharacterSetCode>
+      </gmd:characterEncoding>
+    </gmd:PT_Locale>
+  </gmd:locale>
+
   <gmd:referenceSystemInfo>
     <geonode:MD_ReferenceSystem
       gco:isoType="gmd:MD_ReferenceSystem">
@@ -97,8 +153,16 @@
       gco:isoType="gmd:MD_DataIdentification">
       <gmd:citation>
         <gmd:CI_Citation>
-          <gmd:title>
+          <gmd:title
+            xsi:type="gmd:PT_FreeText_PropertyType">
             <gco:CharacterString>Base Map</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString
+                  locale="#locale-es">Mapa base</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <!-- <gmd:textGroup>... -->
+            </gmd:PT_FreeText>
           </gmd:title>
           <gmd:date>
             <gmd:CI_Date>
@@ -108,12 +172,19 @@
               <gmd:dateType>
                 <geonode:CI_DateTypeCode
                   codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
-                  codeListValue="publication">publication</geonode:CI_DateTypeCode>
+                  codeListValue="publication" />
               </gmd:dateType>
             </gmd:CI_Date>
           </gmd:date>
-          <gmd:edition>
+          <gmd:edition
+            xsi:type="gmd:PT_FreeText_PropertyType">
             <gco:CharacterString>First</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString
+                  locale="#locale-es">Primera</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
           </gmd:edition>
           <gmd:presentationForm>
             <gmd:CI_PresentationFormCode
@@ -122,11 +193,30 @@
           </gmd:presentationForm>
         </gmd:CI_Citation>
       </gmd:citation>
-      <gmd:abstract>
+      <gmd:abstract
+        xsi:type="gmd:PT_FreeText_PropertyType">
+        <!--
+          The xsi:type attribute indicates that this instance of the abstract property is not instantiated through a simple CharacterString, but rather as a free text. As a consequence, the element
+          contains a complementary PT_FreeText subelement containing one or more textGroup elements (one per translation). This can be done for any gco:CharacterString property in order to provide
+          integrated translation of metadata contents
+        -->
         <gco:CharacterString>This is the base map for this GeoNode instance to create mash ups on top of</gco:CharacterString>
+        <gmd:PT_FreeText>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString
+              locale="es">Este es el mapa base para esta instancia de GeoNode, sobre el cual crear mash ups</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+        </gmd:PT_FreeText>
       </gmd:abstract>
-      <gmd:purpose>
+      <gmd:purpose
+        xsi:type="gmd:PT_FreeText_PropertyType">
         <gco:CharacterString>The map was prepared by the GeoNode development team for testing purposes</gco:CharacterString>
+        <gmd:PT_FreeText>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString
+              locale="#locale-es">Este mapa ha sido preparado por el equipo de desarrollo de GeoNode a fin de realizar pruebas</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+        </gmd:PT_FreeText>
       </gmd:purpose>
       <gmd:resourceMaintenance>
         <gmd:MD_MaintenanceInformation>
@@ -142,28 +232,49 @@
           <gmd:keyword>
             <gco:CharacterString>Sunshine duration</gco:CharacterString>
           </gmd:keyword>
-          <gmd:keyword>
+          <gmd:keyword
+            xsi:type="gmd:PT_FreeText_PropertyType">
             <gco:CharacterString>Climate</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString
+                  locale="#locale-es">Clima</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
           </gmd:keyword>
-          <gmd:keyword>
+          <gmd:keyword
+            xsi:type="gmd:PT_FreeText_PropertyType">
             <gco:CharacterString>Environment</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString
+                  locale="#locale-es">Medioambiente</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
           </gmd:keyword>
           <gmd:type>
             <gmd:MD_KeywordTypeCode
               codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode"
-              codeListValue="theme" />
+              codeListValue="theme"></gmd:MD_KeywordTypeCode>
           </gmd:type>
         </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
-          <gmd:keyword>
+          <gmd:keyword
+            xsi:type="gmd:PT_FreeText_PropertyType">
             <gco:CharacterString>Whole world</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString
+                  locale="#locale-es">Mundo entero</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
           </gmd:keyword>
           <gmd:type>
             <gmd:MD_KeywordTypeCode
               codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode"
-              codeListValue="place" />
+              codeListValue="place"></gmd:MD_KeywordTypeCode>
           </gmd:type>
         </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
@@ -179,13 +290,22 @@
               codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode"
               codeListValue="license" />
           </gmd:useConstraints>
-          <gmd:otherConstraints>
+          <gmd:otherConstraints
+            xsi:type="gmd:PT_FreeText_PropertyType">
             <gco:CharacterString>The content of this website can be accessed, printed and downloaded in an unaltered form
              (altered including being stretched, compressed, coloured or altered in any way so as to distort content from its
               original proportions or format) with copyright acknowledged, on a temporary basis for personal study that is not 
               for a direct or indirect commercial use and any non-commercial use. Any content printed or downloaded may not be
               sold, licensed, transferred, copied or reproduced in whole or in part in any manner or in or on any media to any
               person without the prior written consent of the Copyright holder</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString
+                  locale="#locale-es">El contenido de este website puede accederse, imprimirse y descargarse
+                de forma inalterada (incluyendo como alteración el cambio de tamaño, color o cualquier otro tipo de alteración tal como una
+                alteración del contenido en proporción o formato), bla bla bla...</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
           </gmd:otherConstraints>
         </geonode:MD_LegalConstraints>
       </gmd:resourceConstraints>
@@ -195,10 +315,26 @@
           codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode"
           codeListValue="vector" />
       </gmd:spatialRepresentationType>
+      <gmd:spatialResolution>
+        <gmd:MD_Resolution>
+          <gmd:equivalentScale>
+            <gmd:MD_RepresentativeFraction>
+              <gmd:denominator>
+                <gco:Integer>1000000</gco:Integer>
+              </gmd:denominator>
+            </gmd:MD_RepresentativeFraction>
+          </gmd:equivalentScale>
+        </gmd:MD_Resolution>
+      </gmd:spatialResolution>
       <gmd:language>
         <!-- language the data attributes or information is in -->
         <gco:CharacterString>eng</gco:CharacterString>
       </gmd:language>
+      <gmd:characterSet>
+        <gmd:MD_CharacterSetCode
+          codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode"
+          codeListValue="utf8">UTF-8</gmd:MD_CharacterSetCode>
+      </gmd:characterSet>
       <gmd:topicCategory>
         <gmd:MD_TopicCategoryCode>imageryBaseMapsEarthCover</gmd:MD_TopicCategoryCode>
       </gmd:topicCategory>
@@ -240,8 +376,40 @@
           </gmd:geographicElement>
         </gmd:EX_Extent>
       </gmd:extent>
-      <gmd:supplementalInformation>
+      <gmd:extent>
+        <gmd:EX_Extent>
+          <gmd:description>
+            <gco:CharacterString>Dataset enclosing polygon in its native coordinate reference system. Optional</gco:CharacterString>
+          </gmd:description>
+          <gmd:geographicElement>
+            <gmd:EX_BoundingPolygon>
+              <gmd:extentTypeCode>
+                <gco:Boolean>true</gco:Boolean>
+              </gmd:extentTypeCode>
+              <gmd:polygon>
+                <gml:Polygon
+                  gml:id="enclosing-polygon"
+                  srsName="urn:x-ogc:def:crs:EPSG:4326">
+                  <gml:exterior>
+                    <gml:LinearRing>
+                      <gml:posList>-180 -90 -180 90 180 90 180 -90 -180 -90</gml:posList>
+                    </gml:LinearRing>
+                  </gml:exterior>
+                </gml:Polygon>
+              </gmd:polygon>
+            </gmd:EX_BoundingPolygon>
+          </gmd:geographicElement>
+        </gmd:EX_Extent>
+      </gmd:extent>
+      <gmd:supplementalInformation
+        xsi:type="gmd:PT_FreeText_PropertyType">
         <gco:CharacterString>Data Source for Map: OpenStreetMap, 2009.</gco:CharacterString>
+        <gmd:PT_FreeText>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString
+              locale="#locale-es">Origen de datos para el mapa: OpenStreetMap, 2009</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+        </gmd:PT_FreeText>
       </gmd:supplementalInformation>
     </geonode:MD_DataIdentification>
   </gmd:identificationInfo>
@@ -285,8 +453,15 @@
       </gmd:scope>
       <gmd:lineage>
         <gmd:LI_Lineage>
-          <gmd:statement>
+          <gmd:statement
+            xsi:type="gmd:PT_FreeText_PropertyType">
             <gco:CharacterString>Dataset derived from Dec. 2009 OpenStreetMap databse</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString
+                  locale="#locale-es">Datos derivados de la base de OpenStreetMap datos de Diciembre 2009</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
           </gmd:statement>
         </gmd:LI_Lineage>
       </gmd:lineage>
