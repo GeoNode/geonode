@@ -52,7 +52,7 @@ def maps(request, mapid=None):
         return HttpResponse(json.dumps(config))
     elif request.method == 'POST':
         try: 
-            map = read_json_map(request.raw_post_data)
+            map = create_map_json(request.raw_post_data)
             response = HttpResponse('', status=201)
             response['Location'] = map.id
             return response
@@ -63,12 +63,56 @@ def maps(request, mapid=None):
                 mimetype="text/plain"
             )
 
-def mapJSON(request,mapid):
-	map = Map.objects.get(pk=mapid)
-	config = build_map_config(map)
-	return HttpResponse(json.dumps(config))
+def mapJSON(request, mapid):
+    if request.method == 'GET':
+        map = get_object_or_404(Map,pk=mapid) 
+    	config = build_map_config(map)
+    	return HttpResponse(json.dumps(config))
+    elif request.method == 'PUT':
+        return update_map_json(request, mapid)
 
-def read_json_map(json_text):
+
+def update_map_json(request, mapid):
+
+    # login is required, but we'd prefer to 
+    # actually return a 401 status code to 
+    # ajax vs. an uninformative redirect.
+    if not request.user.is_authenticated():
+        return HttpResponse(_("You must be logged in to save this map"),
+                            status=401,
+                            mimetype="text/plain")
+
+    map = get_object_or_404(Map,pk=mapid) 
+    conf = json.loads(request.raw_post_data)
+    
+    map.title = conf['about']['title']
+    map.abstract = conf['about']['abstract']
+    map.contact = conf['about']['contact']
+    map.zoom = conf['map']['zoom']
+    map.center_lon = conf['map']['center'][0]
+    map.center_lat = conf['map']['center'][1]
+    map.featured = conf['about'].get('featured', False)
+    
+    # remove any layers in the current map
+    for layer in map.layer_set.all():
+        layer.delete()
+    
+    # construct layers now specified in the order given.
+    if 'wms' in conf and 'layers' in conf['map']:
+        services = conf['wms']
+        layers = conf['map']['layers']
+        ordering = 0
+        for l in layers:
+            if 'wms' in l and l['wms'] in services:
+                name = l['name']
+                group = l.get('group', '')
+                ows = services[l['wms']]
+                map.layer_set.create(name=name, group=group, ows_url=ows, stack_order=ordering)
+                ordering = ordering + 1
+    map.save()
+    return HttpResponse('', status=204)
+
+def create_map_json(json_text):
     conf = json.loads(json_text)
     title = conf['about']['title']
     abstract = conf['about']['abstract']
