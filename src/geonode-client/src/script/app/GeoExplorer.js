@@ -185,7 +185,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         Ext.util.Observable.observeClass(Ext.data.Connection);
         Ext.data.Connection.on({
             "beforerequest": function(conn, options) {
-                if(this.proxy && options.url.indexOf(this.proxy) !== 0) {
+                if(this.proxy && options.url.indexOf(this.proxy) !== 0 &&
+                   options.url.indexOf(this.rest) !== 0) {
                     var url = Ext.urlAppend(options.url,
                         Ext.urlEncode(options.params));
                     delete options.params;
