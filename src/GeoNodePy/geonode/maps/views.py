@@ -1,4 +1,5 @@
 from geonode.maps.models import Map, Layer, MapLayer
+from geonode.maps.forms import MetadataForm
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -310,13 +311,13 @@ def _describe_layer(request, layer):
     if request.user.is_authenticated():
         if request.method == "GET":
             resource = layer.resource
-            form = LayerDescriptionForm({
+            form = MetadataForm({
                 "title": resource.title,
                 "abstract": resource.abstract,
                 "keywords": ", ".join(resource.keywords)
             })
         elif request.method == "POST":
-            form = LayerDescriptionForm(request.POST)
+            form = MetadataForm(request.POST)
             if form.is_valid():
                 f = form.cleaned_data
                 layer.title = f['title']
