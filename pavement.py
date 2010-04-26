@@ -185,17 +185,32 @@ def setup_geonetwork(options):
     src_url = options.config.parser.get('geonetwork', 'geonetwork_war_url')
     # where to download the war files. If changed change also
     # src/geoserver-geonode-ext/jetty.xml accordingly
+
     webapps = path("./webapps")
     if not webapps.exists():
         webapps.mkdir()
+
     dst_url = webapps / "geonetwork.war"
+    deployed_url = webapps / "geonetwork"
+    schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
+
     if not dst_url.exists() or getattr(options, 'clean', False):
         urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
+    if not path(deployed_url).exists():
+        info("Deploying geonetwork to %s" %deployed_url)
+        path(deployed_url).mkdir()
+        unzip_file(dst_url, deployed_url)
+
+    """Update the ISO 19139 profile to the latest version"""
+    path(schema_url).rmtree()
+    info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
+    path("gn_schema").copytree(schema_url)
+
     src_url = options.config.parser.get('geonetwork', 'intermap_war_url')
     dst_url = webapps / "intermap.war"
+
     if not dst_url.exists() or getattr(options, 'clean', False):
         urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
-
 
 @task
 @needs([
