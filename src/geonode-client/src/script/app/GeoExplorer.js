@@ -144,6 +144,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     saveFailMessage: "UT: Sorry, your map could not be saved.",
     saveFailTitle: "UT: Error While Saving",
     saveMapText: "UT: Save Map",
+    saveNotAuthorizedMessage: "UT: You Must be logged in to save this map.",
     smallSizeLabel: 'UT: Small',
     sourceLoadFailureMessage: 'UT: Error contacting server.\n Please check the url and try again.',
     switchTo3DActionText: "UT:Switch to Google Earth 3D Viewer",
@@ -165,6 +166,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         
         this.initialConfig = Ext.apply({}, queryConfig, config);
         Ext.apply(this, this.initialConfig);
+        this.mapID = this.initialConfig.id;
 
         // add any custom application events
         this.addEvents([
@@ -814,7 +816,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             // this should really be a template
             return window.location.protocol + "//" +
                 window.location.host +
-                "/maps/" + id + ".html"; 
+                "/maps/" + id; 
         };
 
         this.on("idchange", function(id) {
@@ -1828,30 +1830,55 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         return config;
     },
 
+    updateURL: function() {
+        /* PUT to this url to update an existing map */
+        return this.rest + this.mapID + '/data';
+    },
+
     saveMap: function() {
         var config = this.extractConfiguration();
         var failure = function(response, options) {
+            var failureMessage = this.saveFailMessage;
+            if (response.status == 401) {
+                failureMessage = this.saveNotAuthorizedMessage;
+            }
             new Ext.Window({
                 title: this.saveFailTitle,
-                html: this.saveFailMessage
+                html: failureMessage
             }).show();
         };
 
-        Ext.Ajax.request({
-            url: this.rest,
-            method: 'POST',
-            jsonData: config,
-            success: function(response, options) {
-                var id = response.getResponseHeader("Location");
-                // trim whitespace to avoid Safari issue where the trailing newline is included
-                id = id.replace(/^\s*/,'');
-                id = id.replace(/\s*$/,'');
-                id = id.match(/[\d]*$/)[0];
-                this.fireEvent("idchange", id);
-                this.mapID = id; //id is url, not mapID
-            }, 
-            failure: failure, 
-            scope: this
-        });
+        if (!this.mapID) {
+            /* create a new map */ 
+            Ext.Ajax.request({
+                url: this.rest,
+                method: 'POST',
+                jsonData: config,
+                success: function(response, options) {
+                    var id = response.getResponseHeader("Location");
+                    // trim whitespace to avoid Safari issue where the trailing newline is included
+                    id = id.replace(/^\s*/,'');
+                    id = id.replace(/\s*$/,'');
+                    id = id.match(/[\d]*$/)[0];
+                    this.fireEvent("idchange", id);
+                    this.mapID = id; //id is url, not mapID
+                }, 
+                failure: failure, 
+                scope: this
+            });
+        }
+        else {
+            /* save an existing map */
+            Ext.Ajax.request({
+                url: this.updateURL(),
+                method: 'PUT',
+                jsonData: config,
+                success: function(response, options) {
+                    /* nothing for now */
+                }, 
+                failure: failure, 
+                scope: this
+            });         
+        }
     }
 });

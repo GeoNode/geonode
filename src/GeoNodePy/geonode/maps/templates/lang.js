@@ -45,6 +45,7 @@ if (window.GeoExplorer) {
         saveFailMessage: gettext("Sorry, your map could not be saved."),
         saveFailTitle: gettext("Error While Saving"),
         saveMapText: gettext("Save Map"),
+        saveNotAuthorizedMessage: gettext("You must be logged in to save this map."),
         smallSizeLabel: gettext("Small"),
         sourceLoadFailureMessage: gettext("Error contacting server.\n Please check the url and try again."),
         layerPropertiesText: gettext('Layer Properties'),
