@@ -81,14 +81,19 @@ class Layer(models.Model):
         HTTP.add_credentials(_user,_password)
         def _getFeatureUrl(self): 
             if self.storeType == "dataStore":
-                return "%srest/workspaces/%s/datastores/%s/featuretypes/%s" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store, self.name)
+                featureUrl = "%srest/workspaces/%s/datastores/%s/featuretypes/%s" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store, self.name)
+                storeUrl = "%srest/workspaces/%s/datastores/%s" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store)
+                return (featureUrl,storeUrl)
             if self.storeType == "coverageStore":
-                return "%srest/workspaces/%s/coveragestores/%s" % (settings.GEOSERVER_BASE_URL,self.workspace,self.name)
+                featureUrl = "%srest/workspaces/%s/coveragestores/%s" % (settings.GEOSERVER_BASE_URL,self.workspace,self.name)
+                storeUrl = "%srest/workspaces/%s/coveragestores/%s" % (settings.GEOSERVER_BASE_URL,self.workspace,self.name)
+                return (featureUrl,storeUrl)
         try:
-            print("removing layer from GeoNode") 
             layerURL = "%srest/layers/%s" % (settings.GEOSERVER_BASE_URL,self.name)
+            (featUrl,storeUrl) = _getFeatureUrl(self) 
             HTTP.request(layerURL,"DELETE")     
-            HTTP.request(_getFeatureUrl(self),"DELETE")
+            HTTP.request(featUrl,"DELETE")
+            HTTP.request(storeUrl,"DELETE")
             super(Layer, self).delete(*args, **kwargs)
         except ValueError:
             raise NameError("Unable to remove Layer from the GeoNode")
