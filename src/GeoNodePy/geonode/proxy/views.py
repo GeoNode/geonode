@@ -35,7 +35,6 @@ def geoserver(request,path):
         if "content-type" in resp.keys():
             return HttpResponse(content=content,status=resp.status,mimetype=resp["content-type"])
         else: 
-            import pdb; pdb.set_trace()
             return HttpResponse(content=content,status=resp.status)
     else: 
         return HttpResponse(content="Something went wrong",status=404)
