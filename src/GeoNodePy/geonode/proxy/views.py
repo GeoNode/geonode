@@ -32,9 +32,10 @@ def geoserver(request,path):
     h.add_credentials(*settings.GEOSERVER_CREDENTIALS)
     resp, content = h.request(url,request.method,body=request.raw_post_data)
     if resp.status != 404:
-        if "content_type" in resp.keys():
+        if "content-type" in resp.keys():
             return HttpResponse(content=content,status=resp.status,mimetype=resp["content-type"])
         else: 
+            import pdb; pdb.set_trace()
             return HttpResponse(content=content,status=resp.status)
     else: 
         return HttpResponse(content="Something went wrong",status=404)
