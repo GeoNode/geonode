@@ -68,7 +68,9 @@ class Catalog(object):
         # Turn on the "view" permission (aka publish) for
         # the "all" group in GeoNetwork so that the layer
         # will be searchable via CSW without admin login.
-        self.set_metadata_priv(layer.uuid, "all", "view", True)
+        # all other privileges are set to False for all 
+        # groups.
+        self.set_metadata_privs(layer.uuid, {"all":  {"view": True}})
         
         return self.base + "srv/en/csw?" + urllib.urlencode({
             "request": "GetRecordById",
@@ -82,11 +84,17 @@ class Catalog(object):
     def update_from_layer(self, record, layer):
         pass
 
-    def set_metadata_priv(self, uuid, group, operation, enabled):
+    def set_metadata_privs(self, uuid, privileges):
         """
-        set the geonetwork privilege 'operation' to the value 
-        of 'enabled' for the group 'group' on the metadata
-        item identified by 'uuid'
+        set the full set of geonetwork privileges on the item with the 
+        specified uuid based on the dictionary given of the form: 
+        {
+          'group_name1': {'operation1': True, 'operation2': True, ...},
+          'group_name2': ...
+        }
+
+        all unspecified operations and operations for unspecified groups 
+        are set to False.
         """
         
         # XXX This is a fairly ugly workaround that makes 
@@ -98,40 +106,42 @@ class Catalog(object):
         get_groups_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'groups'})
         get_ops_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'operations'})
     
-    
         # get the id of the data.
         request = urllib2.Request(get_dbid_url)
         response = self.urlopen(request)
         doc = XML(response.read())
         data_dbid = doc.find('metadata/{http://www.fao.org/geonetwork}info/id').text
 
-        # get the id of the group.
+        # get the ids of the groups.
         request = urllib2.Request(get_groups_url)
         response = self.urlopen(request)
         doc = XML(response.read())
-        group_id = None
+        group_ids = {}
         for gp in doc.findall('groups/group'):
-            if gp.find('name').text.lower() == group.lower():
-                group_id = gp.attrib['id']
-        if group_id is None:
-            raise Exception('Unable to locate geonetwork group "%s"' % group)
+            group_ids[gp.find('name').text.lower()] = gp.attrib['id']
         
-        # get the id of the operation    
+        # get the ids of the operations    
         request = urllib2.Request(get_ops_url)
         response = self.urlopen(request)
         doc = XML(response.read())
-        operation_id = None
+        operation_ids = {}
         for op in doc.findall('operations/operation'):
-            if op.find('name').text.lower() == operation.lower():
-                operation_id = op.attrib['id']
-        if operation_id is None:
-            raise Exception('Unable to locate geonetwork privilege "%s"' % operation)
+            operation_ids[op.find('name').text.lower()] = op.attrib['id']
 
-        # update the privilege 
-        update_privs_url = self.base + "srv/en/metadata.admin?" + urllib.urlencode({
+        # build params that represent the privilege configuration
+        priv_params = {
             "id": data_dbid, # "uuid": layer.uuid, # you can say this instead in newer versions of GN 
-            "_%s_%s" % (group_id, operation_id): "on", # All: Publish=on
-        })
+        }
+        for group, privs in privileges.items():
+            group_id = group_ids[group]
+            for op, state in privs.items():
+                if state != True:
+                    continue
+                op_id = operation_ids[op]
+                priv_params['_%s_%s' % (group_id, op_id)] = 'on'
+
+        # update all privileges
+        update_privs_url = self.base + "srv/en/metadata.admin?" + urllib.urlencode(priv_params)
         request = urllib2.Request(update_privs_url)
         response = self.urlopen(request)
 
