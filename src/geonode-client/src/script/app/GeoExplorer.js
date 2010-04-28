@@ -238,6 +238,10 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             return this.el.up(".x-window") || document.body;
         }
         
+        // don't draw window shadows - allows us to use autoHeight: true
+        // without using syncShadow on the window
+        Ext.Window.prototype.shadow = false;
+        
         // set SLD defaults for symbolizer
         OpenLayers.Renderer.defaultSymbolizer = {
            fillColor: "#808080",
@@ -592,9 +596,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             disabled: true,
             tooltip: this.layerPropertiesTipText,
             handler: function() {
-                var syncShadow = function() {
-                    prop.syncShadow();
-                };
                 var cancel = function() {
                     var originalLayer = backupRecord.get("layer");
                     layer.mergeNewParams(originalLayer.params);
@@ -630,10 +631,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                                 handler: function() {
                                     prop.close();
                                 }
-                            }],
-                            listeners: {
-                                "tabchange": syncShadow
-                            }
+                            }]
                         }]
                     });
                     // disable the "About" tab's fields to indicate that they
@@ -647,9 +645,6 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         title: "Styles",
                         layerRecord: record,
                         autoScroll: true,
-                        listeners: {
-                            "afterlayout": syncShadow
-                        },
                         defaults: {
                             defaults: {
                                 bubbleEvents: ["add", "remove", "afterlayout"]
