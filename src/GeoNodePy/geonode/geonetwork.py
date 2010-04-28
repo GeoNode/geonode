@@ -11,6 +11,9 @@ class Catalog(object):
         self.base = base
         self.user = user
         self.password = password
+        self._group_ids = {}
+        self._operation_ids = {}
+
 
     def login(self):
         url = "%ssrv/en/xml.user.login" % self.base
@@ -101,43 +104,32 @@ class Catalog(object):
         # requests similar to those made by the GeoNetwork
         # admin based on the recommendation here: 
         # http://bit.ly/ccVEU7
+
         
         get_dbid_url = self.base + 'srv/en/portal.search.present?' + urllib.urlencode({'uuid': uuid})
-        get_groups_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'groups'})
-        get_ops_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'operations'})
-    
+
         # get the id of the data.
         request = urllib2.Request(get_dbid_url)
         response = self.urlopen(request)
         doc = XML(response.read())
         data_dbid = doc.find('metadata/{http://www.fao.org/geonetwork}info/id').text
 
-        # get the ids of the groups.
-        request = urllib2.Request(get_groups_url)
-        response = self.urlopen(request)
-        doc = XML(response.read())
-        group_ids = {}
-        for gp in doc.findall('groups/group'):
-            group_ids[gp.find('name').text.lower()] = gp.attrib['id']
-        
-        # get the ids of the operations    
-        request = urllib2.Request(get_ops_url)
-        response = self.urlopen(request)
-        doc = XML(response.read())
-        operation_ids = {}
-        for op in doc.findall('operations/operation'):
-            operation_ids[op.find('name').text.lower()] = op.attrib['id']
+        # update group and operation info if needed
+        if len(self._group_ids) == 0:
+            self._group_ids = self._get_group_ids()
+        if len(self._operation_ids) == 0:
+            self._operation_ids = self._get_operation_ids()
 
         # build params that represent the privilege configuration
         priv_params = {
             "id": data_dbid, # "uuid": layer.uuid, # you can say this instead in newer versions of GN 
         }
         for group, privs in privileges.items():
-            group_id = group_ids[group]
+            group_id = self._group_ids[group.lower()]
             for op, state in privs.items():
                 if state != True:
                     continue
-                op_id = operation_ids[op]
+                op_id = self._operation_ids[op.lower()]
                 priv_params['_%s_%s' % (group_id, op_id)] = 'on'
 
         # update all privileges
@@ -145,7 +137,37 @@ class Catalog(object):
         request = urllib2.Request(update_privs_url)
         response = self.urlopen(request)
 
-        # TODO: check for error report
+        # TODO: check for error report  
+        
+    def _get_group_ids(self):
+        """
+        helper to fetch the set of geonetwork 
+        groups.
+        """
+        # get the ids of the groups.
+        get_groups_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'groups'})
+        request = urllib2.Request(get_groups_url)
+        response = self.urlopen(request)
+        doc = XML(response.read())
+        groups = {}
+        for gp in doc.findall('groups/group'):
+            groups[gp.find('name').text.lower()] = gp.attrib['id']
+        return groups
+
+    def _get_operation_ids(self):
+        """
+        helper to fetch the set of geonetwork 
+        'operations' (privileges)
+        """
+        # get the ids of the operations    
+        get_ops_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'operations'})
+        request = urllib2.Request(get_ops_url)
+        response = self.urlopen(request)
+        doc = XML(response.read())
+        ops = {}
+        for op in doc.findall('operations/operation'):
+            ops[op.find('name').text.lower()] = op.attrib['id']
+        return ops
 
     def urlopen(self, request):
         if self.opener is None:
