@@ -200,10 +200,11 @@ def setup_geonetwork(options):
     if not dst_url.exists() or getattr(options, 'clean', False):
         urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
         unzip_file(dst_url, webapps)
+        path(deployed_url).rmtree()
     if not path(deployed_url).exists():
         info("Deploying geonetwork to %s" %deployed_url)
         path(deployed_url).mkdir()
-        unzip_file(dst_url, deployed_url)
+        unzip_file(dst_war, deployed_url)
 
     """Update the ISO 19139 profile to the latest version"""
     path(schema_url).rmtree()
