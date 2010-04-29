@@ -5,6 +5,7 @@ import geoserver
 from geoserver.resource import FeatureType, Coverage
 from django import forms
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
@@ -14,8 +15,8 @@ from django.utils.html import escape
 from django.utils.translation import ugettext as _
 import json
 import math
-from django.conf import settings
 import httplib2 
+from owslib.csw import CatalogueServiceWeb
 from urllib import urlencode
 import uuid
 
@@ -227,7 +228,6 @@ def check_download(request):
             resp,content = h.request(url,'GET')
             status= resp.status
             if resp.status == 400:
-                import pdb; pdb.set_trace()
                 return HttpResponse(content="Something went wrong",status=status)
         else: 
             content = "Something Went wrong" 
@@ -608,3 +608,157 @@ def _handle_layer_upload(request, layer=None):
             errors.append(GENERIC_UPLOAD_ERROR)
 
     return layer, errors
+
+def _split_query(query):
+    """
+    split and strip keywords, preserve space 
+    separated quoted blocks.
+    """
+
+    qq = query.split(' ')
+    keywords = []
+    accum = None
+    for kw in qq: 
+        if accum is None: 
+            if kw.startswith('"'):
+                accum = kw[1:]
+            elif kw: 
+                keywords.append(kw)
+        else:
+            accum += ' ' + kw
+            if kw.endswith('"'):
+                keywords.append(accum[0:-1])
+                accum = None
+    if accum is not None:
+        keywords.append(accum)
+    return [kw.strip() for kw in keywords if kw.strip()]
+
+
+DEFAULT_SEARCH_BATCH_SIZE = 10
+MAX_SEARCH_BATCH_SIZE = 25
+def metadata_search(request):
+    """
+    handles a basic search for data using the 
+    GeoNetwork catalog.
+
+    the search accepts: 
+    q - general query for keywords across all fields
+    start - skip to this point in the results
+    count - max records to return
+
+    the search returns a json structure like this: 
+    
+    {
+    'total': <total result count>,
+    'next': <url for next batch if exists>,
+    'prev': <url for previous batch if exists>,
+    'query_info': {
+        'start': <integer indicating where this batch starts>,
+        'count': <integer indicating the batch size used>,
+        'q': <keywords used to query>,
+    },
+    'results': [
+      {
+        'name': <typename>,
+        'abstract': '...',
+        'keywords': ['foo', ...],
+        'detail' = <link to geonode detail page>,
+        'attribution': {
+            'title': <language neutral attribution>,
+            'href': <url>
+        },
+        'download_links': [
+            ['pdf', 'PDF', <url>],
+            ['kml', 'KML', <url>],
+            [<format>, <name>, <url>]
+            ...
+        ],
+        'metadata_links': [
+           ['text/xml', 'ISO19115', <url>],
+           [<mime>, <name>, <url>],
+           ...
+        ]
+      },
+      ...
+    ]}
+    """
+    
+    # grab params directly to implement defaults as
+    # opposed to panicy django forms behavior.
+    query = request.GET.get('q', '')
+    try:
+        start = int(request.GET.get('start', '0'))
+    except:
+        start = 0
+    try:
+        count = min(int(request.GET.get('count', DEFAULT_SEARCH_BATCH_SIZE)),
+                    MAX_SEARCH_BATCH_SIZE)
+    except: 
+        count = DEFAULT_SEARCH_BATCH_SIZE
+
+    result = _metadata_search(query, start, count)
+
+    return HttpResponse(json.dumps(result), mimetype="application/json")    
+
+def _metadata_search(query, start, count, **kw):
+    
+    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+    csw = CatalogueServiceWeb(csw_url);
+
+    keywords = _split_query(query)
+    
+    csw.getrecords(keywords=keywords, startposition=start, maxrecords=count)
+    
+    # build results 
+    # join with django model to grab name and potentially other stuff...
+    # XXX owslib discards result ordering     
+    layers = dict([(layer.uuid, layer) for layer in Layer.objects.filter(uuid__in=csw.records.keys())])
+    results = [_build_search_result(rec, layers.get(rec.identifier, None)) for rec in csw.records.values()]
+
+    result = {'results': results, 
+              'total': len(results)}
+    result['query_info'] = {
+        'start': start,
+        'count': count,
+        'q': query
+    }
+    if start > 0: 
+        prev = max(start - count, 0)
+        params = urlencode({'q': query, 'start': prev, 'count': count})
+        result['prev'] = reverse('geonode.maps.views.metadata_search') + '?' + params
+
+    next = csw.results.get('nextrecord', 0) 
+    if next > 0:
+        params = urlencode({'q': query, 'start': next, 'count': count})
+        result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
+    
+    return result
+
+
+def _build_search_result(rec, layer):
+    """
+    accepts an owslib.csw.CswRecord and 
+    builds a POD structure representing 
+    the search result.
+    """
+    result = {}
+    result['abstract'] = rec.abstract
+    result['keywords'] = [x for x in rec.subjects if x]
+
+    if layer is None:
+        # be semi-graceful with data that doesn't correspond
+        # to a GeoNode layer...
+        result['name'] = 'GeoNetwork/%s' % rec.identifier 
+        result['detail'] = ''
+        result['attribution'] = {'title': '', 'href': ''}
+        result['download_links'] = []
+        result['metadata_links'] = []
+    else:
+        result['name'] = layer.typename
+        result['detail'] = reverse('geonode.maps.views.layerController', args=(layer.typename,))
+        result['attribution'] = {'title': layer.publishing.attribution or '', 
+                                 'href': layer.publishing.attribution_link or ''}    
+        result['download_links'] = layer.download_links()
+        result['metadata_links'] = layer.metadata_links
+
+    return result
