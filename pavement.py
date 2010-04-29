@@ -182,7 +182,9 @@ def setup_geonetwork(options):
     """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
     from urlgrabber.grabber import urlgrab
     from urlgrabber.progress import text_progress_meter
-    src_url = options.config.parser.get('geonetwork', 'geonetwork_war_url')
+    war_zip_file = options.config.parser.get('geonetwork', 'geonetwork_zip')
+    src_url = options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file
+    info("geonetwork url: %s" %src_url)
     # where to download the war files. If changed change also
     # src/geoserver-geonode-ext/jetty.xml accordingly
 
@@ -190,12 +192,14 @@ def setup_geonetwork(options):
     if not webapps.exists():
         webapps.mkdir()
 
-    dst_url = webapps / "geonetwork.war"
+    dst_url = webapps + "/" + war_zip_file
+    dst_war = webapps / "geonetwork.war"
     deployed_url = webapps / "geonetwork"
     schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
 
     if not dst_url.exists() or getattr(options, 'clean', False):
         urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
+        unzip_file(dst_url, webapps)
     if not path(deployed_url).exists():
         info("Deploying geonetwork to %s" %deployed_url)
         path(deployed_url).mkdir()
