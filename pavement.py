@@ -67,6 +67,9 @@ bundle = path('shared/geonode.pybundle')
 dl_cache = "--download-cache=./build"
 dlname = 'geonode.bundle'
 gs_data = "gs-data"
+geoserver_target = path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war')
+geonetwork_target = path('webapps/geonetwork.war')
+def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
 
 deploy_req_txt = """
 # NOTE... this file is generated
@@ -296,8 +299,8 @@ def package_client(options):
     """
     Package compressed client resources (JavaScript, CSS, images).
     """
-    build_dir = options.deploy.out_dir
-    zip = zipfile.ZipFile(build_dir / 'geonode-client.zip','w') #create zip in write mode
+    # build_dir = options.deploy.out_dir
+    zip = zipfile.ZipFile(geonode_client_target(),'w') #create zip in write mode
 
     with pushd('src/geonode-client/build/'):
         for file in path("geonode-client/").walkfiles():
@@ -316,14 +319,14 @@ def package_client(options):
 @needs('package_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
-    path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war').copy(options.deploy.out_dir)
+    geoserver_target.copy(options.deploy.out_dir)
 
 
 @task
 @needs('package_dir', 'setup_geonetwork')
 def package_geonetwork(options):
     """Package GeoNetwork WAR file for deployment."""
-    path('webapps/geonetwork.war').copy(options.deploy.out_dir)
+    geonetwork_target.copy(options.deploy.out_dir)
 
 
 @task
@@ -361,6 +364,62 @@ def create_version_name(svn_version=True):
         slug += "rev" + revision
     return slug
 
+@task
+def make_devkit(options):
+    import virtualenv
+    from urlgrabber.grabber import urlgrab
+    from urlgrabber.progress import text_progress_meter
+
+    (path("package") / "devkit" / "share").makedirs()
+    pip_bundle("package/devkit/share/geonode-core.pybundle -r shared/devkit.requirements")
+    script = virtualenv.create_bootstrap_script("""
+import os, subprocess, zipfile
+
+def after_install(options, home_dir):
+    if sys.platform == 'win32':
+        bin = 'Scripts'
+    else:
+        bin = 'bin'
+
+    installer_base = os.path.abspath(os.path.dirname(__file__))
+
+    def pip(*args):
+        subprocess.call([os.path.join(home_dir, bin, "pip")] + list(args))
+
+    pip("install", os.path.join(installer_base, "share", "geonode-core.pybundle"))
+    setup_jetty(source=os.path.join(installer_base, "share"), dest=os.path.join(home_dir, "share"))
+
+def setup_jetty(source, dest):
+    jetty_zip = os.path.join(source, "jetty-distribution-7.0.2.v20100331.zip")
+    jetty_dir = os.path.join(dest, "jetty-distribution-7.0.2.v20100331")
+
+    zipfile.ZipFile(jetty_zip).extractall(dest)
+    shutil.rmtree(os.path.join(jetty_dir, "contexts"))
+    shutil.rmtree(os.path.join(jetty_dir, "webapps"))
+    os.mkdir(os.path.join(jetty_dir, "contexts"))
+    os.mkdir(os.path.join(jetty_dir, "webapps"))
+
+    deployments = [
+        ('geoserver', 'geoserver-geonode-dev.war'),
+        ('geonetwork', 'geonetwork.war'),
+        ('media', 'geonode-client.zip')
+    ]
+
+    for context, archive in deployments:
+        src = os.path.join(source, archive)
+        dst = os.path.join(jetty_dir, "webapps", context)
+        zipfile.ZipFile(src).extractall(dst)
+""")
+
+    open((path("package")/"devkit"/"go-geonode.py"), 'w').write(script)
+    urlgrab(
+        "http://download.eclipse.org/jetty/7.0.2.v20100331/dist/jetty-distribution-7.0.2.v20100331.zip",
+        "package/devkit/share/jetty-distribution-7.0.2.v20100331.zip",
+        progress_obj = text_progress_meter()
+    )
+    geoserver_target.copy("package/devkit/share")
+    geonetwork_target.copy("package/devkit/share")
+    geonode_client_target().copy("package/devkit/share")
         
 @task
 @cmdopts([
