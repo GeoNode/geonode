@@ -417,6 +417,11 @@ def setup_jetty(source, dest):
         "package/devkit/share/jetty-distribution-7.0.2.v20100331.zip",
         progress_obj = text_progress_meter()
     )
+    urlgrab(
+        "http://pypi.python.org/packages/source/p/pip/pip-0.7.1.tar.gz",
+        "package/devkit/share/pip-0.7.1.tar.gz",
+        progress_obj = text_progress_meter()
+    )
     geoserver_target.copy("package/devkit/share")
     geonetwork_target.copy("package/devkit/share")
     geonode_client_target().copy("package/devkit/share")
