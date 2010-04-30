@@ -19,6 +19,16 @@ setup(name=name,
       license='GPL',
       packages = find_packages(),
       include_package_data=True,
+      install_requires = [
+          "gsconfig.py",
+          "OWSLib>0.3.1",
+          "Django>=1.1",
+          "ReportLab",
+          "PIL",
+          "simplejson",
+          "django-extensions",
+          "httplib2"
+      ],
       zip_safe=False,
       entry_points="""
       # -*- Entry points: -*-
