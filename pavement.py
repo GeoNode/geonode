@@ -148,6 +148,7 @@ def install_25_deps(options):
 
     
 @task
+@needs(['install_deps'])
 def post_bootstrap(options):
     """installs the current package"""
     pip = path(options.config.bin) / "pip"
