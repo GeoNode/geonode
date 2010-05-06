@@ -598,7 +598,9 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             handler: function() {
                 var cancel = function() {
                     var originalLayer = backupRecord.get("layer");
+                    // restore format and transparency
                     layer.mergeNewParams(originalLayer.params);
+                    // restore opacity
                     layer.setOpacity(originalLayer.opacity || 1);
                     prop.close();
                 }
@@ -629,6 +631,9 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                             }, {
                                 text: "Save",
                                 handler: function() {
+                                    layer.mergeNewParams({
+                                        styles: stylesDialog.selectedStyle.get("name")
+                                    });
                                     prop.close();
                                 }
                             }]
@@ -641,16 +646,12 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         i instanceof Ext.form.Field && i.setDisabled(true);
                     });
                     // add styles tab
-                    prop.items.get(0).add(new gxp.WMSStylesDialog({
+                    var stylesDialog = new gxp.WMSStylesDialog({
                         title: "Styles",
                         layerRecord: record,
-                        autoScroll: true,
-                        defaults: {
-                            defaults: {
-                                bubbleEvents: ["add", "remove", "afterlayout"]
-                            }
-                        }
-                    }));
+                        autoScroll: true
+                    });
+                    prop.items.get(0).add(stylesDialog);
                     prop.show();
                 }
             }
