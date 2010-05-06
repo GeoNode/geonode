@@ -315,6 +315,7 @@ a.download {
   padding-left: 18px;
   padding-top: 2px;
   padding-bottom:2px;
+  background-image: url(img/silk/page_white.png)
 }
 
 a.download.pdf{ 
@@ -325,17 +326,17 @@ a.download.kml{
   background-image: url(img/geosilk/kml.png)
 }
 
-a.download.geotiff{ 
+a.download.geotiff,
+a.download.tiff,
+a.download.png { 
   background-image: url(img/geosilk/page_white_raster.png)
 }
 
-a.download.shp{ 
+a.download.shp,
+a.download.zip { 
   background-image: url(img/geosilk/page_white_vector.png)
 }
 
-a.download.ame{
-    background-image: url(img/silk/page_white.png)
-}
 
 .olControlAttribution{ 
 color:gray;

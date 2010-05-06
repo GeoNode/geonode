@@ -634,6 +634,7 @@ def _split_query(query):
     return [kw.strip() for kw in keywords if kw.strip()]
 
 
+
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
 def metadata_search(request):
@@ -644,9 +645,10 @@ def metadata_search(request):
     the search accepts: 
     q - general query for keywords across all fields
     start - skip to this point in the results
-    count - max records to return
+    limit - max records to return
 
-    the search returns a json structure like this: 
+    for ajax requests, the search returns a json structure 
+    like this: 
     
     {
     'total': <total result count>,
@@ -654,10 +656,10 @@ def metadata_search(request):
     'prev': <url for previous batch if exists>,
     'query_info': {
         'start': <integer indicating where this batch starts>,
-        'count': <integer indicating the batch size used>,
+        'limit': <integer indicating the batch size used>,
         'q': <keywords used to query>,
     },
-    'results': [
+    'rows': [
       {
         'name': <typename>,
         'abstract': '...',
@@ -682,32 +684,38 @@ def metadata_search(request):
       ...
     ]}
     """
-    
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
     # grab params directly to implement defaults as
     # opposed to panicy django forms behavior.
-    query = request.GET.get('q', '')
+    query = params.get('q', '')
     try:
-        start = int(request.GET.get('start', '0'))
+        start = int(params.get('start', '0'))
     except:
         start = 0
     try:
-        count = min(int(request.GET.get('count', DEFAULT_SEARCH_BATCH_SIZE)),
+        limit = min(int(params.get('limit', DEFAULT_SEARCH_BATCH_SIZE)),
                     MAX_SEARCH_BATCH_SIZE)
     except: 
-        count = DEFAULT_SEARCH_BATCH_SIZE
+        limit = DEFAULT_SEARCH_BATCH_SIZE
 
-    result = _metadata_search(query, start, count)
+    result = _metadata_search(query, start, limit)
+    result['success'] = True
+    return HttpResponse(json.dumps(result), mimetype="application/json")
 
-    return HttpResponse(json.dumps(result), mimetype="application/json")    
-
-def _metadata_search(query, start, count, **kw):
+def _metadata_search(query, start, limit, **kw):
     
     csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
     csw = CatalogueServiceWeb(csw_url);
 
     keywords = _split_query(query)
     
-    csw.getrecords(keywords=keywords, startposition=start, maxrecords=count)
+    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit)
     
     # build results 
     # join with django model to grab name and potentially other stuff...
@@ -715,21 +723,21 @@ def _metadata_search(query, start, count, **kw):
     layers = dict([(layer.uuid, layer) for layer in Layer.objects.filter(uuid__in=csw.records.keys())])
     results = [_build_search_result(rec, layers.get(rec.identifier, None)) for rec in csw.records.values()]
 
-    result = {'results': results, 
-              'total': len(results)}
+    result = {'rows': results, 
+              'total': csw.results['matches']}
     result['query_info'] = {
         'start': start,
-        'count': count,
+        'limit': limit,
         'q': query
     }
     if start > 0: 
-        prev = max(start - count, 0)
-        params = urlencode({'q': query, 'start': prev, 'count': count})
+        prev = max(start - limit, 0)
+        params = urlencode({'q': query, 'start': prev, 'limit': limit})
         result['prev'] = reverse('geonode.maps.views.metadata_search') + '?' + params
 
     next = csw.results.get('nextrecord', 0) 
     if next > 0:
-        params = urlencode({'q': query, 'start': next, 'count': count})
+        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
     
     return result
@@ -742,13 +750,14 @@ def _build_search_result(rec, layer):
     the search result.
     """
     result = {}
+    result['title'] = rec.title
     result['abstract'] = rec.abstract
     result['keywords'] = [x for x in rec.subjects if x]
 
     if layer is None:
         # be semi-graceful with data that doesn't correspond
         # to a GeoNode layer...
-        result['name'] = 'GeoNetwork/%s' % rec.identifier 
+        result['name'] = rec.identifier 
         result['detail'] = ''
         result['attribution'] = {'title': '', 'href': ''}
         result['download_links'] = []
@@ -762,3 +771,10 @@ def _build_search_result(rec, layer):
         result['metadata_links'] = layer.metadata_links
 
     return result
+    
+    
+def browse_data(request):
+    # for non-ajax requests, render a generic search page
+    return render_to_response('data.html', RequestContext(request, {
+        'init_search': json.dumps(request.GET or {})
+    }))

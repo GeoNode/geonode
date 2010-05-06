@@ -129,3 +129,37 @@ if (GeoExt && GeoExt.ux && GeoExt.ux.PrintPreview) {
         creatingPdfText: gettext("Creating PDF...")
     });
 }
+
+if (GeoNode && GeoNode.SearchTable) {
+    Ext.apply(GeoNode.SearchTable.prototype, {
+        selectHeaderText: gettext('Select'),
+        nameHeaderText: gettext('Name'),
+        titleHeaderText: gettext('Title'),
+        selectText: gettext('Select:'),
+        selectAllText: gettext('All'),
+        selectNoneText: gettext('None'),
+        previousText: gettext('Prev'),
+        nextText: gettext('Next'),
+        ofText: gettext('of'),
+        noResultsText: gettext('Your search did not match any items.'),
+        searchButtonText: gettext('Search'),
+        showingText: gettext('Showing'),
+        loadingText: gettext("Loading...")
+    });
+}
+if (GeoNode && GeoNode.SearchTableRowExpander) {
+    Ext.apply(GeoNode.SearchTableRowExpander.prototype, {
+        abstractText: gettext("Abstract:"),
+        abstractEmptyText: gettext('No abstract is provided for this layer.'),
+        attributionEmptyText: gettext("No attribution information is provided for this layer."),
+        attributionText: gettext("Provided by:"),
+        downloadText : gettext("Download:"),
+        downloadEmptyText: gettext("No download URLs are definied for this layer."),
+        keywordEmptyText: gettext("No keywords are listed for this layer."),
+        keywordText: gettext("Keywords:"),
+        metadataEmptyText: gettext("No metadata URLs are defined for this layer."),
+        metadataText: gettext("Metadata Links:"),
+        dataDetailText: 'Click here for more information about this layer.'
+    });
+}
+

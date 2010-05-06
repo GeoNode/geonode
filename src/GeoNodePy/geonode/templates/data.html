@@ -5,13 +5,13 @@
 {% block title %} {% trans "Browse Data" %} {% endblock %}
 {% block header_append %}
 <script type="text/javascript">
-Ext.onReady(function(){
-    var app = new GeoNode.DataGrid({
-        renderTo: 'layer_data',
-        ows: "{{GEOSERVER_BASE_URL}}wms",
-        proxy: "/proxy/"
-    });
-});
+{% autoescape off %}
+ var search_table = new GeoNode.SearchTable({
+     renderTo: 'layer_data',
+     searchURL: '{% url geonode.maps.views.metadata_search %}',
+     searchParams: {{init_search}}
+ });
+ {% endautoescape %}
 </script> 
 {% endblock %}
 
