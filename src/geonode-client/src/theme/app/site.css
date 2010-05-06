@@ -322,7 +322,8 @@ a.download.pdf{
   background-image: url(img/silk/page_white_acrobat.png)
 }
 
-a.download.kml{ 
+a.download.kml, 
+a.download.kmz { 
   background-image: url(img/geosilk/kml.png)
 }
 
