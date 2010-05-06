@@ -156,7 +156,7 @@ NAVBAR = \
           'item_class': '',
           'link_class': '',
           'text': 'Data',
-          'url': "geonode.views.static page='data'"},
+          'url': "geonode.maps.views.browse_data"},
  'help': {'id': '%sLink',
           'item_class': '',
           'link_class': '',

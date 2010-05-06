@@ -6,17 +6,19 @@
 {% block title %} CAPRA Data {% endblock %} 
 
 {% block header_append %} 
+
 <script src="{% geonode_media "capra_script" %}" type="text/javascript"></script>
 <script src="{% url capra.hazard.views.lang %}" type="text/javascript"></script>
 <script type="text/javascript">
-    Ext.onReady(function() {
-        new capra.DataGrid({ 
-            ows: "{{GEOSERVER_BASE_URL}}wms",
-            proxy: "/proxy/",
-            renderTo: 'layer_data', 
-            categories: {{ typemap|safe }}
-        });
+Ext.onReady(function(){
+   {% autoescape off %}
+    var search_table = new GeoNode.SearchTable({
+        renderTo: 'layer_data',
+        searchURL: '{% url geonode.maps.views.metadata_search %}',
+        searchParams: {{init_search}}
     });
+    {% endautoescape %}
+});
 </script>
 {% endblock %}
 
@@ -24,7 +26,6 @@
 
 {% block main %} 
 <div id="layer_data"></div>
-<div id="ame_data"></div>
 {% endblock %}
 
 {% block sidebar %}
