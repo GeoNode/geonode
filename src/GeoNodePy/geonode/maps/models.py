@@ -146,6 +146,7 @@ class Layer(models.Model):
             })
 
         types = [
+            ("kmz", _("Zipped KML"), "application/vnd.google-earth.kmz+xml"),
             ("tiff", _("GeoTiff"), "image/geotiff"),
             ("pdf", _("PDF"), "application/pdf"),
             ("png", _("PNG"), "image/png")
