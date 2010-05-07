@@ -5,40 +5,154 @@ TODO
 
 Ext.namespace("GeoNode");
 
+
+GeoNode.DataCartOps = Ext.extend(Ext.util.Observable, {
+
+    constructor: function(config) {
+        Ext.apply(this, config);
+        this.doLayout();
+    },
+   
+    doLayout: function() {
+        var el = Ext.get(this.renderTo);
+        var createMapLink = Ext.get(el.query('a.create-map')[0]);
+        this.createMapForm = Ext.get(el.query('#create_map_form')[0]);
+        
+        createMapLink.on('click', function(evt) {
+            evt.preventDefault();
+            var layers = this.cart.getSelectedLayerIds();
+            this.createNewMap(layers);
+        }, this);
+        
+        batch_links = el.query('a.batch-download');
+        for (var i = 0; i < batch_links.length; i++) {
+           var bel = Ext.get(batch_links[i]);
+           bel.on('click', function(e, t, o) {
+               e.preventDefault();
+               var layers = this.cart.getSelectedLayerIds();
+               var format = Ext.get(t).getAttribute('href').substr(1);
+               this.batchDownload(layers, format);
+           }, this);
+        }
+    },
+    
+    createNewMap: function(layerIds) {
+        var inputs = [];
+        for (var i = 0; i < layerIds.length; i++) {
+            inputs.push({
+                tag: 'input',
+                type: 'hidden',
+                name: 'layer',
+                value: layerIds[i]
+            });
+        }
+        Ext.DomHelper.overwrite(this.createMapForm, {'tag': 'div', cn: inputs});
+        this.createMapForm.dom.submit();
+    },
+    
+    batchDownload: function(layerIds, format) {
+        alert("not implemented");
+    }
+    
+});
+
 GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
     
     selectedLayersText: 'UT: Selected Layers',
     emptySelectionText: 'UT: No Layers Selected',
-    nameText: 'UT: Name',
+    titleText: 'UT: Title',
+    clearSelectedButtonText: 'UT: Clear Selected',
+    clearAllButtonText: 'UT: Clear All',
     
     constructor: function(config) {
         Ext.apply(this, config);
         this.doLayout();
     },
+
+    getSelectedLayerIds: function() {
+        var layerIds = [];
+        this.grid.selModel.each(function(rec) {
+            layerIds.push(rec.get('name'));
+        });
+        return layerIds;
+    },
     
     doLayout: function() {
-        var listView = new Ext.list.ListView({
+        var widgetHTML =
+        '<div class="selection-table"></div>' +
+        '<div class="selection-controls"></div>' +
+        '<div class="selection-ops></div>"';
+        
+        var el = Ext.get(this.renderTo);
+        el.update(widgetHTML);
+        var controls_el = el.query('.selection-controls')[0];
+        var table_el = el.query('.selection-table')[0];
+        var ops_el = el.query('.selection-ops')[0];
+        
+        sm = new Ext.grid.CheckboxSelectionModel({});
+        this.grid = new Ext.grid.GridPanel({
             store: this.store,
-            multiSelect: true,
-            emptyText: this.emptySelectionText,
-            reserveScrollOffset: true,
-            hideHeaders: true,
-            columns: [{
-                dataIndex: 'name'
-            }]
+            viewConfig: {
+                autoFill: true,
+                forceFit: true,
+                emptyText: this.emptySelectionText,
+                deferEmptyText: false
+            },
+            height: 150,
+            renderTo: table_el,
+            selModel: sm,
+            colModel: new Ext.grid.ColumnModel({
+                defaults: {sortable: false, menuDisabled: true},
+                columns: [
+                    sm,
+                    {header: this.titleText, dataIndex: 'title'}
+                ]
+            })
         });
-        listView.render(this.renderTo);
-        /*
-        var panel = new Ext.Panel({
-            title: this.selectedLayersText,
-            height: 400,
-            layout:'fit',
-            items: listView
+        // data cart items are initially selected
+        this.store.on('add', function(store, records, index) {
+            sm.selectRow(index, true);
+        })
+
+
+        var clearSelectedButton = new Ext.Button({
+            text: this.clearSelectedButtonText,
         });
-        panel.render(this.renderTo);
-        */
+        clearSelectedButton.on('click', function() {
+            sm.each(function(rec) {
+                var index = this.store.indexOfId(rec.id);
+                if (index >= 0) {
+                    this.store.removeAt(index);
+                }
+            }, this);
+            this.store.reselect();
+        }, this);
+
+        
+        var clearAllButton = new Ext.Button({
+            text: this.clearAllButtonText,
+        });
+        clearAllButton.on('click', function() {
+            this.store.removeAll();
+            this.store.reselect();
+        }, this);
+
+        var controlsForm = new Ext.Panel({
+             frame:false,
+             border: false,
+             layout: new Ext.layout.HBoxLayout({
+                 pack: 'end', 
+                 defaultMargins: {
+                     top: 10,
+                     bottom: 10,
+                     left: 0,
+                     right: 0
+                  }
+             }),
+             items: [clearSelectedButton, clearAllButton]
+         });
+         controlsForm.render(controls_el);
     }
-    
 });
 
 GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
@@ -97,7 +211,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 this.dataCart.reselect();
             }
         }, this);
-    
+        
         this.doLayout();
         this.doSearch();
     },
@@ -213,7 +327,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
              }];
         
         if (this.trackSelection == true) {
-            sm = new Ext.grid.CheckboxSelectionModel({});
+            sm = new Ext.grid.CheckboxSelectionModel({checkOnly: true});
             this.dataCart = new GeoNode.DataCartStore({selModel: sm});
             columns.push(sm);
             tableCfg.selModel = sm;
@@ -396,13 +510,22 @@ GeoNode.DataCartStore = Ext.extend(Ext.data.Store, {
 
     constructor : function(config) {
         this.selModel = config.selModel;
+        this.reselecting = false;
         
         this.selModel.on('rowselect', function(model, index, record) {
+            if (this.reselecting == true) {
+                return;
+            }
+    
             if (this.indexOfId(record.id) == -1) {
                 this.add([record]);
             }
         }, this);
         this.selModel.on('rowdeselect', function(model, index, record) {
+            if (this.reselecting == true) {
+                return;
+            }
+
             var index = this.indexOfId(record.id)
             if (index != -1) {
                 this.removeAt(index);
@@ -413,6 +536,8 @@ GeoNode.DataCartStore = Ext.extend(Ext.data.Store, {
     },
     
     reselect: function() {
+        this.reselecting = true;
+        this.selModel.clearSelections();
         var store = this.selModel.grid.store;
         this.each(function(rec) {
             var index = store.indexOfId(rec.id);
@@ -421,6 +546,7 @@ GeoNode.DataCartStore = Ext.extend(Ext.data.Store, {
             }
             return true;
         }, this);
+        this.reselecting = false;
     }
 });
 
