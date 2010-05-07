@@ -162,4 +162,12 @@ if (GeoNode && GeoNode.SearchTableRowExpander) {
         dataDetailText: 'Click here for more information about this layer.'
     });
 }
-
+if (GeoNode && GeoNode.DataCart) {
+    Ext.apply(GeoNode.DataCart.prototype, {
+        selectedLayersText: gettext('Selected Layers'),
+        emptySelectionText: gettext('No Layers Selected'),
+        titleText: gettext('Title'),
+        clearSelectedButtonText: gettext('Clear Selected'),
+        clearAllButtonText: gettext('Clear All') 
+    });
+}

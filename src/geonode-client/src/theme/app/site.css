@@ -338,6 +338,35 @@ a.download.zip {
   background-image: url(img/geosilk/page_white_vector.png)
 }
 
+#data_ops ul li {
+    list-style-type: none;
+    padding-bottom: 10px;
+}
+
+#data_ops a {
+    text-decoration: none;
+}
+
+#data_ops a.create-map {
+    background-repeat:no-repeat;
+    padding-left: 25px;
+    padding-top: 2px;
+    padding-bottom:2px;
+    background-image: url(img/silk/map_add.png);
+    font-weight: bold;
+}
+
+#data_ops span.export {
+    background-repeat:no-repeat;
+    padding-left: 25px;
+    padding-top: 2px;
+    padding-bottom:2px;
+    background-image: url(img/geosilk/map_save.png);
+    font-weight: bold;
+}
+
+
+
 
 .olControlAttribution{ 
 color:gray;

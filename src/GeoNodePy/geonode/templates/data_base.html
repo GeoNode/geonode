@@ -1,0 +1,79 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+{% load navbar %}
+
+{% block title %} {% trans "Browse Data" %} {% endblock %}
+
+{% block header_append %}
+<script type="text/javascript">
+Ext.onReady(function(){
+   {% autoescape off %}
+    var searchTable = new GeoNode.SearchTable({
+        renderTo: 'layer_data',
+        trackSelection: true,
+        searchURL: '{% url geonode.maps.views.metadata_search %}',
+        searchParams: {{init_search}}
+    });
+    
+    var dataCart = new GeoNode.DataCart({
+      store: searchTable.dataCart,
+      renderTo: 'data_cart'
+    });
+    
+    var dataOps = new GeoNode.DataCartOps({
+      cart: dataCart,
+      renderTo: 'data_ops'
+    });
+    
+    {% endautoescape %}
+});
+</script>
+{% endblock %}
+
+{% block nav %} {% navbar data %} {% endblock %}
+
+{% block main %} 
+<div id="layer_data"></div>
+
+<br/>
+<div>
+<h3>Selected Data</h3>
+<p>{% blocktrans %}Use the checkboxes in the search results to add data to the selection below.{% endblocktrans%}</p>
+  
+<div id="data_cart"></div>
+</div>
+
+<div id="data_ops">
+  <ul>
+    <li><a href="#" class="create-map">{% trans "Create a new map" %}</a></li>
+<!--    <li><span class="export">{% trans "Export selected" %}:</span>
+        <a href="#shp" class="batch-download">Shapefile</a>, 
+        <a href="#geotiff" class="batch-download">GeoTiff</a>
+    </li> -->
+  </ul>
+
+  <form id="create_map_form" action="{% url geonode.maps.views.newmap %}" method="POST">
+  </form>
+</div>
+<br/>
+{% endblock %}
+
+{% block sidebar %}
+{% block sidebar_info %}
+<h2>{% trans "Browse Data" %}</h2>
+{% blocktrans %}
+<p>Here you can browse this GeoNode's data.</p>
+<p>Click the <b>+</b> on any row to show layer metadata or download in PDF, KML, GeoTIFF, or SHP.</p>
+{% endblocktrans %}
+{% endblock %}
+
+<h3>{% trans "Add Data" %}</h3>
+<p>{% trans "Click here to"  %} <a href="{% url geonode.maps.views.upload_layer%}">{% trans "upload a new layer"  %}</a></p>
+
+
+<h3>{% trans "For Developers" %}</h3>
+{% blocktrans %} 
+If you are interested in information about accessing this information through OGC services, click 
+{% endblocktrans %}
+<a href="{% url geonode.views.static "developer" %}">{% trans "here" %}</a>.
+{% endblock %}

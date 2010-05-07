@@ -164,21 +164,45 @@ def newmap(request):
         config = build_map_config(map)
         del config['id']
     else:
-        query = request.META['QUERY_STRING']
-        if query.startswith("layer"):
-            layer_name = request.GET['layer']
-            layer = Layer.objects.get(name=layer_name)
-            
-            bbox = layer.resource.latlon_bbox
-            
+        if request.method == 'GET':
+            params = request.GET
+        elif request.method == 'POST':
+            params = request.POST
+        else:
+            return HttpResponse(status=405)
+        
+        if 'layer' in params:
+            bbox = None
+            layers = []
             config = DEFAULT_MAP_CONFIG
-            config['map']['layers'] = [{'name': "%s:%s" % (layer.workspace,layer.name), 
-                                            'wms' : 'capra'}]
-            config['map']['center'] = ((float(bbox[0]) + float(bbox[1])) / 2, (float(bbox[2]) + float(bbox[3])) / 2)
+            for layer_name in params.getlist('layer'):
+                try:
+                    layer = Layer.objects.get(typename=layer_name)
+                except ObjectDoesNotExist:
+                    # bad layer, skip 
+                    continue
 
-            width_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
-            height_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
-            config['map']['zoom'] = math.floor(min(width_zoom, height_zoom))                                  
+                layer_bbox = layer.resource.latlon_bbox
+                if bbox is None:
+                    bbox = list(layer_bbox)
+                else:
+                    bbox[0] = min(bbox[0], layer_bbox[0])
+                    bbox[1] = max(bbox[1], layer_bbox[1])
+                    bbox[2] = min(bbox[2], layer_bbox[2])
+                    bbox[3] = max(bbox[3], layer_bbox[3])
+                
+                layers.append({'name': layer.typename,
+                               'wms' : 'capra'})
+                                   
+            if len(layers) > 0:
+                config['map']['layers'] = layers
+
+            if bbox is not None:
+                config['map']['center'] = ((float(bbox[0]) + float(bbox[1])) / 2, (float(bbox[2]) + float(bbox[3])) / 2)
+
+                width_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
+                height_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
+                config['map']['zoom'] = math.floor(min(width_zoom, height_zoom))
         else:
             config = DEFAULT_MAP_CONFIG
     return render_to_response('maps/view.html', RequestContext(request, {
