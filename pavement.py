@@ -45,7 +45,6 @@ options(
         dest_dir='./',
         install_paver=True,
         script_name='bootstrap.py',
-        no_site_packages=True,
         paver_command_line='post_bootstrap'
     ),
     deploy=Bunch(
@@ -54,7 +53,6 @@ options(
         packages_to_install=['pip'],
         dest_dir='./',
         install_paver=True,
-        no_site_packages=True,
         paver_command_line='post_bootstrap'      
     ),
     host=Bunch(
