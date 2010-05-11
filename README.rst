@@ -66,14 +66,23 @@ software installed and in your PATH:
 Install
 =======
 
-::
+The following steps should prepare a Python virtual environment for you::
 
   svn co http://svn.opengeo.org/CAPRA/GeoNode/trunk/ GeoNode
   cd GeoNode
-  python bootstrap.py
+  python bootstrap.py --no-site-packages
   . bin/activate
   paver build
   paver host 
+
+Note that when running ``python bootstrap.py`` the ``--no-site-packages``
+option is not required.  If enabled, the bootstrap script will sandbox your
+virtual environment from any packages that are installed in the system, useful
+if you have incompatible versions of libraries such as Django installed
+system-wide.  On the other hand, sometimes it is useful to use a version of
+ReportLab or the Python Imaging Library provided by your operating system
+vendor, or packaged other than on PyPI.  When in doubt, however, just leave this
+option in.
 
 After paver build sets up the basic Django application, you can run::
 
