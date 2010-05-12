@@ -3,13 +3,24 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to GeoNode Developer Documentation's documentation!
-===========================================================
+Welcome to GeoNode Developer Documentation!
+===========================================
+
+GeoNode is a tool to help people collaborate in using geospatial information on
+the web.
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
+
+   about-geonode
+   getting-started
+   django-apps
+   geonode-javascript
+   geoserver-extensions
+   geonetwork-extensions
+   deployment
 
 Indices and tables
 ==================
