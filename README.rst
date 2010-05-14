@@ -5,7 +5,7 @@
 Directory Structure
 ===================
 
-* docs/ - ?? I think this is to help paver find our docs so whit doesn't have
+* docs/ - ? I think this is to help paver find our docs so whit doesn't have
   to maintain two checkouts to build them.
 * hazard.json - a data dump for the hazard categories
 * package - this directory is where distributable bundles of the GeoNode pieces
