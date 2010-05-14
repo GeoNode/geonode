@@ -160,13 +160,13 @@ def setup_gs_data(options):
     """Fetch a data directory to use with GeoServer for testing."""
     from urlgrabber.grabber import urlgrab
     from urlgrabber.progress import text_progress_meter
-    src_url = options.config.parser.get('geoserver', 'gs_data_url')
+    src_url = str(options.config.parser.get('geoserver', 'gs_data_url'))
     shared = path("./shared")
     if not shared.exists():
         shared.mkdir()
     dst_url = shared / "geonode-geoserver-data.zip"
     if not dst_url.exists() or getattr(options, 'clean', False):
-        urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
+        urlgrab(src_url, str(dst_url), progress_obj=text_progress_meter())
     if not path(gs_data).exists():
         path(gs_data).rmtree()
         unzip_file(dst_url, gs_data)
@@ -185,7 +185,7 @@ def setup_geonetwork(options):
     from urlgrabber.grabber import urlgrab
     from urlgrabber.progress import text_progress_meter
     war_zip_file = options.config.parser.get('geonetwork', 'geonetwork_zip')
-    src_url = options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file
+    src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file)
     info("geonetwork url: %s" %src_url)
     # where to download the war files. If changed change also
     # src/geoserver-geonode-ext/jetty.xml accordingly
@@ -200,7 +200,7 @@ def setup_geonetwork(options):
     schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
 
     if not dst_url.exists() or getattr(options, 'clean', False):
-        urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
+        urlgrab(src_url, str(dst_url), progress_obj=text_progress_meter())
         unzip_file(dst_url, webapps)
         path(deployed_url).rmtree()
     if not path(deployed_url).exists():
@@ -213,11 +213,11 @@ def setup_geonetwork(options):
     info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
     path("gn_schema").copytree(schema_url)
 
-    src_url = options.config.parser.get('geonetwork', 'intermap_war_url')
+    src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
     dst_url = webapps / "intermap.war"
 
     if not dst_url.exists() or getattr(options, 'clean', False):
-        urlgrab(src_url, dst_url, progress_obj=text_progress_meter())
+        urlgrab(src_url, str(dst_url), progress_obj=text_progress_meter())
 
 @task
 @needs([
