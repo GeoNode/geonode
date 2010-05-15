@@ -1059,19 +1059,19 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             }
             
             this.layers.add(records);
-
-            // set map center
-            if(this.mapPanel.center) {
-                // zoom does not have to be defined
-                this.map.setCenter(this.mapPanel.center, this.mapPanel.zoom);
-            } else if (this.mapPanel.extent) {
-                this.map.zoomToExtent(this.mapPanel.extent);
-            } else {
-                this.map.zoomToMaxExtent();
-            }
         }
 
         this.layers.insert(0, this.backgroundManager.getBackgroundLayers()); 
+
+        // set map center
+        if(this.mapPanel.center) {
+            // zoom does not have to be defined
+            this.map.setCenter(this.mapPanel.center, this.mapPanel.zoom);
+        } else if (this.mapPanel.extent) {
+            this.map.zoomToExtent(this.mapPanel.extent);
+        } else {
+            this.map.zoomToMaxExtent();
+        }
     },
 
     /**
