@@ -30,7 +30,7 @@ def geoserver(request,path):
     url = "{geoserver}{url}".format(geoserver=settings.GEOSERVER_BASE_URL,url=path)
     h = httplib2.Http()    
     h.add_credentials(*settings.GEOSERVER_CREDENTIALS)
-    resp, content = h.request(url,request.method,body=request.raw_post_data)
+    resp, content = h.request(url,request.method,body=request.raw_post_data,headers={"Content-Type": request.META['CONTENT_TYPE']})
     if resp.status != 404:
         if "content-type" in resp.keys():
             return HttpResponse(content=content,status=resp.status,mimetype=resp["content-type"])
