@@ -187,6 +187,14 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
         Ext.util.Observable.observeClass(Ext.data.Connection);
         Ext.data.Connection.on({
             "beforerequest": function(conn, options) {
+                // use django's /geoserver endpoint when talking to the local
+                // GeoServer's RESTconfig API
+                if(options.url.indexOf(this.localGeoServerBaseUrl +
+                                                            "rest/") === 0) {
+                    options.url = options.url.replace(new RegExp("^" +
+                        this.localGeoServerBaseUrl), "/geoserver/");
+                    return;
+                };
                 if(this.proxy && options.url.indexOf(this.proxy) !== 0 &&
                    options.url.indexOf(this.rest) !== 0) {
                     var url = Ext.urlAppend(options.url,

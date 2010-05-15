@@ -39,7 +39,9 @@ Ext.onReady(function() {
          * maps on the server for sharing and editing.
          */
         rest: "/maps/",
-        homeUrl: "{% url geonode.views.index %}"
+        homeUrl: "{% url geonode.views.index %}",
+        
+        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}"
     };
 
     Ext.apply(config, {% if config %}{{config|safe}}{%else%} {%endif%});
