@@ -639,8 +639,12 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                             }, {
                                 text: "Save",
                                 handler: function() {
+                                    var busyMask = new Ext.LoadMask(prop.el,
+                                        {msg: "Applying style changes..."});
+                                    busyMask.show();
                                     var updateLayer = function() {
                                         record.get("layer").redraw(true);
+                                        busyMask.hide();
                                         prop.close();
                                     }
                                     styleWriter.write({
