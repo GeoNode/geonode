@@ -639,10 +639,15 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                             }, {
                                 text: "Save",
                                 handler: function() {
-                                    layer.mergeNewParams({
-                                        styles: stylesDialog.selectedStyle.get("name")
+                                    var updateLayer = function() {
+                                        record.get("layer").redraw(true);
+                                        prop.close();
+                                    }
+                                    styleWriter.write({
+                                        defaultStyle: stylesDialog.selectedStyle.get("name"),
+                                        success: updateLayer,
+                                        scope: this
                                     });
-                                    prop.close();
                                 }
                             }]
                         }]
@@ -654,9 +659,14 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         i instanceof Ext.form.Field && i.setDisabled(true);
                     });
                     // add styles tab
+                    var styleWriter = new gxp.plugins.GeoServerStyleWriter({
+                        baseUrl: record.get("layer").url.split(
+                            "?").shift().replace("/wms", "/rest")
+                    });
                     var stylesDialog = new gxp.WMSStylesDialog({
                         title: "Styles",
                         layerRecord: record,
+                        plugins: styleWriter,
                         autoScroll: true
                     });
                     prop.items.get(0).add(stylesDialog);
