@@ -599,7 +599,7 @@ def _handle_layer_upload(request, layer=None):
             gn.login()
             md_link = gn.create_from_layer(layer)
             gn.logout()
-            layer.metadata_links = [("text/xml", "ISO19115", md_link)]
+            layer.metadata_links = [("text/xml", "TC211", md_link)]
             layer.save()
         except:
             # Something went wrong, let's try and back out any changes
@@ -700,7 +700,7 @@ def metadata_search(request):
             ...
         ],
         'metadata_links': [
-           ['text/xml', 'ISO19115', <url>],
+           ['text/xml', 'TC211', <url>],
            [<mime>, <name>, <url>],
            ...
         ]
