@@ -105,10 +105,16 @@ def update_map_json(request, mapid):
         ordering = 0
         for l in layers:
             if 'wms' in l and l['wms'] in services:
-                name = l['name']
-                group = l.get('group', '')
-                ows = services[l['wms']]
-                map.layer_set.create(name=name, group=group, ows_url=ows, stack_order=ordering)
+                map.layer_set.create(
+                    name=l['name'], 
+                    group=l.get('group', ''), 
+                    ows_url=services[l['wms']], 
+                    styles=l.get('styles', ''),
+                    format=l.get('format', ''),
+                    opacity=l.get('opacity', 100),
+                    transparent=l.get("transparent", False),
+                    stack_order=ordering
+                )
                 ordering = ordering + 1
     map.save()
     return HttpResponse('', status=204)
@@ -143,9 +149,17 @@ def create_map_json(json_text):
                 name = l['name']
                 group = l.get('group', '')
                 ows = services[l['wms']]
-                map.layer_set.create(name=name, group=group, ows_url=ows, stack_order=ordering)
+                map.layer_set.create(
+                    name=l['name'], 
+                    group=l.get('group', ''), 
+                    ows_url=services[l['wms']], 
+                    styles=l.get('styles', ''),
+                    format=l.get('format', ''),
+                    opacity=l.get('opacity', 100),
+                    transparent=l.get("transparent", False),
+                    stack_order=ordering
+                )
                 ordering = ordering + 1
-
     return map
 
 
@@ -357,11 +371,18 @@ def build_map_config(map):
     config['wms'] = dict(zip(server_mapping.values(), server_mapping.keys()))
 
     for l in layers:
-        config['map']['layers'].append({
+        layer_json = {
             'name': l.name,
             'wms': server_mapping[l.ows_url],
             'group': l.group
-        })
+        }
+
+        if l.format != "": layer_json['format'] = l.format
+        if l.styles != "": layer_json['styles'] = l.styles
+        if l.opacity != "": layer_json['opacity'] = l.opacity
+        if l.transparent: layer_json['transparent'] = True
+
+        config['map']['layers'].append(layer_json)
 
     return config
 
