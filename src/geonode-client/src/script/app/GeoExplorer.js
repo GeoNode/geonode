@@ -1057,6 +1057,16 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
 
                     // set layer visibility from config
                     layer.visibility = ("visibility" in conf) ? conf.visibility : true;
+
+                    layer.mergeNewParams({
+                        styles: conf.styles,
+                        format: conf.format,
+                        transparent: conf.transparent
+                    });
+
+                    if (conf.opacity || conf.opacity === 0) {
+                        layer.setOpacity(conf.opacity);
+                    }
                     
                     // set layer title from config
                     if (conf.title) {
@@ -1837,17 +1847,26 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                     // Return; error gracefully. (This is debatable.)
                     return;
                 }
-                
-                config.map.layers.push({
+
+                var layer_json = {
                     name: layerRecord.get("name"),
                     title: layerRecord.get("title"),
                     visibility: layer.getVisibility(),
                     group: layerRecord.get("group"),
-                    wms: source.get("identifier")
-                });
+                    wms: source.get("identifier"),
+                    styles: layer.params.STYLES,
+                    format: layer.params.FORMAT,
+                    transparent: layer.params.TRANSPARENT
+                }
+
+                if (layer.opacity != undefined) {
+                    layer_json.opacity = layer.opacity;
+                }
+
+                config.map.layers.push(layer_json);
             }
         }, this);
-        
+
         return config;
     },
 

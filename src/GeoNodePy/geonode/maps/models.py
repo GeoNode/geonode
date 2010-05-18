@@ -330,6 +330,10 @@ class Map(models.Model):
 
 class MapLayer(models.Model):
     name = models.CharField(max_length=200)
+    styles = models.CharField(max_length=200)
+    opacity = models.FloatField()
+    format = models.CharField(max_length=200)
+    transparent = models.BooleanField()
     ows_url = models.URLField()
     group = models.CharField(max_length=200,blank=True)
     stack_order = models.IntegerField()
