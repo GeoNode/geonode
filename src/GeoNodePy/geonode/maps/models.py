@@ -48,7 +48,7 @@ class LayerManager(models.Manager):
                 record = gn.get_by_uuid(layer.uuid)
                 if record is None:
                     md_link = gn.create_from_layer(layer)
-                    layer.metadata_links = [("text/xml", "ISO19115", md_link)]
+                    layer.metadata_links = [("text/xml", "TC211", md_link)]
                     layer.save()
                 else: 
                     gn.update(record, layer)
