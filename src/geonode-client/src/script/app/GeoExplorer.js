@@ -643,12 +643,13 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                                         {msg: "Applying style changes..."});
                                     busyMask.show();
                                     var updateLayer = function() {
-                                        record.get("layer").redraw(true);
+                                        layer.mergeNewParams({
+                                            "STYLES": stylesDialog.selectedStyle.get("name")
+                                        });
                                         busyMask.hide();
                                         prop.close();
                                     }
                                     styleWriter.write({
-                                        defaultStyle: stylesDialog.selectedStyle.get("name"),
                                         success: updateLayer,
                                         scope: this
                                     });
