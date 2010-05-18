@@ -10,7 +10,7 @@ conveniently setting up your own GeoNode.  These are provided in the form of
 * A customized build of the GeoNetwork geographic data catalog with a
   simplified  metadata schema
 
-Building from source
+Building from Source
 --------------------
 
 GeoNode's source tree is managed using the Subversion version control software.
@@ -21,6 +21,9 @@ also needed for the Java portions when building from scratch.  Or, in checklist 
 * The Subversion command-line client.  If you like, you can also use one of the
   many graphical clients, but you will need the command-line client as part of
   the build.
+* The git command-line client.  A graphical client is less important for git
+  since the main GeoNode sources are not managed with git; this is solely for
+  fetching third-party libraries.
 * A Java Virtual Machine, at least version 1.5.  The latest from Sun/Oracle is
   recommended for performance reasons.
 * A Python interpreter, at least version 2.6.2.  Since the Python APIs are
@@ -63,9 +66,74 @@ process.  So, here are the steps to follow:
    browsing tools in a fairly generic configuration.
 
 
-* Navigating the development environment
+Navigating the Source Directory
+-------------------------------
 
-  * components: geoserver, geonetwork, geoext, django
-  * your own site sources
+The source tree you just set up contains all the different components of the
+GeoNode.
 
-* Using the development kit
+  * ``pavement.py`` is a build script that produces development kits and
+    manages some other tasks.  Use the ``paver`` command to execute build
+    tasks.  ``paver help`` provides a list of the available tasks.
+
+  * ``src/`` contains sources for several Django components
+
+     * ``src/geonode-client/`` contains some GeoExt components that provide
+       interactivity in the Django site
+     * ``src/geoserver-geonode-ext/`` contains some GeoServer extensions to
+       assist with interaction between GeoServer and Django
+     * ``src/GeoNodePy/`` contains the Django apps that support GeoNode sites.
+  
+  * ``shared/`` contains some configurations for the build process (Python
+    library dependencies, download paths, etc) and also contains some built
+    artifacts.  Consult the source of ``pavement.py`` for some information
+    about how these configuration files are used.
+
+  * ``webapps/`` contains GeoNetwork and Intermap for use during development
+
+  * ``gs-data/`` contains a GeoServer data directory for use during development
+
+Using the Development Kit
+-------------------------
+  
+In order to make it easier to get started with setting up a GeoNode site, the
+GeoNode project provides a development kit including pre-built versions of the
+GeoNetwork, GeoServer, GeoExt, and Django components of the GeoNode.  In order to use the development kit, you will need:
+
+* A Java Virtual Machine, at least version 1.5.  The latest from Sun/Oracle is
+  recommended for performance reasons.
+* A Python interpreter, at least version 2.6.2.  Since the Python APIs are
+  subject to revision between minor versions, it is recommended that you stick
+  with the 2.6.x series.
+
+Once these dependencies are provided, the following steps will install the
+GeoNode development kit:
+
+#. Fetch the GeoNode development kit from the GeoNode website::
+
+   $ wget http://dev.geonode.org/download/geonode-devkit-0.1.zip
+
+#. Unpack the development kit into a directory of your choosing::
+
+   $ unzip geonode-devkit-0.1.zip -d /opt/geonode-devkit-0.1/
+
+#. Install the development kit into a directory.  This sets up that directory as
+   a virtualenv sandbox with some GeoNode related packages installed in it.
+   Jetty, a lightweight Java web application server, is also installed to run
+   GeoServer and GeoNetwork.  The command to install the development kit is::
+
+   $ python /opt/geonode-devkit-0.1/go-geonode.py /opt/geonode-devkit-0.1-venv/
+
+#. "Activate" the virtualenv to make the GeoNode development tools available on
+   your PATH. 
+
+   .. note:: 
+
+     You will need to perform this step each time you want to start
+     working with the development kit.
+
+   ::
+
+     $ . /opt/geonode-devkit-0.1-venv/bin/activate
+
+Now you can set up a new Django site with the GeoNode Django apps enabled. 
