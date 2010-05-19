@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load navbar %}
 
-{% block title %} {% trans "Community Map List" %} {% endblock %}
+{% block title %} {% trans "Community Map List" %} - {{ block.super }} {% endblock %}
 
 {% block header_append %}
 <script type="text/javascript">

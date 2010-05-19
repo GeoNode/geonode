@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 {% load navbar %}
-{% block title %} {% trans "OGC Services" %} {% endblock %}
+{% block title %} {% trans "OGC Services" %} - {{ block.super }} {% endblock %}
 
 {% block nav %}
 {% navbar developer %}

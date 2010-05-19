@@ -3,7 +3,7 @@
 {% load navbar %}
 {% load geonode_media %}
 
-{% block title %} {% trans "Browse Files" %} {% endblock %}
+{% block title %} {% trans "Browse Files" %} - {{ block.super }} {% endblock %}
 
 
 {% block header_append %}

@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load navbar %}
 
-{% block title %} {% trans "Welcome!" %} {% endblock %}
+{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 {% block indexclass %} class="here" {% endblock %}
 {% block nav %}
 {% navbar index %}

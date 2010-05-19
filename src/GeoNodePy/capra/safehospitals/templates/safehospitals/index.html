@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load navbar %}
 
-{% block title %} {% trans "Safe Hospitals" %} {% endblock %}
+{% block title %} {% trans "Safe Hospitals" %} - {{ block.super }} {% endblock %}
 
 {% block header_append %}
 <script src="http://maps.google.com/maps?file=api&v=2&key={{GOOGLE_API_KEY}}"></script>

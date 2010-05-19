@@ -2,9 +2,7 @@
 {% load geonode_media %}
 {% load i18n %}
 
-{% block title %}
-Map Viewer 
-{% endblock %}
+{% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
 
 {% block header_append %}
 {% comment %} 

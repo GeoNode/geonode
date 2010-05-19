@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load navbar %}
 
-{% block title %} {% trans "AME Data"  %} {% endblock %}
+{% block title %} {% trans "AME Data" %} - {{ block.super }} {% endblock %}
 
 {% block main %}
   <div id="description"><h3>{{file.name}}</h3></div>
