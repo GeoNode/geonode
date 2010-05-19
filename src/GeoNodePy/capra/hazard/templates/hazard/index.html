@@ -3,7 +3,7 @@
 {% load navbar %}
 {% load geonode_media %}
 
-{% block title %} {% trans "MyHazard" %} {% endblock %}
+{% block title %} {% trans "MyHazard" %} - {{ block.super }} {% endblock %}
 
 {% block header_append %}
     <script src="http://maps.google.com/maps?file=api&v=2&key={{GOOGLE_API_KEY}}"></script>

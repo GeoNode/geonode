@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block title %} {{ layer.typename }} {% endblock %}
+{% block title %} {{ layer.typename }} - {{ block.super }} {% endblock %}
 
 {% block main %}
   <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>

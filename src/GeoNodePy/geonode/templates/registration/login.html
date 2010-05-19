@@ -1,5 +1,5 @@
 {% extends "page_layout.html" %}
-{% block title %} GeoNode Login {% endblock %}
+{% block title %} GeoNode Login - {{ block.super }} {% endblock %}
 {% block main %}
 <h2>GeoNode Login</h2>
 {% if form.errors %}
