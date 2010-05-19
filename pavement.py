@@ -133,7 +133,7 @@ def download_bundle(options):
     bpath = bundle.abspath()
     if not bundle.exists():
         with pushd('shared'):
-            sh('wget http://capra.opengeo.org/repo/%s.zip' % dlname)
+            sh('wget http://dev.capra.opengeo.org/repo/%s.zip' % dlname)
             path(dlname + '.zip').copy(bpath)
     else:
         info("Skipping download. 'rm bundle  %s' if you need a fresh download. " % bundle)
