@@ -5,6 +5,7 @@ import geoserver
 from geoserver.resource import FeatureType, Coverage
 from django import forms
 from django.contrib.auth.decorators import login_required
+from django.contrib.gis import gdal
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -749,7 +750,18 @@ def metadata_search(request):
     except: 
         limit = DEFAULT_SEARCH_BATCH_SIZE
 
-    result = _metadata_search(query, start, limit)
+    advanced = {}
+    bbox = params.get('bbox', None)
+    if bbox:
+        try:
+            bbox = [float(x) for x in bbox.split(',')]
+            if len(bbox) == 4:
+                advanced['bbox'] =  bbox
+        except:
+            # ignore...
+            pass
+
+    result = _metadata_search(query, start, limit, **advanced)
     result['success'] = True
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
@@ -760,7 +772,7 @@ def _metadata_search(query, start, limit, **kw):
 
     keywords = _split_query(query)
     
-    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit)
+    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
     
     # build results 
     # join with django model to grab name and potentially other stuff...
@@ -798,7 +810,35 @@ def _build_search_result(rec, layer):
     result['title'] = rec.title
     result['abstract'] = rec.abstract
     result['keywords'] = [x for x in rec.subjects if x]
-
+    
+    # 
+    # Take BBOX from GeoNetwork Result...
+    # 
+    # XXX Disabled until reliable srs info can be determined 
+    # these almost all fail because the urns are 
+    # not specific enough. 
+    # 
+    # if rec.bbox is not None:
+    #     # transform bbox to EPSG:4326 (eh I think...)
+    #     try:
+    #         bbox_srs = gdal.SpatialReference(crs)
+    #         out_srs = gdal.SpatialReference('EPSG:4326')
+    #         ct = gdal.CoordTransform(bbox_srs, out_srs)
+    #         pt0 = gdal.OGRGeometry('POINT(%s %s)' % (rec.bbox.minx, rec.bbox.miny))
+    #         pt0.transform(ct)
+    #         pt1 = gdal.OGRGeometry('POINT(%s %s)' % (rec.bbox.maxx, rec.bbox.maxy))
+    #         pt1.transform(ct)
+    #     
+    #         result['bbox'] = {
+    #             'minx': pt0.x,
+    #             'miny': pt0.y,
+    #             'maxx': pt1.x,
+    #             'maxy': pt1.y
+    #         }
+    #     except:
+    #         # oh well, garbage in, garbage out...
+    #         pass
+            
     if layer is None:
         # be semi-graceful with data that doesn't correspond
         # to a GeoNode layer...
@@ -815,11 +855,23 @@ def _build_search_result(rec, layer):
         result['download_links'] = layer.download_links()
         result['metadata_links'] = layer.metadata_links
 
+        bbox = layer.resource.latlon_bbox
+        if bbox is not None:
+            result['bbox'] = {
+                'miny': bbox[0],
+                'maxy': bbox[1],
+                'minx': bbox[2],
+                'maxx': bbox[3]
+            }
+
+
     return result
     
     
 def browse_data(request):
     # for non-ajax requests, render a generic search page
     return render_to_response('data.html', RequestContext(request, {
-        'init_search': json.dumps(request.GET or {})
+        'init_search': json.dumps(request.GET or {}),
+        'background': json.dumps(settings.MAP_BASELAYERS[settings.SEARCH_WIDGET_BASELAYER_INDEX]),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY
     }))

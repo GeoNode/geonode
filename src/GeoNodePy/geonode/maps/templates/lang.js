@@ -171,3 +171,10 @@ if (GeoNode && GeoNode.DataCart) {
         clearAllButtonText: gettext('Clear All') 
     });
 }
+if (GeoNode && GeoNode.BoundingBoxWidget) {
+    Ext.apply(GeoNode.BoundingBoxWidget.prototype, {
+        drawButtonText: gettext('Draw'),
+        clearButtonText: gettext('Clear'),
+        zoomSliderTipText: gettext("Zoom Level")
+    })
+}

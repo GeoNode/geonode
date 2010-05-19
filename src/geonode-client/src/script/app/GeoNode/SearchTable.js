@@ -1,8 +1,3 @@
-/*  A Table for displaying and paging through geonode search results.
-TODO 
-*Selections*
-*/ 
-
 Ext.namespace("GeoNode");
 
 
@@ -156,7 +151,6 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
 });
 
 GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
-
     selectHeaderText: 'UT: Select',
     nameHeaderText: 'UT: Name',
     titleHeaderText: 'UT: Title',
@@ -173,16 +167,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     loadingText: 'UT: Loading',
 
     constructor: function(config) {
+        this.addEvents('load'); 
         Ext.apply(this, config);
-        if (!this.searchParams) {
-            this.searchParams = {};
-        }
-        if (!this.searchParams.start) {
-            this.searchParams.start = 0;
-        }
-        if (!this.searchParams.limit) {
-            this.searchParams.limit = 10;
-        }
+        this.initFromQuery();
         this.loadData();
     },
     
@@ -203,6 +190,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'attribution'},
                 {name: 'download_links'},
                 {name: 'metadata_links'},
+                {name: 'bbox'}
             ], 
         });
         this.searchStore.on('load', function() {
@@ -210,20 +198,58 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             if (this.dataCart) {
                 this.dataCart.reselect();
             }
+            this.fireEvent('load', this);
         }, this);
         
         this.doLayout();
         this.doSearch();
     },
     
+    initFromQuery: function() {
+        if (!this.searchParams) {
+            this.searchParams = {};
+        }
+        if (!this.searchParams.start) {
+            this.searchParams.start = 0;
+        }
+        if (!this.searchParams.limit) {
+            this.searchParams.limit = 10;
+        }
+        
+        if (this.constraints) {
+            for (var i = 0; i < this.constraints.length; i++) {
+                this.constraints[i].initFromQuery(this, this.searchParams);
+            }
+        }
+    },
+    
     doSearch: function() {
+        /* updates parameters from constraints and 
+           permforms a new search */ 
+        var params = {};
+        params.q = this.searchParams.q;
+        params.start = 0;
+        params.limit = this.searchParams.limit;
+        
+        if (this.constraints) {
+            for (var i = 0; i < this.constraints.length; i++) {
+                this.constraints[i].applyConstraint(params);
+            }
+        }
+        // this.updatePermalink(params);
+        this.searchParams = params;
+        this._search(this.searchParams);
+    },
+    
+    _search: function(params) {
+       /* search with given parameters */  
         this.disableControls();
-        this.searchStore.load({params: this.searchParams});
+        this.searchStore.load({params: params});
     },
 
     loadNextBatch: function() {
         this.searchParams.start += this.searchParams.limit;
-        this.doSearch();
+        this._search(this.searchParams);
     },
     
     loadPrevBatch: function() {
@@ -231,7 +257,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         if (this.searchParams.start < 0) {
             this.searchParams.start = 0;
         }
-        this.doSearch();
+        this._search(this.searchParams);
     },
 
     disableControls: function() {
@@ -268,9 +294,21 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     updateQuery: function() {
+        /* called when main search query changes */ 
         this.searchParams.q = this.queryInput.getValue();
-        this.searchParams.start = 0;
         this.doSearch();
+    },
+    
+    hookupSearchButtons: function(el) {
+        var root = Ext.get(el);
+        var buttons = root.query('.search-button');
+        for (var i = 0; i < buttons.length; i++) {
+            var searchButton = new Ext.Button({
+                text: this.searchButtonText,
+                renderTo: buttons[i]
+            });
+            searchButton.on('click', this.doSearch, this);
+        }
     },
 
     doLayout: function() {
@@ -550,3 +588,270 @@ GeoNode.DataCartStore = Ext.extend(Ext.data.Store, {
     }
 });
 
+GeoNode.BBOXConstraintTool = OpenLayers.Class(OpenLayers.Control, {
+    
+    EVENT_TYPES: ["constraintchanged"],
+    
+    initialize: function(layer, options) {
+        this.EVENT_TYPES = GeoNode.BBOXConstraintTool.prototype.EVENT_TYPES.concat(
+            OpenLayers.Control.prototype.EVENT_TYPES);
+        OpenLayers.Control.prototype.initialize.apply(this, [options]);
+        this.layer = layer;
+    },
+
+    draw: function() {
+        this.box = new OpenLayers.Handler.Box(this,
+            {"done": this.boxComplete});
+    },
+    
+    boxComplete: function(bounds) {
+        // reject non-boxes (null, Pixel) 
+        if (!bounds || bounds.CLASS_NAME != 'OpenLayers.Bounds') {
+            return;
+        }
+    
+        var constraint = new OpenLayers.Bounds();
+        var scr_verts = bounds.toGeometry().getVertices();
+        for (var i = 0; i < scr_verts.length; i++) {
+            var pixel = new OpenLayers.Pixel(scr_verts[i].x, scr_verts[i].y);
+            var lonlat = this.map.getLonLatFromPixel(pixel);
+            constraint.extend(lonlat);
+        }
+        this.setConstraint(constraint);
+    },
+
+    setConstraint: function(bounds) {
+        this._clearConstraint();
+        this.constraint = bounds;
+        this.constraint_ft = new OpenLayers.Feature.Vector(bounds.toGeometry()); 
+        this.constraint_ft.state = OpenLayers.State.INSERT;
+        this.layer.addFeatures([this.constraint_ft]);
+        this.events.triggerEvent("constraintchanged", {'constraint': this.constraint})
+    },
+    
+    clearConstraint: function() {
+        this._clearConstraint();
+        this.events.triggerEvent("constraintchanged", {'constraint': null}) 
+    },
+    
+    _clearConstraint: function() {
+        if (this.constraint_ft) {
+            this.layer.removeFeatures([this.constraint_ft]);
+            delete this.constraint_ft;            
+        }
+        if (this.constraint) {
+            delete this.constraint;
+        }
+    },
+    
+    hasConstraint: function() {
+        if (this.constraint) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+
+    activate: function() {
+        OpenLayers.Control.prototype.activate.apply(this);
+        if (this.box) {
+            this.box.activate();
+        }
+    },
+    
+    deactivate: function() {
+        OpenLayers.Control.prototype.deactivate.apply(this);
+        if (this.box) {
+            this.box.deactivate();
+        }                
+    }
+});
+
+GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
+    drawButtonText: 'UT: Draw',
+    clearButtonText: 'UT: Clear',
+    zoomSliderTipText: 'UT: Zoom',
+    
+    constructor: function(config) {
+        Ext.apply(this, config);
+        this.activated = false;
+    },
+
+    doLayout: function() {
+
+        var el = Ext.get(this.renderTo);
+        var map_el = el.query('.bbox-map')[0];
+        var controls_el = el.query('.bbox-controls')[0];
+
+        this.map = new OpenLayers.Map({
+            allOverlays: true,
+            projection: new OpenLayers.Projection("EPSG:900913"),
+            displayProjection: new OpenLayers.Projection("EPSG:4326"),
+            units: "m",
+            maxResolution: 156543.0339,
+            maxExtent: new OpenLayers.Bounds(
+                -20037508.34, -20037508.34,
+                 20037508.34,  20037508.34
+            ),
+            controls: [
+                new OpenLayers.Control.Navigation(),
+                new OpenLayers.Control.PanPanel(),
+                new OpenLayers.Control.ZoomPanel(),            
+                new OpenLayers.Control.Attribution()
+            ]
+        });
+
+
+        var constraintLayer = new OpenLayers.Layer.Vector("Constraint");
+        this.map.addLayers([constraintLayer]);
+        
+        this.constraintTool = new GeoNode.BBOXConstraintTool(constraintLayer);
+        this.map.addControl(this.constraintTool);
+
+
+        this.mapPanel = new GeoExt.MapPanel({
+            layout: "anchor",
+            border: true,
+            map: this.map,
+            renderTo: map_el,
+            height: 300,
+            zoom: this.map.zoom,
+            items: [
+                new GeoExt.ZoomSlider({
+                    vertical: true,
+                    height: 100,
+                    plugins: new GeoExt.ZoomSliderTip({
+                        template: "<div>"+this.zoomSliderTipText+": {zoom}<div>"
+                    })
+                })
+            ]
+        });
+
+        
+        var drawButton = new Ext.Button({text: this.drawButtonText, enableToggle: true});
+        drawButton.on('toggle', function(button, pressed) {
+            if (pressed) {
+                this.constraintTool.activate();
+            }
+            else {
+                this.constraintTool.deactivate();
+            }
+        }, this);
+
+        var clearButton = new Ext.Button({text: this.clearButtonText});
+        clearButton.on('click', function() {
+            this.constraintTool.clearConstraint();
+        }, this);
+        
+        var controlsForm = new Ext.Panel({
+             frame:false,
+             border: false,
+             layout: new Ext.layout.HBoxLayout({
+                 //pack: 'end', 
+                 defaultMargins: {
+                     top: 10,
+                     bottom: 10,
+                     left: 0,
+                     right: 10
+                  }
+             }),
+             items: [drawButton, clearButton]
+         });
+         controlsForm.render(controls_el);
+
+         drawButton.disable();
+         clearButton.disable();         
+         this.enabledCB = el.query('.bbox-enabled input')[0];        
+         this.enabledCB.checked = false;
+         Ext.get(this.enabledCB).on('click', function() {
+            if (this.enabledCB.checked == true) {
+                drawButton.enable();
+                clearButton.enable();
+            }
+            else {
+                drawButton.toggle(false);
+                drawButton.disable();
+                clearButton.disable();
+                this.constraintTool.clearConstraint();
+            }
+         }, this);
+
+
+         this.bgManager = new GeoExplorer.BackgroundLayerManager({
+            proxy: this.proxy,
+            backgroundLayers: [this.background]
+         });
+         gxp.util.dispatch(this.bgManager.getBackgroundLoaders(), this.activate, this);
+    
+         this.grid.on('load', function() {
+            // recompute bounds when search results change...
+            this.updateBounds();
+         }, this);
+    },
+    
+    isActive: function() {
+        return this.enabledCB.checked == true; 
+    },
+    
+    hasConstraint: function() {
+        return (this.isActive() &&
+                this.constraintTool && 
+                this.constraintTool.hasConstraint());
+    },
+    
+    applyConstraint: function(query) {
+        if (this.hasConstraint()) {
+            var bounds = OpenLayers.Bounds.fromArray(this.constraintTool.constraint.toArray());
+            bounds.transform(this.mapPanel.map.projection, new OpenLayers.Projection("EPSG:4326"));
+            query.bbox = bounds.toBBOX();
+        }
+    },
+    
+    initFromQuery: function(grid, query) {  
+        if (query.bbox) {
+            var bounds = OpenLayers.Bounds.fromString(query.bbox);
+            if (bounds) {
+                bounds.transform(new OpenLayers.Projection("EPSG:4326"), this.mapPanel.map.projection);
+                this.constraintTool.setConstraint(bounds);
+            }
+        }
+        this.grid = grid;
+        this.doLayout();
+    },
+    
+    updateBounds: function() {
+        if (!this.activated || this.isActive()) {
+            return;
+        }
+        var newbounds = new OpenLayers.Bounds();
+        var hasBounds = false;
+        
+        this.grid.searchStore.each(function(rec) {
+            var bbox = rec.get('bbox');
+            var cur_proj = new OpenLayers.Projection("EPSG:4326");
+            var map_proj = this.mapPanel.map.projection;
+            if (bbox) {
+                var lower = new OpenLayers.LonLat(bbox.miny, bbox.minx);
+                lower.transform(cur_proj, map_proj);
+                newbounds.extend(lower);
+                var upper = new OpenLayers.LonLat(bbox.maxy, bbox.maxx);
+                upper.transform(cur_proj, map_proj);
+                newbounds.extend(upper);
+                hasBounds = true;
+            }
+        }, this);
+        
+        if (hasBounds) {
+            this.map.zoomToExtent(newbounds);
+        }
+    },
+    
+    activate: function() {
+        this.mapPanel.layers.insert(0, this.bgManager.getBackgroundLayers()); 
+        this.map.setBaseLayer(this.mapPanel.layers[0]);
+        this.map.zoomToMaxExtent();
+        this.activated = true;
+        this.updateBounds();
+    }
+});
