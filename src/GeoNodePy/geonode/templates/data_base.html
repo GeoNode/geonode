@@ -8,12 +8,21 @@
 <script type="text/javascript">
 Ext.onReady(function(){
    {% autoescape off %}
+
+    var bbox = new GeoNode.BoundingBoxWidget({
+         proxy: "/proxy/?url=",
+         background: {{ background }},
+         renderTo: 'sidebar',
+    });
+
     var searchTable = new GeoNode.SearchTable({
         renderTo: 'layer_data',
         trackSelection: true,
         searchURL: '{% url geonode.maps.views.metadata_search %}',
+        constraints: [bbox],
         searchParams: {{init_search}}
     });
+    searchTable.hookupSearchButtons('sidebar');
     
     var dataCart = new GeoNode.DataCart({
       store: searchTable.dataCart,
@@ -25,6 +34,7 @@ Ext.onReady(function(){
       renderTo: 'data_ops'
     });
     
+    
     {% endautoescape %}
 });
 </script>
@@ -33,6 +43,8 @@ Ext.onReady(function(){
 {% block nav %} {% navbar data %} {% endblock %}
 
 {% block main %} 
+<h3>{% trans "Data Search Results" %}</h3>
+
 <div id="layer_data"></div>
 
 <br/>
@@ -59,13 +71,19 @@ Ext.onReady(function(){
 {% endblock %}
 
 {% block sidebar %}
-{% block sidebar_info %}
-<h2>{% trans "Browse Data" %}</h2>
-{% blocktrans %}
-<p>Here you can browse this GeoNode's data.</p>
-<p>Click the <b>+</b> on any row to show layer metadata or download in PDF, KML, GeoTIFF, or SHP.</p>
-{% endblocktrans %}
-{% endblock %}
+<div class="bbox-map"></div>
+<br/>
+<h3>{% trans "Refine Search" %}</h3>
+<div class="bbox-controls">
+  <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
+  <span class="explain">{% blocktrans %}Create a boundary on the map above to limit the search to data that includes features in a specified area.{% endblocktrans %}</span>
+  <div class="bbox-buttons"></div>
+</div>
+<br/>
+<div class="search-button"></div>
+
+<p></p>
+
 
 <h3>{% trans "Add Data" %}</h3>
 <p>{% trans "Click here to"  %} <a href="{% url geonode.maps.views.upload_layer%}">{% trans "upload a new layer"  %}</a></p>

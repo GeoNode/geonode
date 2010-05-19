@@ -365,7 +365,14 @@ a.download.zip {
     font-weight: bold;
 }
 
+.bbox-controls .bbox-enabled {
+    font-weight: bold;
+}
 
+.bbox-controls .explain {
+    font-size: 90%;
+    color: #afafaf;
+}
 
 
 .olControlAttribution{ 

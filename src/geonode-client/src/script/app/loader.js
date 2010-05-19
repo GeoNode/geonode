@@ -3,7 +3,6 @@
     var jsfiles = new Array(
         "/static/src/script/app/GeoExplorer.js",
         "/static/src/script/app/GeoNode/DataGrid.js",
-        "/static/src/script/app/GeoNode/SearchTable.js",
         "/static/src/script/app/Lang.js",
         "/static/src/script/app/Embed.js",
         "/static/src/script/app/LayerPreview.js",
@@ -13,7 +12,8 @@
         "/static/src/script/app/GeoExplorer/CapabilitiesGrid.js",
         "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js",
         "/static/src/script/app/GeoExplorer/GoogleEarthPanel.js",
-        "/static/src/script/app/GeoExplorer/NewSourceWindow.js"
+        "/static/src/script/app/GeoExplorer/NewSourceWindow.js",
+        "/static/src/script/app/GeoNode/SearchTable.js"
     );
 
     var appendable = !((/MSIE/).test(navigator.userAgent) ||
