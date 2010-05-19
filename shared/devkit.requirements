@@ -1,3 +1,4 @@
-src/owslib/
-src/gsconfig.py
-src/GeoNodePy
+-e svn+http://svn.gispython.org/svn/gispy/OWSLib/trunk/#egg=OWSLib
+-e git+git://github.com/dwins/gsconfig.py.git#egg=gsconfig.py
+-e svn+http://svn.opengeo.org/CAPRA/GeoNode/trunk/src/GeoNodePy/#egg=GeoNodePy
+
