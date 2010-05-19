@@ -646,7 +646,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                                         var rec = stylesDialog.selectedStyle;
                                         layer.mergeNewParams({
                                             "STYLES": rec.get("userStyle").isDefault === true ?
-                                                "" : rec.get("name")
+                                                "" : rec.get("name"),
+                                            "_dc": Math.random()
                                         });
                                         busyMask.hide();
                                         prop.close();
