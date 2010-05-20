@@ -3,6 +3,9 @@ Ext.namespace("GeoNode");
 
 GeoNode.DataCartOps = Ext.extend(Ext.util.Observable, {
 
+    failureText: 'UT: Operation Failed',
+    noLayersText: 'UT: No layers are currently selected.',
+
     constructor: function(config) {
         Ext.apply(this, config);
         this.doLayout();
@@ -16,7 +19,12 @@ GeoNode.DataCartOps = Ext.extend(Ext.util.Observable, {
         createMapLink.on('click', function(evt) {
             evt.preventDefault();
             var layers = this.cart.getSelectedLayerIds();
-            this.createNewMap(layers);
+            if (layers && layers.length) {
+                this.createNewMap(layers);
+            }
+            else {
+                Ext.MessageBox.alert(this.failureText, this.noLayersText);
+            }
         }, this);
         
         batch_links = el.query('a.batch-download');
@@ -25,8 +33,13 @@ GeoNode.DataCartOps = Ext.extend(Ext.util.Observable, {
            bel.on('click', function(e, t, o) {
                e.preventDefault();
                var layers = this.cart.getSelectedLayerIds();
-               var format = Ext.get(t).getAttribute('href').substr(1);
-               this.batchDownload(layers, format);
+               if (layers && layers.length) {
+                   var format = Ext.get(t).getAttribute('href').substr(1);
+                   this.batchDownload(layers, format);
+               }
+               else {
+                   Ext.MessageBox.alert(this.failureText, this.noLayersText);
+               }
            }, this);
         }
     },
@@ -46,10 +59,114 @@ GeoNode.DataCartOps = Ext.extend(Ext.util.Observable, {
     },
     
     batchDownload: function(layerIds, format) {
-        alert("not implemented");
+        // alert('Batch Download');
+        new GeoNode.BatchDownloadWidget({
+            layers: layerIds,
+            format: format,
+            begin_download_url: this.begin_download_url,
+            stop_download_url: this.stop_download_url,
+            download_url: this.download_url
+        });
     }
     
 });
+
+
+GeoNode.BatchDownloadWidget = Ext.extend(Ext.util.Observable, {
+
+    downloadingText: 'UT: Downloading...',
+    cancelText: 'UT: Cancel',
+    windowMessageText: 'UT: Please wait',
+    
+    constructor: function(config) {
+        Ext.apply(this, config);
+        this.beginDownload();
+    },
+    
+    beginDownload: function() {
+        // XXX could confirm download here. 
+        var this_widget = this;
+        Ext.Ajax.request({
+           url: this.begin_download_url,
+           method: 'POST',
+           params: {layer: this.layers, format: this.format},
+           success: function(result) {
+               var result = Ext.util.JSON.decode(result.responseText);
+               this_widget.monitorDownload(result.id);
+           },
+           failure: function(result) {
+               //console.log(result);
+           }
+        });
+    },
+    
+    monitorDownload: function(download_id) {
+        var checkStatus; 
+        var this_widget = this;
+                
+        var pb = new Ext.ProgressBar({
+            text: this.downloadingText
+        });
+
+        var cancel_download = function() { 
+            Ext.Ajax.request({
+                url : this_widget.stop_download_url + download_id,
+                method: "GET",
+                success: function(result) {
+                    clearInterval(checkStatus);
+                },
+                failure: function(result) { 
+                    console.log(result); 
+                    clearInterval(checkStatus); // break if something fails
+                } 
+        })};
+        
+        var win = new Ext.Window({
+            width: 250,
+            height: 100,
+            plain: true,
+            modal: true,
+            closable: false,
+            hideBorders: true,
+            items: [pb],
+            buttons: [
+                {text: this.cancelText,
+                handler: function() {
+                    cancel_download();
+                    win.hide();
+                }}
+            ]
+        });
+
+
+        var update_progress = function() { 
+            Ext.Ajax.request({ 
+                url : this_widget.begin_download_url + '?id='+ download_id,
+                method: "GET",
+                success: function(result) {
+                    var process = Ext.util.JSON.decode(result.responseText);
+                    if (process["process"]["status"] === "FINISHED"){ 
+                        clearInterval(checkStatus); 
+                        pb.updateProgress(1,"Done....",true);
+                        win.close();
+                        location.href = this_widget.download_url + download_id;
+                    }
+                    else {
+                        pb.updateProgress(process["process"]["progress"]/100, this_widget.downloadingText,true); 
+                    }
+                },
+                failure: function(result) { 
+                    //console.log(result); 
+                    clearInterval(checkStatus);
+                    win.close();
+                }});
+        };
+        checkStatus = setInterval(update_progress, 1000);
+        win.show();
+    }
+     
+});
+
 
 GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
     
