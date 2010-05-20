@@ -1,5 +1,5 @@
 from geonode.maps.models import Map, Layer, MapLayer
-from geonode.maps.forms import MetadataForm
+from geonode.maps.forms import ContactForm, MetadataForm
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -401,11 +401,13 @@ def _describe_layer(request, layer):
     if request.user.is_authenticated():
         if request.method == "GET":
             resource = layer.resource
-            form = MetadataForm({
+            md_form = MetadataForm({
                 "title": resource.title,
                 "abstract": resource.abstract,
                 "keywords": ", ".join(resource.keywords)
             })
+            poc_form = ContactForm()
+            metadata_provider_form = ContactForm()
         elif request.method == "POST":
             form = MetadataForm(request.POST)
             if form.is_valid():
@@ -417,7 +419,9 @@ def _describe_layer(request, layer):
                 return HttpResponseRedirect("/data/" + layer.typename)
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
-            "form": form
+            "md_form": md_form,
+            "poc_form": poc_form,
+            "metadata_provider_form": metadata_provider_form
         }))
     else: 
         return HttpResponse("Not allowed", status=403)

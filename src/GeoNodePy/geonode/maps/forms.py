@@ -1,4 +1,8 @@
 from django import forms
+from django.forms.util import flatatt
+from django.utils.encoding import force_unicode
+from django.utils.html import conditional_escape
+from django.utils.safestring import mark_safe
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -86,57 +90,24 @@ def require(*args):
 
 class Contact(object): pass
 
-class Proxy(object):
-    def __init__(self, wrapped):
-        self.__wrapped = wrapped
-
-    def __getattr__(self, name):
-        return getattr(self.__wrapped, name)
-
-class LabelledWidget(Proxy):
-    def __init__(self, label, wrapped):
-        super(LabelledWidget, self).__init__(wrapped)
-        self.label = label
-        self.__wrapped = wrapped
+class LabelledInput(forms.Widget):
+    def __init__(self, name, attrs=None):
+        # The 'rows' and 'cols' attributes are required for HTML correctness.
+        self.name = name
+        super(LabelledInput, self).__init__(attrs)
 
     def render(self, name, value, attrs=None):
-        label_html = "<label for='%s'>%s</label>" % (name, self.label) 
-        return "<div>" + label_html + self.__wrapped.render(name, value, attrs) + "</div>"
+        if value is None: value = ''
+        final_attrs = self.build_attrs(attrs)
+        return mark_safe( u'<label for="{id}">{name}</label> <input name="{name}"{atts}>{value}</input>'.format(
+            id = final_attrs.get(id, ""),
+            name = self.name,
+            atts = flatatt(final_attrs),
+            value = conditional_escape(force_unicode(value))
+        ))
 
-class ContactWidget(forms.MultiWidget):
 
-    def __init__(self, attrs=None, date_format=None, time_format=None):
-        name = LabelledWidget("Name", forms.TextInput(attrs))
-        organization = LabelledWidget("Organization", forms.TextInput(attrs))
-        position = LabelledWidget("Position", forms.TextInput(attrs))
-        voice = LabelledWidget("Phone Number (Voice)", forms.TextInput(attrs))
-        facsimile = LabelledWidget("Phone Number (Fax)", forms.TextInput(attrs))
-        delivery_point = LabelledWidget("Delivery Point", forms.TextInput(attrs))
-        city = LabelledWidget("City", forms.TextInput(attrs))
-        administrative_area = LabelledWidget("Administrative Area", forms.TextInput(attrs))
-        postal_code = LabelledWidget("Postal Code", forms.TextInput(attrs))
-        country = LabelledWidget("Country", forms.TextInput(attrs))
-        email = LabelledWidget("Email", forms.TextInput(attrs))
-        role = LabelledWidget("Role", forms.Select(attrs, [(x, x) for x in ROLE_VALUES]))
-
-        if date_format:
-            self.date_format = date_format
-        if time_format:
-            self.time_format = time_format
-        widgets = (
-            name, organization, position, voice, facsimile,
-            delivery_point, city, administrative_area, postal_code,
-            country, email, role
-        )
-        super(ContactWidget, self).__init__(widgets, attrs)
-
-    def decompress(self, value): 
-        if value is None: 
-            return [None for x in CONTACT_FIELDS]
-        else:
-            return [getattr(value, name) for name in CONTACT_FIELDS]
-
-class ContactField(forms.MultiValueField):
+class ContactForm(forms.Form):
     name = forms.CharField(300)
     organization = forms.CharField(300)
     position = forms.CharField(300, required=False)
@@ -150,37 +121,6 @@ class ContactField(forms.MultiValueField):
     email = forms.CharField(300, required=False)
     role = forms.ChoiceField(choices= [(x, x) for x in ROLE_VALUES])
 
-    fields = [
-        name,
-        organization,
-        position,
-        voice,
-        facsimile,
-        delivery_point,
-        city,
-        administrative_area,
-        postal_code,
-        country,
-        email,
-        role
-    ]
-
-    widget = ContactWidget
-
-    def compress(values): 
-        if not (values[0] or values[1]):
-            raise forms.ValidationError("The contact information must "
-                "include either an individual or organization name, or "
-                "both."
-            )
-
-        values = zip(CONTACT_FIELDS, values)
-
-        contact = Contact()
-        for name, value in values:
-            setattr(contact, name, value)
-        return contact
-
 
 class MetadataForm(forms.Form):
     title = forms.CharField(300)
@@ -189,7 +129,6 @@ class MetadataForm(forms.Form):
     edition = forms.CharField(300, required=False)
     abstract = forms.CharField(5000, widget=forms.Textarea)
     purpose = forms.CharField(300, required=False)
-    poc = ContactField()
     maintenance_frequency = forms.ChoiceField(choices = [(x, x) for x in UPDATE_FREQUENCIES])
     keywords = forms.CharField(300, required=False)
     keywords_region = forms.ChoiceField() #TODO: Get list of country codes
@@ -208,4 +147,5 @@ class MetadataForm(forms.Form):
 
     data_quality_statement = forms.CharField(5000, required=False)
 
-    metadata_provider = ContactField()
+    # poc - use a ContactForm
+    # metadata_provider - use a ContactForm
