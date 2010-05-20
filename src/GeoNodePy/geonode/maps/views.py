@@ -258,8 +258,12 @@ def map_download(request, mapid):
          "geoserver" : settings.GEOSERVER_BASE_URL,
          "site" : settings.SITEURL
     }))
+    
 
 def check_download(request):
+    """
+    this is an endpoint for monitoring map downloads
+    """
     try:
         layer = request.session["map_status"] 
         if type(layer) == dict:
@@ -274,6 +278,67 @@ def check_download(request):
     except ValueError:
         print "No layer_status in your session"
     return HttpResponse(content=content,status=status)
+
+
+
+def batch_layer_download(request):
+    """
+    batch download a set of layers
+    
+    POST - begin download
+    GET?id=<download_id> monitor status
+    """
+
+    # currently this just piggy-backs on the map download backend 
+    # by specifying an ad hoc map that contains all layers requested
+    # for download. assumes all layers are hosted locally.
+    # status monitoring is handled slightly differently.
+    
+    if request.method == 'POST':
+
+        def layer_son(layer):
+            return {
+                "name" : layer.typename, 
+                "service" : layer.service_type, 
+                "metadataURL" : "http://localhost/fake/url/{name}".format(name=layer.name),
+                "serviceURL" : "http://localhost/%s" %layer.name,
+            } 
+            
+        
+        fake_map = { 
+            "map" : { 
+                "title" : "Batch Download", 
+                "abstract" : "Collection of layers selected from GeoNode", 
+                "author" : "The GeoNode Team",
+            }, 
+            "layers" : []
+        }
+        
+
+        for layer_id in request.POST.getlist('layer'):
+            try:
+                layer = Layer.objects.get(typename=layer_id)
+                
+                if layer is not None:
+                    fake_map['layers'].append(layer_son(layer))
+            except ObjectDoesNotExist:
+                # bad layer, skip 
+                continue
+
+        url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
+        resp, content = h.request(url,'POST',body=json.dumps(fake_map))
+        return HttpResponse(content, status=resp.status)
+
+    
+    if request.method == 'GET':
+        # essentially, this just proxies back to geoserver
+        download_id = request.GET.get('id', None)
+        if download_id is None:
+            return HttpResponse(status=404)
+
+        url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL, download_id)
+        resp,content = h.request(url,'GET')
+        return HttpResponse(content, status=resp.status)
 
 
 @login_required
@@ -877,5 +942,9 @@ def browse_data(request):
     return render_to_response('data.html', RequestContext(request, {
         'init_search': json.dumps(request.GET or {}),
         'background': json.dumps(settings.MAP_BASELAYERS[settings.SEARCH_WIDGET_BASELAYER_INDEX]),
-        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+         "site" : settings.SITEURL
     }))
+    
+    
+    

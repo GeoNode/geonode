@@ -172,6 +172,23 @@ if (GeoNode && GeoNode.DataCart) {
         clearAllButtonText: gettext('Clear All') 
     });
 }
+
+if (GeoNode && GeoNode.DataCartOps) {
+    Ext.apply(GeoNode.DataCartOps.prototype, {
+        failureText: gettext('Operation Failed'),
+        noLayersText: gettext('No layers are currently selected.')
+    });
+}
+
+
+if (GeoNode && GeoNode.BatchDownloadWidget) {
+    Ext.apply(GeoNode.BatchDownloadWidget.prototype, {
+        downloadingText: gettext('Downloading...'),
+        cancelText: gettext('Cancel'),
+        windowMessageText: gettext('Please wait')
+    });
+}
+
 if (GeoNode && GeoNode.BoundingBoxWidget) {
     Ext.apply(GeoNode.BoundingBoxWidget.prototype, {
         drawButtonText: gettext('Draw'),
@@ -179,3 +196,4 @@ if (GeoNode && GeoNode.BoundingBoxWidget) {
         zoomSliderTipText: gettext("Zoom Level")
     })
 }
+
