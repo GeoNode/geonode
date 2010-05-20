@@ -165,6 +165,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     searchButtonText: 'UT: Search',
     showingText: 'UT: Showing',
     loadingText: 'UT: Loading',
+    permalinkText: 'UT: permalink',
 
     constructor: function(config) {
         this.addEvents('load'); 
@@ -225,26 +226,21 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     
     doSearch: function() {
         /* updates parameters from constraints and 
-           permforms a new search */ 
-        var params = {};
-        params.q = this.searchParams.q;
-        params.start = 0;
-        params.limit = this.searchParams.limit;
-        
+           permforms a new search */         
         if (this.constraints) {
             for (var i = 0; i < this.constraints.length; i++) {
-                this.constraints[i].applyConstraint(params);
+                this.constraints[i].applyConstraint(this.searchParams);
             }
         }
-        // this.updatePermalink(params);
-        this.searchParams = params;
         this._search(this.searchParams);
     },
+    
     
     _search: function(params) {
        /* search with given parameters */  
         this.disableControls();
         this.searchStore.load({params: params});
+        this.updatePermalink(params);
     },
 
     loadNextBatch: function() {
@@ -291,6 +287,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.pagerLabel.setText(this.showingText + ' ' + minItem  +
                                 '-' + maxItem + ' ' + this.ofText + ' ' + 
                                 total);
+    },
+
+    
+    updatePermalink: function() {
+        if (this.permalink) {
+            this.permalink.href = Ext.urlAppend(this.permalinkURL, Ext.urlEncode(this.searchParams));
+        }
     },
 
     updateQuery: function() {
@@ -383,6 +386,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         name: 'search',
                         allowBlank:true
                      });
+        
         this.queryInput.on('specialkey', function(field, e) {
             if (e.getKey() == e.ENTER) {
                 this.updateQuery();
@@ -403,11 +407,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                  right: 10
              }}),
              items: [this.queryInput,
-                     searchButton
+                     searchButton,
+                     {'html': '<a href="" class="permalink">' + this.permalinkText + '</a>', border: false}
              ]
          });
          searchForm.render(input_el);
 
+         this.permalink = Ext.get(input_el).query('a.permalink')[0];
          this.prevButton =  new Ext.Button({text: this.previousText});
          this.prevButton.on('click', this.loadPrevBatch, this);
     
@@ -430,6 +436,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
           });
           controls.render(controls_el);
           this.disableControls();
+
+          if (this.searchParams.q) {
+              this.queryInput.setValue(this.searchParams.q);
+          }
+          this.updatePermalink();
 }
 
 });
@@ -676,6 +687,7 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     constructor: function(config) {
         Ext.apply(this, config);
         this.activated = false;
+        this.doLayout();
     },
 
     doLayout: function() {
@@ -702,7 +714,6 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             ]
         });
 
-
         var constraintLayer = new OpenLayers.Layer.Vector("Constraint");
         this.map.addLayers([constraintLayer]);
         
@@ -727,10 +738,11 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
                 })
             ]
         });
+        this.map.zoomToMaxExtent();
 
         
-        var drawButton = new Ext.Button({text: this.drawButtonText, enableToggle: true});
-        drawButton.on('toggle', function(button, pressed) {
+        this.drawButton = new Ext.Button({text: this.drawButtonText, enableToggle: true});
+        this.drawButton.on('toggle', function(button, pressed) {
             if (pressed) {
                 this.constraintTool.activate();
             }
@@ -739,8 +751,8 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             }
         }, this);
 
-        var clearButton = new Ext.Button({text: this.clearButtonText});
-        clearButton.on('click', function() {
+        this.clearButton = new Ext.Button({text: this.clearButtonText});
+        this.clearButton.on('click', function() {
             this.constraintTool.clearConstraint();
         }, this);
         
@@ -756,24 +768,19 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
                      right: 10
                   }
              }),
-             items: [drawButton, clearButton]
+             items: [this.drawButton, this.clearButton]
          });
          controlsForm.render(controls_el);
 
-         drawButton.disable();
-         clearButton.disable();         
          this.enabledCB = el.query('.bbox-enabled input')[0];        
-         this.enabledCB.checked = false;
+         this.disable();
+         
          Ext.get(this.enabledCB).on('click', function() {
             if (this.enabledCB.checked == true) {
-                drawButton.enable();
-                clearButton.enable();
+                this.enable();
             }
             else {
-                drawButton.toggle(false);
-                drawButton.disable();
-                clearButton.disable();
-                this.constraintTool.clearConstraint();
+                this.disable();
             }
          }, this);
 
@@ -784,10 +791,6 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
          });
          gxp.util.dispatch(this.bgManager.getBackgroundLoaders(), this.activate, this);
     
-         this.grid.on('load', function() {
-            // recompute bounds when search results change...
-            this.updateBounds();
-         }, this);
     },
     
     isActive: function() {
@@ -806,22 +809,34 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             bounds.transform(this.mapPanel.map.projection, new OpenLayers.Projection("EPSG:4326"));
             query.bbox = bounds.toBBOX();
         }
+        else {
+            // no constraint, don't include.
+            delete query.bbox;
+        }
     },
     
     initFromQuery: function(grid, query) {  
+        this.grid = grid;
+        this.grid.on('load', function() {
+           // recompute bounds when search results change...
+           this.updateBounds();
+        }, this);
+
+
         if (query.bbox) {
             var bounds = OpenLayers.Bounds.fromString(query.bbox);
             if (bounds) {
                 bounds.transform(new OpenLayers.Projection("EPSG:4326"), this.mapPanel.map.projection);
                 this.constraintTool.setConstraint(bounds);
+                this.enable();
+                this.map.zoomToExtent(bounds, true);
+                this.map.zoomOut(2);
             }
         }
-        this.grid = grid;
-        this.doLayout();
     },
     
     updateBounds: function() {
-        if (!this.activated || this.isActive()) {
+        if (!this.activated || this.isActive() || !this.grid) {
             return;
         }
         var newbounds = new OpenLayers.Bounds();
@@ -850,8 +865,21 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     activate: function() {
         this.mapPanel.layers.insert(0, this.bgManager.getBackgroundLayers()); 
         this.map.setBaseLayer(this.mapPanel.layers[0]);
-        this.map.zoomToMaxExtent();
         this.activated = true;
         this.updateBounds();
+    },
+    
+    enable: function() {
+        this.enabledCB.checked = true;
+        this.drawButton.enable();
+        this.clearButton.enable();
+    }, 
+
+    disable: function() {
+        this.enabledCB.checked = false;
+        this.drawButton.toggle(false);
+        this.drawButton.disable();
+        this.clearButton.disable();
+        this.constraintTool.clearConstraint();
     }
 });

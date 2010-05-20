@@ -338,6 +338,14 @@ a.download.zip {
   background-image: url(img/geosilk/page_white_vector.png)
 }
 
+a.permalink { 
+  text-decoration: none;  
+  background-repeat:no-repeat;
+  padding-left: 18px;
+  background-image: url(img/silk/link.png);
+}
+
+
 #data_ops ul li {
     list-style-type: none;
     padding-bottom: 10px;
