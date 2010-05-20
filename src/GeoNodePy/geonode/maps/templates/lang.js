@@ -144,7 +144,8 @@ if (GeoNode && GeoNode.SearchTable) {
         noResultsText: gettext('Your search did not match any items.'),
         searchButtonText: gettext('Search'),
         showingText: gettext('Showing'),
-        loadingText: gettext("Loading...")
+        loadingText: gettext("Loading..."),
+        permalinkText: gettext('permalink')
     });
 }
 if (GeoNode && GeoNode.SearchTableRowExpander) {

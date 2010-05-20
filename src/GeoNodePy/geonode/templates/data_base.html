@@ -18,6 +18,7 @@ Ext.onReady(function(){
     var searchTable = new GeoNode.SearchTable({
         renderTo: 'layer_data',
         trackSelection: true,
+        permalinkURL: '{% url geonode.maps.views.browse_data %}',
         searchURL: '{% url geonode.maps.views.metadata_search %}',
         constraints: [bbox],
         searchParams: {{init_search}}
