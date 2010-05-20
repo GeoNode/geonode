@@ -337,6 +337,9 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             url: capsURL,
             success: function(request){
                 var store = new GeoExt.data.WMSCapabilitiesStore({
+                    layerOptions: {
+                        buffer: 0
+                    },
                     fields: [
                         {name: "name", type: "string"},
                         {name: "abstract", type: "string"},
