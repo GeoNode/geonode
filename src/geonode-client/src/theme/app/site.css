@@ -459,3 +459,32 @@ display: none;
     z-index: 3;
     color: #777;
 }
+
+div#main form ul.form {
+    list-style-type: none;
+}
+div#main form ul.form li {
+    margin-bottom: 1.5em;
+		clear: both;
+}
+div#main form ul.form li label {
+		display: block;
+		font-weight: bold;
+}
+div#main form ul.form li input {
+}
+div#main form ul.form ul.errorlist {
+    list-style-type: none;
+		margin: 0;
+		margin-top: 2px;
+		float: right;
+}
+div#main form ul.form fieldset {
+		border: 1px solid #333;
+		padding: 10px;
+		margin-bottom: 10px
+}
+div#main form ul.form fieldset legend{
+		font-weight: bold;
+		padding: 0 4px;
+}
