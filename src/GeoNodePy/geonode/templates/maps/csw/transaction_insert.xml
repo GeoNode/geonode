@@ -215,10 +215,10 @@
                     <gco:Decimal>{{layer.resource.latlon_bbox.0}}</gco:Decimal>
                   </gmd:westBoundLongitude>
                   <gmd:eastBoundLongitude>
-                    <gco:Decimal>{{layer.resource.latlon_bbox.2}}</gco:Decimal>
+                    <gco:Decimal>{{layer.resource.latlon_bbox.1}}</gco:Decimal>
                   </gmd:eastBoundLongitude>
                   <gmd:southBoundLatitude>
-                    <gco:Decimal>{{layer.resource.latlon_bbox.1}}</gco:Decimal>
+                    <gco:Decimal>{{layer.resource.latlon_bbox.2}}</gco:Decimal>
                   </gmd:southBoundLatitude>
                   <gmd:northBoundLatitude>
                     <gco:Decimal>{{layer.resource.latlon_bbox.3}}</gco:Decimal>

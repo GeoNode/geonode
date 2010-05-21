@@ -880,33 +880,15 @@ def _build_search_result(rec, layer):
     result['abstract'] = rec.abstract
     result['keywords'] = [x for x in rec.subjects if x]
     
-    # 
     # Take BBOX from GeoNetwork Result...
-    # 
-    # XXX Disabled until reliable srs info can be determined 
-    # these almost all fail because the urns are 
-    # not specific enough. 
-    # 
-    # if rec.bbox is not None:
-    #     # transform bbox to EPSG:4326 (eh I think...)
-    #     try:
-    #         bbox_srs = gdal.SpatialReference(crs)
-    #         out_srs = gdal.SpatialReference('EPSG:4326')
-    #         ct = gdal.CoordTransform(bbox_srs, out_srs)
-    #         pt0 = gdal.OGRGeometry('POINT(%s %s)' % (rec.bbox.minx, rec.bbox.miny))
-    #         pt0.transform(ct)
-    #         pt1 = gdal.OGRGeometry('POINT(%s %s)' % (rec.bbox.maxx, rec.bbox.maxy))
-    #         pt1.transform(ct)
-    #     
-    #         result['bbox'] = {
-    #             'minx': pt0.x,
-    #             'miny': pt0.y,
-    #             'maxx': pt1.x,
-    #             'maxy': pt1.y
-    #         }
-    #     except:
-    #         # oh well, garbage in, garbage out...
-    #         pass
+    if rec.bbox is not None and rec.bbox.crs == 'urn:ogc:def:crs:::WGS 1984':
+        # slight workaround for ticket 530
+        result['bbox'] = {
+            'minx': min(rec.bbox.minx, rec.bbox.maxx),
+            'maxx': max(rec.bbox.minx, rec.bbox.maxx),
+            'miny': min(rec.bbox.miny, rec.bbox.maxy),
+            'maxy': max(rec.bbox.miny, rec.bbox.maxy)
+        }
             
     if layer is None:
         # be semi-graceful with data that doesn't correspond
@@ -923,16 +905,6 @@ def _build_search_result(rec, layer):
                                  'href': layer.publishing.attribution_link or ''}    
         result['download_links'] = layer.download_links()
         result['metadata_links'] = layer.metadata_links
-
-        bbox = layer.resource.latlon_bbox
-        if bbox is not None:
-            result['bbox'] = {
-                'miny': bbox[0],
-                'maxy': bbox[1],
-                'minx': bbox[2],
-                'maxx': bbox[3]
-            }
-
 
     return result
     
