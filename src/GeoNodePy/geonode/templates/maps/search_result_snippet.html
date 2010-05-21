@@ -1,0 +1,45 @@
+{% load i18n %}
+ 
+<p><b>{% trans "Abstract:" %}</b>
+{% if rec.abstract %}
+  {{rec.abstract}}
+{% else %}
+<em>{% trans "No abstract is provided for this layer." %}</em>
+{% endif %}
+</p>
+
+<p><b>{% trans "Provided by:" %}</b>
+{% if rec.attribution.title and rec.attribution.href %}  
+  <a href="{{rec.attribution.href}}">{{rec.attribution.title}}</a>
+{% else %}
+<em>{% trans "No attribution information is provided for this layer." %}</em>
+{% endif %}
+</p>
+
+<p><b>{% trans "Metadata Links:" %}</b>
+{% for link in rec.metadata_links %}
+    <a href="{{link.2}}">{{link.1}}</a>
+{% empty %}
+    <em>{% trans "No metadata URLs are defined for this layer." %}</em>
+{% endfor %}
+</p>
+
+<p><b>{% trans "Keywords:" %}</b>
+{% for kw in rec.keywords %}
+  {{kw}}{% if not forloop.last %}, {% endif %}
+{% empty %}
+<em>{% trans "No keywords are listed for this layer." %}</em>
+{% endfor %}
+</p>
+
+<p><b>{% trans "Download:" %}</b>
+{% for link in rec.download_links %}
+  <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
+{% empty %}
+<em>{% trans "No download URLs are defined for this layer." %}</em>
+{% endfor %}
+</p>
+
+{% if rec.detail %}
+<p><a href="{{rec.detail}}">{% trans "Click here for more information about this layer." %}</a></p>
+{% endif %}

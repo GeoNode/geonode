@@ -875,6 +875,16 @@ def _metadata_search(query, start, limit, **kw):
     
     return result
 
+def search_result_detail(request):
+    uuid = request.GET.get("uuid")
+    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+    csw = CatalogueServiceWeb(csw_url);
+    csw.getrecordbyid([uuid])
+    doc = csw._records.find(nspath('Record', namespaces['csw']))
+    rec = _build_search_result(doc)
+    return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
+        'rec': rec
+    }))
 
 def _build_search_result(doc):
     """
@@ -887,6 +897,7 @@ def _build_search_result(doc):
     rec = CswRecord(doc)
     result = {}
     result['title'] = rec.title
+    result['uuid'] = rec.identifier
     result['abstract'] = rec.abstract
     result['keywords'] = [x for x in rec.subjects if x]
     result['detail'] = rec.uri or ''
