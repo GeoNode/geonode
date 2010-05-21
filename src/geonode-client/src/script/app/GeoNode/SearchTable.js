@@ -964,10 +964,10 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             var cur_proj = new OpenLayers.Projection("EPSG:4326");
             var map_proj = this.mapPanel.map.projection;
             if (bbox) {
-                var lower = new OpenLayers.LonLat(bbox.miny, bbox.minx);
+                var lower = new OpenLayers.LonLat(bbox.minx, bbox.miny);
                 lower.transform(cur_proj, map_proj);
                 newbounds.extend(lower);
-                var upper = new OpenLayers.LonLat(bbox.maxy, bbox.maxx);
+                var upper = new OpenLayers.LonLat(bbox.maxx, bbox.maxy);
                 upper.transform(cur_proj, map_proj);
                 newbounds.extend(upper);
                 hasBounds = true;
