@@ -20,6 +20,7 @@ Ext.onReady(function(){
         trackSelection: true,
         permalinkURL: '{% url geonode.maps.views.browse_data %}',
         searchURL: '{% url geonode.maps.views.metadata_search %}',
+        layerDetailURL: '{% url geonode.maps.views.search_result_detail %}',
         constraints: [bbox],
         searchParams: {{init_search}}
     });

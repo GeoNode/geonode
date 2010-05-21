@@ -302,6 +302,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             fields: [
                 {name: 'name', type: 'string'},
                 {name: 'title', type: 'string'},
+                {name: 'uuid', type: 'string'},
                 {name: 'abstract', type: 'string'},
                 {name: 'keywords'},
                 {name: 'detail', type: 'string'},
@@ -446,7 +447,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var table_el = el.query('.search-table')[0];
         var controls_el = el.query('.search-controls')[0];
         
-        var expander = new GeoNode.SearchTableRowExpander({}); 
+        var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL}); 
 
 
         tableCfg = {
@@ -563,111 +564,56 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 });
 
 GeoNode.SearchTableRowExpander = Ext.extend(Ext.grid.RowExpander, {
-
-    abstractText: "UT:Abstract:",
-    abstractEmptyText: "UT: No abstract is provided for this layer.",
-    attributionEmptyText: "UT: No attribution information is provided for this layer.",
-    attributionText: "UT:Provided by:",
-    downloadText : "UT:Download:",
-    downloadEmptyText: 'UT: No download URLs are defined for this layer.',
-    keywordEmptyText: "UT: No keywords are listed for this layer.",
-    keywordText: "UT:Keywords:",
-    metadataEmptyText: 'UT: No metadata URLs are defined for this layer.',
-    metadataText: "UT:Metadata Links:",
-    dataDetailText: "UT: Details:",
-
-    constructor: function (config) {
-        config.tpl = config.tpl || this.getDefaultTemplate();
-
-        var expander, templateLib;
-        expander = this;
-        templateLib = this.templateLibrary;
-        templateLib.metadataEmptyText = this.metadataEmptyText;
-        templateLib.keywordEmptyText = this.keywordEmptyText;
-        templateLib.attributionEmptyText = this.attributionEmptyText;
-        templateLib.downloadEmptyText = this.downloadEmptyText;
-        templateLib.abstractEmptyText = this.abstractEmptyText;
-        templateLib.dataDetailText = this.dataDetailText;
-        Ext.apply(config.tpl, templateLib);
-
+    errorText: 'UT: Unable to fetch layer details.',
+    loadingText: 'UT: Loading...',
+    
+    constructor: function(config) {
+        this.fetchURL = config.fetchURL; 
         GeoNode.SearchTableRowExpander.superclass.constructor.call(this, config);
     },
 
-    getDefaultTemplate: function() {
-        return new Ext.Template(
-            '<p><b>' + this.abstractText + '</b> {abstract:this.getAbstract}</p>' +
-            '<p><b>' + this.attributionText + '</b> {attribution:this.attributionLink}</p>'  +
-            '<p><b>' + this.metadataText + '</b> {metadata_links:this.metadataLinks}</p>'  +
-            '<p><b>' + this.keywordText + '</b> {keywords:this.keywordList}</p>'  +
-            '<p><b>' + this.downloadText + '</b> {download_links:this.downloadLinks}</p>' +
-            '<p>{detail:this.detailLink}</p>'
-        );
+    getRowClass : function(record, rowIndex, p, ds){
+        p.cols = p.cols-1;
+        return this.state[record.id] ? 'x-grid3-row-expanded' : 'x-grid3-row-collapsed';
     },
 
-    templateLibrary: {
+    fetchBodyContent: function(body, record, index) {
+        if(!this.enableCaching){
+            this._fetchBodyContent(body, record, index);
+        }
+        var content = this.bodyContent[record.id];
+        if(!content){
+            this._fetchBodyContent(body, record, index);
+        }
+        else {
+            body.innerHTML = content;
+        }
+    },
+    
+    _fetchBodyContent: function(body, record, index) {
+        body.innerHTML = this.loadingText;
+        var template_url = this.fetchURL + '?uuid=' + record.get('uuid');
+        var this_expander = this;
+        Ext.Ajax.request({
+            url : template_url,
+            method: "GET",
+            success: function(result) {
+                var content = result.responseText;
+                body.innerHTML = content;
+                this_expander.bodyContent[record.id] = content;
+            },
+            failure: function(result) {
+                body.innerHTML = this_expander.errorText;
+            } 
+        });
+    },
 
-
-        getAbstract: function(abstract, values) {
-            return abstract || this.abstractEmptyText;
-        },
-
-        metadataLinks: function (metadataURLs, values) {
-            if (metadataURLs === null  || 
-                metadataURLs.length === 0) 
-            {
-                return "<em>" + this.metadataEmptyText + "</em>"; 
-            } else {
-                var i, links, len;
-                links = [];
-                for (i = 0, len = metadataURLs.length; i < len; i++) {
-                    links.push("<a href=\"" + metadataURLs[i][2] + "\"> " +
-                        metadataURLs[i][1] + "</a>");
-                }
-                return links.join(", ");
-            }
-        },
-        
-        downloadLinks: function(downloadURLs, values) {  
-            if (downloadURLs === null  || 
-                downloadURLs.length === 0) 
-            {
-                return "<em>" + this.downloadEmptyText + "</em>"; 
-            } else {
-                var i, links, len;
-                links = [];
-                for (i = 0, len = downloadURLs.length; i < len; i++) {
-                    links.push("<a class=\"download " + downloadURLs[i][0] + "\" href=\"" + downloadURLs[i][2] + "\"> " +
-                        downloadURLs[i][1] + "</a>");
-                }
-                return links.join(", ");
-            }
-        },
-        
-        keywordList: function (keywords, values) {
-            if (keywords === null ||
-                keywords.length === 0) 
-            {
-                return "<em>" + this.keywordEmptyText + "</em>"; 
-            } else {
-                return keywords.join(", ");
-            }
-        },
-
-        attributionLink: function (attribution, values) {
-            if (attribution == null || attribution.href == null || attribution.href == '') {
-                return "<em>" + this.attributionEmptyText + "</em>";
-            } else {
-                return "<a href=\"" + attribution.href + "\"> " + attribution.title + "</a>";
-            }
-        },
-        
-        detailLink: function(detail, values) {
-            if (detail) {
-                return '<a href="' + detail + '">' + this.dataDetailText + '</a>';
-            }
-            else {
-                return '';
-            }
+    beforeExpand : function(record, body, rowIndex){
+        if(this.fireEvent('beforeexpand', this, record, body, rowIndex) !== false){
+            this.fetchBodyContent(body, record, rowIndex);
+            return true;
+        }else{
+            return false;
         }
     }
 });
