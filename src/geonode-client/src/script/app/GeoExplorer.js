@@ -236,6 +236,10 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                         }
                     }
                 });
+                // try to clean up
+                try {
+                    options.success && options.success.call(options.scope);
+                } catch(e) {}
             },
             scope: this
         });
@@ -656,8 +660,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
                                         prop.close();
                                     }
                                     styleWriter.write({
-                                        success: updateLayer,
-                                        scope: this
+                                        success: updateLayer
                                     });
                                 }
                             }]
