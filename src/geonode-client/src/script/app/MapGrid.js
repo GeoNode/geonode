@@ -92,7 +92,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
             "rowdblclick": function(grid, rowIndex, evt) {
                 var rec = grid.store.getAt(rowIndex);
                 if (rec != null) {
-                    location.href = "/maps/" + rec.id + ".html?";
+                    location.href = "/maps/" + rec.id;
                 }
             }
         });
