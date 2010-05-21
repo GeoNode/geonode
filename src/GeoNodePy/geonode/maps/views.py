@@ -17,8 +17,11 @@ from django.utils.translation import ugettext as _
 import json
 import math
 import httplib2 
-from owslib.csw import CatalogueServiceWeb
+from owslib.csw import CatalogueServiceWeb, CswRecord, namespaces
+from owslib.util import nspath
+import re
 from urllib import urlencode
+from urlparse import urlparse
 import uuid
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -843,14 +846,18 @@ def _metadata_search(query, start, limit, **kw):
     
     csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
     
+    
     # build results 
-    # join with django model to grab name and potentially other stuff...
-    # XXX owslib discards result ordering     
-    layers = dict([(layer.uuid, layer) for layer in Layer.objects.filter(uuid__in=csw.records.keys())])
-    results = [_build_search_result(rec, layers.get(rec.identifier, None)) for rec in csw.records.values()]
+    # XXX this goes directly to the result xml doc to obtain 
+    # correct ordering and a fuller view of the result record
+    # than owslib currently parses.  This could be improved by
+    # improving owslib.
+    results = [_build_search_result(doc) for doc in 
+               csw._records.findall('//'+nspath('Record', namespaces['csw']))]
 
     result = {'rows': results, 
               'total': csw.results['matches']}
+
     result['query_info'] = {
         'start': start,
         'limit': limit,
@@ -869,18 +876,38 @@ def _metadata_search(query, start, limit, **kw):
     return result
 
 
-def _build_search_result(rec, layer):
+def _build_search_result(doc):
     """
-    accepts an owslib.csw.CswRecord and 
-    builds a POD structure representing 
+    accepts a node representing a csw result 
+    record and builds a POD structure representing 
     the search result.
     """
+
+    # Let owslib do some parsing for us...
+    rec = CswRecord(doc)
     result = {}
     result['title'] = rec.title
     result['abstract'] = rec.abstract
     result['keywords'] = [x for x in rec.subjects if x]
-    
+    result['detail'] = rec.uri or ''
+
+    # XXX needs indexing ? how
+    result['attribution'] = {'title': '', 'href': ''}
+
+    # XXX !_! pull out geonode 'typename' if there is one
+    # index this directly... 
+    if rec.uri:
+        try:
+            result['name'] = urlparse(rec.uri).path.split('/')[-1]
+        except: 
+            pass
+    # fallback: use geonetwork uuid
+    if not result.get('name', ''):
+        result['name'] = rec.identifier
+
     # Take BBOX from GeoNetwork Result...
+    # XXX this assumes all our bboxes are in this 
+    # improperly specified SRS.
     if rec.bbox is not None and rec.bbox.crs == 'urn:ogc:def:crs:::WGS 1984':
         # slight workaround for ticket 530
         result['bbox'] = {
@@ -889,22 +916,33 @@ def _build_search_result(rec, layer):
             'miny': min(rec.bbox.miny, rec.bbox.maxy),
             'maxy': max(rec.bbox.miny, rec.bbox.maxy)
         }
-            
-    if layer is None:
-        # be semi-graceful with data that doesn't correspond
-        # to a GeoNode layer...
-        result['name'] = rec.identifier 
-        result['detail'] = ''
-        result['attribution'] = {'title': '', 'href': ''}
-        result['download_links'] = []
-        result['metadata_links'] = []
-    else:
-        result['name'] = layer.typename
-        result['detail'] = reverse('geonode.maps.views.layerController', args=(layer.typename,))
-        result['attribution'] = {'title': layer.publishing.attribution or '', 
-                                 'href': layer.publishing.attribution_link or ''}    
-        result['download_links'] = layer.download_links()
-        result['metadata_links'] = layer.metadata_links
+    
+    # XXX these could be exposed in owslib record...
+    # locate all download links
+    format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
+    result['download_links'] = []
+    for link_el in doc.findall(nspath('URI', namespaces['dc'])):
+        if link_el.get('protocol', '') == 'WWW:DOWNLOAD-1.0-http--download':
+            try:
+                extension = link_el.get('name', '').split('.')[-1]
+                format = format_re.match(link_el.get('description')).groups()[0]
+                if 'Format' in format:
+                    import pdb; pdb.set_trace()
+                href = link_el.text
+                result['download_links'].append((extension, format, href))
+            except: 
+                pass
+
+    # construct the link to the geonetwork metadata record (not self-indexed)
+    md_link = settings.GEONETWORK_BASE_URL + "srv/en/csw?" + urlencode({
+            "request": "GetRecordById",
+            "service": "CSW",
+            "version": "2.0.2",
+            "OutputSchema": "http://www.isotc211.org/2005/gmd",
+            "ElementSetName": "full",
+            "id": rec.identifier
+        })
+    result['metadata_links'] = [("text/xml", "TC211", md_link)]
 
     return result
     
