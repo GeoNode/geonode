@@ -59,6 +59,10 @@
     background-image: url(img/silk/delete.png);
 }
 
+.x-btn .icon-layerproperties, .x-menu-item .icon-layerproperties {
+    background-image: url(img/silk/wrench.png);
+}
+
 .x-btn .icon-getfeatureinfo {
     background-image: url(img/silk/information.png);
 }
