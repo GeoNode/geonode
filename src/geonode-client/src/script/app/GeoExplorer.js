@@ -115,7 +115,7 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
     layerAdditionLabel: "UT: or add a new server.",
     layerContainerText: "UT:Map Layers",
     layerPropertiesText: 'UT: Layer Properties',
-    layerPropertiesTipText: 'UT: Change layer metadata, format and style',
+    layerPropertiesTipText: 'UT: Change layer format and style',
     layerSelectionLabel: "UT:View available data from:",
     layersContainerText: "UT:Data",
     layersPanelText: "UT:Layers",
@@ -780,7 +780,8 @@ var GeoExplorer = Ext.extend(Ext.util.Observable, {
             items: [layerTree],
             tbar: [
                 addLayerButton,
-                Ext.apply(new Ext.Button(removeLayerAction), {text: ""})
+                Ext.apply(new Ext.Button(removeLayerAction), {text: ""}),
+                Ext.apply(new Ext.Button(layerPropertiesAction), {text: ""})
             ]
         });
 
