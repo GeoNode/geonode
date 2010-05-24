@@ -96,7 +96,54 @@ To create a custom process:
    your application is running by including it in the ``WEB-INF/lib`` directory 
    of your GeoServer WAR file.
 
-Other Stuff/TODO
-................
+Authentication/Authorization
+----------------------------
 
-* shared authentication with Django
+.. warning:: 
+
+    This section describes features which have not yet been implemented.
+
+GeoNode also provides an extension to GeoServer to have it respect GeoNode's
+user database and permissions instead of its own independent system.  This
+extension allows GeoServer to authenticate users by HTTP Basic auth (good for
+general desktop GIS applications) or Django session cookies (good for users
+accessing GeoServer from the Django site.)  The basic strategy is for GeoServer
+to forward either type of credential to a Django web service which provides
+GeoServer with up-to-date information about the user's permissions.  Consider a
+request coming into some GeoServer service::
+
+    GET /geoserver/ows?request=GetFeature&typename=top_secret:data
+
+GeoServer will first inspect the request to identify whether it contains an
+``Authorization:`` header or a cookie from the Django session system.
+GeoServer then issues a request to Django::
+
+    GET /user/permissions
+   
+Including the credentials it found on the initial request.  If the
+``Authorization:`` header contains the username and password for a valid user,
+or the session cookie corresponds to an active session for a logged-in user,
+then Django responds with a document describing the permissions associated with
+that user.  If the ``Authorization:`` header or cookie is found and determined
+to be invalid, then Django sets a 401 status on the HTTP response.  Otherwise,
+Django assumes an anonymous user and returns a document describing the
+permissions associated with anonymous users.  The permissions document is a
+JSON object that looks like this::
+
+    {
+        "rw": ["prefix:name", "prefix:name"],
+        "ro": ["prefix:name", "prefix:name"]
+    }
+
+That is, a top-level object with two keys:
+
+``rw``
+    an array of prefixed layer names of layers which should be fully available
+    (both read and write) to this user
+
+``ro``
+    an array of prefixed layer names of layers which should be displayed to this
+    user, but which he/she should not be able to modify
+
+All layers not named in this response will be presumed fully restricted, that
+is, neither modifiable nor visible to the user in question.
