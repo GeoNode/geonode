@@ -1,6 +1,37 @@
 JavaScript in GeoNode
 =====================
 
-* viewers
-* controls
-* page-local scripting
+GeoNode provides a number of facilities for interactivity in the web browser built on top of several high-quality JavaScript frameworks:
+
+* `ExtJS <http://extjs.com/>`_ for component-based UI construction and data
+  access
+* `OpenLayers <http://openlayers.org/>`_ for interactive mapping and other
+  geospatial operations
+* `GeoExt <http://geoext.org/>`_ for integrating ExtJS with OpenLayers
+* `GXP <http://projects.opengeo.org/gxp>`_ for providing some higher-level
+  application building facilities on top of GeoExt, as well as improving
+  integration with GeoServer.
+* and a GeoNode-specific framework to handle some pages and services that are
+  unique to GeoNode.
+
+The following concepts are particularly important for developing on top of the
+GeoNode's JavaScript framework.
+
+* Components - Ext components handle most interactive functionality in
+  "regular" web pages.  For example, the scrollable/sortable/filterable table
+  on the default Search page is a Grid component.  While GeoNode does use some
+  custom components, familiarity with the idea of Components used by ExtJS is
+  applicable in GeoNode development.
+
+* Viewers - Viewers display interactive maps in web pages, optionally decorated
+  with Ext controls for toolbars, layer selection, etc.  Viewers in GeoNode use
+  the GeoExplorer base class, which builds on top of GXP's Viewer to provide
+  some common functionality such as respecting site-wide settings for
+  background layers. Viewers can be used as components embedded in pages, or
+  they can be full-page JavaScript applications.
+
+* Controls - Controls are tools for use in OpenLayers maps (such as a freehand
+  control for drawing new geometries onto a map, or an identify control for
+  getting information about individual features on a map.)  GeoExt provides
+  tools for using these controls as ExtJS "Actions" - operations that can be
+  invoked as buttons or menu options or associated with other events.
