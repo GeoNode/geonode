@@ -25,7 +25,7 @@ the process.  The *batch* mode starts a thread on the server and supports
 polling to find out information about progress until the process is completed.
 
 Interactive Mode Processing
-.....................
+...........................
 
 To use interactive-mode processing: 
 
@@ -69,17 +69,32 @@ Custom Processes
 To create a custom process:
 
 #. Write a Java class that extends the Process interface.  It can use GeoTools,
-   and has access to the GeoServer catalog.
+   and has access to the GeoServer catalog.  Let's call it
+   ``com.example.custom.Process``.  Aditionally, subclass ``ProcessRestlet`` to
+   create a Restlet that invokes your Process.
 
-#. Include an applicationContext.xml file that defines a bean using your
-   process class.  An example would be::
+#. Include a Spring context XML file called ``applicationContext.xml`` that
+   defines a bean using your process class, and a restlet mapping that attaches
+   your process to a specific URL pattern.  An example would be:
 
-   <bean class="foo.bar.baz.QuuxProcess" id="quux">
-   </bean>
+   .. code-block:: xml
+
+       <beans>
+         <bean class="com.example.custom.ProcessRestlet" id="exampleRestlet"/>
+         <bean class="org.geoserver.rest.RESTMapping" id="exampleMapping">
+           <property name="routes">
+             <map>
+               <entry>
+                 <key><value>/process/example</value></key>
+                 <value>exampleRestlet</value>
+               </entry>
+             </map>
+         </bean>
+       </beans>
 
 #. Make sure that the JAR containing your process is on the Java classpath when
-   your application is running by including it in the WEB-INF/lib directory of
-   your GeoServer WAR file.
+   your application is running by including it in the ``WEB-INF/lib`` directory 
+   of your GeoServer WAR file.
 
 Other Stuff/TODO
 ................
