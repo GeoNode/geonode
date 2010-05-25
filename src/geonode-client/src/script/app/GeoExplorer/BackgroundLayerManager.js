@@ -30,7 +30,7 @@ GeoExplorer.BackgroundLayerManager = Ext.extend(Ext.util.Observable, {
         var proxy = this.proxy;
         function mungeSourcePlugin(conf) {
             var ptype =
-                "service" in conf ? "gx-" + conf.service + "source" : "gx-wmssource";
+                "service" in conf ? "gx_" + conf.service + "source" : "gx_wmssource";
             var pluginConfig = { "ptype": ptype };
             Ext.apply(pluginConfig, conf);
 
