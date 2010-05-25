@@ -93,7 +93,7 @@
   </dependencies>
   <properties>
     <geotools.version>2.6-SNAPSHOT</geotools.version>
-    <geoserver.version>2.0.2-SNAPSHOT</geoserver.version>
+    <geoserver.version>2.0.3-SNAPSHOT</geoserver.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
   <profiles>
