@@ -42,8 +42,7 @@ Ext.onReady(function() {
         localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}"
     };
 
-    Ext.apply(config, {% if config %}{{config|safe}}{%else%} {%endif%});
-    Ext.apply(config, {"backgroundLayers": {{ bg|safe }}});
+    Ext.apply(config, {{config|safe}});
     app = new GeoExplorer(config);
 });
 </script>

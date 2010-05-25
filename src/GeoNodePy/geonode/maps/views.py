@@ -78,7 +78,6 @@ def mapJSON(request, mapid):
 
 
 def update_map_json(request, mapid):
-
     # login is required, but we'd prefer to 
     # actually return a 401 status code to 
     # ajax vs. an uninformative redirect.
@@ -223,9 +222,9 @@ def newmap(request):
                 config['map']['zoom'] = math.floor(min(width_zoom, height_zoom))
         else:
             config = DEFAULT_MAP_CONFIG
+    config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config), 
-        'bg': json.dumps(settings.MAP_BASELAYERS),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
@@ -391,8 +390,9 @@ def view(request, mapid):
     """
     map = Map.objects.get(pk=mapid)
     config = build_map_config(map)
+    config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/view.html', RequestContext(request, {
-        'config': json.dumps(config), 'bg': json.dumps(settings.MAP_BASELAYERS),
+        'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
@@ -403,9 +403,9 @@ def embed(request, mapid=None):
     else:
         map = Map.objects.get(pk=mapid)
         config = build_map_config(map)
+    config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/embed.html', RequestContext(request, {
-        'config': json.dumps(config),
-        'bg': json.dumps(settings.MAP_BASELAYERS)
+        'config': json.dumps(config)
     }))
 
 
@@ -966,6 +966,3 @@ def browse_data(request):
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
          "site" : settings.SITEURL
     }))
-    
-    
-    
