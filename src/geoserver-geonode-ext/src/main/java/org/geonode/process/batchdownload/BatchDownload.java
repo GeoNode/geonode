@@ -5,6 +5,7 @@ import static org.geonode.process.batchdownload.BatchDownloadFactory.MAP_METADAT
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -16,7 +17,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.geonode.process.batchdownload.geotiff.ZippedGeoTiffCoverageWriter;
 import org.geonode.process.batchdownload.shp.ShapeZipWriter;
 import org.geonode.process.control.AsyncProcess;
 import org.geonode.process.storage.Folder;
@@ -24,8 +24,13 @@ import org.geonode.process.storage.Resource;
 import org.geonode.process.storage.StorageManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.gce.geotiff.GeoTiffFormat;
+import org.geotools.gce.geotiff.GeoTiffWriteParams;
+import org.geotools.gce.geotiff.GeotiffWriterWithProgress;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
 import org.geotools.text.Text;
@@ -33,6 +38,8 @@ import org.geotools.util.SubProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.util.ProgressListener;
 
 final class BatchDownload extends AsyncProcess {
@@ -294,9 +301,56 @@ final class BatchDownload extends AsyncProcess {
         // read coverage
         final GridCoverage2D coverage2d = reader.read(null);
 
-        ZippedGeoTiffCoverageWriter writer = new ZippedGeoTiffCoverageWriter();
+        Resource tempResource = getStorageManager().createTempResource();
+        File tempFile = tempResource.getFile();
+        // write the coverage to a temp file first, then copy the file to the zip output stream.
+        // Otherwise there might be performance problems or even resource exhaustion due to geotiff
+        // writer defaulting to a memory cached image output stream when presented with a plain
+        // OutputStream instead of a file
+        try {
+            write(coverage2d, tempFile, monitor);
 
-        String name = layerRef.getName();
-        writer.write(name, coverage2d, zipOut, monitor);
+            String name = layerRef.getName();
+            final ZipEntry coverageEntry = new ZipEntry(name + ".tiff");
+            zipOut.putNextEntry(coverageEntry);
+            InputStream inputStream = tempResource.getInputStream();
+            try {
+                org.apache.commons.io.IOUtils.copy(inputStream, zipOut);
+            } finally {
+                inputStream.close();
+            }
+            zipOut.closeEntry();
+            zipOut.flush();
+        } finally {
+            tempResource.delete();
+        }
     }
+
+    public void write(final GridCoverage2D coverage, final File dest, final ProgressListener monitor)
+            throws IOException {
+
+        final GeoTiffWriteParams wp = new GeoTiffWriteParams();
+        // setting compression to LZW
+        wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
+        wp.setCompressionType("LZW");
+        wp.setCompressionQuality(0.75F);
+
+        // setting the tile size to 256X256
+        wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
+        wp.setTiling(256, 256);
+
+        final GeoTiffFormat format = new GeoTiffFormat();
+        // setting the write parameters for this geotiff
+        final ParameterValueGroup params = format.getWriteParameters();
+        params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
+                .setValue(wp);
+
+        // get a reader to the input File
+        GeotiffWriterWithProgress writer = new GeotiffWriterWithProgress(dest);
+
+        // writing the coverage
+        GeneralParameterValue[] writeParams = params.values().toArray(new GeneralParameterValue[1]);
+        writer.write(coverage, writeParams, monitor);
+    }
+
 }
