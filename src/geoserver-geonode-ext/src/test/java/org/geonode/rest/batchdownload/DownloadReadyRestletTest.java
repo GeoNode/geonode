@@ -7,7 +7,9 @@ import static org.geonode.rest.batchdownload.BatchDownloadTestData.VECTOR_LAYER;
 import static org.geonode.rest.batchdownload.BatchDownloadTestData.VECTOR_LAYER_NAME;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import junit.framework.Test;
@@ -28,12 +31,17 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerTestSupport;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 
@@ -104,6 +112,41 @@ public class DownloadReadyRestletTest extends GeoServerTestSupport {
         }
 
         assertEquals(expectedFiles, archivedFiles);
+    }
+
+    public void testCoverageContents() throws Exception {
+
+        final Long processId = issueProcessAndWaitForTermination();
+
+        final String request = RESTLET_PATH + "/" + processId.longValue();
+
+        final MockHttpServletResponse response = getAsServletResponse(request);
+        assertEquals(Status.SUCCESS_OK, Status.valueOf(response.getStatusCode()));
+        assertEquals(MediaType.APPLICATION_ZIP, MediaType.valueOf(response.getContentType()));
+
+        final ByteArrayInputStream responseStream = getBinaryInputStream(response);
+        File dataDirectoryRoot = super.getTestData().getDataDirectoryRoot();
+        File file = new File(dataDirectoryRoot, "testCoverageContents.zip");
+        super.getTestData().copyTo(responseStream, file.getName());
+
+        ZipFile zipFile = new ZipFile(file);
+        try {
+            // TODO: change this expectation once we normalize the raster file name
+            String rasterName = RASTER_LAYER.getPrefix() + ":" + RASTER_LAYER.getLocalPart()
+                    + ".tiff";
+            ZipEntry nextEntry = zipFile.getEntry(rasterName);
+            assertNotNull(nextEntry);
+            InputStream coverageInputStream = zipFile.getInputStream(nextEntry);
+            // Use a file, geotiffreader might not work well reading out of a plain input stream
+            File covFile = new File(file.getParentFile(), "coverage.tiff");
+            IOUtils.copy(coverageInputStream, covFile);
+            GeoTiffReader geoTiffReader = new GeoTiffReader(covFile);
+            GridCoverage2D coverage = geoTiffReader.read(null);
+            CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem();
+            assertEquals(CRS.decode("EPSG:4326", true), crs);
+        } finally {
+            zipFile.close();
+        }
     }
 
     private Long issueProcessAndWaitForTermination() throws Exception {
