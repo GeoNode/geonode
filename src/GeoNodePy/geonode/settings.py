@@ -53,9 +53,6 @@ MEDIA_ROOT = ''
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = 'http://localhost:8001/geoserver/www/'
 
-# URL to use as the base for links into the GeoNode site
-SITE_URL = 'http://localhost:8000/'
-
 GEONODE_UPLOAD_PATH = path_extrapolate('../../gs-data/www')
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
