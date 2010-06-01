@@ -211,6 +211,8 @@ final class BatchDownload extends AsyncProcess {
         final int numLayers = layers.size();
         final float layerProgressAmount = 100F / numLayers;
 
+        monitor.started();
+
         LayerReference layerRef;
         ProgressListener layerMonitor;
         for (int layerN = 0; layerN < numLayers; layerN++) {
@@ -218,6 +220,8 @@ final class BatchDownload extends AsyncProcess {
             layerMonitor = new SubProgressListener(monitor, layerProgressAmount);
             zipLayer(layerRef, zipOut, layerMonitor);
         }
+
+        monitor.complete();
     }
 
     private Resource getTargetFileHandle(final String mapName, final StorageManager storageManager) {
