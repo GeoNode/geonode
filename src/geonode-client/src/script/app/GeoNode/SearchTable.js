@@ -228,7 +228,7 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
 
 
         var clearSelectedButton = new Ext.Button({
-            text: this.clearSelectedButtonText,
+            text: this.clearSelectedButtonText
         });
         clearSelectedButton.on('click', function() {
             sm.each(function(rec) {
@@ -242,7 +242,7 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
 
         
         var clearAllButton = new Ext.Button({
-            text: this.clearAllButtonText,
+            text: this.clearAllButtonText
         });
         clearAllButton.on('click', function() {
             this.store.removeAll();
@@ -310,7 +310,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'download_links'},
                 {name: 'metadata_links'},
                 {name: 'bbox'}
-            ], 
+            ]
         });
         this.searchStore.on('load', function() {
             this.updateControls();
@@ -469,7 +469,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             {header: this.nameHeaderText,
              dataIndex: 'name',
              id: 'name',
-             width: 35,
+             width: 35
             },
             {header: this.titleHeaderText,
              dataIndex: 'title',
@@ -511,7 +511,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             }
         }, this);
         var searchButton = new Ext.Button({
-            text: this.searchButtonText,
+            text: this.searchButtonText
         });
         searchButton.on('click', this.updateQuery, this)
 
