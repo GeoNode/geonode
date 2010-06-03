@@ -1,0 +1,15 @@
+[submodule "src/geonode-client/externals/openlayers"]
+	path = src/geonode-client/externals/openlayers
+	url = /home/dwins/externals/openlayers/
+[submodule "src/geonode-client/externals/ext"]
+	path = src/geonode-client/externals/ext
+	url = /home/dwins/externals/extjs/
+[submodule "src/geonode-client/externals/geoext"]
+	path = src/geonode-client/externals/geoext
+	url = /home/dwins/externals/geoext/
+[submodule "src/geonode-client/externals/gxp"]
+	path = src/geonode-client/externals/gxp
+	url = /home/dwins/externals/gxp/
+[submodule "src/geonode-client/externals/PrintPreview"]
+	path = src/geonode-client/externals/PrintPreview
+	url = /home/dwins/externals/PrintPreview/
