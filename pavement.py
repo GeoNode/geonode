@@ -1,5 +1,4 @@
-from __future__ import with_statement
-
+from __future__ import with_statement 
 from paver import svn
 from paver.easy import *
 from paver.easy import options
@@ -133,8 +132,7 @@ def download_bundle(options):
     bpath = bundle.abspath()
     if not bundle.exists():
         with pushd('shared'):
-            sh('wget http://dev.capra.opengeo.org/repo/%s.zip' % dlname)
-            path(dlname + '.zip').copy(bpath)
+            grab("http://dev.capra.opengeo.org/repo/%s.zip" % dlname, bpath)
     else:
         info("Skipping download. 'rm bundle  %s' if you need a fresh download. " % bundle)
 
@@ -155,20 +153,29 @@ def post_bootstrap(options):
 
 #TODO Move svn urls out to a config file
 
+def grab(src, dest):
+    from urlgrabber.grabber import urlgrab, URLGrabError
+    from urlgrabber.progress import text_progress_meter
+    try:
+        urlgrab(str(src), str(dest), reget='simple', progress_obj = text_progress_meter())
+    except URLGrabError, e:
+        # Eat exceptions with error code 9; these indicate that we had already finished the download
+        if e.errno != 9: raise
+
 @task
 def setup_gs_data(options):
     """Fetch a data directory to use with GeoServer for testing."""
-    from urlgrabber.grabber import urlgrab
-    from urlgrabber.progress import text_progress_meter
     src_url = str(options.config.parser.get('geoserver', 'gs_data_url'))
     shared = path("./shared")
     if not shared.exists():
         shared.mkdir()
     dst_url = shared / "geonode-geoserver-data.zip"
-    if not dst_url.exists() or getattr(options, 'clean', False):
-        urlgrab(src_url, str(dst_url), progress_obj=text_progress_meter())
-    if not path(gs_data).exists():
+    if getattr(options, 'clean', False):
+        dst_url.rm()
         path(gs_data).rmtree()
+    if not dst_url.exists():
+        grab(src_url, dst_url)
+    if not path(gs_data).exists():
         unzip_file(dst_url, gs_data)
 
 
@@ -182,8 +189,6 @@ def setup_geoserver(options):
 @task
 def setup_geonetwork(options):
     """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
-    from urlgrabber.grabber import urlgrab
-    from urlgrabber.progress import text_progress_meter
     war_zip_file = options.config.parser.get('geonetwork', 'geonetwork_zip')
     src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file)
     info("geonetwork url: %s" %src_url)
@@ -194,21 +199,21 @@ def setup_geonetwork(options):
     if not webapps.exists():
         webapps.mkdir()
 
-    dst_url = webapps + "/" + war_zip_file
+    dst_url = webapps / war_zip_file
     dst_war = webapps / "geonetwork.war"
     deployed_url = webapps / "geonetwork"
     schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
 
-    if not dst_url.exists() or getattr(options, 'clean', False):
-        urlgrab(src_url, str(dst_url), progress_obj=text_progress_meter())
-        unzip_file(dst_url, webapps)
-        path(deployed_url).rmtree()
-    if not path(deployed_url).exists():
-        info("Deploying geonetwork to %s" %deployed_url)
-        path(deployed_url).mkdir()
-        unzip_file(dst_war, deployed_url)
+    if getattr(options, 'clean', False):
+        dst_url.rmtree()
+        deployed_url.rmtree()
+    grab(src_url, dst_url)
+    if not dst_war.exists():
+        zipfile.ZipFile(dst_url).extractall(webapps)
+    if not deployed_url.exists():
+        zipfile.ZipFile(dst_war).extractall(deployed_url)
 
-    """Update the ISO 19139 profile to the latest version"""
+    # Update the ISO 19139 profile to the latest version
     path(schema_url).rmtree()
     info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
     path("gn_schema").copytree(schema_url)
@@ -216,8 +221,7 @@ def setup_geonetwork(options):
     src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
     dst_url = webapps / "intermap.war"
 
-    if not dst_url.exists() or getattr(options, 'clean', False):
-        urlgrab(src_url, str(dst_url), progress_obj=text_progress_meter())
+    grab(src_url, dst_url)
 
 @task
 @needs([
@@ -242,22 +246,34 @@ def build_js(options):
 
 
 @task
+def js_dependencies(options):
+    """
+    Fetch dependencies for the JavaScript build
+    """
+    grab("http://extjs.cachefly.net/ext-3.2.1.zip", "shared/ext-3.2.1.zip")
+    path("src/geonode-client/externals/ext").rmtree()
+    zipfile.ZipFile("shared/ext-3.2.1.zip").extractall("src/geonode-client/externals/")
+    path("src/geonode-client/externals/ext-3.2.1").rename("src/geonode-client/externals/ext")
+
+
+@task
+@needs(['js_dependencies'])
 def concat_js(options):
     """Compress the JavaScript resources used by the base GeoNode site."""
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
        os.makedirs("geonode-client")
-       svn.export("../externals/ext", "geonode-client/ext")
+       path("../externals/ext").copytree("geonode-client/ext")
        os.makedirs("geonode-client/gx")
-       svn.export("../externals/geoext/resources", "geonode-client/gx/theme")
+       path("../externals/geoext/geoext/resources").copytree("geonode-client/gx/theme")
        os.makedirs("geonode-client/gxp")
-       svn.export("../externals/gxp/src/theme", "geonode-client/gxp/theme")
+       path("../externals/gxp/src/theme").copytree("geonode-client/gxp/theme")
        os.makedirs("geonode-client/PrintPreview")
-       svn.export("../externals/PrintPreview/resources", "geonode-client/PrintPreview/theme")
+       path("../externals/PrintPreview/resources").copytree("geonode-client/PrintPreview/theme")
        os.makedirs("geonode-client/ol") #need to split this off b/c of dumb hard coded OL paths
-       svn.export("../externals/openlayers/theme", "geonode-client/ol/theme")
+       path("../externals/openlayers/theme").copytree("geonode-client/ol/theme")
        os.makedirs("geonode-client/gn")
-       svn.export("../src/theme/", "geonode-client/gn/theme/")
+       path("../src/theme/").copytree("geonode-client/gn/theme/")
 
        sh("jsbuild -o geonode-client/ all.cfg") 
        move("geonode-client/OpenLayers.js","geonode-client/ol/")
