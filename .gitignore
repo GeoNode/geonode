@@ -1,0 +1,24 @@
+# build artifacts
+*.pyc
+*.egg-info
+build
+target
+
+# virtualenv stuff
+/bin
+/include
+/lib/
+/lib64
+/setuptools-0.6c11-py2.6.egg
+
+# supporting stuff pulled in by paver script
+/development.db
+/django.log
+/gs-data/
+/jetty.log
+/shared/geonode-geoserver-data.zip
+/shared/ext-3.2.1.zip
+/src/geoserver-geonode-ext/logs/
+/src/gsconfig.py/
+/src/owslib/
+/webapps/
