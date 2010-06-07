@@ -1,12 +1,12 @@
 [submodule "src/geonode-client/externals/openlayers"]
 	path = src/geonode-client/externals/openlayers
-	url = git@github.com:GeoNode/OpenLayers.git
+	url = git://github.com/GeoNode/OpenLayers.git
 [submodule "src/geonode-client/externals/geoext"]
 	path = src/geonode-client/externals/geoext
-	url = git@github.com:GeoNode/GeoExt.git
+	url = git://github.com/GeoNode/GeoExt.git
 [submodule "src/geonode-client/externals/gxp"]
 	path = src/geonode-client/externals/gxp
-	url = git@github.com:GeoNode/gxp.git
+	url = git://github.com/GeoNode/gxp.git
 [submodule "src/geonode-client/externals/PrintPreview"]
 	path = src/geonode-client/externals/PrintPreview
-	url = git@github.com:GeoNode/PrintPreview.git
+	url = git://github.com/GeoNode/PrintPreview.git
