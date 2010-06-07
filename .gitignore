@@ -18,6 +18,7 @@ target
 /jetty.log
 /shared/geonode-geoserver-data.zip
 /shared/ext-3.2.1.zip
+/src/geonode-client/externals/ext/
 /src/geoserver-geonode-ext/logs/
 /src/gsconfig.py/
 /src/owslib/
