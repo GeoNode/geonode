@@ -13,14 +13,15 @@ import paver.doctools
 import paver.misctasks
 import pkg_resources
 import subprocess
+import shutil
 from shutil import move
 import zipfile
 import tarfile
 import urllib
 
 
-assert sys.version_info[0] >= 2 and sys.version_info[1] >= 6, \
-       SystemError("GeoNode Build requires python 2.6.2 or better")
+assert sys.version_info >= (2,6), \
+       SystemError("GeoNode Build requires python 2.6 or better")
 
 
 options(
@@ -209,9 +210,9 @@ def setup_geonetwork(options):
         deployed_url.rmtree()
     grab(src_url, dst_url)
     if not dst_war.exists():
-        zipfile.ZipFile(dst_url).extractall(webapps)
+        zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
-        zipfile.ZipFile(dst_war).extractall(deployed_url)
+        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
 
     # Update the ISO 19139 profile to the latest version
     path(schema_url).rmtree()
@@ -252,7 +253,7 @@ def js_dependencies(options):
     """
     grab("http://extjs.cachefly.net/ext-3.2.1.zip", "shared/ext-3.2.1.zip")
     path("src/geonode-client/externals/ext").rmtree()
-    zipfile.ZipFile("shared/ext-3.2.1.zip").extractall("src/geonode-client/externals/")
+    zip_extractall(zipfile.ZipFile("shared/ext-3.2.1.zip"), "src/geonode-client/externals/")
     path("src/geonode-client/externals/ext-3.2.1").rename("src/geonode-client/externals/ext")
 
 
@@ -639,3 +640,76 @@ def platform_options(options):
     options.config.bin = path(scripts)
     options.config.corelibs = corelibs
     options.config.pip_flags = pip_flags
+
+# include patched versions of zipfile code
+# to extract zipfile dirs in python 2.6.1 and below...
+
+def zip_extractall(zf, path=None, members=None, pwd=None):
+    if sys.version_info >= (2, 6, 2):
+        zf.extractall(path=path, members=members, pwd=pwd)
+    else:
+        _zip_extractall(zf, path=path, members=members, pwd=pwd)
+
+def _zip_extractall(zf, path=None, members=None, pwd=None):
+    """Extract all members from the archive to the current working
+       directory. `path' specifies a different directory to extract to.
+       `members' is optional and must be a subset of the list returned
+       by namelist().
+    """
+    if members is None:
+        members = zf.namelist()
+
+    for zipinfo in members:
+        _zip_extract(zf, zipinfo, path, pwd)
+
+def _zip_extract(zf, member, path=None, pwd=None):
+    """Extract a member from the archive to the current working directory,
+       using its full name. Its file information is extracted as accurately
+       as possible. `member' may be a filename or a ZipInfo object. You can
+       specify a different directory using `path'.
+    """
+    if not isinstance(member, zipfile.ZipInfo):
+        member = zf.getinfo(member)
+
+    if path is None:
+        path = os.getcwd()
+    
+    return _zip_extract_member(zf, member, path, pwd)
+
+
+def _zip_extract_member(zf, member, targetpath, pwd):
+    """Extract the ZipInfo object 'member' to a physical
+       file on the path targetpath.
+    """
+    # build the destination pathname, replacing
+    # forward slashes to platform specific separators.
+    # Strip trailing path separator, unless it represents the root.
+    if (targetpath[-1:] in (os.path.sep, os.path.altsep)
+        and len(os.path.splitdrive(targetpath)[1]) > 1):
+        targetpath = targetpath[:-1]
+
+    # don't include leading "/" from file name if present
+    if member.filename[0] == '/':
+        targetpath = os.path.join(targetpath, member.filename[1:])
+    else:
+        targetpath = os.path.join(targetpath, member.filename)
+
+    targetpath = os.path.normpath(targetpath)
+
+    # Create all upper directories if necessary.
+    upperdirs = os.path.dirname(targetpath)
+    if upperdirs and not os.path.exists(upperdirs):
+        os.makedirs(upperdirs)
+
+    if member.filename[-1] == '/':
+        if not os.path.isdir(targetpath):
+            os.mkdir(targetpath)
+        return targetpath
+
+    source = zf.open(member, pwd=pwd)
+    target = file(targetpath, "wb")
+    shutil.copyfileobj(source, target)
+    source.close()
+    target.close()
+
+    return targetpath
