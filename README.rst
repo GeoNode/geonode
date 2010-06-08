@@ -2,6 +2,167 @@
  GeoNode
 =========
 
+Build Requirements
+==================
+
+Before starting work on the GeoNode, you will need to have the following
+software installed and in your PATH:
+
+* The git command-line client, version 1.5.3 or higher:
+  - To verify that it is available, run ``git --version`` and verify the
+    version is something like ``git version 1.6.6.1``
+  - If not, you can download one of the installers from http://git-scm.com/ or
+    from your operating system provider.
+
+* The Subversion command-line client, version 1.5 or higher.
+  - To verify that is is available, run ``svn --version`` and verify the output
+    starts with something like ``svn, version 1.6.9 (r901367)``
+  - If not, you can find the appropriate installer at
+    http://subversion.apache.org/packages.html
+
+* Sun Java Development Kit 1.5 or Higher: 
+  - To verify that it is available, run
+    ``javac -help -version`` and verify that it reports a list of usage flags,
+    ending with a line like ``javac 1.5.0_18`` (the numbers will vary with your
+    installed version).
+  - If not, download from http://java.sun.com/javase/downloads/index.jsp 
+    (Make sure to install the *JDK*!) 
+
+* Python 2.6:
+  - To verify that it is available, run 
+    ``python --version`` and verify that it reports a version number like
+    ``Python 2.6``
+  - If not, download from http://python.org/download/
+  - Python must be compiled w/ SSL support and sqlite support to
+    support the geonode development setup.  Installing the sqlite and
+    openssl development headers before building Python will suffice.
+
+* Apache Maven 2.0.10 or Later:
+  - To verify that it is available, run
+    ``mvn -version`` and verify that it reports version information like::
+        
+      Maven version: 2.0.10
+      Java version: 1.5.0_18
+      OS name: "linux" version: "2.6.30.8-64.fc11.x86_64" arch: "amd64" Family: "unix"
+
+  - If not, download from http://maven.apache.org/download.html/
+
+Install
+=======
+
+The following steps should prepare a Python virtual environment for you::
+
+  git clone git://github.com/GeoNode/geonode.git geonode
+  cd geonode
+  git submodule update --init
+  python bootstrap.py --no-site-packages
+  source bin/activate
+  paver build
+  paver host 
+
+.. note:: 
+
+  When running ``python bootstrap.py`` the ``--no-site-packages`` option is
+  not required.  If enabled, the bootstrap script will sandbox your virtual
+  environment from any packages that are installed in the system, useful if
+  you have incompatible versions of libraries such as Django installed
+  system-wide.  On the other hand, sometimes it is useful to use a version of
+  ReportLab or the Python Imaging Library provided by your operating system
+  vendor, or packaged other than on PyPI.  When in doubt, however, just leave
+  this option in.
+
+After paver build sets up the basic Django application, you can run::
+
+  django-admin.py createsuperuser --settings=capra.settings
+
+to create an admin user account.  The administrative control panel is not
+linked from the main site, but can be accessed at http://localhost:8000/admin/.
+
+
+Options
+=======
+
+For JavaScript Developers
+-------------------------
+
+Minified Scripts
+................
+
+JavaScript Developers can switch to using unminified scripts and CSS styles by
+setting the MINIFIED_RESOURCES entry in :file:`src/geonode/settings.py` to
+``False``.  If you are developing JavaScript and testing against minified builds,
+make sure to use::
+
+   $ paver concat_js 
+   $ paver capra_js
+
+to update the built script directories for the base GeoNode site and the CAPRA
+extensions, respectively.
+
+VirtualBox Setup
+................
+
+To test the application in different browsers in VirtualBox guests, the
+following needs to be done before running ``paver host``:
+
+* Start the guest in VirtualBox. Set the network adapter mode to
+  "Host-only adapter". Then set it back to "NAT".
+
+* On the host, do ifconfig and write down the IP address of the vboxnet0
+  adapter.
+
+* Edit src/GeoNodePy/geonode/settings.py and change the line::
+
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
+
+  to use the IP address you have written down above::
+
+    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver/"
+
+* To start the web server, run::
+
+    $ paver host -b 192.168.56.1
+
+* Now GeoNode is available in your browser at http://192.168.56.1:8000/
+
+
+For Java Developers
+-------------------
+
+How GeoNode Finds GeoServer
+...........................
+
+Java Developers can point the application at a particular GeoServer instance by
+setting the GEOSERVER_BASE_URL entry in settings.py to the context path of the
+GeoServer instance.  This should include the trailing slash.  For example, the
+GeoServer used for http://geonode.capra.opengeo.org/ is::
+
+    http://geonode.capra.opengeo.org/geoserver/
+
+The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
+in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
+instance at that port with the following commands::
+   
+    cd src/geonode-geoserver-ext/
+    mvn jetty:run-war
+
+If you want to change this service URL, edit :file:`src/geonode/settings.py` and
+change the line::
+  
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
+
+to indicate the GeoServer URL that you want to use. 
+
+Alternative GeoServer Data Directories
+......................................
+
+This server defaults to using :file:`gs-data/` as the data directory by default.
+If you need you need to use an alternative data directory, you can specify it
+via the command line, using a command like::
+ 
+    mvn jetty:run-war -DGEOSERVER_DATA_DIR=/home/me/mydata/ 
+
+
 Directory Structure
 ===================
 
@@ -29,134 +190,3 @@ Directory Structure
     * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
       Actually, the build script for this project is set up to create a WAR
       that includes those extensions, not just a bundle with the extension.
-
-Build Requirements
-==================
-
-Before starting work on the GeoNode, you will need to have the following
-software installed and in your PATH:
-
-* Sun Java Development Kit 1.5 or Higher: 
-  - To verify that it is available, run
-    ``javac -help -version`` and verify that it reports a list of usage flags,
-    ending with a line like ``javac 1.5.0_18`` (the numbers will vary with your
-    installed version).
-  - If not, download from http://java.sun.com/javase/downloads/index.jsp 
-    (Make sure to install the *JDK*!) 
-
-* Python 2.6:
-  - To verify that it is available, run 
-    ``python --version`` and verify that it reports a version number like
-    ``Python 2.6``
-  - If not, download from http://python.org/download/
-  - Python must be compiled w/ SSL support and sqlite support to
-    support the geonode development setup.  Installing the sqlite and
-    openssl development headers will suffice.
-
-* Apache Maven 2.0.10 or Later:
-  - To verify that it is available, run
-    ``mvn -version`` and verify that it reports version information like::
-        
-      Maven version: 2.0.10
-      Java version: 1.5.0_18
-      OS name: "linux" version: "2.6.30.8-64.fc11.x86_64" arch: "amd64" Family: "unix"
-
-  - If not, download from http://maven.apache.org/download.html/
-
-Install
-=======
-
-The following steps should prepare a Python virtual environment for you::
-
-  svn co http://svn.opengeo.org/CAPRA/GeoNode/trunk/ GeoNode
-  cd GeoNode
-  python bootstrap.py --no-site-packages
-  . bin/activate
-  paver build
-  paver host 
-
-Note that when running ``python bootstrap.py`` the ``--no-site-packages``
-option is not required.  If enabled, the bootstrap script will sandbox your
-virtual environment from any packages that are installed in the system, useful
-if you have incompatible versions of libraries such as Django installed
-system-wide.  On the other hand, sometimes it is useful to use a version of
-ReportLab or the Python Imaging Library provided by your operating system
-vendor, or packaged other than on PyPI.  When in doubt, however, just leave this
-option in.
-
-After paver build sets up the basic Django application, you can run::
-
-  django-admin.py createsuperuser --settings=capra.settings
-
-to create an admin user account.  The administrative control panel is not
-linked from the main site, but can be accessed at http://localhost:8000/admin/.
-. 
-
-Options
-=======
-
-For JavaScript Developers
--------------------------
-
-JavaScript Developers can switch to using unminified scripts and CSS styles by
-setting the MINIFIED_RESOURCES entry in :file:`src/geonode/settings.py` to
-``False``.  If you are developing JavaScript and testing against minified builds,
-make sure to use::
-
-   $ paver concat_js 
-   $ paver capra_js
-
-to update the built script directories for the base GeoNode site and the CAPRA
-extensions, respectively.
-
-To test the application in different browsers in VirtualBox guests, the following
-needs to be done before running ``paver host``:
-
-* Start the guest in VirtualBox. Set the network adapter mode to
-  "Host-only adapter". Then set it back to "NAT".
-
-* On the host, do ifconfig and write down the IP address of the vboxnet0 adapter.
-
-* Edit src/GeoNodePy/geonode/settings.py and change the line::
-
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
-
-  to use the IP address you have written down above::
-
-    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver/"
-
-* To start the web server, run::
-
-   $ paver host -b 192.168.56.1
-
-* Now GeoNode is available in your browser at http://192.168.56.1:8000/
-
-For Java Developers
--------------------
-
-Java Developers can point the application at a particular GeoServer instance by
-setting the GEOSERVER_BASE_URL entry in settings.py to the context path of the
-GeoServer instance.  This should include the trailing slash.  For example, the
-GeoServer used for http://capra.opengeo.org/ is::
-
-    http://capra.opengeo.org/geoserver/
-
-The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
-in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
-instance at that port with the following commands::
-   
-    cd src/geonode-geoserver-ext/
-    mvn jetty:run-war
-
-If you want to change this service URL, edit :file:`src/geonode/settings.py` and
-change the line::
-  
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
-
-to indicate the GeoServer URL that you want to use. 
-
-This server defaults to using :file:`gs-data/` as the data directory by default.
-If you need you need to use an alternative data directory, you can specify it
-via the command line, using a command like::
- 
-    mvn jetty:run-war -DGEOSERVER_DATA_DIR=/home/me/mydata/ 
