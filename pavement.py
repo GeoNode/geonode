@@ -572,7 +572,12 @@ def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
     with pushd("src/geoserver-geonode-ext"):
-        os.environ["MAVEN_OPTS"] = "-XX:-HeapDumpOnOutOfMemoryError -Xmx512M -XX:MaxPermSize=128m -Djetty.host=" + options.host.bind
+        os.environ["MAVEN_OPTS"] = " ".join([
+            "-XX:CompileCommandFile=../../etc/hotspot_compiler",
+            "-Djetty.host=" + options.host.bind,
+            "-Xmx512M",
+            "-XX:MaxPermSize=128m"
+        ])
         mvn = subprocess.Popen(
             ["mvn", "jetty:run"],
             stdout=jettylog,
