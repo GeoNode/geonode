@@ -23,3 +23,10 @@ target
 /src/gsconfig.py/
 /src/owslib/
 /webapps/
+
+# OSX specific
+.Python
+.DS_Store
+
+#Temporary files
+*~
