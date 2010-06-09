@@ -11,6 +11,11 @@ import uuid
 
 def _(x): return x
 
+def get_csw():
+    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+    csw = CatalogueServiceWeb(csw_url);
+    return csw
+
 _wms = None
 _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -169,10 +174,9 @@ class Layer(models.Model):
         return _wms[self.typename]
 
     def metadata_csw(self):
-        csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-        csw = CatalogueServiceWeb(csw_url);
-        csw.getrecordbyid([self.uuid])
-        return csw.records[self.uuid]   
+        csw = get_csw()
+        csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
+        return csw.records.get(self.uuid)
 
     @property
     def attribute_names(self):
