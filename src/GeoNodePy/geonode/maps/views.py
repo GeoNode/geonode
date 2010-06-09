@@ -1,4 +1,4 @@
-from geonode.maps.models import Map, Layer, MapLayer
+from geonode.maps.models import Map, Layer, MapLayer, get_csw
 from geonode.maps.forms import ContactForm, MetadataForm
 from geonode import geonetwork
 import geoserver
@@ -17,7 +17,7 @@ from django.utils.translation import ugettext as _
 import json
 import math
 import httplib2 
-from owslib.csw import CatalogueServiceWeb, CswRecord, namespaces
+from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
 import re
 from urllib import urlencode
@@ -46,6 +46,9 @@ DEFAULT_MAP_CONFIG = {
         "zoom": settings.DEFAULT_MAP_ZOOM
     }
 }
+
+def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
+    return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
 
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
@@ -460,6 +463,9 @@ def view_js(request, mapid):
     config = build_map_config(map)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
+def fixdate(str):
+    return " ".join(str.split("T"))
+
 class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
@@ -469,17 +475,57 @@ def _describe_layer(request, layer):
     if request.user.is_authenticated():
         if request.method == "GET":
             resource = layer.resource
+            meta = layer.metadata_csw()
+            bbox = meta.identification.bbox
+            bbox_ewkt = bbox_to_wkt(bbox.minx, bbox.maxx, bbox.miny, bbox.maxy)
+            keywords = [word for word in meta.identification.keywords['list'] if isinstance(word,str)]
+            if meta.referencesystem.code == 'WGS 1984':
+                srs = '4326'
+            else:
+                # How do we translate the string that GeoNetwork provides to EPSG codes?
+                # Let's fail loudly if that happens.
+                assert False
+            provider = get_csw().provider.contact    
             md_form = MetadataForm({
-                "title": resource.title,
-                "abstract": resource.abstract,
-                "keywords": ", ".join(resource.keywords)
+                "title": meta.identification.title, 
+                "abstract": meta.identification.abstract,
+                "date": fixdate(meta.datestamp),
+                "date_type": "Creation",
+                "constraints_use": "copyright",
+                "maintenance_frequency": "annually",
+                "geographic_bounding_box": bbox_ewkt,
+                "language": meta.language,
+                "keywords": ", ".join([word for word in meta.identification.keywords['list'] if isinstance(word,str)] )
             })
-            poc_form = ContactForm()
-            metadata_provider_form = ContactForm()
+            poc_form = ContactForm(initial={
+               "name": meta.contact.name,
+               "organization": meta.contact.organization,
+               "position": meta.contact.position,
+               "voice": meta.contact.phone,
+               "facsimile": meta.contact.fax,
+               "country": meta.contact.country,
+               "city": meta.contact.city,
+               "role": meta.contact.role,
+               "address": meta.contact.address,
+            }, prefix="poc")
+            
+            metadata_provider_form = ContactForm(initial={
+               "name": provider.name,
+               "organization": provider.organization,
+               "position": provider.position,
+               "voice": provider.phone,
+               "facsimile": provider.fax,
+               "country": provider.country,
+               "city": provider.city,
+               "role": provider.role,
+               "address": provider.address,
+            }, prefix="metadata")
         elif request.method == "POST":
-            form = MetadataForm(request.POST)
-            if form.is_valid():
-                f = form.cleaned_data
+            md_form = MetadataForm(request.POST)
+            poc_form = ContactForm(request.POST, prefix="poc")
+            metadata_provider_form = ContactForm(request.POST, prefix="metadata")
+            if md_form.is_valid():
+                f = md_form.cleaned_data
                 layer.title = f['title']
                 layer.abstract = f['abstract']
                 layer.keywords = [kw for kw in f['keywords'].split(", ") if kw != '']
@@ -839,8 +885,7 @@ def metadata_search(request):
 
 def _metadata_search(query, start, limit, **kw):
     
-    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    csw = CatalogueServiceWeb(csw_url);
+    csw = get_csw()
 
     keywords = _split_query(query)
     
@@ -877,8 +922,7 @@ def _metadata_search(query, start, limit, **kw):
 
 def search_result_detail(request):
     uuid = request.GET.get("uuid")
-    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    csw = CatalogueServiceWeb(csw_url);
+    csw = get_csw()
     csw.getrecordbyid([uuid])
     doc = csw._records.find(nspath('Record', namespaces['csw']))
     rec = _build_search_result(doc)
