@@ -1,6 +1,7 @@
 from geonode.settings import *
+import os
 # Django settings for capra project.
-
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 ## DEBUG = True
 ## TEMPLATE_DEBUG = DEBUG
 ## 
@@ -11,7 +12,7 @@ from geonode.settings import *
 ## MANAGERS = ADMINS
 ## 
 ## DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-## DATABASE_NAME = ''             # Or path to database file if using sqlite3.
+DATABASE_NAME = os.path.join(SITE_ROOT, 'development.db')
 ## DATABASE_USER = ''             # Not used with sqlite3.
 ## DATABASE_PASSWORD = ''         # Not used with sqlite3.
 ## DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
