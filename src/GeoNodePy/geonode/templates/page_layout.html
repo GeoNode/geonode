@@ -64,14 +64,17 @@
             </div>
 						<div class="login-widget"> 
 							{% if user.is_authenticated %}
-							<p>{{user}} | <a href="/accounts/logout">Logout</a></p>
-							{% else %}
-
-						<form action="/accounts/login" method="post"> 
-							<input type="text" name="username" />
-							<input type="password" name="password" />
-							<input type="submit" value="Login" />
-						</form>
+						       {{ user.username }} 
+							   (<a href="{% url auth_logout %}">{% trans "Log out" %}</a> | 
+						    	<a href="{% url auth_password_change %}">{% trans "Change password" %}</a>)
+						    	{% else %}
+						        <form action="/accounts/login" method="post"> 
+									<input type="text" name="username" />
+									<input type="password" name="password" />
+									<input type="submit" value="Login" />
+									{% csrf_token %}
+								</form>
+								<p style="margin-bottom:0em;">{% trans "Not member" %}? <a href="{% url registration_register %}">{% trans "Register" %}</a>!</p>
 							{% endif %}
 						</div>
              <div id="header"><a href="{% url geonode.views.index %}">CAPRA Home</a>
@@ -79,7 +82,9 @@
             {% block nav %}
             {% navbar master %}
             {% endblock %}
-            <div id="main"> {% block main %} {% endblock %} </div>
+            <div id="main"> {% block main %} {% endblock %}
+			        {% block content %}{% endblock %}
+         	 </div>
             <div id="sidebar"> {% block sidebar %} {% endblock %} </div>
         </div>
     </body>
