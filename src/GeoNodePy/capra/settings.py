@@ -76,7 +76,7 @@ ROOT_URLCONF = 'capra.urls'
 TEMPLATE_DIRS = (path_extrapolate('capra/templates'),) + TEMPLATE_DIRS
 
 INSTALLED_APPS = INSTALLED_APPS + ('capra.layertypes',)
-INSTALLED_APPS = INSTALLED_APPS + ('gunicorn',)
+INSTALLED_APPS = INSTALLED_APPS + ('gunicorn','registration', 'profiles', 'geonode_profile')
 
 NAVBAR['hazard'] = {'id': '%sLink',
     'item_class': '',
@@ -113,4 +113,9 @@ if DEBUG:
 else:
     MEDIA_LOCATIONS["capra_script"] = GEONODE_CLIENT_LOCATION + "/capra-client/CAPRA.js"
 
+ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course, use a different value.
 
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/tmp/app-messages' # change this to a proper location
+
+AUTH_PROFILE_MODULE = 'geonode_profile.Profile'

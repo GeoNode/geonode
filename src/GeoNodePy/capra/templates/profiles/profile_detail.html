@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Profile for {{ profile.user.username }}</h2>
+
+<ul>
+	<li>name: {{ profile.name}}</li>
+	<li>email: {{ profile.user.email }}</li>
+	<li>organization: {{ profile.organization}}</li>
+	<li>position: {{ profile.position}}</li>
+	<li>voice: {{ profile.voice}}</li>
+	<li>fax: {{ profile.fax}}</li>
+	<li>delivery: {{ profile.delivery}}</li>
+	<li>area: {{ profile.area}}</li>
+	<li>zipcode: {{ profile.zipcode}}</li>
+	<li>country: {{ profile.country}}</li>
+</ul>	
+
+{% endblock %}

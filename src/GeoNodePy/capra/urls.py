@@ -20,6 +20,8 @@ urlpatterns += patterns('capra.safehospitals.views',
 
 urlpatterns += patterns('',
     (r'^files/', include('capra.files.urls')),
+    (r'^accounts/', include('registration.urls')),
+    (r'^profiles/', include('profiles.urls')),
 )
 
 if settings.DEBUG:
