@@ -1,6 +1,7 @@
 from geonode.settings import *
+import os
 # Django settings for capra project.
-
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 ## DEBUG = True
 ## TEMPLATE_DEBUG = DEBUG
 ## 
@@ -11,7 +12,8 @@ from geonode.settings import *
 ## MANAGERS = ADMINS
 ## 
 ## DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-## DATABASE_NAME = ''             # Or path to database file if using sqlite3.
+DATABASE_NAME = os.path.abspath(os.path.join(SITE_ROOT, 'development.db'))
+print DATABASE_NAME
 ## DATABASE_USER = ''             # Not used with sqlite3.
 ## DATABASE_PASSWORD = ''         # Not used with sqlite3.
 ## DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -76,6 +78,7 @@ ROOT_URLCONF = 'capra.urls'
 TEMPLATE_DIRS = (path_extrapolate('capra/templates'),) + TEMPLATE_DIRS
 
 INSTALLED_APPS = INSTALLED_APPS + ('capra.layertypes',)
+INSTALLED_APPS = INSTALLED_APPS + ('registration', 'profiles', 'capra.geonode_profile')
 
 NAVBAR['hazard'] = {'id': '%sLink',
     'item_class': '',
@@ -112,4 +115,9 @@ if DEBUG:
 else:
     MEDIA_LOCATIONS["capra_script"] = GEONODE_CLIENT_LOCATION + "/capra-client/CAPRA.js"
 
+ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course, use a different value.
 
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/tmp/app-messages' # change this to a proper location
+
+AUTH_PROFILE_MODULE = 'geonode_profile.Profile'

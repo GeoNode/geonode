@@ -8,6 +8,7 @@ import httplib2
 import simplejson
 import urllib
 import uuid
+from django.contrib.auth.models import User
 
 def _(x): return x
 
@@ -73,7 +74,7 @@ class Layer(models.Model):
     name = models.CharField(max_length=128)
     uuid = models.CharField(max_length=36)
     typename = models.CharField(max_length=128)
-
+    owner = models.ForeignKey(User, blank=True, null=True)
 
     def delete(self, *args, **kwargs): 
         """
@@ -228,7 +229,12 @@ class Layer(models.Model):
     def resource(self):
         if not hasattr(self, "_resource_cache"):
             cat = Layer.objects.gs_catalog
-            ws = cat.get_workspace(self.workspace)
+            try:
+                ws = cat.get_workspace(self.workspace)
+            except AttributeError:
+                # Geoserver is not running
+                raise RuntimeError("Geoserver cannot be accessed, are you sure it is running in: %s" %
+                                    (settings.GEOSERVER_BASE_URL))
             store = cat.get_store(self.store, ws)
             self._resource_cache = cat.get_resource(self.name, store)
         return self._resource_cache
@@ -289,6 +295,7 @@ class Map(models.Model):
     zoom = models.IntegerField()
     center_lat = models.FloatField()
     center_lon = models.FloatField()
+    owner = models.ForeignKey(User)
 
     def __unicode__(self):
         return '%s by %s' % (self.title, self.contact)
@@ -335,7 +342,7 @@ class Map(models.Model):
 class MapLayer(models.Model):
     name = models.CharField(max_length=200)
     styles = models.CharField(max_length=200)
-    opacity = models.FloatField()
+    opacity = models.FloatField(default=1.0)
     format = models.CharField(max_length=200)
     transparent = models.BooleanField()
     ows_url = models.URLField()
