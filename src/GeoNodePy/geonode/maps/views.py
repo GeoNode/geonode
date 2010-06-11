@@ -169,7 +169,7 @@ def create_map_json(json_text):
                 ordering = ordering + 1
     return map
 
-
+@csrf_exempt
 def newmap(request):
     '''
     View that creates a new map.  
