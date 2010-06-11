@@ -65,9 +65,9 @@
 						<div class="login-widget"> 
 							{% if user.is_authenticated %}
 						       {{ user.username }} 
-							   (<a href="{% url auth_logout %}">{% trans "Log out" %}</a> | 
+							   (<a href="{% if user.get_profile %}{% url profiles_edit_profile %}{% else %}{% url profiles_create_profile %}{% endif %}">{% trans "Edit profile" %}</a> |
 						    	<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> |
-						    	<a href="{% if user.get_profile %}{% url profiles_edit_profile %}{% else %}{% url profiles_create_profile %}{% endif %}">{% trans "Edit profile" %}</a>)
+						        <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
 						    	{% else %}
 						        <form action="/accounts/login" method="post"> 
 									<input type="text" name="username" />
@@ -75,7 +75,9 @@
 									<input type="submit" value="Login" />
 									{% csrf_token %}
 								</form>
+								{% if REGISTRATION_OPEN %}
 								<p style="margin-bottom:0em;">{% trans "Not member" %}? <a href="{% url registration_register %}">{% trans "Register" %}</a>!</p>
+								{% endif %}
 							{% endif %}
 						</div>
              <div id="header"><a href="{% url geonode.views.index %}">CAPRA Home</a>
