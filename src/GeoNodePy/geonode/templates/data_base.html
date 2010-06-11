@@ -7,100 +7,76 @@
 {% block header_append %}
 <script type="text/javascript">
 Ext.onReady(function(){
-   {% autoescape off %}
-
-    var bbox = new GeoNode.BoundingBoxWidget({
-         proxy: "/proxy/?url=",
-         background: {{ background }},
-         renderTo: 'sidebar',
-    });
-
-    var searchTable = new GeoNode.SearchTable({
-        renderTo: 'layer_data',
-        trackSelection: true,
-        permalinkURL: '{% url geonode.maps.views.browse_data %}',
-        searchURL: '{% url geonode.maps.views.metadata_search %}',
-        layerDetailURL: '{% url geonode.maps.views.search_result_detail %}',
-        constraints: [bbox],
-        searchParams: {{init_search}}
-    });
-    searchTable.hookupSearchButtons('sidebar');
-    
-    var dataCart = new GeoNode.DataCart({
-      store: searchTable.dataCart,
-      renderTo: 'data_cart'
-    });
-    
-    var dataOps = new GeoNode.DataCartOps({
-      cart: dataCart,
-      renderTo: 'data_ops',
-      
-      begin_download_url: '{% url geonode.maps.views.batch_layer_download %}',
-      stop_download_url: '{{site}}geoserver/rest/process/batchDownload/kill/',
-      download_url: '{{site}}geoserver/rest/process/batchDownload/download/',
-    });
-    
-    
-    {% endautoescape %}
+{% autoescape off %}
+  var submitForm = function() {
+      Ext.query('#search_form form')[0].submit();
+  };
+  var searchButton = new Ext.Button({renderTo: 'submit_search', text: '{% trans "Search" %}',
+                                     handler: submitForm});
+  var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
+{% endautoescape %}
 });
 </script>
 {% endblock %}
 
 {% block nav %} {% navbar data %} {% endblock %}
 
-{% block main %} 
-<h3>{% trans "Data Search Results" %}</h3>
+{% block main %}
 
-<div id="layer_data"></div>
+<div id="search_form" class="block">
 
-<br/>
-<div>
-<h3>Selected Data</h3>
-<p>{% blocktrans %}Use the checkboxes in the search results to add data to the selection below.{% endblocktrans%}</p>
-  
-<div id="data_cart"></div>
-</div>
+  <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
-<div id="data_ops">
-  <ul>
-    <li><a href="#" class="create-map">{% trans "Create a new map" %}</a></li>
-    <li><span class="export">{% trans "Export selected" %}:</span>
-        <a href="#mixed" class="batch-download">Zip</a> 
-    </li>
-<!--    <li><span class="export">{% trans "Export selected" %}:</span>
-        <a href="#shp" class="batch-download">Shapefile</a>, 
-        <a href="#geotiff" class="batch-download">GeoTiff</a>
-    </li> -->
-  </ul>
-
-  <form id="create_map_form" action="{% url geonode.maps.views.newmap %}" method="POST">
+  <form action="{% url search %}" method="POST">
+      <table>
+        <tr>
+          <td>
+          <input type="text" id="search_query" name="q" />
+          </td>
+          <td>
+            <div id="submit_search"></div>
+          </td>
+        </tr>
+      </table>
+      <a href="{% url search %}">{% trans "advanced" %}</a>
   </form>
 </div>
-<br/>
+
+<!--
+<div id="keywords" class="block">
+  <h2>{% trans "Browse" %} <span class="subtitle">{% trans "by keyword" %}</span></h2>
+  <div class="keywords_col1"></div>
+  <div class="keywords_col2"></div>
+  <div class="keywords_col3"></div>
+</div>
+--> 
+
+<div id="upload" class="block">
+  <h2>{% trans "Upload" %}</h2>
+  <p>{% trans "We support Shapefile and GeoTIFF uploads." %}
+  <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload a new layer"  %}</a>
+  </p>
+</div>
+
 {% endblock %}
 
 {% block sidebar %}
-<div class="bbox-map"></div>
-<br/>
-<h3>{% trans "Refine Search" %}</h3>
-<div class="bbox-controls">
-  <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
-  <span class="explain">{% blocktrans %}Create a boundary on the map above to limit the search to data that includes features in a specified area.{% endblocktrans %}</span>
-  <div class="bbox-buttons"></div>
+
+<div class="block">
+  {% block sidebar_info %}
+  <h3>{% trans "Browse Data" %}</h3>
+  {% blocktrans %}
+  <p>Here you can browse, search and add to the data hosted by this GeoNode.</p>
+  {% endblocktrans %}
+  {% endblock %}
+  
+    
+  <h3>{% trans "For Developers" %}</h3>
+  {% blocktrans %} 
+  If you are interested in information about accessing this information through OGC services, please visit our
+  {% endblocktrans %}
+  <a href="{% url geonode.views.static "developer" %}">{% trans "developer page" %}</a>.
 </div>
-<br/>
-<div class="search-button"></div>
 
-<p></p>
-
-
-<h3>{% trans "Add Data" %}</h3>
-<p>{% trans "Click here to"  %} <a href="{% url geonode.maps.views.upload_layer%}">{% trans "upload a new layer"  %}</a></p>
-
-
-<h3>{% trans "For Developers" %}</h3>
-{% blocktrans %} 
-If you are interested in information about accessing this information through OGC services, click 
-{% endblocktrans %}
-<a href="{% url geonode.views.static "developer" %}">{% trans "here" %}</a>.
 {% endblock %}
+

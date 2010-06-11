@@ -345,6 +345,14 @@ a.permalink {
   background-image: url(img/silk/link.png);
 }
 
+a.layer-upload-link {
+    text-decoration: none;  
+    background-repeat:no-repeat;
+    padding-left: 18px;
+    margin-top: 1em;
+    background-image: url(img/silk/add.png);
+    display: block;
+}
 
 #data_ops ul li {
     list-style-type: none;
@@ -377,9 +385,42 @@ a.permalink {
     font-weight: bold;
 }
 
-.bbox-controls .explain {
-    font-size: 90%;
-    color: #afafaf;
+#sidebar .search-button {
+    margin-top: 15px;
+}
+
+.explain {
+    font-size: 95%;
+    color: #808080;
+}
+
+h3 .explain {
+    margin-top: .5em;
+    font-size: 60%;
+    display: block;
+}
+
+#main .block {
+    margin-bottom: 50px;
+}
+
+#sidebar .block {
+    margin-bottom: 25px;
+}
+
+.subtitle {
+    font-size: 60%;
+    padding-left: .25em;
+    color: #808080;
+}
+
+/* data page search form */
+#search_form table {
+    border: none;
+}
+
+#search_form #submit_search {
+    padding-left: 5px;
 }
 
 
