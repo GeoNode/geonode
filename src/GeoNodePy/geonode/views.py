@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from geonode.maps.views import build_map_config, DEFAULT_MAP_CONFIG
 import random
+from django.views.decorators.csrf import csrf_exempt
 
 def index(request): 
     featured = Map.objects.filter(featured=True)

@@ -6,7 +6,9 @@ import urllib
 import simplejson 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def proxy(request):
     if 'url' not in request.GET:
         return HttpResponse('The proxy service requires a URL-encoded URL as a parameter.', status=400, content_type="text/plain")
@@ -26,6 +28,7 @@ def proxy(request):
 
 
 @login_required
+@csrf_exempt
 def geoserver(request,path):
     url = "{geoserver}{url}".format(geoserver=settings.GEOSERVER_BASE_URL,url=path)
     h = httplib2.Http()    

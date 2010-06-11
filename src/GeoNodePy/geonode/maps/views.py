@@ -23,6 +23,7 @@ import re
 from urllib import urlencode
 from urlparse import urlparse
 import uuid
+from django.views.decorators.csrf import csrf_exempt
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
@@ -615,6 +616,7 @@ def upload_layer(request):
 
 
 @login_required
+@csrf_exempt
 def _updateLayer(request, layer):
     if request.method == 'GET':
         cat = Layer.objects.gs_catalog
@@ -815,6 +817,7 @@ def _split_query(query):
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
+@csrf_exempt
 def metadata_search(request):
     """
     handles a basic search for data using the 
@@ -1018,7 +1021,7 @@ def _build_search_result(doc):
 def browse_data(request):
     return render_to_response('data.html', RequestContext(request, {}))
 
-    
+@csrf_exempt    
 def search_page(request):
     # for non-ajax requests, render a generic search page
 
