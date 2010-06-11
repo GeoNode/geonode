@@ -1000,12 +1000,23 @@ def _build_search_result(doc):
     result['metadata_links'] = [("text/xml", "TC211", md_link)]
 
     return result
-    
-    
+
 def browse_data(request):
+    return render_to_response('data.html', RequestContext(request, {}))
+
+    
+def search_page(request):
     # for non-ajax requests, render a generic search page
-    return render_to_response('data.html', RequestContext(request, {
-        'init_search': json.dumps(request.GET or {}),
+
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
+    return render_to_response('search.html', RequestContext(request, {
+        'init_search': json.dumps(params or {}),
         'background': json.dumps(settings.MAP_BASELAYERS[settings.SEARCH_WIDGET_BASELAYER_INDEX]),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
          "site" : settings.SITEURL
