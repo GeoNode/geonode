@@ -296,8 +296,7 @@ def capra_js(options):
 
 @task
 def sync_django_db(options):
-    if not path("development.db").exists():
-        sh("django-admin.py syncdb --settings=capra.settings --noinput")
+    sh("django-admin.py syncdb --settings=capra.settings --noinput")
 
 
 @task
