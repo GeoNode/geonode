@@ -12,7 +12,8 @@ SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 ## MANAGERS = ADMINS
 ## 
 ## DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = os.path.join(SITE_ROOT, 'development.db')
+DATABASE_NAME = os.path.abspath(os.path.join(SITE_ROOT, 'development.db'))
+print DATABASE_NAME
 ## DATABASE_USER = ''             # Not used with sqlite3.
 ## DATABASE_PASSWORD = ''         # Not used with sqlite3.
 ## DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -77,7 +78,7 @@ ROOT_URLCONF = 'capra.urls'
 TEMPLATE_DIRS = (path_extrapolate('capra/templates'),) + TEMPLATE_DIRS
 
 INSTALLED_APPS = INSTALLED_APPS + ('capra.layertypes',)
-INSTALLED_APPS = INSTALLED_APPS + ('gunicorn','registration', 'profiles', 'geonode_profile')
+INSTALLED_APPS = INSTALLED_APPS + ('registration', 'profiles', 'capra.geonode_profile')
 
 NAVBAR['hazard'] = {'id': '%sLink',
     'item_class': '',
