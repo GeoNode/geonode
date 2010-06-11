@@ -228,7 +228,12 @@ class Layer(models.Model):
     def resource(self):
         if not hasattr(self, "_resource_cache"):
             cat = Layer.objects.gs_catalog
-            ws = cat.get_workspace(self.workspace)
+            try:
+                ws = cat.get_workspace(self.workspace)
+            except AttributeError:
+                # Geoserver is not running
+                raise RuntimeError("Geoserver cannot be accessed, are you sure it is running in: %s" %
+                                    (settings.GEOSERVER_BASE_URL))
             store = cat.get_store(self.store, ws)
             self._resource_cache = cat.get_resource(self.name, store)
         return self._resource_cache
@@ -335,7 +340,7 @@ class Map(models.Model):
 class MapLayer(models.Model):
     name = models.CharField(max_length=200)
     styles = models.CharField(max_length=200)
-    opacity = models.FloatField()
+    opacity = models.FloatField(default=1.0)
     format = models.CharField(max_length=200)
     transparent = models.BooleanField()
     ows_url = models.URLField()
