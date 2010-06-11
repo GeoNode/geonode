@@ -7,6 +7,7 @@ from geonode.maps.models import Layer
 from geonode.maps.context_processors import resource_urls
 from httplib2 import Http
 import json 
+from django.views.decorators.csrf import csrf_exempt
 
 def index(request): 
     hazards = Hazard.objects.all()
@@ -58,6 +59,7 @@ def report(request, format):
     else:
         raise Exception("Report requested in invalid format. (Expects .html or .pdf)")
 
+@csrf_exempt
 def extract_params(request):
     """
     Examine a report request and extract the parameters that should be 
@@ -88,6 +90,7 @@ def radius_for(scale):
     """
     return 0.012
 
+@csrf_exempt
 def request_rest_process(process, params): 
     """
     Make a REST request for the WPS process named, with the provided parameters.

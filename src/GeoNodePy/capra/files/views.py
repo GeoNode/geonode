@@ -8,6 +8,7 @@ from django.utils.translation import ugettext as _
 from django import forms
 from capra.files.models import AMEFile
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 try:
     import json
@@ -50,6 +51,7 @@ GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your dat
 Please try again, or contact and administrator if the problem continues.")
 
 @login_required
+@csrf_exempt
 def upload(request):
     """
     view that handles uploading a new file
@@ -99,6 +101,7 @@ class EditFileForm(forms.ModelForm):
         fields = ['title', 'scenario', 'country']
     
 @login_required
+@csrf_exempt
 def edit(request, id):
     """
     view that handles editing a file's metadata
@@ -121,6 +124,7 @@ class ReplaceFileForm(forms.ModelForm):
         fields = ['file', 'title']
 
 @login_required
+@csrf_exempt
 def replace(request, id):
     obj = get_object_or_404(AMEFile, pk=id)
     if request.method == 'POST':
