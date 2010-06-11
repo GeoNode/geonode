@@ -476,6 +476,20 @@ def _describe_layer(request, layer):
         if request.method == "GET":
             resource = layer.resource
             meta = layer.metadata_csw()
+            if meta is None:
+                # It probably means GeoNetwork isn't running or the layer is not there.
+                # Don't try to populate the information.
+                md_form = MetadataForm()
+                poc_form = ContactForm(prefix="poc")
+                metadata_provider_form = ContactForm(prefix="metadata")
+                return render_to_response("maps/layer_describe.html", RequestContext(request, {
+                        "layer": layer,
+                        "md_form": md_form,
+                        "poc_form": poc_form,
+                        "metadata_provider_form": metadata_provider_form
+                    }))
+                
+                
             bbox = meta.identification.bbox
             bbox_ewkt = bbox_to_wkt(bbox.minx, bbox.maxx, bbox.miny, bbox.maxy)
             keywords = [word for word in meta.identification.keywords['list'] if isinstance(word,str)]

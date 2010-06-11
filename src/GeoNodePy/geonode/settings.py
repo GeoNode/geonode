@@ -9,6 +9,7 @@ SITENAME = "CAPRA GeoNode"
 SITEURL = "http://localhost:8000/"
 TEMPLATE_DEBUG = DEBUG
 
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
@@ -82,6 +83,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
@@ -185,7 +187,7 @@ NAVBAR = \
 # Determines whether the minified or the "raw" JavaScript files are included.
 # Only applies in development mode. (That is, when DEBUG==True)
 #MINIFIED_RESOURCES = False
-MINIFIED_RESOURCES = False
+MINIFIED_RESOURCES = True
 
 INSTALLED_APPS = (
     'django.contrib.auth',

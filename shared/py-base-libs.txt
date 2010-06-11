@@ -1,4 +1,4 @@
-Django==1.1
+Django==1.2
 simplejson # needed for python2.5
 werkzeug
 django-extensions

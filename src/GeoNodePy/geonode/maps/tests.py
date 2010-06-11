@@ -5,7 +5,7 @@ from geonode.maps.views import build_map_config, DEFAULT_MAP_CONFIG
 import json
 
 class MapTest(TestCase):
-    fixtures = ['testdata.json']
+    fixtures = ['map_data.json']
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
