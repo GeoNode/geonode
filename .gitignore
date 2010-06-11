@@ -23,7 +23,7 @@ target
 /src/gsconfig.py/
 /src/owslib/
 /webapps/
-
+/src/GeoNodePy/capra/development.db
 # OSX specific
 .Python
 .DS_Store
