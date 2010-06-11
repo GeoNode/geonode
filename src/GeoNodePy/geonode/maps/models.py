@@ -8,6 +8,7 @@ import httplib2
 import simplejson
 import urllib
 import uuid
+from django.contrib.auth.models import User
 
 def _(x): return x
 
@@ -73,7 +74,7 @@ class Layer(models.Model):
     name = models.CharField(max_length=128)
     uuid = models.CharField(max_length=36)
     typename = models.CharField(max_length=128)
-
+    owner = models.ForeignKey(User, blank=True, null=True)
 
     def delete(self, *args, **kwargs): 
         """
@@ -294,6 +295,7 @@ class Map(models.Model):
     zoom = models.IntegerField()
     center_lat = models.FloatField()
     center_lon = models.FloatField()
+    owner = models.ForeignKey(User)
 
     def __unicode__(self):
         return '%s by %s' % (self.title, self.contact)
