@@ -41,6 +41,9 @@ LANGUAGES = (
 
 SITE_ID = 1
 
+# Setting a custom test runner to avoid running the tests for some problematic 3rd party apps
+TEST_RUNNER='geonode.testrunner.GeoNodeTestRunner'
+
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
