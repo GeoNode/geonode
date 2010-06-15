@@ -4,6 +4,7 @@ from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.geonetwork import Catalog as GeoNetwork
+from django.db.models import signals
 import httplib2
 import simplejson
 import urllib
@@ -73,36 +74,8 @@ class Layer(models.Model):
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     uuid = models.CharField(max_length=36)
-    typename = models.CharField(max_length=128)
+    typename = models.CharField(max_length=128, unique=True)
     owner = models.ForeignKey(User, blank=True, null=True)
-
-    def delete(self, *args, **kwargs): 
-        """
-        Override default method to remove a layer. This 
-        removes the layer from the GeoServer Catalog as
-        removing it from the Django models
-        """
-        # GEOSERVER_CREDENTIALS         
-        HTTP = httplib2.Http(".cache")
-        HTTP.add_credentials(_user,_password)
-        def _getFeatureUrl(self): 
-            if self.storeType == "dataStore":
-                featureUrl = "%srest/workspaces/%s/datastores/%s/featuretypes/%s" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store, self.name)
-                storeUrl = "%srest/workspaces/%s/datastores/%s" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store)
-                return (featureUrl,storeUrl)
-            if self.storeType == "coverageStore":
-                featureUrl = "%srest/workspaces/%s/coveragestores/%s" % (settings.GEOSERVER_BASE_URL,self.workspace,self.name)
-                storeUrl = "%srest/workspaces/%s/coveragestores/%s" % (settings.GEOSERVER_BASE_URL,self.workspace,self.name)
-                return (featureUrl,storeUrl)
-        try:
-            layerURL = "%srest/layers/%s" % (settings.GEOSERVER_BASE_URL,self.name)
-            (featUrl,storeUrl) = _getFeatureUrl(self) 
-            HTTP.request(layerURL,"DELETE")     
-            HTTP.request(featUrl,"DELETE")
-            HTTP.request(storeUrl,"DELETE")
-            super(Layer, self).delete(*args, **kwargs)
-        except ValueError:
-            raise NameError("Unable to remove Layer from the GeoNode")
 
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
@@ -371,3 +344,30 @@ class MapLayer(models.Model):
 
     def __unicode__(self):
         return '%s?layers=%s' % (self.ows_url, self.name)
+
+def _getFeatureUrl(layer): 
+     layerURL = "%srest/layers/%s.xml" % (settings.GEOSERVER_BASE_URL,layer.name)         
+     if layer.storeType == "dataStore":
+         featureUrl = "%srest/workspaces/%s/datastores/%s/featuretypes/%s.xml" % (settings.GEOSERVER_BASE_URL, layer.workspace, layer.store, layer.name)
+         storeUrl = "%srest/workspaces/%s/datastores/%s.xml" % (settings.GEOSERVER_BASE_URL, layer.workspace, layer.store)
+     elif layer.storeType == "coverageStore":
+         featureUrl = "%srest/workspaces/%s/coveragestores/%s/coverages/%s.xml" % (settings.GEOSERVER_BASE_URL,layer.workspace,layer.store, layer.name)
+         storeUrl = "%srest/workspaces/%s/coveragestores/%s.xml" % (settings.GEOSERVER_BASE_URL,layer.workspace,layer.store)
+     return (layerURL,featureUrl,storeUrl)
+
+def delete_layer(instance, sender, **kwargs): 
+    """
+    Removes the layer from the GeoServer Catalog
+    """
+    # GEOSERVER_CREDENTIALS         
+    HTTP = httplib2.Http(".cache")
+    HTTP.add_credentials(_user,_password)
+ 
+    urls = _getFeatureUrl(instance) 
+    for u in urls:
+        output = HTTP.request(u,"DELETE")
+        if output[0]["status"][0] == '4':
+            raise RuntimeError("Unable to remove layer: %s" % output[1])
+
+
+signals.pre_delete.connect(delete_layer, sender=Layer)
