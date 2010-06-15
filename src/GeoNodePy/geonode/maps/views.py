@@ -286,7 +286,7 @@ def check_download(request):
     return HttpResponse(content=content,status=status)
 
 
-
+@csrf_exempt
 def batch_layer_download(request):
     """
     batch download a set of layers
@@ -472,6 +472,7 @@ class LayerDescriptionForm(forms.Form):
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
 
+@csrf_exempt
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
         if request.method == "GET":
@@ -555,6 +556,7 @@ def _describe_layer(request, layer):
     else: 
         return HttpResponse("Not allowed", status=403)
 
+@csrf_exempt
 def _removeLayer(request,layer):
     if request.user.is_authenticated():
         if (request.method == 'GET'):
@@ -592,6 +594,7 @@ GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your dat
 Please try again, or contact and administrator if the problem continues.")
 
 @login_required
+@csrf_exempt
 def upload_layer(request):
     if request.method == 'GET':
         return render_to_response('maps/layer_upload.html',
