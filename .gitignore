@@ -24,9 +24,13 @@ target
 /src/owslib/
 /webapps/
 /src/GeoNodePy/capra/development.db
+
 # OSX specific
 .Python
 .DS_Store
+
+# pip output files
+pip-log.txt
 
 #Temporary files
 *~
