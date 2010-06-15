@@ -1,5 +1,5 @@
 from django.test import TestCase
-from geonode.maps.models import Map
+from geonode.maps.models import Map, Layer
 from django.test.client import Client
 from geonode.maps.views import build_map_config, DEFAULT_MAP_CONFIG
 import json
@@ -34,14 +34,42 @@ community."
         self.assertEquals(layernames, ['base:CA', 'base:nic_admin'])
 
     def test_mapdetails(self): 
-        ''' Test accessing the detail view of a map '''
+        '''/maps/1 -> Test accessing the detail view of a map'''
         map = Map.objects.get(id="1") 
         c = Client() 
         response = c.get("/maps/%s" % map.id)
         self.assertEquals(response.status_code,200) 
 
-    def test_DescribeData(self):
-          ''' Test accessing the description of a layer '''
+    def test_data(self):
+          '''/data/ -> Test accessing the data page'''
+          c = Client()
+          response = c.get('/data/')
+          self.failUnlessEqual(response.status_code, 200)
+
+    def test_search(self):
+          '''/data/search/ -> Test accessing the data search page'''
+          c = Client()
+          response = c.get('/data/search/')
+          self.failUnlessEqual(response.status_code, 200)
+
+    def test_search_api(self):
+         '''/data/search/api -> Test accessing the data search api JSON'''
+         if self.GEOSERVER:
+             c = Client()
+             response = c.get('/data/search/api')
+             self.failUnlessEqual(response.status_code, 200)
+
+
+    def test_search_detail(self):
+        '''/data/search/detail -> Test accessing the data search detail for a layer'''
+        if self.GEOSERVER:
+            layer = Layer.objects.all()[0]
+            c = Client()
+            response = c.get('/data/search/detail', {'uuid':layer.uuid})
+            self.failUnlessEqual(response.status_code, 200)
+
+    def test_describe_data(self):
+          '''/data/base:CA?describe -> Test accessing the description of a layer '''
 
           c = Client()
           response = c.get('/data/base:CA?describe')
