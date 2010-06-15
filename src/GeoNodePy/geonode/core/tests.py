@@ -63,24 +63,3 @@ class GeoNodeClientTests(TestCase):
         c = Client()
         response = c.get('/profiles/')
         self.failUnlessEqual(response.status_code, 200)
-   
-    def test_DescribeData(self):
-        ''' Test accessing the description of a layer'''
-        
-        c = Client()
-        response = c.get('/data/base:CA?describe')
-        # Since we are not authenticated, we should not be able to access it
-        self.failUnlessEqual(response.status_code, 403)
-        # but if we log in ...
-        c.login(username='bobby', password='bob')
-        # ... all should be good
-        if self.GEOSERVER:
-            response = c.get('/data/base:CA?describe')
-            self.failUnlessEqual(response.status_code, 200)
-        else:
-            # If Geoserver is not running, this should give a runtime error
-            try:
-                c.get('/data/base:CA?describe')
-            except RuntimeError:
-                pass
-        

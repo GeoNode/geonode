@@ -13,7 +13,8 @@
      "featured": false, 
      "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>.", 
      "endorsed": false, 
-     "center_lat": 12.800000000000001
+     "center_lat": 12.800000000000001,
+     "owner": 1
    }
  }, 
  {"pk": 2, "model": "maps.map", "fields": {
@@ -24,7 +25,8 @@
      "featured": false, 
      "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>.", 
      "endorsed": false, 
-     "center_lat": 12.800000000000001
+     "center_lat": 12.800000000000001,
+     "owner": 1
    }
  }, 
  {"pk": 3, "model": "maps.map", "fields": {
@@ -35,7 +37,8 @@
      "featured": false, 
      "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>.", 
      "endorsed": false, 
-     "center_lat": 12.800000000000001
+     "center_lat": 12.800000000000001,
+     "owner": 1
    }
  }, 
  {"pk": 1, "model": "maps.maplayer", "fields": {
