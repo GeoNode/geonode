@@ -166,6 +166,30 @@ class Layer(models.Model):
             "coverageStore": "Raster Data",
         }).get(self.storeType, "Data")
 
+    def delete_from_geoserver(self):
+        layerURL = "%srest/layers/%s.xml" % (settings.GEOSERVER_BASE_URL,self.name)
+        if self.storeType == "dataStore":
+            featureUrl = "%srest/workspaces/%s/datastores/%s/featuretypes/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store, self.name)
+            storeUrl = "%srest/workspaces/%s/datastores/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store)
+        elif self.storeType == "coverageStore":
+            featureUrl = "%srest/workspaces/%s/coveragestores/%s/coverages/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store, self.name)
+            storeUrl = "%srest/workspaces/%s/coveragestores/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store)
+        urls = (layerURL,featureUrl,storeUrl)
+
+        # GEOSERVER_CREDENTIALS
+        HTTP = httplib2.Http(".cache")
+        HTTP.add_credentials(_user,_password)
+
+        for u in urls:
+            output = HTTP.request(u,"DELETE")
+            if output[0]["status"][0] == '4':
+                raise RuntimeError("Unable to remove from Geoserver: %s" % output[1])
+
+    def delete_from_geonetwork(self):
+        gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
+        gn.login()
+        gn.delete_layer(self)
+
     def _set_title(self, title):
         self.resource.title = title
 
@@ -345,29 +369,13 @@ class MapLayer(models.Model):
     def __unicode__(self):
         return '%s?layers=%s' % (self.ows_url, self.name)
 
-def _getFeatureUrl(layer): 
-     layerURL = "%srest/layers/%s.xml" % (settings.GEOSERVER_BASE_URL,layer.name)         
-     if layer.storeType == "dataStore":
-         featureUrl = "%srest/workspaces/%s/datastores/%s/featuretypes/%s.xml" % (settings.GEOSERVER_BASE_URL, layer.workspace, layer.store, layer.name)
-         storeUrl = "%srest/workspaces/%s/datastores/%s.xml" % (settings.GEOSERVER_BASE_URL, layer.workspace, layer.store)
-     elif layer.storeType == "coverageStore":
-         featureUrl = "%srest/workspaces/%s/coveragestores/%s/coverages/%s.xml" % (settings.GEOSERVER_BASE_URL,layer.workspace,layer.store, layer.name)
-         storeUrl = "%srest/workspaces/%s/coveragestores/%s.xml" % (settings.GEOSERVER_BASE_URL,layer.workspace,layer.store)
-     return (layerURL,featureUrl,storeUrl)
 
 def delete_layer(instance, sender, **kwargs): 
     """
-    Removes the layer from the GeoServer Catalog
+    Removes the layer from GeoServer and GeoNetwork
     """
-    # GEOSERVER_CREDENTIALS         
-    HTTP = httplib2.Http(".cache")
-    HTTP.add_credentials(_user,_password)
- 
-    urls = _getFeatureUrl(instance) 
-    for u in urls:
-        output = HTTP.request(u,"DELETE")
-        if output[0]["status"][0] == '4':
-            raise RuntimeError("Unable to remove layer: %s" % output[1])
+    instance.delete_from_geoserver()
+    instance.delete_from_geonetwork()
 
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
