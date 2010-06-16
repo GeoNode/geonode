@@ -157,8 +157,18 @@ def post_bootstrap(options):
 def grab(src, dest):
     from urlgrabber.grabber import urlgrab, URLGrabError
     from urlgrabber.progress import text_progress_meter
+
+    if getattr(options, 'clean', False) and os.path.exists(str(dest)):
+        (path(".") / dest).remove()
+
     try:
-        urlgrab(str(src), str(dest), reget='simple', progress_obj = text_progress_meter())
+        if not os.path.exists(str(dest)):
+            urlgrab(
+                str(src), 
+                str(dest), 
+                reget='simple', 
+                progress_obj = text_progress_meter()
+            )
     except URLGrabError, e:
         # Eat exceptions with error code 9; these indicate that we had already finished the download
         if e.errno != 9: raise
