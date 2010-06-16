@@ -97,7 +97,6 @@ class Catalog(object):
         request = urllib2.Request(url, md_doc, headers)
         response = self.urlopen(request)
         # TODO: Parse response, check for error report
-        print response.read()
 
     def update_from_layer(self, record, layer):
         pass
