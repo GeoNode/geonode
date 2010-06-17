@@ -292,7 +292,7 @@ class Map(models.Model):
     zoom = models.IntegerField()
     center_lat = models.FloatField()
     center_lon = models.FloatField()
-    owner = models.ForeignKey(User)
+    owner = models.ForeignKey(User, blank=True, null=True)
 
     def __unicode__(self):
         return '%s by %s' % (self.title, self.contact)

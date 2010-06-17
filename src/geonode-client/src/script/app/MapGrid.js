@@ -68,7 +68,7 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
                 handler: function() {
                     var rec = mapGrid.getSelectionModel().getSelected();
                     if (rec)
-                        location.href = "/maps/" + rec.id + ".html";
+                        location.href = "/maps/" + rec.id;
                 }
             }),
             new Ext.Button({

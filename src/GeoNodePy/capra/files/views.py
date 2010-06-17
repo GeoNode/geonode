@@ -77,6 +77,7 @@ def upload(request):
         form = UploadFileForm()
         return render_to_response('files/upload.html', RequestContext(request, {'form': form}))
 
+@csrf_exempt
 def dispatch(request, id):
     """
     dispatch method based on http method

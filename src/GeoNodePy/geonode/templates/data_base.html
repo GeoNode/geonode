@@ -28,6 +28,7 @@ Ext.onReady(function(){
   <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
   <form action="{% url search %}" method="POST">
+      {% csrf_token %}
       <table>
         <tr>
           <td>
