@@ -36,7 +36,7 @@ var ExportWizard = Ext.extend(Ext.Window, {
             var query = Ext.urlEncode({map: this.map}); 
 
             // TODO: configurablize!!!1!!!!!111!!!!!!
-            var pathname = window.location.pathname.replace(/\/[^\/]*$/, '/embed.html'); 
+            var pathname = window.location.pathname.replace(/\/[^\/]*$/, '/embed'); 
             var url = 
                 window.location.protocol + "//" +
                 window.location.host +
