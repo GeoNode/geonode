@@ -61,7 +61,7 @@ def maps(request, mapid=None):
         return HttpResponse(json.dumps(config))
     elif request.method == 'POST':
         try: 
-            map = create_map_json(request.raw_post_data)
+            map = create_map_json(request)
             response = HttpResponse('', status=201)
             response['Location'] = map.id
             return response
@@ -126,8 +126,8 @@ def update_map_json(request, mapid):
     map.save()
     return HttpResponse('', status=204)
 
-def create_map_json(json_text):
-    conf = json.loads(json_text)
+def create_map_json(request):
+    conf = json.loads(request.raw_post_data)
     title = conf['about']['title']
     abstract = conf['about']['abstract']
     contact = conf['about']['contact']
@@ -144,7 +144,8 @@ def create_map_json(json_text):
         zoom=zoom, 
         center_lon=center_lon, 
         center_lat=center_lat, 
-        featured=featured
+        featured=featured,
+        owner = request.user,
     )
 
     if 'wms' in conf and 'layers' in conf['map']:
