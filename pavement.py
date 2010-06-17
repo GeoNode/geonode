@@ -180,14 +180,12 @@ def setup_gs_data(options):
     shared = path("./shared")
     if not shared.exists():
         shared.mkdir()
+
     dst_url = shared / "geonode-geoserver-data.zip"
-    if getattr(options, 'clean', False):
-        dst_url.rm()
-        path(gs_data).rmtree()
-    if not dst_url.exists():
-        grab(src_url, dst_url)
-    if not path(gs_data).exists():
-        unzip_file(dst_url, gs_data)
+    grab(src_url, dst_url)
+
+    if getattr(options, 'clean', False): path(gs_data).rmtree()
+    if not path(gs_data).exists(): unzip_file(dst_url, gs_data)
 
 
 @task
