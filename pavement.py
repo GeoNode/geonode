@@ -7,6 +7,7 @@ import functools
 import os
 import sys
 import time
+from datetime import date
 import socket
 import ConfigParser
 import paver.doctools
@@ -377,14 +378,14 @@ def package_all(options):
     info('all is packaged, ready to deploy')
 
 
-def create_version_name(svn_version=True):
+def create_version_name():
     # we'll use the geonodepy version as our "official" version number
     # for now
-    slug = "GeoNode-%s" %pkg_resources.get_distribution('GeoNodePy').version
-    if svn_version:
-        # this assumes releaser know what branch is being released
-        revision = svn.info()['revision']
-        slug += "rev" + revision
+    slug = "GeoNode-%s-%s" % (
+        pkg_resources.get_distribution('GeoNodePy').version,
+        date.today().isoformat()
+    )
+
     return slug
 
 @task
@@ -469,26 +470,19 @@ def make_release(options):
     if hasattr(options, 'name'):
         pkgname = options.name
     else:
-        pkgname = create_version_name(not getattr(options, 'no_svn', False))
+        pkgname = create_version_name()
         if hasattr(options, 'append_to'):
             pkgname += options.append_to
 
-    def excludable(f):
-        return f.find(".svn") != -1
-            
-    svninfo = svn.info()
     with pushd('shared'):
         out_pkg = path(pkgname)
         out_pkg.rmtree()
         path('./package').copytree(out_pkg)
-        infofile = out_pkg / "version.txt"
-        infofile.write_text("%s@%s" % (svninfo["url"], svninfo["revision"]))
 
         tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
         with pushd(out_pkg):
             for file in path(".").walkfiles():
-                if not excludable(file):
-                    tar.add(file)
+                tar.add(file)
         tar.close()
 
         out_pkg.rmtree()
