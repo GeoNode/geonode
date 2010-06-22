@@ -234,10 +234,17 @@ def setup_geonetwork(options):
 
 @task
 @needs([
+    'setup_geoserver',
+    'setup_geonetwork'
+])
+def setup_webapps(options):
+    pass
+
+@task
+@needs([
     'install_deps',
-    'setup_geoserver', 
+    'setup_webapps',
     'build_js', 
-    'setup_geonetwork',
     'sync_django_db'
 ])
 def build(options):
