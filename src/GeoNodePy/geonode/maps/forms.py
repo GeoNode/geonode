@@ -4,7 +4,6 @@ from django.forms.util import flatatt
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-from django.contrib.gis.forms import GeometryField
 from django.utils.translation import ugettext as _
 
 COUNTRIES = (
@@ -496,7 +495,7 @@ class MetadataForm(forms.Form):
     topic_category = forms.ChoiceField(choices = [(x, x) for x in TOPIC_CATEGORIES], required=False)
     temporal_extent_start = forms.DateField(required=False)
     temporal_extent_end = forms.DateField(required=False)
-    geographic_bounding_box = GeometryField()
+    geographic_bounding_box = forms.TextField()
     supplemental_information = forms.CharField(5000, required=False)
 
     distribution_url = forms.CharField(300, required=False)
