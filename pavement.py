@@ -215,7 +215,6 @@ def setup_geonetwork(options):
     schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
 
     if getattr(options, 'clean', False):
-        dst_url.rmtree()
         deployed_url.rmtree()
     grab(src_url, dst_url)
     if not dst_war.exists():
