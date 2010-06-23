@@ -344,7 +344,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     
     doSearch: function() {
         /* updates parameters from constraints and 
-           permforms a new search */         
+           permforms a new search */
+        this.searchParams.start = 0;
         if (this.constraints) {
             for (var i = 0; i < this.constraints.length; i++) {
                 this.constraints[i].applyConstraint(this.searchParams);
