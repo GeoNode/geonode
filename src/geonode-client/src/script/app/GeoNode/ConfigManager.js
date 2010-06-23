@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2009 The Open Planning Project
+ * Copyright (c) 2010 OpenPlans
  */
 
 /**
  *
  */
-GeoExplorer.ConfigManager = Ext.extend(Ext.util.Observable, {
+GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
     backgroundLayers: null,
     map: null,
     
