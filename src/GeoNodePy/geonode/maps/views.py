@@ -512,6 +512,14 @@ def _describe_layer(request, layer):
                 "maintenance_frequency": "annually",
                 "geographic_bounding_box": bbox_ewkt,
                 "language": meta.language,
+                "purpose": meta.identification.purpose,
+                #TODO: Report bug for missing parameters in OWSLib
+                #"edition": meta.identification.edition,
+                #"temporal_extent_start": None,
+                #"temporal_extent_end": None,
+                #"suplemental_information": None,
+                "distribution_url": meta.distribution.onlineresource.description,
+                "distribution_description": meta.distribution.onlineresource.description,
                 "keywords": ", ".join([word for word in meta.identification.keywords['list'] if isinstance(word,str)] )
             })
             poc_form = ContactForm(initial={
@@ -524,6 +532,8 @@ def _describe_layer(request, layer):
                "city": meta.contact.city,
                "role": meta.contact.role,
                "address": meta.contact.address,
+               #TODO: Add missing info to OWSLib
+               #"email": meta.contact.email,
             }, prefix="poc")
             
             metadata_provider_form = ContactForm(initial={
