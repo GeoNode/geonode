@@ -21,14 +21,7 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
     },
     
     getViewerConfig: function() {
-        var layers = [{
-            source: "any",
-            type: "OpenLayers.Layer",
-            args: [this.backgroundDisabledText],
-            visibility: false,
-            fixed: true,
-            group: "background"
-        }];
+        var layers = [];
         var layer;
         for(var i=0,len=this.map.layers.length; i<len; ++i) {
             layer = this.map.layers[i];
@@ -55,7 +48,7 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
                 new OpenLayers.Projection("EPSG:4326"),
                 new OpenLayers.Projection(
                     this.map.projection || "EPSG:900913"));
-        var map = Ext.apply({
+        var map = Ext.applyIf({
             projection: "EPSG:900913",
             units: "m",
             maxResolution: 156543.0339,
@@ -73,6 +66,14 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
         }, this.initialConfig);
         
         this.backgroundLayers && this.addBackgroundConfig(config);
+        layers.push({
+            source: "any",
+            type: "OpenLayers.Layer",
+            args: [this.backgroundDisabledText],
+            visibility: false,
+            fixed: true,
+            group: "background"
+        });
         
         return Ext.applyIf(config, this.initialConfig);
     },
@@ -125,6 +126,7 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
                 }
                 config.map.layers.push(Ext.apply({
                     source: "google",
+                    group: "background",
                     apiKey: bgLayer.apiKey,
                     name: bgLayer.layers instanceof Array ?
                         bgLayer.layers[0] : bgLayer.layers,
@@ -133,6 +135,39 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
                 }, bgLayer));
             }
         } 
+    },
+
+    getConfig: function(viewer) {
+        var viewerConfig = viewer.getState();
+        
+        var center = viewerConfig.map.center &&
+            new OpenLayers.LonLat(viewerConfig.map.center[0],
+            viewerConfig.map.center[1]).transform(
+                new OpenLayers.Projection(
+                    viewerConfig.map.projection || "EPSG:900913"),
+                new OpenLayers.Projection("EPSG:4326"));
+        var config = {
+            wms: {},
+            map: {
+                center: center && [center.lon, center.lat],
+                zoom: viewerConfig.map.zoom,
+                layers: []
+            },
+            about: Ext.apply({}, viewer.about)
+        };
+
+        var layer;
+        for(var i=0, len=viewerConfig.map.layers.length; i<len; ++i) {
+            layer = viewerConfig.map.layers[i];
+            if(layer.group !== "background") {
+                config.wms[layer.source] = viewerConfig.sources[layer.source].url;
+                config.map.layers.push(Ext.apply(layer, {
+                    wms: layer.source
+                }));
+            }
+        };
+        
+        return config;
     }
 
 });
