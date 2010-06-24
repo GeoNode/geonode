@@ -4,7 +4,10 @@
 
 {% block title %} {% trans "Community Map List" %} - {{ block.super }} {% endblock %}
 
-{% block header_append %}
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/gxp_header.html" %}
+{{ block.super }}
 <script type="text/javascript">
 Ext.onReady(function(){
   
