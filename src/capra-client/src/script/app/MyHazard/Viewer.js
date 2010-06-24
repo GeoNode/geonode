@@ -27,7 +27,7 @@ MyHazard.Viewer = Ext.extend(Ext.util.Observable, {
             "ready"
         );
 
-        this.backgroundManager = new GeoExplorer.BackgroundLayerManager({
+        this.backgroundManager = new MyHazard.BackgroundLayerManager({
             proxy: this.proxy,
             backgroundLayers: config.backgroundLayers
         });
