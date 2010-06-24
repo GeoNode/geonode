@@ -5,8 +5,12 @@
 
 {% block title %} {% trans "Browse Files" %} - {{ block.super }} {% endblock %}
 
-
-{% block header_append %}
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/openlayers_header.html" %}
+{% include "geonode/geoext_header.html" %}
+{% include "geonode/gxp_header.html" %}
+{{ block.super }}
 <script src="{% geonode_media "capra_script" %}" type="text/javascript"></script>
 <script src="{% url capra.hazard.views.lang %}" type="text/javascript"></script>
 <script type="text/javascript">
@@ -16,7 +20,6 @@ Ext.onReady(function(){
 });
 </script> 
 {% endblock %}
-
 
 {% block main %}
 <div id="file_list"></div>

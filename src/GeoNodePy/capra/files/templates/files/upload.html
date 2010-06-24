@@ -4,6 +4,12 @@
 
 {% block title %} {% trans "Upload AME Data" %} - {{ block.super }} {% endblock %}
 
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/gxp_header.html" %}
+{{ block.super }}
+{% endblock %}
+
 {% block main %}
 
   <div id="upload_form">

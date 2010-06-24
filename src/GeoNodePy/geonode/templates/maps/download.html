@@ -1,7 +1,11 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block header_append %} 
+{% block head %} 
+{% include "geonode/ext_header.html" %}
+{% include "geonode/geoext_header.html" %}
+{% include "geonode/gxp_header.html" %}
+{{ block.super }}
 <script  type="text/javascript">
         {% if map_status %} 
         var checkStatus, progress, pb, process;
@@ -24,7 +28,6 @@
                 failure: function() { 
                     console.log("something went wrong"); 
                 }});                 
-                
         };
 
         Ext.onReady(function() {         
