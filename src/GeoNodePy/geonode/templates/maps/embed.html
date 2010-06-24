@@ -14,10 +14,6 @@
 var app;
 Ext.onReady(function() {
     var config = {
-        /* This option works around issue #109
-         * until http://trac.openlayers.org/ticket/2178
-         * is fixed.
-         */
         alignToGrid: true,
         useToolbar: false,
         proxy: "/proxy/?url=",
@@ -26,12 +22,11 @@ Ext.onReady(function() {
          * provides listing and, with an authenticated user, saving of 
          * maps on the server for sharing and editing.
          */
-        rest: "/maps/",
-        view: { type: Ext.Viewport }
+        rest: "/maps/"
     };
 
     Ext.apply(config, {{config|safe}});
-    app = new Embed(config);
+    app = new GeoExplorer.Viewer(config);
 });
 </script>
 

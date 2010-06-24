@@ -5,6 +5,7 @@
         "/capra_static/src/script/app/DataGrid.js",
         "/capra_static/src/script/app/MyHazard/Viewer.js",
         "/capra_static/src/script/app/MyHazard/LayerGroupOpacitySlider.js",
+        "/capra_static/src/script/app/MyHazard/BackgroundLayerManager.js",
         "/capra_static/src/script/app/MyHazard/Reporter.js"
     );
 

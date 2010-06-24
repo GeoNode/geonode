@@ -90,6 +90,12 @@ if (GeoExplorer && GeoExplorer.CapabilitiesGrid) {
     });
 }
 
+if (GeoNode && GeoNode.ConfigManager) {
+    Ext.apply(GeoNode.ConfigManager.prototype, {
+        backgroundDisabledText : gettext("No background")
+    });
+}
+
 if (ExportWizard) {
     Ext.apply(ExportWizard.prototype, {
         exportDialogMessage: gettext('<p>Your map is ready to be published to the web! </p> <p> Simply copy the following HTML to embed the map in your website: </p>'),
@@ -187,13 +193,5 @@ if (GeoNode && GeoNode.BatchDownloadWidget) {
         cancelText: gettext('Cancel'),
         windowMessageText: gettext('Please wait')
     });
-}
-
-if (GeoNode && GeoNode.BoundingBoxWidget) {
-    Ext.apply(GeoNode.BoundingBoxWidget.prototype, {
-        drawButtonText: gettext('Draw'),
-        clearButtonText: gettext('Clear'),
-        zoomSliderTipText: gettext("Zoom Level")
-    })
 }
 
