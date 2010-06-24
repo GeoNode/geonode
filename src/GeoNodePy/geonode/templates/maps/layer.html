@@ -26,17 +26,38 @@
                     "layers": [{"wms": "capra", "name": "{{layer.typename}}"}]
                 },
                 backgroundLayers: {{ background|safe }},
-                view: {
-                    type: Ext.Panel,
+                portalConfig: {
                     renderTo: "preview_map",
                     height: 350
+                },
+                createTools: function() {
+                    return [new Ext.Button({
+                        tooltip: GeoExplorer.prototype.backgroundContainerText,
+                        iconCls: 'icon-layer-switcher',
+                        menu: new gxp.menu.LayerMenu({
+                            layers: this.mapPanel.layers
+                        })
+                    })]
+                },
+                listeners: {
+                    "ready": function() {
+                        var map = app.mapPanel.map;
+                        map.zoomToExtent(map.layers[map.layers.length-1].maxExtent);
+                    }
                 }
             };
 
-            app = new LayerPreview(config);
+            app = new GeoExplorer.Viewer(config);
 
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
-                app.setPreviewStyle(elem.value);
+                var layer;
+                for(var i=0, len=app.mapPanel.map.layers.length; i<len; ++i) {
+                    layer = app.mapPanel.map.layers[i];
+                    if(layer !== app.mapPanel.map.baseLayer && layer.getVisibility()) {
+                        layer.mergeNewParams({"STYLES": elem.value});
+                        break;
+                    }
+                }
             });
         });
     </script>

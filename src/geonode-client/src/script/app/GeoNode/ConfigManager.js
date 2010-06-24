@@ -2,6 +2,8 @@
  * Copyright (c) 2010 OpenPlans
  */
 
+Ext.namespace("GeoNode");
+
 /**
  *
  */
@@ -17,6 +19,7 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
     constructor: function(config) {
         this.initialConfig = config;
         Ext.apply(this, this.initialConfig);
+        this.map = this.map || {layers: []};
         this.backgroundQueue = [];
     },
     

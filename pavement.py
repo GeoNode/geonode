@@ -282,8 +282,10 @@ def concat_js(options):
        path("../externals/PrintPreview/resources").copytree("geonode-client/PrintPreview/theme")
        os.makedirs("geonode-client/ol") #need to split this off b/c of dumb hard coded OL paths
        path("../externals/openlayers/theme").copytree("geonode-client/ol/theme")
+       path("../externals/openlayers/img").copytree("geonode-client/ol/img")
        os.makedirs("geonode-client/gn")
        path("../src/theme/").copytree("geonode-client/gn/theme/")
+       path("../src/script/ux").copytree("geonode-client/gn/ux")
 
        sh("jsbuild -o geonode-client/ all.cfg") 
        move("geonode-client/OpenLayers.js","geonode-client/ol/")
