@@ -14,22 +14,16 @@ Note: We should change this key on final deploy!
     google.load("earth", "1");
 </script>
 
+<link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}colorpicker/color-picker.ux.css" />
+
 <script src="{% geonode_media "PrintPreview_script" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% geonode_media "PrintPreview_themes" %}css/printpreview.css" />
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
-<script type="text/javascript">
-printCapabilities.createURL = "/proxy/?url=" + printCapabilities.createURL;
-</script>
 
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
-    var config = {
-        /* This option works around issue #109
-         * until http://trac.openlayers.org/ticket/2178
-         * is fixed.
-         */
-        alignToGrid: true,
+    var config = Ext.apply({
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service 
@@ -40,9 +34,7 @@ Ext.onReady(function() {
         homeUrl: "{% url geonode.views.index %}",
         
         localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}"
-    };
-
-    Ext.apply(config, {{config|safe}});
+    }, {{config|safe}});
     app = new GeoExplorer(config);
 });
 </script>
