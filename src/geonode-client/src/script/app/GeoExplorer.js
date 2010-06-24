@@ -1037,7 +1037,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         scaleLinePanel.on('render', function(){
             var scaleLine = new OpenLayers.Control.ScaleLine({
-                div: scaleLinePanel.getEl().dom
+                div: scaleLinePanel.getEl().dom,
+                geodesic: true
             });
 
             this.mapPanel.map.addControl(scaleLine);
