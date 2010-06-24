@@ -474,6 +474,7 @@ class LayerDescriptionForm(forms.Form):
     keywords = forms.CharField(500, required=False)
 
 @csrf_exempt
+@login_required
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
         if request.method == "GET":
