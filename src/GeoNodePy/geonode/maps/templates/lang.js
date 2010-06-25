@@ -82,7 +82,7 @@ if (window.MapGrid) {
     });
 }
 
-if (GeoExplorer && GeoExplorer.CapabilitiesGrid) {
+if (window.GeoExplorer && GeoExplorer.CapabilitiesGrid) {
     Ext.apply(GeoExplorer.CapabilitiesGrid.prototype, {
         nameHeaderText : gettext("Name"),
         queryableHeaderText : gettext("Queryable"),
@@ -90,13 +90,13 @@ if (GeoExplorer && GeoExplorer.CapabilitiesGrid) {
     });
 }
 
-if (GeoNode && GeoNode.ConfigManager) {
+if (window.GeoNode && GeoNode.ConfigManager) {
     Ext.apply(GeoNode.ConfigManager.prototype, {
         backgroundDisabledText : gettext("No background")
     });
 }
 
-if (ExportWizard) {
+if (window.ExportWizard) {
     Ext.apply(ExportWizard.prototype, {
         exportDialogMessage: gettext('<p>Your map is ready to be published to the web! </p> <p> Simply copy the following HTML to embed the map in your website: </p>'),
         heightLabel: gettext("Height"),
@@ -111,7 +111,7 @@ if (ExportWizard) {
 }
 
 
-if (GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
+if (window.GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
     Ext.apply(GeoExplorer.CapabilitiesRowExpander.prototype, {
         abstractText: gettext("Abstract:"),
         attributionEmptyText: gettext("No attribution information is provided for this layer."),
@@ -124,7 +124,7 @@ if (GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
     });
 }
 
-if (GeoExt && GeoExt.ux && GeoExt.ux.PrintPreview) {
+if (window.GeoExt && GeoExt.ux && GeoExt.ux.PrintPreview) {
     Ext.apply(GeoExt.ux.PrintPreview.prototype, {
         paperSizeText: gettext("Paper size:"),
         resolutionText: gettext("Resolution:"),
@@ -136,7 +136,7 @@ if (GeoExt && GeoExt.ux && GeoExt.ux.PrintPreview) {
     });
 }
 
-if (GeoNode && GeoNode.SearchTable) {
+if (window.GeoNode && GeoNode.SearchTable) {
     Ext.apply(GeoNode.SearchTable.prototype, {
         selectHeaderText: gettext('Select'),
         nameHeaderText: gettext('Name'),
@@ -154,7 +154,7 @@ if (GeoNode && GeoNode.SearchTable) {
         permalinkText: gettext('permalink')
     });
 }
-if (GeoNode && GeoNode.SearchTableRowExpander) {
+if (window.GeoNode && GeoNode.SearchTableRowExpander) {
     Ext.apply(GeoNode.SearchTableRowExpander.prototype, {
         abstractText: gettext("Abstract:"),
         abstractEmptyText: gettext('No abstract is provided for this layer.'),
@@ -169,7 +169,7 @@ if (GeoNode && GeoNode.SearchTableRowExpander) {
         dataDetailText: 'Click here for more information about this layer.'
     });
 }
-if (GeoNode && GeoNode.DataCart) {
+if (window.GeoNode && GeoNode.DataCart) {
     Ext.apply(GeoNode.DataCart.prototype, {
         selectedLayersText: gettext('Selected Layers'),
         emptySelectionText: gettext('No Layers Selected'),
@@ -179,7 +179,7 @@ if (GeoNode && GeoNode.DataCart) {
     });
 }
 
-if (GeoNode && GeoNode.DataCartOps) {
+if (window.GeoNode && GeoNode.DataCartOps) {
     Ext.apply(GeoNode.DataCartOps.prototype, {
         failureText: gettext('Operation Failed'),
         noLayersText: gettext('No layers are currently selected.')
@@ -187,7 +187,7 @@ if (GeoNode && GeoNode.DataCartOps) {
 }
 
 
-if (GeoNode && GeoNode.BatchDownloadWidget) {
+if (window.GeoNode && GeoNode.BatchDownloadWidget) {
     Ext.apply(GeoNode.BatchDownloadWidget.prototype, {
         downloadingText: gettext('Downloading...'),
         cancelText: gettext('Cancel'),
