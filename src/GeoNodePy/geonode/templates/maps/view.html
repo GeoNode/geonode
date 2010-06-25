@@ -4,11 +4,11 @@
 
 {% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
 
-{% block header_append %}
-{% comment %} 
-Google Earth resources
-Note: We should change this key on final deploy!
-{% endcomment %} 
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/openlayers_header.html" %}
+{% include "geonode/geoext_header.html" %}
+{% include "geonode/gxp_header.html" %}
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 <script type="text/javascript">
     google.load("earth", "1");
@@ -18,7 +18,12 @@ Note: We should change this key on final deploy!
 
 <script src="{% geonode_media "PrintPreview_script" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% geonode_media "PrintPreview_themes" %}css/printpreview.css" />
+{% comment %} 
+Google Earth resources
+Note: We should change this key on final deploy!
+{% endcomment %} 
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
+{{ block.super }}
 
 <script type="text/javascript">
 var app;
