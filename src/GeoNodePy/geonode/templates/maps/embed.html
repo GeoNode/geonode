@@ -3,8 +3,12 @@
 {% load geonode_media %}
 {% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
 
-{% block header_append %}
-
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/openlayers_header.html" %}
+{% include "geonode/geoext_header.html" %}
+{% include "geonode/gxp_header.html" %}
+{{ block.super }} 
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 <script type="text/javascript">
     google.load("earth", "1");
@@ -28,5 +32,4 @@ Ext.onReady(function() {
     app = new GeoExplorer.Viewer(config);
 });
 </script>
-
 {% endblock %}
