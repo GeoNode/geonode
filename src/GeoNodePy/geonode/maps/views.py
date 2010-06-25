@@ -370,10 +370,12 @@ def mapdetail(request,mapid):
     The view that show details of each map
     '''
     map = get_object_or_404(Map,pk=mapid) 
+    config = build_map_config(map)
+    config["backgroundLayers"] = settings.MAP_BASELAYERS
+    config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
-        'config': json.dumps(DEFAULT_MAP_CONFIG), 
-        'bg': json.dumps(settings.MAP_BASELAYERS),
+        'config': config, 
         'map': map, 
         'layers': layers
     }))
