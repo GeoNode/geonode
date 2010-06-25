@@ -1,6 +1,17 @@
 Deploying your GeoNode Site
 ===========================
 
+This page provides a high-level description of the software required to set up
+a publicly accessible GeoNode web site.  Since deployment details will vary
+between platforms this information is deliberately vague.  Some
+platform-specific instructions are also available.  The platform-specific
+guides are contributed by the community, so if you deploy on a new platform
+please consider writing or updating a guide.
+
+.. toctree::
+
+   /deploy/ubuntu
+
 Java Web Applications (WARs)
 ----------------------------
 
