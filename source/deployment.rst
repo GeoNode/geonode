@@ -5,12 +5,12 @@ Java Web Applications (WARs)
 ----------------------------
 
 GeoNode requires a Java servlet container compatible with the J2EE standard,
-2.5 or higher.  `Jetty <http://jetty.mortbay.org/>` and `Tomcat
-<http://tomcat.apache.org/>` are two good free servlet containers.  See their
+2.5 or higher.  `Jetty <http://jetty.mortbay.org/>`_ and `Tomcat
+<http://tomcat.apache.org/>`_ are two good free servlet containers.  See their
 web sites for installation and application deployment instructions.
 
 GeoServer with GeoNode Extensions
-.................................
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 GeoNode's GeoServer integration requires some specific extensions to help
 GeoNode in managing GeoServer layers.  These extensions can be added to an
@@ -19,7 +19,7 @@ existing GeoServer installation by adding the JAR files to the GeoServer's
 project provides a custom build of GeoServer with these extensions installed.
 
 GeoNetwork with GeoNode Schema
-..............................
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 GeoNode's GeoNetwork integration requires use of a customized metadata schema
 that adds some social attributes to metadata documents.  The GeoNode project
