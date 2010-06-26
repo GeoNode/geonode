@@ -24,7 +24,14 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
     },
     
     getViewerConfig: function() {
-        var layers = [];
+        var layers = [{
+            source: "any",
+            type: "OpenLayers.Layer",
+            args: [this.backgroundDisabledText],
+            visibility: false,
+            fixed: true,
+            group: "background"
+        }];
         var layer;
         for(var i=0,len=this.map.layers.length; i<len; ++i) {
             layer = this.map.layers[i];
@@ -69,14 +76,6 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
         }, this.initialConfig);
         
         this.backgroundLayers && this.addBackgroundConfig(config);
-        layers.push({
-            source: "any",
-            type: "OpenLayers.Layer",
-            args: [this.backgroundDisabledText],
-            visibility: false,
-            fixed: true,
-            group: "background"
-        });
         
         return Ext.applyIf(config, this.initialConfig);
     },
