@@ -24,6 +24,7 @@ Note: We should change this key on final deploy!
 var app;
 Ext.onReady(function() {
     var config = Ext.apply({
+        useBackgroundCapabilities: false,
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service 
