@@ -125,7 +125,7 @@ DEFAULT_MAP_ZOOM = 7
 
 MAP_BASELAYERS = [{
         'service': "wms",
-        'url': "http://maps.opengeo.org/geowebcache/service/wms?request=GetCapabilities",
+        'url': "http://maps.opengeo.org/geowebcache/service/wms",
         'layers': [
             'bluemarble'
         ]}, {
@@ -135,7 +135,7 @@ MAP_BASELAYERS = [{
             'G_SATELLITE_MAP'
         ]}, {
         'service': "wms",
-        'url': "%swms?request=GetCapabilities" % GEOSERVER_BASE_URL,
+        'url': "%swms" % GEOSERVER_BASE_URL,
         'layers': [
             'base:CA'
         ]}
@@ -221,6 +221,7 @@ if DEBUG:
             "app_themes": "/static/gn/theme/app/",
             "app_script":"/static/gn/GeoNode.js",
             "ux_script":"/static/gn/ux.js",
+            "ux_resources":"/static/gn/ux/",
         }                
     else:
         MEDIA_LOCATIONS = {
@@ -236,6 +237,7 @@ if DEBUG:
             "app_themes": "/static/src/theme/app/",
             "app_script":"/static/src/script/app/loader.js",
             "ux_script":"/static/src/script/ux/loader.js",
+            "ux_resources":"/static/src/script/ux/",
         }
 else:
     MEDIA_LOCATIONS = {
@@ -251,4 +253,5 @@ else:
         "app_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/theme/app/",
         "app_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/GeoNode.js",
         "ux_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/ux.js",
+        "ux_resources": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/ux/",
     }
