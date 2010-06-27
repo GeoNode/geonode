@@ -2,15 +2,35 @@
  * Copyright (c) 2010 OpenPlans
  */
 
+/** api: (define)
+ *  module = GeoNode
+ *  class = ConfigManager
+ *  base_link = `Ext.util.Observable <http://extjs.com/deploy/dev/docs/?class=Ext.util.Observable>`_
+ */
 Ext.namespace("GeoNode");
 
-/**
- *
+/** api: constructor
+ *  .. class:: ConfigManager(config)
+ *   
+ *      Utility class for translating between GeoNode and gxp.Viewer
+ *      configruations.
  */
 GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
+    /** api: config[useBackgroundCapabilities]
+     *  ``Boolean`` If set to false, no GetCapabilities request will be issued
+     *  for background WMS layers. The benefit is shorter loading times for
+     *  the application. The downside is that layers won't be meta-tiled, and
+     *  the name shown in the layer tree is the WMS layer name instead of the
+     *  more verbose title.
+     */
+    useBackgroundCapabilities: true,
+    
     backgroundLayers: null,
     map: null,
     
+    /**
+     * private: property[haveBackground]
+     */
     haveBackground: false,
 
     // i18n defaults
