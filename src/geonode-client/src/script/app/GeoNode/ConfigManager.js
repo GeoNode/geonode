@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2009 The Open Planning Project
+ * Copyright (c) 2010 OpenPlans
  */
+
+Ext.namespace("GeoNode");
 
 /**
  *
  */
-GeoExplorer.ConfigManager = Ext.extend(Ext.util.Observable, {
+GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
     backgroundLayers: null,
     map: null,
     
@@ -17,6 +19,7 @@ GeoExplorer.ConfigManager = Ext.extend(Ext.util.Observable, {
     constructor: function(config) {
         this.initialConfig = config;
         Ext.apply(this, this.initialConfig);
+        this.map = this.map || {layers: []};
         this.backgroundQueue = [];
     },
     
@@ -55,7 +58,7 @@ GeoExplorer.ConfigManager = Ext.extend(Ext.util.Observable, {
                 new OpenLayers.Projection("EPSG:4326"),
                 new OpenLayers.Projection(
                     this.map.projection || "EPSG:900913"));
-        var map = Ext.apply({
+        var map = Ext.applyIf({
             projection: "EPSG:900913",
             units: "m",
             maxResolution: 156543.0339,
@@ -125,6 +128,7 @@ GeoExplorer.ConfigManager = Ext.extend(Ext.util.Observable, {
                 }
                 config.map.layers.push(Ext.apply({
                     source: "google",
+                    group: "background",
                     apiKey: bgLayer.apiKey,
                     name: bgLayer.layers instanceof Array ?
                         bgLayer.layers[0] : bgLayer.layers,
@@ -133,6 +137,39 @@ GeoExplorer.ConfigManager = Ext.extend(Ext.util.Observable, {
                 }, bgLayer));
             }
         } 
+    },
+
+    getConfig: function(viewer) {
+        var viewerConfig = viewer.getState();
+        
+        var center = viewerConfig.map.center &&
+            new OpenLayers.LonLat(viewerConfig.map.center[0],
+            viewerConfig.map.center[1]).transform(
+                new OpenLayers.Projection(
+                    viewerConfig.map.projection || "EPSG:900913"),
+                new OpenLayers.Projection("EPSG:4326"));
+        var config = {
+            wms: {},
+            map: {
+                center: center && [center.lon, center.lat],
+                zoom: viewerConfig.map.zoom,
+                layers: []
+            },
+            about: Ext.apply({}, viewer.about)
+        };
+
+        var layer;
+        for(var i=0, len=viewerConfig.map.layers.length; i<len; ++i) {
+            layer = viewerConfig.map.layers[i];
+            if(layer.group !== "background") {
+                config.wms[layer.source] = viewerConfig.sources[layer.source].url;
+                config.map.layers.push(Ext.apply(layer, {
+                    wms: layer.source
+                }));
+            }
+        };
+        
+        return config;
     }
 
 });

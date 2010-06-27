@@ -1,0 +1,102 @@
+.x-cp-panel {
+	width: 386px;
+	height: 262px;
+}
+.x-cp-rgb-msk {
+	background-image: url(mask.png);
+	background-color: #FF0000;
+	width: 256px;
+	height: 256px;
+	float: left;
+	cursor: crosshair;
+	_cursor: hand;
+	_background-image:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='mask.png',sizingMethod='scale');
+}
+.x-cp-rgb-picker {
+	width: 5px;
+	height: 5px;
+	cursor: crosshair;
+	_cursor: hand;
+	background: url(picker.gif) transparent;
+	background-repeat: no-repeat;
+}
+.x-cp-hue-picker {
+	width: 5px;
+	height: 5px;
+	cursor: crosshair;
+	_cursor: hand;
+	background: url(picker.gif) transparent;
+	background-repeat: no-repeat;
+}
+.x-cp-hue-msk {
+	margin: 0px 0px 0px 3px;
+	background-image: url(side_slider.jpg);
+	background-color: #FF0000;
+	width: 14px;
+	height: 256px;
+	float: left;
+	cursor: crosshair;
+	_cursor: hand;
+}
+.x-cp-control-container {
+	float: left;
+	margin: 0 0 0 3px;
+	padding: 0;
+	width: 98px;
+}
+.x-cp-color-container, .x-cp-coloro-container {
+	margin: 5px 0;
+	border: 1px solid gray;
+	height: 16px;
+	line-height: 16px;
+	padding: 1px;
+	font-size: 9px;
+	text-align: center;
+	vertical-align: middle;
+	cursor: pointer;
+	_cursor: hand;
+}
+.x-cp-coloro-container {
+	cursor: default;
+}
+.x-cp-panel .x-form-item-label {
+	font-size: 9px;
+	width: 45px;
+	float: left;
+	margin: 5px 0;
+}
+.x-cp-rgb-container {
+	font-size: 10px;
+}
+.x-cp-form .x-form-field, .x-cp-form .x-form-element {
+	height: 12px;
+	line-height: 10px;
+	width: 40px;
+	font-size: 10px;
+	text-align: center;
+	float: left;
+	padding: 0;
+}
+.x-cp-clear {
+	clear: both;
+}
+.x-cp-hexa-panel {
+	height: 30px;
+	float: left;
+}
+.x-cp-form .x-fieldset, .x-cp-form .x-form-item, .x-cp-form .x-fieldset  {
+	margin: 0;
+	padding: 0;
+}
+.x-cp-form .x-form-item-label {
+	width: 30px;
+	margin: 0 0 0 3px;
+    padding-top: 0px;
+}
+
+.x-cp-colors-container {
+	margin: 5px 0;
+	clear: both;
+	height: auto;
+}

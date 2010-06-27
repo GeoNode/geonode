@@ -5,7 +5,7 @@
 /**
  *
  */
-GeoExplorer.BackgroundLayerManager = Ext.extend(Ext.util.Observable, {
+MyHazard.BackgroundLayerManager = Ext.extend(Ext.util.Observable, {
     backgroundQueue: null,
     backgroundLayers: null, 
 
@@ -38,7 +38,8 @@ GeoExplorer.BackgroundLayerManager = Ext.extend(Ext.util.Observable, {
                 "url" in pluginConfig && 
                 pluginConfig.url.startsWith("http")
             ) {
-                pluginConfig.url = proxy + escape(pluginConfig.url);
+                pluginConfig.url = proxy + escape(Ext.urlAppend(pluginConfig.url,
+                    Ext.urlEncode({"SERVICE": "WMS", "REQUEST": "GetCapabilities"})));
             }
 
             delete pluginConfig.service;
