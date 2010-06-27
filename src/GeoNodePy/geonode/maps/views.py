@@ -513,12 +513,13 @@ def _describe_layer(request, layer):
                 "geographic_bounding_box": bbox_ewkt,
                 "language": meta.language,
                 "purpose": meta.identification.purpose,
-                #TODO: Report bug for missing parameters in OWSLib
-                #"edition": meta.identification.edition,
+                "edition": meta.identification.edition,
+                # TODO: The following two parameters are not in OWSLib and are not part
+                # of the GeoNetwork XML response. What do we do with them?
                 #"temporal_extent_start": None,
                 #"temporal_extent_end": None,
-                #"suplemental_information": None,
-                "distribution_url": meta.distribution.onlineresource.description,
+                "supplemental_information": meta.identification.supplemental_information,
+                "distribution_url": meta.distribution.onlineresource.url,
                 "distribution_description": meta.distribution.onlineresource.description,
                 "keywords": ", ".join([word for word in meta.identification.keywords['list'] if isinstance(word,str)] )
             })
@@ -532,8 +533,7 @@ def _describe_layer(request, layer):
                "city": meta.contact.city,
                "role": meta.contact.role,
                "address": meta.contact.address,
-               #TODO: Add missing info to OWSLib
-               #"email": meta.contact.email,
+               "email": meta.contact.email,
             }, prefix="poc")
             
             metadata_provider_form = ContactForm(initial={
