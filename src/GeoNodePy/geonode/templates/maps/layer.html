@@ -7,11 +7,7 @@
     <script type="text/javascript">
         Ext.onReady(function() {
             var config = {
-                /* This option works around issue #109
-                 * until http://trac.openlayers.org/ticket/2178
-                 * is fixed.
-                 */
-                alignToGrid: true,
+                useBackgroundCapabilities: false,
                 proxy: "/proxy/?url=",
 
                 /* The URL to a REST map configuration service.  This service 
