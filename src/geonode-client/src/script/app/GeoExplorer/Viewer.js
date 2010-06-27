@@ -67,6 +67,16 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
         GeoExplorer.superclass.initPortal.apply(this, arguments);        
 
     },
+    
+    /**
+     * private: method[addLayerSource]
+     */
+    addLayerSource: function(options) {
+        // use super's super instead of super - we don't want to issue
+        // DescribeLayer requests because we neither need to style layers
+        // nor to show a capabilities grid.
+        var source = GeoExplorer.superclass.addLayerSource.apply(this, arguments);
+    },
 
     /**
      * api: method[createTools]
