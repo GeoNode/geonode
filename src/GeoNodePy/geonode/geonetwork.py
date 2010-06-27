@@ -98,8 +98,19 @@ class Catalog(object):
         response = self.urlopen(request)
         # TODO: Parse response, check for error report
 
-    def update_from_layer(self, record, layer):
-        pass
+    def update_layer(self, layer):
+        tpl = get_template("maps/csw/transaction_update.xml")
+        ctx = Context({'layer': layer})
+        md_doc = tpl.render(ctx)
+
+        url = "%ssrv/en/csw" % self.base
+        headers = {
+            "Content-Type": "application/xml",
+            "Accept": "text/plain"
+        }
+        request = urllib2.Request(url, md_doc, headers)
+        response = self.urlopen(request)
+        # TODO: Parse response, check for error report
 
     def set_metadata_privs(self, uuid, privileges):
         """
