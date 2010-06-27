@@ -19,11 +19,25 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
     /** api: config[useBackgroundCapabilities]
      *  ``Boolean`` If set to false, no GetCapabilities request will be issued
      *  for background WMS layers. The benefit is shorter loading times for
-     *  the application. The downside is that layers won't be meta-tiled, and
-     *  the name shown in the layer tree is the WMS layer name instead of the
-     *  more verbose title.
+     *  the application. The downside is that layers may be improperly
+     *  meta-tiled (beause their extent is unknown), and the name shown in the
+     *  layer tree is the WMS layer name instead of the more verbose title.
+     *  Default is true.
      */
     useBackgroundCapabilities: true,
+    
+    /** api: config[useCapabilities]
+     *  ``Boolean`` If set to false, no GetCapabilities request will be issued
+     *  for non-background WMS layers. The benefit is shorter loading times for
+     *  the application. The downside is that layers may be improperly
+     *  meta-tiled (because their extent is unknown), don't have a Properties
+     *  dialog (and no way to set/change styles), and the name shown in the
+     *  layer tree is the WMS layer name instead of the more verbose title.
+     *  Also, layers added with this option set to false cannot be saved.
+     *  Recommended setting for simple viewers that need fast loading is false,
+     *  and true otherwise.
+     */
+    useCapabilities: true,
     
     backgroundLayers: null,
     map: null,
@@ -58,19 +72,35 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
             if (layer.group == "background" && layer.visibility !== false) {
                 this.haveBackground = true;
             }
-            layers.push(Ext.applyIf({
+            layers.push(this.useCapabilities !== false ? Ext.applyIf({
                 source: layer.wms,
                 buffer: 0
-            }, layer));
+            }, layer) : {
+                source: "any",
+                type: "OpenLayers.Layer.WMS",
+                args: [layer.name, this.wms[layer.wms], {
+                    layers: layer.name,
+                    format: layer.format || "image/png",
+                    styles: layer.styles,
+                    transparent: layer.transparent || true,
+                    tiled: true,
+                    tilesOrigin: [-20037508.34, -20037508.34]
+                }, {
+                    opacity: layer.opacity,
+                    buffer: 0
+                }]
+            });
         }
         var sources = {
             "any": {
                 ptype: "gx_olsource"
             }
         };
-        for(var key in this.wms) {
-            sources[key] = {
-                url: this.wms[key]
+        if(this.useCapabilities !== false) {
+            for(var key in this.wms) {
+                sources[key] = {
+                    url: this.wms[key]
+                }
             }
         }
         var center = this.map.center && new OpenLayers.LonLat(this.map.center[0],
@@ -153,7 +183,9 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
                             layers: bgLayer.layers,
                             format: bgLayer.format || "image/png",
                             styles: bgLayer.styles,
-                            transparent: bgLayer.transparent
+                            transparent: bgLayer.transparent,
+                            tiled: true,
+                            tilesOrigin: [-20037508.34, -20037508.34]
                         }, {
                             opacity: bgLayer.opacity,
                             buffer: 0
