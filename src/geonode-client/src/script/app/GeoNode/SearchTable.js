@@ -666,10 +666,7 @@ GeoNode.DataCartStore = Ext.extend(Ext.data.Store, {
 });
 
 GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
-    drawButtonText: 'UT: Draw',
-    clearButtonText: 'UT: Clear',
-    zoomSliderTipText: 'UT: Zoom',
-    
+
     constructor: function(config) {
         Ext.apply(this, config);
         this.activated = false;
@@ -680,55 +677,18 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
 
         var el = Ext.get(this.renderTo);
 
-
-        this.map = new OpenLayers.Map({
-            allOverlays: true,
-            projection: new OpenLayers.Projection("EPSG:900913"),
-            displayProjection: new OpenLayers.Projection("EPSG:4326"),
-            units: "m",
-            maxResolution: 156543.0339,
-            maxExtent: new OpenLayers.Bounds(
-                -20037508.34, -20037508.34,
-                 20037508.34,  20037508.34
-            ),
-            controls: [
-                new OpenLayers.Control.Navigation(),
-                new OpenLayers.Control.PanPanel(),
-                new OpenLayers.Control.ZoomPanel(),            
-                new OpenLayers.Control.Attribution()
-            ]
+        this.viewer = new GeoExplorer.Viewer({
+            proxy: this.proxy,
+            useToolbar: false,
+            useMapOverlay: false,
+            backgroundLayers: [this.background],
+            portalConfig: {
+                collapsed: true,
+                border: false,
+                height: 300,
+                renderTo: el.query('.bbox-expand')[0]
+            }
         });
-
-        var constraintLayer = new OpenLayers.Layer.Vector("Constraint");
-        this.map.addLayers([constraintLayer]);
-        
-
-        this.mapPanel = new GeoExt.MapPanel({
-            layout: "anchor",
-            border: true,
-            map: this.map,
-            height: 300,
-            zoom: this.map.zoom,
-            items: [
-                new GeoExt.ZoomSlider({
-                    vertical: true,
-                    height: 100,
-                    plugins: new GeoExt.ZoomSliderTip({
-                        template: "<div>"+this.zoomSliderTipText+": {zoom}<div>"
-                    })
-                })
-            ]
-        });
-        this.map.zoomToMaxExtent();
-        
-        var expander_el = el.query('.bbox-expand')[0];
-        this.expander = new Ext.Panel({
-            frame:false,
-             border: false,
-             collapsed: true,
-             items: [this.mapPanel]
-         });
-         this.expander.render(expander_el);
 
          this.enabledCB = el.query('.bbox-enabled input')[0];        
          this.disable();
@@ -742,13 +702,6 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             }
          }, this);
 
-
-         this.bgManager = new GeoExplorer.BackgroundLayerManager({
-            proxy: this.proxy,
-            backgroundLayers: [this.background]
-         });
-         gxp.util.dispatch(this.bgManager.getBackgroundLoaders(), this.activate, this);
-    
     },
     
     isActive: function() {
@@ -764,8 +717,9 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
          * displayed bounding box.
          */
         if (this.hasConstraint()) {
-            var bounds = this.mapPanel.map.getExtent();
-            bounds.transform(this.mapPanel.map.projection, new OpenLayers.Projection("EPSG:4326"));
+            var bounds = this.viewer.mapPanel.map.getExtent();
+            bounds.transform(this.viewer.mapPanel.map.getProjectionObject(),
+                new OpenLayers.Projection("EPSG:4326"));
             query.bbox = bounds.toBBOX();
         }
         else {
@@ -778,26 +732,25 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         if (query.bbox) {
             var bounds = OpenLayers.Bounds.fromString(query.bbox);
             if (bounds) {
-                bounds.transform(new OpenLayers.Projection("EPSG:4326"), this.mapPanel.map.projection);
+                bounds.transform(new OpenLayers.Projection("EPSG:4326"),
+                    this.viewer.mapPanel.map.getProjectionObject());
                 this.enable();
-                this.map.zoomToExtent(bounds, true);
+                this.viewer.mapPanel.map.zoomToExtent(bounds, true);
             }
         }
     },
     
     activate: function() {
-        this.mapPanel.layers.insert(0, this.bgManager.getBackgroundLayers()); 
-        this.map.setBaseLayer(this.mapPanel.layers[0]);
         this.activated = true;
     },
     
     enable: function() {
         this.enabledCB.checked = true;
-        this.expander.expand();
+        this.viewer.portal.expand();
     }, 
 
     disable: function() {
         this.enabledCB.checked = false;
-        this.expander.collapse();
+        this.viewer.portal && this.viewer.portal.collapse();
     }
 });
