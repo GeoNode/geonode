@@ -495,8 +495,8 @@ class MetadataForm(forms.Form):
     topic_category = forms.ChoiceField(choices = [(x, x) for x in TOPIC_CATEGORIES], required=False)
     temporal_extent_start = forms.DateField(required=False)
     temporal_extent_end = forms.DateField(required=False)
-    geographic_bounding_box = forms.CharField(5000)
-    supplemental_information = forms.CharField(5000, required=False)
+    geographic_bounding_box = forms.CharField(5000, widget=forms.Textarea)
+    supplemental_information = forms.CharField(5000, widget=forms.Textarea, required=False)
 
     distribution_url = forms.CharField(300, required=False)
     distribution_description = forms.CharField(5000, required=False)
