@@ -87,40 +87,59 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
             bgLayer = this.backgroundLayers[i];
             var sourceId;
             if (bgLayer.service === "wms") {
-                sourceId = bgLayer.url;
-                // see if we have the service url already in one of the
-                // sources from the db, and use it
-                for (var s in config.sources) {
-                    if (config.sources[s].url == bgLayer.url) {
-                        sourceId = s;
-                        break;
-                    }
-                }
-                
                 var layerName = bgLayer.layers instanceof Array ?
-                        bgLayer.layers[0] : bgLayer.layers;
-                        
-                if (!(sourceId in config.sources)) {
-                    config.sources[sourceId] = {
-                        url: bgLayer.url
-                    }
-                } else {
-                    // avoid duplicate layers from shared background config
-                    // if we have them pulled in already from the db
-                    for (var j=0,jlen=config.map.layers.length; j<jlen; ++j) {
-                        if (layerName == config.map.layers[j].name) {
-                            continue outer;
+                    bgLayer.layers[0] : bgLayer.layers;
+                if (this.useBackgroundCapabilities !== false) {
+                    sourceId = bgLayer.url;
+                    // see if we have the service url already in one of the
+                    // sources from the db, and use it
+                    for (var s in config.sources) {
+                        if (config.sources[s].url == bgLayer.url) {
+                            sourceId = s;
+                            break;
                         }
                     }
+                                        
+                    if (!(sourceId in config.sources)) {
+                        config.sources[sourceId] = {
+                            url: bgLayer.url
+                        }
+                    }
+                    else {
+                        // avoid duplicate layers from shared background config
+                        // if we have them pulled in already from the db
+                        for (var j = 0, jlen = config.map.layers.length; j < jlen; ++j) {
+                            if (layerName == config.map.layers[j].name) {
+                                continue outer;
+                            }
+                        }
+                    }
+                    config.map.layers.push(Ext.apply({
+                        source: sourceId,
+                        name: layerName,
+                        group: "background",
+                        buffer: 0,
+                        visibility: !this.haveBackground && i === 0,
+                        fixed: true
+                    }, bgLayer));
+                } else {
+                    config.map.layers.push({
+                        source: "any",
+                        type: "OpenLayers.Layer.WMS",
+                        group: "background",
+                        visibility: !this.haveBackground && i === 0,
+                        fixed: true,
+                        args: [layerName, bgLayer.url, {
+                            layers: bgLayer.layers,
+                            format: bgLayer.format || "image/png",
+                            styles: bgLayer.styles,
+                            transparent: bgLayer.transparent
+                        }, {
+                            opacity: bgLayer.opacity,
+                            buffer: 0
+                        }]
+                    });
                 }
-                config.map.layers.push(Ext.apply({
-                    source: sourceId,
-                    name: layerName,
-                    group: "background",
-                    buffer: 0,
-                    visibility: !this.haveBackground && i === 0,
-                    fixed: true
-                }, bgLayer));
             } else if (bgLayer.service === "google") {
                 config.sources["google"] = {
                     ptype: "gx_googlesource",
