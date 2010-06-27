@@ -190,6 +190,11 @@ class Layer(models.Model):
         gn.login()
         gn.delete_layer(self)
 
+    def save_to_geonetwork(self):
+        gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
+        gn.login()
+        gn.update_layer(self)
+
     def _set_title(self, title):
         self.resource.title = title
 
@@ -266,8 +271,7 @@ class Layer(models.Model):
             self._publishing_cache = cat.get_layer(self.name)
         return self._publishing_cache
 
-    def save(self, *args, **kw):
-        models.Model.save(self, *args, **kw)
+    def save_to_geoserver(self):
         if hasattr(self, "_resource_cache"):
             Layer.objects.gs_catalog.save(self._resource_cache)
         if hasattr(self, "_publishing_cache"):
@@ -346,7 +350,7 @@ class MapLayer(models.Model):
     group = models.CharField(max_length=200,blank=True)
     stack_order = models.IntegerField()
     map = models.ForeignKey(Map, related_name="layer_set")
-    
+
     def local(self): 
         layer = Layer.objects.filter(typename=self.name)
         if layer.count() == 0:
@@ -369,7 +373,6 @@ class MapLayer(models.Model):
     def __unicode__(self):
         return '%s?layers=%s' % (self.ows_url, self.name)
 
-
 def delete_layer(instance, sender, **kwargs): 
     """
     Removes the layer from GeoServer and GeoNetwork
@@ -377,5 +380,11 @@ def delete_layer(instance, sender, **kwargs):
     instance.delete_from_geoserver()
     instance.delete_from_geonetwork()
 
+def save_layer(instance, sender, **kwargs): 
+    """
+    Removes the layer from GeoServer and GeoNetwork
+    """
+    instance.save_to_geoserver()
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
+signals.post_save.connect(save_layer, sender=Layer)
