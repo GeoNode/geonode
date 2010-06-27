@@ -299,7 +299,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
             e.layer instanceof OpenLayers.Layer.WMS && !e.layer.singleTile &&
-                e.layer.mergeNewParams({
+                e.layer.maxExtent && e.layer.mergeNewParams({
                     tiled: true,
                     tilesOrigin: [e.layer.maxExtent.left, e.layer.maxExtent.bottom]
                 }
