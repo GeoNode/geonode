@@ -202,7 +202,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             strokeWidth: 1,
             strokeDashstyle: "solid",
             pointRadius: 3,
-            graphicName: "square"
+            graphicName: "square",
+            haloColor: "#FFFFFF",
+            fontColor: "#000000"
         };
         
         GeoExplorer.superclass.constructor.apply(this, arguments);
