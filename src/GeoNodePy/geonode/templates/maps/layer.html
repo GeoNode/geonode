@@ -46,11 +46,16 @@
             app = new GeoExplorer.Viewer(config);
 
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
-                var layer;
-                for(var i=0, len=app.mapPanel.map.layers.length; i<len; ++i) {
-                    layer = app.mapPanel.map.layers[i];
-                    if(layer !== app.mapPanel.map.baseLayer && layer.getVisibility()) {
-                        layer.mergeNewParams({"STYLES": elem.value});
+                var layerCfg;
+                for(var i=0, len=app.map.layers.length; i<len; ++i) {
+                    layerCfg = app.map.layers[i];
+                    if(layerCfg.group !== "background") {
+                        var store = app.layerSources[layerCfg.source].store;
+                        var rec = store.getAt(store.findExact("name", layerCfg.name));
+                        app.mapPanel.map.getLayersByName(
+                            rec.get("title") || rec.get("name"))[0].mergeNewParams({
+                                "STYLES": elem.value
+                            });
                         break;
                     }
                 }
