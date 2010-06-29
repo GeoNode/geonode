@@ -27,10 +27,16 @@ def proxy(request):
     return response
 
 
-@login_required
 @csrf_exempt
-def geoserver(request,path):
-    url = "{geoserver}{url}".format(geoserver=settings.GEOSERVER_BASE_URL,url=path)
+def geoserver(request):
+    if not request.user.is_authenticated():
+        return HttpResponse(
+            "You must be logged in to access GeoServer",
+            mimetype="text/plain",
+            status=403
+        )
+    path = request.get_full_path()[11:] # strip "/geoserver/" from path
+    url = "{geoserver}{path}".format(geoserver=settings.GEOSERVER_BASE_URL,path=path)
     h = httplib2.Http()    
     h.add_credentials(*settings.GEOSERVER_CREDENTIALS)
     resp, content = h.request(url,request.method,body=request.raw_post_data,headers={"Content-Type": request.META['CONTENT_TYPE']})
