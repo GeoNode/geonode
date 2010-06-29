@@ -360,20 +360,6 @@ ALL_LANGUAGES = (
     ('zul', 'Zulu'),
 )
 
-ROLE_VALUES = [
-    'datasetProvider',
-    'custodian',
-    'owner',
-    'user',
-    'distributor',
-    'originator',
-    'pointOfContact',
-    'principalInvestigator',
-    'processor',
-    'publisher',
-    'author'
-]
-
 UPDATE_FREQUENCIES = [
     'annually',
     'asNeeded',
@@ -444,8 +430,6 @@ CONTACT_FIELDS = [
 def require(*args):
     pass
 
-class Contact(object): pass
-
 class LabelledInput(forms.Widget):
     def __init__(self, name, attrs=None):
         # The 'rows' and 'cols' attributes are required for HTML correctness.
@@ -461,22 +445,6 @@ class LabelledInput(forms.Widget):
             atts = flatatt(final_attrs),
             value = conditional_escape(force_unicode(value))
         ))
-
-
-class ContactForm(forms.Form):
-    name = forms.CharField(300)
-    organization = forms.CharField(300)
-    position = forms.CharField(300, required=False)
-    voice = forms.CharField(300, required=False)
-    facsimile = forms.CharField(300, required=False)
-    delivery_point = forms.CharField(300, required=False)
-    city = forms.CharField(300, required=False)
-    administrative_area = forms.CharField(300, required=False)
-    postal_code = forms.CharField(300, required=False)
-    country = forms.CharField(300, required=False)
-    email = forms.CharField(300, required=False)
-    role = forms.ChoiceField(choices= [(x, x) for x in ROLE_VALUES])
-
 
 class MetadataForm(forms.Form):
     title = forms.CharField(300)
@@ -497,10 +465,8 @@ class MetadataForm(forms.Form):
     temporal_extent_end = forms.DateField(required=False)
     geographic_bounding_box = forms.CharField(5000, widget=forms.Textarea)
     supplemental_information = forms.CharField(5000, widget=forms.Textarea, required=False)
-
     distribution_url = forms.CharField(300, required=False)
     distribution_description = forms.CharField(5000, required=False)
-
     data_quality_statement = forms.CharField(5000, required=False)
 
     # poc - use a ContactForm

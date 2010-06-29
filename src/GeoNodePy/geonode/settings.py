@@ -123,6 +123,8 @@ DEFAULT_MAP_BASE_LAYER = "base:nic_admin"
 DEFAULT_MAP_CENTER = [-84.7, 12.8]
 DEFAULT_MAP_ZOOM = 7
 
+DEFAULT_LAYERS_OWNER='admin'
+
 MAP_BASELAYERS = [{
         'service': "wms",
         'url': "http://maps.opengeo.org/geowebcache/service/wms",

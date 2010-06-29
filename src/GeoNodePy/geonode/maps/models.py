@@ -35,6 +35,11 @@ class LayerManager(models.Manager):
         gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
         gn.login()
 
+        try:
+            owner = User.objects.get(username=settings.DEFAULT_LAYER_OWNER)
+        except:
+            raise DoesNotExist('DEFAULT_LAYER_OWNER not found, make sure it is correctly configured and the user exists')
+
         for resource in cat.get_resources():
             try:
                 store = resource.store
@@ -45,6 +50,7 @@ class LayerManager(models.Manager):
                     "store": store.name,
                     "storeType": store.resource_type,
                     "typename": "%s:%s" % (workspace.name, resource.name),
+                    "owner": owner,
                     "uuid": str(uuid.uuid4())
                 })
 
