@@ -25,6 +25,11 @@
 var GeoExplorer = Ext.extend(gxp.Viewer, {
     
     /**
+     * api: config[localGeoServerBaseUrl]
+     * ``String`` url of the local GeoServer instance
+     */
+    
+    /**
      * private: property[mapPanel]
      * the :class:`GeoExt.MapPanel` instance for the main viewport
      */
@@ -444,14 +449,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled: true,
             tooltip: this.layerPropertiesTipText,
             handler: function() {
-                var cancel = function() {
-                    var originalLayer = backupRecord.get("layer");
-                    // restore format and transparency
-                    layer.mergeNewParams(originalLayer.params);
-                    // restore opacity
-                    layer.setOpacity(originalLayer.opacity || 1);
-                    prop.close();
-                }
                 var node = layerTree.getSelectionModel().getSelectedNode();
                 if (node && node.layer) {
                     var layer = node.layer;
@@ -472,33 +469,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 style: "padding: 10px;",
                                 autoHeight: true,
                                 hideMode: "offsets"
-                            },
-                            buttons: [{
-                                text: "Cancel",
-                                handler: cancel
-                            }, {
-                                text: "Save",
-                                handler: function() {
-                                    this.busyMask = new Ext.LoadMask(prop.el,
-                                        {msg: "Applying style changes..."});
-                                    this.busyMask.show();
-                                    var updateLayer = function() {
-                                        var rec = stylesDialog.selectedStyle;
-                                        layer.mergeNewParams({
-                                            "STYLES": rec.get("userStyle").isDefault === true ?
-                                                "" : rec.get("name"),
-                                            "_dc": Math.random()
-                                        });
-                                        this.busyMask.hide();
-                                        prop.close();
-                                    }
-                                    styleWriter.write({
-                                        success: updateLayer,
-                                        scope: this
-                                    });
-                                },
-                                scope: this
-                            }]
+                            }
                         }]
                     });
                     // disable the "About" tab's fields to indicate that they
@@ -523,16 +494,66 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 break;
                             }
                         }
-                    }
+                    };
+                    var stylesDialog;
+                    var createStylesDialog = function() {
+                        stylesDialog = new gxp.WMSStylesDialog({
+                            style: "padding: 10px;",
+                            editable: layer.url.indexOf(
+                                this.localGeoServerBaseUrl) === 0,
+                            layerRecord: record,
+                            layerDescription: layerDescription,
+                            plugins: [styleWriter],
+                            autoScroll: true,
+                            listeners: {
+                                "ready": function() {
+                                    // we don't want the Cancel and Save buttons
+                                    // if we cannot edit styles
+                                    stylesDialog.editable === false &&
+                                        stylesDialog.ownerCt.getFooterToolbar().hide();
+                                }
+                            }
+                        });
+                        prop.items.get(0).add({
+                            title: "Styles",
+                            style: "",
+                            autoHeight: true,
+                            items: stylesDialog,
+                            buttons: [{
+                                text: "Cancel",
+                                handler: function() {
+                                    var tabPanel = prop.items.get(0);
+                                    tabPanel.remove(stylesDialog.ownerCt);
+                                    createStylesDialog.call(this);
+                                    tabPanel.setActiveTab(stylesDialog.ownerCt);
+                                },
+                                scope: this
+                            }, {
+                                text: "Save",
+                                handler: function() {
+                                    this.busyMask = new Ext.LoadMask(prop.el,
+                                        {msg: "Applying style changes..."});
+                                    this.busyMask.show();
+                                    var updateLayer = function() {
+                                        var rec = stylesDialog.selectedStyle;
+                                        layer.mergeNewParams({
+                                            "STYLES": rec.get("userStyle").isDefault === true ?
+                                                "" : rec.get("name"),
+                                            "_dc": Math.random()
+                                        });
+                                        this.busyMask.hide();
+                                    }
+                                    styleWriter.write({
+                                        success: updateLayer,
+                                        scope: this
+                                    });
+                                },
+                                scope: this
+                            }]
+                        });
+                    };
+                    createStylesDialog.call(this);
                     // add styles tab
-                    var stylesDialog = new gxp.WMSStylesDialog({
-                        title: "Styles",
-                        layerRecord: record,
-                        layerDescription: layerDescription,
-                        plugins: [styleWriter],
-                        autoScroll: true
-                    });
-                    prop.items.get(0).add(stylesDialog);
                     prop.show();
                 }
             },
@@ -950,7 +971,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }));
         }
 
-        var newSourceWindow = new GeoExplorer.NewSourceWindow({
+        var app = this;
+        var newSourceWindow = new gxp.NewSourceWindow({
             modal: true,
             listeners: {
                 "server-added": function(url) {
@@ -975,6 +997,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     });
                 },
                 scope: this
+            },
+            // hack to get the busy mask so we can close it in case of a
+            // communication failure
+            addSource: function(url, success, failure, scope) {
+                app.busyMask = scope.loadMask;
             }
         });
         
