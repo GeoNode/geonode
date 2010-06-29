@@ -1,5 +1,5 @@
 from geonode.maps.models import Map, Layer, MapLayer, get_csw
-from geonode.maps.forms import ContactForm, MetadataForm
+from geonode.maps.forms import MetadataForm
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -24,8 +24,13 @@ from urllib import urlencode
 from urlparse import urlparse
 import uuid
 from django.views.decorators.csrf import csrf_exempt
+from geonode.geonode_profile.models import Profile
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Profile
 
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
@@ -476,22 +481,22 @@ class LayerDescriptionForm(forms.Form):
 @csrf_exempt
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
+        # if layer has no owner, assign the current user
+        if not layer.owner:
+            layer.owner = request.user
+        #And make sure the profile exists.
+        try:
+            poc_profile = layer.owner.get_profile()
+        except Profile.DoesNotExist:
+            poc_profile = Profile(user=layer.owner)
+
         if request.method == "GET":
             resource = layer.resource
             meta = layer.metadata_csw()
             if meta is None:
                 # It probably means GeoNetwork isn't running or the layer is not there.
                 # Don't try to populate the information.
-                md_form = MetadataForm()
-                poc_form = ContactForm(prefix="poc")
-                metadata_provider_form = ContactForm(prefix="metadata")
-                return render_to_response("maps/layer_describe.html", RequestContext(request, {
-                        "layer": layer,
-                        "md_form": md_form,
-                        "poc_form": poc_form,
-                        "metadata_provider_form": metadata_provider_form
-                    }))
-                
+                assert False
                 
             bbox = meta.identification.bbox
             bbox_ewkt = bbox_to_wkt(bbox.minx, bbox.maxx, bbox.miny, bbox.maxy)
@@ -515,45 +520,37 @@ def _describe_layer(request, layer):
                 "purpose": meta.identification.purpose,
                 # depends on http://trac.gispython.org/lab/ticket/227
                 "edition": meta.identification.edition,
+
                 # TODO: The following two parameters are not in OWSLib and are not part
                 # of the GeoNetwork XML response. What do we do with them?
                 #"temporal_extent_start": None,
                 #"temporal_extent_end": None,
+
                 # depends on http://trac.gispython.org/lab/ticket/227
                 "supplemental_information": meta.identification.supplemental_information,
                 "distribution_url": meta.distribution.onlineresource.url,
                 "distribution_description": meta.distribution.onlineresource.description,
                 "keywords": ", ".join([word for word in meta.identification.keywords['list'] if isinstance(word,str)] )
             })
-            poc_form = ContactForm(initial={
-               "name": meta.contact.name,
-               "organization": meta.contact.organization,
-               "position": meta.contact.position,
-               "voice": meta.contact.phone,
-               "facsimile": meta.contact.fax,
-               "country": meta.contact.country,
-               "city": meta.contact.city,
-               "role": meta.contact.role,
-               "address": meta.contact.address,
-               # Depends on http://trac.gispython.org/lab/ticket/227
-               "email": meta.contact.email,
-            }, prefix="poc")
+                
+            poc_form = ContactForm(instance=layer.owner.get_profile(), prefix="poc")
             
-            metadata_provider_form = ContactForm(initial={
-               "name": provider.name,
-               "organization": provider.organization,
-               "position": provider.position,
-               "voice": provider.phone,
-               "facsimile": provider.fax,
-               "country": provider.country,
-               "city": provider.city,
-               "role": provider.role,
-               "address": provider.address,
-            }, prefix="metadata")
+#            metadata_provider_form = ContactForm(initial={
+#               "name": provider.name,
+#               "organization": provider.organization,
+#               "position": provider.position,
+#               "voice": provider.phone,
+#               "facsimile": provider.fax,
+#               "country": provider.country,
+#               "city": provider.city,
+#               "role": provider.role,
+#               "address": provider.address,
+#            }, prefix="metadata")
+            
         elif request.method == "POST":
             md_form = MetadataForm(request.POST)
             poc_form = ContactForm(request.POST, prefix="poc")
-            metadata_provider_form = ContactForm(request.POST, prefix="metadata")
+#            metadata_provider_form = ContactForm(request.POST, prefix="metadata")
             if md_form.is_valid():
                 f = md_form.cleaned_data
                 layer.title = f['title']
@@ -562,12 +559,13 @@ def _describe_layer(request, layer):
                 layer.save()
                 # push the updates to geonetwork
                 layer.save_to_geonetwork()
+                new_poc = poc_form.save()
                 return HttpResponseRedirect("/data/" + layer.typename)
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
             "md_form": md_form,
             "poc_form": poc_form,
-            "metadata_provider_form": metadata_provider_form
+ #           "metadata_provider_form": metadata_provider_form
         }))
     else: 
         return HttpResponse("Not allowed", status=403)

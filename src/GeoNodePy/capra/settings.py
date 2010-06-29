@@ -77,7 +77,7 @@ ROOT_URLCONF = 'capra.urls'
 TEMPLATE_DIRS = (path_extrapolate('capra/templates'),) + TEMPLATE_DIRS
 
 INSTALLED_APPS = INSTALLED_APPS + ('capra.layertypes',)
-INSTALLED_APPS = INSTALLED_APPS + ('registration', 'profiles', 'capra.geonode_profile')
+INSTALLED_APPS = INSTALLED_APPS + ('registration', 'profiles', 'geonode.geonode_profile')
 
 NAVBAR['hazard'] = {'id': '%sLink',
     'item_class': '',
