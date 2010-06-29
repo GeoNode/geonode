@@ -45,16 +45,12 @@ class Catalog(object):
     def get_by_uuid(self, uuid):
         pass
 
-    def create_from_layer(self, layer):
+    def csw_request(self, layer, template):
         tpl = get_template("maps/csw/transaction_insert.xml")
-        now = date.today()
         ctx = Context({
             'layer': layer,
-            'now': now,
-            'uuid': layer.uuid
         })
         md_doc = tpl.render(ctx)
-
         url = "%ssrv/en/csw" % self.base
         headers = {
             "Content-Type": "application/xml",
@@ -62,7 +58,10 @@ class Catalog(object):
         }
         request = urllib2.Request(url, md_doc, headers)
         response = self.urlopen(request)
+        return response
 
+    def create_from_layer(self, layer):
+        response = self.csw_request(layer, "maps/csw/transaction_insert.xml")
         # print layer.uuid
         # print response.read()
         # TODO: Parse response, check for error report
@@ -85,31 +84,11 @@ class Catalog(object):
         })
 
     def delete_layer(self, layer):
-        tpl = get_template("maps/csw/transaction_delete.xml")
-        ctx = Context({'uuid': layer.uuid})
-        md_doc = tpl.render(ctx)
-
-        url = "%ssrv/en/csw" % self.base
-        headers = {
-            "Content-Type": "application/xml",
-            "Accept": "text/plain"
-        }
-        request = urllib2.Request(url, md_doc, headers)
-        response = self.urlopen(request)
+        response = self.csw_request(layer, "maps/csw/transaction_delete.xml")
         # TODO: Parse response, check for error report
 
     def update_layer(self, layer):
-        tpl = get_template("maps/csw/transaction_update.xml")
-        ctx = Context({'layer': layer})
-        md_doc = tpl.render(ctx)
-
-        url = "%ssrv/en/csw" % self.base
-        headers = {
-            "Content-Type": "application/xml",
-            "Accept": "text/plain"
-        }
-        request = urllib2.Request(url, md_doc, headers)
-        response = self.urlopen(request)
+        response = self.csw_request(layer, "maps/csw/transaction_update.xml")
         # TODO: Parse response, check for error report
 
     def set_metadata_privs(self, uuid, privileges):
