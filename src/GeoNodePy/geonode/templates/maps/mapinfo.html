@@ -1,13 +1,38 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
+{% block head %} 
+{% include "geonode/ext_header.html" %}
+{% include "geonode/openlayers_header.html" %}
+{% include "geonode/geoext_header.html" %}
+{% include "geonode/ux_header.html" %}
+{% include "geonode/gxp_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+var app;
+Ext.onReady(function() {
+    var config = Ext.apply({
+        useToolbar: false,
+        proxy: "/proxy/?url=",
+        rest: "/maps/",
+
+        // tell the map viewer where and how to be rendered
+        portalConfig: {
+            height: 300,
+            renderTo: "embedded_map"
+        }
+    }, {{config|safe}});
+    app = new GeoExplorer.Viewer(config);
+});
+</script>
+{% endblock %}
+
 {% block main %}
 <h3>Map of {{map.title}}</h3>
 <p><strong>Abstract:</strong> {{map.abstract}}</p>
 
-<iframe src="/maps/{{map.id}}/embed" width="550px" height="400px"> 
-  <p>Your broswer does not support iframes</p>
-</iframe>
+<div id="embedded_map">
+</div>
 
 <p><strong>Keywords:</strong> </p>
 <p><strong>Citation:</strong> </p>

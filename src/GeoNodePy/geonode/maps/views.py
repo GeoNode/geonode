@@ -370,10 +370,12 @@ def mapdetail(request,mapid):
     The view that show details of each map
     '''
     map = get_object_or_404(Map,pk=mapid) 
+    config = build_map_config(map)
+    config["backgroundLayers"] = settings.MAP_BASELAYERS
+    config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
-        'config': json.dumps(DEFAULT_MAP_CONFIG), 
-        'bg': json.dumps(settings.MAP_BASELAYERS),
+        'config': config, 
         'map': map, 
         'layers': layers
     }))
@@ -448,7 +450,8 @@ def build_map_config(map):
         layer_json = {
             'name': l.name,
             'wms': server_mapping[l.ows_url],
-            'group': l.group
+            'group': l.group,
+            'styles' : l.styles
         }
 
         if l.format != "": layer_json['format'] = l.format
@@ -474,6 +477,7 @@ class LayerDescriptionForm(forms.Form):
     keywords = forms.CharField(500, required=False)
 
 @csrf_exempt
+@login_required
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
         if request.method == "GET":

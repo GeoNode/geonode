@@ -74,7 +74,7 @@ community."
           c = Client()
           response = c.get('/data/base:CA?describe')
           # Since we are not authenticated, we should not be able to access it
-          self.failUnlessEqual(response.status_code, 403)
+          self.failUnlessEqual(response.status_code, 302)
           # but if we log in ...
           c.login(username='bobby', password='bob')
           # ... all should be good
