@@ -3,9 +3,6 @@
 
 {% block title %} {{ layer.typename }} - {{ block.super }} {% endblock %}
 
-{% block header_append %}
-{% endblock %}
-
 {% block main %}
 
 <h3>{% trans "Are you sure you want to remove"  %} <strong>{{layer.typename}}</strong>?</h3>
@@ -14,9 +11,10 @@
 	{% csrf_token %}
 	<input type="hidden" value="{{layer.typename}}" /> 
 	<input type="submit" value="{% trans "Yes I am sure"  %}" />
-    <button>{% trans "No, don't remove it" %}</button>
 </form>
-
+<form action="/data/{{layer.typename}}" method="GET">
+    <button type="submit">{% trans "No, don't remove it" %}</button>
+</form>
 {% endblock %}
 
 
