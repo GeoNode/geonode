@@ -7,11 +7,7 @@
     <script type="text/javascript">
         Ext.onReady(function() {
             var config = {
-                /* This option works around issue #109
-                 * until http://trac.openlayers.org/ticket/2178
-                 * is fixed.
-                 */
-                alignToGrid: true,
+                useBackgroundCapabilities: false,
                 proxy: "/proxy/?url=",
 
                 /* The URL to a REST map configuration service.  This service 
@@ -26,17 +22,43 @@
                     "layers": [{"wms": "capra", "name": "{{layer.typename}}"}]
                 },
                 backgroundLayers: {{ background|safe }},
-                view: {
-                    type: Ext.Panel,
+                portalConfig: {
                     renderTo: "preview_map",
                     height: 350
+                },
+                createTools: function() {
+                    return [new Ext.Button({
+                        tooltip: GeoExplorer.prototype.backgroundContainerText,
+                        iconCls: 'icon-layer-switcher',
+                        menu: new gxp.menu.LayerMenu({
+                            layers: this.mapPanel.layers
+                        })
+                    })]
+                },
+                listeners: {
+                    "ready": function() {
+                        var map = app.mapPanel.map;
+                        map.zoomToExtent(map.layers[map.layers.length-1].maxExtent);
+                    }
                 }
             };
 
-            app = new LayerPreview(config);
+            app = new GeoExplorer.Viewer(config);
 
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
-                app.setPreviewStyle(elem.value);
+                var layerCfg;
+                for(var i=0, len=app.map.layers.length; i<len; ++i) {
+                    layerCfg = app.map.layers[i];
+                    if(layerCfg.group !== "background") {
+                        var store = app.layerSources[layerCfg.source].store;
+                        var rec = store.getAt(store.findExact("name", layerCfg.name));
+                        app.mapPanel.map.getLayersByName(
+                            rec.get("title") || rec.get("name"))[0].mergeNewParams({
+                                "STYLES": elem.value
+                            });
+                        break;
+                    }
+                }
             });
         });
     </script>
