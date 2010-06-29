@@ -448,7 +448,8 @@ def build_map_config(map):
         layer_json = {
             'name': l.name,
             'wms': server_mapping[l.ows_url],
-            'group': l.group
+            'group': l.group,
+            'styles' : l.styles
         }
 
         if l.format != "": layer_json['format'] = l.format
