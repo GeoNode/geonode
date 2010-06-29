@@ -513,11 +513,13 @@ def _describe_layer(request, layer):
                 "geographic_bounding_box": bbox_ewkt,
                 "language": meta.language,
                 "purpose": meta.identification.purpose,
+                # depends on http://trac.gispython.org/lab/ticket/227
                 "edition": meta.identification.edition,
                 # TODO: The following two parameters are not in OWSLib and are not part
                 # of the GeoNetwork XML response. What do we do with them?
                 #"temporal_extent_start": None,
                 #"temporal_extent_end": None,
+                # depends on http://trac.gispython.org/lab/ticket/227
                 "supplemental_information": meta.identification.supplemental_information,
                 "distribution_url": meta.distribution.onlineresource.url,
                 "distribution_description": meta.distribution.onlineresource.description,
@@ -533,6 +535,7 @@ def _describe_layer(request, layer):
                "city": meta.contact.city,
                "role": meta.contact.role,
                "address": meta.contact.address,
+               # Depends on http://trac.gispython.org/lab/ticket/227
                "email": meta.contact.email,
             }, prefix="poc")
             
