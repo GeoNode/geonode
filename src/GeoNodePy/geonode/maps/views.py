@@ -575,6 +575,33 @@ def _removeLayer(request,layer):
             return HttpResponse("Not allowed",status=403) 
     else:  
         return HttpResponse("Not allowed",status=403)
+
+@csrf_exempt
+def _changeLayerDefaultStyle(request,layer):
+    if request.user.is_authenticated():
+        if (request.method == 'POST'):
+            style_name = request.POST.get('defaultStyle')
+
+            old_default = layer.default_style
+            if old_default.name == style_name:
+                return HttpResponse("Default style for %s remains %s" % (layer.name, style_name), status=200)
+
+            # This code assumes without checking
+            # that the new default style name is included
+            # in the list of possible styles.
+
+            new_style = (style for style in layer.styles if style.name == style_name).next()
+
+            layer.default_style = new_style
+            layer.styles.remove(new_style)
+            layer.styles.append(old_default)
+            layer.save()
+            return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
+        else:
+            return HttpResponse("Not allowed",status=403)
+    else:  
+        return HttpResponse("Not allowed",status=403)
+
 			
 def layerController(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -584,6 +611,8 @@ def layerController(request, layername):
         return _removeLayer(request,layer)
     if (request.META['QUERY_STRING'] == "update"):
         return _updateLayer(request,layer)
+    if (request.META['QUERY_STRING'].startswith("style")):
+        return _changeLayerDefaultStyle(request,layer)
     else: 
         metadata = layer.metadata_csw()
 
