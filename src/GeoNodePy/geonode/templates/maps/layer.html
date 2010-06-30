@@ -60,6 +60,15 @@
                     }
                 }
             });
+
+            Ext.get(Ext.DomQuery.select("select[@name='default-style']")).on("change", function(evt, elem) {
+                Ext.Ajax.request({
+                    method: "post",
+                    url: "?style",
+                    params: {"defaultStyle" : elem.value}
+                });
+            });
+
         });
     </script>
 {% endblock %}
@@ -117,9 +126,21 @@
     <p> {% trans "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style." %}
     <br/>
     <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/> {{ layer.default_style.name|title }} <br/>
-        {% for style in layer.styles %} 
-            <input type="radio" name="style" value="{{style.name}}"/> {{ style.name|title }} <br/>
-        {% endfor %}
+    {% for style in layer.styles %} 
+        <input type="radio" name="style" value="{{style.name}}"/> {{ style.name|title }} <br/>
+    {% endfor %}
+    {% if user.is_authenticated %}
+    {% trans "Default style:" %}
+    <select name="default-style">
+        <option value="{{layer.publishing.default_style.name}}" selected="selected">
+          {{layer.publishing.default_style.name|title}}
+        </option>
+    {% for style in layer.styles %} 
+        <option value="{{style.name}}"/> {{ style.name|title }} <br/>
+    {% endfor %}
+    </select>
+    {% endif %}
+
     </p>
 
     {% if user.is_authenticated %}
