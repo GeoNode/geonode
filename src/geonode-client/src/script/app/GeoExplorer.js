@@ -456,7 +456,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     var record = store.getAt(store.findBy(function(record){
                         return record.get("layer") === layer;
                     }));
-                    var backupRecord = record.clone();
+                    var backupParams = Ext.apply({}, record.get("layer").params);
                     var prop = new Ext.Window({
                         title: "Properties: " + record.get("layer").name,
                         width: 280,
@@ -497,6 +497,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     };
                     var stylesDialog;
                     var createStylesDialog = function() {
+                        var tabPanel;
+                        if(stylesDialog) {
+                            tabPanel = prop.items.get(0);
+                            tabPanel.remove(stylesDialog.ownerCt);
+                            setTab = true;
+                        }
                         stylesDialog = new gxp.WMSStylesDialog({
                             style: "padding: 10px;",
                             editable: layer.url.indexOf(
@@ -511,6 +517,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     // if we cannot edit styles
                                     stylesDialog.editable === false &&
                                         stylesDialog.ownerCt.getFooterToolbar().hide();
+                                },
+                                "modified": function() {
+                                    // enable the save button
+                                    stylesDialog.ownerCt.buttons[1].enable();
+                                },
+                                "styleselected": function() {
+                                    // enable the cancel button
+                                    stylesDialog.ownerCt.buttons[0].enable();
                                 }
                             }
                         });
@@ -521,15 +535,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             items: stylesDialog,
                             buttons: [{
                                 text: "Cancel",
+                                disabled: true,
                                 handler: function() {
-                                    var tabPanel = prop.items.get(0);
-                                    tabPanel.remove(stylesDialog.ownerCt);
+                                    layer.mergeNewParams({
+                                        "STYLES": backupParams.STYLES
+                                    });
                                     createStylesDialog.call(this);
-                                    tabPanel.setActiveTab(stylesDialog.ownerCt);
                                 },
                                 scope: this
                             }, {
                                 text: "Save",
+                                disabled: true,
                                 handler: function() {
                                     this.busyMask = new Ext.LoadMask(prop.el,
                                         {msg: "Applying style changes..."});
@@ -542,6 +558,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                             "_dc": Math.random()
                                         });
                                         this.busyMask.hide();
+                                        createStylesDialog.call(this);
                                     }
                                     styleWriter.write({
                                         success: updateLayer,
@@ -551,6 +568,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 scope: this
                             }]
                         });
+                        tabPanel && tabPanel.setActiveTab(stylesDialog.ownerCt);
+
                     };
                     createStylesDialog.call(this);
                     // add styles tab
