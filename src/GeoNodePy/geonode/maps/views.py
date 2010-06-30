@@ -577,9 +577,10 @@ def _removeLayer(request,layer):
 def _changeLayerDefaultStyle(request,layer):
     if request.user.is_authenticated():
         if (request.method == 'POST'):
-            style = request.POST.get('defaultStyle')
-            layer.default_style = style
-            return HttpResponse("Default style for %s changed to %s" % (layer.name, style),status=200)
+            styleName = request.POST.get('defaultStyle')
+            layer.default_style = (style for style in layer.styles if style.name == styleName).next()
+            layer.save()
+            return HttpResponse("Default style for %s changed to %s" % (layer.name, styleName),status=200)
         else:
             return HttpResponse("Not allowed",status=403)
     else:  
