@@ -8,15 +8,7 @@
   <form action="/data/{{layer.typename}}?describe" method="POST">
 	  {% csrf_token %}
       <ul class="form">
-          {{ md_form.as_ul }}
-          <fieldset>
-              <legend>Point of Contact</legend>
-              {{ poc_form.as_ul }}
-          </fieldset>
-          <fieldset>
-              <legend>Metadata Provider</legend>
-              {{ metadata_provider_form.as_ul }} 
-          </fieldset>
+          {{ layer_form.as_ul }}
           <input type="submit" value="{% trans "Update" %}"/>
       </ul>
   </form>
