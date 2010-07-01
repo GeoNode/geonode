@@ -31,6 +31,7 @@ class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
         exclude = ('user',)
+    create_new_record = forms.BooleanField(initial=False)
 
 class LayerForm(forms.ModelForm):
     class Meta:
@@ -498,19 +499,46 @@ def _describe_layer(request, layer):
         author = author_role.contact
         
         if request.method == "POST":
-            layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
-            
-            poc_form = ContactForm(request.POST, prefix="poc")
+            layer_form = LayerForm(request.POST, instance=layer, prefix="layer")        
             poc_role_form = RoleForm(request.POST, instance=poc_role, prefix="poc_role")
-
-            author_form = ContactForm(request.POST, prefix="author")            
             author_role_form = RoleForm(request.POST, instance=author_role, prefix="author_role")
-            
-#            if poc_role_form.is_valid():
-#                new_poc_role = poc_role_form.cleaned_data['value']
-#                if poc_form.is_valid():
-#                    poc_
-            
+       
+            # If the 'new' checkbox is selected, do not pass the current instance to the
+            # form creation to create a new object.
+            # TODO: Figure out how to make this form handling more concise
+            if poc_role_form.is_valid():
+                new = request.POST.get('poc-create_new_record')
+                if new:
+                    poc_form = ContactForm(request.POST, prefix="poc")
+                    new_poc = poc_form.save()
+                    value = poc_form.cleaned_data['value']
+                    poc_role.value = value
+                    poc_role.contact = new_poc
+                    poc_role.save()
+                else:
+                    poc_role_form.save()
+                    poc_form = ContactForm(request.POST, instance=poc, prefix="poc")
+                    if poc_form.is_valid():
+                        poc_form.save()
+                        
+            # If the 'new' checkbox is selected, do not pass the current instance to the
+            # form creation to create a new object.
+            # TODO: Figure out how to make this form handling more concise
+            if author_role_form.is_valid():
+                new = request.POST.get('author-create_new_record')
+                if new:
+                    author_form = ContactForm(request.POST, prefix="author")
+                    new_author = author_form.save()
+                    value = author_form.cleaned_data['value']
+                    author_role.value = value
+                    author_role.contact = new_author
+                    author_role.save()
+                else:
+                    author_role_form.save()
+                    author_form = ContactForm(request.POST, instance=author, prefix="author")
+                    if author_form.is_valid():
+                        author_form.save()
+
             if layer_form.is_valid():
                 the_layer = layer_form.save()
                 the_layer.save_to_geonetwork()
