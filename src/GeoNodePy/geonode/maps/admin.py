@@ -20,11 +20,13 @@ class ContactAdmin(admin.ModelAdmin):
     inlines = [RoleInline]
 
 class LayerAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'name', 'workspace', 'title', 'date', 'abstract')
-    list_display_links = ('uuid',)
-    list_editable = ('title', 'abstract',)
+    list_display = ('id', 'typename','title', 'date', 'constraints_use', 'topic_category')
+    list_display_links = ('id',)
+    list_editable = ('title', 'constraints_use', 'topic_category')
     list_filter  = ('date', 'date_type', 'constraints_use', 'topic_category')
     filter_horizontal = ('contacts',)
+    date_hierarchy = 'date'
+    readonly_fields = ('uuid', 'typename', 'workspace') 
     inlines = [RoleInline]
 
 admin.site.register(Map, MapAdmin)

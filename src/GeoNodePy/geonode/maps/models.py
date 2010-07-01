@@ -14,6 +14,9 @@ import datetime
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
+def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
+    return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
+
 ROLE_VALUES = [
     'datasetProvider',
     'custodian',
@@ -539,15 +542,24 @@ class LayerManager(models.Manager):
                 
                 if layer.uuid is None:
                     layer.uuid = str(uuid.uuid4())
-                    layer.save()
 
                 record = gn.get_by_uuid(layer.uuid)
                 if record is None:
                     md_link = gn.create_from_layer(layer)
                     layer.metadata_links = [("text/xml", "TC211", md_link)]
-                    layer.save()
                 else: 
                     gn.update_layer(layer)
+                
+                meta = layer.metadata_csw()
+                layer.distribution_url
+                bbox = meta.identification.bbox
+                layer.geographic_bounding_box = bbox_to_wkt(bbox.minx, bbox.maxx, bbox.miny, bbox.maxy)
+                keywords = [word for word in meta.identification.keywords['list'] if isinstance(word,str)]
+                layer.keywords = keywords
+                layer.distribution_url = meta.distribution.onlineresource.url
+                layer.distribution_description = meta.distribution.onlineresource.description
+                layer.save()
+                    
             finally:
                 pass
         gn.logout()
@@ -571,7 +583,7 @@ class Layer(models.Model):
     date_type = models.CharField(max_length=255,choices=[(x, x) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
     edition = models.CharField(max_length=255, blank=True, null=True)
     abstract = models.TextField()
-    purpose = models.TextField()
+    purpose = models.TextField(null=True, blank=True)
     maintenance_frequency = models.CharField(max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
 
     # section 2
@@ -585,7 +597,7 @@ class Layer(models.Model):
     spatial_representation_type = models.CharField(max_length=255, choices=[(x,x) for x in SPATIAL_REPRESENTATION_TYPES], blank=True, null=True)
 
     # Section 4
-    language = models.CharField(max_length=2, choices=ALL_LANGUAGES, default='en')
+    language = models.CharField(max_length=3, choices=ALL_LANGUAGES, default='eng')
     topic_category = models.CharField(max_length=255, choices = [(x, x) for x in TOPIC_CATEGORIES], default = 'location')
 
     # Section 5
