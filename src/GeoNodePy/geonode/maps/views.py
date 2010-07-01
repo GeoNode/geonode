@@ -36,7 +36,7 @@ class ContactForm(forms.ModelForm):
 class LayerForm(forms.ModelForm):
     class Meta:
         model = Layer
-        exclude = ('contacts',)
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
 
 class RoleForm(forms.ModelForm):
     class Meta:
