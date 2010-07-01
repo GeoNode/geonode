@@ -538,7 +538,7 @@ def _describe_layer(request, layer):
                     author_form = ContactForm(request.POST, instance=author, prefix="author")
                     if author_form.is_valid():
                         author_form.save()
-
+     
             if layer_form.is_valid():
                 the_layer = layer_form.save()
                 the_layer.save_to_geonetwork()
