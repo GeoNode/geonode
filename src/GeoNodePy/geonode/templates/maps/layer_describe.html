@@ -9,6 +9,17 @@
 	  {% csrf_token %}
       <ul class="form">
           {{ layer_form.as_ul }}
+          <fieldset>
+	        <legend>Point of Contact</legend>
+            {{ poc_form.as_ul }}
+            {{ poc_role_form.as_ul }}
+          </fieldset>
+          <fieldset>
+	        <legend>Metadata Provider</legend>
+            {{ author_form.as_ul }}
+            {{ author_role_form.as_ul }}
+          </fieldset>
+
           <input type="submit" value="{% trans "Update" %}"/>
       </ul>
   </form>
