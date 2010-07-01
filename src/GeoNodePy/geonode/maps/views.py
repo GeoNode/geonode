@@ -582,7 +582,9 @@ def _changeLayerDefaultStyle(request,layer):
         if (request.method == 'POST'):
             style_name = request.POST.get('defaultStyle')
 
-            # fix this make more concise
+            # would be nice to implement
+            # better handling of default style switching
+            # in layer model or deeper (gsconfig.py, REST API)
 
             old_default = layer.default_style
             if old_default.name == style_name:
