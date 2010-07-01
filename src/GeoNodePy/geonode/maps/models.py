@@ -881,7 +881,7 @@ class MapLayer(models.Model):
 class Role(models.Model):
     contact = models.ForeignKey(Contact)
     layer = models.ForeignKey(Layer)
-    value = models.CharField(choices= [(x, x) for x in ROLE_VALUES], max_length=255)
+    value = models.CharField('Role', choices= [(x, x) for x in ROLE_VALUES], max_length=255)
 
 
 def delete_layer(instance, sender, **kwargs): 

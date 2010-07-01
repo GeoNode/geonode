@@ -29,7 +29,7 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 class ContactForm(forms.ModelForm):
     class Meta:
-        model = Layer
+        model = Contact
         exclude = ('user',)
 
 class LayerForm(forms.ModelForm):
@@ -40,6 +40,7 @@ class LayerForm(forms.ModelForm):
 class RoleForm(forms.ModelForm):
     class Meta:
         model = Role
+        exclude = ('contact', 'layer')
 
 RoleInlineFormSet = inlineformset_factory(Layer, Role)
 
@@ -498,11 +499,17 @@ def _describe_layer(request, layer):
         
         if request.method == "POST":
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+            
+            poc_form = ContactForm(request.POST, prefix="poc")
             poc_role_form = RoleForm(request.POST, instance=poc_role, prefix="poc_role")
+
+            author_form = ContactForm(request.POST, prefix="author")            
             author_role_form = RoleForm(request.POST, instance=author_role, prefix="author_role")
             
-            poc_form = ContactForm(request.POST, instance=poc, prefix="poc")
-            author_form = ContactForm(request.POST, instance=author,prefix="author")
+#            if poc_role_form.is_valid():
+#                new_poc_role = poc_role_form.cleaned_data['value']
+#                if poc_form.is_valid():
+#                    poc_
             
             if layer_form.is_valid():
                 the_layer = layer_form.save()

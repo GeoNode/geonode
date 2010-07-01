@@ -20,7 +20,7 @@ class ContactAdmin(admin.ModelAdmin):
     inlines = [RoleInline]
 
 class LayerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'typename','title', 'date', 'constraints_use', 'topic_category')
+    list_display = ('id', 'typename','service_type','title', 'date', 'constraints_use', 'topic_category')
     list_display_links = ('id',)
     list_editable = ('title', 'constraints_use', 'topic_category')
     list_filter  = ('date', 'date_type', 'constraints_use', 'topic_category')
