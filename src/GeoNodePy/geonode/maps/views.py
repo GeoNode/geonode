@@ -595,8 +595,7 @@ def _changeLayerDefaultStyle(request,layer):
             new_style = (style for style in layer.styles if style.name == style_name).next()
 
             layer.default_style = new_style
-            layer.styles.remove(new_style)
-            layer.styles.append(old_default)
+            layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
             layer.save()
             return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
         else:
