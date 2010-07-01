@@ -582,6 +582,8 @@ def _changeLayerDefaultStyle(request,layer):
         if (request.method == 'POST'):
             style_name = request.POST.get('defaultStyle')
 
+            # fix this make more concise
+
             old_default = layer.default_style
             if old_default.name == style_name:
                 return HttpResponse("Default style for %s remains %s" % (layer.name, style_name), status=200)
@@ -611,7 +613,7 @@ def layerController(request, layername):
         return _removeLayer(request,layer)
     if (request.META['QUERY_STRING'] == "update"):
         return _updateLayer(request,layer)
-    if (request.META['QUERY_STRING'].startswith("style")):
+    if (request.META['QUERY_STRING'] == "style"):
         return _changeLayerDefaultStyle(request,layer)
     else: 
         metadata = layer.metadata_csw()
