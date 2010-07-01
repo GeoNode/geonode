@@ -1,5 +1,4 @@
-from geonode.maps.models import Map, Layer, MapLayer, get_csw
-from geonode.maps.forms import MetadataForm
+from geonode.maps.models import Map, Layer, MapLayer, Contact, get_csw
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -24,13 +23,17 @@ from urllib import urlencode
 from urlparse import urlparse
 import uuid
 from django.views.decorators.csrf import csrf_exempt
-from geonode.geonode_profile.models import Profile
+from django.forms.models import inlineformset_factory
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
 class ContactForm(forms.ModelForm):
     class Meta:
-        model = Profile
+        model = Contact
+
+class LayerForm(forms.ModelForm):
+    class Meta:
+        model = Layer
 
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
@@ -532,7 +535,7 @@ def _describe_layer(request, layer):
                 "distribution_description": meta.distribution.onlineresource.description,
                 "keywords": ", ".join([word for word in meta.identification.keywords['list'] if isinstance(word,str)] )
             })
-                
+
             poc_form = ContactForm(instance=layer.owner.get_profile(), prefix="poc")
             
 #            metadata_provider_form = ContactForm(initial={
