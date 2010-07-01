@@ -539,16 +539,13 @@ class LayerManager(models.Manager):
                     poc_role.save()
                     md_author_role = Role(contact=default_contact, layer= layer, value="custodian")
                     md_author_role.save()
-                
-                if layer.uuid is None:
-                    layer.uuid = str(uuid.uuid4())
 
                 record = gn.get_by_uuid(layer.uuid)
                 if record is None:
                     md_link = gn.create_from_layer(layer)
                     layer.metadata_links = [("text/xml", "TC211", md_link)]
                 else: 
-                    gn.update_layer(layer)
+                    layer.save_to_geonetwork()
                 
                 meta = layer.metadata_csw()
                 layer.distribution_url
