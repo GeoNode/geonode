@@ -531,11 +531,11 @@ class LayerManager(models.Manager):
                     "uuid": str(uuid.uuid4())
                 })
 
-                poc_role = Role(contact=default_contact, layer = layer, value = "pointOfContact")
-                poc_role.save()
-                
-                md_author_role = Role(contact=default_contact, layer= layer, value="custodian")
-                md_author_role.save()
+                if created:
+                    poc_role = Role(contact=default_contact, layer = layer, value = "pointOfContact")
+                    poc_role.save()
+                    md_author_role = Role(contact=default_contact, layer= layer, value="custodian")
+                    md_author_role.save()
                 
                 if layer.uuid is None:
                     layer.uuid = str(uuid.uuid4())
