@@ -1,4 +1,4 @@
-from geonode.maps.models import Map, Layer, MapLayer, Contact, Role, get_csw
+from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -31,7 +31,6 @@ class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
         exclude = ('user',)
-    create_new_record = forms.BooleanField(initial=False)
 
 class LayerForm(forms.ModelForm):
     class Meta:
@@ -40,10 +39,8 @@ class LayerForm(forms.ModelForm):
 
 class RoleForm(forms.ModelForm):
     class Meta:
-        model = Role
+        model = ContactRole
         exclude = ('contact', 'layer')
-
-RoleInlineFormSet = inlineformset_factory(Layer, Role)
 
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
@@ -492,66 +489,62 @@ class LayerDescriptionForm(forms.Form):
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
         
-        poc_role = Role.objects.get(layer = layer, value='pointOfContact')
-        author_role =  Role.objects.get(layer = layer, value='custodian')
-                
-        poc = poc_role.contact
-        author = author_role.contact
+        poc = layer.poc
+        metadata_author = layer.metadata_author
         
+        poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
+        metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
+
         if request.method == "POST":
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")        
             poc_role_form = RoleForm(request.POST, instance=poc_role, prefix="poc_role")
-            author_role_form = RoleForm(request.POST, instance=author_role, prefix="author_role")
-       
+            author_role_form = RoleForm(request.POST, instance=metadata_author_role, prefix="author_role")
+            
             # If the 'new' checkbox is selected, do not pass the current instance to the
             # form creation to create a new object.
-            # TODO: Figure out how to make this form handling more concise
             if poc_role_form.is_valid():
-                new = request.POST.get('poc-create_new_record')
+                new = False
                 if new:
                     poc_form = ContactForm(request.POST, prefix="poc")
                     new_poc = poc_form.save()
-                    value = poc_form.cleaned_data['value']
-                    poc_role.value = value
+                    value = poc_form.cleaned_data['role']
+                    poc_role.role = value
                     poc_role.contact = new_poc
                     poc_role.save()
                 else:
                     poc_role_form.save()
                     poc_form = ContactForm(request.POST, instance=poc, prefix="poc")
-                    if poc_form.is_valid():
+                    if poc_form.has_changed and poc_form.is_valid():
                         poc_form.save()
-                        
+            
             # If the 'new' checkbox is selected, do not pass the current instance to the
             # form creation to create a new object.
-            # TODO: Figure out how to make this form handling more concise
             if author_role_form.is_valid():
-                new = request.POST.get('author-create_new_record')
+                new = False
                 if new:
                     author_form = ContactForm(request.POST, prefix="author")
                     new_author = author_form.save()
-                    value = author_form.cleaned_data['value']
-                    author_role.value = value
-                    author_role.contact = new_author
-                    author_role.save()
+                    value = author_form.cleaned_data['role']
+                    metadata_author_role.role = value
+                    metadata_author_role.contact = new_author
+                    metadata_author_role.save()
                 else:
-                    author_role_form.save()
-                    author_form = ContactForm(request.POST, instance=author, prefix="author")
-                    if author_form.is_valid():
+                    metadata_author_role.save()
+                    author_form = ContactForm(request.POST, instance=metadata_author, prefix="author")
+                    if author_form.has_changed and author_form.is_valid():
                         author_form.save()
-     
+
             if layer_form.is_valid():
                 the_layer = layer_form.save()
-                the_layer.save_to_geonetwork()
+                #the_layer.save_to_geonetwork()
                 return HttpResponseRedirect("/data/" + layer.typename)
         else:
             layer_form = LayerForm(instance=layer, prefix="layer")
             poc_role_form = RoleForm(instance=poc_role, prefix="poc_role")
-            author_role_form = RoleForm(instance=author_role, prefix="author_role")
-            
-            poc_form = ContactForm(instance=poc_role.contact, prefix="poc")
-            author_form = ContactForm(instance=author_role.contact, prefix="author")
-            
-                
+            author_role_form = RoleForm(instance=metadata_author_role, prefix="author_role")
+            poc_form = ContactForm(instance=poc, prefix="poc")
+            author_form = ContactForm(instance=metadata_author, prefix="author")
+
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
             "layer_form": layer_form,

@@ -46,7 +46,7 @@ class Catalog(object):
         pass
 
     def csw_request(self, layer, template):
-        tpl = get_template("maps/csw/transaction_insert.xml")
+        tpl = get_template(template)
         ctx = Context({
             'layer': layer,
         })
