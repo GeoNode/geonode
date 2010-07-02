@@ -14,45 +14,45 @@
    <gmd:contact>
      <gmd:CI_ResponsibleParty>
        <gmd:individualName>
-         <gco:CharacterString>{{ layer.owner.get_profile.name }}</gco:CharacterString>
+         <gco:CharacterString>{{ layer.poc.name }}</gco:CharacterString>
        </gmd:individualName>
        <gmd:organisationName>
-         <gco:CharacterString>{{ layer.owner.get_profile.organization }}</gco:CharacterString>
+         <gco:CharacterString>{{ layer.poc.organization }}</gco:CharacterString>
        </gmd:organisationName>
        <gmd:positionName>
-         <gco:CharacterString>{{ layer.owner.get_profile.position }}</gco:CharacterString>
+         <gco:CharacterString>{{ layer.poc.position }}</gco:CharacterString>
        </gmd:positionName>
        <gmd:contactInfo>
          <gmd:CI_Contact>
            <gmd:phone>
              <gmd:CI_Telephone>
                <gmd:voice gco:nilReason="missing">
-		         <gco:CharacterString>{{ layer.owner.get_profile.voice }}</gco:CharacterString>
+		         <gco:CharacterString>{{ layer.poc.voice }}</gco:CharacterString>
                </gmd:voice>
                <gmd:facsimile gco:nilReason="missing">
-		         <gco:CharacterString>{{ layer.owner.get_profile.fax }}</gco:CharacterString>
+		         <gco:CharacterString>{{ layer.poc.fax }}</gco:CharacterString>
                </gmd:facsimile>
              </gmd:CI_Telephone>
            </gmd:phone>
            <gmd:address>
              <gmd:CI_Address>
                <gmd:deliveryPoint>
-		         <gco:CharacterString>{{ layer.owner.get_profile.delivery }}</gco:CharacterString>
+		         <gco:CharacterString>{{ layer.poc.delivery }}</gco:CharacterString>
                </gmd:deliveryPoint>
                <gmd:city>
-		         <gco:CharacterString>{{ layer.owner.get_profile.city }}</gco:CharacterString>
+		         <gco:CharacterString>{{ layer.poc.city }}</gco:CharacterString>
                </gmd:city>
                <gmd:administrativeArea gco:nilReason="missing">
                  <gco:CharacterString />
                </gmd:administrativeArea>
                <gmd:postalCode>
-		         <gco:CharacterString>{{ layer.owner.get_profile.zipcode }}</gco:CharacterString>
+		         <gco:CharacterString>{{ layer.poc.zipcode }}</gco:CharacterString>
                </gmd:postalCode>
                <gmd:country>
-		         <gco:CharacterString>{{ layer.owner.get_profile.country }}</gco:CharacterString>
+		         <gco:CharacterString>{{ layer.poc.country }}</gco:CharacterString>
                </gmd:country>
                <gmd:electronicMailAddress>
-		         <gco:CharacterString>{{ layer.owner.email }}</gco:CharacterString>
+		         <gco:CharacterString>{{ layer.poc.email }}</gco:CharacterString>
                </gmd:electronicMailAddress>
              </gmd:CI_Address>
            </gmd:address>

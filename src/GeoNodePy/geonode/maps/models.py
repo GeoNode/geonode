@@ -11,7 +11,7 @@ import simplejson
 import urllib
 import uuid
 import datetime
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext as _
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
@@ -465,13 +465,8 @@ system, so know what you do :-)'
 
 class Contact(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
-
-    # the specification says that either name or organization should be provided, 
-    # for now I am setting just name as manadatory but we should tie this requirement
-    # to model validation in the future.
-    name = models.CharField('Individual Name', max_length=255)
+    name = models.CharField('Individual Name', max_length=255, blank=True, null=True)
     organization = models.CharField('Organization Name', max_length=255, blank=True, null=True)
-    
     position = models.CharField('Position Name', max_length=255, blank=True, null=True)
     voice = models.CharField('Voice', max_length=255, blank=True, null=True)
     fax = models.CharField('Facsimile',  max_length=255, blank=True, null=True)
@@ -481,9 +476,17 @@ class Contact(models.Model):
     zipcode = models.CharField('Postal Code', max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        # the specification says that either name or organization should be provided
+        valid_name = (self.name != None and self.name != '')
+        valid_organization = (self.organization != None and self.organization !='')
+        if not (valid_name or valid_organization):
+            raise ValidationError('Either name or organization should be provided')
     
     def __unicode__(self):
-        return self.name
+        return u"%s (%s)" % (self.name, self.organization)
 
 
 def _(x): return x
@@ -510,14 +513,8 @@ class LayerManager(models.Manager):
         gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
         gn.login()
 
-        contacts = Contact.objects.all()
-
-        # what do we find/set the default contact?
-        if len(contacts) > 0:
-            default_contact = contacts.order_by('id')[0]
-        else:
-            default_contact = Contact(name="Geonode user", organization="Geonode")
-            default_contact.save()
+        default_poc, created = Contact.objects.get_or_create(name='Geonode Point of Contact')
+        default_metadata_author, created = Contact.objects.get_or_create(name='Geonode Metadata Author')
 
         for resource in cat.get_resources():
             try:
@@ -530,15 +527,15 @@ class LayerManager(models.Manager):
                     "storeType": store.resource_type,
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title,
-                    "abstract": resource.abstract or '',            
+                    "abstract": resource.abstract or 'No abstract supplied',
                     "uuid": str(uuid.uuid4())
                 })
 
+                # Assign default contacts because geonetwork will not save the record
+                # if that info is not supplied.
                 if created:
-                    poc_role = Role(contact=default_contact, layer = layer, value = "pointOfContact")
-                    poc_role.save()
-                    md_author_role = Role(contact=default_contact, layer= layer, value="custodian")
-                    md_author_role.save()
+                    layer.poc = default_poc
+                    layer.metadata_author = default_metadata_author
 
                 record = gn.get_by_uuid(layer.uuid)
                 if record is None:
@@ -574,6 +571,8 @@ class Layer(models.Model):
     uuid = models.CharField(max_length=36)
     typename = models.CharField(max_length=128, unique=True)
 
+    contacts = models.ManyToManyField(Contact, through='ContactRole')
+
     # section 1
     title = models.CharField(max_length=255)
     date = models.DateTimeField(auto_now=True)
@@ -584,7 +583,7 @@ class Layer(models.Model):
     maintenance_frequency = models.CharField(max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
 
     # section 2
-    #poc
+    # see poc property definition below
 
     # section 3
     keywords = models.TextField(blank=True, null=True)
@@ -604,15 +603,14 @@ class Layer(models.Model):
     supplemental_information = models.TextField(default=DEFAULT_SUPLEMENTAL_INFORMATION)
 
     # Section 6
-    distribution_url = models.URLField(blank=True, null=True)
+    distribution_url = models.TextField(blank=True, null=True)
     distribution_description = models.TextField(blank=True, null=True)
 
     # Section 8
     data_quality_statement = models.TextField(blank=True, null=True)
 
     # Section 9
-    
-    contacts = models.ManyToManyField(Contact, through='Role')
+    # see metadata_author property definition below
 
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
@@ -776,8 +774,44 @@ class Layer(models.Model):
             self._publishing_cache = cat.get_layer(self.name)
         return self._publishing_cache
 
+    @property
+    def poc_role(self):
+        role, created = Role.objects.get_or_create(value='pointOfContact')
+        return role
+
+    @property
+    def metadata_author_role(self):
+        role, created = Role.objects.get_or_create(value='author')
+        return role
+        
+    def _set_poc(self, poc):
+        # reset any poc asignation to this layer
+        ContactRole.objects.filter(role=self.poc_role, layer=self).delete()
+        #create the new assignation
+        contact_role = ContactRole.objects.create(role=self.poc_role, layer=self, contact=poc)
+
+    def _get_poc(self):
+        return ContactRole.objects.get(role=self.poc_role, layer=self).contact
+    
+    poc = property(_get_poc, _set_poc)
+
+    def _set_metadata_author(self, metadata_author):
+        # reset any metadata_author asignation to this layer
+        ContactRole.objects.filter(role=self.metadata_author_role, layer=self).delete()
+        #create the new assignation
+        contact_role = ContactRole.objects.create(role=self.metadata_author_role, 
+                                                  layer=self, contact=metadata_author)
+
+    def _get_metadata_author(self):
+        return ContactRole.objects.get(role=self.metadata_author_role, layer=self).contact
+
+    metadata_author = property(_get_metadata_author, _set_metadata_author)
+
     def save_to_geoserver(self):
         if hasattr(self, "_resource_cache"):
+            self.resource.title = self.title
+            self.resource.abstract = self.abstract
+            self.resource.name= self.name
             Layer.objects.gs_catalog.save(self._resource_cache)
         if hasattr(self, "_publishing_cache"):
             Layer.objects.gs_catalog.save(self._publishing_cache)
@@ -879,10 +913,23 @@ class MapLayer(models.Model):
         return '%s?layers=%s' % (self.ows_url, self.name)
 
 class Role(models.Model):
+    """
+    Roles are a generic way to create groups of permissions.
+    """
+    value = models.CharField('Role', choices= [(x, x) for x in ROLE_VALUES], max_length=255, unique=True)
+    permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
+
+    def __unicode__(self):
+        return self.get_value_display()
+
+
+class ContactRole(models.Model):
+    """
+    ContactRole is an intermediate model to bind Contacts and Layers and apply roles.
+    """
     contact = models.ForeignKey(Contact)
     layer = models.ForeignKey(Layer)
-    value = models.CharField('Role', choices= [(x, x) for x in ROLE_VALUES], max_length=255)
-
+    role = models.ForeignKey(Role)
 
 def delete_layer(instance, sender, **kwargs): 
     """
