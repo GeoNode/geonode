@@ -108,7 +108,7 @@ class Layer(models.Model):
                 })
             types = [
                 ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
-                ("gml", _("GML"), "gml")
+                ("gml", _("GML 2.0"), "gml2")
             ]
             links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
 
