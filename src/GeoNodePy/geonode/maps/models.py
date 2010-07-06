@@ -285,6 +285,10 @@ class Map(models.Model):
     title = models.CharField(max_length=200)
     abstract = models.CharField(max_length=200)
     contact = models.CharField(max_length=200)
+    
+    # These fields are likely deprecated but
+    # we need to double check with the World Bank
+    # as they were the ones who required them
     featured = models.BooleanField()
     endorsed = models.BooleanField()
 
