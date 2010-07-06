@@ -201,11 +201,15 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_extensions',
+    'registration',
+    'profiles',
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
 )
 
+AUTH_PROFILE_MODULE = 'maps.Contact'
+REGISTRATION_OPEN = False
 GEONODE_CLIENT_LOCATION = "http://geonode.capra.opengeo.org/geonode-client"
 
 if DEBUG:
