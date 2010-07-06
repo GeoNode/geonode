@@ -77,7 +77,6 @@ ROOT_URLCONF = 'capra.urls'
 TEMPLATE_DIRS = (path_extrapolate('capra/templates'),) + TEMPLATE_DIRS
 
 INSTALLED_APPS = INSTALLED_APPS + ('capra.layertypes',)
-INSTALLED_APPS = INSTALLED_APPS + ('registration', 'profiles',)
 
 NAVBAR['hazard'] = {'id': '%sLink',
     'item_class': '',
@@ -118,7 +117,3 @@ ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course, us
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/tmp/app-messages' # change this to a proper location
-
-AUTH_PROFILE_MODULE = 'maps.Contact'
-
-REGISTRATION_OPEN = False
