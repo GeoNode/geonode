@@ -14,10 +14,6 @@ Ext.onReady(function(){
   
   var rest_url = "{%url geonode.maps.views.maps %}";
 
-  var filterStore = function(store) {
-    return store.filter("endorsed", false);
-  };
-
   var mapGrid = new MapGrid({
       store : new Ext.data.JsonStore({
           url: rest_url,
@@ -31,9 +27,6 @@ Ext.onReady(function(){
               {name: "endorsed", mapping: "config.about.endorsed"}
           ],
           autoLoad: true,
-          listeners : {
-              "load" : filterStore
-          }
       })
   });
 

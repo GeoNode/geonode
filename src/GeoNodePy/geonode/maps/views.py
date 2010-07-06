@@ -360,9 +360,6 @@ def deletemap(request, mapid):
     map.delete()
     for layer in layers:
         layer.delete()
-    if is_featured:
-        return HttpResponseRedirect(reverse('geonode.views.curated'))
-    else:
         return HttpResponseRedirect(reverse('geonode.views.community'))
 
 def mapdetail(request,mapid): 
