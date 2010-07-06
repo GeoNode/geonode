@@ -20,8 +20,6 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
 
     initComponent: function(){
 
-        this.title = this.mapGridText;
-
         this.store = this.store || new Ext.data.JsonStore({
             url: this.url,
             root: 'maps',
@@ -60,33 +58,6 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
         }
 
         var mapGrid = this;
-        this.tbar = [
-            "->",
-            new Ext.Button({
-                text: this.openMapText,
-                iconCls: "icon-open-map",
-                handler: function() {
-                    var rec = mapGrid.getSelectionModel().getSelected();
-                    if (rec)
-                        location.href = "/maps/" + rec.id;
-                }
-            }),
-            new Ext.Button({
-                text: this.exportMapText,
-                iconCls: "icon-export",
-                handler: function() {
-                    var rec = mapGrid.getSelectionModel().getSelected();
-                    if (rec) mapGrid.showExportWizard({map: rec.id});
-                }
-            }) /*,
-            new Ext.Button({
-                text: this.createMapText,
-                iconCls: "icon-create-map",
-                handler: function() {
-                    location.href = "map.html"
-                }
-            }) */
-        ];
 
         this.listeners = Ext.applyIf(this.listeners || {}, {
             "rowdblclick": function(grid, rowIndex, evt) {
