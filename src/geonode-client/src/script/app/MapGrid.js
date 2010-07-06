@@ -45,6 +45,13 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
             this.plugins = this.expander;
         }
 
+        // disabling the default mousedown behavior of the
+        // expander because we are providing the row toggling
+        // behavior on the row click
+        this.expander.onMouseDown = function(e, t){
+            //don't do anything
+        }
+
         if(!this.cm){
             this.cm = new Ext.grid.ColumnModel([
                 this.expander,
@@ -65,6 +72,9 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
                 if (rec != null) {
                     location.href = "/maps/" + rec.id;
                 }
+            },
+            "rowclick" : function(grid, rowIndex, evt){
+                grid.expander.toggleRow(rowIndex);
             }
         });
 
