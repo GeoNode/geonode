@@ -29,11 +29,5 @@ def community(request):
         "maps": maps
     }))
 
-def curated(request):
-    maps = Map.objects.filter(featured=True)[:5]
-    return render_to_response('curated.html', RequestContext(request, {
-        "maps": maps
-    }))
-
 def lang(request): 
     return render_to_response('lang.js', mimetype="text/javascript")
