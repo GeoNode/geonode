@@ -152,13 +152,8 @@ NAVBAR = \
 {'community': {'id': '%sLink',
                'item_class': '',
                'link_class': '',
-               'text': 'Contributed Maps',
+               'text': 'Maps',
                'url': 'geonode.views.community'},
- 'curated': {'id': '%sLink',
-             'item_class': '',
-             'link_class': '',
-             'text': 'CAPRA Maps',
-             'url': 'geonode.views.curated'},
  'data': {'id': '%sLink',
           'item_class': '',
           'link_class': '',
@@ -186,7 +181,7 @@ NAVBAR = \
           'id': '%sLink',
           'item_class': '',
           'link_class': '',
-          'visible': 'data\ncurated\ncommunity\nhelp'}}
+          'visible': 'data\ncommunity\nhelp'}}
 
 
 # Determines whether the minified or the "raw" JavaScript files are included.

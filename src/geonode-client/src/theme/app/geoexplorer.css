@@ -24,13 +24,12 @@
     background-color: #EAEAEA;
 }
 
-
-.x-tree-node img.gx-folder, .x-tree-node-collapsed img.gx-folder{
-    background: url(http://extjs.cachefly.net/ext-2.2.1/resources/images/default/tree/folder.gif);
+.x-tree-node-leaf  .gx-tree-layer-icon {
+    background-image: url(img/geosilk/vector.png);
 }
- 
-.x-tree-node-expanded img.gx-folder {
-    background: url(http://extjs.cachefly.net/ext-2.2.1/resources/images/default/tree/folder-open.gif);
+
+.x-tree-node-leaf  .gx-tree-rasterlayer-icon {
+    background-image: url(img/geosilk/raster.png);
 }
 
 .x-menu-group-item .x-menu-item-icon {
@@ -173,6 +172,10 @@ background-color:white;
 
 .x-btn .icon-zoom-visible, .x-menu-item .icon-zoom-visible { 
     background-image: url(img/silk/arrow_out.png);
+}
+
+.x-btn .icon-zoom-to, .x-menu-item .icon-zoom-to { 
+    background-image: url(img/silk/magnifier.png);
 }
 
 .x-btn .icon-pan { 

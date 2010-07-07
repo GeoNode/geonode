@@ -643,7 +643,7 @@ class Layer(models.Model):
                 })
             types = [
                 ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
-                ("gml", _("GML"), "gml")
+                ("gml", _("GML 2.0"), "gml2")
             ]
             links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
 
@@ -828,6 +828,10 @@ class Map(models.Model):
     title = models.CharField(max_length=200)
     abstract = models.CharField(max_length=200)
     contact = models.CharField(max_length=200)
+    
+    # These fields are likely deprecated but
+    # we need to double check with the World Bank
+    # as they were the ones who required them
     featured = models.BooleanField()
     endorsed = models.BooleanField()
 
