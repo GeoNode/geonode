@@ -509,13 +509,18 @@ class LayerManager(models.Manager):
         user, password = settings.GEOSERVER_CREDENTIALS
         self.gs_catalog = Catalog(url, _user, _password)
 
+    def default_poc(self):
+        default_poc, created = Contact.objects.get_or_create(name='Geonode Point of Contact')
+        return default_poc
+
+    def default_metadata_author(self):
+        default_metadata_author, created = Contact.objects.get_or_create(name='Geonode Metadata Author')
+        return default_metadata_author
+
     def slurp(self):
         cat = self.gs_catalog
         gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
         gn.login()
-
-        default_poc, created = Contact.objects.get_or_create(name='Geonode Point of Contact')
-        default_metadata_author, created = Contact.objects.get_or_create(name='Geonode Metadata Author')
 
         for resource in cat.get_resources():
             try:
@@ -527,16 +532,10 @@ class LayerManager(models.Manager):
                     "store": store.name,
                     "storeType": store.resource_type,
                     "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title,
+                    "title": resource.title or "No title supplied",
                     "abstract": resource.abstract or 'No abstract supplied',
                     "uuid": str(uuid.uuid4())
                 })
-
-                # Assign default contacts because geonetwork will not save the record
-                # if that info is not supplied.
-                if created:
-                    layer.poc = default_poc
-                    layer.metadata_author = default_metadata_author
 
                 record = gn.get_by_uuid(layer.uuid)
                 if record is None:
@@ -544,16 +543,8 @@ class LayerManager(models.Manager):
                     layer.metadata_links = [("text/xml", "TC211", md_link)]
                 else: 
                     layer.save_to_geonetwork()
-                
-                meta = layer.metadata_csw()
-                layer.distribution_url
-                bbox = meta.identification.bbox
-                layer.geographic_bounding_box = bbox_to_wkt(bbox.minx, bbox.maxx, bbox.miny, bbox.maxy)
-                keywords = [word for word in meta.identification.keywords['list'] if isinstance(word,str)]
-                layer.keywords = keywords
-                layer.distribution_url = meta.distribution.onlineresource.url
-                layer.distribution_description = meta.distribution.onlineresource.description
                 layer.save()
+                layer.autopopulate()
                     
             finally:
                 pass
@@ -792,8 +783,12 @@ class Layer(models.Model):
         contact_role = ContactRole.objects.create(role=self.poc_role, layer=self, contact=poc)
 
     def _get_poc(self):
-        return ContactRole.objects.get(role=self.poc_role, layer=self).contact
-    
+        try:
+            the_poc = ContactRole.objects.get(role=self.poc_role, layer=self).contact
+        except ContactRole.DoesNotExist:
+            the_poc = None
+        return the_poc
+
     poc = property(_get_poc, _set_poc)
 
     def _set_metadata_author(self, metadata_author):
@@ -804,7 +799,11 @@ class Layer(models.Model):
                                                   layer=self, contact=metadata_author)
 
     def _get_metadata_author(self):
-        return ContactRole.objects.get(role=self.metadata_author_role, layer=self).contact
+        try:
+            the_ma = ContactRole.objects.get(role=self.metadata_author_role, layer=self).contact
+        except  ContactRole.DoesNotExist:
+            the_ma = None
+        return the_ma
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
@@ -816,6 +815,26 @@ class Layer(models.Model):
             Layer.objects.gs_catalog.save(self._resource_cache)
         if hasattr(self, "_publishing_cache"):
             Layer.objects.gs_catalog.save(self._publishing_cache)
+
+    def  autopopulate(self):
+        meta = self.metadata_csw()
+        bbox = meta.identification.bbox
+        self.geographic_bounding_box = bbox_to_wkt(bbox.minx, bbox.maxx, bbox.miny, bbox.maxy)
+        keywords = [word for word in meta.identification.keywords['list'] if isinstance(word,str)]
+        self.keywords = keywords
+        self.distribution_url = meta.distribution.onlineresource.url
+        self.distribution_description = meta.distribution.onlineresource.description
+        if self.poc is None:
+            self.poc = Layer.objects.default_poc()
+        if self.metadata_author is None:
+            self.metadata_author = Layer.objects.default_metadata_author()
+        self.save()
+
+    def set_bbox(self, box):
+        """
+        Sets a bounding box based on the gsconfig native_box param.
+        """
+        self.geographic_bounding_box = bbox_to_wkt(box[4], box[0], box[1], box[2], box[3])
 
     def get_absolute_url(self):
         return "%sdata/%s" % (settings.SITEURL,self.typename)

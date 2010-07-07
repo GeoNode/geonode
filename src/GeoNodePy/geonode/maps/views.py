@@ -777,7 +777,6 @@ def _handle_layer_upload(request, layer=None):
                 gs_resource.latlon_bbox = gs_resource.native_bbox
                 gs_resource.projection = "EPSG:4326"
                 cat.save(gs_resource)
-
             typename = gs_resource.store.workspace.name + ':' + gs_resource.name
             
             # if we created a new store, create a new layer
@@ -786,13 +785,17 @@ def _handle_layer_upload(request, layer=None):
                                          storeType=gs_resource.store.resource_type,
                                          typename=typename,
                                          workspace=gs_resource.store.workspace.name,
+                                         title=gs_resource.title,
                                          uuid=str(uuid.uuid4()))
+            layer.set_bbox(gs_resource.native_bbox)
             gn = geonetwork.Catalog(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
             gn.login()
             md_link = gn.create_from_layer(layer)
             gn.logout()
             layer.metadata_links = [("text/xml", "TC211", md_link)]
             layer.save()
+            # This has to be done at the end, so the geoserver record is accesible
+            layer.autopopulate()
         except:
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
