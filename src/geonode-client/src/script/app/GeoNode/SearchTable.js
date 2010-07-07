@@ -679,6 +679,8 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
 
         this.viewer = new GeoExplorer.Viewer({
             proxy: this.proxy,
+            useCapabilities: false,
+            useBackgroundCapabilities: false,
             useToolbar: false,
             useMapOverlay: false,
             backgroundLayers: [this.background],

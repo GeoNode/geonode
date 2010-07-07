@@ -3,15 +3,17 @@
 
 {% block title %} {{ layer.resource.title|default:layer.typename }} - {{ block.super }} {% endblock %}
 
-{% block header_append %}
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/openlayers_header.html" %}
+{% include "geonode/geoext_header.html" %}
+{% include "geonode/ux_header.html" %}
+{% include "geonode/gxp_header.html" %}
+{{ block.super }}
     <script type="text/javascript">
         Ext.onReady(function() {
             var config = {
-                /* This option works around issue #109
-                 * until http://trac.openlayers.org/ticket/2178
-                 * is fixed.
-                 */
-                alignToGrid: true,
+                useBackgroundCapabilities: false,
                 proxy: "/proxy/?url=",
 
                 /* The URL to a REST map configuration service.  This service 
@@ -50,15 +52,29 @@
             app = new GeoExplorer.Viewer(config);
 
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
-                var layer;
-                for(var i=0, len=app.mapPanel.map.layers.length; i<len; ++i) {
-                    layer = app.mapPanel.map.layers[i];
-                    if(layer !== app.mapPanel.map.baseLayer && layer.getVisibility()) {
-                        layer.mergeNewParams({"STYLES": elem.value});
+                var layerCfg;
+                for(var i=0, len=app.map.layers.length; i<len; ++i) {
+                    layerCfg = app.map.layers[i];
+                    if(layerCfg.group !== "background") {
+                        var store = app.layerSources[layerCfg.source].store;
+                        var rec = store.getAt(store.findExact("name", layerCfg.name));
+                        app.mapPanel.map.getLayersByName(
+                            rec.get("title") || rec.get("name"))[0].mergeNewParams({
+                                "STYLES": elem.value
+                            });
                         break;
                     }
                 }
             });
+
+            Ext.get(Ext.DomQuery.select("select[@name='default-style']")).on("change", function(evt, elem) {
+                Ext.Ajax.request({
+                    method: "post",
+                    url: "?style",
+                    params: {"defaultStyle" : elem.value}
+                });
+            });
+
         });
     </script>
 {% endblock %}
@@ -115,10 +131,22 @@
     <h3> {% trans "Styles" %} </h3>
     <p> {% trans "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style." %}
     <br/>
-    <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/> {{ layer.default_style.name|title }} <br/>
-        {% for style in layer.styles %} 
-            <input type="radio" name="style" value="{{style.name}}"/> {{ style.name|title }} <br/>
-        {% endfor %}
+        <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/> {{ layer.default_style.name|title }} <a href="{{ GEOSERVER_BASE_URL }}styles/{{layer.publishing.default_style.name}}.sld">SLD</a><br/>
+    {% for style in layer.styles %} 
+        <input type="radio" name="style" value="{{style.name}}"/> {{ style.name|title }}  <a href="{{ GEOSERVER_BASE_URL }}styles/{{style.name}}.sld">SLD</a><br/>
+    {% endfor %}
+    {% if user.is_authenticated %}
+    {% trans "Default style:" %}
+    <select name="default-style">
+        <option value="{{layer.publishing.default_style.name}}" selected="selected">
+          {{layer.publishing.default_style.name|title}}
+        </option>
+    {% for style in layer.styles %} 
+        <option value="{{style.name}}"/> {{ style.name|title }} <br/>
+    {% endfor %}
+    </select>
+    {% endif %}
+
     </p>
 
     {% if user.is_authenticated %}

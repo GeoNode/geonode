@@ -372,9 +372,6 @@ def deletemap(request, mapid):
     map.delete()
     for layer in layers:
         layer.delete()
-    if is_featured:
-        return HttpResponseRedirect(reverse('geonode.views.curated'))
-    else:
         return HttpResponseRedirect(reverse('geonode.views.community'))
 
 def mapdetail(request,mapid): 
@@ -382,10 +379,12 @@ def mapdetail(request,mapid):
     The view that show details of each map
     '''
     map = get_object_or_404(Map,pk=mapid) 
+    config = build_map_config(map)
+    config["backgroundLayers"] = settings.MAP_BASELAYERS
+    config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
-        'config': json.dumps(DEFAULT_MAP_CONFIG), 
-        'bg': json.dumps(settings.MAP_BASELAYERS),
+        'config': config, 
         'map': map, 
         'layers': layers
     }))
@@ -460,7 +459,8 @@ def build_map_config(map):
         layer_json = {
             'name': l.name,
             'wms': server_mapping[l.ows_url],
-            'group': l.group
+            'group': l.group,
+            'styles' : l.styles
         }
 
         if l.format != "": layer_json['format'] = l.format
@@ -486,6 +486,7 @@ class LayerDescriptionForm(forms.Form):
     keywords = forms.CharField(500, required=False)
 
 @csrf_exempt
+@login_required
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
         
@@ -570,6 +571,36 @@ def _removeLayer(request,layer):
             return HttpResponse("Not allowed",status=403) 
     else:  
         return HttpResponse("Not allowed",status=403)
+
+@csrf_exempt
+def _changeLayerDefaultStyle(request,layer):
+    if request.user.is_authenticated():
+        if (request.method == 'POST'):
+            style_name = request.POST.get('defaultStyle')
+
+            # would be nice to implement
+            # better handling of default style switching
+            # in layer model or deeper (gsconfig.py, REST API)
+
+            old_default = layer.default_style
+            if old_default.name == style_name:
+                return HttpResponse("Default style for %s remains %s" % (layer.name, style_name), status=200)
+
+            # This code assumes without checking
+            # that the new default style name is included
+            # in the list of possible styles.
+
+            new_style = (style for style in layer.styles if style.name == style_name).next()
+
+            layer.default_style = new_style
+            layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
+            layer.save()
+            return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
+        else:
+            return HttpResponse("Not allowed",status=403)
+    else:  
+        return HttpResponse("Not allowed",status=403)
+
 			
 def layerController(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -579,6 +610,8 @@ def layerController(request, layername):
         return _removeLayer(request,layer)
     if (request.META['QUERY_STRING'] == "update"):
         return _updateLayer(request,layer)
+    if (request.META['QUERY_STRING'] == "style"):
+        return _changeLayerDefaultStyle(request,layer)
     else: 
         metadata = layer.metadata_csw()
 
