@@ -775,19 +775,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         //needed for Safari
-        var layersPanel = new Ext.Panel({
-            title: this.layersPanelText,
+        var westPanel = new Ext.Panel({
             layout: "fit",
-            items: [layersTabPanel]
+            items: [layersTabPanel],
+            region: "west",
+            width: 250
         });
-
+/*
         var westPanel = new Ext.Container({
             layout: "accordion",
             layoutConfig: {
                 animate:true
             },
-            region: "west",
-            width: 250,
+            
             split: true,
             collapsible: true,
             collapseMode: "mini",
@@ -796,7 +796,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 metaDataPanel, layersPanel
             ]
         });
-
+*/
         this.toolbar = new Ext.Toolbar({
             disabled: true,
             items: this.createTools()
