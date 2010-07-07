@@ -1114,7 +1114,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
         
             var zoomSelector = new Ext.form.ComboBox({
-                emptyText: 'Zoom level',
+                emptyText: this.zoomSelectorText,
                 tpl: '<tpl for="."><div class="x-combo-list-item">1 : {[parseInt(values.scale)]}</div></tpl>',
                 editable: false,
                 triggerAction: 'all',
