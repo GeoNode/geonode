@@ -13,7 +13,8 @@ Ext.grid.RowExpander = function(config){
         beforeexpand : true,
         expand: true,
         beforecollapse: true,
-        collapse: true
+        collapse: true,
+        init: true
     });
 
     Ext.grid.RowExpander.superclass.constructor.call(this);
@@ -63,6 +64,8 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
         grid.on('render', function(){
             view.mainBody.on('mousedown', this.onMouseDown, this);
         }, this);
+
+        this.fireEvent('init', this);
     },
 
     getBodyContent : function(record, index){
