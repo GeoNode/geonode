@@ -266,6 +266,7 @@ div.overlay-scaleline {
 }
 
 .olControlScaleLine {
+    line-height: 10px;
     display: block;
     position: relative;
     font-family: tahoma,arial,helvetica,sans-serif;
