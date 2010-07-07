@@ -3,6 +3,7 @@ from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 from django import forms
+from django.contrib.auth import get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis import gdal
 from django.core.exceptions import ObjectDoesNotExist
@@ -819,6 +820,37 @@ def _handle_layer_upload(request, layer=None):
             errors.append(GENERIC_UPLOAD_ERROR)
 
     return layer, errors
+
+def layer_acls(request):
+    """
+    returns json-encoded lists of layer identifiers that 
+    represent the sets of read-write and read-only layers
+    for the currently authenticated user. 
+    """
+        
+    all_readable = set()
+    all_writable = set()
+    for bck in get_auth_backends():
+        if hasattr(bck, 'objects_with_perm'):
+            all_readable.update(bck.objects_with_perm(request.user,
+                                                      'maps.view_layer',
+                                                      Layer))
+            all_writable.update(bck.objects_with_perm(request.user,
+                                                      'maps.change_layer', 
+                                                      Layer))
+    read_only = [x for x in all_readable if x not in all_writable]
+    read_write = [x for x in all_writable if x in all_readable]
+
+    read_only = [x[0] for x in Layer.objects.filter(id__in=read_only).values_list('typename').all()]
+    read_write = [x[0] for x in Layer.objects.filter(id__in=read_write).values_list('typename').all()]
+    
+    result = {
+        'rw': read_write,
+        'ro': read_only
+    }
+
+    return HttpResponse(json.dumps(result), mimetype="application/json")
+
 
 def _split_query(query):
     """
