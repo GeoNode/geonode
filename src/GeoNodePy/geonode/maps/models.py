@@ -377,7 +377,7 @@ ALL_LANGUAGES = (
     ('urd', 'Urdu'),
     ('uzb', 'Uzbek'),
     ('vie', 'Vietnamese'),
-    ('vol', 'Volap√ºk'),
+    ('vol', 'Volapük'),
     ('wol', 'Wolof'),
     ('xho', 'Xhosa'),
     ('yid', 'Yiddish'),
