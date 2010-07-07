@@ -67,8 +67,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     describeLayerCache: null,
     
     /** private: property[busyMask]
+     *  ``Ext.LoadMask``
      */
     busyMask: null,
+    
+    /** private: property[urlPortRegEx]
+     *  ``RegExp``
+     */
+    urlPortRegEx: /^(http[s]?:\/\/[^:]*)(:80|:443)?\//,
     
     //public variables for string literals needed for localization
     addLayersButtonText: "UT:Add Layers",
@@ -150,11 +156,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             "beforerequest": function(conn, options) {
                 // use django's /geoserver endpoint when talking to the local
                 // GeoServer's RESTconfig API
-                var url = options.url.replace(
-                    /^(http[s]?:\/\/[^:]*)(:80|:443)?\//, "$1/");
-                if(url.indexOf(this.localGeoServerBaseUrl + "rest/") === 0) {
+                var url = options.url.replace(this.urlPortRegEx, "$1/");
+                var localUrl = this.localGeoServerBaseUrl.replace(
+                    this.urlPortRegEx, "$1/");
+                if(url.indexOf(localUrl + "rest/") === 0) {
                     options.url = url.replace(new RegExp("^" +
-                        this.localGeoServerBaseUrl), "/geoserver/");
+                        localUrl), "/geoserver/");
                     return;
                 };
                 // use the proxy for all non-local requests
@@ -505,8 +512,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         }
                         stylesDialog = new gxp.WMSStylesDialog({
                             style: "padding: 10px;",
-                            editable: layer.url.indexOf(
-                                this.localGeoServerBaseUrl) === 0,
+                            editable: layer.url.replace(
+                                this.urlPortRegEx, "$1/").indexOf(
+                                this.localGeoServerBaseUrl.replace(
+                                this.urlPortRegEx, "$1/")) === 0,
                             layerRecord: record,
                             layerDescription: layerDescription,
                             plugins: [styleWriter],
