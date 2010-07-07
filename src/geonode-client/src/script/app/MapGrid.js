@@ -75,7 +75,8 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
             },
             "rowclick" : function(grid, rowIndex, evt){
                 grid.expander.toggleRow(rowIndex);
-            }
+                evt.stopEvent();
+            }                            
         });
 
         MapGrid.superclass.initComponent.call(this);
