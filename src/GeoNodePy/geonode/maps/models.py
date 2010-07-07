@@ -864,6 +864,13 @@ class Layer(models.Model):
     def __str__(self):
         return "%s Layer" % self.typename
 
+    class Meta:
+        # custom permissions,
+        # change and delete are standard in django
+        permissions = (('view_layer', 'Can view'), 
+                       ('change_layer_permissions', "Can change permissions"), )
+
+
 class Map(models.Model):
     # metadata fields
     title = models.CharField(max_length=200)
@@ -922,6 +929,13 @@ class Map(models.Model):
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
+        
+    class Meta:
+        # custom permissions, 
+        # change and delete are standard in django
+        permissions = (('view_map', 'Can view'), 
+                       ('change_map_permissions', "Can change permissions"), )
+
 
 
 class MapLayer(models.Model):

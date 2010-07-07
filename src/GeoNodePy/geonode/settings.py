@@ -116,6 +116,8 @@ GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
 
+AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
+
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 LOGIN_REDIRECT_URL = "/"
 #Default settings for map composing application.
