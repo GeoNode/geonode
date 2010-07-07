@@ -28,6 +28,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * api: config[localGeoServerBaseUrl]
      * ``String`` url of the local GeoServer instance
      */
+    localGeoServerBaseUrl: "",
     
     /**
      * private: property[mapPanel]
