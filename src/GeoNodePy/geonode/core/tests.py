@@ -29,13 +29,6 @@ class GeoNodeClientTests(TestCase):
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_Curated(self):
-        'Test if the curated maps page renders.'
-        c = Client()
-        response = c.get('/curated/')
-
-        self.failUnlessEqual(response.status_code, 200)
-
     def test_Community(self):
         '''Test community page renders.'''
 

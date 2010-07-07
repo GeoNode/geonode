@@ -9,7 +9,6 @@
         "/static/src/script/app/MapGrid.js",
         "/static/src/script/app/GeoNode/ConfigManager.js",
         "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js",
-        "/static/src/script/app/GeoExplorer/NewSourceWindow.js",
         "/static/src/script/app/GeoNode/SearchTable.js"
     );
 

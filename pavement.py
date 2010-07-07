@@ -215,7 +215,6 @@ def setup_geonetwork(options):
     schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
 
     if getattr(options, 'clean', False):
-        dst_url.rmtree()
         deployed_url.rmtree()
     grab(src_url, dst_url)
     if not dst_war.exists():
@@ -235,10 +234,17 @@ def setup_geonetwork(options):
 
 @task
 @needs([
+    'setup_geoserver',
+    'setup_geonetwork'
+])
+def setup_webapps(options):
+    pass
+
+@task
+@needs([
     'install_deps',
-    'setup_geoserver', 
+    'setup_webapps',
     'build_js', 
-    'setup_geonetwork',
     'sync_django_db'
 ])
 def build(options):

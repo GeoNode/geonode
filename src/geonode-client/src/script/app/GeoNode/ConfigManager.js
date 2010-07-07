@@ -2,15 +2,49 @@
  * Copyright (c) 2010 OpenPlans
  */
 
+/** api: (define)
+ *  module = GeoNode
+ *  class = ConfigManager
+ *  base_link = `Ext.util.Observable <http://extjs.com/deploy/dev/docs/?class=Ext.util.Observable>`_
+ */
 Ext.namespace("GeoNode");
 
-/**
- *
+/** api: constructor
+ *  .. class:: ConfigManager(config)
+ *   
+ *      Utility class for translating between GeoNode and gxp.Viewer
+ *      configruations.
  */
 GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
+    /** api: config[useBackgroundCapabilities]
+     *  ``Boolean`` If set to false, no GetCapabilities request will be issued
+     *  for background WMS layers. The benefit is shorter loading times for
+     *  the application. The downside is that layers may be improperly
+     *  meta-tiled (beause their extent is unknown), and the name shown in the
+     *  layer tree is the WMS layer name instead of the more verbose title.
+     *  Default is true.
+     */
+    useBackgroundCapabilities: true,
+    
+    /** api: config[useCapabilities]
+     *  ``Boolean`` If set to false, no GetCapabilities request will be issued
+     *  for non-background WMS layers. The benefit is shorter loading times for
+     *  the application. The downside is that layers may be improperly
+     *  meta-tiled (because their extent is unknown), don't have a Properties
+     *  dialog (and no way to set/change styles), and the name shown in the
+     *  layer tree is the WMS layer name instead of the more verbose title.
+     *  Also, layers added with this option set to false cannot be saved.
+     *  Recommended setting for simple viewers that need fast loading is false,
+     *  and true otherwise.
+     */
+    useCapabilities: true,
+    
     backgroundLayers: null,
     map: null,
     
+    /**
+     * private: property[haveBackground]
+     */
     haveBackground: false,
 
     // i18n defaults
@@ -38,19 +72,35 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
             if (layer.group == "background" && layer.visibility !== false) {
                 this.haveBackground = true;
             }
-            layers.push(Ext.applyIf({
+            layers.push(this.useCapabilities !== false ? Ext.applyIf({
                 source: layer.wms,
                 buffer: 0
-            }, layer));
+            }, layer) : {
+                source: "any",
+                type: "OpenLayers.Layer.WMS",
+                args: [layer.name, this.wms[layer.wms], {
+                    layers: layer.name,
+                    format: layer.format || "image/png",
+                    styles: layer.styles,
+                    transparent: layer.transparent || true,
+                    tiled: true,
+                    tilesOrigin: [-20037508.34, -20037508.34]
+                }, {
+                    opacity: layer.opacity,
+                    buffer: 0
+                }]
+            });
         }
         var sources = {
             "any": {
                 ptype: "gx_olsource"
             }
         };
-        for(var key in this.wms) {
-            sources[key] = {
-                url: this.wms[key]
+        if(this.useCapabilities !== false) {
+            for(var key in this.wms) {
+                sources[key] = {
+                    url: this.wms[key]
+                }
             }
         }
         var center = this.map.center && new OpenLayers.LonLat(this.map.center[0],
@@ -87,40 +137,61 @@ GeoNode.ConfigManager = Ext.extend(Ext.util.Observable, {
             bgLayer = this.backgroundLayers[i];
             var sourceId;
             if (bgLayer.service === "wms") {
-                sourceId = bgLayer.url;
-                // see if we have the service url already in one of the
-                // sources from the db, and use it
-                for (var s in config.sources) {
-                    if (config.sources[s].url == bgLayer.url) {
-                        sourceId = s;
-                        break;
-                    }
-                }
-                
                 var layerName = bgLayer.layers instanceof Array ?
-                        bgLayer.layers[0] : bgLayer.layers;
-                        
-                if (!(sourceId in config.sources)) {
-                    config.sources[sourceId] = {
-                        url: bgLayer.url
-                    }
-                } else {
-                    // avoid duplicate layers from shared background config
-                    // if we have them pulled in already from the db
-                    for (var j=0,jlen=config.map.layers.length; j<jlen; ++j) {
-                        if (layerName == config.map.layers[j].name) {
-                            continue outer;
+                    bgLayer.layers[0] : bgLayer.layers;
+                if (this.useBackgroundCapabilities !== false) {
+                    sourceId = bgLayer.url;
+                    // see if we have the service url already in one of the
+                    // sources from the db, and use it
+                    for (var s in config.sources) {
+                        if (config.sources[s].url == bgLayer.url) {
+                            sourceId = s;
+                            break;
                         }
                     }
+                                        
+                    if (!(sourceId in config.sources)) {
+                        config.sources[sourceId] = {
+                            url: bgLayer.url
+                        }
+                    }
+                    else {
+                        // avoid duplicate layers from shared background config
+                        // if we have them pulled in already from the db
+                        for (var j = 0, jlen = config.map.layers.length; j < jlen; ++j) {
+                            if (layerName == config.map.layers[j].name) {
+                                continue outer;
+                            }
+                        }
+                    }
+                    config.map.layers.push(Ext.apply({
+                        source: sourceId,
+                        name: layerName,
+                        group: "background",
+                        buffer: 0,
+                        visibility: !this.haveBackground && i === 0,
+                        fixed: true
+                    }, bgLayer));
+                } else {
+                    config.map.layers.push({
+                        source: "any",
+                        type: "OpenLayers.Layer.WMS",
+                        group: "background",
+                        visibility: !this.haveBackground && i === 0,
+                        fixed: true,
+                        args: [layerName, bgLayer.url, {
+                            layers: bgLayer.layers,
+                            format: bgLayer.format || "image/png",
+                            styles: bgLayer.styles,
+                            transparent: bgLayer.transparent,
+                            tiled: true,
+                            tilesOrigin: [-20037508.34, -20037508.34]
+                        }, {
+                            opacity: bgLayer.opacity,
+                            buffer: 0
+                        }]
+                    });
                 }
-                config.map.layers.push(Ext.apply({
-                    source: sourceId,
-                    name: layerName,
-                    group: "background",
-                    buffer: 0,
-                    visibility: !this.haveBackground && i === 0,
-                    fixed: true
-                }, bgLayer));
             } else if (bgLayer.service === "google") {
                 config.sources["google"] = {
                     ptype: "gx_googlesource",
