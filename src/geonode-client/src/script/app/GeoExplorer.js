@@ -1434,34 +1434,20 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         var tools = [
-		     /*
-		       ======== UNSUPPORTED TOOLS ==========
-		       
-            new Ext.Button({
-                text: "GeoExplorer",
-                iconCls: "icon-geoexplorer",
-                handler: this.displayAppInfo
-            }),
-            "-",
-            new Ext.Button({
-                tooltip: "Bookmark",
-                handler: this.bookmark,
-                scope: this,
-                iconCls: "icon-save"
-            }),
-            "-",
-            navAction,
-            infoButton,
-            measureSplit,
-            "-",
-		     */
             new Ext.Button({
                 tooltip: this.saveMapText,
                 handler: this.save,
                 scope: this,
                 iconCls: "icon-save"
             }),
+            new Ext.Action({
+                tooltip: this.publishActionText,
+                handler: this.makeExportDialog,
+                scope: this,
+                iconCls: 'icon-export'
+            }),
             window.printCapabilities ? printButton : "",
+            "-",
             new Ext.Button({
                 handler: function(){
                     this.mapPanel.map.zoomIn();
@@ -1500,11 +1486,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     }
                 },
                 scope: this
-            }), new Ext.Action({
-                tooltip: this.publishActionText,
-                handler: this.makeExportDialog,
-                scope: this,
-                iconCls: 'icon-export'
             }),
             enable3DButton
         ];
