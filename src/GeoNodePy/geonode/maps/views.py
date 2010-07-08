@@ -787,15 +787,7 @@ def _handle_layer_upload(request, layer=None):
                                          workspace=gs_resource.store.workspace.name,
                                          title=gs_resource.title,
                                          uuid=str(uuid.uuid4()))
-            layer.set_bbox(gs_resource.native_bbox)
-            gn = geonetwork.Catalog(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
-            gn.login()
-            md_link = gn.create_from_layer(layer)
-            gn.logout()
-            layer.metadata_links = [("text/xml", "TC211", md_link)]
             layer.save()
-            # This has to be done at the end, so the geoserver record is accesible
-            layer.autopopulate()
         except:
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
