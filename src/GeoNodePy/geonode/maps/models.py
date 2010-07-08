@@ -532,19 +532,12 @@ class LayerManager(models.Manager):
                     "store": store.name,
                     "storeType": store.resource_type,
                     "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title or "No title supplied",
-                    "abstract": resource.abstract or 'No abstract supplied',
+                    "title": resource.title,
+                    "abstract": resource.abstract,
                     "uuid": str(uuid.uuid4())
                 })
 
-                record = gn.get_by_uuid(layer.uuid)
-                if record is None:
-                    md_link = gn.create_from_layer(layer)
-                    layer.metadata_links = [("text/xml", "TC211", md_link)]
-                else: 
-                    layer.save_to_geonetwork()
                 layer.save()
-                layer.autopopulate()
                     
             finally:
                 pass
@@ -716,11 +709,18 @@ class Layer(models.Model):
         gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
         gn.login()
         gn.delete_layer(self)
+        gn.logout()
 
     def save_to_geonetwork(self):
         gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
         gn.login()
-        gn.update_layer(self)
+        record = gn.get_by_uuid(self.uuid)
+        if record is None:
+            md_link = gn.create_from_layer(self)
+            self.metadata_links = [("text/xml", "TC211", md_link)]
+        else:
+            gn.update_layer(self)
+        gn.logout()
 
     @property
     def resource(self):
@@ -816,32 +816,38 @@ class Layer(models.Model):
         if hasattr(self, "_publishing_cache"):
             Layer.objects.gs_catalog.save(self._publishing_cache)
 
-    def  autopopulate(self):
-        meta = self.metadata_csw()
-        bbox = meta.identification.bbox
-        self.geographic_bounding_box = bbox_to_wkt(bbox.minx, bbox.maxx, bbox.miny, bbox.maxy)
-        keywords = [word for word in meta.identification.keywords['list'] if isinstance(word,str)]
-        self.keywords = keywords
-        self.distribution_url = meta.distribution.onlineresource.url
-        self.distribution_description = meta.distribution.onlineresource.description
+    def  _populate_from_gs(self):
+        gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
+        if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
+            self.set_bbox(gs_resource.native_bbox)
+
+    def _autopopulate(self):
         if self.poc is None:
             self.poc = Layer.objects.default_poc()
         if self.metadata_author is None:
             self.metadata_author = Layer.objects.default_metadata_author()
-        self.save()
+        if self.abstract == '' or self.abstract is None:
+            self.abstract = 'No abstract provided'
+        if self.title == '' or self.title is None:
+            self.title = self.name
+
+    def _populate_from_gn(self):
+        meta = self.metadata_csw()
+        self.keywords = [word for word in meta.identification.keywords['list'] if isinstance(word,str)]
+        self.distribution_url = meta.distribution.onlineresource.url
+        self.distribution_description = meta.distribution.onlineresource.description
 
     def set_bbox(self, box):
         """
         Sets a bounding box based on the gsconfig native_box param.
         """
-        self.geographic_bounding_box = bbox_to_wkt(box[4], box[0], box[1], box[2], box[3])
+        self.geographic_bounding_box = bbox_to_wkt(box[0], box[1], box[2], box[3], srid=box[4] )
 
     def get_absolute_url(self):
         return "%sdata/%s" % (settings.SITEURL,self.typename)
 
     def __str__(self):
         return "%s Layer" % self.typename
-
 
 class Map(models.Model):
     # metadata fields
@@ -962,11 +968,14 @@ def delete_layer(instance, sender, **kwargs):
     instance.delete_from_geoserver()
     instance.delete_from_geonetwork()
 
-def save_layer(instance, sender, **kwargs): 
-    """
-    Removes the layer from GeoServer and GeoNetwork
-    """
-    instance.save_to_geoserver()
+def post_save_layer(instance, sender, **kwargs):
+    instance._autopopulate()
+    if kwargs['created']:
+        instance.save_to_geoserver()
+        instance._populate_from_gs()
+        instance.save_to_geonetwork()
+        instance._populate_from_gn()
+        instance.save(force_update=True)
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
-signals.post_save.connect(save_layer, sender=Layer)
+signals.post_save.connect(post_save_layer, sender=Layer)
