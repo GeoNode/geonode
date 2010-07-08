@@ -715,43 +715,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         });
 
-        var linkField = new Ext.form.TextField({
-            width: '95%',
-            disabled: true,
-            fieldLabel: this.metaDataMapId,
-            listeners: {
-                scope: this
-            }
-        });
-
-        var permalink = function(id) {
-            // this should really be a template
-            return window.location.protocol + "//" +
-                window.location.host +
-                "/maps/" + id; 
-        };
-
-        this.on("idchange", function(id) {
-            linkField.setValue(permalink(id));
-        }, this);
-
-        var metaDataPanel = new Ext.FormPanel({
-            bodyStyle: {padding: "5px"},
-            //region: 'north',
-            autoScroll: true,
-            //collapsed: true,
-            collapsible: true,
-            labelAlign: "top",
-            items: [
-                titleField,
-                contactField,
-                abstractField,
-                linkField
-            ],
-            title: this.metaDataHeader,
-            height: 250
-        });
-
 
         this.on("ready", function(){
             this.mapID = this.initialConfig.id;
@@ -855,12 +818,40 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
-        Lang.registerLinks();
+        var permalink = function(id) {
+            return (new Ext.Template("{protocol}//{host}/maps/{id}")).apply({
+                protocol: window.location.protocol,
+                host: window.location.host,
+                id: id
+            }) 
+        };
+
+        this.moreInfoPanel = new Ext.Panel({
+            layout:"fit",
+            items: {html: "<a class='link' href='foo'> More info</a>"}
+            //TODO: template
+        });-
+
+        this.on("idchange", function(id) {
+            this.moreInfoPanel.removeAll();
+            this.moreInfoPanel.add({
+                html: "<a href='"+permalink(id)+"'> More info</a>" //TODO: template
+            });
+            this.moreInfoPanel.doLayout();
+        }, this);
 
         var titlePanel = new Ext.Panel({
             region: "north",
-            html: this.about.title
+            autoHeight: true,
+            items: [
+                {html: "<h3>" + this.about.title + "</h3>"},
+                this.moreInfoPanel
+            ]
         });
+
+
+        Lang.registerLinks();
+
 
         this.portalItems = [
             header, {
