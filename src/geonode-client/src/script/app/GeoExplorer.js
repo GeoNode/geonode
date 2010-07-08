@@ -850,12 +850,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var header = new Ext.Panel({
             region: "north",
-            autoHeight: true
+            autoHeight: true,
+            contentEl: "app-header"
         });
 
-        header.on('render', function() {
-            header.getEl().appendChild(Ext.get('app-header'));
-        });
 
         Lang.registerLinks();
 
