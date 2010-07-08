@@ -532,8 +532,8 @@ class LayerManager(models.Manager):
                     "store": store.name,
                     "storeType": store.resource_type,
                     "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title,
-                    "abstract": resource.abstract,
+                    "title": resource.title or 'No title provided',
+                    "abstract": resource.abstract or 'No abstract provided',
                     "uuid": str(uuid.uuid4())
                 })
 
@@ -818,8 +818,9 @@ class Layer(models.Model):
 
     def  _populate_from_gs(self):
         gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
+        srs = gs_resource.projection
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
-            self.set_bbox(gs_resource.native_bbox)
+            self.set_bbox(gs_resource.native_bbox, srs=srs)
 
     def _autopopulate(self):
         if self.poc is None:
@@ -837,11 +838,15 @@ class Layer(models.Model):
         self.distribution_url = meta.distribution.onlineresource.url
         self.distribution_description = meta.distribution.onlineresource.description
 
-    def set_bbox(self, box):
+    def set_bbox(self, box, srs=None):
         """
         Sets a bounding box based on the gsconfig native_box param.
         """
-        self.geographic_bounding_box = bbox_to_wkt(box[0], box[1], box[2], box[3], srid=box[4] )
+        if srs:
+            srid = srs
+        else:
+            srid = box[4]
+        self.geographic_bounding_box = bbox_to_wkt(box[0], box[1], box[2], box[3], srid=srid )
 
     def get_absolute_url(self):
         return "%sdata/%s" % (settings.SITEURL,self.typename)
