@@ -859,6 +859,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         Lang.registerLinks();
 
+        var titlePanel = new Ext.Panel({
+            region: "north",
+            html: this.about.title
+        });
+
         this.portalItems = [
             header, {
                 region: "center",
@@ -870,6 +875,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     deferredRender: false,
                     tbar: this.toolbar,
                     items: [
+                        titlePanel,
                         this.mapPanelContainer,
                         westPanel
                     ]
