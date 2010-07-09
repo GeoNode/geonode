@@ -819,24 +819,28 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
+        var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}");
         var permalink = function(id) {
-            return (new Ext.Template("{protocol}//{host}/maps/{id}")).apply({
+            return permalinkTemplate.apply({
                 protocol: window.location.protocol,
                 host: window.location.host,
                 id: id
             }) 
         };
 
+        var moreInfoTemplate = new Ext.Template("<a class='link' href='{permalink}'> More info</a>");
+        var mapInfoHtml = this.mapID ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
         this.moreInfoPanel = new Ext.Panel({
             layout:"fit",
-            items: {html: "<a class='link' href='foo'> More info</a>"}
-            //TODO: template
-        });-
+            items: {
+                html: mapInfoHtml
+            }
+        });
 
         this.on("idchange", function(id) {
             this.moreInfoPanel.removeAll();
             this.moreInfoPanel.add({
-                html: "<a href='"+permalink(id)+"'> More info</a>" //TODO: template
+                html: moreInfoTemplate.apply({permalink : permalink(app.mapID)})
             });
             this.moreInfoPanel.doLayout();
         }, this);
