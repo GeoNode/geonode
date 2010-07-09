@@ -680,55 +680,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             defaults: {cls: 'legend-item'}
         });
 
-        var titleField = new Ext.form.TextField({
-            width: '95%',
-            disabled: true,
-            fieldLabel: this.metaDataMapTitle,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                    this.about.title = newValue;
-                },
-                scope: this
-            }
-        });
-
-        var contactField = new Ext.form.TextField({
-            width: '95%',
-            disabled: true,
-            fieldLabel: this.metaDataMapContact,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                    this.about.contact = newValue;
-                },
-                scope: this
-            }
-        });
-
-        var abstractField = new Ext.form.TextArea({
-            width: '95%',
-            disabled: true,
-            fieldLabel: this.metaDataMapAbstract,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                     this.about["abstract"] = newValue;
-                },
-                scope: this
-            }
-        });
-
-
         this.on("ready", function(){
             this.mapID = this.initialConfig.id;
             
-            titleField.setValue(this.about.title);
-            contactField.setValue(this.about.contact);
-            abstractField.setValue(this.about["abstract"]);
-            if (!this.mapID) {
-                linkField.setValue(this.noPermalinkText);
-            } else {
+            if (this.mapID) {
                 this.fireEvent('idchange', this.mapID);
             }
-            metaDataPanel.enable();
         }, this);
 
         var layersTabPanel = new Ext.TabPanel({
@@ -1622,7 +1579,72 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         return this.rest + this.mapID + '/data';
     },
 
-    save: function() {
+    showMetadataForm: function(){
+        
+        var titleField = new Ext.form.TextField({
+            width: '95%',
+            fieldLabel: this.metaDataMapTitle,
+            listeners: {
+                'change': function(field, newValue, oldValue) {
+                    this.about.title = newValue;
+                },
+                scope: this
+            }
+        });
+
+        var contactField = new Ext.form.TextField({
+            width: '95%',
+            fieldLabel: this.metaDataMapContact,
+            listeners: {
+                'change': function(field, newValue, oldValue) {
+                    this.about.contact = newValue;
+                },
+                scope: this
+            }
+        });
+
+        var abstractField = new Ext.form.TextArea({
+            width: '95%',
+            fieldLabel: this.metaDataMapAbstract,
+            listeners: {
+                'change': function(field, newValue, oldValue) {
+                     this.about["abstract"] = newValue;
+                },
+                scope: this
+            }
+        });
+
+        titleField.setValue(this.about.title);
+        contactField.setValue(this.about.contact);
+        abstractField.setValue(this.about["abstract"]);
+
+        var metaDataPanel = new Ext.FormPanel({
+            bodyStyle: {padding: "5px"},
+            //region: 'north',           
+            labelAlign: "top",
+            items: [
+                titleField,
+                contactField,
+                abstractField,           
+            ],
+            height: 250
+        });
+
+        metaDataPanel.enable();
+
+        var metadataWindow = new Ext.Window({
+            title: this.metaDataHeader,
+            items: metaDataPanel
+        });
+
+        metadataWindow.show();
+    },
+
+    save: function(as) {
+        if (as || !this.mapID){
+            this.showMetadataForm();
+        }
+        
         var config = this.configManager.getConfig(this);
         
         var failure = function(response, options) {
