@@ -116,6 +116,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     saveFailMessage: "UT: Sorry, your map could not be saved.",
     saveFailTitle: "UT: Error While Saving",
     saveMapText: "UT: Save Map",
+    saveMapAsText: "UT: Save Map As",
     saveNotAuthorizedMessage: "UT: You Must be logged in to save this map.",
     smallSizeLabel: 'UT: Small',
     sourceLoadFailureMessage: 'UT: Error contacting server.\n Please check the url and try again.',
@@ -1430,6 +1431,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 handler: this.save,
                 scope: this,
                 iconCls: "icon-save"
+            }),
+            new Ext.Button({
+                tooltip: this.saveMapAsText,
+                handler: this.save, //TODO: pass 'as' as argument
+                scope: this,
+                iconCls: "icon-save-as" //TODO: 'save as' icon
             }),
             new Ext.Action({
                 tooltip: this.publishActionText,
