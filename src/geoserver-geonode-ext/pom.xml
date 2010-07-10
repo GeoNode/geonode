@@ -36,9 +36,14 @@
       <artifactId>printing</artifactId>
       <version>${geoserver.version}</version>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>restconfig</artifactId>
+      <version>${geoserver.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>ftp</artifactId>
       <version>${geoserver.version}</version>
     </dependency>
     <dependency>
@@ -90,10 +95,31 @@
       <version>${geotools.version}</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- Jetty runner dependencies -->
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <version>${jetty.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty-naming</artifactId>
+      <version>${jetty.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty-plus</artifactId>
+      <version>${jetty.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <properties>
     <geotools.version>2.6-SNAPSHOT</geotools.version>
     <geoserver.version>2.0.3-SNAPSHOT</geoserver.version>
+    <jetty.version>6.1.8</jetty.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
   <profiles>
