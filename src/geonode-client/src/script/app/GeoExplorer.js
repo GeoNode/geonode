@@ -788,38 +788,49 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var mapInfoHtml = this.mapID ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
         this.moreInfoPanel = new Ext.Panel({
             layout:"fit",
+            flex: 0,
+            border:false,
             items: {
+                border: false,
                 html: mapInfoHtml
             }
         });
-
         this.on("idchange", function(id) {
             this.moreInfoPanel.removeAll();
             this.moreInfoPanel.add({
+                border: false,
                 html: moreInfoTemplate.apply({permalink : permalink(app.mapID)})
             });
             this.moreInfoPanel.doLayout();
+            this.topPanel.doLayout();
         }, this);
 
 
         var titleTemplate = new Ext.Template("<h3>{title}</h3>");
         this.titlePanel = new Ext.Panel({
             layout:"fit",
+            region: "center",
+            flex: 1,
+            border: false,
             items: {
+                border: false,
                 html: titleTemplate.apply({title: this.about.title})
             }
         });
         this.on("saved", function() {
             this.titlePanel.removeAll();
             this.titlePanel.add({
+                border: false,
                 html: titleTemplate.apply({title: this.about.title})
             });
             this.titlePanel.doLayout();
         }, this);
 
-        var topPanel = new Ext.Panel({
+        this.topPanel = new Ext.Panel({
             region: "north",
             autoHeight: true,
+            layout: "hbox",
+            align: "stretch",
             items: [
                 this.titlePanel,
                 this.moreInfoPanel
@@ -828,23 +839,25 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         Lang.registerLinks();
 
-
         this.portalItems = [
             header, {
                 region: "center",
                 xtype: "container",
-                layout: "fit",
+                layout: "border",
                 hideBorders: true,
-                items: {
-                    layout: "border",
-                    deferredRender: false,
-                    tbar: this.toolbar,
-                    items: [
-                        topPanel,
-                        this.mapPanelContainer,
-                        westPanel
-                    ]
-                }
+                items: [
+                    this.topPanel,
+                    {
+                        layout: "border",
+                        deferredRender: false,
+                        tbar: this.toolbar,
+                        region: "center",
+                        items: [
+                            this.mapPanelContainer,
+                            westPanel
+                        ]
+                    }
+                ]
             }
         ];
 
