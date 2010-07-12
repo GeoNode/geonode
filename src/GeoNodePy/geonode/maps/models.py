@@ -362,7 +362,7 @@ class MapLayer(models.Model):
     def local_link(self): 
         if self.local():
             layer = Layer.objects.get(typename=self.name)
-            link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),self.name)
+            link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),layer.title)
         else: 
             link = "<span>%s</span> " % self.name
         return link
