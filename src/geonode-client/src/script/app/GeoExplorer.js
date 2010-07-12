@@ -717,22 +717,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             region: "west",
             width: 250
         });
-/*
-        var westPanel = new Ext.Container({
-            layout: "accordion",
-            layoutConfig: {
-                animate:true
-            },
-            
-            split: true,
-            collapsible: true,
-            collapseMode: "mini",
-            activeItem: 1,
-            items: [
-                metaDataPanel, layersPanel
-            ]
-        });
-*/
+
         this.toolbar = new Ext.Toolbar({
             disabled: true,
             items: this.createTools()
