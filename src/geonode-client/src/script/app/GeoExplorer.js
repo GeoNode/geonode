@@ -699,6 +699,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             
             if (this.mapID) {
                 this.fireEvent('idchange', this.mapID);
+            } else {
+                this.showCapabilitiesGrid();
             }
         }, this);
 
