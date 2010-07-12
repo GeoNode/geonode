@@ -1610,7 +1610,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var abstractField = new Ext.form.TextArea({
             width: '95%',
-            height: 300,
+            height: 200,
             fieldLabel: this.metaDataMapAbstract
         });
 
