@@ -1657,7 +1657,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         this.metadataForm.hide();
                         this.save();
                     },
-                    scope: this                               
+                    scope: this
                 }),
                 new Ext.Button({
                     text: "Cancel",
