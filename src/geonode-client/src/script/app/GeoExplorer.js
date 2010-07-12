@@ -1407,12 +1407,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this,
                 iconCls: "icon-save"
             }),
-            new Ext.Button({
-                tooltip: this.saveMapAsText,
-                handler: this.saveHandler, //TODO: pass 'as' as argument
-                scope: this,
-                iconCls: "icon-save-as" //TODO: 'save as' icon
-            }),
             new Ext.Action({
                 tooltip: this.publishActionText,
                 handler: this.makeExportDialog,
@@ -1631,6 +1625,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             width: 400,
             autoHeight: true,
             bbar: [
+                "->",
+                new Ext.Button({
+                    text: "Save as Copy",
+                    handler: function(e){
+                        this.about.title = titleField.getValue();
+                        this.about["abstract"] = abstractField.getValue();
+                        this.metadataForm.hide();
+                        this.save(true);
+                    },
+                    scope: this
+                }),
                 new Ext.Button({
                     text: "Save",
                     handler: function(e){
@@ -1677,14 +1682,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
 
     saveHandler: function(button, event) {
-        if ((button && button.iconCls == "icon-save-as") || !this.mapID){
-            this.showMetadataForm();
-        } else {
-            this.save();
-        }    
+        this.showMetadataForm();
     },
 
-    save : function(){
+    /**
+     * Method: save
+     * Saves the map.
+     * as - a boolean, True if map should be "Saved as..."
+     * instead of overwritten
+     */
+    save : function(as){
         var config = this.configManager.getConfig(this);
         
         var failure = function(response, options) {
@@ -1699,7 +1706,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }).show();
         };
 
-        if (!this.mapID) {
+        if (!this.mapID || as) {
             /* create a new map */ 
             Ext.Ajax.request({
                 url: this.rest,
