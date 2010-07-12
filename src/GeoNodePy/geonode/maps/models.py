@@ -507,8 +507,14 @@ class LayerManager(models.Manager):
         user, password = settings.GEOSERVER_CREDENTIALS
         self.gs_catalog = Catalog(url, _user, _password)
         self.geonetwork = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
-        self.geonetwork.login()
-        # How do we perform logout? to make sure we don't leave the socket open.
+
+    @property
+    def gn_catalog(self):
+        # check if geonetwork is logged in
+        if not self.geonetwork.connected:
+            self.geonetwork.login()
+        # How do we perform a geonetwork logout? to make sure we don't leave the socket open.
+        return self.geonetwork
 
     def default_poc(self):
         default_poc, created = Contact.objects.get_or_create(name='Geonode Point of Contact')
@@ -520,8 +526,7 @@ class LayerManager(models.Manager):
 
     def slurp(self):
         cat = self.gs_catalog
-        gn = self.geonetwork
-
+        gn = self.gn_catalog
         for resource in cat.get_resources():
             try:
                 store = resource.store
@@ -705,11 +710,11 @@ class Layer(models.Model):
                 raise RuntimeError("Unable to remove from Geoserver: %s" % output[1])
 
     def delete_from_geonetwork(self):
-        gn = Layer.objects.geonetwork
+        gn = Layer.objects.gn_catalog
         gn.delete_layer(self)
 
     def save_to_geonetwork(self):
-        gn = Layer.objects.geonetwork
+        gn = Layer.objects.gn_catalog
         record = gn.get_by_uuid(self.uuid)
         if record is None:
             md_link = gn.create_from_layer(self)
