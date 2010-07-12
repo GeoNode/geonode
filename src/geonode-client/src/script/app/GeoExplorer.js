@@ -1107,7 +1107,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     }
                     zoomSelector.clearValue();
                 }
-            };
+            }
             setScale.call(this);
             this.mapPanel.map.events.register('zoomend', this, setScale);
 
