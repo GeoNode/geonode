@@ -1399,13 +1399,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var tools = [
             new Ext.Button({
                 tooltip: this.saveMapText,
-                handler: this.save,
+                handler: this.saveHandler,
                 scope: this,
                 iconCls: "icon-save"
             }),
             new Ext.Button({
                 tooltip: this.saveMapAsText,
-                handler: this.save, //TODO: pass 'as' as argument
+                handler: this.saveHandler, //TODO: pass 'as' as argument
                 scope: this,
                 iconCls: "icon-save-as" //TODO: 'save as' icon
             }),
@@ -1646,15 +1646,34 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             title: this.metaDataHeader,
             items: metaDataPanel
         });
-
-        metadataWindow.show();
     },
 
-    save: function(as) {
-        if (as || !this.mapID){
-            this.showMetadataForm();
+    /**
+     * Method: showMetadataForm
+     * Shows the window with a metadata form
+     */
+    showMetadataForm: function() {
+        if(!this.metadataForm) {
+            this.initMetadataForm();
         }
-        
+
+        this.metadataForm.show();
+    },
+
+    updateURL: function() {
+        /* PUT to this url to update an existing map */
+        return this.rest + this.mapID + '/data';
+    },
+
+    saveHandler: function(button, event) {
+        if ((button && button.iconCls == "icon-save-as") || !this.mapID){
+            this.showMetadataForm();
+        } else {
+            this.save();
+        }    
+    },
+
+    save : function(){
         var config = this.configManager.getConfig(this);
         
         var failure = function(response, options) {
