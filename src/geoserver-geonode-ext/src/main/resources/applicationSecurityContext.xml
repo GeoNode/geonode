@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- ========================================================================================= -->
+  <!-- The following is the Acegi configuration for form based authentication, with login/logout -->
+  <!-- handling, as well as remember-me cookie handling, and session integration so that user    -->
+  <!-- does not have to login for each page.                                                     -->
+  <!-- This also makes sure that when you request a secured resource you go first to the         -->
+  <!-- login page, but get redirected to the origally requested page once login is succefull     -->
+  <!-- ========================================================================================= -->
+
+  <!-- 
+    This filter delegates a different chain of sub-filters for administration
+    console pages and OWS services. Basically, we set up a chain involving basic/anonymous
+    authentication for OWS services, and a form based authentication for  the web console, 
+    so that accessing the console by means of simple calls is still easy.
+    
+    An attempt at form+basic has been done, that would have eased writing code accessing
+    directly the console, but it does not play well with logout: once the browser learns
+    about basic auth credentials it'll keep on using them, the only way to make it stop
+    is to declare a different user in the location bar, such as in: http://user@host:port/...
+    
+    For filters introduction, their meanining, the
+    different setup between form and basic authentication accesses,
+    and importance of the order please see the Acegi reference guide, chapter 3.2,
+    (page 17 of the PDF version)
+  -->
+  <bean id="filterChainProxy"
+    class="org.acegisecurity.util.FilterChainProxy">
+    <property name="filterInvocationDefinitionSource">
+      <value>
+        CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+        PATTERN_TYPE_APACHE_ANT
+        /wfs/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,basicProcessingFilter,anonymousProcessingFilter
+        /ows/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,basicProcessingFilter,anonymousProcessingFilter
+        /wfsv/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,basicProcessingFilter,anonymousProcessingFilter
+        /wms/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,basicProcessingFilter,anonymousProcessingFilter
+        /wcs/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,basicProcessingFilter,anonymousProcessingFilter
+        /rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,basicProcessingFilter,anonymousProcessingFilter
+        /gwc/rest/web/**=anonymousProcessingFilter
+        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter
+        /**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,rememberMeProcessingFilter,anonymousProcessingFilter
+      </value>
+    </property>
+  </bean>
+
+  <!--   
+    This filter integrates the authentication information in the http sessions, so it's
+    meant to be used only for the administration console, but not for the services.
+    Gathers authentication infos from the session, so that you don't have to re-authenticate
+    at each request, and adds it to the session after authentication.
+    This specific instance is configured with remember-me functionality, so that authentication
+    information can be gathered from a cookie set on the browser, too.
+    This version will create the user session if missing, it's meant for web console operation.
+  -->
+  <bean id="httpSessionContextIntegrationFilterWithASCTrue"
+    class="org.acegisecurity.context.HttpSessionContextIntegrationFilter">
+    <property name="allowSessionCreation" value="true" />
+  </bean>
+
+  <!-- 
+    Same as the one above, but this one uses a session if it's already there, otherwise
+    it won't create it. This is meant to keep the overhead on service call low, but allow
+    users that have already authenticated using a form based access to keep using that
+    authentication when accessing services.
+  -->
+    class="org.acegisecurity.context.HttpSessionContextIntegrationFilter">
+    <property name="allowSessionCreation" value="false" />
+  </bean>
+
+  <!--
+    This filters processes logouts, removing both session informations, and the remember-me
+    cookie from the browser
+  -->
+  <bean id="logoutFilter"
+    class="org.acegisecurity.ui.logout.LogoutFilter">
+    <constructor-arg value="/web/" />
+    <!-- URL redirected to after logout -->
+    <constructor-arg>
+      <list>
+        <ref bean="rememberMeServices" />
+        <bean
+          class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- 
+    This filter does the actual main authentication workflow and handles form based authentication too.
+    It asks the authentication manager wheter access is granted to the resource the user is trying to access,
+    redirects to a failure page if it fails, and to another filter if the authentication informations are 
+    just being provided. This is useful only for form based authentication, the OWS services do use another
+    authentication processing filter.
+  -->
+  <bean id="authenticationProcessingFilter"
+    class="org.geoserver.security.GeoserverAuthenticationProcessingFilter">
+    <property name="authenticationManager" ref="authenticationManager" />
+    <property name="authenticationFailureUrl"
+      value="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&amp;error=true" />
+    <property name="defaultTargetUrl" value="/" />
+    <property name="filterProcessesUrl" value="/j_acegi_security_check" />
+    <property name="rememberMeServices" ref="rememberMeServices" />
+  </bean>
+
+  <!--  
+    Double check, this may not be necessary
+  
+  <bean id="securityContextHolderAwareRequestFilter"
+    class="org.acegisecurity.wrapper.SecurityContextHolderAwareRequestFilter" />
+    -->
+
+  <!-- 
+    If authentication is missing from the SecurityContext, tries to put authentication
+    information into the context using remember-me cookies. Will try to authenticate
+    the contents of the cookie against the authentication manager
+  -->
+  <bean id="rememberMeProcessingFilter"
+    class="org.acegisecurity.ui.rememberme.RememberMeProcessingFilter">
+    <property name="authenticationManager" ref="authenticationManager" />
+    <property name="rememberMeServices" ref="rememberMeServices" />
+  </bean>
+
+  <!-- 
+    Puts default authentication informations in the security context, making sure
+    we always get an anonymous user and anonymous role if all other authentication
+    attempts failed
+  -->
+  <bean id="anonymousProcessingFilter"
+    class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
+    <property name="key" value="geoserver" />
+    <property name="userAttribute" value="anonymousUser,ROLE_ANONYMOUS" />
+  </bean>
+
+  <!-- 
+    Handles the basic authentication headers. This integrates with the remember-me services, so that
+    you'll have to provide username/password just once during interactive tests.
+  -->
+  <bean id="basicProcessingFilter"
+    class="org.acegisecurity.ui.basicauth.BasicProcessingFilter">
+    <property name="authenticationManager">
+      <ref local="authenticationManager" />
+    </property>
+    <property name="authenticationEntryPoint">
+      <ref local="basicProcessingFilterEntryPoint" />
+    </property>
+    <property name="rememberMeServices">
+      <ref local="rememberMeServices" />
+    </property>
+  </bean>
+
+  <!-- 
+    This entry point gets called when basic authentication is needed 
+    (or a previous attempt fail) to commence authentication 
+    with the basic processing filter 
+  -->
+  <bean id="basicProcessingFilterEntryPoint"
+    class="org.acegisecurity.ui.basicauth.BasicProcessingFilterEntryPoint">
+    <property name="realmName">
+      <value>GeoServer Realm</value>
+    </property>
+  </bean>
+
+  <!--
+    The actual remember-me cookie handler
+  -->
+  <bean id="rememberMeServices"
+    class="org.acegisecurity.ui.rememberme.TokenBasedRememberMeServices">
+    <property name="userDetailsService" ref="userDetailsService" />
+    <property name="key" value="geoserver" />
+  </bean>
+  
+  <!-- The dao used to deal with rest security -->
+  <bean id="restRulesDao" class="org.geoserver.security.RESTAccessRuleDAO">
+    <constructor-arg ref="dataDirectory"/>
+  </bean>
+
+  <!-- 
+    The bean managing authentication, basically forwards authentication requests against
+    a number of child providers
+  -->
+  <bean id="authenticationManager"
+    class="org.acegisecurity.providers.ProviderManager">
+    <property name="providers">
+      <list>
+        <ref local="geonodeAuthenticationProvider" />
+        <bean
+          class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
+          <property name="key" value="geoserver" />
+        </bean>
+        <bean
+          class="org.acegisecurity.providers.rememberme.RememberMeAuthenticationProvider">
+          <property name="key" value="geoserver" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- The client talking to GeoNode to get authentications from cookies and username/password -->
+  <bean id="geonodeSecurityClient" class="org.geonode.security.DefaultSecurityClient">
+    <!-- We probably need to add a reference to the data directory here -->
+  </bean>
+  
+  <!-- The GeoNode username/password manager -->
+  <bean id="geonodeAuthenticationProvider" class="org.geonode.security.GeoNodeAuthenticationProvider">
+    <constructor-arg index="0" ref="geonodeSecurityClient"/>
+  </bean>
+
+  <!-- The GeoNode cookie processing filter -->
+  <bean id="genodeCookieFilter" class="org.geonode.security.GeoNodeCookieProcessingFilter">
+    <constructor-arg index="0" ref="geonodeSecurityClient"/>
+  </bean>
+  
+  <!-- The custom data access manager using the GeoNode granted authorities -->
+  <bean id="geonodeAccessManager" class="org.geonode.security.GeoNodeDataAccessManager"/>
+  
+</beans>
