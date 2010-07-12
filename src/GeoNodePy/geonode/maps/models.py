@@ -490,8 +490,6 @@ class Contact(models.Model):
         return u"%s (%s)" % (self.name, self.organization)
 
 
-def _(x): return x
-
 def get_csw():
     csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
     csw = CatalogueServiceWeb(csw_url);
