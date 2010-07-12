@@ -770,44 +770,41 @@ class Layer(models.Model):
 
     @property
     def poc_role(self):
-        role, created = Role.objects.get_or_create(value='pointOfContact')
+        role = Role.objects.get(value='pointOfContact')
         return role
 
     @property
     def metadata_author_role(self):
-        role, created = Role.objects.get_or_create(value='author')
+        role = Role.objects.get(value='author')
         return role
         
-    def _set_poc(self, poc):
-        # reset any poc asignation to this layer
-        ContactRole.objects.filter(role=self.poc_role, layer=self).delete()
-        #create the new assignation
-        contact_role = ContactRole.objects.create(role=self.poc_role, layer=self, contact=poc)
+    def add_poc(self, poc):
+        ContactRole.objects.create(role=self.poc_role, layer=self, contact=poc)
 
-    def _get_poc(self):
-        try:
-            the_poc = ContactRole.objects.get(role=self.poc_role, layer=self).contact
-        except ContactRole.DoesNotExist:
-            the_poc = None
-        return the_poc
+    @property
+    def pocs(self):
+        """
+        Returns a list of pocs or a empty list
+        """
+        cr_list = ContactRole.objects.filter(role=self.poc_role, layer=self)
+        if len(cr_list) > 0:
+            return [x.contact for x in cr_list]
+        else:
+            return [] 
 
-    poc = property(_get_poc, _set_poc)
-
-    def _set_metadata_author(self, metadata_author):
-        # reset any metadata_author asignation to this layer
-        ContactRole.objects.filter(role=self.metadata_author_role, layer=self).delete()
-        #create the new assignation
-        contact_role = ContactRole.objects.create(role=self.metadata_author_role, 
-                                                  layer=self, contact=metadata_author)
-
-    def _get_metadata_author(self):
-        try:
-            the_ma = ContactRole.objects.get(role=self.metadata_author_role, layer=self).contact
-        except  ContactRole.DoesNotExist:
-            the_ma = None
-        return the_ma
-
-    metadata_author = property(_get_metadata_author, _set_metadata_author)
+    def add_metadata_author(self, metadata_author):
+        ContactRole.objects.create(role=self.metadata_author_role, 
+                                    layer=self, contact=metadata_author)
+    @property
+    def metadata_authors(self):
+        """
+        Returns a list of metadata authors or a empty list
+        """
+        cr_list = ContactRole.objects.filter(role=self.metadata_author_role, layer=self)
+        if len(cr_list) > 0:
+            return [x.contact for x in cr_list]
+        else:
+            return []
 
     def save_to_geoserver(self):
         if hasattr(self, "_resource_cache"):
@@ -825,10 +822,10 @@ class Layer(models.Model):
             self.set_bbox(gs_resource.native_bbox, srs=srs)
 
     def _autopopulate(self):
-        if self.poc is None:
-            self.poc = Layer.objects.default_poc()
-        if self.metadata_author is None:
-            self.metadata_author = Layer.objects.default_metadata_author()
+        if len(self.pocs) ==0:
+            self.add_poc(Layer.objects.default_poc())
+        if len(self.metadata_authors) == 0:
+            self.add_metadata_author(Layer.objects.default_metadata_author())
         if self.abstract == '' or self.abstract is None:
             self.abstract = 'No abstract provided'
         if self.title == '' or self.title is None:
@@ -967,6 +964,9 @@ class ContactRole(models.Model):
     contact = models.ForeignKey(Contact)
     layer = models.ForeignKey(Layer)
     role = models.ForeignKey(Role)
+
+    class Meta:
+        unique_together = (("contact", "layer", "role"),)
 
 def delete_layer(instance, sender, **kwargs): 
     """
