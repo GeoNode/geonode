@@ -1584,44 +1584,28 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         new ExportWizard({map: this.mapID}).show();
     },
 
-    updateURL: function() {
-        /* PUT to this url to update an existing map */
-        return this.rest + this.mapID + '/data';
-    },
 
-    showMetadataForm: function(){
+    
+    /**
+     * Method: initMetadataForm
+     * Constructs a window with a metadata form.
+     */
+    initMetadataForm: function(){
         
         var titleField = new Ext.form.TextField({
             width: '95%',
-            fieldLabel: this.metaDataMapTitle,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                    this.about.title = newValue;
-                },
-                scope: this
-            }
+            fieldLabel: this.metaDataMapTitle
         });
 
         var contactField = new Ext.form.TextField({
             width: '95%',
-            fieldLabel: this.metaDataMapContact,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                    this.about.contact = newValue;
-                },
-                scope: this
-            }
+            fieldLabel: this.metaDataMapContact
         });
 
         var abstractField = new Ext.form.TextArea({
             width: '95%',
-            fieldLabel: this.metaDataMapAbstract,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                     this.about["abstract"] = newValue;
-                },
-                scope: this
-            }
+            height: 300,
+            fieldLabel: this.metaDataMapAbstract
         });
 
         titleField.setValue(this.about.title);
