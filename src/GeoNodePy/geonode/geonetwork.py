@@ -13,6 +13,7 @@ class Catalog(object):
         self.password = password
         self._group_ids = {}
         self._operation_ids = {}
+        self.connected = False
 
 
     def login(self):
@@ -36,11 +37,13 @@ class Catalog(object):
         cookie_handler = urllib2.HTTPCookieProcessor(self.cookies)
         redirect_handler = urllib2.HTTPRedirectHandler()
         self.opener = urllib2.build_opener(redirect_handler, cookie_handler)
+        self.connected = True
 
     def logout(self):
         url = "%ssrv/en/xml.user.logout" % self.base
         request = urllib2.Request(url)
         response = self.opener.open(request)
+        self.connected = False
 
     def get_by_uuid(self, uuid):
         pass
