@@ -517,11 +517,11 @@ class LayerManager(models.Manager):
         return self.geonetwork
 
     def default_poc(self):
-        default_poc, created = Contact.objects.get_or_create(name='Geonode Point of Contact')
+        default_poc = Contact.objects.get(id=1)
         return default_poc
 
     def default_metadata_author(self):
-        default_metadata_author, created = Contact.objects.get_or_create(name='Geonode Metadata Author')
+        default_metadata_author = Contact.objects.get(id=2)
         return default_metadata_author
 
     def slurp(self):
