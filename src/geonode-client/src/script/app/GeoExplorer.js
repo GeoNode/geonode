@@ -104,7 +104,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     measureSplitText: "UT:Measure",
     metaDataHeader: 'UT:About this Map',
     metaDataMapAbstract: 'UT:Abstract',
-    metaDataMapContact: 'UT:Contact',
     metaDataMapId: "UT:Permalink",
     metaDataMapTitle: 'UT:Title',
     miniSizeLabel: 'UT: Mini',
@@ -1602,11 +1601,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             fieldLabel: this.metaDataMapTitle
         });
 
-        var contactField = new Ext.form.TextField({
-            width: '95%',
-            fieldLabel: this.metaDataMapContact
-        });
-
         var abstractField = new Ext.form.TextArea({
             width: '95%',
             height: 300,
@@ -1614,7 +1608,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         titleField.setValue(this.about.title);
-        contactField.setValue(this.about.contact);
         abstractField.setValue(this.about["abstract"]);
 
         var metaDataPanel = new Ext.FormPanel({
@@ -1622,7 +1615,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             labelAlign: "top",
             items: [
                 titleField,
-                contactField,
                 abstractField
             ]
         });
@@ -1643,7 +1635,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     text: "Save",
                     handler: function(e){
                         this.about.title = titleField.getValue();
-                        this.about.contact = contactField.getValue();
                         this.about["abstract"] = abstractField.getValue();
                         this.metadataForm.hide();
                         this.save();
@@ -1662,7 +1653,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 hide: function(win){
                     //these aren't working
                     titleField.setValue(app.about.title);
-                    contactField.setValue(app.about.contact);
                     abstractField.setValue(app.about["abstract"]);
                 }
             }
