@@ -453,7 +453,7 @@ CONTACT_FIELDS = [
     "role"
 ]
 
-DEFAULT_SUPLEMENTAL_INFORMATION=_(
+DEFAULT_SUPPLEMENTAL_INFORMATION=_(
 'You can customize the template to suit your \
 needs. You can add and remove fields and fill out default \
 information (e.g. contact details). Fields you can not change in \
@@ -584,7 +584,7 @@ class Layer(models.Model):
     temporal_extent_start = models.DateField(blank=True, null=True)
     temporal_extent_end = models.DateField(blank=True, null=True)
     geographic_bounding_box = models.TextField()
-    supplemental_information = models.TextField(default=DEFAULT_SUPLEMENTAL_INFORMATION)
+    supplemental_information = models.TextField(default=DEFAULT_SUPPLEMENTAL_INFORMATION)
 
     # Section 6
     distribution_url = models.TextField(blank=True, null=True)
