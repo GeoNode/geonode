@@ -513,7 +513,7 @@ class LayerManager(models.Manager):
         # check if geonetwork is logged in
         if not self.geonetwork.connected:
             self.geonetwork.login()
-        # How do we perform a geonetwork logout? to make sure we don't leave the socket open.
+        # Make sure to logout after you have finished using it.
         return self.geonetwork
 
     def default_poc(self):
@@ -546,6 +546,8 @@ class LayerManager(models.Manager):
                     
             finally:
                 pass
+        # Doing a logout since we know we don't need this object anymore.
+        gn.logout()
 
 class Layer(models.Model):
     """
