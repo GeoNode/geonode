@@ -149,7 +149,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
              * Event: idchange
              * Fires upon a new ID provided for the map configuration being edited by this viewer.
              */
-            "idchange"
+            "idchange",
+            /**
+             * Event: idchange
+             * Fires when the map has been saved.
+             */
+            "saved"
         ]);
         
         // global request proxy and error handling
@@ -812,15 +817,30 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             this.moreInfoPanel.doLayout();
         }, this);
 
-        var titlePanel = new Ext.Panel({
+
+        var titleTemplate = new Ext.Template("<h3>{title}</h3>");
+        this.titlePanel = new Ext.Panel({
+            layout:"fit",
+            items: {
+                html: titleTemplate.apply({title: this.about.title})
+            }
+        });
+        this.on("saved", function() {
+            this.titlePanel.removeAll();
+            this.titlePanel.add({
+                html: titleTemplate.apply({title: this.about.title})
+            });
+            this.titlePanel.doLayout();
+        }, this);
+
+        var topPanel = new Ext.Panel({
             region: "north",
             autoHeight: true,
             items: [
-                {html: "<h3>" + this.about.title + "</h3>"},
+                this.titlePanel,
                 this.moreInfoPanel
             ]
         });
-
 
         Lang.registerLinks();
 
@@ -836,7 +856,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     deferredRender: false,
                     tbar: this.toolbar,
                     items: [
-                        titlePanel,
+                        topPanel,
                         this.mapPanelContainer,
                         westPanel
                     ]
@@ -1718,6 +1738,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     id = id.match(/[\d]*$/)[0];
                     this.mapID = id; //id is url, not mapID
                     this.fireEvent("idchange", id);
+                    this.fireEvent("saved");
                 }, 
                 failure: failure, 
                 scope: this
