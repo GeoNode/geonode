@@ -71,7 +71,7 @@ public class DefaultProcessController implements ProcessController, DisposableBe
         daemonThreadFac.setThreadPriority(3);
         evictorExecutor = Executors.newScheduledThreadPool(1, daemonThreadFac);
 
-        final long evictTimeoutMillis = TimeUnit.MINUTES.toMillis(processEvictionMinutes);
+        final long evictTimeoutMillis = TimeUnit.SECONDS.toMillis(processEvictionMinutes * 60);
         Runnable evictionTask = new ProcessEvictor(asyncProcesses, evictTimeoutMillis);
         evictorExecutor.scheduleWithFixedDelay(evictionTask, evictCheckSeconds, evictCheckSeconds,
                 TimeUnit.SECONDS);
