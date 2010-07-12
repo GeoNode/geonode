@@ -506,6 +506,9 @@ class LayerManager(models.Manager):
         url = "%srest" % settings.GEOSERVER_BASE_URL
         user, password = settings.GEOSERVER_CREDENTIALS
         self.gs_catalog = Catalog(url, _user, _password)
+        self.geonetwork = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
+        self.geonetwork.login()
+        # How do we perform logout? to make sure we don't leave the socket open.
 
     def default_poc(self):
         default_poc, created = Contact.objects.get_or_create(name='Geonode Point of Contact')
@@ -517,8 +520,7 @@ class LayerManager(models.Manager):
 
     def slurp(self):
         cat = self.gs_catalog
-        gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
-        gn.login()
+        gn = self.geonetwork
 
         for resource in cat.get_resources():
             try:
@@ -539,7 +541,6 @@ class LayerManager(models.Manager):
                     
             finally:
                 pass
-        gn.logout()
 
 class Layer(models.Model):
     """
@@ -704,21 +705,17 @@ class Layer(models.Model):
                 raise RuntimeError("Unable to remove from Geoserver: %s" % output[1])
 
     def delete_from_geonetwork(self):
-        gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
-        gn.login()
+        gn = Layer.objects.geonetwork
         gn.delete_layer(self)
-        gn.logout()
 
     def save_to_geonetwork(self):
-        gn = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
-        gn.login()
+        gn = Layer.objects.geonetwork
         record = gn.get_by_uuid(self.uuid)
         if record is None:
             md_link = gn.create_from_layer(self)
             self.metadata_links = [("text/xml", "TC211", md_link)]
         else:
             gn.update_layer(self)
-        gn.logout()
 
     @property
     def resource(self):
