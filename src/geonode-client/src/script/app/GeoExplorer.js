@@ -1613,22 +1613,54 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         abstractField.setValue(this.about["abstract"]);
 
         var metaDataPanel = new Ext.FormPanel({
-            bodyStyle: {padding: "5px"},
-            //region: 'north',           
+            bodyStyle: {padding: "5px"},          
             labelAlign: "top",
             items: [
                 titleField,
                 contactField,
-                abstractField,           
-            ],
-            height: 250
+                abstractField
+            ]
         });
 
         metaDataPanel.enable();
 
-        var metadataWindow = new Ext.Window({
+        var app = this;
+
+        this.metadataForm = new Ext.Window({
             title: this.metaDataHeader,
-            items: metaDataPanel
+            closeAction: 'hide',
+            items: metaDataPanel,
+            modal: true,
+            width: 400,
+            autoHeight: true,
+            bbar: [
+                new Ext.Button({
+                    text: "Save",
+                    handler: function(e){
+                        this.about.title = titleField.getValue();
+                        this.about.contact = contactField.getValue();
+                        this.about["abstract"] = abstractField.getValue();
+                        this.metadataForm.hide();
+                        this.save();
+                    },
+                    scope: this                               
+                }),
+                new Ext.Button({
+                    text: "Cancel",
+                    handler: function() {
+                        this.metadataForm.hide();
+                    },
+                    scope: this
+                })
+            ],
+            listeners: {
+                hide: function(win){
+                    //these aren't working
+                    titleField.setValue(app.about.title);
+                    contactField.setValue(app.about.contact);
+                    abstractField.setValue(app.about["abstract"]);
+                }
+            }
         });
     },
 
