@@ -33,12 +33,12 @@ public class GeoNodeCookieProcessingFilter implements Filter {
 
     static final String GEONODE_COOKIE_NAME = "geonodeSessionId";
 
-    GeonodeSecurityClient geonode;
+    GeonodeSecurityClient client;
 
     private RememberMeServices rememberMeServices;
 
-    public GeoNodeCookieProcessingFilter(GeonodeSecurityClient geonode) {
-        this.geonode = geonode;
+    public GeoNodeCookieProcessingFilter(GeonodeSecurityClient client) {
+        this.client = client;
     }
 
     public void destroy() {
@@ -62,7 +62,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
                 || (existingAuth instanceof AnonymousAuthentication);
         if (authenticationRequired && gnCookie != null) {
             try {
-                Authentication authResult = geonode.authenticate(gnCookie.getValue());
+                Authentication authResult = client.authenticate(gnCookie.getValue());
 
                 SecurityContextHolder.getContext().setAuthentication(authResult);
 

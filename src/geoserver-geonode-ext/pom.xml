@@ -95,6 +95,13 @@
       <version>${geotools.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <version>1.3</version>
+      <scope>test</scope>
+    </dependency>
+    
     
     <!-- Jetty runner dependencies -->
     <dependency>

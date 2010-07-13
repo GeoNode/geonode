@@ -65,10 +65,10 @@ public class MockSecurityClient implements GeonodeSecurityClient {
         if (admin) {
             authorities.add(new GrantedAuthorityImpl(GeoNodeDataAccessManager.ADMIN_ROLE));
         }
-        if (readOnlyLayers.size() > 0) {
+        if (readOnlyLayers != null && readOnlyLayers.size() > 0) {
             authorities.add(new LayersGrantedAuthority(readOnlyLayers, LayerMode.READ_ONLY));
         }
-        if (readWriteLayers.size() > 0) {
+        if (readWriteLayers != null && readWriteLayers.size() > 0) {
             authorities.add(new LayersGrantedAuthority(readWriteLayers, LayerMode.READ_WRITE));
         }
 

@@ -33,20 +33,22 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     }
 
     public boolean canAccess(Authentication user, ResourceInfo resource, AccessMode mode) {
-        for (GrantedAuthority ga : user.getAuthorities()) {
-            if (ga instanceof LayersGrantedAuthority) {
-                LayersGrantedAuthority lga = ((LayersGrantedAuthority) ga);
-                // see if the layer is contained in the granted authority list with
-                // sufficient privileges
-                if (mode == AccessMode.READ
-                        || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayerMode.READ_WRITE)) {
-                    if (lga.getLayerNames().contains(resource.getPrefixedName())) {
-                        return true;
+        if(user != null && user.getAuthorities() != null) {
+            for (GrantedAuthority ga : user.getAuthorities()) {
+                if (ga instanceof LayersGrantedAuthority) {
+                    LayersGrantedAuthority lga = ((LayersGrantedAuthority) ga);
+                    // see if the layer is contained in the granted authority list with
+                    // sufficient privileges
+                    if (mode == AccessMode.READ
+                            || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayerMode.READ_WRITE)) {
+                        if (lga.getLayerNames().contains(resource.getPrefixedName())) {
+                            return true;
+                        }
                     }
+                } else if (ADMIN_ROLE.equals(ga.getAuthority())) {
+                    // admin is all powerful
+                    return true;
                 }
-            } else if (ADMIN_ROLE.equals(ga.getAuthority())) {
-                // admin is all powerful
-                return true;
             }
         }
         // if we got here sorry, no luck
