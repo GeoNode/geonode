@@ -102,6 +102,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     lengthActionText: "UT:Length",
     mapSizeLabel: 'UT: Map Size', 
     measureSplitText: "UT:Measure",
+    metadataFormCancelText : "UT:Cancel",
+    metadataFormSaveAsCopyText : "UT:Save as Copy",
+    metadataFormSaveText : "UT:Save",
     metaDataHeader: 'UT:About this Map',
     metaDataMapAbstract: 'UT:Abstract',
     metaDataMapId: "UT:Permalink",
@@ -1642,7 +1645,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             bbar: [
                 "->",
                 new Ext.Button({
-                    text: "Save as Copy",
+                    text: this.metadataFormSaveAsCopyText,
                     handler: function(e){
                         this.about.title = titleField.getValue();
                         this.about["abstract"] = abstractField.getValue();
@@ -1652,7 +1655,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     scope: this
                 }),
                 new Ext.Button({
-                    text: "Save",
+                    text: this.metadataFormSaveText,
                     handler: function(e){
                         this.about.title = titleField.getValue();
                         this.about["abstract"] = abstractField.getValue();
@@ -1662,7 +1665,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     scope: this
                 }),
                 new Ext.Button({
-                    text: "Cancel",
+                    text: this.metadataFormCancelText,
                     handler: function() {
                         this.metadataForm.hide();
                     },
