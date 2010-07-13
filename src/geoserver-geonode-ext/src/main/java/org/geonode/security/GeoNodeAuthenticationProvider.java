@@ -16,21 +16,25 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
  * An authentication provider passing the username/password to GeoNode for authentication
  * 
  * @author Andrea Aime - OpenGeo
- *
+ * 
  */
 public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
-    
+
     GeonodeSecurityClient client;
+
+    public GeoNodeAuthenticationProvider(GeonodeSecurityClient client) {
+        this.client = client;
+    }
 
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
         String username = token.getName();
         String password = (String) token.getCredentials();
-        
+
         try {
             return client.authenticate(username, password);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new AuthenticationServiceException("Communication with GeoNode failed", e);
         }
     }
