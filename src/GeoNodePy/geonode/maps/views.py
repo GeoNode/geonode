@@ -2,8 +2,9 @@ from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role,
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
+import base64
 from django import forms
-from django.contrib.auth import get_backends as get_auth_backends
+from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis import gdal
 from django.core.exceptions import ObjectDoesNotExist
@@ -821,21 +822,46 @@ def _handle_layer_upload(request, layer=None):
 
     return layer, errors
 
+
+def _basic_auth_user(request):
+    """
+    authenticate user based on http basic auth
+    against the model database.
+    """
+    try:
+        meth, auth = request.META['HTTP_AUTHORIZATION'].split()
+        if meth.lower() != 'basic':
+            return None
+        username, password = base64.b64decode(auth).split(':')
+        return authenticate(username=username, password=password)
+    except:
+        return None
+    
 def layer_acls(request):
     """
     returns json-encoded lists of layer identifiers that 
     represent the sets of read-write and read-only layers
     for the currently authenticated user. 
     """
-        
+    
+    # XXX preference ?
+    acl_user = request.user
+    if 'HTTP_AUTHORIZATION' in request.META:
+        acl_user = _basic_auth_user(request)
+        if not acl_user: 
+            return HttpResponse(_("Bad HTTP Authorization Credentials."),
+                                status=401,
+                                mimetype="text/plain")
+
+            
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():
         if hasattr(bck, 'objects_with_perm'):
-            all_readable.update(bck.objects_with_perm(request.user,
+            all_readable.update(bck.objects_with_perm(acl_user,
                                                       'maps.view_layer',
                                                       Layer))
-            all_writable.update(bck.objects_with_perm(request.user,
+            all_writable.update(bck.objects_with_perm(acl_user,
                                                       'maps.change_layer', 
                                                       Layer))
     read_only = [x for x in all_readable if x not in all_writable]
@@ -846,7 +872,9 @@ def layer_acls(request):
     
     result = {
         'rw': read_write,
-        'ro': read_only
+        'ro': read_only,
+        'is_superuser':  acl_user.is_superuser,
+        'is_anonymous': acl_user.is_anonymous()
     }
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
