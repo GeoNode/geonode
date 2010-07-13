@@ -490,8 +490,8 @@ class LayerDescriptionForm(forms.Form):
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
         
-        poc = layer.pocs[0]
-        metadata_author = layer.metadata_authors[0]
+        poc = layer.poc
+        metadata_author = layer.metadata_author
         
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
