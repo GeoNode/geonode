@@ -132,9 +132,8 @@ MAP_BASELAYERS = [{
             'bluemarble'
         ]}, {
         'service': 'google',
-        'apiKey' : GOOGLE_API_KEY,
         'layers': [
-            'G_SATELLITE_MAP'
+            'SATELLITE'
         ]}, {
         'service': "wms",
         'url': "%swms" % GEOSERVER_BASE_URL,
