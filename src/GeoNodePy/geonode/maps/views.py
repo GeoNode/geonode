@@ -33,6 +33,14 @@ class ContactForm(forms.ModelForm):
         exclude = ('user',)
 
 class LayerForm(forms.ModelForm):
+    poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
+                                 label = "Point Of Contact", required=False,
+                                 queryset = Contact.objects.exclude(user=None))
+
+    metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
+                                             label = "Metadata Author", required=False,
+                                             queryset = Contact.objects.exclude(user=None))
+
     class Meta:
         model = Layer
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
@@ -489,68 +497,54 @@ class LayerDescriptionForm(forms.Form):
 @login_required
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
-        
         poc = layer.poc
         metadata_author = layer.metadata_author
-        
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
 
         if request.method == "POST":
-            layer_form = LayerForm(request.POST, instance=layer, prefix="layer")        
-            poc_role_form = RoleForm(request.POST, instance=poc_role, prefix="poc_role")
-            author_role_form = RoleForm(request.POST, instance=metadata_author_role, prefix="author_role")
+            layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
             
-            # If the 'new' checkbox is selected, do not pass the current instance to the
-            # form creation to create a new object.
-            if poc_role_form.is_valid():
-                new = False
-                if new:
-                    poc_form = ContactForm(request.POST, prefix="poc")
-                    new_poc = poc_form.save()
-                    value = poc_form.cleaned_data['role']
-                    poc_role.role = value
-                    poc_role.contact = new_poc
-                    poc_role.save()
-                else:
-                    poc_role_form.save()
+            if layer_form.is_valid():
+                new_poc = layer_form.cleaned_data['poc']
+                new_author = layer_form.cleaned_data['metadata_author']
+
+                if new_poc is None:
                     poc_form = ContactForm(request.POST, instance=poc, prefix="poc")
                     if poc_form.has_changed and poc_form.is_valid():
-                        poc_form.save()
-            
-            # If the 'new' checkbox is selected, do not pass the current instance to the
-            # form creation to create a new object.
-            if author_role_form.is_valid():
-                new = False
-                if new:
-                    author_form = ContactForm(request.POST, prefix="author")
-                    new_author = author_form.save()
-                    value = author_form.cleaned_data['role']
-                    metadata_author_role.role = value
-                    metadata_author_role.contact = new_author
-                    metadata_author_role.save()
-                else:
-                    metadata_author_role.save()
+                        new_poc = poc_form.save()
+
+                if new_author is None:
                     author_form = ContactForm(request.POST, instance=metadata_author, prefix="author")
                     if author_form.has_changed and author_form.is_valid():
-                        author_form.save()
+                        new_author = author_form.save()
 
-            if layer_form.is_valid():
-                the_layer = layer_form.save()
-                #the_layer.save_to_geonetwork()
-                return HttpResponseRedirect("/data/" + layer.typename)
+                if new_poc is not None and new_author is not None:
+                    the_layer = layer_form.save(commit=False)
+                    the_layer.poc = new_poc
+                    the_layer.metadata_author = new_author
+                    the_layer.save()
+                    return HttpResponseRedirect("/data/" + layer.typename)
+
         else:
             layer_form = LayerForm(instance=layer, prefix="layer")
-            poc_role_form = RoleForm(instance=poc_role, prefix="poc_role")
-            author_role_form = RoleForm(instance=metadata_author_role, prefix="author_role")
-            poc_form = ContactForm(instance=poc, prefix="poc")
-            author_form = ContactForm(instance=metadata_author, prefix="author")
+            if poc.user == None:
+                poc_form = ContactForm(instance=poc, prefix="poc")
+            else:
+                layer_form.fields['poc'].initial = poc.id
+                poc_form = ContactForm(prefix="poc")
+                poc_form.hidden=True
+
+            if metadata_author.user == None:
+                author_form = ContactForm(instance=metadata_author, prefix="author")
+            else:
+                layer_form.fields['metadata_author'].initial = metadata_author.id
+                author_form = ContactForm(prefix="author")
+                author_form.hidden=True
 
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
             "layer_form": layer_form,
-            "poc_role_form": poc_role_form,
-            "author_role_form": author_role_form,
             "poc_form": poc_form,
             "author_form": author_form,
         }))
@@ -787,6 +781,13 @@ def _handle_layer_upload(request, layer=None):
                                          workspace=gs_resource.store.workspace.name,
                                          title=gs_resource.title,
                                          uuid=str(uuid.uuid4()))
+            # A user without a profile might be uploading this
+            poc_contact, __ = Contact.object.get_or_create(user=request.user,
+                                                   defaults={"name": request.user.username })
+            author_contact, __ = Contact.object.get_or_create(user=request.user,
+                                                   defaults={"name": request.user.username })
+            layer.poc = poc_contact
+            layer.metadata_author = author_contact
             layer.save()
         except:
             # Something went wrong, let's try and back out any changes
