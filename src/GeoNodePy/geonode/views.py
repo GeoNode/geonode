@@ -13,10 +13,7 @@ def static(request, page):
     }))
 
 def community(request):
-    maps = Map.objects.filter(featured=False)[:5]
-    return render_to_response('community.html', RequestContext(request, {
-        "maps": maps
-    }))
+    return render_to_response('community.html')
 
 def lang(request): 
     return render_to_response('lang.js', mimetype="text/javascript")
