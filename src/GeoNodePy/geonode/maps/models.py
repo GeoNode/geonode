@@ -5,6 +5,7 @@ from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
+from django.utils.html import escape
 import httplib2
 import simplejson
 import urllib
@@ -335,6 +336,49 @@ class Map(models.Model):
                 } for layer in layers ] 
             }
         return simplejson.dumps(map)
+
+    @property
+    def viewer_json(self):
+        layers = self.layer_set.all() #implicitly sorted by stack_order
+        servers = list(set(l.ows_url for l in layers))
+        server_mapping = {}
+
+        for i in range(len(servers)):
+            server_mapping[servers[i]] = str(i)
+
+        config = {
+            'id': self.id,
+            'about': {
+                'title':    escape(self.title),
+                'contact':  escape(self.contact),
+                'abstract': escape(self.abstract),
+                'endorsed': self.endorsed
+            },
+            'map': {
+                'layers': [],
+                'center': [self.center_lon, self.center_lat],
+                'zoom': self.zoom
+            }
+        }
+
+        config['wms'] = dict(zip(server_mapping.values(), server_mapping.keys()))
+
+        for l in layers:
+            layer_json = {
+                'name': l.name,
+                'wms': server_mapping[l.ows_url],
+                'group': l.group,
+                'styles' : l.styles
+            }
+
+            if l.format != "": layer_json['format'] = l.format
+            if l.styles != "": layer_json['styles'] = l.styles
+            if l.opacity != "": layer_json['opacity'] = l.opacity
+            if l.transparent: layer_json['transparent'] = True
+
+            config['map']['layers'].append(layer_json)
+
+        return config
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
