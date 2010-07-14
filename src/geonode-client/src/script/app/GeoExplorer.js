@@ -1595,11 +1595,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         new ExportWizard({map: this.mapID}).show();
     },
 
-
-    
-    /**
-     * Method: initMetadataForm
-     * Constructs a window with a metadata form.
+    /** private: method[initMetadataForm]
+     *
+     * Initialize metadata entry form.
      */
     initMetadataForm: function(){
         
@@ -1676,9 +1674,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
 
-    /**
-     * Method: showMetadataForm
-     * Shows the window with a metadata form
+    /** private: method[showMetadataForm]
+     *  Shows the window with a metadata form
      */
     showMetadataForm: function() {
         if(!this.metadataForm) {
@@ -1693,11 +1690,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         return this.rest + this.mapID + '/data';
     },
 
-    /**
-     * Method: save
-     * Saves the map.
-     * as - a boolean, True if map should be "Saved as..."
-     * instead of overwritten
+    /** api: method[save]
+     *  :arg as: ''Boolean'' True if map should be "Saved as..."
+     *
+     *  Subclasses that load config asynchronously can override this to load
+     *  any configuration before applyConfig is called.
      */
     save : function(as){
         var config = this.configManager.getConfig(this);
