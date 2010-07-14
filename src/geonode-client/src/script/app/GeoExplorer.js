@@ -1674,7 +1674,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ],
             listeners: {
                 hide: function(win){
-                    //these aren't working
                     titleField.setValue(app.about.title);
                     abstractField.setValue(app.about["abstract"]);
                 }
