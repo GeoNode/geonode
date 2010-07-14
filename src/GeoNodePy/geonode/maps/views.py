@@ -1,4 +1,7 @@
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
+from geonode.core.models import UserRowLevelPermission, GenericRowLevelPermission
+from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.maps.models import Map, Layer, MapLayer, get_csw
+from geonode.maps.forms import ContactForm, MetadataForm
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -6,6 +9,7 @@ import base64
 from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib.gis import gdal
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -370,7 +374,152 @@ def batch_layer_download(request):
         return HttpResponse(content, status=resp.status)
 
 
+MAP_PERMISSION_LEVELS = [
+    {'maps.view_map': False,
+     'maps.change_map': False,
+     'maps.delete_map': False,
+     'maps.change_map_permissions': False
+    },
+    {'maps.view_map': True,
+     'maps.change_map': False,
+     'maps.delete_map': False,
+     'maps.change_map_permissions': False
+    },
+    {'maps.view_map': True,
+     'maps.change_map': True,
+     'maps.delete_map': False,
+     'maps.change_map_permissions': False
+    },
+    {'maps.view_map': True,
+     'maps.change_map': True,
+     'maps.delete_map': True,
+     'maps.change_map_permissions': True
+    }
+]
+
+def _identify_permission_level(has_perm, levels):
+    for i, level in enumerate(levels):
+        has_all = True
+        for (perm, state) in level.items():
+            if has_perm(perm) != state:
+                has_all = False
+                break
+        if has_all:
+            return i
+    return -1
+
+def _identify_user_level(user, obj, levels):
+    def has_perm(perm):
+        return user.has_perm(perm, obj=obj)
+    return _identify_permission_level(has_perm, levels)
+
+def _identify_gen_level(obj, gen_role, levels):
+    for bck in get_auth_backends():
+        if hasattr(bck, 'get_generic_obj_permissions'):
+            perms = bck.get_generic_obj_permissions(gen_role, obj=obj)
+            
+            def has_perm(perm):
+                return perm in perms
+            return _identify_permission_level(has_perm, levels)
+    return -1
+
+
+
+MAP_LEVEL_NAMES = [_('No Permissions'),
+                  _('Read-Only'),
+                  _('Read and Modify'),
+                  _('Administrative')]
+
+def _map_permissions(map):
+    anonymous_level = _identify_gen_level(map, ANONYMOUS_USERS, MAP_PERMISSION_LEVELS)
+    all_auth_level = _identify_gen_level(map, AUTHENTICATED_USERS, MAP_PERMISSION_LEVELS)
+        
+    # get all user-specific permissions
+    user_levels = {}
+    for bck in get_auth_backends():
+        if hasattr(bck, 'get_all_user_object_permissions'):
+            for username, perms in bck.get_all_user_object_permissions(map).items():
+                user_levels[username] = _identify_permission_level(perms.__contains__, MAP_PERMISSION_LEVELS)
+    user_levels = user_levels.items()
+    user_levels.sort()
+
+    return {
+        'anonymous_level': anonymous_level,
+        'all_auth_level': all_auth_level,
+        'user_levels': user_levels,
+    }
+    
+def view_map_permissions(request, mapid):
+    map = get_object_or_404(Map,pk=mapid) 
+
+    if not request.user.has_perm('maps.map.change_permissions', obj=map):
+        return HttpResponse(_("You are not permitted to view this map's permissions."),
+                            status=401,
+                            mimetype="text/plain")
+
+    ctx =  _map_permissions(map)
+    ctx['anonymous_level'] = MAP_LEVEL_NAMES[ctx['anonymous_level']]
+    ctx['all_auth_level'] = MAP_LEVEL_NAMES[ctx['all_auth_level']]
+    
+    ulevs = []
+    for u, l in ctx['user_levels']:
+        ulevs.append([u, MAP_LEVEL_NAMES[l]])
+    ctx['user_levels'] = ulevs
+    ctx['map'] = map
+
+    return render_to_response("maps/permissions.html", RequestContext(request, ctx))
+                              
+
+# XXX should not be exempt
+@csrf_exempt
 @login_required
+def edit_map_permissions(request, mapid):
+    map = get_object_or_404(Map,pk=mapid) 
+
+    if not request.user.has_perm('maps.map.change_permissions', obj=map):
+        return HttpResponse(_("You are not permitted to change this map's permissions."),
+                            status=401,
+                            mimetype="text/plain")
+    
+    if request.method == 'GET':
+        info = _map_permissions(map)
+        info['all_usernames'] = [x[0] for x in User.objects.values_list('username').order_by()]
+        info['levels'] = [(i, MAP_LEVEL_NAMES[i]) for i in range(len(MAP_LEVEL_NAMES))]
+
+        ctx = {'map': map, 'permissions_json': json.dumps(info)}
+        return render_to_response("maps/edit_permissions.html", RequestContext(request, ctx))
+    elif request.method == 'POST':
+        for bck in get_auth_backends():
+            if hasattr(bck, 'set_all_user_obj_perms'):
+                params = request.POST
+                anon_level = int(params['anonymous_level'])
+                all_auth_level = int(params['all_auth_level'])
+                
+                kpat = re.compile("^u_(.*)_level$")
+                ulevs = {}
+                for k, v in params.items(): 
+                    m = kpat.match(k)
+                    if m: 
+                        username = m.groups()[0]
+                        level = int(v)
+                        if level != -1:
+                            ulevs[username] = level
+                lev_max = len(MAP_PERMISSION_LEVELS) -1
+                
+                def tp(perms):
+                    return [x for (x, k) in perms.items() if k == True]
+
+                if anon_level >= 0 and anon_level <= lev_max:
+                    bck.set_all_generic_obj_perms(ANONYMOUS_USERS, map, tp(MAP_PERMISSION_LEVELS[anon_level])) 
+                if all_auth_level >= 0 and all_auth_level <= lev_max:
+                    bck.set_all_generic_obj_perms(AUTHENTICATED_USERS, map, tp(MAP_PERMISSION_LEVELS[all_auth_level])) 
+                for username, level in ulevs.items():
+                    user = User.objects.get(username=username)
+                    if level >= 0 and level <= lev_max:
+                        bck.set_all_user_obj_perms(user, map, tp(MAP_PERMISSION_LEVELS[level]))
+        return HttpResponse(json.dumps({}), mimetype="application/javascript")
+
+
 def deletemap(request, mapid):
     '''
     '''
