@@ -38,13 +38,16 @@ process.  So, here are the steps to follow:
 
 #. Fetch the latest version of the GeoNode sources by using the SVN command::
    
-     $ svn checkout http://svn.opengeo.org/CAPRA/GeoNode/trunk/ GeoNode/
+     $ git clone git://github.com/GeoNode/geonode.git 
 
-#. Change directories into the GeoNode source directory and use the
-   ``bootstrap.py`` script to set up a virtualenv sandbox and install the
-   GeoNode dependencies into it::
+#. Change directories into the GeoNode source directory and update the git
+   submodules used to reference GeoNode's JavaScript dependencies.
+   Additionally, use the ``bootstrap.py`` script to set up a virtualenv sandbox
+   and install the GeoNode Python dependencies into it::
 
-     $ cd GeoNode && python bootstrap.py
+     $ cd geonode 
+     $ git submodule update --init
+     $ python bootstrap.py
 
 #. Since GeoNode uses virtualenv to isolate its python
    modules from the wider system, you must "activate" the virtualenv before
@@ -52,13 +55,16 @@ process.  So, here are the steps to follow:
 
      $ . bin/activate # for Linux, Mac, and other Unix-like OS's
 
-   ::
-
-     C:\> Scripts/activate.bat ; for Windows
-
 #. Now you should have GeoNode and its dependencies set up and ready to run in
-   development mode. (See some other section of this manual for information
-   about deployment.)  The command to start up a development server is::
+   development mode. (See :doc:`/deployment` for information about deployment.)
+   To run GeoNode in development mode you will need to run two separate servers
+   for the Java and Python web services.  For the Java services::
+    
+     $ cd src/geoserver-geonode-dev/
+     $ sh startup.sh
+
+   In another terminal, activate the virtualenv again and start up a
+   development server with ::
 
      $ django-admin.py runserver --settings=geonode.settings
 
