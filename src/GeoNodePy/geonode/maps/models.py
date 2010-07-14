@@ -516,13 +516,21 @@ class LayerManager(models.Manager):
         # Make sure to logout after you have finished using it.
         return self.geonetwork
 
+    def admin_contact(self):
+        # this assumes there is at least one superuser
+        superusers = User.objects.filter(is_superuser=True).order_by('id')
+        if superusers.count() == 0:
+            raise RuntimeException('GeoNode needs at least one admin/superuser set')
+        
+        contact, created = Contact.objects.get_or_create(user=superusers[0], 
+                                                defaults={"name": "Geonode Admin"})
+        return contact
+
     def default_poc(self):
-        default_poc = Contact.objects.get(id=1)
-        return default_poc
+        return self.admin_contact()
 
     def default_metadata_author(self):
-        default_metadata_author = Contact.objects.get(id=2)
-        return default_metadata_author
+        return self.admin_contact
 
     def slurp(self):
         cat = self.gs_catalog
@@ -972,9 +980,18 @@ class ContactRole(models.Model):
         """
         Make sure there is only one poc and author per layer
         """
-        if (role == self.layer.poc_role) or (role == self.layer.metadata_author_role):
-            if self.layer.contact_set.filter(self.role).count() > 0:
+        if (self.role == self.layer.poc_role) or (self.role == self.layer.metadata_author_role):
+            if self.layer.contacts.filter(contactrole__role=self.role).count() > 0:
                  raise ValidationError('There can be only one %s for a given layer' % self.role)
+        if self.contact.user is None:
+            # verify that any unbound contact is only associated to one layer
+            bounds = ContactRole.objects.filter(contact=self.contact).count()
+            if bounds > 1:
+                raise ValidationError('There can be one and only one layer linked to an unbound contact' % self.role)
+            elif bounds == 1:
+                # verify that if there was one already, it corresponds to this instace
+                if ContactRole.objects.filter(contact=self.contact).get().id != self.id:
+                    raise ValidationError('There can be one and only one layer linked to an unbound contact' % self.role)
 
     class Meta:
         unique_together = (("contact", "layer", "role"),)

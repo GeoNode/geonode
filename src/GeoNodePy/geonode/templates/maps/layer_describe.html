@@ -3,27 +3,30 @@
 
 {% block title %} {{ layer.typename }} - {{ block.super }} {% endblock %}
 
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+    Ext.onReady(function() {
+        // get #poc_form and #metadata_form, and add a `onchange` handler
+        // that shows the form if the blank option is selected.
+    });
+</script>
+{% endblock %}
 {% block main %}
   <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
   <form action="/data/{{layer.typename}}?describe" method="POST">
 	  {% csrf_token %}
       <ul class="form">
-          {{ layer_form.as_ul }}
-          <fieldset>
+	      {{ layer_form.as_ul }}
+          <fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Point of Contact</legend>
             {{ poc_form.as_ul }}
-            {{ poc_role_form.as_ul }}
-            <input type="submit" value="{% trans "Update existing" %}"/>
-            <input type="submit" value="{% trans "Save as new" %}"/>
           </fieldset>
-          <fieldset>
+          <fieldset id="metadata_form" {% if author_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Metadata Provider</legend>
             {{ author_form.as_ul }}
-            {{ author_role_form.as_ul }}
-            <input type="submit" value="{% trans "Update existing" %}"/>
-            <input type="submit" value="{% trans "Save as new" %}"/>
           </fieldset>
-
           <input type="submit" value="{% trans "Update" %}"/>
       </ul>
   </form>
