@@ -13,7 +13,7 @@ class MapTest(TestCase):
     def setUp(self):
         # If Geoserver and GeoNetwork are not running
         # avoid running tests that call those views.
-        if "GEOSERVER" in os.environ.keys():
+        if "GEOSERVER" in os.environ:
             self.GEOSERVER = True
 
     default_abstract = "This is a demonstration of GeoNode, an application \
@@ -41,50 +41,54 @@ community."
         self.assertEquals(response.status_code,200) 
 
     def test_data(self):
-          '''/data/ -> Test accessing the data page'''
-          c = Client()
-          response = c.get('/data/')
-          self.failUnlessEqual(response.status_code, 200)
+        '''/data/ -> Test accessing the data page'''
+        c = Client()
+        response = c.get('/data/')
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_search(self):
-          '''/data/search/ -> Test accessing the data search page'''
-          c = Client()
-          response = c.get('/data/search/')
-          self.failUnlessEqual(response.status_code, 200)
+        '''/data/search/ -> Test accessing the data search page'''
+        c = Client()
+        response = c.get('/data/search/')
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_search_api(self):
-         '''/data/search/api -> Test accessing the data search api JSON'''
-         if self.GEOSERVER:
-             c = Client()
-             response = c.get('/data/search/api')
-             self.failUnlessEqual(response.status_code, 200)
+        '''/data/search/api -> Test accessing the data search api JSON'''
+        if self.GEOSERVER:
+            c = Client()
+            response = c.get('/data/search/api')
+            self.failUnlessEqual(response.status_code, 200)
 
 
     def test_search_detail(self):
-        '''/data/search/detail -> Test accessing the data search detail for a layer'''
+        '''
+        /data/search/detail -> Test accessing the data search detail for a layer
+        Disabled due to reliance on consistent UUIDs across loads.
+        '''
         if self.GEOSERVER:
             layer = Layer.objects.all()[0]
+
             c = Client()
             response = c.get('/data/search/detail', {'uuid':layer.uuid})
             self.failUnlessEqual(response.status_code, 200)
 
     def test_describe_data(self):
-          '''/data/base:CA?describe -> Test accessing the description of a layer '''
+        '''/data/base:CA?describe -> Test accessing the description of a layer '''
 
-          c = Client()
-          response = c.get('/data/base:CA?describe')
-          # Since we are not authenticated, we should not be able to access it
-          self.failUnlessEqual(response.status_code, 302)
-          # but if we log in ...
-          c.login(username='bobby', password='bob')
-          # ... all should be good
-          if self.GEOSERVER:
-              response = c.get('/data/base:CA?describe')
-              self.failUnlessEqual(response.status_code, 200)
-          else:
-              # If Geoserver is not running, this should give a runtime error
-              try:
-                  c.get('/data/base:CA?describe')
-              except RuntimeError:
-                  pass
+        c = Client()
+        response = c.get('/data/base:CA?describe')
+        # Since we are not authenticated, we should not be able to access it
+        self.failUnlessEqual(response.status_code, 302)
+        # but if we log in ...
+        c.login(username='bobby', password='bob')
+        # ... all should be good
+        if self.GEOSERVER:
+            response = c.get('/data/base:CA?describe')
+            self.failUnlessEqual(response.status_code, 200)
+        else:
+            # If Geoserver is not running, this should give a runtime error
+            try:
+                c.get('/data/base:CA?describe')
+            except RuntimeError:
+                pass
 
