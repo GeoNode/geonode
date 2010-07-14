@@ -1421,7 +1421,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var tools = [
             new Ext.Button({
                 tooltip: this.saveMapText,
-                handler: this.saveHandler,
+                handler: this.showMetadataForm,
                 scope: this,
                 iconCls: "icon-save"
             }),
@@ -1697,10 +1697,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     updateURL: function() {
         /* PUT to this url to update an existing map */
         return this.rest + this.mapID + '/data';
-    },
-
-    saveHandler: function(button, event) {
-        this.showMetadataForm();
     },
 
     /**
