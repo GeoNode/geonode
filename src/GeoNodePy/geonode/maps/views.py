@@ -873,6 +873,7 @@ def layer_acls(request):
     result = {
         'rw': read_write,
         'ro': read_only,
+        'username': acl_user.username,
         'is_superuser':  acl_user.is_superuser,
         'is_anonymous': acl_user.is_anonymous()
     }
