@@ -148,12 +148,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // add any custom application events
         this.addEvents([
             /**
-             * Event: idchange
-             * Fires upon a new ID provided for the map configuration being edited by this viewer.
-             */
-            "idchange",
-            /**
-             * Event: idchange
+             * Event: saved
              * Fires when the map has been saved.
              */
             "saved"
@@ -227,8 +222,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             haloColor: "#FFFFFF",
             fontColor: "#000000"
         };
-        
+
         GeoExplorer.superclass.constructor.apply(this, arguments);
+
+        this.mapID = this.initialConfig.id;
     },
     
     loadConfig: function(config) {
@@ -698,11 +695,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         this.on("ready", function(){
-            this.mapID = this.initialConfig.id;
-            
-            if (this.mapID) {
-                this.fireEvent('idchange', this.mapID);
-            } else {
+            if (!this.mapID) {
                 this.showCapabilitiesGrid();
             }
         }, this);
@@ -800,16 +793,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 html: mapInfoHtml
             }
         });
-        this.on("idchange", function(id) {
-            this.moreInfoPanel.removeAll();
-            this.moreInfoPanel.add({
-                border: false,
-                html: moreInfoTemplate.apply({permalink : permalink(app.mapID)})
-            });
-            this.moreInfoPanel.doLayout();
-            this.topPanel.doLayout();
-        }, this);
-
 
         var titleTemplate = new Ext.Template("<h3>{title}</h3>");
         this.titlePanel = new Ext.Panel({
@@ -822,13 +805,25 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 html: titleTemplate.apply({title: this.about.title})
             }
         });
-        this.on("saved", function() {
+        this.on("saved", function(id) {
+            //reset title
             this.titlePanel.removeAll();
             this.titlePanel.add({
                 border: false,
                 html: titleTemplate.apply({title: this.about.title})
             });
             this.titlePanel.doLayout();
+
+            //reset more info link
+            this.moreInfoPanel.removeAll();
+            this.moreInfoPanel.add({
+                border: false,
+                html: moreInfoTemplate.apply({permalink : permalink(app.mapID)})
+            });
+            this.moreInfoPanel.doLayout();
+
+            //redo layout
+            this.topPanel.doLayout();
         }, this);
 
         this.topPanel = new Ext.Panel({
@@ -1732,8 +1727,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     id = id.replace(/\s*$/,'');
                     id = id.match(/[\d]*$/)[0];
                     this.mapID = id; //id is url, not mapID
-                    this.fireEvent("idchange", id);
-                    this.fireEvent("saved");
+                    this.fireEvent("saved", id);
                 }, 
                 failure: failure, 
                 scope: this
@@ -1747,6 +1741,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 jsonData: config,
                 success: function(response, options) {
                     /* nothing for now */
+                    this.fireEvent("saved", this.mapID);
                 }, 
                 failure: failure, 
                 scope: this
