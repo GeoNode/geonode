@@ -21,7 +21,8 @@ import org.geoserver.security.DataAccessManager;
  */
 public class GeoNodeDataAccessManager implements DataAccessManager {
 
-    static final String ADMIN_ROLE = "ROLE_ADMINISTRATOR";
+    public static final String ADMIN_ROLE = "ROLE_ADMINISTRATOR";
+    boolean authenticationEnabled = true;
 
     public boolean canAccess(Authentication user, WorkspaceInfo workspace, AccessMode mode) {
         // we only have access information at the layer level
@@ -33,6 +34,10 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     }
 
     public boolean canAccess(Authentication user, ResourceInfo resource, AccessMode mode) {
+        if(!authenticationEnabled) {
+            return true;
+        }
+        
         if(user != null && user.getAuthorities() != null) {
             for (GrantedAuthority ga : user.getAuthorities()) {
                 if (ga instanceof LayersGrantedAuthority) {
@@ -57,6 +62,14 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
 
     public CatalogMode getMode() {
         return CatalogMode.CHALLENGE;
+    }
+    
+    /**
+     * Used for testing purposes only
+     * @param authenticationEnabled
+     */
+    public void setAuthenticationEnabled(boolean authenticationEnabled) {
+        this.authenticationEnabled = authenticationEnabled;
     }
 
 }

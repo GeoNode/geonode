@@ -43,4 +43,8 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
+    public void setClient(GeonodeSecurityClient client) {
+        this.client = client;
+    }
+
 }
