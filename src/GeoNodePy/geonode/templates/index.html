@@ -18,11 +18,6 @@
 <script type="text/javascript">
 Ext.onReady(function(){
 {% autoescape off %}
-/*
-  var submitForm = function() {
-      Ext.query('#search_form form')[0].submit();
-  };
-*/
 
   var exploreMapButton = new Ext.Button({
      renderTo: 'explore_map', 
@@ -36,9 +31,15 @@ Ext.onReady(function(){
      handler: function(){ window.location = "{% url geonode.maps.views.newmap %}"; }
   });
 
-/*
+  var submitForm = function() {
+      Ext.query('#search_form form')[0].submit();
+  };
+
+  var searchButton = new Ext.Button({renderTo: 'submit_search', text: '{% trans "Search" %}',
+                                     handler: submitForm});
+
   var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
-*/
+
 {% endautoescape %}
 });
 </script>
@@ -67,6 +68,22 @@ shared by others.</p>
 <strong>upload</strong> your own data.</p>
 
 <!-- Data search text box and button -->
+
+  <form action="{% url search %}" method="POST">
+      {% csrf_token %}
+      <table>
+        <tr>
+          <td>
+          <input type="text" id="search_query" name="q" />
+          </td>
+          <td>
+            <div id="submit_search"></div>
+          </td>
+        </tr>
+      </table>
+      <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+  </form>
+
 <!-- Links to specialized views of data -->
 <!-- Upload data button (link?) -->
 
