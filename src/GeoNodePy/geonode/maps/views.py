@@ -431,8 +431,7 @@ def build_map_config(map):
         'about': {
             'title':    escape(map.title),
             'contact':  escape(map.contact),
-            'abstract': escape(map.abstract),
-            'endorsed': map.endorsed
+            'abstract': escape(map.abstract)
         },
         'map': { 
             'layers': [],
