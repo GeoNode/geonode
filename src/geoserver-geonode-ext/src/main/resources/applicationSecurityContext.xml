@@ -41,7 +41,7 @@
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,anonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
         /gwc/rest/web/**=anonymousProcessingFilter,filterInvocationInterceptor
         /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,gnBasicProcessingFilter,anonymousProcessingFilter,gnRestFilterInvocationInterceptor
-        /**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,gnAuthenticationProcessingFilter,gnRememberMeProcessingFilter,anonymousProcessingFilter,filterInvocationInterceptor
+        /**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,anonymousProcessingFilter,filterInvocationInterceptor
       </value>
     </property>
   </bean>
@@ -78,20 +78,8 @@
       value="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&amp;error=true" />
     <property name="defaultTargetUrl" value="/" />
     <property name="filterProcessesUrl" value="/j_acegi_security_check" />
-    <property name="rememberMeServices" ref="rememberMeServices" />
   </bean>
 
-  <!-- 
-    If authentication is missing from the SecurityContext, tries to put authentication
-    information into the context using remember-me cookies. Will try to authenticate
-    the contents of the cookie against the authentication manager
-  -->
-  <bean id="gnRememberMeProcessingFilter"
-    class="org.acegisecurity.ui.rememberme.RememberMeProcessingFilter">
-    <property name="authenticationManager" ref="gnAuthenticationManager" />
-    <property name="rememberMeServices" ref="rememberMeServices" />
-  </bean>
-  
   <!-- 
       During the request execution security exceptions may be thrown, either during the
     authentication or authorization phase. This filter redirects authentication failures
@@ -111,8 +99,7 @@
   </bean>
 
   <!-- 
-    Handles the basic authentication headers. This integrates with the remember-me services, so that
-    you'll have to provide username/password just once during interactive tests.
+    Handles the basic authentication headers.
   -->
   <bean id="gnBasicProcessingFilter"
     class="org.acegisecurity.ui.basicauth.BasicProcessingFilter">
@@ -121,9 +108,6 @@
     </property>
     <property name="authenticationEntryPoint">
       <ref bean="basicProcessingFilterEntryPoint" />
-    </property>
-    <property name="rememberMeServices">
-      <ref bean="rememberMeServices" />
     </property>
   </bean>
 
@@ -138,10 +122,6 @@
         <ref local="geonodeAuthenticationProvider" />
         <bean
           class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
-          <property name="key" value="geoserver" />
-        </bean>
-        <bean
-          class="org.acegisecurity.providers.rememberme.RememberMeAuthenticationProvider">
           <property name="key" value="geoserver" />
         </bean>
       </list>

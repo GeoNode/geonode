@@ -16,6 +16,7 @@ import net.sf.json.JSONObject;
 import net.sf.json.test.JSONAssert;
 
 import org.apache.commons.io.IOUtils;
+import org.geonode.GeoNodeTestSupport;
 import org.geonode.geojson.GeoJSONParser;
 import org.geonode.process.coveragestats.HazardStatisticsFactory;
 import org.geoserver.data.test.MockData;
@@ -30,7 +31,7 @@ import org.restlet.data.Status;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class ProcessRestletTest extends GeoServerTestSupport {
+public class ProcessRestletTest extends GeoNodeTestSupport {
 
     private static final String RESTLET_PATH = "/rest/process/hazard";
 

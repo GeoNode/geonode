@@ -27,6 +27,17 @@ public interface GeonodeSecurityClient {
      */
     public Authentication authenticate(String cookieValue) throws AuthenticationException,
             IOException;
+    
+    /**
+     * Gets the authentication for an anonymous user
+     * 
+     * @param gnCookie
+     * @return
+     * @throws AuthenticationException
+     * @throws IOException
+     */
+    public Authentication authenticateAnonymous() throws AuthenticationException,
+            IOException;
 
     /**
      * Authenticates based on username/password

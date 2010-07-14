@@ -1,13 +1,11 @@
 package org.geonode.security;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.http.Cookie;
@@ -16,19 +14,17 @@ import javax.xml.parsers.ParserConfigurationException;
 import junit.framework.Test;
 
 import org.apache.commons.codec.binary.Base64;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geonode.GeoNodeTestSupport;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.test.GeoServerTestSupport;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class SecuredAccessTest extends GeoServerTestSupport {
+public class SecuredAccessTest extends GeoNodeTestSupport {
 
     /**
      * This behaves like a read only test in that the mock status is reset by each test
@@ -46,23 +42,17 @@ public class SecuredAccessTest extends GeoServerTestSupport {
                 .bean("geonodeFilterChainProxy"));
     }
 
+    /**
+     * This is a security test, we want the authorization backed to actually do its work
+     */
+    @Override
+    protected boolean isAuthorizationEnabled() {
+        return true;
+    }
+
     @Override
     protected void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
-
-        // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("wfs", "http://www.opengis.net/wfs");
-        namespaces.put("ows", "http://www.opengis.net/ows");
-        namespaces.put("ogc", "http://www.opengis.net/ogc");
-        namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
-        namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema");
-        namespaces.put("gml", "http://www.opengis.net/gml");
-        namespaces.put(MockData.CITE_PREFIX, MockData.CITE_URI);
-        namespaces.put(MockData.CDF_PREFIX, MockData.CDF_URI);
-        namespaces.put(MockData.CGF_PREFIX, MockData.CGF_URI);
-        namespaces.put(MockData.SF_PREFIX, MockData.SF_URI);
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
 
         // build an empty mock client
         client = new MockSecurityClient();
@@ -103,27 +93,30 @@ public class SecuredAccessTest extends GeoServerTestSupport {
 
         checkValidCookieAuth(cookie);
     }
-    
+
     public void testUserBasicRead() throws Exception {
         String username = "joe";
         String password = "secret";
-        client.addUserAuth(username, password, false, Collections.singletonList(getLayerId(MockData.BUILDINGS)), null);
+        client.addUserAuth(username, password, false, Collections
+                .singletonList(getLayerId(MockData.BUILDINGS)), null);
 
         checkValidBasicAuth(username, password);
     }
-    
+
     public void testUserBasicReadWrite() throws Exception {
         String username = "joe";
         String password = "secret";
-        client.addUserAuth(username, password, false, null, Collections.singletonList(getLayerId(MockData.BUILDINGS)));
+        client.addUserAuth(username, password, false, null, Collections
+                .singletonList(getLayerId(MockData.BUILDINGS)));
 
         checkValidBasicAuth(username, password);
     }
-    
+
     public void testUserCookie() throws Exception {
         String username = "joe";
         String cookie = "geonode-auth-lameuser";
-        client.addCookieAuth(cookie, username, false, Collections.singletonList(getLayerId(MockData.BUILDINGS)), null);
+        client.addCookieAuth(cookie, username, false, Collections
+                .singletonList(getLayerId(MockData.BUILDINGS)), null);
 
         checkValidCookieAuth(cookie);
     }
@@ -142,8 +135,8 @@ public class SecuredAccessTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", doc);
     }
 
-    void checkValidCookieAuth(String cookie) throws Exception,
-            ParserConfigurationException, SAXException, IOException, XpathException {
+    void checkValidCookieAuth(String cookie) throws Exception, ParserConfigurationException,
+            SAXException, IOException, XpathException {
         MockHttpServletRequest request = createRequest("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
                 + getLayerId(MockData.BUILDINGS));
         request.addCookie(new Cookie(GeoNodeCookieProcessingFilter.GEONODE_COOKIE_NAME, cookie));
@@ -154,6 +147,23 @@ public class SecuredAccessTest extends GeoServerTestSupport {
         print(doc);
         assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", doc);
     }
-    
-    
+
+    /**
+     * Checks an anonymous user that has layer grants (which can happen in GeoNode)
+     * 
+     * @throws Exception
+     */
+    public void testAnonymousAuthWithGrants() throws Exception {
+        client.setAnonymousRights(false, Collections.singletonList(getLayerId(MockData.BUILDINGS)),
+                null);
+        MockHttpServletRequest request = createRequest("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
+                + getLayerId(MockData.BUILDINGS));
+
+        MockHttpServletResponse resp = dispatch(request);
+        assertEquals(200, resp.getErrorCode());
+        Document doc = dom(new ByteArrayInputStream(resp.getOutputStreamContent().getBytes()));
+        print(doc);
+        assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", doc);
+    }
+
 }

@@ -11,18 +11,29 @@ import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
+import org.geonode.security.GeoNodeDataAccessManager;
+import org.geonode.security.GeonodeSecurityClient;
+import org.geonode.security.LayersGrantedAuthority;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 
 /**
- * A mock security client used to test  
+ * A mock security client used to test
+ * 
  * @author Andrea Aime - OpenGeo
- *
+ * 
  */
 public class MockSecurityClient implements GeonodeSecurityClient {
 
-    Map<String, Authentication> cookieAuths = new HashMap<String, Authentication>();
+    Map<String, Authentication> cookieAuths;
 
-    Map<String, Authentication> userAuths = new HashMap<String, Authentication>();
+    Map<String, Authentication> userAuths;
+
+    AnonymousAuthenticationToken anonymousAuth;
+    
+    public MockSecurityClient() {
+        reset();
+    }
 
     public Authentication authenticate(String cookieValue) throws AuthenticationException,
             IOException {
@@ -41,8 +52,10 @@ public class MockSecurityClient implements GeonodeSecurityClient {
     }
 
     public void reset() {
-        cookieAuths.clear();
-        userAuths.clear();
+        cookieAuths = new HashMap<String, Authentication>();
+        userAuths = new HashMap<String, Authentication>();
+        anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous", 
+                new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_ANONYMOUS")});
     }
 
     public void addUserAuth(String username, String password, boolean admin,
@@ -76,5 +89,26 @@ public class MockSecurityClient implements GeonodeSecurityClient {
                 username, password, (GrantedAuthority[]) authorities
                         .toArray(new GrantedAuthority[authorities.size()]));
         return token;
+    }
+
+    public void setAnonymousRights(boolean admin, List<String> readOnlyLayers, List<String> readWriteLayers) {
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
+        if (admin) {
+            authorities.add(new GrantedAuthorityImpl(GeoNodeDataAccessManager.ADMIN_ROLE));
+        }
+        if (readOnlyLayers != null && readOnlyLayers.size() > 0) {
+            authorities.add(new LayersGrantedAuthority(readOnlyLayers, LayerMode.READ_ONLY));
+        }
+        if (readWriteLayers != null && readWriteLayers.size() > 0) {
+            authorities.add(new LayersGrantedAuthority(readWriteLayers, LayerMode.READ_WRITE));
+        }
+
+        anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous",
+                (GrantedAuthority[]) authorities.toArray(new GrantedAuthority[authorities.size()]));
+    }
+
+    public Authentication authenticateAnonymous() throws AuthenticationException, IOException {
+        return anonymousAuth;
     }
 }
