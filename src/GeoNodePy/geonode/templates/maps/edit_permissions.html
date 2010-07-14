@@ -1,0 +1,140 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+<script type="text/javascript">
+  Ext.onReady(function() {
+    var title = "{{ map.title }}";
+    {% autoescape off %}
+    var permissions = {{ permissions_json }};
+    {% endautoescape %}
+    var form_target = "{% url geonode.maps.views.edit_map_permissions map.id %}";
+
+    var make_user_combo = function(name, label) {
+      var options = permissions.all_usernames.slice(0);
+      return new Ext.form.ComboBox({
+        name: name,
+        fieldLabel: label,
+        allowBlank: false, 
+        forceSelection: true,
+        typeAhead: true,
+        triggerAction: 'all',
+        store: options,
+        value: options[0]
+      });
+    };
+
+    var make_perm_combo = function(name, label, value) {
+      var options = permissions.levels.slice(0);
+      if (value == -1) {
+        options.push([-1, gettext("Custom")]);
+      }
+      return new Ext.form.ComboBox({
+        id: 'cb_' + name,
+        hiddenName: name,
+        fieldLabel: label,
+        allowBlank: false, 
+        forceSelection: true,
+        typeAhead: true,
+        triggerAction: 'all',
+        value: value,
+        store: options
+      });
+    };
+    
+    var make_perm_combo_for_user = function(username, user_level) {
+      return make_perm_combo('u_' + username + '_level',
+                             gettext("User") + " " + username,
+                             user_level);
+    };
+    
+    var fp = new Ext.FormPanel({
+      width: 500,
+      frame: true,
+      title: gettext('Edit permissions for ' + title),
+      autoHeight: true,
+      bodyStyle: 'padding: 10px 10px 0 10px;',
+      method: 'POST',
+      buttons: [
+        {text: gettext('New Permission'), 
+         handler: function() {
+           var user_select = make_user_combo('user', 'User');
+           var perm_select = make_perm_combo('perm', 'Permission', 0);
+           var perm_popup = new Ext.Window({
+               width: 300,
+               height: 150,
+               plain: true,
+               modal: true,
+               items: new Ext.FormPanel({
+                 frame: true,
+                 title: gettext('Create permission'),
+                 autoHeight: true,
+                 items: [user_select, perm_select]}),
+               buttons: [
+                 {text: gettext('Cancel'),
+                  handler: function() {
+                    perm_popup.close();
+                  }},
+                 {text: gettext('Create'),
+                  handler: function() {
+                    var username = user_select.getValue();
+                    var level = perm_select.getValue();
+                    var combo = make_perm_combo_for_user(username, level);
+                    var existing = fp.get(combo.getId());
+                    if (existing) {
+                      existing.setValue(level);
+                    }
+                    else {
+                      fp.add(combo);
+                      fp.form.add(combo);
+                      fp.doLayout();
+                    }
+                    perm_popup.close();
+                 }}]
+             });
+             perm_popup.show();
+           }
+         },
+        {text: gettext('Save'),
+         handler: function() {
+           if(fp.getForm().isValid()) {
+             fp.getForm().submit({
+                 url: form_target,
+                 success: function(fp, o) {
+                 },
+                 failure: function(fp, o) {
+                }
+              });
+            }
+         }}
+        ]
+    });
+    fp.add(make_perm_combo('anonymous_level',
+                           gettext('Anonymous Users'),
+                           permissions['anonymous_level']));
+    fp.add(make_perm_combo('all_auth_level', 
+                           gettext('Registered Users'),
+                           permissions['all_auth_level']));
+    
+    for (var i = 0; i < permissions.user_levels.length; i++) {
+      var username = permissions.user_levels[i][0];
+      var user_level = permissions.user_levels[i][1];
+      var combo = make_perm_combo_for_user(username, user_level);  
+      fp.add(combo);
+    }
+    fp.render('permissions_form');
+
+  });
+  
+
+</script>
+{{ block.super }}
+{% endblock %}
+
+{% block title %} Permissions - {{ map.title }} - {{ block.super }} {% endblock %}
+
+{% block main %}
+  <div id="permissions_form"></div>
+{% endblock %}
