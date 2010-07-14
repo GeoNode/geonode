@@ -290,7 +290,6 @@ class Map(models.Model):
     # we need to double check with the World Bank
     # as they were the ones who required them
     featured = models.BooleanField()
-    endorsed = models.BooleanField()
 
     # viewer configuration
     zoom = models.IntegerField()
