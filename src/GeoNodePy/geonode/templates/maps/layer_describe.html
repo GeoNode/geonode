@@ -10,7 +10,21 @@
     Ext.onReady(function() {
         // get #poc_form and #metadata_form, and add a `onchange` handler
         // that shows the form if the blank option is selected.
-    });
+		Ext.get('id_layer-poc').on('change', function() {
+	        if (this.getValue()===""){
+			    Ext.get("poc_form").show();
+			}else{
+				Ext.get("poc_form").hide();
+			}
+		   });
+		Ext.get('id_layer-metadata_author').on('change', function() {
+	        if (this.getValue()===""){
+			    Ext.get("metadata_form").show();
+			}else{
+				Ext.get("metadata_form").hide();
+			}
+		});
+	});
 </script>
 {% endblock %}
 {% block main %}
