@@ -148,7 +148,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // add any custom application events
         this.addEvents([
             /**
-             * Event: saved
+             * api: event[saved]
              * Fires when the map has been saved.
              */
             "saved"
