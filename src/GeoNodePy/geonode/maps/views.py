@@ -12,7 +12,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
-from django.utils.html import escape
 from django.utils.translation import ugettext as _
 import json
 import math
@@ -53,11 +52,11 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
-        map_configs = [{"id": map.pk, "config": build_map_config(map)} for map in Map.objects.all()]
+        map_configs = [{"id": map.pk, "config": map.viewer_json} for map in Map.objects.all()]
         return HttpResponse(json.dumps({"maps": map_configs}), mimetype="application/json")
     elif request.method == 'GET' and mapid is not None:
         map = Map.objects.get(pk=mapid)
-        config = build_map_config(map)
+        config = map.viewer_json
         return HttpResponse(json.dumps(config))
     elif request.method == 'POST':
         try: 
@@ -75,7 +74,7 @@ def maps(request, mapid=None):
 def mapJSON(request, mapid):
     if request.method == 'GET':
         map = get_object_or_404(Map,pk=mapid) 
-    	config = build_map_config(map)
+    	config = map.viewer_json
     	return HttpResponse(json.dumps(config))
     elif request.method == 'PUT':
         return update_map_json(request, mapid)
@@ -183,7 +182,7 @@ def newmap(request):
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map = get_object_or_404(Map,pk=mapid) 
-        config = build_map_config(map)
+        config = map.viewer_json
         del config['id']
     else:
         if request.method == 'GET':
@@ -367,7 +366,7 @@ def mapdetail(request,mapid):
     The view that show details of each map
     '''
     map = get_object_or_404(Map,pk=mapid) 
-    config = build_map_config(map)
+    config = map.viewer_json
     config["backgroundLayers"] = settings.MAP_BASELAYERS
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map.id) 
@@ -393,7 +392,7 @@ def view(request, mapid):
     the map with the given map ID.
     """
     map = Map.objects.get(pk=mapid)
-    config = build_map_config(map)
+    config = map.viewer_json
     config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
@@ -406,7 +405,7 @@ def embed(request, mapid=None):
         config = DEFAULT_MAP_CONFIG
     else:
         map = Map.objects.get(pk=mapid)
-        config = build_map_config(map)
+        config = map.viewer_json
     config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
@@ -418,51 +417,9 @@ def data(request):
         'GEOSERVER_BASE_URL':settings.GEOSERVER_BASE_URL
     }))
 
-def build_map_config(map):
-    layers = map.layer_set.all()
-    servers = list(set(l.ows_url for l in layers))
-    server_mapping = {}
-
-    for i in range(len(servers)):
-        server_mapping[servers[i]] = str(i)
-
-    config = {
-        'id': map.id,
-        'about': {
-            'title':    escape(map.title),
-            'contact':  escape(map.contact),
-            'abstract': escape(map.abstract),
-            'endorsed': map.endorsed
-        },
-        'map': { 
-            'layers': [],
-            'center': [map.center_lon, map.center_lat],
-            'zoom': map.zoom
-        }
-    }
-
-    config['wms'] = dict(zip(server_mapping.values(), server_mapping.keys()))
-
-    for l in layers:
-        layer_json = {
-            'name': l.name,
-            'wms': server_mapping[l.ows_url],
-            'group': l.group,
-            'styles' : l.styles
-        }
-
-        if l.format != "": layer_json['format'] = l.format
-        if l.styles != "": layer_json['styles'] = l.styles
-        if l.opacity != "": layer_json['opacity'] = l.opacity
-        if l.transparent: layer_json['transparent'] = True
-
-        config['map']['layers'].append(layer_json)
-
-    return config
-
 def view_js(request, mapid):
     map = Map.objects.get(pk=mapid)
-    config = build_map_config(map)
+    config = map.viewer_json
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def fixdate(str):

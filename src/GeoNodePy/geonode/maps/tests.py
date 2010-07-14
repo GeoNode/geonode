@@ -1,7 +1,7 @@
 from django.test import TestCase
 from geonode.maps.models import Map, Layer
 from django.test.client import Client
-from geonode.maps.views import build_map_config, DEFAULT_MAP_CONFIG
+from geonode.maps.views import DEFAULT_MAP_CONFIG
 import json
 import os
 
@@ -27,7 +27,7 @@ community."
         ''' Make some assertions about the data structure produced for serialization
             to a JSON map configuration '''
         map = Map.objects.get(id=1)
-        cfg = build_map_config(map)
+        cfg = map.viewer_json
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
         layernames = [x['name'] for x in cfg['map']['layers']]
