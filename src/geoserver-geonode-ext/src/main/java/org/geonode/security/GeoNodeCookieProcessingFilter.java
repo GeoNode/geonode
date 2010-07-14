@@ -5,6 +5,8 @@
 package org.geonode.security;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -21,6 +23,7 @@ import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.ui.rememberme.RememberMeServices;
 import org.apache.ftpserver.usermanager.AnonymousAuthentication;
+import org.geotools.util.logging.Logging;
 
 /**
  * A processing filter that will inspect the cookies and look for the GeoNode single sign on one. If
@@ -31,7 +34,9 @@ import org.apache.ftpserver.usermanager.AnonymousAuthentication;
  */
 public class GeoNodeCookieProcessingFilter implements Filter {
 
-    static final String GEONODE_COOKIE_NAME = "geonodeSessionId";
+    static final Logger LOGGER = Logging.getLogger(GeoNodeCookieProcessingFilter.class);
+
+    static final String GEONODE_COOKIE_NAME = "sessionid";
 
     GeonodeSecurityClient client;
 
@@ -60,19 +65,32 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         // an authentication
         boolean authenticationRequired = existingAuth == null || !existingAuth.isAuthenticated()
                 || (existingAuth instanceof AnonymousAuthentication);
-        if (authenticationRequired && gnCookie != null) {
+        if (authenticationRequired) {
             try {
-                Authentication authResult = client.authenticate(gnCookie.getValue());
+                if (gnCookie != null) {
 
-                SecurityContextHolder.getContext().setAuthentication(authResult);
+                    Authentication authResult = client.authenticate(gnCookie.getValue());
 
-                if (rememberMeServices != null) {
-                    rememberMeServices.loginSuccess(httpRequest, httpResponse, authResult);
+                    SecurityContextHolder.getContext().setAuthentication(authResult);
+
+                    if (rememberMeServices != null) {
+                        rememberMeServices.loginSuccess(httpRequest, httpResponse, authResult);
+                    }
+                } else {
+                    Authentication authResult = client.authenticateAnonymous();
+
+                    SecurityContextHolder.getContext().setAuthentication(authResult);
+
+                    if (rememberMeServices != null) {
+                        rememberMeServices.loginSuccess(httpRequest, httpResponse, authResult);
+                    }
                 }
             } catch (AuthenticationException e) {
                 // we just go ahead and fall back on basic authentication
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING,
+                        "Error connecting to the GeoNode server for authentication purposes", e);
             }
-
         }
 
         // move forward along the chain
@@ -80,9 +98,11 @@ public class GeoNodeCookieProcessingFilter implements Filter {
     }
 
     Cookie getGeoNodeCookie(HttpServletRequest request) {
-        for (Cookie c : request.getCookies()) {
-            if (GEONODE_COOKIE_NAME.equals(c.getName())) {
-                return c;
+        if (request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if (GEONODE_COOKIE_NAME.equals(c.getName())) {
+                    return c;
+                }
             }
         }
 
@@ -91,6 +111,10 @@ public class GeoNodeCookieProcessingFilter implements Filter {
 
     public void setRememberMeServices(RememberMeServices rememberMeServices) {
         this.rememberMeServices = rememberMeServices;
+    }
+
+    public void setClient(GeonodeSecurityClient client) {
+        this.client = client;
     }
 
 }
