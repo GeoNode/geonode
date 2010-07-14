@@ -16,45 +16,53 @@
 {% include "geonode/gxp_header.html" %}
 {{ block.super }}
 <script type="text/javascript">
-var app;
-Ext.onReady(function() {
-    var config = Ext.apply({
-        useToolbar: false,
-        proxy: "/proxy/?url=",
-        rest: "/maps/",
-
-        // tell the map viewer where and how to be rendered
-        portalConfig: {
-            height: 300,
-            renderTo: "embedded_map"
-        }
-    }, {{config|safe}});
-    app = new GeoExplorer.Viewer(config);
+Ext.onReady(function(){
+{% autoescape off %}
+/*
+  var submitForm = function() {
+      Ext.query('#search_form form')[0].submit();
+  };
+*/
+  var createMapButton = new Ext.Button({
+     renderTo: 'create_map', 
+     text: '{% trans "Create Map" %}',
+     handler: function(){ window.location = "{% url geonode.maps.views.newmap %}"; }
+  });
+/*
+  var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
+*/
+{% endautoescape %}
 });
 </script>
 {% endblock %}
 
 {% block main %} 
-<div id="description">
-    <h3> {% trans "Welcome to CAPRA's GeoNode!" %} </h3>
-</div>
-<div id="featuredmap">
-    <div id="embedded_map"></div>
-</div>
+<!-- TODO: i18n on the text here -->
+<h2> {% trans "Welcome" %} </h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, 
+sed do eiusmod tempor incididunt ut labore et dolore magna 
+aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
+ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+<h2> {% trans "Maps" %} </h2>
+<p>GeoNode lets you compose and share maps.  <strong>Create</strong>
+a map with our cartography tool, or <strong>explore</strong> maps
+shared by others.</p>
+
+<!-- Explore Maps button -->
+<!-- Create Map button -->
+<div id="create_map"></div>
+
+<br /> <!-- need better solution for this, will be addressed in retheming -->
+
+<h2> {% trans "Data" %} </h2>
+<p>GeoNode lets you upload, manage, and browse data.  
+<strong>Create</strong> for data that is valuable to you, or 
+<strong>upload</strong> your own data.</p>
+
+<!-- Data search text box and button -->
+<!-- Links to specialized views of data -->
+<!-- Upload data button (link?) -->
+
 {% endblock %}
 {% block sidebar %}
-<h3> {% trans "Welcome to CAPRA's GeoNode!" %} </h3>
-{% blocktrans %}
-<p>The GeoNode is a data clearing house for CAPRA. Currently a prototype, it 
-provides tools for the distribution and composition of hazard and risk map data.
-Its purpose is to inform decisions about future data management developments for
-CAPRA.</p>
-{% endblocktrans %}
-<div id="featured-map-metadata">
-  <div id="featured-map-header">{% trans "GeoNode featured map" %}</div>
-  <h4 id="map-title">{{map.about.title}}</h4>
-  <p id="map-abstract">{{map.about.abstract}}</p>
-</div>
-
-
 {% endblock %}
