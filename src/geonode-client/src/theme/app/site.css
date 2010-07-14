@@ -158,30 +158,6 @@ div#main ul.x-tree-root-ct {
   list-style-position: outside;
 }
 
-div#featured-map-metadata{
-border:1px solid black;
-background-color: #EEE;
-padding: 1em;
- }
-
-div#featured-map-metadata p{
-margin-bottom: 0;
-}
-
-
-div#featured-map-metadata h4{
-height:auto;
-margin-bottom: 1em;
- }
-
-
-div#featured-map-header{ 
-text-transform:uppercase;
-color: #333;
-font-weight: bold;
-margin-bottom:.75em;
- }
-
 #main{
   float:left;
   width:580px;
