@@ -1704,7 +1704,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * as - a boolean, True if map should be "Saved as..."
      * instead of overwritten
      */
-    save : function(){
+    save : function(as){
         var config = this.configManager.getConfig(this);
         
         var failure = function(response, options) {
@@ -1719,7 +1719,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }).show();
         };
 
-        if (!this.mapID) {
+        if (!this.mapID || as) {
             /* create a new map */ 
             Ext.Ajax.request({
                 url: this.rest,
