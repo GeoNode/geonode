@@ -23,11 +23,19 @@ Ext.onReady(function(){
       Ext.query('#search_form form')[0].submit();
   };
 */
+
+  var exploreMapButton = new Ext.Button({
+     renderTo: 'explore_map', 
+     text: '{% trans "Explore Maps" %}',
+     handler: function(){ window.location = "{% url geonode.views.community %}"; }
+  });
+
   var createMapButton = new Ext.Button({
      renderTo: 'create_map', 
      text: '{% trans "Create Map" %}',
      handler: function(){ window.location = "{% url geonode.maps.views.newmap %}"; }
   });
+
 /*
   var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
 */
@@ -48,8 +56,7 @@ ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
 a map with our cartography tool, or <strong>explore</strong> maps
 shared by others.</p>
 
-<!-- Explore Maps button -->
-<!-- Create Map button -->
+<div id="explore_map"></div>
 <div id="create_map"></div>
 
 <br /> <!-- need better solution for this, will be addressed in retheming -->
