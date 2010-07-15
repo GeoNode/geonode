@@ -530,7 +530,7 @@ class LayerManager(models.Manager):
         return self.admin_contact()
 
     def default_metadata_author(self):
-        return self.admin_contact
+        return self.admin_contact()
 
     def slurp(self):
         cat = self.gs_catalog
