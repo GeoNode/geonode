@@ -30,7 +30,9 @@ community."
         cfg = map.viewer_json
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
-        layernames = [x['name'] for x in cfg['map']['layers']]
+        def is_wms_layer(x):
+            return cfg['sources'][x['source']]['ptype'] == 'gx_wmssource'
+        layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
         self.assertEquals(layernames, ['base:CA', 'base:nic_admin'])
 
     def test_mapdetails(self): 

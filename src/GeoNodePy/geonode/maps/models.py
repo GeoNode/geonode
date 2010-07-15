@@ -342,8 +342,11 @@ class Map(models.Model):
         layers = self.layer_set.all() #implicitly sorted by stack_order
         server_lookup = {}
         sources = dict()
+        sources.update(settings.MAP_BASELAYERSOURCES)
 
-        for i, ows in enumerate(set(l.ows_url for l in layers)):
+        i = 0
+        for ows in set(l.ows_url for l in layers):
+            while str(i) in sources: i = i + 1
             sources[str(i)] = { "ptype": "gx_wmssource", "url": ows }
             server_lookup[ows] = str(i)
 
@@ -370,9 +373,10 @@ class Map(models.Model):
                 'abstract': escape(self.abstract),
                 'endorsed': self.endorsed
             },
+            'defaultSourceType': "gx_wmssource",
             'sources': sources,
             'map': {
-                'layers': [layer_config(l) for l in layers],
+                'layers': settings.MAP_BASELAYERS + [layer_config(l) for l in layers],
                 'center': [self.center_lon, self.center_lat],
                 'projection': "EPSG:4326",
                 'zoom': self.zoom
