@@ -292,7 +292,7 @@ def map_download(request, mapid):
     This should be fix because 
     """ 
     mapObject = get_object_or_404(Map,pk=mapid)
-    if not request.user.has_perm('maps.view_map', obj=map):
+    if not request.user.has_perm('maps.view_map', obj=mapObject):
         return HttpResponse(_('Not Permitted'), status=401)
 
     map_status = dict()
@@ -521,7 +521,8 @@ def mapdetail(request,mapid):
     layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
         'config': config, 
-        'map': map, 
+        'map': map,
+        'map_perms': map.get_user_permissions(request.user), 
         'layers': layers
     }))
 

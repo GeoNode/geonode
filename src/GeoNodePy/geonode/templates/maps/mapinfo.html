@@ -52,8 +52,12 @@ Ext.onReady(function() {
   </ul>    
   <h3>Manage</h3>
   <ul>
-    <li><a href="{% url geonode.maps.views.view map.id %}">Edit map or metadata</a></li> 
+    {% if 'maps.change_map' in map_perms %}
+    <li><a href="{% url geonode.maps.views.view map.id %}">Edit map or metadata</a></li>
+    {% endif %} 
+    {% if 'maps.delete_map' in map_perms %}
     <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">Delete map</a></li>
+    {% endif %}
     <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">Duplicate map</a></li>
   </ul>      
 </div> 
