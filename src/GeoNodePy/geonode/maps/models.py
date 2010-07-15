@@ -346,24 +346,7 @@ class Map(models.Model):
         for i in range(len(servers)):
             server_mapping[servers[i]] = str(i)
 
-        config = {
-            'id': self.id,
-            'about': {
-                'title':    escape(self.title),
-                'contact':  escape(self.contact),
-                'abstract': escape(self.abstract),
-                'endorsed': self.endorsed
-            },
-            'map': {
-                'layers': [],
-                'center': [self.center_lon, self.center_lat],
-                'zoom': self.zoom
-            }
-        }
-
-        config['wms'] = dict(zip(server_mapping.values(), server_mapping.keys()))
-
-        for l in layers:
+        def layer_config(l):
             layer_json = {
                 'name': l.name,
                 'wms': server_mapping[l.ows_url],
@@ -376,9 +359,24 @@ class Map(models.Model):
             if l.opacity != "": layer_json['opacity'] = l.opacity
             if l.transparent: layer_json['transparent'] = True
 
-            config['map']['layers'].append(layer_json)
+            return layer_json
 
-        return config
+        return {
+            'id': self.id,
+            'about': {
+                'title':    escape(self.title),
+                'contact':  escape(self.contact),
+                'abstract': escape(self.abstract),
+                'endorsed': self.endorsed
+            },
+            'wms': dict((v, k) for (k, v) in server_mapping.iteritems()),
+            'map': {
+                'layers': [layer_config(l) for l in layers],
+                'center': [self.center_lon, self.center_lat],
+                'zoom': self.zoom
+            }
+        }
+
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
