@@ -132,7 +132,7 @@ MAP_BASELAYERSOURCES = {
     },
     "google":{
         "ptype":"gx_googlesource",
-        "apiKey":"ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
+        "apiKey": GOOGLE_API_KEY
     }
 }
 
