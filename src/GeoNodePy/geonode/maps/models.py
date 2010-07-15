@@ -340,16 +340,17 @@ class Map(models.Model):
     @property
     def viewer_json(self):
         layers = self.layer_set.all() #implicitly sorted by stack_order
-        servers = list(set(l.ows_url for l in layers))
-        server_mapping = {}
+        server_lookup = {}
+        sources = dict()
 
-        for i in range(len(servers)):
-            server_mapping[servers[i]] = str(i)
+        for i, ows in enumerate(set(l.ows_url for l in layers)):
+            sources[str(i)] = { "ptype": "gx_wmssource", "url": ows }
+            server_lookup[ows] = str(i)
 
         def layer_config(l):
             layer_json = {
                 'name': l.name,
-                'wms': server_mapping[l.ows_url],
+                'source': server_lookup[l.ows_url],
                 'group': l.group,
                 'styles' : l.styles
             }
@@ -369,10 +370,11 @@ class Map(models.Model):
                 'abstract': escape(self.abstract),
                 'endorsed': self.endorsed
             },
-            'wms': dict((v, k) for (k, v) in server_mapping.iteritems()),
+            'sources': sources,
             'map': {
                 'layers': [layer_config(l) for l in layers],
                 'center': [self.center_lon, self.center_lat],
+                'projection': "EPSG:4326",
                 'zoom': self.zoom
             }
         }
