@@ -223,16 +223,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         GeoExplorer.superclass.constructor.apply(this, arguments);
     },
     
-    loadConfig: function(config) {
-        var query = Ext.urlDecode(document.location.search.substr(1));
-        var queryConfig = Ext.util.JSON.decode(query.q);
-        this.configManager = new GeoNode.ConfigManager(
-            Ext.apply({}, queryConfig, config));
-
-        GeoExplorer.superclass.loadConfig.apply(this,
-            [this.configManager.getViewerConfig()]);
-    },
-    
     displayXHRTrouble: function(response) {
         Ext.Msg.show({
             title: this.connErrorTitleText,
