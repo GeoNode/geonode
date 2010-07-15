@@ -26,26 +26,22 @@ from django.views.decorators.csrf import csrf_exempt
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
-DEFAULT_MAP_CONFIG = {
-    "alignToGrid": True,
-    "proxy": "/proxy/?url=",
-    "about": {
-        "title": "GeoNode Default Map",
-        "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
-        "contact": "For more information, contact OpenGeo at http://opengeo.org/"
-    },
-    "wms": {
-        "capra": "%swms" % settings.GEOSERVER_BASE_URL
-    },
-    "map": {
-        "layers": [ {
-            "name": settings.DEFAULT_MAP_BASE_LAYER,
-            "wms": "capra"
-        } ],
-        "center": settings.DEFAULT_MAP_CENTER,
-        "zoom": settings.DEFAULT_MAP_ZOOM
-    }
-}
+DEFAULT_TITLE = "GeoNode Default Map"
+DEFAULT_ABSTRACT = "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community."
+DEFAULT_MAP_CONFIG = Map(
+    title=DEFAULT_TITLE, 
+    abstract=DEFAULT_ABSTRACT,
+    projection="EPSG:900913",
+    max_resolution=156543.0339,
+    units="m",
+    center_x=-9428760.8688778,
+    center_y=1436891.8972581,
+    extent_max_x=20037508.34,
+    extent_max_y=20037508.34,
+    extent_min_x=-20037508.34,
+    extent_min_y=-20037508.34,
+    zoom=7
+).viewer_json
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
