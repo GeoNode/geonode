@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
 import org.acegisecurity.ui.rememberme.RememberMeServices;
-import org.apache.ftpserver.usermanager.AnonymousAuthentication;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -64,7 +64,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         // if we still need to authenticate and we find the cookie, consult GeoNode for
         // an authentication
         boolean authenticationRequired = existingAuth == null || !existingAuth.isAuthenticated()
-                || (existingAuth instanceof AnonymousAuthentication);
+                || (existingAuth instanceof AnonymousAuthenticationToken);
         if (authenticationRequired) {
             try {
                 if (gnCookie != null) {
