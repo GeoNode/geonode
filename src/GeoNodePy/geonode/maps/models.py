@@ -295,12 +295,33 @@ class Map(models.Model):
 
     # viewer configuration
     zoom = models.IntegerField()
-    center_lat = models.FloatField()
-    center_lon = models.FloatField()
+    projection = models.CharField(max_length=32)
+    units = models.CharField(max_length=8)
+    max_resolution = models.FloatField()
+
+    extent_max_x = models.FloatField()
+    extent_min_x = models.FloatField()
+    extent_max_y = models.FloatField()
+    extent_min_y = models.FloatField()
+
+    center_x = models.FloatField()
+    center_y = models.FloatField()
+
+    # center_lat = models.FloatField()
+    # center_lon = models.FloatField()
+
     owner = models.ForeignKey(User, blank=True, null=True)
 
     def __unicode__(self):
         return '%s by %s' % (self.title, self.contact)
+
+    @property
+    def center(self):
+        return (self.center_x, self.center_y)
+
+    @property
+    def extent(self):
+        return (self.extent_min_x, self.extent_min_y, self.extent_max_x, self.extent_max_y)
 
     @property
     def layers(self):
@@ -376,9 +397,12 @@ class Map(models.Model):
             'defaultSourceType': "gx_wmssource",
             'sources': sources,
             'map': {
+                "units": self.units,
+                "maxResolution": self.max_resolution,
+                "maxExtent": self.extent,
                 'layers': settings.MAP_BASELAYERS + [layer_config(l) for l in layers],
-                'center': [self.center_lon, self.center_lat],
-                'projection': "EPSG:4326",
+                'center': [self.center_x, self.center_y],
+                'projection': self.projection,
                 'zoom': self.zoom
             }
         }
