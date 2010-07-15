@@ -88,6 +88,17 @@ class PermissionLevelMixin(object):
     ]
     """
 
+    def get_user_permissions(self, user):
+        """
+        returns the names of all Permissions the given user 
+        has for this object, including those inherited 
+        from generic roles.
+        """
+        for bck in get_auth_backends():
+            if bck.supports_object_permissions:
+                return bck.get_all_permissions(user, obj=self)
+
+
     def get_user_level(self, user):
         """
         get the permission level (if any) specifically assigned to the given user.
