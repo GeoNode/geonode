@@ -41,11 +41,11 @@
       <artifactId>restconfig</artifactId>
       <version>${geoserver.version}</version>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>ftp</artifactId>
       <version>${geoserver.version}</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>web-app</artifactId>
