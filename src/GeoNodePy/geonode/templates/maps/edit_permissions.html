@@ -26,8 +26,14 @@
       });
     };
 
-    var make_perm_combo = function(name, label, value) {
-      var options = permissions.levels.slice(0);
+    var make_perm_combo = function(name, label, value, max) {
+      var options;
+      if (max) {
+        options = permissions.levels.slice(0, max);
+      }
+      else {
+        options = permissions.levels.slice(0);
+      }
       if (value == -1) {
         options.push([-1, gettext("Custom")]);
       }
@@ -103,24 +109,39 @@
              fp.getForm().submit({
                  url: form_target,
                  success: function(fp, o) {
+                   document.location = o.result.redirect_to;
                  },
                  failure: function(fp, o) {
+                   error_message = '<ul>';
+                   for (var i = 0; i < o.result.errors.length; i++) {
+                       error_message += '<li>' + o.result.errors[i] + '</li>'
+                   }
+                   error_message += '</ul>'
+                   
+                   Ext.Msg.show({
+                       title: gettext("Error"),
+                       msg: error_message,
+                       minWidth: 200,
+                       modal: true,
+                       icon: Ext.Msg.ERROR,
+                       buttons: Ext.Msg.OK
+                   });
                 }
               });
             }
          }}
         ]
     });
-    fp.add(make_perm_combo('anonymous_level',
+    fp.add(make_perm_combo('anonymous',
                            gettext('Anonymous Users'),
-                           permissions['anonymous_level']));
-    fp.add(make_perm_combo('all_auth_level', 
+                           permissions['anonymous'], 3));
+    fp.add(make_perm_combo('authenticated', 
                            gettext('Registered Users'),
-                           permissions['all_auth_level']));
+                           permissions['authenticated']));
     
-    for (var i = 0; i < permissions.user_levels.length; i++) {
-      var username = permissions.user_levels[i][0];
-      var user_level = permissions.user_levels[i][1];
+    for (var i = 0; i < permissions.users.length; i++) {
+      var username = permissions.users[i][0];
+      var user_level = permissions.users[i][1];
       var combo = make_perm_combo_for_user(username, user_level);  
       fp.add(combo);
     }
