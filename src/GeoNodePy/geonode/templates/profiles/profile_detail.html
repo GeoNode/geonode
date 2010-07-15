@@ -1,7 +1,12 @@
 {% extends "base.html" %}
-
+{% load avatar_tags %}
 {% block content %}
 <h2>Profile for {{ profile.user.username }}</h2>
+{% avatar profile.user 100 %}
+
+{% if request.user == profile.user %}
+    <a href="{% url avatar_change %}">Change your avatar</a>
+{% endif %}
 
 <ul>
 	<li>name: {{ profile.name}}</li>
