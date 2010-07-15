@@ -7,7 +7,6 @@ import geoserver
 from geoserver.resource import FeatureType, Coverage
 import base64
 from django import forms
-from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.gis import gdal
@@ -16,7 +15,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
-from django.template import RequestContext
+from django.template import RequestContext, loader
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
 import json
@@ -79,12 +78,17 @@ DEFAULT_MAP_CONFIG = {
 
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
-        map_configs = [{"id": map.pk, "config": build_map_config(map)} for map in Map.objects.all()]
+        map_configs = [{"id": map.pk, "config": build_map_config(map)} for map in Map.objects.all()
+                       if request.user.has_perm('maps.view_map', obj=map)]
         return HttpResponse(json.dumps({"maps": map_configs}), mimetype="application/json")
     elif request.method == 'GET' and mapid is not None:
         map = Map.objects.get(pk=mapid)
-        config = build_map_config(map)
-        return HttpResponse(json.dumps(config))
+        if request.user.has_perm('maps.view_map', obj=map):
+            config = build_map_config(map)
+            return HttpResponse(json.dumps(config))
+        else:
+            return HttpResponse(loader.render_to_string('401.html', 
+                RequestContext(request, {})), status=401)
     elif request.method == 'POST':
         try: 
             map = create_map_json(request)
@@ -101,6 +105,9 @@ def maps(request, mapid=None):
 def mapJSON(request, mapid):
     if request.method == 'GET':
         map = get_object_or_404(Map,pk=mapid) 
+        if not request.user.has_perm('maps.view_map', obj=map):
+            return HttpResponse(loader.render_to_string('401.html', 
+                RequestContext(request, {})), status=401)
     	config = build_map_config(map)
     	return HttpResponse(json.dumps(config))
     elif request.method == 'PUT':
@@ -117,6 +124,11 @@ def update_map_json(request, mapid):
                             mimetype="text/plain")
 
     map = get_object_or_404(Map,pk=mapid) 
+    if not request.user.has_perm('maps.change_map', obj=map):
+        return HttpResponse(_('You are not permitted to save this map'),
+                            status=401,
+                            mimetype="text/plain")
+
     conf = json.loads(request.raw_post_data)
     
     map.title = conf['about']['title']
@@ -153,6 +165,11 @@ def update_map_json(request, mapid):
     return HttpResponse('', status=204)
 
 def create_map_json(request):
+    if not request.user.is_authenticated():
+        return HttpResponse(_("You must be logged in to save this map"),
+                            status=401,
+                            mimetype="text/plain")
+
     conf = json.loads(request.raw_post_data)
     title = conf['about']['title']
     abstract = conf['about']['abstract']
@@ -173,6 +190,10 @@ def create_map_json(request):
         featured=featured,
         owner = request.user,
     )
+    # django api does not automatically grant object 
+    # permissions to object owners, so we grant them 
+    # here.
+    map.set_user_level(request.user, map.LEVEL_ADMIN)
 
     if 'wms' in conf and 'layers' in conf['map']:
         services = conf['wms']
@@ -271,6 +292,9 @@ def map_download(request, mapid):
     This should be fix because 
     """ 
     mapObject = get_object_or_404(Map,pk=mapid)
+    if not request.user.has_perm('maps.view_map', obj=map):
+        return HttpResponse(_('Not Permitted'), status=401)
+
     map_status = dict()
     if request.method == 'POST': 
         url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
@@ -374,97 +398,30 @@ def batch_layer_download(request):
         return HttpResponse(content, status=resp.status)
 
 
-MAP_PERMISSION_LEVELS = [
-    {'maps.view_map': False,
-     'maps.change_map': False,
-     'maps.delete_map': False,
-     'maps.change_map_permissions': False
-    },
-    {'maps.view_map': True,
-     'maps.change_map': False,
-     'maps.delete_map': False,
-     'maps.change_map_permissions': False
-    },
-    {'maps.view_map': True,
-     'maps.change_map': True,
-     'maps.delete_map': False,
-     'maps.change_map_permissions': False
-    },
-    {'maps.view_map': True,
-     'maps.change_map': True,
-     'maps.delete_map': True,
-     'maps.change_map_permissions': True
-    }
-]
 
-def _identify_permission_level(has_perm, levels):
-    for i, level in enumerate(levels):
-        has_all = True
-        for (perm, state) in level.items():
-            if has_perm(perm) != state:
-                has_all = False
-                break
-        if has_all:
-            return i
-    return -1
-
-def _identify_user_level(user, obj, levels):
-    def has_perm(perm):
-        return user.has_perm(perm, obj=obj)
-    return _identify_permission_level(has_perm, levels)
-
-def _identify_gen_level(obj, gen_role, levels):
-    for bck in get_auth_backends():
-        if hasattr(bck, 'get_generic_obj_permissions'):
-            perms = bck.get_generic_obj_permissions(gen_role, obj=obj)
-            
-            def has_perm(perm):
-                return perm in perms
-            return _identify_permission_level(has_perm, levels)
-    return -1
-
-
-
-MAP_LEVEL_NAMES = [_('No Permissions'),
-                  _('Read-Only'),
-                  _('Read and Modify'),
-                  _('Administrative')]
-
-def _map_permissions(map):
-    anonymous_level = _identify_gen_level(map, ANONYMOUS_USERS, MAP_PERMISSION_LEVELS)
-    all_auth_level = _identify_gen_level(map, AUTHENTICATED_USERS, MAP_PERMISSION_LEVELS)
-        
-    # get all user-specific permissions
-    user_levels = {}
-    for bck in get_auth_backends():
-        if hasattr(bck, 'get_all_user_object_permissions'):
-            for username, perms in bck.get_all_user_object_permissions(map).items():
-                user_levels[username] = _identify_permission_level(perms.__contains__, MAP_PERMISSION_LEVELS)
-    user_levels = user_levels.items()
-    user_levels.sort()
-
-    return {
-        'anonymous_level': anonymous_level,
-        'all_auth_level': all_auth_level,
-        'user_levels': user_levels,
-    }
-    
 def view_map_permissions(request, mapid):
     map = get_object_or_404(Map,pk=mapid) 
 
     if not request.user.has_perm('maps.map.change_permissions', obj=map):
-        return HttpResponse(_("You are not permitted to view this map's permissions."),
-                            status=401,
-                            mimetype="text/plain")
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message': 
+                _("You are not permitted to view this map's permissions")})), status=401)
 
-    ctx =  _map_permissions(map)
-    ctx['anonymous_level'] = MAP_LEVEL_NAMES[ctx['anonymous_level']]
-    ctx['all_auth_level'] = MAP_LEVEL_NAMES[ctx['all_auth_level']]
+    ctx =  map.get_all_level_info()
+    def lname(l):
+        if l >= 0: 
+            return map.LEVEL_NAME[l]
+        else:
+            return _('Custom')
+    
+    ctx[ANONYMOUS_USERS] = lname(ctx[ANONYMOUS_USERS])
+    ctx[AUTHENTICATED_USERS] = lname(ctx[AUTHENTICATED_USERS])
     
     ulevs = []
-    for u, l in ctx['user_levels']:
-        ulevs.append([u, MAP_LEVEL_NAMES[l]])
-    ctx['user_levels'] = ulevs
+    for u, l in ctx['users'].items():
+        ulevs.append([u, lname(l)])
+    ulevs.sort()
+    ctx['users'] = ulevs
     ctx['map'] = map
 
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
@@ -477,54 +434,69 @@ def edit_map_permissions(request, mapid):
     map = get_object_or_404(Map,pk=mapid) 
 
     if not request.user.has_perm('maps.map.change_permissions', obj=map):
-        return HttpResponse(_("You are not permitted to change this map's permissions."),
-                            status=401,
-                            mimetype="text/plain")
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message':
+                _("You are not permitted to edit this map's permissions")})), status=401)
     
     if request.method == 'GET':
-        info = _map_permissions(map)
+        info = map.get_all_level_info()
+        info['users'] = sorted(info['users'].items())
         info['all_usernames'] = [x[0] for x in User.objects.values_list('username').order_by()]
-        info['levels'] = [(i, MAP_LEVEL_NAMES[i]) for i in range(len(MAP_LEVEL_NAMES))]
+        info['levels'] = [(i, map.LEVEL_NAME[i]) for i in range(len(map.LEVEL_NAME))]
 
         ctx = {'map': map, 'permissions_json': json.dumps(info)}
         return render_to_response("maps/edit_permissions.html", RequestContext(request, ctx))
     elif request.method == 'POST':
-        for bck in get_auth_backends():
-            if hasattr(bck, 'set_all_user_obj_perms'):
-                params = request.POST
-                anon_level = int(params['anonymous_level'])
-                all_auth_level = int(params['all_auth_level'])
-                
-                kpat = re.compile("^u_(.*)_level$")
-                ulevs = {}
-                for k, v in params.items(): 
-                    m = kpat.match(k)
-                    if m: 
-                        username = m.groups()[0]
-                        level = int(v)
-                        if level != -1:
-                            ulevs[username] = level
-                lev_max = len(MAP_PERMISSION_LEVELS) -1
-                
-                def tp(perms):
-                    return [x for (x, k) in perms.items() if k == True]
+        errors = []
+        params = request.POST
+        anon_level = int(params[ANONYMOUS_USERS])
+        all_auth_level = int(params[AUTHENTICATED_USERS])
+        
+        kpat = re.compile("^u_(.*)_level$")
+        ulevs = {}
+        for k, v in params.items(): 
+            m = kpat.match(k)
+            if m: 
+                username = m.groups()[0]
+                level = int(v)
+                if level != -1:
+                    ulevs[username] = level
+        lev_max = map.LEVEL_ADMIN
+        anon_lev_max = map.LEVEL_WRITE
 
-                if anon_level >= 0 and anon_level <= lev_max:
-                    bck.set_all_generic_obj_perms(ANONYMOUS_USERS, map, tp(MAP_PERMISSION_LEVELS[anon_level])) 
-                if all_auth_level >= 0 and all_auth_level <= lev_max:
-                    bck.set_all_generic_obj_perms(AUTHENTICATED_USERS, map, tp(MAP_PERMISSION_LEVELS[all_auth_level])) 
-                for username, level in ulevs.items():
-                    user = User.objects.get(username=username)
-                    if level >= 0 and level <= lev_max:
-                        bck.set_all_user_obj_perms(user, map, tp(MAP_PERMISSION_LEVELS[level]))
-        return HttpResponse(json.dumps({}), mimetype="application/javascript")
+        if anon_level >= 0 and anon_level <= anon_lev_max:
+            map.set_gen_level(ANONYMOUS_USERS, anon_level)
+        if all_auth_level >= 0 and all_auth_level <= lev_max:
+            map.set_gen_level(AUTHENTICATED_USERS, all_auth_level) 
+        for username, level in ulevs.items():
+            user = User.objects.get(username=username)
+            if level >= 0 and level <= lev_max:
+                map.set_user_level(user, level)
+        
+        result = {}
+        if len(errors) > 0:
+            result['success'] = False
+            result['errors'] = errors
+        else:
+            result['success'] = True
+            result['redirect_to'] = reverse('view_map_permissions', args=(map.id,))
+        result = json.dumps(result)
+
+        return HttpResponse(result, mimetype="application/javascript")
 
 
+@login_required
 def deletemap(request, mapid):
     '''
     '''
     # XXX transaction?
     map = get_object_or_404(Map,pk=mapid) 
+
+    if not request.user.has_perm('maps.delete_map', obj=map):
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message': 
+                _("You are not permitted to delete this map.")})), status=401)
+
     is_featured = map.featured
     layers = MapLayer.objects.filter(map=map.id) 
      
@@ -537,7 +509,12 @@ def mapdetail(request,mapid):
     '''
     The view that show details of each map
     '''
-    map = get_object_or_404(Map,pk=mapid) 
+    map = get_object_or_404(Map,pk=mapid)
+    if not request.user.has_perm('maps.view_map', obj=map):
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message': 
+                _("You are not allowed to view this map.")})), status=401)
+     
     config = build_map_config(map)
     config["backgroundLayers"] = settings.MAP_BASELAYERS
     config = json.dumps(config)
@@ -564,6 +541,11 @@ def view(request, mapid):
     the map with the given map ID.
     """
     map = Map.objects.get(pk=mapid)
+    if not request.user.has_perm('maps.view_map', obj=map):
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message': 
+                _("You are not allowed to view this map.")})), status=401)    
+    
     config = build_map_config(map)
     config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/view.html', RequestContext(request, {
@@ -577,6 +559,9 @@ def embed(request, mapid=None):
         config = DEFAULT_MAP_CONFIG
     else:
         map = Map.objects.get(pk=mapid)
+        if not request.user.has_perm('maps.view_map', obj=map):
+            return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
+        
         config = build_map_config(map)
     config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/embed.html', RequestContext(request, {
@@ -633,6 +618,8 @@ def build_map_config(map):
 
 def view_js(request, mapid):
     map = Map.objects.get(pk=mapid)
+    if not request.user.has_perm('maps.view_map', obj=map):
+        return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
     config = build_map_config(map)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 

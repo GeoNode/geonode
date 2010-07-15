@@ -38,11 +38,11 @@ class GranularBackend(ModelBackend):
                 obj_key = self._cache_key_for_obj(obj)
                 return user_obj._obj_perm_cache[obj_key]
             except KeyError:
-                all_perms = ['%s.%s' % p for p in self._get_all_obj_permissions(user_obj, obj)]
+                all_perms = ['%s.%s' % p for p in self._get_all_obj_perms(user_obj, obj)]
                 user_obj._obj_perm_cache[obj_key] = all_perms
                 return all_perms
     
-    def get_generic_obj_permissions(self, generic_role, obj):
+    def get_generic_obj_perms(self, generic_role, obj):
         if not hasattr(obj, '_gen_perm_cache'):
             # TODO: this cache should really be bounded.
             # repoze.lru perhaps?
@@ -51,7 +51,7 @@ class GranularBackend(ModelBackend):
             key = generic_role
             return obj._gen_perm_cache[key]
         except KeyError: 
-            perms = ['%s.%s' % p for p in self._get_generic_obj_permissions([generic_role], obj)]
+            perms = ['%s.%s' % p for p in self._get_generic_obj_perms([generic_role], obj)]
             obj._gen_perm_cache[key] = perms
             return perms
 
@@ -65,7 +65,7 @@ class GranularBackend(ModelBackend):
         return key
     
         
-    def _get_generic_obj_permissions(self, generic_roles, obj, ct=None):
+    def _get_generic_obj_perms(self, generic_roles, obj, ct=None):
         perms = set()
 
         if ct is None:
@@ -77,7 +77,7 @@ class GranularBackend(ModelBackend):
         return perms
 
 
-    def _get_all_obj_permissions(self, user_obj, obj, ct=None):
+    def _get_all_obj_perms(self, user_obj, obj, ct=None):
         """
         get all permissions for user in the context of ob (not cached)
         """
@@ -88,7 +88,7 @@ class GranularBackend(ModelBackend):
         generic_roles = [ANONYMOUS_USERS]
         if not user_obj.is_anonymous():
             generic_roles.append(AUTHENTICATED_USERS)        
-        obj_perms.update(self._get_generic_obj_permissions(generic_roles, obj, ct=ct))
+        obj_perms.update(self._get_generic_obj_perms(generic_roles, obj, ct=ct))
         
         if not user_obj.is_anonymous():
             # get any user user-specific permissions
@@ -169,7 +169,7 @@ class GranularBackend(ModelBackend):
                                                   object_ct=ct,
                                                   object_id=obj.id)
 
-    def get_all_user_object_permissions(self, obj):
+    def get_all_user_object_perms(self, obj):
         """
         helper, get all permissions set on a particular object organized by user.
         """
