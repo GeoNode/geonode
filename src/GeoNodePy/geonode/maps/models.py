@@ -4,6 +4,7 @@ from django.db import models
 from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
+from geonode.core.models import PermissionLevelMixin
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 import httplib2
@@ -871,7 +872,8 @@ class Layer(models.Model):
                        ('change_layer_permissions', "Can change permissions"), )
 
 
-class Map(models.Model):
+
+class Map(models.Model, PermissionLevelMixin):
     # metadata fields
     title = models.CharField(max_length=200)
     abstract = models.CharField(max_length=200)
@@ -935,6 +937,42 @@ class Map(models.Model):
         # change and delete are standard in django
         permissions = (('view_map', 'Can view'), 
                        ('change_map_permissions', "Can change permissions"), )
+
+    # Permission Level Constants
+    LEVEL_NONE  = 0
+    LEVEL_READ  = 1
+    LEVEL_WRITE = 2
+    LEVEL_ADMIN = 3
+
+    LEVEL_PERM = [
+      {'maps.view_map': False,
+       'maps.change_map': False,
+       'maps.delete_map': False,
+       'maps.change_map_permissions': False
+      },
+      {'maps.view_map': True,
+       'maps.change_map': False,
+       'maps.delete_map': False,
+       'maps.change_map_permissions': False
+      },
+      {'maps.view_map': True,
+       'maps.change_map': True,
+       'maps.delete_map': False,
+       'maps.change_map_permissions': False
+      },
+      {'maps.view_map': True,
+       'maps.change_map': True,
+       'maps.delete_map': True,
+       'maps.change_map_permissions': True
+      }
+    ]
+
+    LEVEL_NAME = [_('No Permissions'),
+                  _('Read-Only'),
+                  _('Read and Modify'),
+                  _('Administrative')]
+    
+
 
 
 
