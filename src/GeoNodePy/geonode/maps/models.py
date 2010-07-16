@@ -558,7 +558,7 @@ class LayerManager(models.Manager):
         # Doing a logout since we know we don't need this object anymore.
         gn.logout()
 
-class Layer(models.Model):
+class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
     """
@@ -870,6 +870,40 @@ class Layer(models.Model):
         # change and delete are standard in django
         permissions = (('view_layer', 'Can view'), 
                        ('change_layer_permissions', "Can change permissions"), )
+
+    # Permission Level Constants
+    LEVEL_NONE  = 0
+    LEVEL_READ  = 1
+    LEVEL_WRITE = 2
+    LEVEL_ADMIN = 3
+
+    LEVEL_PERM = [
+        {'maps.view_layer': False,
+         'maps.change_layer': False,
+         'maps.delete_layer': False,
+         'maps.change_layer_permissions': False
+        },
+        {'maps.view_layer': True,
+         'maps.change_layer': False,
+         'maps.delete_layer': False,
+         'maps.change_layer_permissions': False
+        },
+        {'maps.view_layer': True,
+         'maps.change_layer': True,
+         'maps.delete_layer': False,
+         'maps.change_layer_permissions': False
+        },
+        {'maps.view_layer': True,
+         'maps.change_layer': True,
+         'maps.delete_layer': True,
+         'maps.change_layer_permissions': True
+        }
+    ]
+
+    LEVEL_NAME = [_('No Permissions'),
+                 _('Read-Only'),
+                 _('Read and Modify'),
+                 _('Administrative')]
 
 
 
