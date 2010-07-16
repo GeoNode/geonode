@@ -43,18 +43,18 @@ DEFAULT_MAP_CONFIG = Map(
     extent_min_x=-20037508.34,
     extent_min_y=-20037508.34,
     zoom=7
-).viewer_json
+).viewer_json()
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
 
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
-        map_configs = [{"id": map.pk, "config": map.viewer_json} for map in Map.objects.all()]
+        map_configs = [{"id": map.pk, "config": map.viewer_json()} for map in Map.objects.all()]
         return HttpResponse(json.dumps({"maps": map_configs}), mimetype="application/json")
     elif request.method == 'GET' and mapid is not None:
         map = Map.objects.get(pk=mapid)
-        config = map.viewer_json
+        config = map.viewer_json()
         return HttpResponse(json.dumps(config))
     elif request.method == 'POST':
         if not request.user.is_authenticated:
@@ -79,7 +79,7 @@ def maps(request, mapid=None):
 def mapJSON(request, mapid):
     if request.method == 'GET':
         map = get_object_or_404(Map,pk=mapid) 
-    	return HttpResponse(json.dumps(map.viewer_json))
+    	return HttpResponse(json.dumps(map.viewer_json()))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -115,7 +115,7 @@ def newmap(request):
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map = get_object_or_404(Map,pk=mapid) 
-        config = map.viewer_json
+        config = map.viewer_json()
         del config['id']
     else:
         if request.method == 'GET':
@@ -299,7 +299,7 @@ def mapdetail(request,mapid):
     The view that show details of each map
     '''
     map = get_object_or_404(Map,pk=mapid) 
-    config = map.viewer_json
+    config = map.viewer_json()
     config["backgroundLayers"] = settings.MAP_BASELAYERS
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map.id) 
@@ -325,7 +325,7 @@ def view(request, mapid):
     the map with the given map ID.
     """
     map = Map.objects.get(pk=mapid)
-    config = map.viewer_json
+    config = map.viewer_json()
     config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
@@ -338,7 +338,7 @@ def embed(request, mapid=None):
         config = DEFAULT_MAP_CONFIG
     else:
         map = Map.objects.get(pk=mapid)
-        config = map.viewer_json
+        config = map.viewer_json()
     config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
@@ -352,7 +352,7 @@ def data(request):
 
 def view_js(request, mapid):
     map = Map.objects.get(pk=mapid)
-    config = map.viewer_json
+    config = map.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def fixdate(str):
@@ -506,9 +506,27 @@ def layerController(request, layername):
     else: 
         metadata = layer.metadata_csw()
 
+        maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
+        map = Map(
+            title=DEFAULT_TITLE, 
+            abstract=DEFAULT_ABSTRACT,
+            contact=DEFAULT_CONTACT,
+            projection="EPSG:900913",
+            max_resolution=156543.0339,
+            units="m",
+            center_x=0, # center doesn't matter; the viewer will center on the layer bounds
+            center_y=0,
+            zoom=1,     # same thing with zoom
+            extent_max_x=20037508.34,
+            extent_max_y=20037508.34,
+            extent_min_x=-20037508.34,
+            extent_min_y=-20037508.34
+        )
+
         return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
             "metadata": metadata,
+            "viewer": json.dumps(map.viewer_json(maplayer)),
             "background": settings.MAP_BASELAYERS,
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
