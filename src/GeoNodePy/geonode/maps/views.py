@@ -1,6 +1,6 @@
 from geonode.core.models import UserRowLevelPermission, GenericRowLevelPermission
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map, Layer, MapLayer, get_csw
+from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.forms import ContactForm, MetadataForm
 from geonode import geonetwork
 import geoserver
@@ -522,7 +522,6 @@ def mapdetail(request,mapid):
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
         'config': config, 
         'map': map,
-        'map_perms': map.get_user_permissions(request.user), 
         'layers': layers
     }))
 
