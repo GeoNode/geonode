@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load avatar_tags %}
 
 {% block content %}
 {% for profile in object_list %}
    <ul>
-     <li>{% avatar profile.user 50 %}<a href="{{profile.get_absolute_url}}">{{ profile.name }}</a></li>
+     <li>{% if profile.user %}{% avatar profile.user 50 %}{% endif %}<a href="{{profile.get_absolute_url}}">{{ profile.name }}</a></li>
    </ul>
 {% endfor %}
 {% endblock %}
