@@ -3,155 +3,34 @@
 
 
 {% block head %}
+
 {% include "geonode/ext_header.html" %}
+{% include "geonode/openlayers_header.html" %}
+{% include "geonode/geoext_header.html" %}
+{% include "geonode/ux_header.html" %}
+{% include "geonode/gxp_header.html" %}
+
+{{ block.super }}
+
 <script type="text/javascript">
+
   Ext.onReady(function() {
     var title = "{{ map.title }}";
     {% autoescape off %}
-    var permissions = {{ permissions_json }};
+    var perm_info = {{ permissions_json }};
     {% endautoescape %}
     var form_target = "{% url geonode.maps.views.edit_map_permissions map.id %}";
 
-    var make_user_combo = function(name, label) {
-      var options = permissions.all_usernames.slice(0);
-      return new Ext.form.ComboBox({
-        name: name,
-        fieldLabel: label,
-        allowBlank: false, 
-        forceSelection: true,
-        typeAhead: true,
-        triggerAction: 'all',
-        store: options,
-        value: options[0]
-      });
-    };
-
-    var make_perm_combo = function(name, label, value, max) {
-      var options;
-      if (max) {
-        options = permissions.levels.slice(0, max);
-      }
-      else {
-        options = permissions.levels.slice(0);
-      }
-      if (value == -1) {
-        options.push([-1, gettext("Custom")]);
-      }
-      return new Ext.form.ComboBox({
-        id: 'cb_' + name,
-        hiddenName: name,
-        fieldLabel: label,
-        allowBlank: false, 
-        forceSelection: true,
-        typeAhead: true,
-        triggerAction: 'all',
-        value: value,
-        store: options
-      });
-    };
-    
-    var make_perm_combo_for_user = function(username, user_level) {
-      return make_perm_combo('u_' + username + '_level',
-                             gettext("User") + " " + username,
-                             user_level);
-    };
-    
-    var fp = new Ext.FormPanel({
-      width: 500,
-      frame: true,
-      title: gettext('Edit permissions for ' + title),
-      autoHeight: true,
-      bodyStyle: 'padding: 10px 10px 0 10px;',
-      method: 'POST',
-      buttons: [
-        {text: gettext('New Permission'), 
-         handler: function() {
-           var user_select = make_user_combo('user', 'User');
-           var perm_select = make_perm_combo('perm', 'Permission', 0);
-           var perm_popup = new Ext.Window({
-               width: 300,
-               height: 150,
-               plain: true,
-               modal: true,
-               items: new Ext.FormPanel({
-                 frame: true,
-                 title: gettext('Create permission'),
-                 autoHeight: true,
-                 items: [user_select, perm_select]}),
-               buttons: [
-                 {text: gettext('Cancel'),
-                  handler: function() {
-                    perm_popup.close();
-                  }},
-                 {text: gettext('Create'),
-                  handler: function() {
-                    var username = user_select.getValue();
-                    var level = perm_select.getValue();
-                    var combo = make_perm_combo_for_user(username, level);
-                    var existing = fp.get(combo.getId());
-                    if (existing) {
-                      existing.setValue(level);
-                    }
-                    else {
-                      fp.add(combo);
-                      fp.form.add(combo);
-                      fp.doLayout();
-                    }
-                    perm_popup.close();
-                 }}]
-             });
-             perm_popup.show();
-           }
-         },
-        {text: gettext('Save'),
-         handler: function() {
-           if(fp.getForm().isValid()) {
-             fp.getForm().submit({
-                 url: form_target,
-                 success: function(fp, o) {
-                   document.location = o.result.redirect_to;
-                 },
-                 failure: function(fp, o) {
-                   error_message = '<ul>';
-                   for (var i = 0; i < o.result.errors.length; i++) {
-                       error_message += '<li>' + o.result.errors[i] + '</li>'
-                   }
-                   error_message += '</ul>'
-                   
-                   Ext.Msg.show({
-                       title: gettext("Error"),
-                       msg: error_message,
-                       minWidth: 200,
-                       modal: true,
-                       icon: Ext.Msg.ERROR,
-                       buttons: Ext.Msg.OK
-                   });
-                }
-              });
-            }
-         }}
-        ]
+    new GeoNode.PermissionsEditor({
+        renderTo: "permissions_form",
+        submitTo: form_target,
+        title: title,
+        permissions: perm_info
     });
-    fp.add(make_perm_combo('anonymous',
-                           gettext('Anonymous Users'),
-                           permissions['anonymous'], 3));
-    fp.add(make_perm_combo('authenticated', 
-                           gettext('Registered Users'),
-                           permissions['authenticated']));
-    
-    for (var i = 0; i < permissions.users.length; i++) {
-      var username = permissions.users[i][0];
-      var user_level = permissions.users[i][1];
-      var combo = make_perm_combo_for_user(username, user_level);  
-      fp.add(combo);
-    }
-    fp.render('permissions_form');
-
   });
-  
 
 </script>
-{{ block.super }}
+
 {% endblock %}
 
 {% block title %} Permissions - {{ map.title }} - {{ block.super }} {% endblock %}
