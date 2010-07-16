@@ -27,7 +27,7 @@ community."
         ''' Make some assertions about the data structure produced for serialization
             to a JSON map configuration '''
         map = Map.objects.get(id=1)
-        cfg = map.viewer_json
+        cfg = map.viewer_json()
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
         def is_wms_layer(x):
