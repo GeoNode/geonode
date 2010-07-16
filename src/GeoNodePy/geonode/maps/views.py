@@ -34,14 +34,8 @@ DEFAULT_MAP_CONFIG = Map(
     abstract=DEFAULT_ABSTRACT,
     contact=DEFAULT_CONTACT,
     projection="EPSG:900913",
-    max_resolution=156543.0339,
-    units="m",
     center_x=-9428760.8688778,
     center_y=1436891.8972581,
-    extent_max_x=20037508.34,
-    extent_max_y=20037508.34,
-    extent_min_x=-20037508.34,
-    extent_min_y=-20037508.34,
     zoom=7
 ).viewer_json()
 
@@ -507,18 +501,9 @@ def layerController(request, layername):
         metadata = layer.metadata_csw()
 
         maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
-        map = Map(
-            projection="EPSG:900913",
-            max_resolution=156543.0339,
-            units="m",
-            center_x=0, # center doesn't matter; the viewer will center on the layer bounds
-            center_y=0,
-            zoom=0,     # same thing with zoom
-            extent_max_x=20037508.34,
-            extent_max_y=20037508.34,
-            extent_min_x=-20037508.34,
-            extent_min_y=-20037508.34
-        )
+
+        # center/zoom don't matter; the viewer will center on the layer bounds
+        map = Map(projection="EPSG:900913")
 
         return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
@@ -974,18 +959,7 @@ def search_page(request):
     else:
         return HttpResponse(status=405)
 
-    map = Map(
-        projection="EPSG:900913",
-        max_resolution=156543.0339,
-        units="m",
-        center_x=0,
-        center_y=0,
-        extent_max_x=20037508.34,
-        extent_max_y=20037508.34,
-        extent_min_x=-20037508.34,
-        extent_min_y=-20037508.34,
-        zoom=1
-    )
+    map = Map(projection="EPSG:900913")
 
     return render_to_response('search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
