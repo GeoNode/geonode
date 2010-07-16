@@ -1,7 +1,3 @@
-/* workaround for combo box lists disappearing in Ext.Window in Ext 3.2-beta */
-.x-combo-list {
-    z-index: 10000 !important;
-}
 
 /* don't wrap lines on any tooltips */
 .x-tip {
