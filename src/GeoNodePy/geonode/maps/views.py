@@ -402,7 +402,7 @@ def batch_layer_download(request):
 def view_map_permissions(request, mapid):
     map = get_object_or_404(Map,pk=mapid) 
 
-    if not request.user.has_perm('maps.map.change_permissions', obj=map):
+    if not request.user.has_perm('maps.change_map_permissions', obj=map):
         return HttpResponse(loader.render_to_string('401.html', 
             RequestContext(request, {'error_message': 
                 _("You are not permitted to view this map's permissions")})), status=401)
@@ -433,7 +433,7 @@ def view_map_permissions(request, mapid):
 def edit_map_permissions(request, mapid):
     map = get_object_or_404(Map,pk=mapid) 
 
-    if not request.user.has_perm('maps.map.change_permissions', obj=map):
+    if not request.user.has_perm('maps.change_map_permissions', obj=map):
         return HttpResponse(loader.render_to_string('401.html', 
             RequestContext(request, {'error_message':
                 _("You are not permitted to edit this map's permissions")})), status=401)
@@ -958,6 +958,92 @@ def _handle_layer_upload(request, layer=None):
 
     return layer, errors
 
+@login_required
+def view_layer_permissions(request, layername):
+    layer = get_object_or_404(Layer,typename=layername) 
+
+    if not request.user.has_perm('maps.change_layer_permissions', obj=layer):
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message': 
+                _("You are not permitted to view this layer's permissions")})), status=401)
+
+    ctx =  layer.get_all_level_info()
+    def lname(l):
+        if l >= 0: 
+            return layer.LEVEL_NAME[l]
+        else:
+            return _('Custom')
+
+    ctx[ANONYMOUS_USERS] = lname(ctx[ANONYMOUS_USERS])
+    ctx[AUTHENTICATED_USERS] = lname(ctx[AUTHENTICATED_USERS])
+
+    ulevs = []
+    for u, l in ctx['users'].items():
+        ulevs.append([u, lname(l)])
+    ulevs.sort()
+    ctx['users'] = ulevs
+    ctx['layer'] = layer
+
+    return render_to_response("maps/layer_permissions.html", RequestContext(request, ctx))
+
+
+# XXX should not be exempt
+@csrf_exempt
+@login_required
+def edit_layer_permissions(request, layername):
+    layer = get_object_or_404(Layer,typename=layername) 
+
+    if not request.user.has_perm('maps.change_layer_permissions', obj=layer):
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message':
+                _("You are not permitted to edit this layer's permissions")})), status=401)
+
+    if request.method == 'GET':
+        info = layer.get_all_level_info()
+        info['users'] = sorted(info['users'].items())
+        info['all_usernames'] = [x[0] for x in User.objects.values_list('username').order_by()]
+        info['levels'] = [(i, layer.LEVEL_NAME[i]) for i in range(len(layer.LEVEL_NAME))]
+
+        ctx = {'layer': layer, 'permissions_json': json.dumps(info)}
+        return render_to_response("maps/layer_edit_permissions.html", RequestContext(request, ctx))
+    elif request.method == 'POST':
+        errors = []
+        params = request.POST
+        anon_level = int(params[ANONYMOUS_USERS])
+        all_auth_level = int(params[AUTHENTICATED_USERS])
+
+        kpat = re.compile("^u_(.*)_level$")
+        ulevs = {}
+        for k, v in params.items(): 
+            m = kpat.match(k)
+            if m: 
+                username = m.groups()[0]
+                level = int(v)
+                if level != -1:
+                    ulevs[username] = level
+        lev_max = layer.LEVEL_ADMIN
+        anon_lev_max = layer.LEVEL_WRITE
+
+        if anon_level >= 0 and anon_level <= anon_lev_max:
+            layer.set_gen_level(ANONYMOUS_USERS, anon_level)
+        if all_auth_level >= 0 and all_auth_level <= lev_max:
+            layer.set_gen_level(AUTHENTICATED_USERS, all_auth_level) 
+        for username, level in ulevs.items():
+            user = User.objects.get(username=username)
+            if level >= 0 and level <= lev_max:
+                layer.set_user_level(user, level)
+
+        result = {}
+        if len(errors) > 0:
+            result['success'] = False
+            result['errors'] = errors
+        else:
+            result['success'] = True
+            result['redirect_to'] = reverse('view_layer_permissions', args=(layer.typename,))
+        result = json.dumps(result)
+
+        return HttpResponse(result, mimetype="application/javascript")
+
 
 def _basic_auth_user(request):
     """
@@ -972,7 +1058,9 @@ def _basic_auth_user(request):
         return authenticate(username=username, password=password)
     except:
         return None
-    
+
+
+
 def layer_acls(request):
     """
     returns json-encoded lists of layer identifiers that 
