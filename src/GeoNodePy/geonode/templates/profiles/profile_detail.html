@@ -4,10 +4,6 @@
 <h2>Profile for {{ profile.user.username }}</h2>
 {% avatar profile.user 100 %}
 
-{% if user == profile.user %}
-    <a href="{% url avatar_change %}">Change your avatar</a>
-{% endif %}
-
 <ul>
 	<li>name: {{ profile.name}}</li>
 	<li>email: {{ profile.user.email }}</li>
