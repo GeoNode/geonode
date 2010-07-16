@@ -1,5 +1,4 @@
-from geonode.maps.models import Map, Layer, MapLayer, get_csw
-from geonode.maps.forms import ContactForm, MetadataForm
+from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -24,8 +23,32 @@ from urllib import urlencode
 from urlparse import urlparse
 import uuid
 from django.views.decorators.csrf import csrf_exempt
+from django.forms.models import inlineformset_factory
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        exclude = ('user',)
+
+class LayerForm(forms.ModelForm):
+    poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
+                                 label = "Point Of Contact", required=False,
+                                 queryset = Contact.objects.exclude(user=None))
+
+    metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
+                                             label = "Metadata Author", required=False,
+                                             queryset = Contact.objects.exclude(user=None))
+
+    class Meta:
+        model = Layer
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
+
+class RoleForm(forms.ModelForm):
+    class Meta:
+        model = ContactRole
+        exclude = ('contact', 'layer')
 
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
@@ -47,9 +70,6 @@ DEFAULT_MAP_CONFIG = {
         "zoom": settings.DEFAULT_MAP_ZOOM
     }
 }
-
-def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
-    return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
 
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
@@ -477,83 +497,55 @@ class LayerDescriptionForm(forms.Form):
 @login_required
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
-        if request.method == "GET":
-            resource = layer.resource
-            meta = layer.metadata_csw()
-            if meta is None:
-                # It probably means GeoNetwork isn't running or the layer is not there.
-                # Don't try to populate the information.
-                md_form = MetadataForm()
-                poc_form = ContactForm(prefix="poc")
-                metadata_provider_form = ContactForm(prefix="metadata")
-                return render_to_response("maps/layer_describe.html", RequestContext(request, {
-                        "layer": layer,
-                        "md_form": md_form,
-                        "poc_form": poc_form,
-                        "metadata_provider_form": metadata_provider_form
-                    }))
-                
-                
-            bbox = meta.identification.bbox
-            bbox_ewkt = bbox_to_wkt(bbox.minx, bbox.maxx, bbox.miny, bbox.maxy)
-            keywords = [word for word in meta.identification.keywords['list'] if isinstance(word,str)]
-            if meta.referencesystem.code == 'WGS 1984':
-                srs = '4326'
+        poc = layer.poc
+        metadata_author = layer.metadata_author
+        poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
+        metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
+
+        if request.method == "POST":
+            layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+            if layer_form.is_valid():
+                new_poc = layer_form.cleaned_data['poc']
+                new_author = layer_form.cleaned_data['metadata_author']
+
+                if new_poc is None:
+                    poc_form = ContactForm(request.POST, prefix="poc")
+                    if poc_form.has_changed and poc_form.is_valid():
+                        new_poc = poc_form.save()
+
+                if new_author is None:
+                    author_form = ContactForm(request.POST, prefix="author")
+                    if author_form.has_changed and author_form.is_valid():
+                        new_author = author_form.save()
+
+                if new_poc is not None and new_author is not None:
+                    the_layer = layer_form.save(commit=False)
+                    the_layer.poc = new_poc
+                    the_layer.metadata_author = new_author
+                    the_layer.save()
+                    return HttpResponseRedirect("/data/" + layer.typename)
+
+        else:
+            layer_form = LayerForm(instance=layer, prefix="layer")
+            if poc.user is None:
+                poc_form = ContactForm(instance=poc, prefix="poc")
             else:
-                # How do we translate the string that GeoNetwork provides to EPSG codes?
-                # Let's fail loudly if that happens.
-                assert False
-            provider = get_csw().provider.contact    
-            md_form = MetadataForm({
-                "title": meta.identification.title, 
-                "abstract": meta.identification.abstract,
-                "date": fixdate(meta.datestamp),
-                "date_type": "Creation",
-                "constraints_use": "copyright",
-                "maintenance_frequency": "annually",
-                "geographic_bounding_box": bbox_ewkt,
-                "language": meta.language,
-                "keywords": ", ".join([word for word in meta.identification.keywords['list'] if isinstance(word,str)] )
-            })
-            poc_form = ContactForm(initial={
-               "name": meta.contact.name,
-               "organization": meta.contact.organization,
-               "position": meta.contact.position,
-               "voice": meta.contact.phone,
-               "facsimile": meta.contact.fax,
-               "country": meta.contact.country,
-               "city": meta.contact.city,
-               "role": meta.contact.role,
-               "address": meta.contact.address,
-            }, prefix="poc")
-            
-            metadata_provider_form = ContactForm(initial={
-               "name": provider.name,
-               "organization": provider.organization,
-               "position": provider.position,
-               "voice": provider.phone,
-               "facsimile": provider.fax,
-               "country": provider.country,
-               "city": provider.city,
-               "role": provider.role,
-               "address": provider.address,
-            }, prefix="metadata")
-        elif request.method == "POST":
-            md_form = MetadataForm(request.POST)
-            poc_form = ContactForm(request.POST, prefix="poc")
-            metadata_provider_form = ContactForm(request.POST, prefix="metadata")
-            if md_form.is_valid():
-                f = md_form.cleaned_data
-                layer.title = f['title']
-                layer.abstract = f['abstract']
-                layer.keywords = [kw for kw in f['keywords'].split(", ") if kw != '']
-                layer.save()
-                return HttpResponseRedirect("/data/" + layer.typename)
+                layer_form.fields['poc'].initial = poc.id
+                poc_form = ContactForm(prefix="poc")
+                poc_form.hidden=True
+
+            if metadata_author.user is None:
+                author_form = ContactForm(instance=metadata_author, prefix="author")
+            else:
+                layer_form.fields['metadata_author'].initial = metadata_author.id
+                author_form = ContactForm(prefix="author")
+                author_form.hidden=True
+
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
-            "md_form": md_form,
+            "layer_form": layer_form,
             "poc_form": poc_form,
-            "metadata_provider_form": metadata_provider_form
+            "author_form": author_form,
         }))
     else: 
         return HttpResponse("Not allowed", status=403)
@@ -778,7 +770,6 @@ def _handle_layer_upload(request, layer=None):
                 gs_resource.latlon_bbox = gs_resource.native_bbox
                 gs_resource.projection = "EPSG:4326"
                 cat.save(gs_resource)
-
             typename = gs_resource.store.workspace.name + ':' + gs_resource.name
             
             # if we created a new store, create a new layer
@@ -787,12 +778,15 @@ def _handle_layer_upload(request, layer=None):
                                          storeType=gs_resource.store.resource_type,
                                          typename=typename,
                                          workspace=gs_resource.store.workspace.name,
+                                         title=gs_resource.title,
                                          uuid=str(uuid.uuid4()))
-            gn = geonetwork.Catalog(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
-            gn.login()
-            md_link = gn.create_from_layer(layer)
-            gn.logout()
-            layer.metadata_links = [("text/xml", "TC211", md_link)]
+            # A user without a profile might be uploading this
+            poc_contact, __ = Contact.object.get_or_create(user=request.user,
+                                                   defaults={"name": request.user.username })
+            author_contact, __ = Contact.object.get_or_create(user=request.user,
+                                                   defaults={"name": request.user.username })
+            layer.poc = poc_contact
+            layer.metadata_author = author_contact
             layer.save()
         except:
             # Something went wrong, let's try and back out any changes

@@ -105,21 +105,31 @@
 
 {% block main %}
 <div id="description"> <h3> {{ layer.resource.title|default:layer.typename }} </h3> </div>
-<p> <strong>{% trans "Abstract" %}:</strong> {{ metadata.abstract|default:_("No abstract for this layer.") }} </p>
+<p> <strong>{% trans "Abstract" %}:</strong> {{ layer.abstract|default:_("No abstract for this layer.") }} </p>
 
 <div id="preview_map"></div>
 
 <p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>
-<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.resource.keywords|join:", " }}</p>
+<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>
+<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>
+<p> <strong>{% trans "Topic Category" %}:</strong> {{ layer.topic_category }}</p>
+
 <p> <strong>{% trans "Citation" %}:</strong> 
-    {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
+    {{ layer.constraints_use}} {{ layer.contraints_other}}
 </p>
 <p> <strong>{% trans "Contact" %}:</strong>
-    {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
+    {{ layer.poc|default:_("No attribution information for this layer.") }}
 </p>
 <p> <strong>{% trans "Attributes" %}:</strong> 
     {{ layer.attribute_names|join:", " }}
 </p>
+<p> <strong>{% trans "Supplemental Information" %}:</strong> 
+    {{ layer.supplemental_information }}
+</p>
+<p> <strong>{% trans "Data Quality Statement" %}:</strong> 
+    {{ layer.data_quality_statement }}
+</p>
+<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>
 <p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
 
 {% endblock %}
