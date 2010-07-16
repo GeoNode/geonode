@@ -299,24 +299,69 @@ class Layer(models.Model):
 
 
 class Map(models.Model):
-    # metadata fields
+    """
+    A Map aggregates several layers together and annotates them with a viewport
+    configuration.
+    """
+
+    """
+    A display name suitable for search results and page headers
+    """
     title = models.CharField(max_length=200)
+
+    """
+    A longer description of the themes in the map.
+    """
     abstract = models.CharField(max_length=200)
+
+    """
+    *Deprecated* A free-form text field identifying the map's creator.  See
+    ``owner`` as a better alternative.
+    """
     contact = models.CharField(max_length=200)
     
-    # These fields are likely deprecated but
-    # we need to double check with the World Bank
-    # as they were the ones who required them
+    """
+    *Deprecated* A boolean identifying this map as a candidate for display on
+    the site front page.  The map on the home page is being considered for
+    removal, and this flag would go with it.
+    """
     featured = models.BooleanField()
+
+    """
+    *Deprecated* A boolean identifying this map as endorsed by the maintainers
+    of the site.  This flag will be removed as ratings become a more flexible
+    system for identifying high-quality maps.
+    """
     endorsed = models.BooleanField()
 
     # viewer configuration
+    """
+    The zoom level to use when initially loading this map.  Zoom levels start
+    at 0 (most zoomed out) and each increment doubles the resolution.
+    """
     zoom = models.IntegerField()
+
+    """
+    The projection used for this map.  This is stored as a string with the
+    projection's SRID.
+    """
     projection = models.CharField(max_length=32)
 
+    """
+    The x coordinate to center on when loading this map.  Its interpretation
+    depends on the projection.
+    """
     center_x = models.FloatField()
+
+    """
+    The y coordinate to center on when loading this map.  Its interpretation
+    depends on the projection.
+    """
     center_y = models.FloatField()
 
+    """
+    The user that created/owns this map.
+    """
     owner = models.ForeignKey(User, blank=True, null=True)
 
     def __unicode__(self):
@@ -324,11 +369,11 @@ class Map(models.Model):
 
     @property
     def center(self):
+        """
+        A handy shortcut for the center_x and center_y properties as a tuple
+        (read only)
+        """
         return (self.center_x, self.center_y)
-
-    @property
-    def extent(self):
-        return (self.extent_min_x, self.extent_min_y, self.extent_max_x, self.extent_max_y)
 
     @property
     def layers(self):
@@ -366,6 +411,15 @@ class Map(models.Model):
         return simplejson.dumps(map)
 
     def viewer_json(self, *added_layers):
+        """
+        Convert this map to a nested dictionary structure matching the JSON
+        configuration for GXP Viewers.
+
+        The ``added_layers`` parameter list allows a list of extra MapLayer
+        instances to append to the Map's layer list when generating the
+        configuration. These are not persisted; if you want to add layers you
+        should use ``.layer_set.create()``.
+        """
         layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
         server_lookup = {}
         sources = dict()
@@ -415,6 +469,12 @@ class Map(models.Model):
         return config
 
     def update_from_viewer(self, conf):
+        """
+        Update this Map's details by parsing a JSON object as produced by
+        a GXP Viewer.  
+        
+        This method automatically persists to the database!
+        """
         if isinstance(conf, basestring):
             conf = simplejson.loads(conf)
 
