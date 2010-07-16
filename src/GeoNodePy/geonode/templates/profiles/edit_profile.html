@@ -1,9 +1,20 @@
-{% include "base.html" %}
+{% extends "base.html" %}
+{% load avatar_tags %}
 
 {% block content %}
+<h2>Edit {{ profile.user.username }}'s profile</h2>
+{% avatar profile.user 100 %}
+
+{% if user == profile.user %}
+    <a href="{% url avatar_change %}">Change your avatar</a>
+{% endif %}
+
 <form action="" method="post">
 {% csrf_token %}
-{{ form.as_p }}
+<ul class="form">
+{{ form.as_ul }}
+</ul>
+
 <input type="submit" value="Submit" />
 </form>
 {% endblock %}
