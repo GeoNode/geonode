@@ -3,8 +3,10 @@
 
 {% block content %}
 {% for profile in object_list %}
+   {% if profile.user %}
    <ul>
-     <li>{% if profile.user %}{% avatar profile.user 50 %}{% endif %}<a href="{{profile.get_absolute_url}}">{{ profile.name }}</a></li>
+     <li>{% avatar profile.user 50 %}<a href="{{profile.get_absolute_url}}">{{ profile.name }}</a></li>
    </ul>
+    {% endif %}
 {% endfor %}
 {% endblock %}
