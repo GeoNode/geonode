@@ -1636,7 +1636,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
 
     save: function() {
-        var config = this.configManager.getConfig(this);
+        var config = this.getState();
         
         var failure = function(response, options) {
             var failureMessage = this.saveFailMessage;
