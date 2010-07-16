@@ -358,9 +358,8 @@ class Map(models.Model):
             }
         return simplejson.dumps(map)
 
-    @property
-    def viewer_json(self):
-        layers = self.layer_set.all() #implicitly sorted by stack_order
+    def viewer_json(self, *added_layers):
+        layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
         server_lookup = {}
         sources = dict()
         sources.update(settings.MAP_BASELAYERSOURCES)
