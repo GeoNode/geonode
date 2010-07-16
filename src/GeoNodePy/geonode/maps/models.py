@@ -19,6 +19,23 @@ def get_csw():
     csw = CatalogueServiceWeb(csw_url);
     return csw
 
+_viewer_projection_lookup = {
+    "EPSG:900913": {
+        "maxResolution": 156543.0339,
+        "units": "m",
+        "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
+    },
+    "EPSG:4326": {
+        "max_resolution": (180 - (-180)) / 256,
+        "units": "degrees",
+        "maxExtent": [-180, -90, 180, 90]
+    }
+}
+
+def _get_viewer_projection_info(srid):
+    # TODO: Look up projection details in EPSG database
+    return _viewer_projection_lookup.get(srid, {})
+
 _wms = None
 _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -296,19 +313,9 @@ class Map(models.Model):
     # viewer configuration
     zoom = models.IntegerField()
     projection = models.CharField(max_length=32)
-    units = models.CharField(max_length=8)
-    max_resolution = models.FloatField()
-
-    extent_max_x = models.FloatField()
-    extent_min_x = models.FloatField()
-    extent_max_y = models.FloatField()
-    extent_min_y = models.FloatField()
 
     center_x = models.FloatField()
     center_y = models.FloatField()
-
-    # center_lat = models.FloatField()
-    # center_lon = models.FloatField()
 
     owner = models.ForeignKey(User, blank=True, null=True)
 
@@ -385,7 +392,7 @@ class Map(models.Model):
 
             return layer_json
 
-        return {
+        config = {
             'id': self.id,
             'about': {
                 'title':    escape(self.title),
@@ -396,15 +403,16 @@ class Map(models.Model):
             'defaultSourceType': "gx_wmssource",
             'sources': sources,
             'map': {
-                "units": self.units,
-                "maxResolution": self.max_resolution,
-                "maxExtent": self.extent,
                 'layers': settings.MAP_BASELAYERS + [layer_config(l) for l in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
             }
         }
+
+        config["map"].update(_get_viewer_projection_info(self.projection))
+
+        return config
 
     def update_from_viewer(self, conf):
         if isinstance(conf, basestring):
@@ -420,13 +428,6 @@ class Map(models.Model):
         self.center_y = conf['map']['center'][1]
 
         self.projection = conf['map']['projection']
-        self.units = conf['map']['units']
-        self.max_resolution = conf['map']['maxResolution']
-
-        self.extent_min_x = conf['map']['maxExtent'][0]
-        self.extent_min_y = conf['map']['maxExtent'][1]
-        self.extent_max_x = conf['map']['maxExtent'][2]
-        self.extent_max_y = conf['map']['maxExtent'][3]
 
         self.featured = conf['about'].get('featured', False)
 
