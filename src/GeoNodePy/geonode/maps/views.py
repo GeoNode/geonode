@@ -28,9 +28,11 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 DEFAULT_TITLE = "GeoNode Default Map"
 DEFAULT_ABSTRACT = "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community."
+DEFAULT_CONTACT = "For more information, contact OpenGeo at http://opengeo.org/"
 DEFAULT_MAP_CONFIG = Map(
     title=DEFAULT_TITLE, 
     abstract=DEFAULT_ABSTRACT,
+    contact=DEFAULT_CONTACT,
     projection="EPSG:900913",
     max_resolution=156543.0339,
     units="m",
