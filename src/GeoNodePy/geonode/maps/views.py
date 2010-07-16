@@ -57,12 +57,19 @@ def maps(request, mapid=None):
         config = map.viewer_json
         return HttpResponse(json.dumps(config))
     elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return HttpResponse(
+                'You must be logged in to save new maps',
+                mimetype="text/plain",
+                status=401
+            )
         try: 
-            map = create_map_json(request)
+            map = Map(owner=request.user)
+            map.update_from_viewer(request.raw_post_data)
             response = HttpResponse('', status=201)
             response['Location'] = map.id
             return response
-        except:
+        except Exception, e:
             return HttpResponse(
                 "The server could not understand your request.",
                 status=400, 
@@ -72,100 +79,28 @@ def maps(request, mapid=None):
 def mapJSON(request, mapid):
     if request.method == 'GET':
         map = get_object_or_404(Map,pk=mapid) 
-    	config = map.viewer_json
-    	return HttpResponse(json.dumps(config))
+    	return HttpResponse(json.dumps(map.viewer_json))
     elif request.method == 'PUT':
-        return update_map_json(request, mapid)
-
-
-def update_map_json(request, mapid):
-    # login is required, but we'd prefer to 
-    # actually return a 401 status code to 
-    # ajax vs. an uninformative redirect.
-    if not request.user.is_authenticated():
-        return HttpResponse(_("You must be logged in to save this map"),
-                            status=401,
-                            mimetype="text/plain")
-
-    map = get_object_or_404(Map,pk=mapid) 
-    conf = json.loads(request.raw_post_data)
-    
-    map.title = conf['about']['title']
-    map.abstract = conf['about']['abstract']
-    map.contact = conf['about']['contact']
-    map.zoom = conf['map']['zoom']
-    map.center_lon = conf['map']['center'][0]
-    map.center_lat = conf['map']['center'][1]
-    map.featured = conf['about'].get('featured', False)
-    
-    # remove any layers in the current map
-    for layer in map.layer_set.all():
-        layer.delete()
-    
-    # construct layers now specified in the order given.
-    if 'wms' in conf and 'layers' in conf['map']:
-        services = conf['wms']
-        layers = conf['map']['layers']
-        ordering = 0
-        for l in layers:
-            if 'wms' in l and l['wms'] in services:
-                map.layer_set.create(
-                    name=l['name'], 
-                    group=l.get('group', ''), 
-                    ows_url=services[l['wms']], 
-                    styles=l.get('styles', ''),
-                    format=l.get('format', ''),
-                    opacity=l.get('opacity', 100),
-                    transparent=l.get("transparent", False),
-                    stack_order=ordering
-                )
-                ordering = ordering + 1
-    map.save()
-    return HttpResponse('', status=204)
-
-def create_map_json(request):
-    conf = json.loads(request.raw_post_data)
-    title = conf['about']['title']
-    abstract = conf['about']['abstract']
-    contact = conf['about']['contact']
-    zoom = conf['map']['zoom']
-    center_lon = conf['map']['center'][0]
-    center_lat = conf['map']['center'][1]
-
-    featured = conf['about'].get('featured', False)
-
-    map = Map.objects.create(
-        title=title, 
-        abstract=abstract, 
-        contact=contact, 
-        zoom=zoom, 
-        center_lon=center_lon, 
-        center_lat=center_lat, 
-        featured=featured,
-        owner = request.user,
-    )
-
-    if 'wms' in conf and 'layers' in conf['map']:
-        services = conf['wms']
-        layers = conf['map']['layers']
-        ordering = 0
-        for l in layers:
-            if 'wms' in l and l['wms'] in services:
-                name = l['name']
-                group = l.get('group', '')
-                ows = services[l['wms']]
-                map.layer_set.create(
-                    name=l['name'], 
-                    group=l.get('group', ''), 
-                    ows_url=services[l['wms']], 
-                    styles=l.get('styles', ''),
-                    format=l.get('format', ''),
-                    opacity=l.get('opacity', 100),
-                    transparent=l.get("transparent", False),
-                    stack_order=ordering
-                )
-                ordering = ordering + 1
-    return map
+        if not request.user.is_authenticated():
+            return HttpResponse(
+                _("You must be logged in to save this map"),
+                status=401,
+                mimetype="text/plain"
+            )
+        map = get_object_or_404(Map, pk=mapid)
+        try:
+            map.update_from_viewer(request.raw_post_data)
+            return HttpResponse(
+                "Map successfully updated.", 
+                mimetype="text/plain",
+                status=204
+            )
+        except Exception, e:
+            return HttpResponse(
+                "The server could not understand the request.",
+                mimetype="text/plain",
+                status=400
+            )
 
 @csrf_exempt
 def newmap(request):

@@ -407,6 +407,56 @@ class Map(models.Model):
             }
         }
 
+    def update_from_viewer(self, conf):
+        if isinstance(conf, basestring):
+            conf = simplejson.loads(conf)
+
+        self.title = conf['about']['title']
+        self.abstract = conf['about']['abstract']
+        self.contact = conf['about']['contact']
+
+        self.zoom = conf['map']['zoom']
+
+        self.center_x = conf['map']['center'][0]
+        self.center_y = conf['map']['center'][1]
+
+        self.projection = conf['map']['projection']
+        self.units = conf['map']['units']
+        self.max_resolution = conf['map']['maxResolution']
+
+        self.extent_min_x = conf['map']['maxExtent'][0]
+        self.extent_min_y = conf['map']['maxExtent'][1]
+        self.extent_max_x = conf['map']['maxExtent'][2]
+        self.extent_max_y = conf['map']['maxExtent'][3]
+
+        self.featured = conf['about'].get('featured', False)
+
+        def source_for(layer):
+            return conf["sources"][layer["source"]]
+
+        def is_wms(layer):
+            if "ptype" in source_for(l):
+                return source_for(l)["ptype"] == "gx_wmssource"
+            else:
+                return conf["defaultSourceType"] == "gx_wmssource"
+       
+        layers = [l for l in conf["map"]["layers"] if is_wms(l)]
+        
+        for layer in self.layer_set.all():
+            layer.delete()
+
+        for ordering, layer in enumerate(layers):
+            self.layer_set.create(
+                name=layer["name"],
+                group=layer.get('group', ""),
+                ows_url=source_for(layer)["url"],
+                styles=layer.get("styles", ""),
+                format=layer.get("format", ""),
+                opacity=layer.get("opacity", 100),
+                transparent=layer.get("transparent", False),
+                stack_order = ordering
+            )
+        self.save()
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
