@@ -17,8 +17,8 @@ Ext.onReady(function(){
 
     var bbox = new GeoNode.BoundingBoxWidget({
          proxy: "/proxy/?url=",
-         background: {{ background }},
          renderTo: 'sidebar',
+         viewerConfig: {{ viewer_config }}
     });
 
     var searchTable = new GeoNode.SearchTable({

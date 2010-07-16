@@ -508,15 +508,12 @@ def layerController(request, layername):
 
         maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
         map = Map(
-            title=DEFAULT_TITLE, 
-            abstract=DEFAULT_ABSTRACT,
-            contact=DEFAULT_CONTACT,
             projection="EPSG:900913",
             max_resolution=156543.0339,
             units="m",
             center_x=0, # center doesn't matter; the viewer will center on the layer bounds
             center_y=0,
-            zoom=1,     # same thing with zoom
+            zoom=0,     # same thing with zoom
             extent_max_x=20037508.34,
             extent_max_y=20037508.34,
             extent_min_x=-20037508.34,
@@ -977,9 +974,22 @@ def search_page(request):
     else:
         return HttpResponse(status=405)
 
+    map = Map(
+        projection="EPSG:900913",
+        max_resolution=156543.0339,
+        units="m",
+        center_x=0,
+        center_y=0,
+        extent_max_x=20037508.34,
+        extent_max_y=20037508.34,
+        extent_min_x=-20037508.34,
+        extent_min_y=-20037508.34,
+        zoom=1
+    )
+
     return render_to_response('search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
-        'background': json.dumps(settings.MAP_BASELAYERS[settings.SEARCH_WIDGET_BASELAYER_INDEX]),
+        'viewer_config': json.dumps(map.viewer_json()),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-         "site" : settings.SITEURL
+        "site" : settings.SITEURL
     }))
