@@ -184,10 +184,6 @@ MAP_BASELAYERS = [{
       {"buffer":0}]
     }]
 
-# which MAP_BASELAYER to use for the 
-# data search bounding box widget.
-SEARCH_WIDGET_BASELAYER_INDEX = 0
-
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
 NAVBAR = \
