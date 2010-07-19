@@ -67,9 +67,8 @@ public class GeoNodeCookieProcessingFilter implements Filter {
                 || (existingAuth instanceof AnonymousAuthenticationToken);
         if (authenticationRequired) {
             try {
-                if (gnCookie != null) {
-
-                    Authentication authResult = client.authenticate(gnCookie.getValue());
+                if (gnCookie == null) {
+                    Authentication authResult = client.authenticateAnonymous();
 
                     SecurityContextHolder.getContext().setAuthentication(authResult);
 
@@ -77,7 +76,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
                         rememberMeServices.loginSuccess(httpRequest, httpResponse, authResult);
                     }
                 } else {
-                    Authentication authResult = client.authenticateAnonymous();
+                    Authentication authResult = client.authenticate(gnCookie.getValue());
 
                     SecurityContextHolder.getContext().setAuthentication(authResult);
 
