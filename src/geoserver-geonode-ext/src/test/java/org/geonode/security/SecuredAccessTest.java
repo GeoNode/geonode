@@ -131,7 +131,7 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
         MockHttpServletResponse resp = dispatch(request);
         assertEquals(200, resp.getErrorCode());
         Document doc = dom(new ByteArrayInputStream(resp.getOutputStreamContent().getBytes()));
-        print(doc);
+        // print(doc);
         assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", doc);
     }
 
@@ -144,7 +144,7 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
         MockHttpServletResponse resp = dispatch(request);
         assertEquals(200, resp.getErrorCode());
         Document doc = dom(new ByteArrayInputStream(resp.getOutputStreamContent().getBytes()));
-        print(doc);
+        // print(doc);
         assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", doc);
     }
 
@@ -162,7 +162,7 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
         MockHttpServletResponse resp = dispatch(request);
         assertEquals(200, resp.getErrorCode());
         Document doc = dom(new ByteArrayInputStream(resp.getOutputStreamContent().getBytes()));
-        print(doc);
+        // print(doc);
         assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", doc);
     }
 
