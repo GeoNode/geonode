@@ -133,6 +133,10 @@ MAP_BASELAYERS = [{
         'layers': [
             'bluemarble'
         ]}, {
+        'service': 'google',
+        'layers': [
+             'SATELLITE'
+        ]}, {
         'service': "wms",
         'url': "%swms" % GEOSERVER_BASE_URL,
         'layers': [
