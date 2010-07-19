@@ -33,6 +33,8 @@ urlpatterns = patterns('',
     (r'^accounts/login', 'django.contrib.auth.views.login'),
     (r'^accounts/logout', 'django.contrib.auth.views.logout'),
     (r'^avatar/', include('avatar.urls')),
+    (r'^accounts/', include('registration.urls')),
+    (r'^profiles/', include('profiles.urls')),
 )
 
 #
