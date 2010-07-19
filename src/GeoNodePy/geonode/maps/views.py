@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.gis import gdal
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
@@ -42,6 +43,7 @@ DEFAULT_MAP_CONFIG = Map(
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
 
+@transaction.commit_manually
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
         map_configs = [{"id": map.pk, "config": map.viewer_json()} for map in Map.objects.all()]
@@ -58,12 +60,16 @@ def maps(request, mapid=None):
                 status=401
             )
         try: 
-            map = Map(owner=request.user)
+            
+            map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
+            map.save()
             map.update_from_viewer(request.raw_post_data)
             response = HttpResponse('', status=201)
             response['Location'] = map.id
+            transaction.commit()
             return response
         except Exception, e:
+            transaction.rollback()
             return HttpResponse(
                 "The server could not understand your request.",
                 status=400, 
