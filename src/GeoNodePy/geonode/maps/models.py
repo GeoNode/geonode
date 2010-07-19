@@ -1009,10 +1009,14 @@ def delete_layer(instance, sender, **kwargs):
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
+    instance.save_to_geoserver()
+
     if kwargs['created']:
-        instance.save_to_geoserver()
         instance._populate_from_gs()
-        instance.save_to_geonetwork()
+
+    instance.save_to_geonetwork()
+
+    if kwargs['created']:
         instance._populate_from_gn()
         instance.save(force_update=True)
 
