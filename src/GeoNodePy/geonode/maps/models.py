@@ -425,26 +425,35 @@ class Map(models.Model):
         sources = dict()
         sources.update(settings.MAP_BASELAYERSOURCES)
 
+        def uniqify(seq):
+            """
+            get a list of unique items from the input sequence.
+            
+            This relies only on equality tests, so you can use it on most
+            things.  If you have a sequence of hashables, list(set(seq)) is
+            better.
+            """
+            results = []
+            for x in seq:
+                if x not in results: results.append(x)
+            return results
+
         i = 0
-        for ows in set(l.ows_url for l in layers):
+        for source in uniqify(l.source_config() for l in layers):
             while str(i) in sources: i = i + 1
-            sources[str(i)] = { "ptype": "gx_wmssource", "url": ows }
-            server_lookup[ows] = str(i)
+            sources[str(i)] = source 
+            server_lookup[simplejson.dumps(source)] = str(i)
+
+        def source_lookup(source):
+            for k, v in sources.iteritems():
+                if v == source: return k
+            return None
 
         def layer_config(l):
-            layer_json = {
-                'name': l.name,
-                'source': server_lookup[l.ows_url],
-                'group': l.group,
-                'styles' : l.styles
-            }
-
-            if l.format != "": layer_json['format'] = l.format
-            if l.styles != "": layer_json['styles'] = l.styles
-            if l.opacity != "": layer_json['opacity'] = l.opacity
-            if l.transparent: layer_json['transparent'] = True
-
-            return layer_json
+            cfg = l.layer_config()
+            source = source_lookup(l.source_config())
+            if source: cfg["source"] = source
+            return cfg
 
         config = {
             'id': self.id,
@@ -506,23 +515,31 @@ class Map(models.Model):
             layer.delete()
 
         for ordering, layer in enumerate(layers):
-            self.layer_set.create(
-                name=layer["name"],
-                group=layer.get('group', ""),
-                ows_url=source_for(layer)["url"],
-                styles=layer.get("styles", ""),
-                format=layer.get("format", ""),
-                opacity=layer.get("opacity", 100),
-                transparent=layer.get("transparent", False),
-                stack_order = ordering
+            self.layer_set.from_viewer_config(
+                self, layer, source_for(layer), ordering
             )
         self.save()
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
 
+class MapLayerManager(models.Manager):
+    def from_viewer_config(self, map, layer, source, ordering):
+        return self.create(
+            map = map,
+            name = layer["name"],
+            group = layer.get('group', ""),
+            ows_url = source["url"],
+            styles = layer.get("styles", ""),
+            format = layer.get("format", ""),
+            opacity = layer.get("opacity", 1),
+            transparent = layer.get("transparent", False),
+            stack_order = ordering
+        )
 
 class MapLayer(models.Model):
+    objects = MapLayerManager()
+
     name = models.CharField(max_length=200)
     styles = models.CharField(max_length=200)
     opacity = models.FloatField(default=1.0)
@@ -539,6 +556,25 @@ class MapLayer(models.Model):
             return False
         else: 
             return True
+ 
+    def source_config(self):
+        return { "ptype": "gx_wmssource", "url": self.ows_url }
+
+    def layer_config(self):
+        layer_json = {
+            'name': self.name,
+            # 'source': server_lookup[self.ows_url],
+            'group': self.group,
+            'styles' : self.styles
+        }
+
+        if self.format != "": layer_json['format'] = self.format
+        if self.styles != "": layer_json['styles'] = self.styles
+        if self.opacity != "": layer_json['opacity'] = self.opacity
+        if self.transparent: layer_json['transparent'] = True
+
+        return layer_json
+
 
     @property
     def local_link(self): 
