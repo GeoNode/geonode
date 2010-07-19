@@ -1,8 +1,12 @@
 {% extends "base.html" %}
-{% load avatar_tags %}
+{% load i18n avatar_tags %}
 {% block content %}
 <h2>Profile for {{ profile.user.username }}</h2>
 {% avatar profile.user 100 %}
+
+<h4>
+{% if user == profile.user %}<a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a>{% endif %}
+</h4>
 
 <ul>
 	<li>name: {{ profile.name}}</li>
