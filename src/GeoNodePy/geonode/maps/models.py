@@ -304,65 +304,65 @@ class Map(models.Model):
     configuration.
     """
 
+    title = models.CharField(max_length=200)
     """
     A display name suitable for search results and page headers
     """
-    title = models.CharField(max_length=200)
 
+    abstract = models.CharField(max_length=200)
     """
     A longer description of the themes in the map.
     """
-    abstract = models.CharField(max_length=200)
 
-    """
-    *Deprecated* A free-form text field identifying the map's creator.  See
-    ``owner`` as a better alternative.
-    """
     contact = models.CharField(max_length=200)
+    """
+    *Deprecated* A free-form text field identifying the map's creator.  Prefer
+    ``owner`` over this for new code.
+    """
     
+    featured = models.BooleanField()
     """
     *Deprecated* A boolean identifying this map as a candidate for display on
     the site front page.  The map on the home page is being considered for
     removal, and this flag would go with it.
     """
-    featured = models.BooleanField()
 
+    endorsed = models.BooleanField()
     """
     *Deprecated* A boolean identifying this map as endorsed by the maintainers
     of the site.  This flag will be removed as ratings become a more flexible
     system for identifying high-quality maps.
     """
-    endorsed = models.BooleanField()
 
     # viewer configuration
+    zoom = models.IntegerField()
     """
     The zoom level to use when initially loading this map.  Zoom levels start
     at 0 (most zoomed out) and each increment doubles the resolution.
     """
-    zoom = models.IntegerField()
 
+    projection = models.CharField(max_length=32)
     """
     The projection used for this map.  This is stored as a string with the
     projection's SRID.
     """
-    projection = models.CharField(max_length=32)
 
+    center_x = models.FloatField()
     """
     The x coordinate to center on when loading this map.  Its interpretation
     depends on the projection.
     """
-    center_x = models.FloatField()
 
+    center_y = models.FloatField()
     """
     The y coordinate to center on when loading this map.  Its interpretation
     depends on the projection.
     """
-    center_y = models.FloatField()
 
+    owner = models.ForeignKey(User, blank=True, null=True)
     """
     The user that created/owns this map.
     """
-    owner = models.ForeignKey(User, blank=True, null=True)
 
     def __unicode__(self):
         return '%s by %s' % (self.title, self.contact)
