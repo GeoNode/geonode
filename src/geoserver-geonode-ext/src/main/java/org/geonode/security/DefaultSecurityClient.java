@@ -135,8 +135,13 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
             return new AnonymousAuthenticationToken("geonode", "anonymous", (GrantedAuthority[]) authorities
                     .toArray(new GrantedAuthority[authorities.size()]));
         } else {
-            return new UsernamePasswordAuthenticationToken("", null, (GrantedAuthority[]) authorities
-                    .toArray(new GrantedAuthority[authorities.size()]));
+            String userName = "";
+            if(json.containsKey("name")){
+                userName = json.getString("name");
+            }
+            return new UsernamePasswordAuthenticationToken(userName, null,
+                    (GrantedAuthority[]) authorities.toArray(new GrantedAuthority[authorities
+                            .size()]));
         }
     }
 
