@@ -22,6 +22,7 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.platform.GeoServerExtensions;
@@ -44,7 +45,10 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     String baseUrl;
 
     public DefaultSecurityClient() {
-        client = new HttpClient();
+        MultiThreadedHttpConnectionManager httpConnectionManager = new MultiThreadedHttpConnectionManager();
+        httpConnectionManager.getParams().setConnectionTimeout(1000);
+        httpConnectionManager.getParams().setSoTimeout(1000);
+        client = new HttpClient(httpConnectionManager);
     }
 
     public Authentication authenticate(String cookieValue) throws AuthenticationException,
