@@ -24,15 +24,17 @@ urlpatterns = patterns('',
     url(r'^data/search/?$', 'geonode.maps.views.search_page', name='search'),
     url(r'^data/search/api/?$', 'geonode.maps.views.metadata_search', name='search_api'),
     url(r'^data/search/detail/?$', 'geonode.maps.views.search_result_detail', name='search_result_detail'),
-    (r'^data/upload$', 'geonode.maps.views.upload_layer'),
+    url(r'^data/upload$', 'geonode.maps.views.upload_layer', name='data_upload'),
     (r'^data/download$', 'geonode.maps.views.batch_layer_download'),
     (r'^data/(?P<layername>[^/]*)$', 'geonode.maps.views.layerController'),
     (r'^admin/', include(admin.site.urls)),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
     (r'^accounts/login', 'django.contrib.auth.views.login'),
-    (r'^accounts/logout', 'django.contrib.auth.views.logout')
-
+    (r'^accounts/logout', 'django.contrib.auth.views.logout'),
+    (r'^avatar/', include('avatar.urls')),
+    (r'^accounts/', include('registration.urls')),
+    (r'^profiles/', include('profiles.urls')),
 )
 
 #
