@@ -505,3 +505,8 @@ div#main form ul.form fieldset legend{
 		font-weight: bold;
 		padding: 0 4px;
 }
+
+/* SLD titles on the layer.html template */
+span.style-title {
+    cursor: pointer;
+}
