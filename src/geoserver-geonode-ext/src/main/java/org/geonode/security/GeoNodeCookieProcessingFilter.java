@@ -76,7 +76,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
                         rememberMeServices.loginSuccess(httpRequest, httpResponse, authResult);
                     }
                 } else {
-                    Authentication authResult = client.authenticate(gnCookie.getValue());
+                    Authentication authResult = client.authenticateCookie(gnCookie.getValue());
 
                     SecurityContextHolder.getContext().setAuthentication(authResult);
 

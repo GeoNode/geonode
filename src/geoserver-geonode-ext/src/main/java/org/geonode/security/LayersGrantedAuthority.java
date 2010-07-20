@@ -4,6 +4,8 @@
  */
 package org.geonode.security;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.acegisecurity.GrantedAuthority;
@@ -15,17 +17,19 @@ import org.acegisecurity.GrantedAuthority;
  */
 public class LayersGrantedAuthority implements GrantedAuthority {
 
+    private static final long serialVersionUID = 3234834124752682694L;
+
     public enum LayerMode {
         READ_ONLY, READ_WRITE
     };
 
-    List<String> layerNames;
+    private final List<String> layerNames;
 
-    LayerMode accessMode;
+    private final LayerMode accessMode;
 
-    public LayersGrantedAuthority(List<String> layerNames, LayerMode accessMode) {
+    public LayersGrantedAuthority(final List<String> layerNames, final LayerMode accessMode) {
         super();
-        this.layerNames = layerNames;
+        this.layerNames = Collections.unmodifiableList(new ArrayList<String>(layerNames));
         this.accessMode = accessMode;
     }
 
@@ -37,8 +41,14 @@ public class LayersGrantedAuthority implements GrantedAuthority {
         return layerNames;
     }
 
+    /**
+     * This is not a role, so we return {@code null}, by API spec.
+     * 
+     * @return {@code null}
+     * @see org.acegisecurity.GrantedAuthority#getAuthority()
+     */
     public String getAuthority() {
-        return null; // this is not a role, so we return null, by API spec
+        return null;
     }
 
 }
