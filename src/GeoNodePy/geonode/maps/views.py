@@ -594,7 +594,7 @@ def _changeLayerDefaultStyle(request,layer):
     else:  
         return HttpResponse("Not allowed",status=403)
 
-			
+@csrf_exempt
 def layerController(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if (request.META['QUERY_STRING'] == "describe"):
