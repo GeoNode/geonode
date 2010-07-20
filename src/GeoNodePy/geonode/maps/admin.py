@@ -1,5 +1,8 @@
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role
+from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
@@ -28,6 +31,13 @@ class LayerAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace') 
     inlines = [ContactRoleInline]
+
+    actions = ['change_ownership']
+
+    def change_ownership(modeladmin, request, queryset):
+        selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+        return HttpResponseRedirect(reverse('change_layer_owner', kwargs={"ids": "_".join(selected)}))
+    change_ownership.short_description = "Change the owner of the selected layers"
 
 admin.site.register(Map, MapAdmin)
 admin.site.register(Contact, ContactAdmin)
