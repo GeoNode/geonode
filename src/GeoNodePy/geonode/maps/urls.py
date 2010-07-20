@@ -14,4 +14,5 @@ urlpatterns = patterns('geonode.maps.views',
     (r'^embed/$', 'embed'),
     (r'^(?P<mapid>\d+)/embed$', 'embed'),
     (r'^(?P<mapid>\d+)/data$', 'mapJSON'),
+    url(r'^change-layer-owner/(?P<ids>\w+)$', 'change_owner', name="change_layer_owner"),
 )
