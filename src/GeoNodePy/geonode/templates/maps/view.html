@@ -40,10 +40,57 @@ Ext.onReady(function() {
         rest: "/maps/",
         homeUrl: "{% url geonode.views.index %}",
         
-        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}"
+        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+
+        portalConfig: {
+            renderTo: "geoexplorer",
+            height: 400 //yo
+        },
+
+        listeners: {
+            ready: function(){
+                Ext.get("header-wrapper").removeClass("hidden");
+            }
+        }
+
     }, {{config|safe}});
+
     app = new GeoExplorer(config);
+
+    var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}");
+    var permalink = function(id) {
+            return permalinkTemplate.apply({
+                protocol: window.location.protocol,
+                host: window.location.host,
+                id: id
+            }) 
+        };
+
+    var moreInfoTemplate = new Ext.Template("<a class='link' href='{permalink}'> More info</a>");
+    var mapInfoHtml = config.mapID ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
+    Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
+
+    var titleTemplate = new Ext.Template("<h3>{title}</h3>");
+    Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}));
+
+        app.on("saved", function(id) {
+            //reset title header
+            Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}))
+
+            //reset more info link
+            Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.mapID)}))
+        }, this);
+
 });
 </script>
 
+{% endblock %}
+
+{% block body %}
+{{ block.super }}
+<div id="topPanel">
+  <div id="more-info"></div>
+  <span id="map-title-header"></span>
+</div>
+<div id="geoexplorer"></div>
 {% endblock %}
