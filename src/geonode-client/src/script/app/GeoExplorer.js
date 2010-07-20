@@ -107,14 +107,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     metadataFormSaveText : "UT:Save",
     metaDataHeader: 'UT:About this Map',
     metaDataMapAbstract: 'UT:Abstract',
-    metaDataMapId: "UT:Permalink",
     metaDataMapTitle: 'UT:Title',
     miniSizeLabel: 'UT: Mini',
     navActionTipText: "UT:Pan Map",
     navNextAction: "UT:Zoom to Next Extent",
     navPreviousActionText: "UT:Zoom to Previous Extent",
-    noPermalinkText: "UT: This map has not yet been saved.",
-    permalinkLabel: 'UT: Permalink',
     premiumSizeLabel: 'UT: Premium',
     printTipText: "UT:Print Map",
     printWindowTitleText: "UT:Print Preview",
@@ -768,100 +765,24 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             activeItem: 0
         });
 
-        var header = new Ext.Panel({
-            region: "north",
-            autoHeight: true,
-            contentEl: "app-header"
-        });
-
-
-        var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}");
-        var permalink = function(id) {
-            return permalinkTemplate.apply({
-                protocol: window.location.protocol,
-                host: window.location.host,
-                id: id
-            }) 
-        };
-
-        var moreInfoTemplate = new Ext.Template("<a class='link' href='{permalink}'> More info</a>");
-        var mapInfoHtml = this.mapID ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
-        this.moreInfoPanel = new Ext.Panel({
-            layout:"fit",
-            flex: 0,
-            border:false,
-            items: {
-                border: false,
-                html: mapInfoHtml
-            }
-        });
-
-        var titleTemplate = new Ext.Template("<h3>{title}</h3>");
-        this.titlePanel = new Ext.Panel({
-            layout:"fit",
-            region: "center",
-            flex: 1,
-            border: false,
-            items: {
-                border: false,
-                html: titleTemplate.apply({title: this.about.title})
-            }
-        });
-        this.on("saved", function(id) {
-            //reset title
-            this.titlePanel.removeAll();
-            this.titlePanel.add({
-                border: false,
-                html: titleTemplate.apply({title: this.about.title})
-            });
-            this.titlePanel.doLayout();
-
-            //reset more info link
-            this.moreInfoPanel.removeAll();
-            this.moreInfoPanel.add({
-                border: false,
-                html: moreInfoTemplate.apply({permalink : permalink(app.mapID)})
-            });
-            this.moreInfoPanel.doLayout();
-
-            //redo layout
-            this.topPanel.doLayout();
-        }, this);
-
-        this.topPanel = new Ext.Panel({
-            region: "north",
-            autoHeight: true,
-            layout: "hbox",
-            align: "stretch",
-            items: [
-                this.titlePanel,
-                this.moreInfoPanel
-            ]
-        });
-
         Lang.registerLinks();
 
-        this.portalItems = [
-            header, {
-                region: "center",
-                xtype: "container",
+        this.portalItems = {
+            region: "center",
+            xtype: "container",
+            layout: "border",
+            hideBorders: true,
+            items: {
                 layout: "border",
-                hideBorders: true,
+                deferredRender: false,
+                tbar: this.toolbar,
+                region: "center",
                 items: [
-                    this.topPanel,
-                    {
-                        layout: "border",
-                        deferredRender: false,
-                        tbar: this.toolbar,
-                        region: "center",
-                        items: [
-                            this.mapPanelContainer,
-                            westPanel
-                        ]
-                    }
+                    this.mapPanelContainer,
+                    westPanel
                 ]
-            }
-        ];
+            }                
+        };
 
         GeoExplorer.superclass.initPortal.apply(this, arguments);
     },
