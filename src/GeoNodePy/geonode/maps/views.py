@@ -1069,3 +1069,7 @@ def search_page(request):
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
          "site" : settings.SITEURL
     }))
+
+def change_owner(request, ids):
+    theids = ids.split('_')
+    return render_to_response('maps/change_owner.html', RequestContext(request, {'ids': theids,}))
