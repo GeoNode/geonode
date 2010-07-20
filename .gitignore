@@ -22,8 +22,10 @@ target
 /src/geoserver-geonode-ext/logs/
 /src/gsconfig.py/
 /src/owslib/
+/src/avatar/
 /webapps/
 /src/GeoNodePy/capra/development.db
+
 
 # OSX specific
 .Python

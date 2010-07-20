@@ -485,7 +485,11 @@ class Contact(models.Model):
         valid_organization = (self.organization != None and self.organization !='')
         if not (valid_name or valid_organization):
             raise ValidationError('Either name or organization should be provided')
-    
+
+    def get_absolute_url(self):
+        return ('profiles_profile_detail', (), { 'username': self.user.username })
+    get_absolute_url = models.permalink(get_absolute_url)
+
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.organization)
 
