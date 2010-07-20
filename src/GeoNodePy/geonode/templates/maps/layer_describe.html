@@ -3,19 +3,43 @@
 
 {% block title %} {{ layer.typename }} - {{ block.super }} {% endblock %}
 
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+    Ext.onReady(function() {
+        // get #poc_form and #metadata_form, and add a `onchange` handler
+        // that shows the form if the blank option is selected.
+		Ext.get('id_layer-poc').on('change', function() {
+	        if (this.getValue()===""){
+			    Ext.get("poc_form").show();
+			}else{
+				Ext.get("poc_form").hide();
+			}
+		   });
+		Ext.get('id_layer-metadata_author').on('change', function() {
+	        if (this.getValue()===""){
+			    Ext.get("metadata_form").show();
+			}else{
+				Ext.get("metadata_form").hide();
+			}
+		});
+	});
+</script>
+{% endblock %}
 {% block main %}
   <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
   <form action="/data/{{layer.typename}}?describe" method="POST">
 	  {% csrf_token %}
       <ul class="form">
-          {{ md_form.as_ul }}
-          <fieldset>
-              <legend>Point of Contact</legend>
-              {{ poc_form.as_ul }}
+	      {{ layer_form.as_ul }}
+          <fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
+	        <legend>Point of Contact</legend>
+            {{ poc_form.as_ul }}
           </fieldset>
-          <fieldset>
-              <legend>Metadata Provider</legend>
-              {{ metadata_provider_form.as_ul }} 
+          <fieldset id="metadata_form" {% if author_form.hidden %}style="display:none"{% endif %}>
+	        <legend>Metadata Provider</legend>
+            {{ author_form.as_ul }}
           </fieldset>
           <input type="submit" value="{% trans "Update" %}"/>
       </ul>
