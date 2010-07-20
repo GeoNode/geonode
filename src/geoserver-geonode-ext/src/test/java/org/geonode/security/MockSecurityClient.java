@@ -35,12 +35,12 @@ public class MockSecurityClient implements GeonodeSecurityClient {
         reset();
     }
 
-    public Authentication authenticate(String cookieValue) throws AuthenticationException,
+    public Authentication authenticateCookie(String cookieValue) throws AuthenticationException,
             IOException {
         return cookieAuths.get(cookieValue);
     }
 
-    public Authentication authenticate(String username, String password)
+    public Authentication authenticateUserPwd(String username, String password)
             throws AuthenticationException, IOException {
         Authentication auth = userAuths.get(username);
         if (auth != null) {

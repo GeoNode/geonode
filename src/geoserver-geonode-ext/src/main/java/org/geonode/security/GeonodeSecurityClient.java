@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2010 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
@@ -25,7 +25,7 @@ public interface GeonodeSecurityClient {
      * @throws AuthenticationException
      * @throws IOException
      */
-    public Authentication authenticate(String cookieValue) throws AuthenticationException,
+    public Authentication authenticateCookie(String cookieValue) throws AuthenticationException,
             IOException;
     
     /**
@@ -48,7 +48,7 @@ public interface GeonodeSecurityClient {
      * @throws AuthenticationException
      * @throws IOException
      */
-    public Authentication authenticate(String username, String password)
+    public Authentication authenticateUserPwd(String username, String password)
             throws AuthenticationException, IOException;
 
 }

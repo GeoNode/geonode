@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2010 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
@@ -21,9 +21,6 @@ import org.acegisecurity.GrantedAuthorityImpl;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
@@ -40,111 +37,120 @@ import org.springframework.context.ApplicationContextAware;
 public class DefaultSecurityClient implements GeonodeSecurityClient, ApplicationContextAware {
     static final Logger LOGGER = Logging.getLogger(DefaultSecurityClient.class);
 
-    HttpClient client;
+    private final HTTPClient client;
 
-    String baseUrl;
+    private String baseUrl;
 
-    public DefaultSecurityClient() {
-        MultiThreadedHttpConnectionManager httpConnectionManager = new MultiThreadedHttpConnectionManager();
-        httpConnectionManager.getParams().setConnectionTimeout(1000);
-        httpConnectionManager.getParams().setSoTimeout(1000);
-        client = new HttpClient(httpConnectionManager);
+    public DefaultSecurityClient(final HTTPClient httpClient) {
+        this.client = httpClient;
     }
 
-    public Authentication authenticate(String cookieValue) throws AuthenticationException,
+    String getBaseUrl() {
+        return baseUrl;
+    }
+
+    /**
+     * @see org.geonode.security.GeonodeSecurityClient#authenticateCookie(java.lang.String)
+     */
+    public Authentication authenticateCookie(String cookieValue) throws AuthenticationException,
             IOException {
-        GetMethod get = new GetMethod(baseUrl + "data/acls");
-        try {
-            get.addRequestHeader("Cookie", GeoNodeCookieProcessingFilter.GEONODE_COOKIE_NAME + "="
-                    + cookieValue);
-            get.setFollowRedirects(true);
-            int status = client.executeMethod(get);
 
-            if (status != 200) {
-                throw new IOException("GeoNode communication failed, status report is: " + status
-                        + ", " + get.getStatusText());
-            }
+        final String headerName = "Cookie";
+        final String headerValue = GeoNodeCookieProcessingFilter.GEONODE_COOKIE_NAME + "="
+                + cookieValue;
 
-            String response = get.getResponseBodyAsString();
-            JSONObject json = (JSONObject) JSONSerializer.toJSON(response);
-            return toAuthentication(json);
-        } finally {
-            get.releaseConnection();
-        }
+        return authenticate(headerName, headerValue);
     }
 
-    public Authentication authenticate(String username, String password)
+    /**
+     * @see org.geonode.security.GeonodeSecurityClient#authenticateUserPwd(java.lang.String,
+     *      java.lang.String)
+     */
+    public Authentication authenticateUserPwd(String username, String password)
             throws AuthenticationException, IOException {
-        GetMethod get = new GetMethod(baseUrl + "data/acls");
-        try {
-            get.addRequestHeader("Authorization", "Basic "
-                    + new String(Base64.encodeBase64((username + ":" + password).getBytes())));
-            get.setFollowRedirects(true);
-            int status = client.executeMethod(get);
+        final String headerName = "Authorization";
+        final String headerValue = "Basic "
+                + new String(Base64.encodeBase64((username + ":" + password).getBytes()));
 
-            if (status != 200) {
-                throw new IOException("GeoNode communication failed, status report is: " + status
-                        + ", " + get.getStatusText());
-            }
-
-            JSONObject json = (JSONObject) JSONSerializer.toJSON(get.getResponseBodyAsString());
-            return toAuthentication(json);
-
-        } finally {
-            get.releaseConnection();
-        }
+        return authenticate(headerName, headerValue);
     }
-    
+
+    /**
+     * @see org.geonode.security.GeonodeSecurityClient#authenticateAnonymous()
+     */
     public Authentication authenticateAnonymous() throws AuthenticationException, IOException {
-        GetMethod get = new GetMethod(baseUrl + "data/acls");
-        try {
-            get.setFollowRedirects(true);
-            int status = client.executeMethod(get);
-
-            if (status != 200) {
-                throw new IOException("GeoNode communication failed, status report is: " + status
-                        + ", " + get.getStatusText());
-            }
-
-            JSONObject json = (JSONObject) JSONSerializer.toJSON(get.getResponseBodyAsString());
-            return toAuthentication(json);
-
-        } finally {
-            get.releaseConnection();
-        }
+        return authenticate((String[]) null);
     }
 
+    private Authentication authenticate(final String... requestHeaders)
+            throws AuthenticationException, IOException {
+
+        final String url = baseUrl + "data/acls";
+
+        final String responseBodyAsString = client.sendGET(url, requestHeaders);
+
+        JSONObject json = (JSONObject) JSONSerializer.toJSON(responseBodyAsString);
+        Authentication authentication = toAuthentication(json);
+        return authentication;
+    }
+
+    @SuppressWarnings("unchecked")
     private Authentication toAuthentication(JSONObject json) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        JSONArray roLayers = json.getJSONArray("ro");
-        if (roLayers != null) {
-            authorities.add(new LayersGrantedAuthority(new ArrayList<String>(roLayers),
-                    LayerMode.READ_ONLY));
+        if (json.containsKey("ro")) {
+            JSONArray roLayers = json.getJSONArray("ro");
+            authorities.add(new LayersGrantedAuthority(roLayers, LayerMode.READ_ONLY));
         }
-        JSONArray rwLayers = json.getJSONArray("rw");
-        if (rwLayers != null) {
-            authorities.add(new LayersGrantedAuthority(new ArrayList<String>(rwLayers),
-                    LayerMode.READ_ONLY));
+        if (json.containsKey("rw")) {
+            JSONArray rwLayers = json.getJSONArray("rw");
+            authorities.add(new LayersGrantedAuthority(rwLayers, LayerMode.READ_WRITE));
         }
         if (json.getBoolean("is_superuser")) {
             authorities.add(new GrantedAuthorityImpl(GeoNodeDataAccessManager.ADMIN_ROLE));
         }
 
+<<<<<<< HEAD
         if(json.getBoolean("is_anonymous")) {
             authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
             return new AnonymousAuthenticationToken("geonode", "anonymous", (GrantedAuthority[]) authorities
                     .toArray(new GrantedAuthority[authorities.size()]));
+=======
+        final Authentication authentication;
+
+        if (json.getBoolean("is_anonymous")) {
+            authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
+            String key = "geonode";
+            Object principal = "anonymous";
+            GrantedAuthority[] grantedAuthorities = authorities
+                    .toArray(new GrantedAuthority[authorities.size()]);
+
+            authentication = new AnonymousAuthenticationToken(key, principal, grantedAuthorities);
+>>>>>>> abstract out HTTPClient and add unit tests for DefaultSecurityClient
         } else {
             String userName = "";
-            if(json.containsKey("name")){
+            if (json.containsKey("name")) {
                 userName = json.getString("name");
             }
-            return new UsernamePasswordAuthenticationToken(userName, null,
-                    (GrantedAuthority[]) authorities.toArray(new GrantedAuthority[authorities
-                            .size()]));
+            GrantedAuthority[] grantedAuthorities = authorities
+                    .toArray(new GrantedAuthority[authorities.size()]);
+
+            authentication = new UsernamePasswordAuthenticationToken(userName, null,
+                    grantedAuthorities);
         }
+        return authentication;
     }
 
+    /**
+     * Looks up for the {@code GEONODE_BASE_URL} property (either a System property, a servlet
+     * context parameter or an environment variable) to be used as the base URL for the GeoNode
+     * authentication requests (for which {@code 'data/acls'} will be appended).
+     * <p>
+     * If not provided, defaults to {@code http://localhost:8000}
+     * </p>
+     * 
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     * @see GeoServerExtensions#getProperty(String, ApplicationContext)
+     */
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         // determine where geonode is
         this.baseUrl = GeoServerExtensions.getProperty("GEONODE_BASE_URL", applicationContext);

@@ -33,7 +33,7 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
         String password = (String) token.getCredentials();
 
         try {
-            return client.authenticate(username, password);
+            return client.authenticateUserPwd(username, password);
         } catch (IOException e) {
             throw new AuthenticationServiceException("Communication with GeoNode failed", e);
         }
