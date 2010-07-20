@@ -781,9 +781,9 @@ def _handle_layer_upload(request, layer=None):
                                          title=gs_resource.title,
                                          uuid=str(uuid.uuid4()))
             # A user without a profile might be uploading this
-            poc_contact, __ = Contact.object.get_or_create(user=request.user,
+            poc_contact, __ = Contact.objects.get_or_create(user=request.user,
                                                    defaults={"name": request.user.username })
-            author_contact, __ = Contact.object.get_or_create(user=request.user,
+            author_contact, __ = Contact.objects.get_or_create(user=request.user,
                                                    defaults={"name": request.user.username })
             layer.poc = poc_contact
             layer.metadata_author = author_contact
