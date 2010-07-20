@@ -635,6 +635,11 @@ class LayerDescriptionForm(forms.Form):
 @login_required
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
+        if not request.user.has_perm('maps.change_layer', obj=layer):
+            return HttpResponse(loader.render_to_string('401.html', 
+                RequestContext(request, {'error_message': 
+                    _("You are not permitted to modify this layer's metadata")})), status=401)
+        
         poc = layer.poc
         metadata_author = layer.metadata_author
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
@@ -691,6 +696,11 @@ def _describe_layer(request, layer):
 @csrf_exempt
 def _removeLayer(request,layer):
     if request.user.is_authenticated():
+        if not request.user.has_perm('maps.delete_layer', obj=layer):
+            return HttpResponse(loader.render_to_string('401.html', 
+                RequestContext(request, {'error_message': 
+                    _("You are not permitted to delete this layer")})), status=401)
+        
         if (request.method == 'GET'):
             return render_to_response('maps/layer_remove.html',RequestContext(request, {
                 "layer": layer
@@ -706,6 +716,11 @@ def _removeLayer(request,layer):
 @csrf_exempt
 def _changeLayerDefaultStyle(request,layer):
     if request.user.is_authenticated():
+        if not request.user.has_perm('maps.change_layer', obj=layer):
+            return HttpResponse(loader.render_to_string('401.html', 
+                RequestContext(request, {'error_message': 
+                    _("You are not permitted to modify this layer")})), status=401)
+        
         if (request.method == 'POST'):
             style_name = request.POST.get('defaultStyle')
 
@@ -744,6 +759,11 @@ def layerController(request, layername):
     if (request.META['QUERY_STRING'] == "style"):
         return _changeLayerDefaultStyle(request,layer)
     else: 
+        if not request.user.has_perm('maps.view_layer', obj=layer):
+            return HttpResponse(loader.render_to_string('401.html', 
+                RequestContext(request, {'error_message': 
+                    _("You are not permitted to view this layer")})), status=401)
+        
         metadata = layer.metadata_csw()
 
         return render_to_response('maps/layer.html', RequestContext(request, {
@@ -785,6 +805,11 @@ def upload_layer(request):
 @login_required
 @csrf_exempt
 def _updateLayer(request, layer):
+    if not request.user.has_perm('maps.change_layer', obj=layer):
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message': 
+                _("You are not permitted to modify this layer")})), status=401)
+    
     if request.method == 'GET':
         cat = Layer.objects.gs_catalog
         info = cat.get_resource(layer.name)
@@ -1213,6 +1238,22 @@ def metadata_search(request):
             pass
 
     result = _metadata_search(query, start, limit, **advanced)
+
+    # XXX slowdown here to dig out result permissions
+    for doc in result['rows']: 
+        try: 
+            layer = Layer.objects.get(uuid=doc['uuid'])
+            doc['_local'] = True
+            doc['_permissions'] = {
+                'view': request.user.has_perm('maps.view_layer', obj=layer),
+                'change': request.user.has_perm('maps.change_layer', obj=layer),
+                'delete': request.user.has_perm('maps.delete_layer', obj=layer),
+                'change_permissions': request.user.has_perm('maps.change_layer_permissions', obj=layer),
+            }
+        except:
+            doc['_local'] = False
+            pass
+
     result['success'] = True
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
@@ -1259,8 +1300,18 @@ def search_result_detail(request):
     csw.getrecordbyid([uuid])
     doc = csw._records.find(nspath('Record', namespaces['csw']))
     rec = _build_search_result(doc)
+    
+    try:
+        layer = Layer.objects.get(uuid=uuid)
+        layer_is_remote = False
+    except:
+        layer = None
+        layer_is_remote = True
+
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
-        'rec': rec
+        'rec': rec,
+        'layer': layer,
+        'layer_is_remote': layer_is_remote
     }))
 
 def _build_search_result(doc):
@@ -1314,8 +1365,6 @@ def _build_search_result(doc):
             try:
                 extension = link_el.get('name', '').split('.')[-1]
                 format = format_re.match(link_el.get('description')).groups()[0]
-                if 'Format' in format:
-                    import pdb; pdb.set_trace()
                 href = link_el.text
                 result['download_links'].append((extension, format, href))
             except: 
