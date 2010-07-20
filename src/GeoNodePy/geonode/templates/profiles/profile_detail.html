@@ -1,7 +1,12 @@
 {% extends "base.html" %}
-
+{% load i18n avatar_tags %}
 {% block content %}
 <h2>Profile for {{ profile.user.username }}</h2>
+{% avatar profile.user 100 %}
+
+<h4>
+{% if user == profile.user %}<a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a>{% endif %}
+</h4>
 
 <ul>
 	<li>name: {{ profile.name}}</li>
@@ -15,5 +20,8 @@
 	<li>zipcode: {{ profile.zipcode}}</li>
 	<li>country: {{ profile.country}}</li>
 </ul>	
+
+<a href="{% url data_upload %}">{% trans "Upload new data" %}</a> |
+<a href="{% url map_new %}">{% trans "Create a new map" %}</a>
 
 {% endblock %}
