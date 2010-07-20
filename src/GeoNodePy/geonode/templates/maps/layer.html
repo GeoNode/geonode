@@ -191,7 +191,7 @@
     {% if user.is_authenticated %}
     {% has_obj_perm user layer "maps.change_layer" as can_change %}
     {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
-
+    {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
 
         <h3> {% trans "Manage" %} </h3>
         <ul>
@@ -199,6 +199,9 @@
         {% if can_change %}
                 <li><a href="?describe">{% trans "Update the description of this data" %}</a></li>
             	<li><a href="?update">{% trans "Upload a new version of this data" %}</a></li>
+        {% endif %}
+        {% if can_change_permissions %}
+        <li><a href="{% url edit_layer_permissions layer.typename %}">{% trans "Edit Permissions" %}</a></li>
         {% endif %}
         {% if can_delete %}
 				<li><a href="?remove">{% trans "Remove" %}</a></li>
