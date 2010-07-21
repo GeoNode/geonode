@@ -50,6 +50,11 @@ class RoleForm(forms.ModelForm):
         model = ContactRole
         exclude = ('contact', 'layer')
 
+class PocForm(forms.Form):
+    contact = forms.ModelChoiceField(label = "New point of contact",
+                                     queryset = Contact.objects.exclude(user=None))
+
+
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
     "proxy": "/proxy/?url=",
@@ -1068,3 +1073,20 @@ def search_page(request):
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
          "site" : settings.SITEURL
     }))
+
+
+def change_poc(request, ids, template = 'maps/change_poc.html'):
+    layers = Layer.objects.filter(id__in=ids.split('_'))
+    if request.method == 'POST':
+        form = PocForm(request.POST)
+        if form.is_valid():
+            for layer in layers:
+                layer.poc = form.cleaned_data['contact']
+                layer.save()
+            # Process the data in form.cleaned_data
+            # ...
+            return HttpResponseRedirect('/admin/maps/layer') # Redirect after POST
+    else:
+        form = PocForm() # An unbound form
+    return render_to_response(template, RequestContext(request, 
+                                  {'layers': layers, 'form': form }))
