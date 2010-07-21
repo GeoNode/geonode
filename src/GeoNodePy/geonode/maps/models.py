@@ -4,6 +4,7 @@ from django.db import models
 from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
+from geonode.core.models import PermissionLevelMixin
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 import httplib2
@@ -557,7 +558,7 @@ class LayerManager(models.Manager):
         # Doing a logout since we know we don't need this object anymore.
         gn.logout()
 
-class Layer(models.Model):
+class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
     """
@@ -870,8 +871,43 @@ class Layer(models.Model):
         permissions = (('view_layer', 'Can view'), 
                        ('change_layer_permissions', "Can change permissions"), )
 
+    # Permission Level Constants
+    LEVEL_NONE  = 0
+    LEVEL_READ  = 1
+    LEVEL_WRITE = 2
+    LEVEL_ADMIN = 3
 
-class Map(models.Model):
+    LEVEL_PERM = [
+        {'maps.view_layer': False,
+         'maps.change_layer': False,
+         'maps.delete_layer': False,
+         'maps.change_layer_permissions': False
+        },
+        {'maps.view_layer': True,
+         'maps.change_layer': False,
+         'maps.delete_layer': False,
+         'maps.change_layer_permissions': False
+        },
+        {'maps.view_layer': True,
+         'maps.change_layer': True,
+         'maps.delete_layer': False,
+         'maps.change_layer_permissions': False
+        },
+        {'maps.view_layer': True,
+         'maps.change_layer': True,
+         'maps.delete_layer': True,
+         'maps.change_layer_permissions': True
+        }
+    ]
+
+    LEVEL_NAME = [_('No Permissions'),
+                 _('Read-Only'),
+                 _('Read and Modify'),
+                 _('Administrative')]
+
+
+
+class Map(models.Model, PermissionLevelMixin):
     # metadata fields
     title = models.CharField(max_length=200)
     abstract = models.CharField(max_length=200)
@@ -935,6 +971,42 @@ class Map(models.Model):
         # change and delete are standard in django
         permissions = (('view_map', 'Can view'), 
                        ('change_map_permissions', "Can change permissions"), )
+
+    # Permission Level Constants
+    LEVEL_NONE  = 0
+    LEVEL_READ  = 1
+    LEVEL_WRITE = 2
+    LEVEL_ADMIN = 3
+
+    LEVEL_PERM = [
+      {'maps.view_map': False,
+       'maps.change_map': False,
+       'maps.delete_map': False,
+       'maps.change_map_permissions': False
+      },
+      {'maps.view_map': True,
+       'maps.change_map': False,
+       'maps.delete_map': False,
+       'maps.change_map_permissions': False
+      },
+      {'maps.view_map': True,
+       'maps.change_map': True,
+       'maps.delete_map': False,
+       'maps.change_map_permissions': False
+      },
+      {'maps.view_map': True,
+       'maps.change_map': True,
+       'maps.delete_map': True,
+       'maps.change_map_permissions': True
+      }
+    ]
+
+    LEVEL_NAME = [_('No Permissions'),
+                  _('Read-Only'),
+                  _('Read and Modify'),
+                  _('Administrative')]
+    
+
 
 
 

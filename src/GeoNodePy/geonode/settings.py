@@ -135,7 +135,7 @@ MAP_BASELAYERS = [{
         ]}, {
         'service': 'google',
         'layers': [
-            'SATELLITE'
+             'SATELLITE'
         ]}, {
         'service': "wms",
         'url': "%swms" % GEOSERVER_BASE_URL,
