@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load navbar %}
 {% load geonode_media %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
     <head>
@@ -47,6 +48,7 @@
 									<input type="password" name="password" />
 									<input type="submit" value="Login" />
 									{% csrf_token %}
+									stuff
 								</form>
 								{% if REGISTRATION_OPEN %}
 								<p style="margin-bottom:0em;">{% trans "Not member" %}? <a href="{% url registration_register %}">{% trans "Register" %}</a>!</p>
