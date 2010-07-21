@@ -989,7 +989,8 @@ def _build_search_result(doc):
     record and builds a POD structure representing 
     the search result.
     """
-
+    if doc is None:
+        return None
     # Let owslib do some parsing for us...
     rec = CswRecord(doc)
     result = {}
