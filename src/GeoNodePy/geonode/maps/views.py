@@ -30,7 +30,8 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 DEFAULT_TITLE = "GeoNode Default Map"
 DEFAULT_ABSTRACT = "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community."
 DEFAULT_CONTACT = "For more information, contact OpenGeo at http://opengeo.org/"
-DEFAULT_MAP_CONFIG = Map(
+
+_default_map = Map(
     title=DEFAULT_TITLE, 
     abstract=DEFAULT_ABSTRACT,
     contact=DEFAULT_CONTACT,
@@ -38,7 +39,23 @@ DEFAULT_MAP_CONFIG = Map(
     center_x=-9428760.8688778,
     center_y=1436891.8972581,
     zoom=7
-).viewer_json()
+)
+
+def _baselayer(lyr, order):
+    return MapLayer.objects.from_viewer_config(
+        map = _default_map,
+        layer = lyr,
+        source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
+        ordering = order
+    )
+
+_layers = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
+
+DEFAULT_MAP_CONFIG = _default_map.viewer_json(*_layers)
+
+del _default_map
+del _baselayer
+del _layers
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
@@ -71,7 +88,7 @@ def maps(request, mapid=None):
         except Exception, e:
             transaction.rollback()
             return HttpResponse(
-                "The server could not understand your request.",
+                "The server could not understand your request." + str(e),
                 status=400, 
                 mimetype="text/plain"
             )
@@ -97,7 +114,7 @@ def mapJSON(request, mapid):
             )
         except Exception, e:
             return HttpResponse(
-                "The server could not understand the request.",
+                "The server could not understand the request." + str(e),
                 mimetype="text/plain",
                 status=400
             )
