@@ -49,13 +49,12 @@ def _baselayer(lyr, order):
         ordering = order
     )
 
-_layers = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
+DEFAULT_BASELAYERS = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
 
-DEFAULT_MAP_CONFIG = _default_map.viewer_json(*_layers)
+DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASELAYERS)
 
 del _default_map
 del _baselayer
-del _layers
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
@@ -531,8 +530,7 @@ def layerController(request, layername):
         return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
             "metadata": metadata,
-            "viewer": json.dumps(map.viewer_json(maplayer)),
-            "background": settings.MAP_BASELAYERS,
+            "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
 
