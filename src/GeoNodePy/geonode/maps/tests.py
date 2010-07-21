@@ -23,7 +23,7 @@ community."
 
     default_title = "GeoNode Default Map"
 
-    def dont_test_map2json(self):
+    def test_map2json(self):
         ''' Make some assertions about the data structure produced for serialization
             to a JSON map configuration '''
         map = Map.objects.get(id=1)
@@ -31,7 +31,7 @@ community."
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
         layernames = [x['name'] for x in cfg['map']['layers']]
-        self.assertEquals(layernames, ['base:CA', 'base:nic_admin'])
+        self.assertEquals(layernames, ['base:CA',])
 
     def test_mapdetails(self): 
         '''/maps/1 -> Test accessing the detail view of a map'''
