@@ -60,7 +60,7 @@ community."
              self.failUnlessEqual(response.status_code, 200)
 
 
-    def dont_test_search_detail(self):
+    def test_search_detail(self):
         '''/data/search/detail -> Test accessing the data search detail for a layer'''
         if self.GEOSERVER:
             layer = Layer.objects.all()[0]
