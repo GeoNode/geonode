@@ -109,12 +109,6 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
             authorities.add(new GrantedAuthorityImpl(GeoNodeDataAccessManager.ADMIN_ROLE));
         }
 
-<<<<<<< HEAD
-        if(json.getBoolean("is_anonymous")) {
-            authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
-            return new AnonymousAuthenticationToken("geonode", "anonymous", (GrantedAuthority[]) authorities
-                    .toArray(new GrantedAuthority[authorities.size()]));
-=======
         final Authentication authentication;
 
         if (json.getBoolean("is_anonymous")) {
@@ -125,7 +119,6 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
                     .toArray(new GrantedAuthority[authorities.size()]);
 
             authentication = new AnonymousAuthenticationToken(key, principal, grantedAuthorities);
->>>>>>> abstract out HTTPClient and add unit tests for DefaultSecurityClient
         } else {
             String userName = "";
             if (json.containsKey("name")) {
