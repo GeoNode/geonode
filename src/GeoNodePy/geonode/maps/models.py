@@ -525,30 +525,51 @@ class Map(models.Model):
 
 class MapLayerManager(models.Manager):
     def from_viewer_config(self, map, layer, source, ordering):
+        layer_cfg = dict(layer)
+        for k in ["format", "name", "opacity", "styles", "transparent",
+                  "fixed", "group", "visibility", "title", "source"]:
+            if k in layer_cfg: del layer_cfg[k]
+
+        source_cfg = dict(source)
+        for k in ["url", "projection"]:
+            if k in source_cfg: del source_cfg[k]
+
         return self.create(
             map = map,
-            name = layer["name"],
-            group = layer.get('group', ""),
-            ows_url = source["url"],
-            styles = layer.get("styles", ""),
-            format = layer.get("format", ""),
+            stack_order = ordering,
+            format = layer.get("format", None),
+            name = layer.get("name", None),
             opacity = layer.get("opacity", 1),
+            styles = layer.get("styles", None),
             transparent = layer.get("transparent", False),
-            stack_order = ordering
+            fixed = layer.get("fixed", False),
+            group = layer.get('group', ""),
+            visibility = layer.get("visibility", True),
+            ows_url = source.get("url", None),
+            layer_params = simplejson.dumps(layer_cfg),
+            source_params = simplejson.dumps(source_cfg)
         )
 
 class MapLayer(models.Model):
     objects = MapLayerManager()
 
-    name = models.CharField(max_length=200)
-    styles = models.CharField(max_length=200)
-    opacity = models.FloatField(default=1.0)
-    format = models.CharField(max_length=200)
-    transparent = models.BooleanField()
-    ows_url = models.URLField()
-    group = models.CharField(max_length=200,blank=True)
-    stack_order = models.IntegerField()
     map = models.ForeignKey(Map, related_name="layer_set")
+    stack_order = models.IntegerField()
+
+    format = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    opacity = models.FloatField(default=1.0)
+    styles = models.CharField(max_length=200)
+    transparent = models.BooleanField()
+
+    fixed = models.BooleanField(default=False)
+    group = models.CharField(max_length=200,blank=True)
+    visibility = models.BooleanField(default=True)
+
+    ows_url = models.URLField()
+
+    layer_params = models.CharField(max_length=1024)
+    source_params = models.CharField(max_length=1024)
     
     def local(self): 
         layer = Layer.objects.filter(typename=self.name)
@@ -558,22 +579,32 @@ class MapLayer(models.Model):
             return True
  
     def source_config(self):
-        return { "ptype": "gx_wmssource", "url": self.ows_url }
+        try:
+            cfg = simplejson.loads(self.source_params)
+        except:
+            cfg = dict(ptype = "gx_wmssource")
+
+        if self.ows_url: cfg["url"] = self.ows_url
+
+        return cfg
 
     def layer_config(self):
-        layer_json = {
-            'name': self.name,
-            # 'source': server_lookup[self.ows_url],
-            'group': self.group,
-            'styles' : self.styles
-        }
+        try:
+            cfg = simplejson.loads(self.layer_params)
+        except: 
+            cfg = dict()
 
-        if self.format != "": layer_json['format'] = self.format
-        if self.styles != "": layer_json['styles'] = self.styles
-        if self.opacity != "": layer_json['opacity'] = self.opacity
-        if self.transparent: layer_json['transparent'] = True
+        if self.format: cfg['format'] = self.format
+        if self.name: cfg["name"] = self.name
+        if self.opacity: cfg['opacity'] = self.opacity
+        if self.styles: cfg['styles'] = self.styles
+        if self.transparent: cfg['transparent'] = True
 
-        return layer_json
+        cfg["fixed"] = self.fixed
+        if self.group: cfg["group"] = self.group
+        cfg["visibility"] = self.visibility
+
+        return cfg
 
 
     @property
