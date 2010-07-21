@@ -874,12 +874,6 @@ class Map(models.Model):
     abstract = models.CharField(max_length=200)
     contact = models.CharField(max_length=200)
     
-    # These fields are likely deprecated but
-    # we need to double check with the World Bank
-    # as they were the ones who required them
-    featured = models.BooleanField()
-    endorsed = models.BooleanField()
-
     # viewer configuration
     zoom = models.IntegerField()
     center_lat = models.FloatField()
