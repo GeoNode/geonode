@@ -37,7 +37,7 @@ class LayerAdmin(admin.ModelAdmin):
     def change_poc(modeladmin, request, queryset):
         selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
         return HttpResponseRedirect(reverse('change_poc', kwargs={"ids": "_".join(selected)}))
-    change_ownership.short_description = "Change the point of contact for the selected layers"
+    change_poc.short_description = "Change the point of contact for the selected layers"
 
 admin.site.register(Map, MapAdmin)
 admin.site.register(Contact, ContactAdmin)
