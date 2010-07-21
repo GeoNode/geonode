@@ -524,7 +524,7 @@ class LayerManager(models.Manager):
         # this assumes there is at least one superuser
         superusers = User.objects.filter(is_superuser=True).order_by('id')
         if superusers.count() == 0:
-            raise RuntimeException('GeoNode needs at least one admin/superuser set')
+            raise RuntimeError('GeoNode needs at least one admin/superuser set')
         
         contact, created = Contact.objects.get_or_create(user=superusers[0], 
                                                 defaults={"name": "Geonode Admin"})
