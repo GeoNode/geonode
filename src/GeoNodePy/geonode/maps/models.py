@@ -423,7 +423,6 @@ class Map(models.Model):
         layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
         server_lookup = {}
         sources = dict()
-        sources.update(settings.MAP_BASELAYERSOURCES)
 
         def uniqify(seq):
             """
@@ -438,8 +437,11 @@ class Map(models.Model):
                 if x not in results: results.append(x)
             return results
 
+        configs = [l.source_config() for l in layers]
+        configs.append({"ptype":"gx_wmssource", "url": settings.GEOSERVER_BASE_URL + "wms"})
+
         i = 0
-        for source in uniqify(l.source_config() for l in layers):
+        for source in uniqify(configs):
             while str(i) in sources: i = i + 1
             sources[str(i)] = source 
             server_lookup[simplejson.dumps(source)] = str(i)
@@ -466,7 +468,7 @@ class Map(models.Model):
             'defaultSourceType': "gx_wmssource",
             'sources': sources,
             'map': {
-                'layers': settings.MAP_BASELAYERS + [layer_config(l) for l in layers],
+                'layers': [layer_config(l) for l in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
@@ -503,21 +505,16 @@ class Map(models.Model):
         def source_for(layer):
             return conf["sources"][layer["source"]]
 
-        def is_wms(layer):
-            if "ptype" in source_for(l):
-                return source_for(l)["ptype"] == "gx_wmssource"
-            else:
-                return conf["defaultSourceType"] == "gx_wmssource"
-       
-        layers = [l for l in conf["map"]["layers"] if is_wms(l)]
+        layers = [l for l in conf["map"]["layers"]]
         
         for layer in self.layer_set.all():
             layer.delete()
 
         for ordering, layer in enumerate(layers):
-            self.layer_set.from_viewer_config(
-                self, layer, source_for(layer), ordering
-            )
+            self.layer_set.add(
+                self.layer_set.from_viewer_config(
+                    self, layer, source_for(layer), ordering
+            ))
         self.save()
 
     def get_absolute_url(self):
@@ -534,7 +531,7 @@ class MapLayerManager(models.Manager):
         for k in ["url", "projection"]:
             if k in source_cfg: del source_cfg[k]
 
-        return self.create(
+        return self.model(
             map = map,
             stack_order = ordering,
             format = layer.get("format", None),
@@ -543,7 +540,7 @@ class MapLayerManager(models.Manager):
             styles = layer.get("styles", None),
             transparent = layer.get("transparent", False),
             fixed = layer.get("fixed", False),
-            group = layer.get('group', ""),
+            group = layer.get('group', None),
             visibility = layer.get("visibility", True),
             ows_url = source.get("url", None),
             layer_params = simplejson.dumps(layer_cfg),
@@ -556,17 +553,17 @@ class MapLayer(models.Model):
     map = models.ForeignKey(Map, related_name="layer_set")
     stack_order = models.IntegerField()
 
-    format = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
+    format = models.CharField(null=True,max_length=200)
+    name = models.CharField(null=True,max_length=200)
     opacity = models.FloatField(default=1.0)
-    styles = models.CharField(max_length=200)
+    styles = models.CharField(null=True,max_length=200)
     transparent = models.BooleanField()
 
     fixed = models.BooleanField(default=False)
-    group = models.CharField(max_length=200,blank=True)
+    group = models.CharField(null=True,max_length=200)
     visibility = models.BooleanField(default=True)
 
-    ows_url = models.URLField()
+    ows_url = models.URLField(null=True)
 
     layer_params = models.CharField(max_length=1024)
     source_params = models.CharField(max_length=1024)
