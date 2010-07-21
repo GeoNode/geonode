@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load geonode_auth %}
  
 <p><b>{% trans "Abstract:" %}</b>
 {% if rec.abstract %}
@@ -32,14 +33,35 @@
 {% endfor %}
 </p>
 
-<p><b>{% trans "Download:" %}</b>
-{% for link in rec.download_links %}
-  <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
-{% empty %}
-<em>{% trans "No download URLs are defined for this layer." %}</em>
-{% endfor %}
-</p>
 
-{% if rec.detail %}
-<p><a href="{{rec.detail}}">{% trans "Click here for more information about this layer." %}</a></p>
+{% if layer_is_remote %}
+  <p><b>{% trans "Download:" %}</b>
+  {% for link in rec.download_links %}
+    <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
+  {% empty %}
+  <em>{% trans "No download URLs are defined for this layer." %}</em>
+  {% endfor %}
+  </p>
+
+  {% if rec.detail %}
+  <p><a href="{{rec.detail}}">{% trans "Visit originating site for more information about this layer." %}</a></p>
+  {% endif %}
+
+{% else %} 
+  {% has_obj_perm user layer "maps.view_layer" as can_view %}
+  {% if can_view %}
+    <p><b>{% trans "Download:" %}</b>
+    {% for link in rec.download_links %}
+      <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
+    {% empty %}
+    <em>{% trans "No download URLs are defined for this layer." %}</em>
+    {% endfor %}
+    </p>
+
+    {% if rec.detail %}
+    <p><a href="{{rec.detail}}">{% trans "Click here for more information about this layer." %}</a></p>
+    {% endif %}
+  {% else %}
+    <p>{% trans "You do not have permission to view or download this layer" %}</p>
+  {% endif %}
 {% endif %}
