@@ -1,7 +1,6 @@
 from geonode.core.models import UserRowLevelPermission, GenericRowLevelPermission
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
-from geonode.maps.forms import ContactForm, MetadataForm
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
