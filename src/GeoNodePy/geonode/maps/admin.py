@@ -32,12 +32,12 @@ class LayerAdmin(admin.ModelAdmin):
     readonly_fields = ('uuid', 'typename', 'workspace') 
     inlines = [ContactRoleInline]
 
-    actions = ['change_ownership']
+    actions = ['change_poc']
 
-    def change_ownership(modeladmin, request, queryset):
+    def change_poc(modeladmin, request, queryset):
         selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
-        return HttpResponseRedirect(reverse('change_layer_owner', kwargs={"ids": "_".join(selected)}))
-    change_ownership.short_description = "Change the owner of the selected layers"
+        return HttpResponseRedirect(reverse('change_poc', kwargs={"ids": "_".join(selected)}))
+    change_ownership.short_description = "Change the point of contact for the selected layers"
 
 admin.site.register(Map, MapAdmin)
 admin.site.register(Contact, ContactAdmin)

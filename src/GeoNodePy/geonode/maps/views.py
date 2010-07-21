@@ -50,6 +50,11 @@ class RoleForm(forms.ModelForm):
         model = ContactRole
         exclude = ('contact', 'layer')
 
+class PocForm(form.Form):
+    contact = forms.ModelChoiceField(label = "Point Of Contact",
+                                     queryset = Contact.objects.exclude(user=None))
+
+
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
     "proxy": "/proxy/?url=",
@@ -1070,6 +1075,7 @@ def search_page(request):
          "site" : settings.SITEURL
     }))
 
-def change_owner(request, ids):
+
+def change_poc(request, ids, template = 'maps/change_poc.html'):
     theids = ids.split('_')
-    return render_to_response('maps/change_owner.html', RequestContext(request, {'ids': theids,}))
+    return render_to_response(template, RequestContext(request, {'ids': theids,}))
