@@ -41,18 +41,6 @@ Ext.onReady(function() {
         homeUrl: "{% url geonode.views.index %}",
         
         localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
-
-        portalConfig: {
-            renderTo: "geoexplorer",
-            height: 400 //yo
-        },
-
-        listeners: {
-            ready: function(){
-                Ext.get("header-wrapper").removeClass("hidden");
-            }
-        }
-
     }, {{config|safe}});
 
     app = new GeoExplorer(config);
@@ -88,7 +76,7 @@ Ext.onReady(function() {
 
 {% block body %}
 {{ block.super }}
-<div id="topPanel">
+<div id="topPanel" style="visibility:hidden">
   <div id="more-info"></div>
   <span id="map-title-header"></span>
 </div>
