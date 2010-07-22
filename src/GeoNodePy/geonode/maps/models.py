@@ -522,6 +522,15 @@ class Map(models.Model):
 
 class MapLayerManager(models.Manager):
     def from_viewer_config(self, map, layer, source, ordering):
+        """
+        Parse a MapLayer object out of a parsed layer configuration from a GXP
+        viewer.
+
+        ``map`` is the Map instance to associate with the new layer
+        ``layer`` is the parsed dict for the layer
+        ``source`` is the parsed dict for the layer's source
+        ``ordering`` is the index of the layer within the map's layer list
+        """
         layer_cfg = dict(layer)
         for k in ["format", "name", "opacity", "styles", "transparent",
                   "fixed", "group", "visibility", "title", "source"]:
@@ -548,25 +557,97 @@ class MapLayerManager(models.Manager):
         )
 
 class MapLayer(models.Model):
+    """
+    The MapLayer model represents a layer included in a map.  This doesn't just
+    identify the dataset, but also extra options such as which style to load
+    and the file format to use for image tiles.
+    """
+
     objects = MapLayerManager()
+    """
+    see :class:`geonode.maps.models.MapLayerManager`
+    """
 
     map = models.ForeignKey(Map, related_name="layer_set")
+    """
+    The map containing this layer
+    """
+
     stack_order = models.IntegerField()
+    """
+    The z-index of this layer in the map; layers with a higher stack_order will
+    be drawn on top of others.
+    """
 
     format = models.CharField(null=True,max_length=200)
+    """
+    The mimetype of the image format to use for tiles (image/png, image/jpeg,
+    image/gif...)
+    """
+
     name = models.CharField(null=True,max_length=200)
+    """
+    The name of the layer to load.
+
+    The interpretation of this name depends on the source of the layer (Google
+    has a fixed set of names, WMS services publish a list of available layers
+    in their capabilities documents, etc.)
+    """
+
     opacity = models.FloatField(default=1.0)
+    """
+    The opacity with which to render this layer, on a scale from 0 to 1.
+    """
+
     styles = models.CharField(null=True,max_length=200)
+    """
+    The name of the style to use for this layer (only useful for WMS layers.)
+    """
+
     transparent = models.BooleanField()
+    """
+    A boolean value, true if we should request tiles with a transparent background.
+    """
 
     fixed = models.BooleanField(default=False)
+    """
+    A boolean value, true if we should prevent the user from dragging and
+    dropping this layer in the layer chooser.
+    """
+
     group = models.CharField(null=True,max_length=200)
+    """
+    A group label to apply to this layer.  This affects the hierarchy displayed
+    in the map viewer's layer tree.
+    """
+
     visibility = models.BooleanField(default=True)
+    """
+    A boolean value, true if this layer should be visible when the map loads.
+    """
 
     ows_url = models.URLField(null=True)
+    """
+    The URL of the OWS service providing this layer, if any exists.
+    """
 
     layer_params = models.CharField(max_length=1024)
+    """
+    A JSON-encoded dictionary of arbitrary parameters for the layer itself when
+    passed to the GXP viewer.
+
+    If this dictionary conflicts with options that are stored in other fields
+    (such as format, styles, etc.) then the fields override.
+    """
+
     source_params = models.CharField(max_length=1024)
+    """
+    A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
+    configuration for this layer.
+
+    If this dictionary conflicts with options that are stored in other fields
+    (such as ows_url) then the fields override.
+    """
     
     def local(self): 
         layer = Layer.objects.filter(typename=self.name)
@@ -576,6 +657,10 @@ class MapLayer(models.Model):
             return True
  
     def source_config(self):
+        """
+        Generate a dict that can be serialized to a GXP layer source
+        configuration suitable for loading this layer.
+        """
         try:
             cfg = simplejson.loads(self.source_params)
         except:
@@ -586,6 +671,15 @@ class MapLayer(models.Model):
         return cfg
 
     def layer_config(self):
+        """
+        Generate a dict that can be serialized to a GXP layer configuration
+        suitable for loading this layer.
+
+        The "source" property will be left unset; the layer is not aware of the
+        name assigned to its source plugin.  See
+        :method:`geonode.maps.models.Map.viewer_json` for an example of
+        generating a full map configuration.
+        """
         try:
             cfg = simplejson.loads(self.layer_params)
         except: 
