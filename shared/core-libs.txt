@@ -5,3 +5,7 @@ http://www.reportlab.com/ftp/ReportLab_2_3.tar.gz#egg=reportlab
 -e git+git://github.com/dwins/gsconfig.py.git#egg=gsconfig.py
 django-registration
 django-profiles
+Paste
+PasteDeploy
+PasteScript
+dj.paste
