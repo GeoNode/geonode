@@ -593,10 +593,10 @@ def host(options):
             stderr=jettylog
         )
     django = subprocess.Popen([
-            "django-admin.py", 
-            "runserver",
-            "--settings=capra.settings",
-            options.host.bind + ":8000"
+            "paster", 
+            "serve",
+            "--reload",
+	        "shared/dev-paste.ini"
         ],  
         stdout=djangolog,
         stderr=djangolog
@@ -608,24 +608,44 @@ def host(options):
             return True
         except Exception, e:
             return False
+    
+    def django_is_up():
+        try:
+            urllib.urlopen("http://" + options.host.bind + ":8000")
+            return True
+        except Exception, e:
+            return False
+
+    socket.setdefaulttimeout(1)
+
+    info("Django is starting up, please wait...")
+    while not django_is_up():
+        time.sleep(2)
 
     info("Logging servlet output to jetty.log and django output to django.log...")
     info("Jetty is starting up, please wait...")
-    socket.setdefaulttimeout(1)
     while not jetty_is_up():
         time.sleep(2)
 
-    sh("django-admin.py updatelayers --settings=capra.settings")
-    info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
-    info("The GeoNode is an unstoppable machine")
-    info("Press CTRL-C to shut down")
-
-    try: 
+    try:
+        sh("django-admin.py updatelayers --settings=capra.settings")
+        
+        info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
+        info("The GeoNode is an unstoppable machine")
+        info("Press CTRL-C to shut down")
         django.wait()
-    except KeyboardInterrupt:
+        info("Django process terminated, see log for details.")
+    finally:
         info("Shutting down...")
-        django.terminate()
-        mvn.terminate()
+        try:
+            django.terminate()
+        except: 
+            pass
+        try:
+            mvn.terminate()
+        except: 
+            pass
+
         django.wait()
         mvn.wait()
         sys.exit()
