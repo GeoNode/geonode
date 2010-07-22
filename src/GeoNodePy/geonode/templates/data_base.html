@@ -45,7 +45,7 @@ Ext.onReady(function(){
           </td>
         </tr>
       </table>
-      <a href="{% url search %}">{% trans "advanced" %}</a>
+      <a href="{% url search %}">{% trans "Advanced Search" %}</a>
   </form>
 </div>
 
@@ -65,25 +65,19 @@ Ext.onReady(function(){
   </p>
 </div>
 
-{% endblock %}
-
-{% block sidebar %}
-
 <div class="block">
-  {% block sidebar_info %}
-  <h3>{% trans "Browse Data" %}</h3>
-  {% blocktrans %}
-  <p>Here you can browse, search and add to the data hosted by this GeoNode.</p>
-  {% endblocktrans %}
-  {% endblock %}
-  
-    
-  <h3>{% trans "For Developers" %}</h3>
+  <h2>{% trans "For Developers" %}</h2>
   {% blocktrans %} 
   If you are interested in information about accessing this information through OGC services, please visit our
   {% endblocktrans %}
   <a href="{% url geonode.views.static "developer" %}">{% trans "developer page" %}</a>.
 </div>
 
+{% endblock %}
+
+{% block sidebar %}
+
+{% block sidebar_info %}    
+{% endblock %}
 {% endblock %}
 

@@ -123,6 +123,8 @@ DEFAULT_MAP_BASE_LAYER = "base:nic_admin"
 DEFAULT_MAP_CENTER = [-84.7, 12.8]
 DEFAULT_MAP_ZOOM = 7
 
+DEFAULT_LAYERS_OWNER='admin'
+
 MAP_BASELAYERSOURCES = {
     "any": {
         "ptype":"gx_olsource"
@@ -234,11 +236,16 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_extensions',
+    'registration',
+    'profiles',
+    'avatar',
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
 )
 
+AUTH_PROFILE_MODULE = 'maps.Contact'
+REGISTRATION_OPEN = False
 GEONODE_CLIENT_LOCATION = "http://geonode.capra.opengeo.org/geonode-client"
 
 if DEBUG:
