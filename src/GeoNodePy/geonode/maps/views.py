@@ -327,7 +327,6 @@ def mapdetail(request,mapid):
     '''
     map = get_object_or_404(Map,pk=mapid) 
     config = map.viewer_json()
-    config["backgroundLayers"] = settings.MAP_BASELAYERS
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
@@ -353,7 +352,6 @@ def view(request, mapid):
     """
     map = Map.objects.get(pk=mapid)
     config = map.viewer_json()
-    config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
@@ -366,7 +364,6 @@ def embed(request, mapid=None):
     else:
         map = Map.objects.get(pk=mapid)
         config = map.viewer_json()
-    config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))
