@@ -767,21 +767,32 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         Lang.registerLinks();
 
+        var header = Ext.Panel({
+            region: "north",
+            items: [
+                {contentEl: "app-header"},
+                {contentEl: "topPanel"}
+            ]
+        });
+
         this.portalItems = {
             region: "center",
             xtype: "container",
             layout: "border",
             hideBorders: true,
-            items: {
-                layout: "border",
-                deferredRender: false,
-                tbar: this.toolbar,
-                region: "center",
-                items: [
-                    this.mapPanelContainer,
-                    westPanel
-                ]
-            }                
+            items: [
+                header,
+                {
+                    layout: "border",
+                    deferredRender: false,
+                    tbar: this.toolbar,
+                    region: "center",
+                    items: [
+                        this.mapPanelContainer,
+                        westPanel
+                    ]
+                }
+            ]  
         };
 
         GeoExplorer.superclass.initPortal.apply(this, arguments);
