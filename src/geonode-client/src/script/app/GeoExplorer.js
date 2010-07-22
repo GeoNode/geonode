@@ -143,7 +143,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.popupCache = {};
         this.describeLayerCache = {};
         // add any custom application events
-        this.addEvents([
+        this.addEvents(
             /**
              * api: event[saved]
              * Fires when the map has been saved.
@@ -478,7 +478,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             autoHeight: true,
                             layerRecord: record,
                             defaults: {
-                                style: "padding: 10px;",
                                 autoHeight: true,
                                 hideMode: "offsets"
                             }
@@ -490,103 +489,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     prop.items.get(0).items.get(0).cascade(function(i) {
                         i instanceof Ext.form.Field && i.setDisabled(true);
                     });
-                    var layerUrl = record.get("layer").url;
-                    // configure writer plugin for styles
-                    var styleWriter = new gxp.plugins.GeoServerStyleWriter({
-                        baseUrl: layerUrl.split(
-                            "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
+                    var stylesPanel = this.createStylesPanel({
+                        layerRecord: record,
+                        applySelectedStyle: true
                     });
-                    // get DescribeLayer entry
-                    var layerDescription;
-                    var cache = this.describeLayerCache[layerUrl];
-                    if (cache) {
-                        for (var i=0,len=cache.length; i<len; ++i) {
-                            if (cache[i].layerName == record.get("name")) {
-                                layerDescription = cache[i];
-                                break;
-                            }
-                        }
-                    };
-                    var stylesDialog;
-                    var createStylesDialog = function() {
-                        var tabPanel;
-                        if(stylesDialog) {
-                            tabPanel = prop.items.get(0);
-                            tabPanel.remove(stylesDialog.ownerCt);
-                            setTab = true;
-                        }
-                        stylesDialog = new gxp.WMSStylesDialog({
-                            style: "padding: 10px;",
-                            editable: layer.url.replace(
-                                this.urlPortRegEx, "$1/").indexOf(
-                                this.localGeoServerBaseUrl.replace(
-                                this.urlPortRegEx, "$1/")) === 0,
-                            layerRecord: record,
-                            layerDescription: layerDescription,
-                            plugins: [styleWriter],
-                            autoScroll: true,
-                            listeners: {
-                                "ready": function() {
-                                    // we don't want the Cancel and Save buttons
-                                    // if we cannot edit styles
-                                    stylesDialog.editable === false &&
-                                        stylesDialog.ownerCt.getFooterToolbar().hide();
-                                },
-                                "modified": function() {
-                                    // enable the save button
-                                    stylesDialog.ownerCt.buttons[1].enable();
-                                },
-                                "styleselected": function() {
-                                    // enable the cancel button
-                                    stylesDialog.ownerCt.buttons[0].enable();
-                                }
-                            }
-                        });
-                        prop.items.get(0).add({
-                            title: "Styles",
-                            style: "",
-                            autoHeight: true,
-                            items: stylesDialog,
-                            buttons: [{
-                                text: "Cancel",
-                                disabled: true,
-                                handler: function() {
-                                    layer.mergeNewParams({
-                                        "STYLES": backupParams.STYLES
-                                    });
-                                    createStylesDialog.call(this);
-                                },
-                                scope: this
-                            }, {
-                                text: "Save",
-                                disabled: true,
-                                handler: function() {
-                                    this.busyMask = new Ext.LoadMask(prop.el,
-                                        {msg: "Applying style changes..."});
-                                    this.busyMask.show();
-                                    var updateLayer = function() {
-                                        var rec = stylesDialog.selectedStyle;
-                                        layer.mergeNewParams({
-                                            "STYLES": rec.get("userStyle").isDefault === true ?
-                                                "" : rec.get("name"),
-                                            "_dc": Math.random()
-                                        });
-                                        this.busyMask.hide();
-                                        createStylesDialog.call(this);
-                                    }
-                                    styleWriter.write({
-                                        success: updateLayer,
-                                        scope: this
-                                    });
-                                },
-                                scope: this
-                            }]
-                        });
-                        tabPanel && tabPanel.setActiveTab(stylesDialog.ownerCt);
-
-                    };
-                    createStylesDialog.call(this);
+                    stylesPanel.setTitle("Styles");
                     // add styles tab
+                    prop.items.get(0).add(stylesPanel)
                     prop.show();
                 }
             },
@@ -798,6 +707,139 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         GeoExplorer.superclass.initPortal.apply(this, arguments);
     },
     
+    /** api: method[createStylesPanel]
+     *  :param options: ``Object`` Options for the :class:`gxp.WMSStylesDialog`.
+     *      Supported options are ``layerRecord``, ``styleName``, ``editable``
+     *      and ``listeners`` (except "ready", "modified" and "styleselected"
+     *      listeners)
+     *  :return: ``Ext.Panel`` A panel with a :class:`gxp.WMSStylesDialog` as
+     *      only item.
+     */
+    createStylesPanel: function(options) {
+        var stylesPanel, stylesDialog;
+        var createStylesDialog = function() {
+            if (stylesPanel) {
+                stylesDialog.destroy();
+                stylesPanel.getFooterToolbar().items.each(function(i) {
+                    i.disable();
+                });
+            }
+            stylesDialog = new gxp.WMSStylesDialog(Ext.apply({
+                style: "padding: 10px 10px 0 10px;",
+                editable: layer.url.replace(
+                    this.urlPortRegEx, "$1/").indexOf(
+                    this.localGeoServerBaseUrl.replace(
+                    this.urlPortRegEx, "$1/")) === 0,
+                layerDescription: layerDescription,
+                plugins: [new gxp.plugins.GeoServerStyleWriter({
+                    baseUrl: layerUrl.split(
+                        "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
+                })],
+                autoScroll: true,
+                listeners: Ext.apply(options.listeners, {
+                    "ready": function() {
+                        // we don't want the Cancel and Save buttons
+                        // if we cannot edit styles
+                        stylesDialog.editable === false &&
+                            stylesPanel.getFooterToolbar().hide();
+                    },
+                    "modified": function() {
+                        // enable the save button
+                        stylesPanel.buttons[1].enable();
+                    },
+                    "styleselected": function() {
+                        // enable the cancel button
+                        stylesPanel.buttons[0].enable();
+                    },
+                    scope: this
+                })
+            }, options));
+            if (stylesPanel) {
+                stylesPanel.add(stylesDialog);
+                stylesPanel.doLayout();
+            }
+        }.bind(this);
+        
+        var layer = options.layerRecord.get("layer");
+        var layerUrl = layer.url;
+        
+        // remember the layer's current style
+        var initialStyle = layer.params.STYLES;
+
+        // get DescribeLayer entry
+        var layerDescription;
+        var cache = this.describeLayerCache[layerUrl];
+        if (cache) {
+            for (var i=0,len=cache.length; i<len; ++i) {
+                if (cache[i].layerName == record.get("name")) {
+                    layerDescription = cache[i];
+                    break;
+                }
+            }
+        };
+        
+        createStylesDialog();
+        stylesPanel = new Ext.Panel({
+            autoHeight: true,
+            border: false,
+            items: stylesDialog,
+            buttons: [{
+                text: "Cancel",
+                disabled: true,
+                handler: function() {
+                    layer.mergeNewParams({
+                        "STYLES": initialStyle
+                    });
+                    stylesPanel.ownerCt instanceof Ext.Window ?
+                        stylesPanel.ownerCt.close() :
+                        createStylesDialog();
+                },
+                scope: this
+            }, {
+                text: "Save",
+                disabled: true,
+                handler: function() {
+                    this.busyMask = new Ext.LoadMask(stylesPanel.el,
+                        {msg: "Applying style changes..."});
+                    this.busyMask.show();
+                    stylesDialog.saveStyles({
+                        success: function() {
+                            var rec = stylesDialog.selectedStyle;
+                            var styleName = rec.get("userStyle").isDefault ?
+                                "" : rec.get("name");
+                            if (options.applySelectedStyle === true ||
+                                        styleName === initialStyle ||
+                                        rec.get("name") === initialStyle) {
+                                layer.mergeNewParams({
+                                    "STYLES": styleName,
+                                    "_dc": Math.random()
+                                });
+                            }
+                            this.busyMask.hide();
+                            // use setTimeout here to make sure that other
+                            // "saved" listeners also get executed before the
+                            // stylesDialog gets destroyed
+                            window.setTimeout(function() {
+                                stylesPanel.ownerCt instanceof Ext.Window ?
+                                    stylesPanel.ownerCt.close() :
+                                    createStylesDialog();
+                            });
+                        },
+                        scope: this
+                    });
+                },
+                scope: this
+            }],
+            listeners: {
+                "added": function(cmp, ownerCt) {
+                    ownerCt instanceof Ext.Window &&
+                        cmp.buttons[0].enable();
+                }
+            }
+        });
+        return stylesPanel;
+    },
+
     /**
      * Method: initCapGrid
      * Constructs a window with a capabilities grid.
