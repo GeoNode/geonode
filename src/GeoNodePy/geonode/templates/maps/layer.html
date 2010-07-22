@@ -1,4 +1,5 @@
 {% extends "page_layout.html" %}
+{% load geonode_media %}
 {% load i18n %}
 
 {% block title %} {{ layer.resource.title|default:layer.typename }} - {{ block.super }} {% endblock %}
@@ -9,12 +10,17 @@
 {% include "geonode/geoext_header.html" %}
 {% include "geonode/ux_header.html" %}
 {% include "geonode/gxp_header.html" %}
+
+<link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}colorpicker/color-picker.ux.css" />
+
 {{ block.super }}
+
     <script type="text/javascript">
         Ext.onReady(function() {
             var config = {
                 useBackgroundCapabilities: false,
                 proxy: "/proxy/?url=",
+                localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
 
                 /* The URL to a REST map configuration service.  This service 
                  * provides listing and, with an authenticated user, saving of 
@@ -39,7 +45,7 @@
                 listeners: {
                     "ready": function() {
                         var map = app.mapPanel.map;
-                        map.zoomToExtent(map.layers[map.layers.length-1].maxExtent);
+                        map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
                     }
                 }
             };
@@ -49,19 +55,10 @@
             app = new GeoExplorer.Viewer(config);
 
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
-                var layerCfg;
-                for(var i=0, len=app.map.layers.length; i<len; ++i) {
-                    layerCfg = app.map.layers[i];
-                    if(layerCfg.group !== "background") {
-                        var store = app.layerSources[layerCfg.source].store;
-                        var rec = store.getAt(store.findExact("name", layerCfg.name));
-                        app.mapPanel.map.getLayersByName(
-                            rec.get("title") || rec.get("name"))[0].mergeNewParams({
-                                "STYLES": elem.value
-                            });
-                        break;
-                    }
-                }
+                app.mapPanel.map.layers.slice(-1)[0].mergeNewParams({
+                    "STYLES": elem.value,
+                    "_dc": Math.random()
+                });
             });
 
             Ext.get(Ext.DomQuery.select("select[@name='default-style']")).on("change", function(evt, elem) {
@@ -71,28 +68,65 @@
                     params: {"defaultStyle" : elem.value}
                 });
             });
-
+            
+            Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
+                showStyle(elem.previousSibling.value);
+            });
         });
+
+        function showStyle(styleName) {
+            var map = app.mapPanel.map;
+            var layerRecord = app.mapPanel.layers.getByLayer(
+                map.layers.slice(-1)[0]);
+            var stylesPanel = app.createStylesPanel({
+                layerRecord: layerRecord,
+                styleName: styleName,
+                editable: {{ user.is_authenticated|lower }},
+                listeners: {
+                    "saved": function() {
+                        window.location.reload();
+                    }
+                }
+            });
+            styleName || stylesPanel.items.get(0).addStyle();
+            new Ext.Window({
+                title: "Styles",
+                autoHeight: true,
+                width: 280,
+                bodyStyle: "background-color: white;",
+                items: stylesPanel
+            }).show();
+        }
     </script>
 {% endblock %}
 
 {% block main %}
 <div id="description"> <h3> {{ layer.resource.title|default:layer.typename }} </h3> </div>
-<p> <strong>{% trans "Abstract" %}:</strong> {{ metadata.abstract|default:_("No abstract for this layer.") }} </p>
+<p> <strong>{% trans "Abstract" %}:</strong> {{ layer.abstract|default:_("No abstract for this layer.") }} </p>
 
 <div id="preview_map"></div>
 
 <p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>
-<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.resource.keywords|join:", " }}</p>
+<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>
+<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>
+<p> <strong>{% trans "Topic Category" %}:</strong> {{ layer.topic_category }}</p>
+
 <p> <strong>{% trans "Citation" %}:</strong> 
-    {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
+    {{ layer.constraints_use}} {{ layer.contraints_other}}
 </p>
 <p> <strong>{% trans "Contact" %}:</strong>
-    {{ layer.metadata.attribution|default:_("No attribution information for this layer.") }}
+    {{ layer.poc|default:_("No attribution information for this layer.") }}
 </p>
 <p> <strong>{% trans "Attributes" %}:</strong> 
     {{ layer.attribute_names|join:", " }}
 </p>
+<p> <strong>{% trans "Supplemental Information" %}:</strong> 
+    {{ layer.supplemental_information }}
+</p>
+<p> <strong>{% trans "Data Quality Statement" %}:</strong> 
+    {{ layer.data_quality_statement }}
+</p>
+<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>
 <p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
 
 {% endblock %}
@@ -123,15 +157,16 @@
         <p> {% trans "This layer is not currently used in any maps." %} </p>
     {% endif %}
     <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.typename}}">Create new map</a></p> 
-    </p>
 
     <h3> {% trans "Styles" %} </h3>
     <p> {% trans "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style." %}
     <br/>
-        <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/> {{ layer.default_style.name|title }} <a href="{{ GEOSERVER_BASE_URL }}styles/{{layer.publishing.default_style.name}}.sld">SLD</a><br/>
+    <span class="styles-list">
+        <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/><span class="style-title"> {{ layer.default_style.name|title }} </span><a href="{{ GEOSERVER_BASE_URL }}styles/{{layer.publishing.default_style.name}}.sld">SLD</a><br/>
     {% for style in layer.styles %} 
-        <input type="radio" name="style" value="{{style.name}}"/> {{ style.name|title }}  <a href="{{ GEOSERVER_BASE_URL }}styles/{{style.name}}.sld">SLD</a><br/>
+        <input type="radio" name="style" value="{{style.name}}"/><span class="style-title"> {{ style.name|title }} </span><a href="{{ GEOSERVER_BASE_URL }}styles/{{style.name}}.sld">SLD</a><br/>
     {% endfor %}
+    </span>
     {% if user.is_authenticated %}
     {% trans "Default style:" %}
     <select name="default-style">
@@ -139,9 +174,10 @@
           {{layer.publishing.default_style.name|title}}
         </option>
     {% for style in layer.styles %} 
-        <option value="{{style.name}}"/> {{ style.name|title }} <br/>
+        <option value="{{style.name}}"> {{ style.name|title }} </option>
     {% endfor %}
-    </select>
+    </select><br/>
+    <a href="javascript:showStyle()">Create new style</a>
     {% endif %}
 
     </p>
