@@ -66,7 +66,7 @@
 
   <!-- 
     This filter does the actual main authentication workflow and handles form based authentication too.
-    It asks the authentication manager wheter access is granted to the resource the user is trying to access,
+    It asks the authentication manager whether access is granted to the resource the user is trying to access,
     redirects to a failure page if it fails, and to another filter if the authentication informations are 
     just being provided. This is useful only for form based authentication, the OWS services do use another
     authentication processing filter.
