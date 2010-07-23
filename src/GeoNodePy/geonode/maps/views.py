@@ -190,10 +190,7 @@ def create_map_json(request):
         featured=featured,
         owner = request.user,
     )
-    # django api does not automatically grant object 
-    # permissions to object owners, so we grant them 
-    # here.
-    map.set_user_level(request.user, map.LEVEL_ADMIN)
+    map.set_default_permissions()
 
     if 'wms' in conf and 'layers' in conf['map']:
         services = conf['wms']
@@ -942,7 +939,8 @@ def _handle_layer_upload(request, layer=None):
                                          typename=typename,
                                          workspace=gs_resource.store.workspace.name,
                                          title=gs_resource.title,
-                                         uuid=str(uuid.uuid4()))
+                                         uuid=str(uuid.uuid4()),
+                                         owner=request.user)
             # A user without a profile might be uploading this
             poc_contact, __ = Contact.objects.get_or_create(user=request.user,
                                                    defaults={"name": request.user.username })
@@ -951,6 +949,7 @@ def _handle_layer_upload(request, layer=None):
             layer.poc = poc_contact
             layer.metadata_author = author_contact
             layer.save()
+            layer.set_default_permissions()
         except:
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
