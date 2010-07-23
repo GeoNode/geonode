@@ -145,7 +145,6 @@ def mapJSON(request, mapid):
                 mimetype="text/plain",
                 status=400
             )
-
 @csrf_exempt
 def newmap(request):
     '''
@@ -341,7 +340,6 @@ def deletemap(request, mapid):
     '''
     # XXX transaction?
     map = get_object_or_404(Map,pk=mapid) 
-    is_featured = map.featured
     layers = MapLayer.objects.filter(map=map.id) 
      
     map.delete()
@@ -911,7 +909,8 @@ def _build_search_result(doc):
     record and builds a POD structure representing 
     the search result.
     """
-
+    if doc is None:
+        return None
     # Let owslib do some parsing for us...
     rec = CswRecord(doc)
     result = {}

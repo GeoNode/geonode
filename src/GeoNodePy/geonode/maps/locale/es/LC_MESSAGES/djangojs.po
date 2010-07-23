@@ -194,7 +194,7 @@ msgid "Files"
 msgstr ""
 
 #: templates/lang.js:79
-msgid "<p>  Your map is ready to be published to the web! </p> <p> Simply copy the following HTML to embed the map in your website: </p>"
+msgid "Your map is ready to be published to the web!  Simply copy the following HTML to embed the map in your website:"
 msgstr ""
 
 #: templates/lang.js:80
