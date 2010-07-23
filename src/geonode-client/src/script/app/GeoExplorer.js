@@ -151,8 +151,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
              *  * ``String`` the map id
              */
             "saved"
-        ]);
-        
+        );
+
         // global request proxy and error handling
         Ext.util.Observable.observeClass(Ext.data.Connection);
         Ext.data.Connection.on({
@@ -674,35 +674,31 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             activeItem: 0
         });
 
-        Lang.registerLinks();
-
-        var header = Ext.Panel({
+        var header = new Ext.Panel({
             region: "north",
-            items: [
-                {contentEl: "app-header"},
-                {contentEl: "topPanel"}
-            ]
+            autoHeight: true,
+            contentEl: 'header-wrapper'
         });
 
-        this.portalItems = {
-            region: "center",
-            xtype: "container",
-            layout: "border",
-            hideBorders: true,
-            items: [
-                header,
-                {
+        Lang.registerLinks();
+
+        this.portalItems = [
+            header, {
+                region: "center",
+                xtype: "container",
+                layout: "fit",
+                hideBorders: true,
+                items: {
                     layout: "border",
                     deferredRender: false,
                     tbar: this.toolbar,
-                    region: "center",
                     items: [
                         this.mapPanelContainer,
                         westPanel
                     ]
                 }
-            ]  
-        };
+            }
+        ];
 
         GeoExplorer.superclass.initPortal.apply(this, arguments);
     },

@@ -61,13 +61,14 @@ Ext.onReady(function() {
     var titleTemplate = new Ext.Template("<h3>{title}</h3>");
     Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}));
 
-        app.on("saved", function(id) {
-            //reset title header
-            Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}))
+    app.on("saved", function(id) {
+        //reset title header
+        Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}))
 
-            //reset more info link
-            Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.mapID)}))
-        }, this);
+        //reset more info link
+        Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.mapID)}))
+    }, this);
+
 
 });
 </script>
@@ -75,10 +76,11 @@ Ext.onReady(function() {
 {% endblock %}
 
 {% block body %}
-{{ block.super }}
-<div id="topPanel" style="visibility:hidden">
-  <div id="more-info"></div>
-  <span id="map-title-header"></span>
+<div id="header-wrapper">
+  {{ block.super }}
+  <div id="topPanel">
+    <div id="more-info"></div>
+    <span id="map-title-header"></span>
+  </div>
 </div>
-<div id="geoexplorer"></div>
 {% endblock %}
