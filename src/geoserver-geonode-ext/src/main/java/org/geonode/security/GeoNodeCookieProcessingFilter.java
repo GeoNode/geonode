@@ -47,14 +47,25 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         this.client = client;
     }
 
+    /**
+     * @see javax.servlet.Filter#destroy()
+     */
     public void destroy() {
         // nothing to do here
     }
 
+    /**
+     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+     */
     public void init(FilterConfig filterConfig) throws ServletException {
         // nothing to do here
     }
 
+    /**
+     * 
+     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+     *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
@@ -82,7 +93,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
                     final String cookieValue = gnCookie.getValue();
                     authResult = client.authenticateCookie(cookieValue);
                 }
-                
+
                 securityContext.setAuthentication(authResult);
 
                 if (rememberMeServices != null) {
@@ -93,6 +104,8 @@ public class GeoNodeCookieProcessingFilter implements Filter {
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING,
                         "Error connecting to the GeoNode server for authentication purposes", e);
+                throw new ServletException("Error connecting to GeoNode authentication server: "
+                        + e.getMessage(), e);
             }
         }
 
@@ -112,10 +125,16 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         return null;
     }
 
+    /**
+     * @param rememberMeServices
+     */
     public void setRememberMeServices(RememberMeServices rememberMeServices) {
         this.rememberMeServices = rememberMeServices;
     }
 
+    /**
+     * @param client
+     */
     public void setClient(GeonodeSecurityClient client) {
         this.client = client;
     }

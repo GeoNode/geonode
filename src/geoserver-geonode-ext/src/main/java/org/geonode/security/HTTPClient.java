@@ -36,6 +36,15 @@ public class HTTPClient {
         client = new HttpClient(connectionManager);
     }
 
+    /**
+     * Sends an HTTP GET request to the given {@code url} with the provided (possibly empty or null)
+     * request headers, and returns the response content as a string.
+     * 
+     * @param url
+     * @param requestHeaders
+     * @return
+     * @throws IOException
+     */
     public String sendGET(final String url, final String[] requestHeaders) throws IOException {
 
         GetMethod get = new GetMethod(url);

@@ -205,8 +205,8 @@ final class HazardStatistics extends AbstractProcess {
             } else {
                 requestCrs = layerCrs;
             }
-            final Filter filter = ff.intersects(ff.property(geometryDescriptor.getName()), ff
-                    .literal(bufferedGeometry));
+            final Filter filter = ff.intersects(ff.property(geometryDescriptor.getName()),
+                    ff.literal(bufferedGeometry));
 
             DefaultQuery query = new DefaultQuery();
             query.setPropertyNames(politicalLayerAtts);
