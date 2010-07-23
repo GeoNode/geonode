@@ -36,7 +36,12 @@ class GeoNodeTestRunner(DjangoTestSuiteRunner):
         # that import failing aborts the test suite run.
         # Keyczar test problems issue is being tracked at:
         # http://github.com/django-extensions/django-extensions/issues#issue/17  
-                     'django_extensions.models']
+                     'django_extensions.models',
+        # Django avatar requires PIL to be compiled with the libjpeg bindings
+        # in some development systems (MacOSX) this is not done with the
+        # default PIL install.
+                     'avatar.models',
+        ]
 
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         suite = unittest.TestSuite()

@@ -87,7 +87,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorTitleText: "UT:Connection Error",
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
-    exportDialogMessage: '<p> UT: Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
     heightLabel: 'UT: Height',
     infoButtonText: "UT:Get Feature Info",
     largeSizeLabel: 'UT:Large',
@@ -102,17 +101,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     lengthActionText: "UT:Length",
     mapSizeLabel: 'UT: Map Size', 
     measureSplitText: "UT:Measure",
+    metadataFormCancelText : "UT:Cancel",
+    metadataFormSaveAsCopyText : "UT:Save as Copy",
+    metadataFormSaveText : "UT:Save",
     metaDataHeader: 'UT:About this Map',
     metaDataMapAbstract: 'UT:Abstract',
-    metaDataMapContact: 'UT:Contact',
-    metaDataMapId: "UT:Permalink",
     metaDataMapTitle: 'UT:Title',
     miniSizeLabel: 'UT: Mini',
     navActionTipText: "UT:Pan Map",
     navNextAction: "UT:Zoom to Next Extent",
     navPreviousActionText: "UT:Zoom to Previous Extent",
-    noPermalinkText: "UT: This map has not yet been saved.",
-    permalinkLabel: 'UT: Permalink',
     premiumSizeLabel: 'UT: Premium',
     printTipText: "UT:Print Map",
     printWindowTitleText: "UT:Print Preview",
@@ -123,6 +121,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     saveFailMessage: "UT: Sorry, your map could not be saved.",
     saveFailTitle: "UT: Error While Saving",
     saveMapText: "UT: Save Map",
+    saveMapAsText: "UT: Save Map As",
     saveNotAuthorizedMessage: "UT: You Must be logged in to save this map.",
     smallSizeLabel: 'UT: Small',
     sourceLoadFailureMessage: 'UT: Error contacting server.\n Please check the url and try again.',
@@ -145,12 +144,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // add any custom application events
         this.addEvents(
             /**
-             * Event: idchange
-             * Fires upon a new ID provided for the map configuration being edited by this viewer.
+             * api: event[saved]
+             * Fires when the map has been saved.
+             *  Listener arguments:
+             *  * ``String`` the map id
              */
-            "idchange"
+            "saved"
         );
-        
+
         // global request proxy and error handling
         Ext.util.Observable.observeClass(Ext.data.Connection);
         Ext.data.Connection.on({
@@ -219,8 +220,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             haloColor: "#FFFFFF",
             fontColor: "#000000"
         };
-        
+
         GeoExplorer.superclass.constructor.apply(this, arguments);
+
+        this.mapID = this.initialConfig.id;
     },
     
     displayXHRTrouble: function(response) {
@@ -588,92 +591,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             defaults: {cls: 'legend-item'}
         });
 
-        var titleField = new Ext.form.TextField({
-            width: '95%',
-            disabled: true,
-            fieldLabel: this.metaDataMapTitle,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                    this.about.title = newValue;
-                },
-                scope: this
-            }
-        });
-
-        var contactField = new Ext.form.TextField({
-            width: '95%',
-            disabled: true,
-            fieldLabel: this.metaDataMapContact,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                    this.about.contact = newValue;
-                },
-                scope: this
-            }
-        });
-
-        var abstractField = new Ext.form.TextArea({
-            width: '95%',
-            disabled: true,
-            fieldLabel: this.metaDataMapAbstract,
-            listeners: {
-                'change': function(field, newValue, oldValue) {
-                     this.about["abstract"] = newValue;
-                },
-                scope: this
-            }
-        });
-
-        var linkField = new Ext.form.TextField({
-            width: '95%',
-            disabled: true,
-            fieldLabel: this.metaDataMapId,
-            listeners: {
-                scope: this
-            }
-        });
-
-        var permalink = function(id) {
-            // this should really be a template
-            return window.location.protocol + "//" +
-                window.location.host +
-                "/maps/" + id; 
-        };
-
-        this.on("idchange", function(id) {
-            linkField.setValue(permalink(id));
-        }, this);
-
-        var metaDataPanel = new Ext.FormPanel({
-            bodyStyle: {padding: "5px"},
-            //region: 'north',
-            autoScroll: true,
-            //collapsed: true,
-            collapsible: true,
-            labelAlign: "top",
-            items: [
-                titleField,
-                contactField,
-                abstractField,
-                linkField
-            ],
-            title: this.metaDataHeader,
-            height: 250
-        });
-
-
         this.on("ready", function(){
-            this.mapID = this.initialConfig.id;
-            
-            titleField.setValue(this.about.title);
-            contactField.setValue(this.about.contact);
-            abstractField.setValue(this.about["abstract"]);
             if (!this.mapID) {
-                linkField.setValue(this.noPermalinkText);
-            } else {
-                this.fireEvent('idchange', this.mapID);
+                this.showCapabilitiesGrid();
             }
-            metaDataPanel.enable();
         }, this);
 
         var layersTabPanel = new Ext.TabPanel({
@@ -684,26 +605,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         //needed for Safari
-        var layersPanel = new Ext.Panel({
-            title: this.layersPanelText,
+        var westPanel = new Ext.Panel({
             layout: "fit",
-            items: [layersTabPanel]
-        });
-
-        var westPanel = new Ext.Container({
-            layout: "accordion",
-            layoutConfig: {
-                animate:true
-            },
+            items: [layersTabPanel],
             region: "west",
-            width: 250,
-            split: true,
-            collapsible: true,
-            collapseMode: "mini",
-            activeItem: 1,
-            items: [
-                metaDataPanel, layersPanel
-            ]
+            width: 250
         });
 
         this.toolbar = new Ext.Toolbar({
@@ -759,11 +665,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var header = new Ext.Panel({
             region: "north",
-            autoHeight: true
-        });
-
-        header.on('render', function() {
-            header.getEl().appendChild(Ext.get('app-header'));
+            autoHeight: true,
+            contentEl: 'header-wrapper'
         });
 
         Lang.registerLinks();
@@ -1182,7 +1085,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     }
                     zoomSelector.clearValue();
                 }
-            };
+            }
             setScale.call(this);
             this.mapPanel.map.events.register('zoomend', this, setScale);
 
@@ -1472,34 +1375,20 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         var tools = [
-		     /*
-		       ======== UNSUPPORTED TOOLS ==========
-		       
-            new Ext.Button({
-                text: "GeoExplorer",
-                iconCls: "icon-geoexplorer",
-                handler: this.displayAppInfo
-            }),
-            "-",
-            new Ext.Button({
-                tooltip: "Bookmark",
-                handler: this.bookmark,
-                scope: this,
-                iconCls: "icon-save"
-            }),
-            "-",
-            navAction,
-            infoButton,
-            measureSplit,
-            "-",
-		     */
             new Ext.Button({
                 tooltip: this.saveMapText,
-                handler: this.save,
+                handler: this.showMetadataForm,
                 scope: this,
                 iconCls: "icon-save"
             }),
+            new Ext.Action({
+                tooltip: this.publishActionText,
+                handler: this.makeExportDialog,
+                scope: this,
+                iconCls: 'icon-export'
+            }),
             window.printCapabilities ? printButton : "",
+            "-",
             new Ext.Button({
                 handler: function(){
                     this.mapPanel.map.zoomIn();
@@ -1538,11 +1427,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     }
                 },
                 scope: this
-            }), new Ext.Action({
-                tooltip: this.publishActionText,
-                handler: this.makeExportDialog,
-                scope: this,
-                iconCls: 'icon-export'
             }),
             enable3DButton
         ];
@@ -1669,7 +1553,106 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * (persisted) map, etc. 
      */
     makeExportDialog: function() { 
-        new ExportWizard({map: this.mapID}).show();
+        new Ext.Window({
+            title: this.publishActionText,
+            layout: "fit",
+            width: 380,
+            autoHeight: true,
+            items: [{
+                xtype: "gx_embedmapdialog",
+                url: this.rest + this.mapID + "/embed" 
+            }]
+        }).show();
+    },
+
+    /** private: method[initMetadataForm]
+     *
+     * Initialize metadata entry form.
+     */
+    initMetadataForm: function(){
+        
+        var titleField = new Ext.form.TextField({
+            width: '95%',
+            fieldLabel: this.metaDataMapTitle
+        });
+
+        var abstractField = new Ext.form.TextArea({
+            width: '95%',
+            height: 200,
+            fieldLabel: this.metaDataMapAbstract
+        });
+
+        titleField.setValue(this.about.title);
+        abstractField.setValue(this.about["abstract"]);
+
+        var metaDataPanel = new Ext.FormPanel({
+            bodyStyle: {padding: "5px"},          
+            labelAlign: "top",
+            items: [
+                titleField,
+                abstractField
+            ]
+        });
+
+        metaDataPanel.enable();
+
+        var app = this;
+
+        this.metadataForm = new Ext.Window({
+            title: this.metaDataHeader,
+            closeAction: 'hide',
+            items: metaDataPanel,
+            modal: true,
+            width: 400,
+            autoHeight: true,
+            bbar: [
+                "->",
+                new Ext.Button({
+                    text: this.metadataFormSaveAsCopyText,
+                    handler: function(e){
+                        this.about.title = titleField.getValue();
+                        this.about["abstract"] = abstractField.getValue();
+                        this.metadataForm.hide();
+                        this.save(true);
+                    },
+                    scope: this
+                }),
+                new Ext.Button({
+                    text: this.metadataFormSaveText,
+                    handler: function(e){
+                        this.about.title = titleField.getValue();
+                        this.about["abstract"] = abstractField.getValue();
+                        this.metadataForm.hide();
+                        this.save();
+                    },
+                    scope: this
+                }),
+                new Ext.Button({
+                    text: this.metadataFormCancelText,
+                    handler: function() {
+                        this.metadataForm.hide();
+                    },
+                    scope: this
+                })
+            ],
+            listeners: {
+                hide: function(win){
+                    titleField.setValue(app.about.title);
+                    abstractField.setValue(app.about["abstract"]);
+                }
+            }
+        });
+    },
+
+    /** private: method[showMetadataForm]
+     *  Shows the window with a metadata form
+     */
+    showMetadataForm: function() {
+        if(!this.metadataForm) {
+            this.initMetadataForm();
+        }
+
+        this.metadataForm.show();
     },
 
     updateURL: function() {
@@ -1677,7 +1660,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         return this.rest + this.mapID + '/data';
     },
 
-    save: function() {
+    /** api: method[save]
+     *  :arg as: ''Boolean'' True if map should be "Saved as..."
+     *
+     *  Subclasses that load config asynchronously can override this to load
+     *  any configuration before applyConfig is called.
+     */
+    save : function(as){
         var config = this.getState();
         
         var failure = function(response, options) {
@@ -1692,7 +1681,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }).show();
         };
 
-        if (!this.mapID) {
+        if (!this.mapID || as) {
             /* create a new map */ 
             Ext.Ajax.request({
                 url: this.rest,
@@ -1705,7 +1694,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     id = id.replace(/\s*$/,'');
                     id = id.match(/[\d]*$/)[0];
                     this.mapID = id; //id is url, not mapID
-                    this.fireEvent("idchange", id);
+                    this.fireEvent("saved", id);
                 }, 
                 failure: failure, 
                 scope: this
@@ -1719,6 +1708,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 jsonData: config,
                 success: function(response, options) {
                     /* nothing for now */
+                    this.fireEvent("saved", this.mapID);
                 }, 
                 failure: failure, 
                 scope: this

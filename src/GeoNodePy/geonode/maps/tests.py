@@ -18,7 +18,7 @@ class MapTest(TestCase):
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
-use the &#39;Save Map&#39; button above to contribute your map to the GeoNode \
+use the Save Map button above to contribute your map to the GeoNode \
 community." 
 
     default_title = "GeoNode Default Map"
@@ -33,7 +33,7 @@ community."
         def is_wms_layer(x):
             return cfg['sources'][x['source']]['ptype'] == 'gx_wmssource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
-        self.assertEquals(layernames, ['base:CA', 'base:nic_admin'])
+        self.assertEquals(layernames, ['base:CA',])
 
     def test_mapdetails(self): 
         '''/maps/1 -> Test accessing the detail view of a map'''
@@ -77,6 +77,8 @@ community."
     def test_describe_data(self):
         '''/data/base:CA?describe -> Test accessing the description of a layer '''
 
+        from django.contrib.auth.models import User
+        self.assertEqual(2, User.objects.all().count())
         c = Client()
         response = c.get('/data/base:CA?describe')
         # Since we are not authenticated, we should not be able to access it
@@ -93,4 +95,3 @@ community."
                 c.get('/data/base:CA?describe')
             except RuntimeError:
                 pass
-
