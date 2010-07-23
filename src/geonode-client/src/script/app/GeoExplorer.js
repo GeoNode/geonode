@@ -1395,7 +1395,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 tooltip: this.publishActionText,
                 handler: this.makeExportDialog,
                 scope: this,
-                iconCls: 'icon-export'
+                iconCls: 'icon-export',
+                disabled: !this.mapID
             }),
             window.printCapabilities ? printButton : "",
             "-",
@@ -1440,6 +1441,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             enable3DButton
         ];
+        !this.mapID && this.on("saved", function() {
+            // enable the "Publish Map" button
+            tools[1].enable();
+        }, this);
 
         return tools;
     },
