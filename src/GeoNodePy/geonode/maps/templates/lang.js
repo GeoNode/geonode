@@ -96,15 +96,15 @@ if (window.GeoNode && GeoNode.ConfigManager) {
     });
 }
 
-if (window.ExportWizard) {
-    Ext.apply(ExportWizard.prototype, {
-        exportDialogMessage: gettext('<p>Your map is ready to be published to the web! </p> <p> Simply copy the following HTML to embed the map in your website: </p>'),
+if (window.gxp && gxp.EmbedMapDialog) {
+    Ext.apply(gxp.EmbedMapDialog.prototype, {
         heightLabel: gettext("Height"),
         largeSizeLabel: gettext("Large"),
         mapSizeLabel: gettext("Map Size"),
         miniSizeLabel: gettext("Mini"),
         premiumSizeLabel: gettext("Premium"),
         publishActionText: gettext("Publish Map"),
+        publishMessage: gettext('Your map is ready to be published to the web!  Simply copy the following HTML to embed the map in your website:'),
         smallSizeLabel: gettext("Small"),
         widthLabel: gettext("Width")
     });
