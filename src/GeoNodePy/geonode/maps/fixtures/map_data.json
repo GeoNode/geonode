@@ -1,58 +1,38 @@
-[{"pk": 1, "model": "maps.layer", "fields": {"typename": "risk:NIC_Rain_1000y.grd"}}, 
- {"pk": 2, "model": "maps.layer", "fields": {"typename": "risk:NIC_0.5s_200y"}}, 
- {"pk": 3, "model": "maps.layer", "fields": {"typename": "base:distrits"}}, 
- {"pk": 4, "model": "maps.layer", "fields": {"typename": "base:nic_admin"}}, 
- {"pk": 5, "model": "maps.layer", "fields": {"typename": "risk:NIC_0.5s_1000y"}}, 
- {"pk": 6, "model": "maps.layer", "fields": {"typename": "base:CA"}}, 
- {"pk": 7, "model": "maps.layer", "fields": {"typename": "risk:NIC_Rain_100y.grd"}}, 
- {"pk": 1, "model": "maps.map", "fields": {
-     "title": "GeoNode Default Map", 
-     "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the 'Save Map' button above to contribute your map to the GeoNode community.", 
-     "center_lon": -84.700000000000003, 
-     "zoom": 7, 
-     "featured": false, 
-     "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>.", 
-     "endorsed": false, 
-     "center_lat": 12.800000000000001,
-     "owner": 1
-   }
+[
+ {
+    "pk": 1, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "admin", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": true, 
+      "is_staff": true, 
+      "last_login": "2010-07-20 17:26:12", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$6c974$de67ee46336cb3b9bb9e90d53863c3a8d01ce944", 
+      "email": "admin@admin.admin", 
+      "date_joined": "2010-07-20 13:31:27"
+    }
  }, 
- {"pk": 2, "model": "maps.map", "fields": {
-     "title": "GeoNode Default Map", 
-     "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the 'Save Map' button above to contribute your map to the GeoNode community.", 
-     "center_lon": -84.700000000000003, 
-     "zoom": 7, 
-     "featured": false, 
-     "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>.", 
-     "endorsed": false, 
-     "center_lat": 12.800000000000001,
-     "owner": 1
-   }
- }, 
- {"pk": 3, "model": "maps.map", "fields": {
-     "title": "GeoNode Default Map", 
-     "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the 'Save Map' button above to contribute your map to the GeoNode community.", 
-     "center_lon": -84.700000000000003, 
-     "zoom": 7, 
-     "featured": false, 
-     "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>.", 
-     "endorsed": false, 
-     "center_lat": 12.800000000000001,
-     "owner": 1
-   }
+ {"pk": 1, "model": "maps.layer", "fields": {"typename": "base:CA"}}, 
+ {"pk": 1,  "model": "maps.map",  "fields": {
+      "title": "GeoNode Default Map", 
+      "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.", 
+      "center_lon": -84.700000000000003, 
+      "zoom": 7, 
+      "contact": "For more information, contact OpenGeo at http://opengeo.org/", 
+      "owner": 1, 
+      "center_lat": 12.800000000000001
+    }
  }, 
  {"pk": 1, "model": "maps.maplayer", "fields": {
      "group": "background", 
      "ows_url": "http://localhost:8001/geoserver/wms", 
      "name": "base:CA", 
      "stack_order": 0, 
-     "map": 1
-     }
- }, 
- {"pk": 2, "model": "maps.maplayer", "fields": {
-     "ows_url": "http://localhost:8001/geoserver/wms", 
-     "name": "base:nic_admin", 
-     "stack_order": 2, 
      "map": 1
      }
  }

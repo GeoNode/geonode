@@ -124,7 +124,6 @@ def update_map_json(request, mapid):
     map.zoom = conf['map']['zoom']
     map.center_lon = conf['map']['center'][0]
     map.center_lat = conf['map']['center'][1]
-    map.featured = conf['about'].get('featured', False)
     
     # remove any layers in the current map
     for layer in map.layer_set.all():
@@ -160,8 +159,6 @@ def create_map_json(request):
     center_lon = conf['map']['center'][0]
     center_lat = conf['map']['center'][1]
 
-    featured = conf['about'].get('featured', False)
-
     map = Map.objects.create(
         title=title, 
         abstract=abstract, 
@@ -169,7 +166,6 @@ def create_map_json(request):
         zoom=zoom, 
         center_lon=center_lon, 
         center_lat=center_lat, 
-        featured=featured,
         owner = request.user,
     )
 
@@ -379,7 +375,6 @@ def deletemap(request, mapid):
     '''
     # XXX transaction?
     map = get_object_or_404(Map,pk=mapid) 
-    is_featured = map.featured
     layers = MapLayer.objects.filter(map=map.id) 
      
     map.delete()
@@ -988,7 +983,8 @@ def _build_search_result(doc):
     record and builds a POD structure representing 
     the search result.
     """
-
+    if doc is None:
+        return None
     # Let owslib do some parsing for us...
     rec = CswRecord(doc)
     result = {}
