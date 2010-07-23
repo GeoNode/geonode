@@ -5,7 +5,7 @@ from django.template import RequestContext
 from geonode.maps.views import build_map_config, DEFAULT_MAP_CONFIG
 
 def index(request): 
-    return render_to_response('index.html')
+    return render_to_response('index.html', RequestContext(request))
 
 def static(request, page):
     return render_to_response(page + '.html', RequestContext(request, {
