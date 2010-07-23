@@ -87,7 +87,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorTitleText: "UT:Connection Error",
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
-    exportDialogMessage: '<p> UT: Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
     heightLabel: 'UT: Height',
     infoButtonText: "UT:Get Feature Info",
     largeSizeLabel: 'UT:Large',
@@ -1565,7 +1564,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     makeExportDialog: function() { 
         new Ext.Window({
-            title: "Export Map",
+            title: this.publishActionText,
             layout: "fit",
             width: 380,
             autoHeight: true,
