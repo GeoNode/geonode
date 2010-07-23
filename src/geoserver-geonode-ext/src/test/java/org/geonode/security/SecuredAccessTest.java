@@ -60,7 +60,7 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
         // override the auth provider client
         GeoNodeAuthenticationProvider authProvider = GeoServerExtensions.bean(
                 GeoNodeAuthenticationProvider.class, applicationContext);
-        authProvider.client = client;
+        authProvider.setClient(client);
 
         // override the cookie filter
         GeoNodeCookieProcessingFilter filter = GeoServerExtensions.bean(
@@ -97,8 +97,8 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
     public void testUserBasicRead() throws Exception {
         String username = "joe";
         String password = "secret";
-        client.addUserAuth(username, password, false, Collections
-                .singletonList(getLayerId(MockData.BUILDINGS)), null);
+        client.addUserAuth(username, password, false,
+                Collections.singletonList(getLayerId(MockData.BUILDINGS)), null);
 
         checkValidBasicAuth(username, password);
     }
@@ -106,8 +106,8 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
     public void testUserBasicReadWrite() throws Exception {
         String username = "joe";
         String password = "secret";
-        client.addUserAuth(username, password, false, null, Collections
-                .singletonList(getLayerId(MockData.BUILDINGS)));
+        client.addUserAuth(username, password, false, null,
+                Collections.singletonList(getLayerId(MockData.BUILDINGS)));
 
         checkValidBasicAuth(username, password);
     }
@@ -115,8 +115,8 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
     public void testUserCookie() throws Exception {
         String username = "joe";
         String cookie = "geonode-auth-lameuser";
-        client.addCookieAuth(cookie, username, false, Collections
-                .singletonList(getLayerId(MockData.BUILDINGS)), null);
+        client.addCookieAuth(cookie, username, false,
+                Collections.singletonList(getLayerId(MockData.BUILDINGS)), null);
 
         checkValidCookieAuth(cookie);
     }
@@ -125,8 +125,8 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
             ParserConfigurationException, SAXException, IOException, XpathException {
         MockHttpServletRequest request = createRequest("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
                 + getLayerId(MockData.BUILDINGS));
-        request.addHeader("Authorization", "Basic "
-                + new String(Base64.encodeBase64((username + ":" + password).getBytes())));
+        request.addHeader("Authorization",
+                "Basic " + new String(Base64.encodeBase64((username + ":" + password).getBytes())));
 
         MockHttpServletResponse resp = dispatch(request);
         assertEquals(200, resp.getErrorCode());
