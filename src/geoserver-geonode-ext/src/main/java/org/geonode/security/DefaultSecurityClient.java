@@ -6,6 +6,7 @@ package org.geonode.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +32,10 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * Default implementation, which actually talks to a GeoNode server (there are also mock
  * implementations used for testing the whole machinery without a running GeoNode instance)
+ * <p>
+ * The GeoNode access control list endpoint is resolved at
+ * {@link #setApplicationContext(ApplicationContext)}
+ * </p>
  * 
  * @author Andrea Aime - OpenGeo
  */
@@ -45,6 +50,11 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
         this.client = httpClient;
     }
 
+    /**
+     * Package protected accessor to baseUrl for test purposes only
+     * 
+     * @return
+     */
     String getBaseUrl() {
         return baseUrl;
     }
@@ -87,7 +97,13 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
 
         final String url = baseUrl + "data/acls";
 
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.finest("Authenticating with " + Arrays.toString(requestHeaders));
+        }
         final String responseBodyAsString = client.sendGET(url, requestHeaders);
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.finest("Auth response: " + responseBodyAsString);
+        }
 
         JSONObject json = (JSONObject) JSONSerializer.toJSON(responseBodyAsString);
         Authentication authentication = toAuthentication(json);
@@ -156,7 +172,5 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
             baseUrl += "/";
         }
     }
-
-    
 
 }
