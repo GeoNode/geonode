@@ -16,21 +16,19 @@
     </head>
     <body>
         {% block body %} 
-        <div style='visibility: hidden;'>
-            <div id='app-header'>
-                <div class="fullscreen clearfix" id="ja-search">
-                    <form class="spanish" name="es" action="/i18n/setlang/" method="post">
-                        <input type="hidden" name="language" value="es"/>
-                        <button type="submit"></button>
-                    </form>
-                    <form class="english" name="en" action="/i18n/setlang/" method="post">
-                        <input type="hidden" name="language" value="en"/>
-                        <button type="submit"></button>
-                    </form>
-                    <a id='banner' href='{% url geonode.views.index %}'></a>
-                </div>
-            </div>
-        </div>
+        <div id='app-header'>
+          <div class="fullscreen clearfix" id="ja-search">
+            <form class="spanish" name="es" action="/i18n/setlang/" method="post">
+              <input type="hidden" name="language" value="es"/>
+              <button type="submit"></button>
+            </form>
+            <form class="english" name="en" action="/i18n/setlang/" method="post">
+              <input type="hidden" name="language" value="en"/>
+              <button type="submit"></button>
+            </form>
+            <a id='banner' href='{% url geonode.views.index %}'></a>
+          </div>
+        </div>        
         {% endblock %}
     </body>
 </html>
