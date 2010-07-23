@@ -5,6 +5,7 @@ from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
+from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 import httplib2
@@ -552,7 +553,8 @@ class LayerManager(models.Manager):
                 })
 
                 layer.save()
-                    
+                if created: 
+                    layer.set_default_permissions()
             finally:
                 pass
         # Doing a logout since we know we don't need this object anymore.
@@ -570,6 +572,7 @@ class Layer(models.Model, PermissionLevelMixin):
     name = models.CharField(max_length=128)
     uuid = models.CharField(max_length=36)
     typename = models.CharField(max_length=128, unique=True)
+    owner = models.ForeignKey(User, blank=True, null=True)
 
     contacts = models.ManyToManyField(Contact, through='ContactRole')
 
@@ -904,7 +907,20 @@ class Layer(models.Model, PermissionLevelMixin):
                  _('Read-Only'),
                  _('Read and Modify'),
                  _('Administrative')]
+                 
+    def set_default_permissions(self):
+        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ) 
 
+        # remove specific user permissions
+        current_perms =  self.get_all_level_info()
+        for username in current_perms['users'].keys():
+            user = User.objects.get(username=username)
+            self.set_user_level(user, self.LEVEL_NONE)
+
+        # assign owner admin privs
+        if self.owner:
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
 
 class Map(models.Model, PermissionLevelMixin):
@@ -1006,6 +1022,19 @@ class Map(models.Model, PermissionLevelMixin):
                   _('Read and Modify'),
                   _('Administrative')]
     
+    def set_default_permissions(self):
+        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_WRITE) 
+
+        # remove specific user permissions
+        current_perms =  self.get_all_level_info()
+        for username in current_perms['users'].keys():
+            user = User.objects.get(username=username)
+            self.set_user_level(user, self.LEVEL_NONE)
+
+        # assign owner admin privs
+        if self.owner:
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)    
 
 
 
