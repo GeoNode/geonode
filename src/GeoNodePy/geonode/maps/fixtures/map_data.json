@@ -23,10 +23,8 @@
       "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.", 
       "center_lon": -84.700000000000003, 
       "zoom": 7, 
-      "featured": false, 
       "contact": "For more information, contact OpenGeo at http://opengeo.org/", 
       "owner": 1, 
-      "endorsed": false, 
       "center_lat": 12.800000000000001
     }
  }, 
