@@ -13,19 +13,23 @@ import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 
 /**
- * An authentication provider passing the username/password to GeoNode for authentication
+ * An {@link AuthenticationProvider} provider passing the username/password to GeoNode for
+ * authentication
  * 
  * @author Andrea Aime - OpenGeo
  * 
  */
 public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
 
-    GeonodeSecurityClient client;
+    private GeonodeSecurityClient client;
 
     public GeoNodeAuthenticationProvider(GeonodeSecurityClient client) {
         this.client = client;
     }
 
+    /**
+     * @see org.acegisecurity.providers.AuthenticationProvider#authenticate(org.acegisecurity.Authentication)
+     */
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
@@ -39,10 +43,17 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
         }
     }
 
+    /**
+     * @see org.acegisecurity.providers.AuthenticationProvider#supports(java.lang.Class)
+     */
     public boolean supports(Class authentication) {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
+    /**
+     * 
+     * @param client
+     */
     public void setClient(GeonodeSecurityClient client) {
         this.client = client;
     }
