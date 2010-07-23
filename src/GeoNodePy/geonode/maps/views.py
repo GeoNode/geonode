@@ -245,7 +245,7 @@ def newmap(request):
 
                 width_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
                 height_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
-                config['map']['zoom'] = math.floor(min(width_zoom, height_zoom))
+                config['map']['zoom'] = math.ceil(min(width_zoom, height_zoom))
         else:
             config = DEFAULT_MAP_CONFIG
     config["backgroundLayers"] = settings.MAP_BASELAYERS
