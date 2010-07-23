@@ -1679,7 +1679,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * (persisted) map, etc. 
      */
     makeExportDialog: function() { 
-        new ExportWizard({map: this.mapID}).show();
+        new Ext.Window({
+            title: "Export Map",
+            layout: "fit",
+            width: 380,
+            autoHeight: true,
+            items: [{
+                xtype: "gx_embedmapdialog",
+                url: this.rest + this.mapID + "/embed" 
+            }]
+        }).show();
     },
 
     updateURL: function() {
