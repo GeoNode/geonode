@@ -34,10 +34,7 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
             var store = record.store
             if (store instanceof GeoExt.data.WMSCapabilitiesStore) {
                 var request = store.reader.raw.capability.request.describelayer;
-                if (!request) {
-                    return true;
-                }
-                Ext.Ajax.request({
+                request && Ext.Ajax.request({
                     url: request.href,
                     params: {
                         "REQUEST": "DescribeLayer",
