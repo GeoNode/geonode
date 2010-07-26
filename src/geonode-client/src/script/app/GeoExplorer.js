@@ -61,12 +61,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     popupCache: null,
     
-    /** private: property[describeLayerCache]
-     *  ``Object`` Cache of parsed DescribeLayer responses for all WMS layer
-     *      sources, keyed by service URL.
-     */
-    describeLayerCache: null,
-    
     /** private: property[busyMask]
      *  ``Ext.LoadMask``
      */
@@ -140,7 +134,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     constructor: function(config) {
         this.popupCache = {};
-        this.describeLayerCache = {};
         // add any custom application events
         this.addEvents(
             /**
@@ -265,42 +258,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         });
-    },
-    
-    addLayerSource: function(options) {
-        var source = GeoExplorer.superclass.addLayerSource.apply(this, arguments);
-        source instanceof gxp.plugins.WMSSource && source.on("ready", function() {
-            var request = source.store.reader.raw.capability.request.describelayer;
-            if (!request) {
-                return;
-            }
-            var layers = [];
-            source.store.each(function(r) {
-                layers.push(r.get("name"));
-            });
-            Ext.Ajax.request({
-                url: source.url,
-                params: {
-                    "SERVICE": "WMS",
-                    "REQUEST": "DescribeLayer",
-                    "VERSION": source.store.reader.raw.version,
-                    "LAYERS": layers.join(",")
-                },
-                disableCaching: false,
-                success: function(response) {
-                    this.describeLayerCache[request.href] =
-                        new OpenLayers.Format.WMSDescribeLayer().read(
-                            response.responseXML &&
-                            response.responseXML.documentElement ?
-                                response.responseXML : response.responseText);
-                },
-                failure: function() {
-                    // well, bad luck, but no need to worry
-                },
-                scope: this
-            });
-        }, this);
-        return source;
     },
     
     initMapPanel: function() {
@@ -725,7 +682,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     this.urlPortRegEx, "$1/").indexOf(
                     this.localGeoServerBaseUrl.replace(
                     this.urlPortRegEx, "$1/")) === 0,
-                layerDescription: layerDescription,
                 plugins: [new gxp.plugins.GeoServerStyleWriter({
                     baseUrl: layerUrl.split(
                         "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
@@ -761,18 +717,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // remember the layer's current style
         var initialStyle = layer.params.STYLES;
 
-        // get DescribeLayer entry
-        var layerDescription;
-        var cache = this.describeLayerCache[layerUrl];
-        if (cache) {
-            for (var i=0,len=cache.length; i<len; ++i) {
-                if (cache[i].layerName == record.get("name")) {
-                    layerDescription = cache[i];
-                    break;
-                }
-            }
-        };
-        
         createStylesDialog();
         stylesPanel = new Ext.Panel({
             autoHeight: true,
@@ -854,11 +798,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         var firstSource = this.layerSources[data[0][0]];
-        var expander = new GeoExplorer.CapabilitiesRowExpander({
-            ows: firstSource.url,
-            layerDescriptions: firstSource.store.reader.raw &&
-                this.describeLayerCache[firstSource.store.reader.raw.capability.request.describelayer.href]
-        });
+        var expander = new GeoExplorer.CapabilitiesRowExpander();
         
         var addLayers = function() {
             var key = sourceComboBox.getValue();
@@ -917,9 +857,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     // TODO: remove the following when this Ext issue is addressed
                     // http://www.extjs.com/forum/showthread.php?100345-GridPanel-reconfigure-should-refocus-view-to-correct-scroller-height&p=471843
                     capGridPanel.getView().focusRow(0);
-                    expander.ows = this.layerSources[record.get("id")].url;
-                    expander.layerDescriptions = store.reader.raw &&
-                        this.describeLayerCache[store.reader.raw.capability.request.describelayer.href]
                 },
                 scope: this
             }
