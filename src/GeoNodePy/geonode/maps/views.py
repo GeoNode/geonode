@@ -97,7 +97,7 @@ def maps(request, mapid=None):
         config = map.viewer_json()
         return HttpResponse(json.dumps(config))
     elif request.method == 'POST':
-        if not request.user.is_authenticated:
+        if not request.user.is_authenticated():
             return HttpResponse(
                 'You must be logged in to save new maps',
                 mimetype="text/plain",
