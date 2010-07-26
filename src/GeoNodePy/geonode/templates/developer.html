@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block main %}
+<div class="twocol">
 <p>
   The CAPRA GeoNode is an open service built on open source software.
   We encourage you to build new applications using the its components
@@ -103,8 +104,10 @@ To get data from the GeoNode web services use the WFS protocol.  For
   Query. It is all documented on the wiki
   at <code>http://geotools.org/</code>.
 </p>
+</div>
 {% endblock %}
 {% block sidebar %}
+<div class="threecol">
 <h3>CAPRA's Web Services</h3>
 <p>CAPRA's Web Services are available from the following URLs:</p>
 <ul>
@@ -114,4 +117,5 @@ To get data from the GeoNode web services use the WFS protocol.  For
   <li><b>KML through WMS:</b> <code>http://capra.opengeo.org/geoserver/wms/kml?layers=&lt;layername&gt;</code>
   </li>
 </ul>
+</div>
 {% endblock %}
