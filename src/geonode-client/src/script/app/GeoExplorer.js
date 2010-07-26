@@ -785,19 +785,30 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     initCapGrid: function(){
 
-        var source, data = [];        
+        var initialSourceId, source, data = [];        
         for (var id in this.layerSources) {
             source = this.layerSources[id];
+            if (initialSourceId === undefined &&
+                    source instanceof gxp.plugins.WMSSource &&
+                    source.url.replace(this.urlPortRegEx, "$1/").indexOf(
+                        this.localGeoServerBaseUrl.replace(
+                            this.urlPortRegEx, "$1/")) === 0) {
+                initialSourceId = id;
+            }
             if (source.store) {
                 data.push([id, this.layerSources[id].title || id]);                
             }
         }
+        // fall back to 1st source if the local GeoServer WMS is not used
+        if (initialSourceId === undefined) {
+            initialSourceId = data[0][0];
+        }
+
         var sources = new Ext.data.ArrayStore({
             fields: ["id", "title"],
             data: data
         });
 
-        var firstSource = this.layerSources[data[0][0]];
         var expander = new GeoExplorer.CapabilitiesRowExpander();
         
         var addLayers = function() {
@@ -823,7 +834,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         var capGridPanel = new Ext.grid.GridPanel({
-            store: firstSource.store,
+            store: this.layerSources[initialSourceId].store,
             layout: 'fit',
             region: 'center',
             autoScroll: true,
@@ -849,7 +860,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             allowBlank: false,
             forceSelection: true,
             mode: "local",
-            value: data[0][0],
+            value: initialSourceId,
             listeners: {
                 select: function(combo, record, index) {
                     var store = this.layerSources[record.get("id")].store;
