@@ -61,12 +61,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     popupCache: null,
     
-    /** private: property[describeLayerCache]
-     *  ``Object`` Cache of parsed DescribeLayer responses for all WMS layer
-     *      sources, keyed by service URL.
-     */
-    describeLayerCache: null,
-    
     /** private: property[busyMask]
      *  ``Ext.LoadMask``
      */
@@ -87,7 +81,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorTitleText: "UT:Connection Error",
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
-    exportDialogMessage: '<p> UT: Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
     heightLabel: 'UT: Height',
     infoButtonText: "UT:Get Feature Info",
     largeSizeLabel: 'UT:Large',
@@ -141,7 +134,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     constructor: function(config) {
         this.popupCache = {};
-        this.describeLayerCache = {};
         // add any custom application events
         this.addEvents(
             /**
@@ -266,42 +258,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         });
-    },
-    
-    addLayerSource: function(options) {
-        var source = GeoExplorer.superclass.addLayerSource.apply(this, arguments);
-        source instanceof gxp.plugins.WMSSource && source.on("ready", function() {
-            var request = source.store.reader.raw.capability.request.describelayer;
-            if (!request) {
-                return;
-            }
-            var layers = [];
-            source.store.each(function(r) {
-                layers.push(r.get("name"));
-            });
-            Ext.Ajax.request({
-                url: source.url,
-                params: {
-                    "SERVICE": "WMS",
-                    "REQUEST": "DescribeLayer",
-                    "VERSION": source.store.reader.raw.version,
-                    "LAYERS": layers.join(",")
-                },
-                disableCaching: false,
-                success: function(response) {
-                    this.describeLayerCache[request.href] =
-                        new OpenLayers.Format.WMSDescribeLayer().read(
-                            response.responseXML &&
-                            response.responseXML.documentElement ?
-                                response.responseXML : response.responseText);
-                },
-                failure: function() {
-                    // well, bad luck, but no need to worry
-                },
-                scope: this
-            });
-        }, this);
-        return source;
     },
     
     initMapPanel: function() {
@@ -726,7 +682,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     this.urlPortRegEx, "$1/").indexOf(
                     this.localGeoServerBaseUrl.replace(
                     this.urlPortRegEx, "$1/")) === 0,
-                layerDescription: layerDescription,
                 plugins: [new gxp.plugins.GeoServerStyleWriter({
                     baseUrl: layerUrl.split(
                         "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
@@ -762,18 +717,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // remember the layer's current style
         var initialStyle = layer.params.STYLES;
 
-        // get DescribeLayer entry
-        var layerDescription;
-        var cache = this.describeLayerCache[layerUrl];
-        if (cache) {
-            for (var i=0,len=cache.length; i<len; ++i) {
-                if (cache[i].layerName == record.get("name")) {
-                    layerDescription = cache[i];
-                    break;
-                }
-            }
-        };
-        
         createStylesDialog();
         stylesPanel = new Ext.Panel({
             autoHeight: true,
@@ -842,24 +785,31 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     initCapGrid: function(){
 
-        var source, data = [];        
+        var initialSourceId, source, data = [];        
         for (var id in this.layerSources) {
             source = this.layerSources[id];
+            if (initialSourceId === undefined &&
+                    source instanceof gxp.plugins.WMSSource &&
+                    source.url.replace(this.urlPortRegEx, "$1/").indexOf(
+                        this.localGeoServerBaseUrl.replace(
+                            this.urlPortRegEx, "$1/")) === 0) {
+                initialSourceId = id;
+            }
             if (source.store) {
                 data.push([id, this.layerSources[id].title || id]);                
             }
         }
+        // fall back to 1st source if the local GeoServer WMS is not used
+        if (initialSourceId === undefined) {
+            initialSourceId = data[0][0];
+        }
+
         var sources = new Ext.data.ArrayStore({
             fields: ["id", "title"],
             data: data
         });
 
-        var firstSource = this.layerSources[data[0][0]];
-        var expander = new GeoExplorer.CapabilitiesRowExpander({
-            ows: firstSource.url,
-            layerDescriptions: firstSource.store.reader.raw &&
-                this.describeLayerCache[firstSource.store.reader.raw.capability.request.describelayer.href]
-        });
+        var expander = new GeoExplorer.CapabilitiesRowExpander();
         
         var addLayers = function() {
             var key = sourceComboBox.getValue();
@@ -884,7 +834,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         var capGridPanel = new Ext.grid.GridPanel({
-            store: firstSource.store,
+            store: this.layerSources[initialSourceId].store,
             layout: 'fit',
             region: 'center',
             autoScroll: true,
@@ -910,7 +860,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             allowBlank: false,
             forceSelection: true,
             mode: "local",
-            value: data[0][0],
+            value: initialSourceId,
             listeners: {
                 select: function(combo, record, index) {
                     var store = this.layerSources[record.get("id")].store;
@@ -918,9 +868,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     // TODO: remove the following when this Ext issue is addressed
                     // http://www.extjs.com/forum/showthread.php?100345-GridPanel-reconfigure-should-refocus-view-to-correct-scroller-height&p=471843
                     capGridPanel.getView().focusRow(0);
-                    expander.ows = this.layerSources[record.get("id")].url;
-                    expander.layerDescriptions = store.reader.raw &&
-                        this.describeLayerCache[store.reader.raw.capability.request.describelayer.href]
                 },
                 scope: this
             }
@@ -1396,7 +1343,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 tooltip: this.publishActionText,
                 handler: this.makeExportDialog,
                 scope: this,
-                iconCls: 'icon-export'
+                iconCls: 'icon-export',
+                disabled: !this.mapID
             }),
             window.printCapabilities ? printButton : "",
             "-",
@@ -1441,6 +1389,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             enable3DButton
         ];
+        !this.mapID && this.on("saved", function() {
+            // enable the "Publish Map" button
+            tools[1].enable();
+        }, this);
 
         return tools;
     },
@@ -1564,7 +1516,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * (persisted) map, etc. 
      */
     makeExportDialog: function() { 
-        new ExportWizard({map: this.mapID}).show();
+        new Ext.Window({
+            title: this.publishActionText,
+            layout: "fit",
+            width: 380,
+            autoHeight: true,
+            items: [{
+                xtype: "gx_embedmapdialog",
+                url: this.rest + this.mapID + "/embed" 
+            }]
+        }).show();
     },
 
     /** private: method[initMetadataForm]
