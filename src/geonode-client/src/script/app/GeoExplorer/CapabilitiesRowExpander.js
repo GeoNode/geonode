@@ -2,8 +2,6 @@ Ext.namespace("GeoExplorer");
 
 GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
 
-    ows: null,
-
     abstractText: "UT:Abstract:",
     attributionEmptyText: "UT: No attribution information is provided for this layer.",
     attributionText: "UT:Provided by:",
@@ -12,19 +10,16 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
     keywordText: "UT:Keywords:",
     metadataEmptyText: 'UT: No metadata URLs are defined for this layer.',
     metadataText: "UT:Metadata Links:",
-
+    
     constructor: function (config) {
+        config = config || {};
         config.tpl = config.tpl || this.getDefaultTemplate();
 
         var expander, templateLib;
         expander = this;
-        this.ows = config.ows;
         templateLib = Ext.apply({
             ows: function () {
                 return expander.ows;
-            },
-            layerDescriptions: function() {
-                return expander.layerDescriptions;
             }
         }, this.templateLibrary);
         templateLib.metadataEmptyText = this.metadataEmptyText;
@@ -34,6 +29,39 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
         Ext.apply(config.tpl, templateLib);
 
         GeoExplorer.CapabilitiesRowExpander.superclass.constructor.call(this, config);
+        
+        this.on("beforeexpand", function(expander, record, body, rowIndex) {
+            var store = record.store
+            if (store instanceof GeoExt.data.WMSCapabilitiesStore) {
+                var request = store.reader.raw.capability.request.describelayer;
+                request && Ext.Ajax.request({
+                    url: request.href,
+                    params: {
+                        "REQUEST": "DescribeLayer",
+                        "VERSION": store.reader.raw.version,
+                        "LAYERS": record.get("layer").params.LAYERS
+                    },
+                    disableCaching: false,
+                    success: function(response) {
+                        var describeLayer =
+                            new OpenLayers.Format.WMSDescribeLayer().read(
+                                response.responseXML &&
+                                response.responseXML.documentElement ?
+                                    response.responseXML : response.responseText);
+                        if (describeLayer.length && describeLayer[0].owsType === "WFS") {
+                            Ext.get(
+                                Ext.query(".wfs.nodisplay", body)
+                            ).removeClass("nodisplay");
+                        }
+                    },
+                    failure: function() {
+                        // well, bad luck, but no need to worry
+                    },
+                    scope: this
+                });
+                return true;
+            };
+        }, this);
     },
 
     /**
@@ -55,7 +83,7 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
             '<a class="download pdf" target="_blank" href="{name:this.pdfUrl}">PDF</a>, ' +
             '<a class="download kml" target="_blank" href="{name:this.kmlUrl}">KML</a>, ' +
             '<a class="download geotiff" target="_blank" href="{name:this.geoTiffUrl}">GeoTIFF</a>' +
-            '<span class="{name:this.showWFS}">, '  +
+            '<span class="wfs nodisplay">, '  +
             '<a class="download shp" target="_blank" href="{name:this.shpUrl}">SHP (ZIP)</a>'  +
             '</span>' +
             '</p>' +
@@ -123,22 +151,6 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
                 formats.indexOf("application/vnd.google-earth.kmz+xml") !== -1 &&
                 formats.indexOf("application/pdf") !== -1 &&
                 formats.indexOf("image/geotiff") !== -1 ? "" : "nodisplay";
-        },
-
-        showWFS: function (name, values) {
-            var layerDescriptions = this.layerDescriptions();
-            var cls = "nodisplay";
-            if (layerDescriptions) {
-                var desc;
-                for (var i=0,len=layerDescriptions.length; i<len; ++i) {
-                    desc = layerDescriptions[i];
-                    if (desc.layerName == name && desc.owsType == "WFS") {
-                        cls = "";
-                        break;
-                    }
-                }
-            }
-            return cls;
         },
 
         shpUrl: function (name, values) {
