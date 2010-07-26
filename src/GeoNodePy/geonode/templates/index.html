@@ -46,6 +46,7 @@ Ext.onReady(function(){
 {% endblock %}
 
 {% block main %} 
+<div class="onecol">
 <!-- TODO: i18n on the text here -->
 <div class="block">
   <h2> {% trans "Welcome" %} </h2>
@@ -97,6 +98,7 @@ GeoNode lets you upload, manage, and browse data.
   <!-- Links to specialized views of data -->
   <!-- Upload data button (link?) -->
   <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload data"  %}</a>
+</div>
 </div>
 {% endblock %}
 {% block sidebar %}

@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block main %} 
+<div class="twocol">
 {% blocktrans %}
 <p>The CAPRA GeoNode provides access to risk data as well as
   particular refined data sets.  These can be freely combined to create
@@ -15,7 +16,7 @@
   application allows users to browse existing maps and contribute their
   own.
 </p>
-<a name='browsing-data><h4>Browsing Data</h4></a>
+<a name='browsing-data'><h4>Browsing Data</h4></a>
          <p>The <a href='data'>Data
            </a> tab allows you to browse data
            produced for the CAPRA project.
@@ -67,7 +68,7 @@
 <p>To view any of the maps on either tab simply click on the title and
   then hit <b>Open Map
   </b> button.  This will open
-  the <a href='maps/new'>Map Composer
+  the <a href="maps/new">Map Composer
   </a> to your selected map.
 </p>
 <h5>Google Earth Mode
@@ -78,7 +79,7 @@
   have the Google Earth plugin installed you will be prompted to install
   it. 
 </p>
-<a name='creating-a-map'>
+<a name="creating-a-map">
   <h4>Creating a Map</h4>
 </a>
 <p>To create a new map go to the <a href='community'>Contributed
@@ -171,8 +172,10 @@ the <a href='community'>Contributed Maps
 </a> tab.
 </p> 
 {% endblocktrans %} 
+</div>
 {% endblock %} 
 {% block sidebar %}
+<div class="threecol">
 <h3>{% trans "GeoNode Help" %}</h3>
 {% blocktrans %} 
 <p>This page provides helpful information about how to use the
@@ -201,4 +204,5 @@ the <a href='community'>Contributed Maps
 
 </ul>
 {% endblocktrans %}
+</div>
 {% endblock %}

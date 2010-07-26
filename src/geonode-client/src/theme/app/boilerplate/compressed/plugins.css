@@ -1,0 +1,13 @@
+/* -------------------------------------------------------------- 
+   Tabs
+-------------------------------------------------------------- */
+
+ul.tabs { margin: 0; padding: 0; }
+ul.tabs li { float: left; list-style: none; margin: 0; padding: 0; }
+ul.tabs li a { float: left; display: block; }
+
+/* Clearing floats without extra markup  */
+ul.tabs { display: inline-block; }
+ul.tabs:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+* html ul.tabs { height: 1%; }
+ul.tabs { display: block; }
