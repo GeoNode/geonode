@@ -989,11 +989,11 @@ def search_page(request):
     else:
         return HttpResponse(status=405)
 
-    map = Map(projection="EPSG:900913")
+    map = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
 
     return render_to_response('search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map.viewer_json()),
+        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASELAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         "site" : settings.SITEURL
     }))
