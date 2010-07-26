@@ -14,23 +14,15 @@
 <script type="text/javascript">
 Ext.onReady(function(){
    {% autoescape off %}
-
-    var bbox = new GeoNode.BoundingBoxWidget({
-         proxy: "/proxy/?url=",
-         background: {{ background }},
-         renderTo: 'sidebar',
-    });
-
-    var searchTable = new GeoNode.SearchTable({
+ 
+    var searchTable = new GeoNode.MapSearchTable({
         renderTo: 'search_results',
         trackSelection: true,
-        permalinkURL: '{% url search %}',
-        searchURL: '{% url search_api %}',
-        layerDetailURL: '{% url search_result_detail %}',
-        constraints: [bbox],
+        permalinkURL: '{% url maps_search %}',
+        searchURL: '{% url maps_search_api %}',
         searchParams: {{init_search}}
     });
-    searchTable.hookupSearchButtons('sidebar');
+
 
     {% endautoescape %}
 });
@@ -45,6 +37,7 @@ Ext.onReady(function(){
   <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
 
   <div id="search_results"></div>  
+
   <p class="explain">{%trans "TODO: APPROPRIATE EXPLANATORY TEXT" %}
   {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
   </p>

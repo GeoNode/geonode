@@ -31,7 +31,7 @@ Ext.onReady(function(){
 
 {% block main %}
 
-<div class="block">
+<div id="search_form" class="block">
   <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
 
   <form action="{% url maps_search %}" method="POST">
