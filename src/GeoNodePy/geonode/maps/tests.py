@@ -21,6 +21,8 @@ for assembling and publishing web based maps.  After adding layers to the map, \
 use the Save Map button above to contribute your map to the GeoNode \
 community." 
 
+    default_contact = "For more information, contact OpenGeo at http://opengeo.org/"
+
     default_title = "GeoNode Default Map"
 
     def test_map2json(self):
@@ -41,6 +43,63 @@ community."
         c = Client() 
         response = c.get("/maps/%s" % map.id)
         self.assertEquals(response.status_code,200) 
+        
+    def test_map_save(self):
+        """POST /maps -> Test saving a new map"""
+        # This is a valid map viewer config, based on the sample data provided
+        # by andreas in issue 566. -dwins
+        viewer_config = """
+        {
+          "defaultSourceType": "gx_wmssource",
+          "about": {
+              "title": "Title",
+              "abstract": "Abstract",
+              "contact": "Contact"
+          },
+          "sources": {
+            "capra": {
+              "url":"http://localhost:8001/geoserver/wms"
+            }
+          },
+          "map": {
+            "projection":"EPSG:900913",
+            "units":"m",
+            "maxResolution":156543.0339,
+            "maxExtent":[-20037508.34,-20037508.34,20037508.34,20037508.34],
+            "center":[-9428760.8688778,1436891.8972581],
+            "layers":[{
+              "source":"capra",
+              "buffer":0,
+              "wms":"capra",
+              "name":"base:nic_admin"
+            }],
+            "zoom":7
+          }
+        }
+        """
+
+        # since django's test client doesn't support providing a JSON request
+        # body, just test the model directly. 
+        # the view's hooked up right, I promise.
+        map = Map(zoom=7, center_x=0, center_y=0)
+        map.save() # can't attach layers to a map whose pk isn't set yet
+        map.update_from_viewer(json.loads(viewer_config))
+        self.assertEquals(map.title, "Title")
+        self.assertEquals(map.abstract, "Abstract")
+        self.assertEquals(map.contact, "Contact")
+        self.assertEquals(map.layer_set.all().count(), 1)
+
+    def test_map_fetch(self):
+        """/maps/[id]/data -> Test fetching a map in JSON"""
+        map = Map.objects.get(id="1")
+        c = Client()
+        response = c.get("/maps/%s/data" % map.id)
+        self.assertEquals(response.status_code, 200)
+        cfg = json.loads(response.content)
+        self.assertEquals(cfg["about"]["abstract"], self.default_abstract) 
+        self.assertEquals(cfg["about"]["contact"], self.default_contact) 
+        self.assertEquals(cfg["about"]["title"], self.default_title) 
+        self.assertEquals(len(cfg["map"]["layers"]), 5) 
 
     def test_data(self):
         '''/data/ -> Test accessing the data page'''
