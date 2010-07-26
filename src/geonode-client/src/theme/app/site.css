@@ -1,423 +1,6 @@
-/* Begin Blueprint */
-/* -----------------------------------------------------------------------
-
-
- Blueprint CSS Framework 0.9
- http://blueprintcss.org
-
-   * Copyright (c) 2007-Present. See LICENSE for more info.
-   * See README for instructions on how to use Blueprint.
-   * For credits and origins, see AUTHORS.
-   * This is a compressed file. See the sources in the 'src' directory.
-
------------------------------------------------------------------------ */
-
-
-/* reset.css */
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin:0;padding:0;border:0;font-weight:inherit;font-style:inherit;font-size:12px;font-family:inherit;vertical-align:baseline;}
-body {line-height:1.5;}
-table {border-collapse:separate;border-spacing:0;}
-caption, th, td {text-align:left;font-weight:normal;}
-table, td, th {vertical-align:middle;}
-blockquote:before, blockquote:after, q:before, q:after {content:"";}
-blockquote, q {quotes:"" "";}
-a img {border:none;}
-
-/* typography.css */
-
-h1, h2, h3, h4, h5, h6 {
-}
-
-h1 { font-size: 3em; line-height: 1; margin-bottom: 0.5em; }
-h2 { font-size: 2em; margin-bottom: 0.75em; }
-h3 { font-size: 1.5em; line-height: 1; margin-bottom: 1em; }
-h4 { font-size: 1.2em; line-height: 1.25; margin-bottom: 1.25em; height: 1.25em; }
-h5 { font-size: 1em; font-weight: bold; margin-bottom: 1.5em; }
-h6 { font-size: 1em; font-weight: bold; }
-
-h1 img, h2 img, h3 img, 
-h4 img, h5 img, h6 img {
-  margin: 0;
-}
-
-/* End Blueprint */
-
-
-/* Page Styles */
-
-body { 
-  margin: 0;
-  padding: 0;
-  font-family: "Lucida Grande",Arial,Helvetica,sans-serif;
-}
-
-div#container {
-  margin: auto;
-  width: 950px;
-}
-
-div#header { 
-  background: url(img/geo_node_banner.png) no-repeat;
-  height: 70px;
-  margin-bottom: 6px;
-}
-
-div#header h1 { 
-  font-size:0;
-  text-indent: -999em;
-  font-size: 0;
-}
-
-div#header a {
-  display: block;
-  width: 440px;
-  height: 100%;
-  text-indent: -999em;
-  font-size: 0;
-}
-
-
-div#app-header { 
-  background: url(img/geo_node_banner_repeat.png) repeat-x;
-  height: 70px;
-}
-
-div#app-header a#banner{ 
-  background: url(img/geo_node_banner_modified.png) no-repeat;
-  height: 70px;
-  display: block;
-}
-
-div#lang { 
-  color:#FFFFFF;
-  margin-left:500px;
-  margin-top: 30px;
-}
-
-strong {
-    font-weight: bold;
-}
-
-ul#sitenav { 
-margin-bottom:20px;
-background: url(img/menu.png) no-repeat;
-height: 35px;
-width: 950px;
-font-family: "Lucida Grande",Arial,Helvetica,sans-serif;
-color: #333;
-line-height: 35px;
-}
-
-ul#sitenav li{ 
-display:inline;
-text-align:center;
- }
-
-ul#sitenav li a { 
-text-align: center;
-width: 12.4%;
-display: block;
-float: left;
-vertical-align:middle;
-cursor: pointer;
-padding: 0 20px;
-font-size: 92%;
-color: #333;
-text-decoration: none;
-background: transparent url(img/mainnav-sep.gif) no-repeat scroll right bottom;
- }
-
-ul#sitenav li.last a { background: none; }
-
-ul#sitenav li a.here{ 
-font-weight:bold;
-color: #000;
- }
-
- h3 { 
- color: #C21317; 
- }
-
-h4 { 
-font-weight:bold;
-color: #C21317; 
- }
-
-div#sidebar{ 
-  float:right;
-  width: 350px; 
-  clear:none;
-}
-
-
-div#sidebar ul, div#main ul, div#sidebar ol, div#main ol{ 
-  list-style-position: inside;
-}
-
-div#main ul.x-tree-root-ct {
-  list-style-position: outside;
-}
-
-#main{
-  float:left;
-  width:580px;
-  clear:none;
-}
-
-#data{ 
-  margin: 20px 0;
-  background-color: #CCCCFF;
- }
-
-
-p, ul#sitenav, ol, div#sidebar ul, div#main ul { /* This needs more breadth in the ul list*/ 
-margin-bottom: 2em;
-}
-
-div#sidebar ul, div#main ul { 
-  list-style-type: disc;
-}
-
-div#sidebar ol, div#main ol { 
-  list-style-type: decimal;
-}
-
-
-code { 
-font-family: "Courier New", Monospace;
-}
-
-/* CAPRA Styles */
-
-#ja-topbar{ 
-
-background:#FFFFFF url(img/language-en.png) no-repeat scroll 0 0;
-height:35px;
-margin:0 auto;
-position:relative;
-width:950px;
-
- }
-
-#ja-topbar.es{ 
-
-background:#FFFFFF url(img/language-es.png) no-repeat scroll 0 0;
- }
-
-
-#ja-search { 
-    padding-left:8px;
-}
-
-#ja-search .fullscreen {
-    align: right;
-}
-
-
-
-#ja-search form { display: inline; }
-
-#ja-search .english button { 
-width:74px;
-height: 30px;
-background: #FFF url(img/english.jpg) no-repeat scroll 0 0;
-border: none;
-display: block;
-float:left;
- }
-
-#ja-search .spanish button { 
-width:62px;
-height: 30px;
-background: #FFF url(img/spanish.jpg) no-repeat scroll 0 0;
-border: none;
-display: block;
-float:left;
- }
-
-div#app-header #ja-search button { 
-    float:right;
-}
-
-div#app-header #ja-search .spanish button { 
-    width: 16px;
-    height: 12px;
-    margin: 2px;
-    background: url(img/es.gif) no-repeat scroll 0 0;
-}
-
-div#app-header #ja-search .english button { 
-    width: 16px;
-    height: 12px;
-    margin: 2px;
-    background: url(img/gb.gif) no-repeat scroll 0 0;
-}
-
-#home{ 
-display: block;
-float:left;
-height: 30px;
-}
-
-.en a#home{ 
-width:65px;
-background: #FFF url(img/home.jpg) no-repeat scroll 0 0;
- }
-
-.es a#home{ 
-background: #FFF url(img/inicio.png) no-repeat scroll 0 0;
-width: 50px;
- }
-
-
-/* Application Styles  */
-
-#app-div{ 
-width:100%;
-height:85%;
- }
-
-.x-btn .icon-create-map { 
-  background-image: url(img/silk/map_add.png);
-}
-
-
-.x-btn .icon-open-map { 
-  background-image: url(img/silk/map_magnify.png);
-}
-
-a.download { 
-  background-repeat:no-repeat;
-  padding-left: 18px;
-  padding-top: 2px;
-  padding-bottom:2px;
-  background-image: url(img/silk/page_white.png)
-}
-
-a.download.pdf{ 
-  background-image: url(img/silk/page_white_acrobat.png)
-}
-
-a.download.kml, 
-a.download.kmz { 
-  background-image: url(img/geosilk/kml.png)
-}
-
-a.download.geotiff,
-a.download.tiff,
-a.download.png { 
-  background-image: url(img/geosilk/page_white_raster.png)
-}
-
-a.download.shp,
-a.download.zip { 
-  background-image: url(img/geosilk/page_white_vector.png)
-}
-
-a.permalink { 
-  text-decoration: none;  
-  background-repeat:no-repeat;
-  padding-left: 18px;
-  background-image: url(img/silk/link.png);
-}
-
-a.layer-upload-link {
-    text-decoration: none;  
-    background-repeat:no-repeat;
-    padding-left: 18px;
-    margin-top: 1em;
-    background-image: url(img/silk/add.png);
-    display: block;
-}
-
-#data_ops ul li {
-    list-style-type: none;
-    padding-bottom: 10px;
-}
-
-#data_ops a {
-    text-decoration: none;
-}
-
-#data_ops a.create-map {
-    background-repeat:no-repeat;
-    padding-left: 25px;
-    padding-top: 2px;
-    padding-bottom:2px;
-    background-image: url(img/silk/map_add.png);
-    font-weight: bold;
-}
-
-#data_ops span.export {
-    background-repeat:no-repeat;
-    padding-left: 25px;
-    padding-top: 2px;
-    padding-bottom:2px;
-    background-image: url(img/geosilk/map_save.png);
-    font-weight: bold;
-}
-
-.bbox-controls .bbox-enabled {
-    font-weight: bold;
-}
-
-#sidebar .search-button {
-    margin-top: 15px;
-}
-
-.explain {
-    font-size: 95%;
-    color: #808080;
-}
-
-h3 .explain {
-    margin-top: .5em;
-    font-size: 60%;
-    display: block;
-}
-
-#main .block {
-    margin-bottom: 50px;
-}
-
-#sidebar .block {
-    margin-bottom: 25px;
-}
-
-.subtitle {
-    font-size: 60%;
-    padding-left: .25em;
-    color: #808080;
-}
-
-/* data page search form */
-#search_form table {
-    border: none;
-}
-
-#search_form #submit_search {
-    padding-left: 5px;
-}
-
-
-.olControlAttribution{ 
-color:gray;
-bottom: .5em;
-left: .4em;
-right: 220px;
-text-size: smaller;
-}
-.login-widget{ 
-margin-top: 30px;
-margin-right: 10px;
-float: right;
-color: #fff;
-}
-.login-widget a { 
-	color: #fff;
-	}
-/* UTILITY CLASSES */
-
+/*-----------------------
+Utility Classes
+-----------------------*/
 .selfclear:after {
 content: " ";
 display: block;
@@ -435,78 +18,451 @@ display: block;
 }
 
 * html .selfclear {
-height: 1px; /* IE < 7 */
+zoom: 1; /* IE < 7 */
 }
 
 .nodisplay { 
 display: none;
 }
 
+/*-----------------------
+General Styles
+-----------------------*/
+body {
+margin: 0;
+color: #111;
+border-bottom: 1px solid #d5d5d5;
+}
+
+a {
+color: #003C4C;
+text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+color: #003C4C;
+}
+
+.help,
+.secondary {
+color: #d8d8d8;
+}
+
+
+/*-----------------------
+Layout
+-----------------------*/
+.wrap {
+width: 980px;
+margin: 0 auto;
+}
+
+#header {
+background: #00a6d3 url(img/header-bg.png) repeat-x;
+border-top: 1px solid #7a7a7a;
+border-bottom: 2px solid #008cb3;
+font-size: 1.2em;
+}
+
+#header .wrap {
+min-height: 1em;
+position: relative;
+}
+
+#logo {
+float: left;
+width: 158px;
+height: 50px;
+background: url(img/logo-bg.png) no-repeat;
+overflow: hidden;
+text-indent: -9999em;
+}
+
+#login-area {
+position: absolute;
+top: 50%;
+right: 0;
+margin-top: -0.5em;
+text-align: right;
+}
+
+#login-area a {
+color: #fff;
+font-weight: bold;
+text-decoration: none;
+}
+
+#login-area a:hover,
+#login-area a:active {
+text-decoration: underline;
+}
+
+
+#crossbar {
+background: #003c4c;
+border-bottom: 2px solid #008cb3;
+}
+
+#sitenav {
+margin: 0;
+padding: 0;
+list-style-type: none;
+line-height: 1;
+}
+
+#sitenav li {
+float: left;
+margin: 0;
+padding: 0;
+}
+
+#sitenav li a {
+float: left;
+margin: 0;
+padding: 8px 10px;
+color: #fff;
+font-weight: bold;
+text-decoration: none;
+}
+
+#sitenav li a.current {
+background: #d8d8d8;
+color: #003c4c;
+padding-top: 4px;
+border-top: 1px solid #2b5b68;
+margin-top: 2px;
+margin-bottom: -2px;
+border-bottom: 2px solid #d8d8d8;
+}
+
+#main {
+background: #fff url(img/main-bg.png) repeat-x;
+border-bottom: 1px solid #d5d5d5;
+}
+
+#main .wrap {
+padding: 10px 0 0;
+}
+
+.onecol {
+width: 920px;
+margin: 0 10px;
+padding: 10px 20px;
+background: url(img/1col-bg.png) no-repeat;
+}
+
+.twocol {
+width: 600px; /* ticket says content should be 580px but comp has 600px wide */
+margin: 0 10px;
+padding: 10px 20px;
+background: url(img/2col-bg.png) no-repeat;
+float: left;
+}
+
+.threecol {
+width: 260px;
+margin: 0 10px;
+padding: 10px 20px;
+background: url(img/3col-bg.png) no-repeat;
+float: left;
+}
+
+#footer {
+background: #f1f6f7;
+border-top: 3px solid #cde2e8;
+border-bottom: 3px solid #cde2e8;
+}
+
+/*-----------------------
+CAPRA Styles (Does this belong in a site-specific theme?)
+-----------------------*/
+#ja-topbar{ 
+background: #fff url(img/language-en.png) no-repeat scroll 0 0;
+height:35px;
+margin:0 auto;
+position:relative;
+width:950px;
+}
+
+#ja-topbar.es{ 
+background: #fff url(img/language-es.png) no-repeat scroll 0 0;
+}
+
+
+#ja-search { 
+padding-left:8px;
+}
+
+#ja-search .fullscreen {
+align: right;
+}
+
+
+
+#ja-search form {
+display: inline;
+}
+
+#ja-search .english button { 
+width:74px;
+height: 30px;
+background: #fff url(img/english.jpg) no-repeat scroll 0 0;
+border: none;
+display: block;
+float:left;
+}
+
+#ja-search .spanish button { 
+width:62px;
+height: 30px;
+background: #fff url(img/spanish.jpg) no-repeat scroll 0 0;
+border: none;
+display: block;
+float:left;
+}
+
+div#app-header #ja-search button { 
+float:right;
+}
+
+div#app-header #ja-search .spanish button { 
+width: 16px;
+height: 12px;
+margin: 2px;
+background: url(img/es.gif) no-repeat scroll 0 0;
+}
+
+div#app-header #ja-search .english button { 
+width: 16px;
+height: 12px;
+margin: 2px;
+background: url(img/gb.gif) no-repeat scroll 0 0;
+}
+
+#home{ 
+display: block;
+float:left;
+height: 30px;
+}
+
+.en a#home{ 
+width:65px;
+background: #fff url(img/home.jpg) no-repeat scroll 0 0;
+}
+
+.es a#home{ 
+background: #fff url(img/inicio.png) no-repeat scroll 0 0;
+width: 50px;
+}
+
+
+/*-----------------------
+Application Styles
+-----------------------*/
+#app-div { 
+width:100%;
+height:85%;
+}
+
+.x-btn .icon-create-map { 
+background-image: url(img/silk/map_add.png);
+}
+
+
+.x-btn .icon-open-map { 
+background-image: url(img/silk/map_magnify.png);
+}
+
+a.download { 
+background-repeat:no-repeat;
+padding-left: 18px;
+padding-top: 2px;
+padding-bottom:2px;
+background-image: url(img/silk/page_white.png)
+}
+
+a.download.pdf { 
+background-image: url(img/silk/page_white_acrobat.png)
+}
+
+a.download.kml, 
+a.download.kmz { 
+background-image: url(img/geosilk/kml.png)
+}
+
+a.download.geotiff,
+a.download.tiff,
+a.download.png { 
+background-image: url(img/geosilk/page_white_raster.png)
+}
+
+a.download.shp,
+a.download.zip { 
+background-image: url(img/geosilk/page_white_vector.png)
+}
+
+a.permalink { 
+text-decoration: none;  
+background-repeat:no-repeat;
+padding-left: 18px;
+background-image: url(img/silk/link.png);
+}
+
+a.layer-upload-link {
+text-decoration: none;  
+background-repeat:no-repeat;
+padding-left: 18px;
+margin-top: 1em;
+background-image: url(img/silk/add.png);
+display: block;
+}
+
+#data_ops ul li {
+list-style-type: none;
+padding-bottom: 10px;
+}
+
+#data_ops a {
+text-decoration: none;
+}
+
+#data_ops a.create-map {
+background-repeat:no-repeat;
+padding-left: 25px;
+padding-top: 2px;
+padding-bottom:2px;
+background-image: url(img/silk/map_add.png);
+font-weight: bold;
+}
+
+#data_ops span.export {
+background-repeat:no-repeat;
+padding-left: 25px;
+padding-top: 2px;
+padding-bottom:2px;
+background-image: url(img/geosilk/map_save.png);
+font-weight: bold;
+}
+
+.bbox-controls .bbox-enabled {
+font-weight: bold;
+}
+
+.explain {
+font-size: 0.95em;
+color: #888;
+}
+
+.subtitle {
+font-size: 0.6em;
+padding-left: 0.25em;
+color: #888;
+}
+
+/*-----------------------
+Data Page Search Form
+-----------------------*/
+#search_form table {
+border: none;
+}
+
+#search_form #submit_search {
+padding-left: 5px;
+}
+
+.olControlAttribution{ 
+color:gray;
+bottom: .5em;
+left: .4em;
+right: 220px;
+font-size: smaller;
+}
+
+.login-widget{ 
+margin-top: 30px;
+margin-right: 10px;
+float: right;
+color: #fff;
+}
+
+.login-widget a { 
+color: #fff;
+}
+
 
 /*!
- * Ext JS Library 3.2.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
- */
-/*
- * FileUploadField component styles
- */
+* Ext JS Library 3.2.0
+* Copyright(c) 2006-2010 Ext JS, Inc.
+* licensing@extjs.com
+* http://www.extjs.com/license
+*/
+/*-----------------------
+FileUploadField component styles
+-----------------------*/
 .x-form-file-wrap {
-    position: relative;
-    height: 22px;
+position: relative;
+height: 22px;
 }
+
 .x-form-file-wrap .x-form-file {
-	position: absolute;
-	right: 0;
-	-moz-opacity: 0;
-	filter:alpha(opacity: 0);
-	opacity: 0;
-	z-index: 2;
-    height: 22px;
+position: absolute;
+right: 0;
+-moz-opacity: 0;
+filter:alpha(opacity: 0);
+opacity: 0;
+z-index: 2;
+height: 22px;
 }
+
 .x-form-file-wrap .x-form-file-btn {
-	position: absolute;
-	right: 0;
-	z-index: 1;
+position: absolute;
+right: 0;
+z-index: 1;
 }
+
 .x-form-file-wrap .x-form-file-text {
-    position: absolute;
-    left: 0;
-    z-index: 3;
-    color: #777;
+position: absolute;
+left: 0;
+z-index: 3;
+color: #777;
 }
 
 div#main form ul.form {
-    list-style-type: none;
+list-style-type: none;
 }
+
 div#main form ul.form li {
-    margin-bottom: 1.5em;
-		clear: both;
+margin-bottom: 1.5em;
+clear: both;
 }
+
 div#main form ul.form li label {
-		display: block;
-		font-weight: bold;
+display: block;
+font-weight: bold;
 }
+
 div#main form ul.form li input {
 }
+
 div#main form ul.form ul.errorlist {
-    list-style-type: none;
-		margin: 0;
-		margin-top: 2px;
-		float: right;
+list-style-type: none;
+margin: 0;
+margin-top: 2px;
+float: right;
 }
+
 div#main form ul.form fieldset {
-		border: 1px solid #333;
-		padding: 10px;
-		margin-bottom: 10px
+border: 1px solid #333;
+padding: 10px;
+margin-bottom: 10px
 }
+
 div#main form ul.form fieldset legend{
-		font-weight: bold;
-		padding: 0 4px;
+font-weight: bold;
+padding: 0 4px;
 }
 
 /* SLD titles on the layer.html template */
 span.style-title {
-    cursor: pointer;
+cursor: pointer;
 }

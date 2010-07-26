@@ -4,65 +4,50 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-    <head>
-        <title>{% block title %} {{ SITENAME }} {% endblock %}</title>
+<head>
+  <title>{% block title %} {{ SITENAME }} {% endblock %}</title>
+  <link rel="shortcut icon" href="{% geonode_media "app_themes" %}img/favicon.ico"/>
+  {% block head %}
+  <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}boilerplate-min.css" media="screen" />
+  <!--[if lte IE 6]><link rel="stylesheet" href="{% geonode_media "app_themes" %}boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+  <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" media="screen" />
+  <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+  <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
+  {% endblock %}
+</head>
+<body>
+  <div id="header">
+    <div class="wrap selfclear">
+      <a id="logo" href="{% url geonode.views.index %}">GeoNode</a>
+      <div id="login-area">
+        {% if user.is_authenticated %}
+          <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
+      	{% else %}
+          <!-- this should be updated to a url var --><a href="/accounts/login">Sign in</a>
+          {% if REGISTRATION_OPEN %} or <a href="{% url registration_register %}">{% trans "Register" %}</a>{% endif %}
+          for extra features
+      {% endif %}
+      </div>
+    </div><!-- /.wrap -->
+  </div><!-- /#header -->
+  <div id="crossbar">
+    <div class="wrap selfclear">             
+      {% block nav %}
+        {% navbar master %}
+      {% endblock %}
+    </div><!-- /.wrap -->
+  </div><!-- /#crossbar -->
+  <div id="main">
+    <div class="wrap selfclear">       
+      {% block main %}{% endblock %}
+      {% block content %}{% endblock %}
+      {% block sidebar %}{% endblock %}
+    </div><!-- /.wrap -->
+  </div><!-- /#main -->
+  <div id="footer">
+    <div class="wrap selfclear">             
 
-        <!-- IE 8 Compatibility -->
-        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
-
-        <link rel="shortcut icon" href="{% geonode_media "app_themes" %}img/favicon.ico"/>
-
-        {% block head %}
-        <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" />
-        <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-        <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
-        {% endblock %}
-    </head>
-    <body>
-        <div id="container" class="selfclear">
-            <div class="clearfix" id="ja-topbar">
-                <div id="ja-pathway">
-                </div>
-                <div class="clearfix" id="ja-search">
-                    <form class="spanish" name="es" action="/i18n/setlang/" method="post">
-	                    {% csrf_token %}
-                        <input type="hidden" name="language" value="es"/>
-                        <button type="submit"></button>
-                    </form>
-                    <form class="english" name="en" action="/i18n/setlang/" method="post">
-	                    {% csrf_token %}
-                        <input type="hidden" name="language" value="en"/>
-                        <button type="submit"></button>
-                    </form>
-                    <a title="CAPRA" id="home" href="http://ecapra.org/en/index.php"></a>
-                </div>
-            </div>
-						<div class="login-widget"> 
-							{% if user.is_authenticated %}
-							   <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (
-						    	<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> |
-						        <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
-						    	{% else %}
-						        <form action="/accounts/login" method="post"> 
-									<input type="text" name="username" />
-									<input type="password" name="password" />
-									<input type="submit" value="Login" />
-									{% csrf_token %}
-								</form>
-								{% if REGISTRATION_OPEN %}
-								<p style="margin-bottom:0em;">{% trans "Not member" %}? <a href="{% url registration_register %}">{% trans "Register" %}</a>!</p>
-								{% endif %}
-							{% endif %}
-						</div>
-             <div id="header"><a href="{% url geonode.views.index %}">CAPRA Home</a>
-			</div>
-            {% block nav %}
-            {% navbar master %}
-            {% endblock %}
-            <div id="main"> {% block main %} {% endblock %}
-			        {% block content %}{% endblock %}
-         	 </div>
-            <div id="sidebar"> {% block sidebar %} {% endblock %} </div>
-        </div>
-    </body>
+    </div><!-- /.wrap -->
+  </div><!-- /#footer -->
+</body>
 </html>
