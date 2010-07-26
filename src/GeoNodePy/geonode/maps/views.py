@@ -24,6 +24,7 @@ from urlparse import urlparse
 import uuid
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import inlineformset_factory
+from django.db.models import Q
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
@@ -1086,3 +1087,117 @@ def change_poc(request, ids, template = 'maps/change_poc.html'):
         form = PocForm() # An unbound form
     return render_to_response(template, RequestContext(request, 
                                   {'layers': layers, 'form': form }))
+
+
+
+
+#### MAPS SEARCHING
+
+DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
+MAX_MAPS_SEARCH_BATCH_SIZE = 25
+@csrf_exempt
+def maps_search(request):
+    """
+    handles a basic search for maps using the 
+    GeoNetwork catalog.
+
+    the search accepts: 
+    q - general query for keywords across all fields
+    start - skip to this point in the results
+    limit - max records to return
+
+    for ajax requests, the search returns a json structure 
+    like this: 
+    
+    {
+    'total': <total result count>,
+    # NOT IMPLEMENT YET 'next': <url for next batch if exists>,
+    # NOT IMPLEMENT YET 'prev': <url for previous batch if exists>,
+    'query_info': {
+        'start': <integer indicating where this batch starts>,
+        'limit': <integer indicating the batch size used>,
+        'q': <keywords used to query>,
+    },
+    'rows': [
+      {
+        'title': <map title,
+        'abstract': '...',
+      },
+      ...
+    ]}
+    """
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
+    # grab params directly to implement defaults as
+    # opposed to panicy django forms behavior.
+    query = params.get('q', '')
+    try:
+        start = int(params.get('start', '0'))
+    except:
+        start = 0
+    try:
+        limit = min(int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE)),
+                    MAX_MAPS_SEARCH_BATCH_SIZE)
+    except: 
+        limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
+
+    result = _maps_search(query, start, limit)
+    result['success'] = True
+    return HttpResponse(json.dumps(result), mimetype="application/json")
+
+def _maps_search(query, start, limit):
+
+    keywords = _split_query(query)
+ 
+    if len(keywords) == 0:
+        maps = Map.objects.all()
+
+    maps = Map.objects
+    for keyword in keywords:
+        maps = maps.filter(
+              Q(title__icontains=keyword)
+            | Q(abstract__icontains=keyword))
+
+    # TODO: test this use of start/limit
+    result = {'rows': list(maps.values('title','abstract')[start:start+limit]), 
+              'total': maps.count()}
+
+    result['query_info'] = {
+        'start': start,
+        'limit': limit,
+        'q': query
+    }
+    if start > 0: 
+        prev = max(start - limit, 0)
+        params = urlencode({'q': query, 'start': prev, 'limit': limit})
+        # TODO:
+        #result['prev'] = reverse('geonode.maps.views.metadata_search') + '?' + params
+
+    # TODO
+    # next = csw.results.get('nextrecord', 0) 
+    # if next > 0:
+    #     params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
+    #     result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
+    
+    return result
+
+@csrf_exempt    
+def maps_search_page(request):
+    # for non-ajax requests, render a generic search page
+
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
+    return render_to_response('maps_search.html', RequestContext(request, {
+        'init_search': json.dumps(params or {}),
+         "site" : settings.SITEURL
+    }))
