@@ -218,6 +218,7 @@ def newmap(request):
             bbox = None
             layers = []
             config = DEFAULT_MAP_CONFIG
+            config['fromLayer'] = True
             for layer_name in params.getlist('layer'):
                 try:
                     layer = Layer.objects.get(typename=layer_name)

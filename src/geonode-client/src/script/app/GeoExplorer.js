@@ -585,7 +585,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         this.on("ready", function(){
-            if (!this.mapID) {
+            if (!this.fromLayer && !this.mapID) {
                 this.showCapabilitiesGrid();
             }
         }, this);
