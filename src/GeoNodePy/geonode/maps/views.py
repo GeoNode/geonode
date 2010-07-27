@@ -171,8 +171,6 @@ def newmap(request):
         if 'layer' in params:
             bbox = None
             layers = []
-            config = DEFAULT_MAP_CONFIG
-            map = Map(zoom=7, center_x=0, center_y=0, projection="EPSG:900913")
             for layer_name in params.getlist('layer'):
                 try:
                     layer = Layer.objects.get(typename=layer_name)
@@ -212,6 +210,7 @@ def newmap(request):
                 map.zoom = math.ceil(min(width_zoom, height_zoom))
 
             config = map.viewer_json(*(DEFAULT_BASELAYERS + layers))
+            config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
     return render_to_response('maps/view.html', RequestContext(request, {
