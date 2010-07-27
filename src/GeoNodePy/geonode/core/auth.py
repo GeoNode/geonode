@@ -57,7 +57,7 @@ class GranularBackend(ModelBackend):
         perms = set()
         ct = ContentType.objects.get_for_model(obj)
         for rm in GenericObjectRoleMapping.objects.select_related('role', 'role__permissions', 'role__permissions__content_type').filter(object_id=obj.id, object_ct=ct, subject__in=generic_roles).all():
-            for perm in rm.role.permissions:
+            for perm in rm.role.permissions.all():
                 perms.add((perm.content_type.app_label, perm.codename))
         return perms
 
@@ -74,9 +74,9 @@ class GranularBackend(ModelBackend):
         
         ct = ContentType.objects.get_for_model(obj)
         if not user_obj.is_anonymous():
-            for rm in UserObjectRoleMapping.objects.select_related('role', 'role__permissions', 'role__permissions__content_type').filter(object_id=obj.id, object_ct=ct, user=user).all():
-                for perm in rm.role.permissions:
-                    perms.add((perm.content_type.app_label, perm.codename))
+            for rm in UserObjectRoleMapping.objects.select_related('role', 'role__permissions', 'role__permissions__content_type').filter(object_id=obj.id, object_ct=ct, user=user_obj).all():
+                for perm in rm.role.permissions.all():
+                    obj_perms.add((perm.content_type.app_label, perm.codename))
 
         return obj_perms
 
