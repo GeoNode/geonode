@@ -1,5 +1,6 @@
-from geonode.core.models import UserRowLevelPermission, GenericRowLevelPermission
+from geonode.core.models import ObjectRole, UserObjectRoleMapping, GenericObjectRoleMapping
 from django.contrib import admin
 
-admin.site.register(UserRowLevelPermission)
-admin.site.register(GenericRowLevelPermission)
+admin.site.register(ObjectRole)
+admin.site.register(UserObjectRoleMapping)
+admin.site.register(GenericObjectRoleMapping)

@@ -1,4 +1,3 @@
-from geonode.core.models import UserRowLevelPermission, GenericRowLevelPermission
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode import geonetwork
@@ -74,6 +73,19 @@ DEFAULT_MAP_CONFIG = {
         "center": settings.DEFAULT_MAP_CENTER,
         "zoom": settings.DEFAULT_MAP_ZOOM
     }
+}
+
+MAP_LEV_NAMES = {
+    Map.LEVEL_NONE  : _('No Permissions'),
+    Map.LEVEL_READ  : _('Read Only'),
+    Map.LEVEL_WRITE : _('Read/Write'),
+    Map.LEVEL_ADMIN : _('Administrative')
+}
+LAYER_LEV_NAMES = {
+    Layer.LEVEL_NONE  : _('No Permissions'),
+    Layer.LEVEL_READ  : _('Read Only'),
+    Layer.LEVEL_WRITE : _('Read/Write'),
+    Layer.LEVEL_ADMIN : _('Administrative')
 }
 
 def maps(request, mapid=None):
@@ -404,23 +416,8 @@ def view_map_permissions(request, mapid):
             RequestContext(request, {'error_message': 
                 _("You are not permitted to view this map's permissions")})), status=401)
 
-    ctx =  map.get_all_level_info()
-    def lname(l):
-        if l >= 0: 
-            return map.LEVEL_NAME[l]
-        else:
-            return _('Custom')
-    
-    ctx[ANONYMOUS_USERS] = lname(ctx[ANONYMOUS_USERS])
-    ctx[AUTHENTICATED_USERS] = lname(ctx[AUTHENTICATED_USERS])
-    
-    ulevs = []
-    for u, l in ctx['users'].items():
-        ulevs.append([u, lname(l)])
-    ulevs.sort()
-    ctx['users'] = ulevs
+    ctx = _view_perms_context(map, MAP_LEV_NAMES)
     ctx['map'] = map
-
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
                               
 
@@ -436,40 +433,11 @@ def edit_map_permissions(request, mapid):
                 _("You are not permitted to edit this map's permissions")})), status=401)
     
     if request.method == 'GET':
-        info = map.get_all_level_info()
-        info['users'] = sorted(info['users'].items())
-        info['all_usernames'] = [x[0] for x in User.objects.values_list('username').order_by()]
-        info['levels'] = [(i, map.LEVEL_NAME[i]) for i in range(len(map.LEVEL_NAME))]
-
-        ctx = {'map': map, 'permissions_json': json.dumps(info)}
+        info = _perms_info_json(map, MAP_LEV_NAMES)
+        ctx = {'map': map, 'permissions_json': info}
         return render_to_response("maps/edit_permissions.html", RequestContext(request, ctx))
-    elif request.method == 'POST':
-        errors = []
-        params = request.POST
-        anon_level = int(params[ANONYMOUS_USERS])
-        all_auth_level = int(params[AUTHENTICATED_USERS])
-        
-        kpat = re.compile("^u_(.*)_level$")
-        ulevs = {}
-        for k, v in params.items(): 
-            m = kpat.match(k)
-            if m: 
-                username = m.groups()[0]
-                level = int(v)
-                if level != -1:
-                    ulevs[username] = level
-        lev_max = map.LEVEL_ADMIN
-        anon_lev_max = map.LEVEL_WRITE
-
-        if anon_level >= 0 and anon_level <= anon_lev_max:
-            map.set_gen_level(ANONYMOUS_USERS, anon_level)
-        if all_auth_level >= 0 and all_auth_level <= lev_max:
-            map.set_gen_level(AUTHENTICATED_USERS, all_auth_level) 
-        for username, level in ulevs.items():
-            user = User.objects.get(username=username)
-            if level >= 0 and level <= lev_max:
-                map.set_user_level(user, level)
-        
+    elif request.method == 'POST':        
+        errors = _handle_perms_edit(request, map)
         result = {}
         if len(errors) > 0:
             result['success'] = False
@@ -982,6 +950,8 @@ def _handle_layer_upload(request, layer=None):
 
     return layer, errors
 
+
+
 @login_required
 def view_layer_permissions(request, layername):
     layer = get_object_or_404(Layer,typename=layername) 
@@ -990,26 +960,72 @@ def view_layer_permissions(request, layername):
         return HttpResponse(loader.render_to_string('401.html', 
             RequestContext(request, {'error_message': 
                 _("You are not permitted to view this layer's permissions")})), status=401)
+    
+    ctx = _view_perms_context(layer, LAYER_LEV_NAMES)
+    ctx['layer'] = layer
+    return render_to_response("maps/layer_permissions.html", RequestContext(request, ctx))
 
-    ctx =  layer.get_all_level_info()
+def _view_perms_context(obj, level_names):
+
+    ctx =  obj.get_all_level_info()
     def lname(l):
-        if l >= 0: 
-            return layer.LEVEL_NAME[l]
-        else:
-            return _('Custom')
-
-    ctx[ANONYMOUS_USERS] = lname(ctx[ANONYMOUS_USERS])
-    ctx[AUTHENTICATED_USERS] = lname(ctx[AUTHENTICATED_USERS])
+        return level_names.get(l, _("???"))
+    ctx[ANONYMOUS_USERS] = lname(ctx.get(ANONYMOUS_USERS, obj.LEVEL_NONE))
+    ctx[AUTHENTICATED_USERS] = lname(ctx.get(AUTHENTICATED_USERS, obj.LEVEL_NONE))
 
     ulevs = []
     for u, l in ctx['users'].items():
         ulevs.append([u, lname(l)])
     ulevs.sort()
     ctx['users'] = ulevs
-    ctx['layer'] = layer
 
-    return render_to_response("maps/layer_permissions.html", RequestContext(request, ctx))
+    return ctx
 
+def _perms_info_json(obj, level_names):
+    info = obj.get_all_level_info()
+    # these are always specified even if none
+    info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
+    info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
+    info['users'] = sorted(info['users'].items())
+    info['all_usernames'] = [x[0] for x in User.objects.values_list('username').order_by()]
+    info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
+    return json.dumps(info)
+
+INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
+def _handle_perms_edit(request, obj):
+    errors = []
+    params = request.POST
+    valid_pl = obj.permission_levels
+    
+    anon_level = params[ANONYMOUS_USERS]
+    # validate anonymous level, disallow admin level
+    if not anon_level in valid_pl or anon_level == obj.LEVEL_ADMIN:
+        errors.append(_("Anonymous Users") + ": " + INVALID_PERMISSION_MESSAGE)
+    
+    all_auth_level = params[AUTHENTICATED_USERS]
+    if not all_auth_level in valid_pl:
+        errors.append(_("Registered Users") + ": " + INVALID_PERMISSION_MESSAGE)
+
+    kpat = re.compile("^u_(.*)_level$")
+    ulevs = {}
+    for k, level in params.items(): 
+        m = kpat.match(k)
+        if m: 
+            username = m.groups()[0]
+            if not level in valid_pl:
+                errors.append(_("User") + " " + username + ": " + INVALID_PERMISSION_MESSAGE)
+            else:
+                ulevs[username] = level
+
+    if len(errors) == 0: 
+        obj.set_gen_level(ANONYMOUS_USERS, anon_level)
+        obj.set_gen_level(AUTHENTICATED_USERS, all_auth_level)
+        
+        for username, level in ulevs.items():
+            user = User.objects.get(username=username)
+            obj.set_user_level(user, level)
+
+    return errors
 
 # XXX should not be exempt
 @csrf_exempt
@@ -1023,40 +1039,13 @@ def edit_layer_permissions(request, layername):
                 _("You are not permitted to edit this layer's permissions")})), status=401)
 
     if request.method == 'GET':
-        info = layer.get_all_level_info()
-        info['users'] = sorted(info['users'].items())
-        info['all_usernames'] = [x[0] for x in User.objects.values_list('username').order_by()]
-        info['levels'] = [(i, layer.LEVEL_NAME[i]) for i in range(len(layer.LEVEL_NAME))]
-
-        ctx = {'layer': layer, 'permissions_json': json.dumps(info)}
+        info = _perms_info_json(layer, LAYER_LEV_NAMES)
+        ctx = {'layer': layer, 'permissions_json': info}
         return render_to_response("maps/layer_edit_permissions.html", RequestContext(request, ctx))
     elif request.method == 'POST':
-        errors = []
-        params = request.POST
-        anon_level = int(params[ANONYMOUS_USERS])
-        all_auth_level = int(params[AUTHENTICATED_USERS])
 
-        kpat = re.compile("^u_(.*)_level$")
-        ulevs = {}
-        for k, v in params.items(): 
-            m = kpat.match(k)
-            if m: 
-                username = m.groups()[0]
-                level = int(v)
-                if level != -1:
-                    ulevs[username] = level
-        lev_max = layer.LEVEL_ADMIN
-        anon_lev_max = layer.LEVEL_WRITE
-
-        if anon_level >= 0 and anon_level <= anon_lev_max:
-            layer.set_gen_level(ANONYMOUS_USERS, anon_level)
-        if all_auth_level >= 0 and all_auth_level <= lev_max:
-            layer.set_gen_level(AUTHENTICATED_USERS, all_auth_level) 
-        for username, level in ulevs.items():
-            user = User.objects.get(username=username)
-            if level >= 0 and level <= lev_max:
-                layer.set_user_level(user, level)
-
+        errors = _handle_perms_edit(request, layer)
+        
         result = {}
         if len(errors) > 0:
             result['success'] = False

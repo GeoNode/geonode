@@ -875,38 +875,10 @@ class Layer(models.Model, PermissionLevelMixin):
                        ('change_layer_permissions', "Can change permissions"), )
 
     # Permission Level Constants
-    LEVEL_NONE  = 0
-    LEVEL_READ  = 1
-    LEVEL_WRITE = 2
-    LEVEL_ADMIN = 3
-
-    LEVEL_PERM = [
-        {'maps.view_layer': False,
-         'maps.change_layer': False,
-         'maps.delete_layer': False,
-         'maps.change_layer_permissions': False
-        },
-        {'maps.view_layer': True,
-         'maps.change_layer': False,
-         'maps.delete_layer': False,
-         'maps.change_layer_permissions': False
-        },
-        {'maps.view_layer': True,
-         'maps.change_layer': True,
-         'maps.delete_layer': False,
-         'maps.change_layer_permissions': False
-        },
-        {'maps.view_layer': True,
-         'maps.change_layer': True,
-         'maps.delete_layer': True,
-         'maps.change_layer_permissions': True
-        }
-    ]
-
-    LEVEL_NAME = [_('No Permissions'),
-                 _('Read-Only'),
-                 _('Read and Modify'),
-                 _('Administrative')]
+    # LEVEL_NONE inherited
+    LEVEL_READ  = 'layer_readonly'
+    LEVEL_WRITE = 'layer_readwrite'
+    LEVEL_ADMIN = 'layer_admin'
                  
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
@@ -989,38 +961,10 @@ class Map(models.Model, PermissionLevelMixin):
                        ('change_map_permissions', "Can change permissions"), )
 
     # Permission Level Constants
-    LEVEL_NONE  = 0
-    LEVEL_READ  = 1
-    LEVEL_WRITE = 2
-    LEVEL_ADMIN = 3
-
-    LEVEL_PERM = [
-      {'maps.view_map': False,
-       'maps.change_map': False,
-       'maps.delete_map': False,
-       'maps.change_map_permissions': False
-      },
-      {'maps.view_map': True,
-       'maps.change_map': False,
-       'maps.delete_map': False,
-       'maps.change_map_permissions': False
-      },
-      {'maps.view_map': True,
-       'maps.change_map': True,
-       'maps.delete_map': False,
-       'maps.change_map_permissions': False
-      },
-      {'maps.view_map': True,
-       'maps.change_map': True,
-       'maps.delete_map': True,
-       'maps.change_map_permissions': True
-      }
-    ]
-
-    LEVEL_NAME = [_('No Permissions'),
-                  _('Read-Only'),
-                  _('Read and Modify'),
-                  _('Administrative')]
+    # LEVEL_NONE inherited
+    LEVEL_READ  = 'map_readonly'
+    LEVEL_WRITE = 'map_readwrite'
+    LEVEL_ADMIN = 'map_admin'
     
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
