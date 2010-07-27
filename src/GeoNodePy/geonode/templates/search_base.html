@@ -18,7 +18,7 @@ Ext.onReady(function(){
     var bbox = new GeoNode.BoundingBoxWidget({
          proxy: "/proxy/?url=",
          background: {{ background }},
-         renderTo: 'sidebar',
+         renderTo: 'refine',
     });
 
     var searchTable = new GeoNode.SearchTable({
@@ -30,7 +30,7 @@ Ext.onReady(function(){
         constraints: [bbox],
         searchParams: {{init_search}}
     });
-    searchTable.hookupSearchButtons('sidebar');
+    searchTable.hookupSearchButtons('refine');
     
     var dataCart = new GeoNode.DataCart({
       store: searchTable.dataCart,
