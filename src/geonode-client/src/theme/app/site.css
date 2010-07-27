@@ -97,7 +97,6 @@ text-decoration: none;
 text-decoration: underline;
 }
 
-
 #crossbar {
 background: #003c4c;
 border-bottom: 2px solid #008cb3;
@@ -144,6 +143,9 @@ border-bottom: 1px solid #d5d5d5;
 padding: 10px 0 0;
 }
 
+/*-----------------------
+Columns
+-----------------------*/
 .onecol {
 width: 920px;
 margin: 0 10px;
@@ -152,7 +154,7 @@ background: url(img/1col-bg.png) no-repeat;
 }
 
 .twocol {
-width: 600px; /* ticket says content should be 580px but comp has 600px wide */
+width: 600px;
 margin: 0 10px;
 padding: 10px 20px;
 background: url(img/2col-bg.png) no-repeat;
