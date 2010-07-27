@@ -1,7 +1,13 @@
 Ext.namespace("GeoNode");
 
 GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
+
+    autoExpandColumn: 'title',
+
     titleHeaderText: 'UT: Title',
+    contactHeaderText: "UT: Contact",
+    mapAbstractLabelText: "UT: Abstract",
+    mapLinkLabelText: "UT:View this Map",
     previousText: 'UT: Prev',
     nextText: 'UT: Next',
     ofText: 'UT: of',
@@ -170,12 +176,12 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
         var table_el = el.query('.search-table')[0];
         var controls_el = el.query('.search-controls')[0];
 
-        //TODO: This has to be correct with the other expander stuff
-        //var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL}); 
-
+        var tpl = new Ext.Template('<p><b>' + this.mapAbstractLabelText + ':</b> {abstract}</p>'+ '<p><a href="/maps/{id}">' + this.mapLinkLabelText + '</a></p>');
+        var expander = new Ext.grid.RowExpander({tpl: tpl});
+               
         tableCfg = {
             store: this.searchStore, 
-            //plugins: [expander],
+            plugins: [expander],
             autoExpandColumn: 'title',
             viewConfig: {
                 autoFill: true, 
@@ -185,24 +191,38 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
             height: 300,
             renderTo: table_el
         };
-
-
-        var columns = [
-            //expander,
-            {header: this.titleHeaderText,
-             dataIndex: 'title',
-             id: 'title',
-             renderer: function(value, metaData, record, rowIndex, colIndex, store) {
-                 var detail = record.get('detail');
-                 if (detail) {
-                     return '<a href="' + detail + '">' + value + '</a>';
-                 }
-                 else {
-                     return value;
-                 }
-             }
-             }];
         
+        var columns = [
+            expander,
+            {
+                header: this.titleHeaderText,
+                dataIndex: 'title',
+                id: 'title',
+                renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+                    var detail = record.get('detail');
+                    if (detail) {
+                        return '<a href="' + detail + '">' + value + '</a>';
+                    }
+                    else {
+                        return value;
+                    }
+                }
+            },
+            {
+                header: this.contactHeaderText,
+                dataIndex: 'contact',
+                id: 'contact',
+                renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+                    var detail = record.get('contact_detail');
+                    if (detail) {
+                        return '<a href="' + detail + '">' + value + '</a>';
+                    }
+                    else {
+                        return value;
+                    }
+                }
+            }];
+    
         var colModel = new Ext.grid.ColumnModel({
             defaults: {sortable: false, menuDisabled: true},
             columns: columns
