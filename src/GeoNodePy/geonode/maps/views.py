@@ -1122,6 +1122,7 @@ def maps_search(request):
       {
         'title': <map title,
         'abstract': '...',
+        'detail' = <link to geonode detail page>,
       },
       ...
     ]}
@@ -1163,8 +1164,13 @@ def _maps_search(query, start, limit):
               Q(title__icontains=keyword)
             | Q(abstract__icontains=keyword))
 
+    maps_list = []
+    for mapdict in maps.values('id','title','abstract')[start:start+limit]:
+        mapdict['detail'] = reverse('geonode.maps.views.map_controller', args=(mapdict['id'],))
+        maps_list.append(mapdict)
+
     # TODO: test this use of start/limit
-    result = {'rows': list(maps.values('title','abstract')[start:start+limit]), 
+    result = {'rows': maps_list, 
               'total': maps.count()}
 
     result['query_info'] = {
