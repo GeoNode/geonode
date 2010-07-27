@@ -1111,8 +1111,8 @@ def maps_search(request):
     
     {
     'total': <total result count>,
-    # NOT IMPLEMENT YET 'next': <url for next batch if exists>,
-    # NOT IMPLEMENT YET 'prev': <url for previous batch if exists>,
+    'next': <url for next batch if exists>,
+    'prev': <url for previous batch if exists>,
     'query_info': {
         'start': <integer indicating where this batch starts>,
         'limit': <integer indicating the batch size used>,
@@ -1181,14 +1181,12 @@ def _maps_search(query, start, limit):
     if start > 0: 
         prev = max(start - limit, 0)
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        # TODO:
-        #result['prev'] = reverse('geonode.maps.views.metadata_search') + '?' + params
+        result['prev'] = reverse('geonode.maps.views.maps_search') + '?' + params
 
-    # TODO
-    # next = csw.results.get('nextrecord', 0) 
-    # if next > 0:
-    #     params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-    #     result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
+    next = start + limit + 1
+    if next < maps.count():
+         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
+         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
     
     return result
 
