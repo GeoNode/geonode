@@ -189,8 +189,28 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
                 forceFit: true,
                 emptyText: this.noResultsText
             },
-            height: 300,
-            renderTo: table_el
+            autoHeight: true,
+            renderTo : table_el
+        };
+
+        tableCfg.listeners = {
+            "rowdblclick": function(grid, rowIndex, evt) {
+                var rec = grid.store.getAt(rowIndex);
+                if (rec != null) {
+                    location.href = rec.get('detail');
+                }
+            },
+            "rowclick" : function(grid, rowIndex, evt){
+                expander.toggleRow(rowIndex);
+            },
+            "beforerender" : function(grid){
+                // Can't set listener on render directly because
+                // this handler needs to fire after one set in
+                // the expander's init
+                grid.on('render', function(){
+                    grid.getView().mainBody.un('mousedown', expander.onMouseDown, expander);
+                })
+            }
         };
         
         var columns = [
