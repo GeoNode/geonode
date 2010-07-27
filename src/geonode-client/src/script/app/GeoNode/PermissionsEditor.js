@@ -20,7 +20,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             {text: gettext('New Permission'), 
              handler: function() {
                var user_select = the_pe._make_user_combo('user', 'User');
-               var perm_select = the_pe._make_perm_combo('perm', 'Permission', 0);
+               var perm_select = the_pe._make_perm_combo('perm', 'Permission', the_pe.permissions.levels[1][0]);
                var perm_popup = new Ext.Window({
                    width: 300,
                    height: 150,
@@ -123,9 +123,6 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
       }
       else {
         combo_options = this.permissions.levels.slice(0);
-      }
-      if (value == -1) {
-        combo_options.push([-1, gettext("Custom")]);
       }
       cbo = new Ext.form.ComboBox({
         id: 'cb_' + name,
