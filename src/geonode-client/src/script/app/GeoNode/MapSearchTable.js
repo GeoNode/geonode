@@ -28,9 +28,10 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
             remoteSort: true,
             totalProperty: 'total',
             fields: [
-                // TODO : Need this? {name: 'id', mapping: 'id'},
+                {name: 'id', mapping: 'id'},
                 {name: 'title', type: 'string'},
                 {name: 'abstract', type: 'string'},
+                {name: 'detail', type: 'string'},
                 // TODO: Contact field {name: 'contact', type: 'string'},
             ]
         });
@@ -192,7 +193,7 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
              dataIndex: 'title',
              id: 'title',
              renderer: function(value, metaData, record, rowIndex, colIndex, store) {
-                 var detail = "TODO: Real map info page link here" //record.get('detail');
+                 var detail = record.get('detail');
                  if (detail) {
                      return '<a href="' + detail + '">' + value + '</a>';
                  }
