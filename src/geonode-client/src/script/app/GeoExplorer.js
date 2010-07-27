@@ -93,6 +93,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     layersPanelText: "UT:Layers",
     legendPanelText: "UT:Legend",
     lengthActionText: "UT:Length",
+    loadingMapMessage: "UT:Loading Map...",
     mapSizeLabel: 'UT: Map Size', 
     measureSplitText: "UT:Measure",
     metadataFormCancelText : "UT:Cancel",
@@ -272,13 +273,38 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
         
+        var layerCount = 0;
+        
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
-            e.layer instanceof OpenLayers.Layer.WMS && !e.layer.singleTile &&
-                e.layer.maxExtent && e.layer.mergeNewParams({
+            var layer = e.layer;
+            if (layer instanceof OpenLayers.Layer.WMS) {
+                !layer.singleTile && layer.maxExtent && layer.mergeNewParams({
                     tiled: true,
-                    tilesOrigin: [e.layer.maxExtent.left, e.layer.maxExtent.bottom]
-                }
-            );
+                    tilesOrigin: [layer.maxExtent.left, layer.maxExtent.bottom]
+                });
+                layer.events.on({
+                    "loadstart": function() {
+                        layerCount++;
+                        if (!this.busyMask) {
+                            this.busyMask = new Ext.LoadMask(
+                                this.mapPanel.map.div, {
+                                    msg: this.loadingMapMessage
+                                }
+                            );
+                            this.busyMask.show();
+                        }
+                        layer.events.unregister("loadstart", this, arguments.callee);
+                    },
+                    "loadend": function() {
+                        layerCount--;
+                        if(layerCount === 0) {
+                            this.busyMask.hide();
+                        }
+                        layer.events.unregister("loadend", this, arguments.callee);
+                    },
+                    scope: this
+                })
+            } 
         });
     },
     

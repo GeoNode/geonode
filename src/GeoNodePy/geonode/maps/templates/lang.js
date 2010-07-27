@@ -22,6 +22,7 @@ if (window.GeoExplorer) {
         layersPanelText: gettext("Layers"),
         legendPanelText: gettext("Legend"),
         lengthActionText: gettext("Length"),
+        loadingMapMessage: gettext("Loading Map..."),
         mapSizeLabel: gettext("Map Size"), 
         measureSplitText: gettext("Measure"),
         metaDataHeader: gettext("About this Map"),
