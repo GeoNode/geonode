@@ -46,23 +46,25 @@ Ext.onReady(function(){
           </td>
         </tr>
       </table>
-      <a href="{% url maps_search %}">{% trans "Advanced Search" %}</a>
+      <!-- We don't yet have any 'advanced' map search features.
+           <a href="{% url maps_search %}">{% trans "Advanced Search" %}</a> -->
   </form>
 </div>
 
 <div id="create" class="block">
   <h2>{% trans "Create Maps" %}</h2>
-  <p>{% trans "We support Shapefile and GeoTIFF uploads." %}
-  <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload a new layer"  %}</a>
+  <p>{% trans "Use GeoNode's Map Composer application to create your own maps.  Add layers from this GeoNode or remote services, and style them." %}
+  </p>
+  <p>
+  <a href="{%url geonode.maps.views.newmap %}">{% trans "Create your own map" %}</a>
   </p>
 </div>
 
 
 <!-- "Your Maps" button goes here -->
 <!-- create map button goes here -->
-<p>
-  <a href="{%url geonode.maps.views.newmap %}">{% trans "create your own map" %}</a>
-  !
+
+
 </p>
 
 
