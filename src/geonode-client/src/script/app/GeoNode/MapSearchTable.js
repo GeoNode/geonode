@@ -225,13 +225,13 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
             }];
     
         var colModel = new Ext.grid.ColumnModel({
-            defaults: {sortable: false, menuDisabled: true},
+            defaults: {menuDisabled: true},
             columns: columns
         });
         tableCfg.colModel = colModel;
 
         this.table = new Ext.grid.GridPanel(tableCfg);
-        
+
         this.queryInput = new Ext.form.TextField({
                         fieldLabel: this.searchLabelText,
                         name: 'search',
