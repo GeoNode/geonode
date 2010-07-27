@@ -22,7 +22,7 @@
       <div id="login-area">
         {% if user.is_authenticated %}
           <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
-      	{% else %}
+        {% else %}
           <!-- this should be updated to a url var --><a href="/accounts/login">Sign in</a>
           {% if REGISTRATION_OPEN %} or <a href="{% url registration_register %}">{% trans "Register" %}</a>{% endif %}
           for extra features
@@ -46,7 +46,7 @@
   </div><!-- /#main -->
   <div id="footer">
     <div class="wrap selfclear">             
-
+      {% block footer %}{% endblock %}
     </div><!-- /.wrap -->
   </div><!-- /#footer -->
 </body>
