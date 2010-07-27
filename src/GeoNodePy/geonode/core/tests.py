@@ -4,7 +4,7 @@ import os
 
 class GeoNodeClientTests(TestCase):
     
-    fixtures = ['test_data.json', 'map_data.json']
+    fixtures = ['test_data.json']
     GEOSERVER = False
 
     def setUp(self):

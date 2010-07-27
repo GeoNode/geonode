@@ -5,7 +5,6 @@
         "/static/src/script/app/GeoNode/DataGrid.js",
         "/static/src/script/app/Lang.js",
         "/static/src/script/app/GeoExplorer/Viewer.js",
-        "/static/src/script/app/ExportWizard.js",
         "/static/src/script/app/MapGrid.js",
         "/static/src/script/app/GeoNode/ConfigManager.js",
         "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js",

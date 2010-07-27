@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url
 
 js_info_dict = {
     'packages': ('geonode.maps',),
@@ -6,7 +6,7 @@ js_info_dict = {
 
 urlpatterns = patterns('geonode.maps.views',
     (r'^$', 'maps'),
-    (r'^new$', 'newmap'),
+    url(r'^new$', 'newmap', name="map_new"),
     (r'^(?P<mapid>\d+)$', 'map_controller'),
     (r'^(?P<mapid>\d+)/view$', 'view'),
     (r'^(?P<mapid>\d+)/download/$', 'map_download'),
@@ -15,5 +15,7 @@ urlpatterns = patterns('geonode.maps.views',
     (r'^(?P<mapid>\d+)/embed$', 'embed'),
     (r'^(?P<mapid>\d+)/data$', 'mapJSON'),
     url(r'^(?P<mapid>\d+)/permissions$', 'view_map_permissions', name='view_map_permissions'),
-    url(r'^(?P<mapid>\d+)/permissions/edit$', 'edit_map_permissions', name='edit_map_permissions')
+    url(r'^(?P<mapid>\d+)/permissions/edit$', 'edit_map_permissions', name='edit_map_permissions'),
+    url(r'^change-poc/(?P<ids>\w+)$', 'change_poc', name="change_poc"),
+
 )
