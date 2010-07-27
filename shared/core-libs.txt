@@ -9,3 +9,5 @@ Paste
 PasteDeploy
 PasteScript
 dj.paste
+-e git+http://github.com/ericflo/django-avatar.git#egg=avatar
+

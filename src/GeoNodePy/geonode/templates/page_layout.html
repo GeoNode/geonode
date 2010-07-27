@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load navbar %}
 {% load geonode_media %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
     <head>
@@ -38,8 +39,7 @@
             </div>
 						<div class="login-widget"> 
 							{% if user.is_authenticated %}
-						       {{ user.username }} 
-							   (<a href="{% if user.get_profile %}{% url profiles_edit_profile %}{% else %}{% url profiles_create_profile %}{% endif %}">{% trans "Edit profile" %}</a> |
+							   <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (
 						    	<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> |
 						        <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
 						    	{% else %}

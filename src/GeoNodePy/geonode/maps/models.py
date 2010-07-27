@@ -487,7 +487,11 @@ class Contact(models.Model):
         valid_organization = (self.organization != None and self.organization !='')
         if not (valid_name or valid_organization):
             raise ValidationError('Either name or organization should be provided')
-    
+
+    def get_absolute_url(self):
+        return ('profiles_profile_detail', (), { 'username': self.user.username })
+    get_absolute_url = models.permalink(get_absolute_url)
+
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.organization)
 
@@ -522,7 +526,7 @@ class LayerManager(models.Manager):
         # this assumes there is at least one superuser
         superusers = User.objects.filter(is_superuser=True).order_by('id')
         if superusers.count() == 0:
-            raise RuntimeException('GeoNode needs at least one admin/superuser set')
+            raise RuntimeError('GeoNode needs at least one admin/superuser set')
         
         contact, created = Contact.objects.get_or_create(user=superusers[0], 
                                                 defaults={"name": "Geonode Admin"})
@@ -822,6 +826,8 @@ class Layer(models.Model, PermissionLevelMixin):
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
     def save_to_geoserver(self):
+        if self.resource is None:
+            return
         if hasattr(self, "_resource_cache"):
             self.resource.title = self.title
             self.resource.abstract = self.abstract
@@ -832,6 +838,8 @@ class Layer(models.Model, PermissionLevelMixin):
 
     def  _populate_from_gs(self):
         gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
+        if gs_resource is None:
+            return
         srs = gs_resource.projection
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
             self.set_bbox(gs_resource.native_bbox, srs=srs)
@@ -848,6 +856,8 @@ class Layer(models.Model, PermissionLevelMixin):
 
     def _populate_from_gn(self):
         meta = self.metadata_csw()
+        if meta is None:
+            return
         self.keywords = [word for word in meta.identification.keywords['list'] if isinstance(word,str)]
         self.distribution_url = meta.distribution.onlineresource.url
         self.distribution_description = meta.distribution.onlineresource.description
@@ -901,12 +911,6 @@ class Map(models.Model, PermissionLevelMixin):
     abstract = models.CharField(max_length=200)
     contact = models.CharField(max_length=200)
     
-    # These fields are likely deprecated but
-    # we need to double check with the World Bank
-    # as they were the ones who required them
-    featured = models.BooleanField()
-    endorsed = models.BooleanField()
-
     # viewer configuration
     zoom = models.IntegerField()
     center_lat = models.FloatField()
@@ -1005,7 +1009,7 @@ class MapLayer(models.Model):
     def local_link(self): 
         if self.local():
             layer = Layer.objects.get(typename=self.name)
-            link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),self.name)
+            link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),layer.title)
         else: 
             link = "<span>%s</span> " % self.name
         return link
