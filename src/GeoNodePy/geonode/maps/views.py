@@ -1089,9 +1089,7 @@ def change_poc(request, ids, template = 'maps/change_poc.html'):
                                   {'layers': layers, 'form': form }))
 
 
-
-
-#### MAPS SEARCHING
+#### MAPS SEARCHING ####
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
