@@ -82,7 +82,12 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
         final String headerValue = "Basic "
                 + new String(Base64.encodeBase64((username + ":" + password).getBytes()));
 
-        return authenticate(headerName, headerValue);
+        UsernamePasswordAuthenticationToken auth;
+        auth = (UsernamePasswordAuthenticationToken) authenticate(headerName, headerValue);
+        // need to set credentials
+        auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), password,
+                auth.getAuthorities());
+        return auth;
     }
 
     /**
