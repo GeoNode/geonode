@@ -471,6 +471,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             expander,
             {header: this.nameHeaderText,
              dataIndex: 'name',
+             hidden: true,
              id: 'name',
              width: 35
             },
