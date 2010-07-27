@@ -462,7 +462,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 forceFit: true,
                 emptyText: this.noResultsText
             },
-            height: 300,
+            autoHeight: true,
             renderTo: table_el
         };
 
