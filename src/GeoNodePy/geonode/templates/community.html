@@ -43,28 +43,18 @@ Ext.onReady(function(){
     <div id="map-browser"></div>
   </div>          
 </div>
-
 {% endblock %}
 
 {% block sidebar %}
 <div class="threecol">
   <h3>{% trans "Contributed Maps" %}</h3>
   {% blocktrans %}
-  <p> Contributed Maps are made by people like you. They are made from data hosted by the CAPRA GeoNode, as well as data hosted by other entities. </p>
-  <p> You can browse the contributed maps using the grid to the left.</p>
-  <p>
-    Click on a map to select it. Then click
-    <b>Open Map</b>
-    to open it in a map editor, or click
-    <b>Export Map</b>
-    to export it as a widget.
+  <p>Contributed Maps are made by people like you. They are made from data hosted by the CAPRA GeoNode, as well as data hosted by other entities.</p>
+  <p>You can browse the contributed maps using the grid to the left.</p>
+  <p>Click on a map to select it. Then click <b>Open Map</b> to open it in a map editor, or click <b>Export Map</b> to export it as a widget.</p>
+  <p>Click here to{% endblocktrans %}
+    <a href="{%url geonode.maps.views.newmap %}">{% trans "create your own map" %}</a>!
   </p>
-  <p>
-    Click here to{% endblocktrans %}
-    <a href="{%url geonode.maps.views.newmap %}">{% trans "create your own map" %}</a>
-    !
-  </p>
-
   The sidebar contains useful, but not urgent information.  Check it out, if you like.
 </div>
 {% endblock %}
