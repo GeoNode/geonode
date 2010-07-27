@@ -31,6 +31,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     localGeoServerBaseUrl: "",
     
     /**
+     * api: config[fromLayer]
+     * ``Boolean`` true if map view was loaded with layer parameters
+     */
+    fromLayer: false,
+
+    /**
      * private: property[mapPanel]
      * the :class:`GeoExt.MapPanel` instance for the main viewport
      */
@@ -93,6 +99,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     layersPanelText: "UT:Layers",
     legendPanelText: "UT:Legend",
     lengthActionText: "UT:Length",
+    loadingMapMessage: "UT:Loading Map...",
     mapSizeLabel: 'UT: Map Size', 
     measureSplitText: "UT:Measure",
     metadataFormCancelText : "UT:Cancel",
@@ -262,13 +269,38 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
         
+        var layerCount = 0;
+        
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
-            e.layer instanceof OpenLayers.Layer.WMS && !e.layer.singleTile &&
-                e.layer.maxExtent && e.layer.mergeNewParams({
+            var layer = e.layer;
+            if (layer instanceof OpenLayers.Layer.WMS) {
+                !layer.singleTile && layer.maxExtent && layer.mergeNewParams({
                     tiled: true,
-                    tilesOrigin: [e.layer.maxExtent.left, e.layer.maxExtent.bottom]
-                }
-            );
+                    tilesOrigin: [layer.maxExtent.left, layer.maxExtent.bottom]
+                });
+                layer.events.on({
+                    "loadstart": function() {
+                        layerCount++;
+                        if (!this.busyMask) {
+                            this.busyMask = new Ext.LoadMask(
+                                this.mapPanel.map.div, {
+                                    msg: this.loadingMapMessage
+                                }
+                            );
+                            this.busyMask.show();
+                        }
+                        layer.events.unregister("loadstart", this, arguments.callee);
+                    },
+                    "loadend": function() {
+                        layerCount--;
+                        if(layerCount === 0) {
+                            this.busyMask.hide();
+                        }
+                        layer.events.unregister("loadend", this, arguments.callee);
+                    },
+                    scope: this
+                })
+            } 
         });
     },
     
@@ -549,7 +581,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         this.on("ready", function(){
-            if (!this.mapID) {
+            if (!this.fromLayer && !this.mapID) {
                 this.showCapabilitiesGrid();
             }
         }, this);
@@ -775,19 +807,30 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     initCapGrid: function(){
 
-        var source, data = [];        
+        var initialSourceId, source, data = [];        
         for (var id in this.layerSources) {
             source = this.layerSources[id];
+            if (initialSourceId === undefined &&
+                    source instanceof gxp.plugins.WMSSource &&
+                    source.url.replace(this.urlPortRegEx, "$1/").indexOf(
+                        this.localGeoServerBaseUrl.replace(
+                            this.urlPortRegEx, "$1/")) === 0) {
+                initialSourceId = id;
+            }
             if (source.store) {
                 data.push([id, this.layerSources[id].title || id]);                
             }
         }
+        // fall back to 1st source if the local GeoServer WMS is not used
+        if (initialSourceId === undefined) {
+            initialSourceId = data[0][0];
+        }
+
         var sources = new Ext.data.ArrayStore({
             fields: ["id", "title"],
             data: data
         });
 
-        var firstSource = this.layerSources[data[0][0]];
         var expander = new GeoExplorer.CapabilitiesRowExpander();
         
         var addLayers = function() {
@@ -813,7 +856,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         var capGridPanel = new Ext.grid.GridPanel({
-            store: firstSource.store,
+            store: this.layerSources[initialSourceId].store,
             layout: 'fit',
             region: 'center',
             autoScroll: true,
@@ -839,7 +882,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             allowBlank: false,
             forceSelection: true,
             mode: "local",
-            value: data[0][0],
+            value: initialSourceId,
             listeners: {
                 select: function(combo, record, index) {
                     var store = this.layerSources[record.get("id")].store;
