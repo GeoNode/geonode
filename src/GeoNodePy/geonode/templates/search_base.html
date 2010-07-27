@@ -54,62 +54,51 @@ Ext.onReady(function(){
 {% block nav %} {% navbar data %} {% endblock %}
 
 {% block main %} 
+<div class="twocol">
+  <div class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
-<div class="block">
-  <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
-
-  <div id="search_results"></div>  
-  <p class="explain">{%trans "Click the <b>+</b> on any row to show layer metadata or download in PDF, KML, GeoTIFF, or SHP." %}
-  {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
-  </p>
+    <div id="search_results"></div>  
+    <p class="explain">{%trans "Click the <b>+</b> on any row to show layer metadata or download in PDF, KML, GeoTIFF, or SHP." %}
+    {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
+    </p>
+  </div>
 </div>
-
 {% endblock %}
 
 {% block sidebar %}
-<div id="refine" class="block">
-  <h3>{% trans "Refine Search" %}</h3>
-
-  <div class="bbox-controls">
-    <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
-    <span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span>
-
-    <div class="bbox-expand">
+<div class="threecol">
+  <div id="refine" class="block">
+    <h3>{% trans "Refine Search" %}</h3>
+    <div class="bbox-controls">
+      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
+      <span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span>
+      <div class="bbox-expand">
+      </div>
+    </div>
+    <div class="search-button">Refine</div>
+  </div>
+  <div class="block">
+  <h3>Selected Data
+    <span class="explain">{% blocktrans %}Use the checkboxes in the search results to add data to your selection.{% endblocktrans%}</span>  
+  </h3>
+  <div id="selection">
+    <div id="data_cart"></div>
+    </div>
+    <div id="data_ops">
+      <ul>
+        <li><a href="#" class="create-map">{% trans "Create a new map" %}</a></li>
+        <li><span class="export">{% trans "Export selected" %}:</span>
+            <a href="#mixed" class="batch-download">Zip</a> 
+        </li>
+    <!--    <li><span class="export">{% trans "Export selected" %}:</span>
+            <a href="#shp" class="batch-download">Shapefile</a>, 
+            <a href="#geotiff" class="batch-download">GeoTiff</a>
+        </li> -->
+      </ul>
+      <form id="create_map_form" action="{% url geonode.maps.views.newmap %}" method="POST">
+      </form>
     </div>
   </div>
-  
-  <div class="search-button">Refine</div>
 </div>
-
-
-<div class="block">
-<h3>Selected Data
-  <span class="explain">{% blocktrans %}Use the checkboxes in the search results to add data to your selection.{% endblocktrans%}</span>  
-</h3>
-
-  
-<div id="selection">
-  <div id="data_cart"></div>
-  </div>
-
-  <div id="data_ops">
-    <ul>
-      <li><a href="#" class="create-map">{% trans "Create a new map" %}</a></li>
-      <li><span class="export">{% trans "Export selected" %}:</span>
-          <a href="#mixed" class="batch-download">Zip</a> 
-      </li>
-  <!--    <li><span class="export">{% trans "Export selected" %}:</span>
-          <a href="#shp" class="batch-download">Shapefile</a>, 
-          <a href="#geotiff" class="batch-download">GeoTiff</a>
-      </li> -->
-    </ul>
-
-    <form id="create_map_form" action="{% url geonode.maps.views.newmap %}" method="POST">
-    </form>
-  </div>
-</div>
-
-
-
-
 {% endblock %}
