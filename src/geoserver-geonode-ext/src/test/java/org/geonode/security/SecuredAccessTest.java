@@ -65,7 +65,12 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
         // override the cookie filter
         GeoNodeCookieProcessingFilter filter = GeoServerExtensions.bean(
                 GeoNodeCookieProcessingFilter.class, applicationContext);
-        filter.client = client;
+        filter.setClient(client);
+
+        // override the anonymous filter
+        GeoNodeAnonymousProcessingFilter anonFilter = GeoServerExtensions.bean(
+                GeoNodeAnonymousProcessingFilter.class, applicationContext);
+        anonFilter.setClient(client);
     }
 
     /**
