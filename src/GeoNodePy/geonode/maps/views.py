@@ -54,6 +54,11 @@ class RoleForm(forms.ModelForm):
         model = ContactRole
         exclude = ('contact', 'layer')
 
+class PocForm(forms.Form):
+    contact = forms.ModelChoiceField(label = "New point of contact",
+                                     queryset = Contact.objects.exclude(user=None))
+
+
 DEFAULT_MAP_CONFIG = {
     "alignToGrid": True,
     "proxy": "/proxy/?url=",
@@ -149,7 +154,6 @@ def update_map_json(request, mapid):
     map.zoom = conf['map']['zoom']
     map.center_lon = conf['map']['center'][0]
     map.center_lat = conf['map']['center'][1]
-    map.featured = conf['about'].get('featured', False)
     
     # remove any layers in the current map
     for layer in map.layer_set.all():
@@ -190,8 +194,6 @@ def create_map_json(request):
     center_lon = conf['map']['center'][0]
     center_lat = conf['map']['center'][1]
 
-    featured = conf['about'].get('featured', False)
-
     map = Map.objects.create(
         title=title, 
         abstract=abstract, 
@@ -199,7 +201,6 @@ def create_map_json(request):
         zoom=zoom, 
         center_lon=center_lon, 
         center_lat=center_lat, 
-        featured=featured,
         owner = request.user,
     )
     map.set_default_permissions()
@@ -253,6 +254,7 @@ def newmap(request):
             bbox = None
             layers = []
             config = DEFAULT_MAP_CONFIG
+            config['fromLayer'] = True
             for layer_name in params.getlist('layer'):
                 try:
                     layer = Layer.objects.get(typename=layer_name)
@@ -280,7 +282,7 @@ def newmap(request):
 
                 width_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
                 height_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
-                config['map']['zoom'] = math.floor(min(width_zoom, height_zoom))
+                config['map']['zoom'] = math.ceil(min(width_zoom, height_zoom))
         else:
             config = DEFAULT_MAP_CONFIG
     config["backgroundLayers"] = settings.MAP_BASELAYERS
@@ -462,7 +464,6 @@ def deletemap(request, mapid):
             RequestContext(request, {'error_message': 
                 _("You are not permitted to delete this map.")})), status=401)
 
-    is_featured = map.featured
     layers = MapLayer.objects.filter(map=map.id) 
      
     map.delete()
@@ -552,8 +553,7 @@ def build_map_config(map):
         'about': {
             'title':    escape(map.title),
             'contact':  escape(map.contact),
-            'abstract': escape(map.abstract),
-            'endorsed': map.endorsed
+            'abstract': escape(map.abstract)
         },
         'map': { 
             'layers': [],
@@ -1306,7 +1306,8 @@ def _build_search_result(doc):
     record and builds a POD structure representing 
     the search result.
     """
-
+    if doc is None:
+        return None
     # Let owslib do some parsing for us...
     rec = CswRecord(doc)
     result = {}
@@ -1389,3 +1390,20 @@ def search_page(request):
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
          "site" : settings.SITEURL
     }))
+
+
+def change_poc(request, ids, template = 'maps/change_poc.html'):
+    layers = Layer.objects.filter(id__in=ids.split('_'))
+    if request.method == 'POST':
+        form = PocForm(request.POST)
+        if form.is_valid():
+            for layer in layers:
+                layer.poc = form.cleaned_data['contact']
+                layer.save()
+            # Process the data in form.cleaned_data
+            # ...
+            return HttpResponseRedirect('/admin/maps/layer') # Redirect after POST
+    else:
+        form = PocForm() # An unbound form
+    return render_to_response(template, RequestContext(request, 
+                                  {'layers': layers, 'form': form }))

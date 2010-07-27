@@ -199,6 +199,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'registration',
     'profiles',
+    'avatar',
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',

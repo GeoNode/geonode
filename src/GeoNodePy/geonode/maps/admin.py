@@ -1,5 +1,8 @@
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role
+from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
@@ -28,6 +31,13 @@ class LayerAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace') 
     inlines = [ContactRoleInline]
+
+    actions = ['change_poc']
+
+    def change_poc(modeladmin, request, queryset):
+        selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+        return HttpResponseRedirect(reverse('change_poc', kwargs={"ids": "_".join(selected)}))
+    change_poc.short_description = "Change the point of contact for the selected layers"
 
 admin.site.register(Map, MapAdmin)
 admin.site.register(Contact, ContactAdmin)

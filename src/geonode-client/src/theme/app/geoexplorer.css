@@ -338,3 +338,7 @@ div.overlay-scaleline {
     font: 8pt courier,courier new,monospace;
     padding: 5px;
 }
+
+#more-info{ 
+float:right;
+}
