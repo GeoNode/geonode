@@ -38,7 +38,8 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'title', type: 'string'},
                 {name: 'abstract', type: 'string'},
                 {name: 'detail', type: 'string'},
-                // TODO: Contact field {name: 'contact', type: 'string'},
+                {name: 'contact', type: 'string'},
+                //TODO: Awaiting map ownership work  {name: 'contact_detail', type: 'string'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -211,7 +212,7 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
             {
                 header: this.contactHeaderText,
                 dataIndex: 'contact',
-                id: 'contact',
+                id: 'contact' /*, TODO: awaiting new map security stuff
                 renderer: function(value, metaData, record, rowIndex, colIndex, store) {
                     var detail = record.get('contact_detail');
                     if (detail) {
@@ -220,7 +221,7 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
                     else {
                         return value;
                     }
-                }
+                } */
             }];
     
         var colModel = new Ext.grid.ColumnModel({

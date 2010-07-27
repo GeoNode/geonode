@@ -1122,7 +1122,9 @@ def maps_search(request):
       {
         'title': <map title,
         'abstract': '...',
-        'detail' = <link to geonode detail page>,
+        'detail' : <url geonode detail page>,
+        'contact': <name of the map's point of contact>, #TODO: which one?
+        'contact_detail': <url of contact's profile page>
       },
       ...
     ]}
@@ -1165,11 +1167,15 @@ def _maps_search(query, start, limit):
             | Q(abstract__icontains=keyword))
 
     maps_list = []
-    for mapdict in maps.values('id','title','abstract')[start:start+limit]:
+    # TODO: 'contact' field will be made obsolete by new map ownership changes
+    for mapdict in maps.values('id','title','abstract', 'contact')[start:start+limit]:
         mapdict['detail'] = reverse('geonode.maps.views.map_controller', args=(mapdict['id'],))
+        # TODO use new map ownership
+        # mapdict['contact'] = <the name of the map's first POC>
+        # TODO: use this once map ownership is in 
+        # mapdict['contact_detail'] = reverse(<profile view>, args=(<poc's id>,)
         maps_list.append(mapdict)
 
-    # TODO: test this use of start/limit
     result = {'rows': maps_list, 
               'total': maps.count()}
 
