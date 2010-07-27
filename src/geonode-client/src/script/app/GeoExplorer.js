@@ -31,6 +31,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     localGeoServerBaseUrl: "",
     
     /**
+     * api: config[fromLayer]
+     * ``Boolean`` true if map view was loaded with layer parameters
+     */
+    fromLayer: false,
+
+    /**
      * private: property[mapPanel]
      * the :class:`GeoExt.MapPanel` instance for the main viewport
      */
