@@ -11,6 +11,7 @@ import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationServiceException;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.util.Assert;
 
 /**
  * An {@link AuthenticationProvider} provider passing the username/password to GeoNode for
@@ -32,6 +33,8 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
      */
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
+        Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, authentication,
+                "authentication shall be a UsernamePasswordAuthenticationToken");
         UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
         String username = token.getName();
         String password = (String) token.getCredentials();
