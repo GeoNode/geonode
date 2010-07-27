@@ -2,6 +2,7 @@
 {% load avatar_tags %}
 
 {% block content %}
+<div class="onecol">
 {% for profile in object_list %}
    {% if profile.user %}
    <ul>
@@ -9,4 +10,5 @@
    </ul>
     {% endif %}
 {% endfor %}
+</div>
 {% endblock %}
