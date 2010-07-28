@@ -22,23 +22,36 @@ import org.geoserver.security.DataAccessManager;
 public class GeoNodeDataAccessManager implements DataAccessManager {
 
     public static final String ADMIN_ROLE = "ROLE_ADMINISTRATOR";
+
     boolean authenticationEnabled = true;
 
+    /**
+     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
+     *      org.geoserver.catalog.WorkspaceInfo, org.geoserver.security.AccessMode)
+     */
     public boolean canAccess(Authentication user, WorkspaceInfo workspace, AccessMode mode) {
         // we only have access information at the layer level
         return true;
     }
 
+    /**
+     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
+     *      org.geoserver.catalog.LayerInfo, org.geoserver.security.AccessMode)
+     */
     public boolean canAccess(Authentication user, LayerInfo layer, AccessMode mode) {
         return canAccess(user, layer.getResource(), mode);
     }
 
+    /**
+     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
+     *      org.geoserver.catalog.ResourceInfo, org.geoserver.security.AccessMode)
+     */
     public boolean canAccess(Authentication user, ResourceInfo resource, AccessMode mode) {
-        if(!authenticationEnabled) {
+        if (!authenticationEnabled) {
             return true;
         }
-        
-        if(user != null && user.getAuthorities() != null) {
+
+        if (user != null && user.getAuthorities() != null) {
             for (GrantedAuthority ga : user.getAuthorities()) {
                 if (ga instanceof LayersGrantedAuthority) {
                     LayersGrantedAuthority lga = ((LayersGrantedAuthority) ga);
@@ -60,12 +73,17 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
         return false;
     }
 
+    /**
+     * @return {@link CatalogMode#CHALLENGE}
+     * @see org.geoserver.security.DataAccessManager#getMode()
+     */
     public CatalogMode getMode() {
         return CatalogMode.CHALLENGE;
     }
-    
+
     /**
      * Used for testing purposes only
+     * 
      * @param authenticationEnabled
      */
     public void setAuthenticationEnabled(boolean authenticationEnabled) {

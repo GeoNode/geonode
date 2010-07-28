@@ -11,23 +11,30 @@ import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationServiceException;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.util.Assert;
 
 /**
- * An authentication provider passing the username/password to GeoNode for authentication
+ * An {@link AuthenticationProvider} provider passing the username/password to GeoNode for
+ * authentication
  * 
  * @author Andrea Aime - OpenGeo
  * 
  */
 public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
 
-    GeonodeSecurityClient client;
+    private GeonodeSecurityClient client;
 
     public GeoNodeAuthenticationProvider(GeonodeSecurityClient client) {
         this.client = client;
     }
 
+    /**
+     * @see org.acegisecurity.providers.AuthenticationProvider#authenticate(org.acegisecurity.Authentication)
+     */
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
+        Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, authentication,
+                "authentication shall be a UsernamePasswordAuthenticationToken");
         UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
         String username = token.getName();
         String password = (String) token.getCredentials();
@@ -39,10 +46,17 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
         }
     }
 
+    /**
+     * @see org.acegisecurity.providers.AuthenticationProvider#supports(java.lang.Class)
+     */
     public boolean supports(Class authentication) {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
+    /**
+     * 
+     * @param client
+     */
     public void setClient(GeonodeSecurityClient client) {
         this.client = client;
     }

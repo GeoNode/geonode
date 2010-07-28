@@ -31,15 +31,15 @@ public abstract class GeoNodeTestSupport extends GeoServerTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
 
         // if necessary, disable the authorization subsystem
-        if(!isAuthorizationEnabled()) {
-            GeoNodeDataAccessManager manager = GeoServerExtensions.bean(GeoNodeDataAccessManager.class, applicationContext);
+        if (!isAuthorizationEnabled()) {
+            GeoNodeDataAccessManager manager = GeoServerExtensions.bean(
+                    GeoNodeDataAccessManager.class, applicationContext);
             manager.setAuthenticationEnabled(false);
         }
     }
-    
+
     protected boolean isAuthorizationEnabled() {
         return false;
     }
 
-    
 }
