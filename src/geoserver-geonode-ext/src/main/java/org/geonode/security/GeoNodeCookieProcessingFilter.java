@@ -16,13 +16,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
-import org.acegisecurity.ui.rememberme.RememberMeServices;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -30,7 +29,7 @@ import org.geotools.util.logging.Logging;
  * that is found, GeoNode will be interrogated to gather the user privileges.
  * 
  * @author Andrea Aime - OpenGeo
- * 
+ * @author Gabriel Roldan - OpenGeo
  */
 public class GeoNodeCookieProcessingFilter implements Filter {
 
@@ -38,57 +37,65 @@ public class GeoNodeCookieProcessingFilter implements Filter {
 
     static final String GEONODE_COOKIE_NAME = "sessionid";
 
-    GeonodeSecurityClient client;
-
-    private RememberMeServices rememberMeServices;
+    private GeonodeSecurityClient client;
 
     public GeoNodeCookieProcessingFilter(GeonodeSecurityClient client) {
         this.client = client;
     }
 
+    /**
+     * @see javax.servlet.Filter#destroy()
+     */
     public void destroy() {
         // nothing to do here
     }
 
+    /**
+     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+     */
     public void init(FilterConfig filterConfig) throws ServletException {
         // nothing to do here
     }
 
+    /**
+     * 
+     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+     *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
-        Cookie gnCookie = getGeoNodeCookie(httpRequest);
+
+        final HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+        final SecurityContext securityContext = SecurityContextHolder.getContext();
+        final Authentication existingAuth = securityContext.getAuthentication();
 
         // if we still need to authenticate and we find the cookie, consult GeoNode for
         // an authentication
-        boolean authenticationRequired = existingAuth == null || !existingAuth.isAuthenticated()
+        final boolean authenticationRequired = existingAuth == null
+                || !existingAuth.isAuthenticated()
                 || (existingAuth instanceof AnonymousAuthenticationToken);
+
         if (authenticationRequired) {
-            try {
-                if (gnCookie == null) {
-                    Authentication authResult = client.authenticateAnonymous();
+            final Cookie gnCookie = getGeoNodeCookie(httpRequest);
 
-                    SecurityContextHolder.getContext().setAuthentication(authResult);
+            if (gnCookie != null) {
+                try {
+                    final Authentication authResult;
 
-                    if (rememberMeServices != null) {
-                        rememberMeServices.loginSuccess(httpRequest, httpResponse, authResult);
-                    }
-                } else {
-                    Authentication authResult = client.authenticateCookie(gnCookie.getValue());
+                    final String cookieValue = gnCookie.getValue();
+                    authResult = client.authenticateCookie(cookieValue);
+                    securityContext.setAuthentication(authResult);
 
-                    SecurityContextHolder.getContext().setAuthentication(authResult);
-
-                    if (rememberMeServices != null) {
-                        rememberMeServices.loginSuccess(httpRequest, httpResponse, authResult);
-                    }
+                } catch (AuthenticationException e) {
+                    // we just go ahead and fall back on basic authentication
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING,
+                            "Error connecting to the GeoNode server for authentication purposes", e);
+                    throw new ServletException(
+                            "Error connecting to GeoNode authentication server: " + e.getMessage(),
+                            e);
                 }
-            } catch (AuthenticationException e) {
-                // we just go ahead and fall back on basic authentication
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
-                        "Error connecting to the GeoNode server for authentication purposes", e);
             }
         }
 
@@ -96,7 +103,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    Cookie getGeoNodeCookie(HttpServletRequest request) {
+    private Cookie getGeoNodeCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
                 if (GEONODE_COOKIE_NAME.equals(c.getName())) {
@@ -108,10 +115,9 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         return null;
     }
 
-    public void setRememberMeServices(RememberMeServices rememberMeServices) {
-        this.rememberMeServices = rememberMeServices;
-    }
-
+    /**
+     * @param client
+     */
     public void setClient(GeonodeSecurityClient client) {
         this.client = client;
     }

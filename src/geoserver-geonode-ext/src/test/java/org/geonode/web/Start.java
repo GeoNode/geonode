@@ -15,25 +15,23 @@ import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.xml.XmlConfiguration;
 
-
 /**
  * Jetty starter, will run geoserver inside the Jetty web container.<br>
- * Useful for debugging, especially in IDE were you have direct dependencies
- * between the sources of the various modules (such as Eclipse).
- *
+ * Useful for debugging, especially in IDE were you have direct dependencies between the sources of
+ * the various modules (such as Eclipse).
+ * 
  * @author wolf
- *
+ * 
  */
 public class Start {
-    private static final Logger log = org.geotools.util.logging.Logging.getLogger(Start.class.getName());
+    private static final Logger log = org.geotools.util.logging.Logging.getLogger(Start.class
+            .getName());
 
     public static void main(String[] args) {
         Server jettyServer = null;
 
         try {
             jettyServer = new Server();
-
-
 
             SocketConnector conn = new SocketConnector();
             String portVariable = System.getProperty("jetty.port");
@@ -44,13 +42,13 @@ public class Start {
             conn.setAcceptQueueSize(100);
             conn.setMaxIdleTime(1000 * 60 * 60);
             conn.setSoLingerTime(-1);
-            
+
             // Use this to set a limit on the number of threads used to respond requests
             // BoundedThreadPool tp = new BoundedThreadPool();
             // tp.setMinThreads(8);
             // tp.setMaxThreads(8);
             // conn.setThreadPool(tp);
-            
+
             jettyServer.setConnectors(new Connector[] { conn });
 
             WebAppContext wah = new WebAppContext();
@@ -65,12 +63,12 @@ public class Start {
                 (new XmlConfiguration(new FileInputStream(jettyConfigFile))).configure(jettyServer);
             }
 
-           jettyServer.start();
+            jettyServer.start();
 
             // use this to test normal stop behaviour, that is, to check stuff that
-            // need to be done on container shutdown (and yes, this will make 
+            // need to be done on container shutdown (and yes, this will make
             // jetty stop just after you started it...)
-            // jettyServer.stop(); 
+            // jettyServer.stop();
         } catch (Exception e) {
             log.log(Level.SEVERE, "Could not start the Jetty server: " + e.getMessage(), e);
 
@@ -79,19 +77,19 @@ public class Start {
                     jettyServer.stop();
                 } catch (Exception e1) {
                     log.log(Level.SEVERE,
-                        "Unable to stop the " + "Jetty server:" + e1.getMessage(), e1);
+                            "Unable to stop the " + "Jetty server:" + e1.getMessage(), e1);
                 }
             }
         }
     }
 
-	private static int parsePort(String portVariable) {
-		if(portVariable == null)
-			return -1;
-	    try {
-	    	return Integer.valueOf(portVariable).intValue();
-	    } catch(NumberFormatException e) {
-	    	return -1;
-	    }
-	}
+    private static int parsePort(String portVariable) {
+        if (portVariable == null)
+            return -1;
+        try {
+            return Integer.valueOf(portVariable).intValue();
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
 }

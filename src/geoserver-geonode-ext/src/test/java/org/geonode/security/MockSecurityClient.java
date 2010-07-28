@@ -12,9 +12,6 @@ import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
-import org.geonode.security.GeoNodeDataAccessManager;
-import org.geonode.security.GeonodeSecurityClient;
-import org.geonode.security.LayersGrantedAuthority;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 
 /**
@@ -30,7 +27,7 @@ public class MockSecurityClient implements GeonodeSecurityClient {
     Map<String, Authentication> userAuths;
 
     AnonymousAuthenticationToken anonymousAuth;
-    
+
     public MockSecurityClient() {
         reset();
     }
@@ -54,8 +51,8 @@ public class MockSecurityClient implements GeonodeSecurityClient {
     public void reset() {
         cookieAuths = new HashMap<String, Authentication>();
         userAuths = new HashMap<String, Authentication>();
-        anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous", 
-                new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_ANONYMOUS")});
+        anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous",
+                new GrantedAuthority[] { new GrantedAuthorityImpl("ROLE_ANONYMOUS") });
     }
 
     public void addUserAuth(String username, String password, boolean admin,
@@ -86,12 +83,13 @@ public class MockSecurityClient implements GeonodeSecurityClient {
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                username, password, (GrantedAuthority[]) authorities
-                        .toArray(new GrantedAuthority[authorities.size()]));
+                username, password,
+                (GrantedAuthority[]) authorities.toArray(new GrantedAuthority[authorities.size()]));
         return token;
     }
 
-    public void setAnonymousRights(boolean admin, List<String> readOnlyLayers, List<String> readWriteLayers) {
+    public void setAnonymousRights(boolean admin, List<String> readOnlyLayers,
+            List<String> readWriteLayers) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
         if (admin) {

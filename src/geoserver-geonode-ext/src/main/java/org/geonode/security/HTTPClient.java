@@ -1,10 +1,14 @@
 package org.geonode.security;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.springframework.util.Assert;
 
 /**
  * A reentrant HTTP client used to send authentication requests to GeoNode
@@ -25,9 +29,11 @@ public class HTTPClient {
     public HTTPClient(final int maxConnectionsPerHost, final int connectionTimeout,
             final int readTimeout) {
 
-        assert maxConnectionsPerHost > 0 : "maxConnectionsPerHost shall be a positive integer";
-        assert connectionTimeout >= 0 : "connectionTimeout shall be a positive integer or zero";
-        assert readTimeout >= 0 : "readTimeout shall be a positive integer or zero";
+        Assert.isTrue(maxConnectionsPerHost > 0,
+                "maxConnectionsPerHost shall be a positive integer");
+        Assert.isTrue(connectionTimeout >= 0,
+                "connectionTimeout shall be a positive integer or zero");
+        Assert.isTrue(readTimeout >= 0, "readTimeout shall be a positive integer or zero");
 
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         connectionManager.getParams().setDefaultMaxConnectionsPerHost(maxConnectionsPerHost);
@@ -36,6 +42,15 @@ public class HTTPClient {
         client = new HttpClient(connectionManager);
     }
 
+    /**
+     * Sends an HTTP GET request to the given {@code url} with the provided (possibly empty or null)
+     * request headers, and returns the response content as a string.
+     * 
+     * @param url
+     * @param requestHeaders
+     * @return
+     * @throws IOException
+     */
     public String sendGET(final String url, final String[] requestHeaders) throws IOException {
 
         GetMethod get = new GetMethod(url);
@@ -57,7 +72,19 @@ public class HTTPClient {
                 throw new IOException("GeoNode communication failed, status report is: " + status
                         + ", " + get.getStatusText());
             }
-            responseBodyAsString = get.getResponseBodyAsString();
+            StringBuilder responseBody = new StringBuilder();
+            InputStream bodyAsStream = get.getResponseBodyAsStream();
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+                        bodyAsStream));
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    responseBody.append(line).append('\n');
+                }
+            } finally {
+                bodyAsStream.close();
+            }
+            responseBodyAsString = responseBody.toString();
         } finally {
             get.releaseConnection();
         }
