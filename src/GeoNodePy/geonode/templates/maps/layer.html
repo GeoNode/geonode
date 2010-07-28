@@ -28,17 +28,12 @@
                  * maps on the server for sharing and editing.
                  */
                 rest: "/maps/",
-                wms: {
-                    "capra": "{{ GEOSERVER_BASE_URL }}wms"
-                },
-                map: {
-                    "layers": [{"wms": "capra", "name": "{{layer.typename}}"}]
-                },
-                backgroundLayers: {{ background|safe }},
+
                 portalConfig: {
                     renderTo: "preview_map",
                     height: 350
                 },
+
                 createTools: function() {
                     return [new Ext.Button({
                         tooltip: GeoExplorer.prototype.backgroundContainerText,
@@ -55,6 +50,8 @@
                     }
                 }
             };
+
+            config = Ext.apply(config, {{ viewer|safe }});
 
             app = new GeoExplorer.Viewer(config);
 

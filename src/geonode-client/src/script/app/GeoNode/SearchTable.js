@@ -715,6 +715,13 @@ GeoNode.DataCartStore = Ext.extend(Ext.data.Store, {
 
 GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
 
+    /**
+     * Property: viewerConfig
+     * Options such as background layers configuration to be passed to the
+     * gxp.Viewer instance enclosed by this BoundingBoxWidget.
+     */
+    viewerConfig: null,
+
     constructor: function(config) {
         Ext.apply(this, config);
         this.activated = false;
@@ -725,20 +732,23 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
 
         var el = Ext.get(this.renderTo);
 
-        this.viewer = new GeoExplorer.Viewer({
+        var viewerConfig = {
             proxy: this.proxy,
             useCapabilities: false,
             useBackgroundCapabilities: false,
             useToolbar: false,
             useMapOverlay: false,
-            backgroundLayers: [this.background],
             portalConfig: {
                 collapsed: true,
                 border: false,
                 height: 300,
                 renderTo: el.query('.bbox-expand')[0]
             }
-        });
+        }
+
+        viewerConfig = Ext.apply(viewerConfig, this.viewerConfig)
+
+        this.viewer = new GeoExplorer.Viewer(viewerConfig);
 
          this.enabledCB = el.query('.bbox-enabled input')[0];        
          this.disable();
