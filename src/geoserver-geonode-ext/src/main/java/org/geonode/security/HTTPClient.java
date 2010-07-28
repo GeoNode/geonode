@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.springframework.util.Assert;
 
 /**
  * A reentrant HTTP client used to send authentication requests to GeoNode
@@ -28,9 +29,11 @@ public class HTTPClient {
     public HTTPClient(final int maxConnectionsPerHost, final int connectionTimeout,
             final int readTimeout) {
 
-        assert maxConnectionsPerHost > 0 : "maxConnectionsPerHost shall be a positive integer";
-        assert connectionTimeout >= 0 : "connectionTimeout shall be a positive integer or zero";
-        assert readTimeout >= 0 : "readTimeout shall be a positive integer or zero";
+        Assert.isTrue(maxConnectionsPerHost > 0,
+                "maxConnectionsPerHost shall be a positive integer");
+        Assert.isTrue(connectionTimeout >= 0,
+                "connectionTimeout shall be a positive integer or zero");
+        Assert.isTrue(readTimeout >= 0, "readTimeout shall be a positive integer or zero");
 
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         connectionManager.getParams().setDefaultMaxConnectionsPerHost(maxConnectionsPerHost);
