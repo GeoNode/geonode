@@ -31,9 +31,9 @@ from django.forms.models import inlineformset_factory
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
-DEFAULT_TITLE = "GeoNode Default Map"
-DEFAULT_ABSTRACT = "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community."
-DEFAULT_CONTACT = "For more information, contact OpenGeo at http://opengeo.org/"
+DEFAULT_TITLE = ""
+DEFAULT_ABSTRACT = ""
+DEFAULT_CONTACT = ""
 
 _default_map = Map(
     title=DEFAULT_TITLE, 
@@ -186,6 +186,9 @@ def newmap(request):
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map = get_object_or_404(Map,pk=mapid) 
+        map.abstract = DEFAULT_ABSTRACT
+        map.contact = DEFAULT_CONTACT
+        map.title = DEFAULT_TITLE
         config = map.viewer_json()
         del config['id']
     else:
@@ -409,9 +412,7 @@ def edit_map_permissions(request, mapid):
 
 @login_required
 def deletemap(request, mapid):
-    '''
-    '''
-    # XXX transaction?
+    ''' Delete a map, and its constituent layers. '''
     map = get_object_or_404(Map,pk=mapid) 
 
     if not request.user.has_perm('maps.delete_map', obj=map):
@@ -419,12 +420,17 @@ def deletemap(request, mapid):
             RequestContext(request, {'error_message': 
                 _("You are not permitted to delete this map.")})), status=401)
 
-    layers = MapLayer.objects.filter(map=map.id) 
-     
-    map.delete()
-    for layer in layers:
-        layer.delete()
-        return HttpResponseRedirect(reverse('geonode.views.community'))
+    if request.method == 'GET':
+        return render_to_response("maps/map_remove.html", RequestContext(request, {
+            "map": map
+        }))
+    elif request.method == 'POST':
+        layers = map.layer_set.all()
+        for layer in layers:
+            layer.delete()
+        map.delete()
+
+        return HttpResponseRedirect(reverse("data"))
 
 def mapdetail(request,mapid): 
     '''
