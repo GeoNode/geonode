@@ -173,6 +173,7 @@ def newmap(request):
         
         if 'layer' in params:
             bbox = None
+            map = Map(projection="EPSG:900913")
             layers = []
             for layer_name in params.getlist('layer'):
                 try:
@@ -183,7 +184,7 @@ def newmap(request):
 
                 layer_bbox = layer.resource.latlon_bbox
                 if bbox is None:
-                    bbox = layer_bbox[0:4]
+                    bbox = list(layer_bbox[0:4])
                 else:
                     bbox[0] = min(bbox[0], layer_bbox[0])
                     bbox[1] = max(bbox[1], layer_bbox[1])
