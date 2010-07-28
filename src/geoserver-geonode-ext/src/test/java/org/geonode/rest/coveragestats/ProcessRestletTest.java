@@ -20,7 +20,6 @@ import org.geonode.GeoNodeTestSupport;
 import org.geonode.geojson.GeoJSONParser;
 import org.geonode.process.coveragestats.HazardStatisticsFactory;
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.TestData;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;

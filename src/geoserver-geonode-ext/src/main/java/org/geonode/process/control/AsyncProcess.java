@@ -24,8 +24,8 @@ public abstract class AsyncProcess implements Process {
      * special input parameter.
      */
     public static final Parameter<StorageManager> STORAGE_MANAGER = new Parameter<StorageManager>(
-            "StorageManager", StorageManager.class, Text.text("Storage Manager"), Text
-                    .text("Storage Manager"));
+            "StorageManager", StorageManager.class, Text.text("Storage Manager"),
+            Text.text("Storage Manager"));
 
     private ProcessStatus status;
 

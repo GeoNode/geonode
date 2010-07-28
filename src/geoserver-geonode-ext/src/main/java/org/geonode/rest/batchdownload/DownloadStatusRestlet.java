@@ -23,8 +23,8 @@ import org.restlet.resource.StringRepresentation;
 /**
  * Returns the status code and progress percentage of a launched process.
  * <p>
- * Input: HTTP GET request to {@code <restlet end point>/<process id>}. For example: {@code
- * http://localhost:8080/geoserver/rest/process/batchdownload/status/1001}
+ * Input: HTTP GET request to {@code <restlet end point>/<process id>}. For example:
+ * {@code http://localhost:8080/geoserver/rest/process/batchdownload/status/1001}
  * </p>
  * <p>
  * Output: JSON object with the following structure:

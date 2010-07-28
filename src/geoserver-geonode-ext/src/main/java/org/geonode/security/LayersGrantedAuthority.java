@@ -11,7 +11,7 @@ import java.util.List;
 import org.acegisecurity.GrantedAuthority;
 
 /**
- * An authority marking the user
+ * An authority marking the user credentials read/only and read/write access to layers
  * 
  * @author Andrea Aime - OpenGeo
  */
