@@ -27,9 +27,9 @@ from django.forms.models import inlineformset_factory
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
-DEFAULT_TITLE = "GeoNode Default Map"
-DEFAULT_ABSTRACT = "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community."
-DEFAULT_CONTACT = "For more information, contact OpenGeo at http://opengeo.org/"
+DEFAULT_TITLE = ""
+DEFAULT_ABSTRACT = ""
+DEFAULT_CONTACT = ""
 
 _default_map = Map(
     title=DEFAULT_TITLE, 
@@ -158,6 +158,9 @@ def newmap(request):
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map = get_object_or_404(Map,pk=mapid) 
+        map.abstract = DEFAULT_ABSTRACT
+        map.contact = DEFAULT_CONTACT
+        map.title = DEFAULT_TITLE
         config = map.viewer_json()
         del config['id']
     else:
