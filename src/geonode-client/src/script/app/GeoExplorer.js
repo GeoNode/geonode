@@ -31,6 +31,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     localGeoServerBaseUrl: "",
     
     /**
+     * api: config[fromLayer]
+     * ``Boolean`` true if map view was loaded with layer parameters
+     */
+    fromLayer: false,
+
+    /**
      * private: property[mapPanel]
      * the :class:`GeoExt.MapPanel` instance for the main viewport
      */
@@ -93,6 +99,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     layersPanelText: "UT:Layers",
     legendPanelText: "UT:Legend",
     lengthActionText: "UT:Length",
+    loadingMapMessage: "UT:Loading Map...",
     mapSizeLabel: 'UT: Map Size', 
     measureSplitText: "UT:Measure",
     metadataFormCancelText : "UT:Cancel",
@@ -219,16 +226,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.mapID = this.initialConfig.id;
     },
     
-    loadConfig: function(config) {
-        var query = Ext.urlDecode(document.location.search.substr(1));
-        var queryConfig = Ext.util.JSON.decode(query.q);
-        this.configManager = new GeoNode.ConfigManager(
-            Ext.apply({}, queryConfig, config));
-
-        GeoExplorer.superclass.loadConfig.apply(this,
-            [this.configManager.getViewerConfig()]);
-    },
-    
     displayXHRTrouble: function(response) {
         Ext.Msg.show({
             title: this.connErrorTitleText,
@@ -272,13 +269,38 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
         
+        var layerCount = 0;
+        
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
-            e.layer instanceof OpenLayers.Layer.WMS && !e.layer.singleTile &&
-                e.layer.maxExtent && e.layer.mergeNewParams({
+            var layer = e.layer;
+            if (layer instanceof OpenLayers.Layer.WMS) {
+                !layer.singleTile && layer.maxExtent && layer.mergeNewParams({
                     tiled: true,
-                    tilesOrigin: [e.layer.maxExtent.left, e.layer.maxExtent.bottom]
-                }
-            );
+                    tilesOrigin: [layer.maxExtent.left, layer.maxExtent.bottom]
+                });
+                layer.events.on({
+                    "loadstart": function() {
+                        layerCount++;
+                        if (!this.busyMask) {
+                            this.busyMask = new Ext.LoadMask(
+                                this.mapPanel.map.div, {
+                                    msg: this.loadingMapMessage
+                                }
+                            );
+                            this.busyMask.show();
+                        }
+                        layer.events.unregister("loadstart", this, arguments.callee);
+                    },
+                    "loadend": function() {
+                        layerCount--;
+                        if(layerCount === 0) {
+                            this.busyMask.hide();
+                        }
+                        layer.events.unregister("loadend", this, arguments.callee);
+                    },
+                    scope: this
+                })
+            } 
         });
     },
     
@@ -559,7 +581,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         this.on("ready", function(){
-            if (!this.mapID) {
+            if (!this.fromLayer && !this.mapID) {
                 this.showCapabilitiesGrid();
             }
         }, this);
@@ -1630,7 +1652,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *  any configuration before applyConfig is called.
      */
     save : function(as){
-        var config = this.configManager.getConfig(this);
+        var config = this.getState();
         
         var failure = function(response, options) {
             var failureMessage = this.saveFailMessage;
