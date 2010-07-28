@@ -130,6 +130,7 @@ def maps(request, mapid=None):
             
             map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
             map.save()
+            map.set_default_permissions()
             map.update_from_viewer(request.raw_post_data)
             response = HttpResponse('', status=201)
             response['Location'] = map.id
