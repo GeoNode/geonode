@@ -150,13 +150,14 @@ Ext.onReady(function(){
 {% block sidebar %}
 <h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
 <p>{% trans "This form allows you to update the data for this layer."  %}</p>
-<p>{% trans "Updated data must be the same format as the data already in place, e.g. "  %}
-  {% if is_featuretype %}
-  a Shapefile.
-  {% else %}
-  a GeoTIFF.
-  {% endif %}
-  </p>
+<p>{% blocktrans %}
+If the new dataset omits attributes that were included in the previous version,
+or changes their types, then existing styles for the layer may not work.
+Please check your maps if the new data includes such changes.  Additionally,
+updated data must be the same format as the data already in place, e.g.
+{% endblocktrans %}
+{% if is_featuretype %} a Shapefile. {% else %} a GeoTIFF.  {% endif %}
+</p>
 <p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
 
 <h3>{% trans "This action affects the following maps:"  %}</h3>

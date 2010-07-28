@@ -47,7 +47,9 @@ Ext.onReady(function() {
   <p>This map uses the following layers </p>
   <ul>
     {% for layer in layers %}
+    {% if not layer.group == "background" %}
     <li>{% autoescape off %}{{layer.local_link}}{% endautoescape %}</li> 
+    {% endif %} 
     {% endfor %}  
   </ul>    
   <h3>Manage</h3>
