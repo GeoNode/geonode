@@ -210,6 +210,10 @@ def newmap(request):
                     # bad layer, skip 
                     continue
 
+                if not request.user.has_perm('maps.view_layer', obj=layer):
+                    # invisible layer, skip inclusion
+                    continue
+                    
                 layer_bbox = layer.resource.latlon_bbox
                 if bbox is None:
                     bbox = list(layer_bbox[0:4])
