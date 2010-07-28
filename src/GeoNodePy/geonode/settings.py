@@ -108,7 +108,7 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 
 # The username and password for a user that can add and edit layer details on GeoServer
-GEOSERVER_CREDENTIALS = "admin", "admin"
+GEOSERVER_CREDENTIALS = "geoserver_admin", open(path_extrapolate('../../geoserver_token')).readline()[0:-1]
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
 GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
