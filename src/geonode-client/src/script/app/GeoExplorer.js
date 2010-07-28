@@ -226,16 +226,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.mapID = this.initialConfig.id;
     },
     
-    loadConfig: function(config) {
-        var query = Ext.urlDecode(document.location.search.substr(1));
-        var queryConfig = Ext.util.JSON.decode(query.q);
-        this.configManager = new GeoNode.ConfigManager(
-            Ext.apply({}, queryConfig, config));
-
-        GeoExplorer.superclass.loadConfig.apply(this,
-            [this.configManager.getViewerConfig()]);
-    },
-    
     displayXHRTrouble: function(response) {
         Ext.Msg.show({
             title: this.connErrorTitleText,
@@ -1662,7 +1652,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *  any configuration before applyConfig is called.
      */
     save : function(as){
-        var config = this.configManager.getConfig(this);
+        var config = this.getState();
         
         var failure = function(response, options) {
             var failureMessage = this.saveFailMessage;
