@@ -974,19 +974,15 @@ def edit_layer_permissions(request, layername):
         return HttpResponse(result, mimetype="application/javascript")
 
 
-def _basic_auth_user(request):
+def _get_basic_auth_info(request):
     """
-    authenticate user based on http basic auth
-    against the model database.
+    grab basic auth info
     """
-    try:
-        meth, auth = request.META['HTTP_AUTHORIZATION'].split()
-        if meth.lower() != 'basic':
-            return None
-        username, password = base64.b64decode(auth).split(':')
-        return authenticate(username=username, password=password)
-    except:
-        return None
+    meth, auth = request.META['HTTP_AUTHORIZATION'].split()
+    if meth.lower() != 'basic':
+        raise ValueError
+    username, password = base64.b64decode(auth).split(':')
+    return username, password
 
 def layer_acls(request):
     """
@@ -995,11 +991,32 @@ def layer_acls(request):
     for the currently authenticated user. 
     """
     
-    # XXX preference ?
+    # the layer_acls view supports basic auth, and a special 
+    # user which represents the geoserver administrator that
+    # is not present in django.
     acl_user = request.user
     if 'HTTP_AUTHORIZATION' in request.META:
-        acl_user = _basic_auth_user(request)
-        if not acl_user: 
+        try:
+            username, password = _get_basic_auth_info(request)
+            acl_user = authenticate(username=username, password=password)
+
+            # Nope, is it the special geoserver user?
+            if (acl_user is None and 
+                username == settings.GEOSERVER_CREDENTIALS[0] and
+                password == settings.GEOSERVER_CREDENTIALS[1]):
+                # great, tell geoserver it's an admin.
+                result = {
+                   'rw': [],
+                   'ro': [],
+                   'name': username,
+                   'is_superuser':  True,
+                   'is_anonymous': False
+                }
+                return HttpResponse(json.dumps(result), mimetype="application/json")
+        except:
+            pass
+        
+        if acl_user is None: 
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
                                 mimetype="text/plain")

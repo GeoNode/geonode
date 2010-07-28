@@ -245,6 +245,7 @@ def setup_webapps(options):
     'install_deps',
     'setup_webapps',
     'build_js', 
+    'generate_geoserver_token',
     'sync_django_db'
 ])
 def build(options):
@@ -315,6 +316,17 @@ def capra_js(options):
 def sync_django_db(options):
     sh("django-admin.py syncdb --settings=capra.settings --noinput")
 
+@task
+def generate_geoserver_token(options):
+    from random import choice
+    import string
+    chars = string.letters + string.digits + "-_!@#$*"
+    token = ''
+    for i in range(32):
+        token += choice(chars)
+    tf = open('geoserver_token', 'w')
+    tf.write(token)
+    tf.close()
 
 @task
 def package_dir(options):
