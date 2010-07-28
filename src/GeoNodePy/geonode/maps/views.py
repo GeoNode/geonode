@@ -86,6 +86,15 @@ class PocForm(forms.Form):
                                      queryset = Contact.objects.exclude(user=None))
 
 
+class MapForm(forms.ModelForm):
+    class Meta:
+        model = Map
+        exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner')
+        widgets = {
+            'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
+        }
+
+
 
 @transaction.commit_manually
 def maps(request, mapid=None):
@@ -368,6 +377,33 @@ def mapdetail(request,mapid):
         'layers': layers
     }))
 
+@csrf_exempt
+@login_required
+def describemap(request, mapid):
+    '''
+    The view that displays a form for
+    editing map metadata
+    '''
+    map = get_object_or_404(Map,pk=mapid) 
+    if request.user.is_authenticated():
+        if request.method == "POST":
+            # Change metadata, return to map info page
+            map_form = MapForm(request.POST, instance=map, prefix="map")
+            if map_form.is_valid():
+                map_form.save()
+
+                return HttpResponseRedirect(reverse('geonode.maps.views.map_controller', args=(map.id,)))
+        else:
+            # Show form
+            map_form = MapForm(instance=map, prefix="map")
+
+        return render_to_response("maps/map_describe.html", RequestContext(request, {
+            "map": map,
+            "map_form": map_form
+        }))
+    else: 
+        return HttpResponse("Not allowed", status=403)
+
 def map_controller(request, mapid):
     '''
     main view for map resources, dispatches to correct 
@@ -375,6 +411,8 @@ def map_controller(request, mapid):
     '''
     if 'remove' in request.GET: 
         return deletemap(request, mapid)
+    elif 'describe' in request.GET:
+        return describemap(request, mapid)
     else:
         return mapdetail(request, mapid)
 
