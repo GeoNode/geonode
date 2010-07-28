@@ -8,14 +8,14 @@ from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.gis import gdal
+from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext, loader
-from django.utils.html import escape
 from django.utils.translation import ugettext as _
 import json
 import math
@@ -31,6 +31,37 @@ from django.forms.models import inlineformset_factory
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
+DEFAULT_TITLE = "GeoNode Default Map"
+DEFAULT_ABSTRACT = "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community."
+DEFAULT_CONTACT = "For more information, contact OpenGeo at http://opengeo.org/"
+
+_default_map = Map(
+    title=DEFAULT_TITLE, 
+    abstract=DEFAULT_ABSTRACT,
+    contact=DEFAULT_CONTACT,
+    projection="EPSG:900913",
+    center_x=-9428760.8688778,
+    center_y=1436891.8972581,
+    zoom=7
+)
+
+def _baselayer(lyr, order):
+    return MapLayer.objects.from_viewer_config(
+        map = _default_map,
+        layer = lyr,
+        source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
+        ordering = order
+    )
+
+DEFAULT_BASELAYERS = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
+
+DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASELAYERS)
+
+del _default_map
+del _baselayer
+
+def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
+    return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
 class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
@@ -59,26 +90,6 @@ class PocForm(forms.Form):
                                      queryset = Contact.objects.exclude(user=None))
 
 
-DEFAULT_MAP_CONFIG = {
-    "alignToGrid": True,
-    "proxy": "/proxy/?url=",
-    "about": {
-        "title": "GeoNode Default Map",
-        "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
-        "contact": "For more information, contact OpenGeo at http://opengeo.org/"
-    },
-    "wms": {
-        "capra": "%swms" % settings.GEOSERVER_BASE_URL
-    },
-    "map": {
-        "layers": [ {
-            "name": settings.DEFAULT_MAP_BASE_LAYER,
-            "wms": "capra"
-        } ],
-        "center": settings.DEFAULT_MAP_CENTER,
-        "zoom": settings.DEFAULT_MAP_ZOOM
-    }
-}
 
 MAP_LEV_NAMES = {
     Map.LEVEL_NONE  : _('No Permissions'),
@@ -93,28 +104,41 @@ LAYER_LEV_NAMES = {
     Layer.LEVEL_ADMIN : _('Administrative')
 }
 
+@transaction.commit_manually
 def maps(request, mapid=None):
     if request.method == 'GET' and mapid is None:
-        map_configs = [{"id": map.pk, "config": build_map_config(map)} for map in Map.objects.all()
+        map_configs = [{"id": map.pk, "config": map.viewer_json()} for map in Map.objects.all()
                        if request.user.has_perm('maps.view_map', obj=map)]
         return HttpResponse(json.dumps({"maps": map_configs}), mimetype="application/json")
     elif request.method == 'GET' and mapid is not None:
         map = Map.objects.get(pk=mapid)
         if request.user.has_perm('maps.view_map', obj=map):
-            config = build_map_config(map)
+            config = map.viewer_json()
             return HttpResponse(json.dumps(config))
         else:
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {})), status=401)
+        
     elif request.method == 'POST':
+        if not request.user.is_authenticated():
+            return HttpResponse(
+                'You must be logged in to save new maps',
+                mimetype="text/plain",
+                status=401
+            )
         try: 
-            map = create_map_json(request)
+            
+            map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
+            map.save()
+            map.update_from_viewer(request.raw_post_data)
             response = HttpResponse('', status=201)
             response['Location'] = map.id
+            transaction.commit()
             return response
-        except:
+        except Exception, e:
+            transaction.rollback()
             return HttpResponse(
-                "The server could not understand your request.",
+                "The server could not understand your request." + str(e),
                 status=400, 
                 mimetype="text/plain"
             )
@@ -125,107 +149,28 @@ def mapJSON(request, mapid):
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {})), status=401)
-    	config = build_map_config(map)
-    	return HttpResponse(json.dumps(config))
+    	return HttpResponse(json.dumps(map.viewer_json()))
     elif request.method == 'PUT':
-        return update_map_json(request, mapid)
-
-
-def update_map_json(request, mapid):
-    # login is required, but we'd prefer to 
-    # actually return a 401 status code to 
-    # ajax vs. an uninformative redirect.
-    if not request.user.is_authenticated():
-        return HttpResponse(_("You must be logged in to save this map"),
-                            status=401,
-                            mimetype="text/plain")
-
-    map = get_object_or_404(Map,pk=mapid) 
-    if not request.user.has_perm('maps.change_map', obj=map):
-        return HttpResponse(_('You are not permitted to save this map'),
-                            status=401,
-                            mimetype="text/plain")
-
-    conf = json.loads(request.raw_post_data)
-    
-    map.title = conf['about']['title']
-    map.abstract = conf['about']['abstract']
-    map.contact = conf['about']['contact']
-    map.zoom = conf['map']['zoom']
-    map.center_lon = conf['map']['center'][0]
-    map.center_lat = conf['map']['center'][1]
-    
-    # remove any layers in the current map
-    for layer in map.layer_set.all():
-        layer.delete()
-    
-    # construct layers now specified in the order given.
-    if 'wms' in conf and 'layers' in conf['map']:
-        services = conf['wms']
-        layers = conf['map']['layers']
-        ordering = 0
-        for l in layers:
-            if 'wms' in l and l['wms'] in services:
-                map.layer_set.create(
-                    name=l['name'], 
-                    group=l.get('group', ''), 
-                    ows_url=services[l['wms']], 
-                    styles=l.get('styles', ''),
-                    format=l.get('format', ''),
-                    opacity=l.get('opacity', 100),
-                    transparent=l.get("transparent", False),
-                    stack_order=ordering
-                )
-                ordering = ordering + 1
-    map.save()
-    return HttpResponse('', status=204)
-
-def create_map_json(request):
-    if not request.user.is_authenticated():
-        return HttpResponse(_("You must be logged in to save this map"),
-                            status=401,
-                            mimetype="text/plain")
-
-    conf = json.loads(request.raw_post_data)
-    title = conf['about']['title']
-    abstract = conf['about']['abstract']
-    contact = conf['about']['contact']
-    zoom = conf['map']['zoom']
-    center_lon = conf['map']['center'][0]
-    center_lat = conf['map']['center'][1]
-
-    map = Map.objects.create(
-        title=title, 
-        abstract=abstract, 
-        contact=contact, 
-        zoom=zoom, 
-        center_lon=center_lon, 
-        center_lat=center_lat, 
-        owner = request.user,
-    )
-    map.set_default_permissions()
-
-    if 'wms' in conf and 'layers' in conf['map']:
-        services = conf['wms']
-        layers = conf['map']['layers']
-        ordering = 0
-        for l in layers:
-            if 'wms' in l and l['wms'] in services:
-                name = l['name']
-                group = l.get('group', '')
-                ows = services[l['wms']]
-                map.layer_set.create(
-                    name=l['name'], 
-                    group=l.get('group', ''), 
-                    ows_url=services[l['wms']], 
-                    styles=l.get('styles', ''),
-                    format=l.get('format', ''),
-                    opacity=l.get('opacity', 100),
-                    transparent=l.get("transparent", False),
-                    stack_order=ordering
-                )
-                ordering = ordering + 1
-    return map
+        if not request.user.is_authenticated():
+            return HttpResponse(
+                _("You must be logged in to save this map"),
+                status=401,
+                mimetype="text/plain"
+            )
+        map = get_object_or_404(Map, pk=mapid)
+        try:
+            map.update_from_viewer(request.raw_post_data)
+            return HttpResponse(
+                "Map successfully updated.", 
+                mimetype="text/plain",
+                status=204
+            )
+        except Exception, e:
+            return HttpResponse(
+                "The server could not understand the request." + str(e),
+                mimetype="text/plain",
+                status=400
+            )
 
 @csrf_exempt
 def newmap(request):
@@ -240,7 +185,7 @@ def newmap(request):
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map = get_object_or_404(Map,pk=mapid) 
-        config = build_map_config(map)
+        config = map.viewer_json()
         del config['id']
     else:
         if request.method == 'GET':
@@ -253,8 +198,6 @@ def newmap(request):
         if 'layer' in params:
             bbox = None
             layers = []
-            config = DEFAULT_MAP_CONFIG
-            config['fromLayer'] = True
             for layer_name in params.getlist('layer'):
                 try:
                     layer = Layer.objects.get(typename=layer_name)
@@ -264,28 +207,39 @@ def newmap(request):
 
                 layer_bbox = layer.resource.latlon_bbox
                 if bbox is None:
-                    bbox = list(layer_bbox)
+                    bbox = layer_bbox[0:4]
                 else:
                     bbox[0] = min(bbox[0], layer_bbox[0])
                     bbox[1] = max(bbox[1], layer_bbox[1])
                     bbox[2] = min(bbox[2], layer_bbox[2])
                     bbox[3] = max(bbox[3], layer_bbox[3])
                 
-                layers.append({'name': layer.typename,
-                               'wms' : 'capra'})
-                                   
-            if len(layers) > 0:
-                config['map']['layers'] = layers
+                layers.append(MapLayer(
+                    map = map,
+                    name = layer.typename,
+                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                    visibility = True
+                ))
 
             if bbox is not None:
-                config['map']['center'] = ((float(bbox[0]) + float(bbox[1])) / 2, (float(bbox[2]) + float(bbox[3])) / 2)
+                minx, maxx, miny, maxy = [float(c) for c in bbox]
+                x = (minx + maxx) / 2
+                y = (miny + maxy) / 2
+                wkt = "POINT(" + str(x) + " " + str(y) + ")"
+                center = GEOSGeometry(wkt, srid=4326)
+                center.transform(3785)
 
-                width_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
-                height_zoom = math.log(360 / (float(bbox[1]) - float(bbox[0])),2)
-                config['map']['zoom'] = math.ceil(min(width_zoom, height_zoom))
+                width_zoom = math.log(360 / (maxx - minx), 2)
+                height_zoom = math.log(360 / (maxy - miny), 2)
+
+                map.center_x = center.x
+                map.center_y = center.y
+                map.zoom = math.ceil(min(width_zoom, height_zoom))
+
+            config = map.viewer_json(*(DEFAULT_BASELAYERS + layers))
+            config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
-    config["backgroundLayers"] = settings.MAP_BASELAYERS
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config), 
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
@@ -481,8 +435,7 @@ def mapdetail(request,mapid):
             RequestContext(request, {'error_message': 
                 _("You are not allowed to view this map.")})), status=401)
      
-    config = build_map_config(map)
-    config["backgroundLayers"] = settings.MAP_BASELAYERS
+    config = map.viewer_json()
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map.id) 
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
@@ -512,8 +465,7 @@ def view(request, mapid):
             RequestContext(request, {'error_message': 
                 _("You are not allowed to view this map.")})), status=401)    
     
-    config = build_map_config(map)
-    config["backgroundLayers"] = settings.MAP_BASELAYERS
+    config = map.viewer_json()
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
@@ -528,8 +480,7 @@ def embed(request, mapid=None):
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
         
-        config = build_map_config(map)
-    config["backgroundLayers"] = settings.MAP_BASELAYERS
+        config = map.viewer_json()
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))
@@ -540,52 +491,11 @@ def data(request):
         'GEOSERVER_BASE_URL':settings.GEOSERVER_BASE_URL
     }))
 
-def build_map_config(map):
-    layers = map.layer_set.all()
-    servers = list(set(l.ows_url for l in layers))
-    server_mapping = {}
-
-    for i in range(len(servers)):
-        server_mapping[servers[i]] = str(i)
-
-    config = {
-        'id': map.id,
-        'about': {
-            'title':    escape(map.title),
-            'contact':  escape(map.contact),
-            'abstract': escape(map.abstract)
-        },
-        'map': { 
-            'layers': [],
-            'center': [map.center_lon, map.center_lat],
-            'zoom': map.zoom
-        }
-    }
-
-    config['wms'] = dict(zip(server_mapping.values(), server_mapping.keys()))
-
-    for l in layers:
-        layer_json = {
-            'name': l.name,
-            'wms': server_mapping[l.ows_url],
-            'group': l.group,
-            'styles' : l.styles
-        }
-
-        if l.format != "": layer_json['format'] = l.format
-        if l.styles != "": layer_json['styles'] = l.styles
-        if l.opacity != "": layer_json['opacity'] = l.opacity
-        if l.transparent: layer_json['transparent'] = True
-
-        config['map']['layers'].append(layer_json)
-
-    return config
-
 def view_js(request, mapid):
     map = Map.objects.get(pk=mapid)
     if not request.user.has_perm('maps.view_map', obj=map):
         return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
-    config = build_map_config(map)
+    config = map.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def fixdate(str):
@@ -731,10 +641,15 @@ def layerController(request, layername):
         
         metadata = layer.metadata_csw()
 
+        maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
+
+        # center/zoom don't matter; the viewer will center on the layer bounds
+        map = Map(projection="EPSG:900913")
+
         return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
             "metadata": metadata,
-            "background": settings.MAP_BASELAYERS,
+            "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
 
@@ -1384,11 +1299,13 @@ def search_page(request):
     else:
         return HttpResponse(status=405)
 
+    map = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
+
     return render_to_response('search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
-        'background': json.dumps(settings.MAP_BASELAYERS[settings.SEARCH_WIDGET_BASELAYER_INDEX]),
+        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASELAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-         "site" : settings.SITEURL
+        "site" : settings.SITEURL
     }))
 
 

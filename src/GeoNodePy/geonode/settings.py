@@ -127,25 +127,66 @@ DEFAULT_MAP_ZOOM = 7
 
 DEFAULT_LAYERS_OWNER='admin'
 
+MAP_BASELAYERSOURCES = {
+    "any": {
+        "ptype":"gx_olsource"
+    },
+    "capra": {
+        "url":"http://localhost:8001/geoserver/wms"
+    },
+    "google":{
+        "ptype":"gx_googlesource",
+        "apiKey": GOOGLE_API_KEY
+    }
+}
+
 MAP_BASELAYERS = [{
-        'service': "wms",
-        'url': "http://maps.opengeo.org/geowebcache/service/wms",
-        'layers': [
-            'bluemarble'
-        ]}, {
-        'service': 'google',
-        'layers': [
-             'SATELLITE'
-        ]}, {
-        'service': "wms",
-        'url': "%swms" % GEOSERVER_BASE_URL,
-        'layers': [
-            'base:CA'
-        ]}
+    "source":"any",
+    "type":"OpenLayers.Layer",
+    "args":["No background"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  },{
+    "source":"any",
+    "type":"OpenLayers.Layer.WMS",
+    "group":"background",
+    "visibility": True,
+    "fixed": True,
+    "args":[
+      "bluemarble",
+      "http://maps.opengeo.org/geowebcache/service/wms",
+      {
+        "layers":["bluemarble"],
+        "format":"image/png",
+        "tiled": True,
+        "tilesOrigin":[-20037508.34,-20037508.34]
+      },
+      {"buffer":0}
     ]
-# which MAP_BASELAYER to use for the 
-# data search bounding box widget.
-SEARCH_WIDGET_BASELAYER_INDEX = 0
+  },{
+    "source":"google",
+    "group":"background",
+    "name":"SATELLITE",
+    "visibility": False,
+    "fixed": True,
+  },{
+    "source":"any",
+    "type":"OpenLayers.Layer.WMS",
+    "group":"background",
+    "visibility": False,
+    "fixed": True,
+    "args":[
+      "base:CA",
+      "http://localhost:8001/geoserver/wms",
+      {
+        "layers":["base:CA"],
+        "format":"image/png",
+        "tiled": True,
+        "tilesOrigin":[-20037508.34,-20037508.34]
+      },
+      {"buffer":0}]
+    }]
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
