@@ -335,16 +335,20 @@ def batch_layer_download(request):
 
 @login_required
 def deletemap(request, mapid):
-    '''
-    '''
-    # XXX transaction?
+    ''' Delete a map, and its constituent layers. '''
     map = get_object_or_404(Map,pk=mapid) 
-    layers = MapLayer.objects.filter(map=map.id) 
-     
-    map.delete()
-    for layer in layers:
-        layer.delete()
-        return HttpResponseRedirect(reverse('geonode.views.community'))
+
+    if request.method == 'GET':
+        return render_to_response("maps/map_remove.html", RequestContext(request, {
+            "map": map
+        }))
+    elif request.method == 'POST':
+        layers = map.layer_set.all()
+        for layer in layers:
+            layer.delete()
+        map.delete()
+
+        return HttpResponseRedirect(reverse("data"))
 
 def mapdetail(request,mapid): 
     '''
