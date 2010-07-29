@@ -27,9 +27,9 @@ from django.forms.models import inlineformset_factory
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
-DEFAULT_TITLE = "GeoNode Default Map"
-DEFAULT_ABSTRACT = "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community."
-DEFAULT_CONTACT = "For more information, contact OpenGeo at http://opengeo.org/"
+DEFAULT_TITLE = ""
+DEFAULT_ABSTRACT = ""
+DEFAULT_CONTACT = ""
 
 _default_map = Map(
     title=DEFAULT_TITLE, 
@@ -84,6 +84,15 @@ class RoleForm(forms.ModelForm):
 class PocForm(forms.Form):
     contact = forms.ModelChoiceField(label = "New point of contact",
                                      queryset = Contact.objects.exclude(user=None))
+
+
+class MapForm(forms.ModelForm):
+    class Meta:
+        model = Map
+        exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner')
+        widgets = {
+            'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
+        }
 
 
 
@@ -158,6 +167,9 @@ def newmap(request):
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map = get_object_or_404(Map,pk=mapid) 
+        map.abstract = DEFAULT_ABSTRACT
+        map.contact = DEFAULT_CONTACT
+        map.title = DEFAULT_TITLE
         config = map.viewer_json()
         del config['id']
     else:
@@ -170,6 +182,7 @@ def newmap(request):
         
         if 'layer' in params:
             bbox = None
+            map = Map(projection="EPSG:900913")
             layers = []
             for layer_name in params.getlist('layer'):
                 try:
@@ -180,7 +193,7 @@ def newmap(request):
 
                 layer_bbox = layer.resource.latlon_bbox
                 if bbox is None:
-                    bbox = layer_bbox[0:4]
+                    bbox = list(layer_bbox[0:4])
                 else:
                     bbox[0] = min(bbox[0], layer_bbox[0])
                     bbox[1] = max(bbox[1], layer_bbox[1])
@@ -335,16 +348,20 @@ def batch_layer_download(request):
 
 @login_required
 def deletemap(request, mapid):
-    '''
-    '''
-    # XXX transaction?
+    ''' Delete a map, and its constituent layers. '''
     map = get_object_or_404(Map,pk=mapid) 
-    layers = MapLayer.objects.filter(map=map.id) 
-     
-    map.delete()
-    for layer in layers:
-        layer.delete()
-        return HttpResponseRedirect(reverse('geonode.views.community'))
+
+    if request.method == 'GET':
+        return render_to_response("maps/map_remove.html", RequestContext(request, {
+            "map": map
+        }))
+    elif request.method == 'POST':
+        layers = map.layer_set.all()
+        for layer in layers:
+            layer.delete()
+        map.delete()
+
+        return HttpResponseRedirect(reverse("data"))
 
 def mapdetail(request,mapid): 
     '''
@@ -360,6 +377,33 @@ def mapdetail(request,mapid):
         'layers': layers
     }))
 
+@csrf_exempt
+@login_required
+def describemap(request, mapid):
+    '''
+    The view that displays a form for
+    editing map metadata
+    '''
+    map = get_object_or_404(Map,pk=mapid) 
+    if request.user.is_authenticated():
+        if request.method == "POST":
+            # Change metadata, return to map info page
+            map_form = MapForm(request.POST, instance=map, prefix="map")
+            if map_form.is_valid():
+                map_form.save()
+
+                return HttpResponseRedirect(reverse('geonode.maps.views.map_controller', args=(map.id,)))
+        else:
+            # Show form
+            map_form = MapForm(instance=map, prefix="map")
+
+        return render_to_response("maps/map_describe.html", RequestContext(request, {
+            "map": map,
+            "map_form": map_form
+        }))
+    else: 
+        return HttpResponse("Not allowed", status=403)
+
 def map_controller(request, mapid):
     '''
     main view for map resources, dispatches to correct 
@@ -367,6 +411,8 @@ def map_controller(request, mapid):
     '''
     if 'remove' in request.GET: 
         return deletemap(request, mapid)
+    elif 'describe' in request.GET:
+        return describemap(request, mapid)
     else:
         return mapdetail(request, mapid)
 
