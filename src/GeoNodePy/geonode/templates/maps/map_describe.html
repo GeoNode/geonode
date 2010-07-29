@@ -1,0 +1,23 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {{ map.title }} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+    Ext.onReady(function() {
+    });
+</script>
+{% endblock %}
+{% block main %}
+  <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
+  <form action="/maps/{{map.id}}?describe" method="POST">
+	  {% csrf_token %}
+      <ul class="form">
+	      {{ map_form.as_ul }}
+          <input type="submit" value="{% trans "Update" %}"/>
+      </ul>
+  </form>
+{% endblock %}
