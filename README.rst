@@ -58,7 +58,17 @@ The following steps should prepare a Python virtual environment for you::
   python bootstrap.py --no-site-packages
   source bin/activate
   paver build
+  django-admin.py createsuperuser --settings=capra.settings
   paver host 
+
+Once fully started, you should see a message indicating the address of your geonode::
+  
+  Development GeoNode is running at http://localhost:8000/
+  The GeoNode is an unstoppable machine
+  Press CTRL-C to shut down
+
+The django administrative control panel is not linked from the main site, but can be accessed at http://localhost:8000/admin/.
+
 
 .. note:: 
 
@@ -70,13 +80,6 @@ The following steps should prepare a Python virtual environment for you::
   ReportLab or the Python Imaging Library provided by your operating system
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option in.
-
-After paver build sets up the basic Django application, you can run::
-
-  django-admin.py createsuperuser --settings=capra.settings
-
-to create an admin user account.  The administrative control panel is not
-linked from the main site, but can be accessed at http://localhost:8000/admin/.
 
 
 Options
