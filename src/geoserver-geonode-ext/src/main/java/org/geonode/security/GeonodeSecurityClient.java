@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
 
 /**
  * A client that talks to GeoNode to authenticate the users based on cookies contents or
@@ -21,7 +22,9 @@ public interface GeonodeSecurityClient {
      * Authenticates a user based on cookie contents
      * 
      * @param gnCookie
-     * @return
+     * @return either a {@link GeoNodeSessionAuthToken} or an {@link AnonymousAuthenticationToken},
+     *         depending on whether GeoNode knows about the {@code sessionid} with value
+     *         {@code cookieValue} or not.
      * @throws AuthenticationException
      * @throws IOException
      */
