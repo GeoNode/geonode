@@ -31,6 +31,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     localGeoServerBaseUrl: "",
     
     /**
+     * api: config[fromLayer]
+     * ``Boolean`` true if map view was loaded with layer parameters
+     */
+    fromLayer: false,
+
+    /**
      * private: property[mapPanel]
      * the :class:`GeoExt.MapPanel` instance for the main viewport
      */
@@ -223,16 +229,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         GeoExplorer.superclass.constructor.apply(this, arguments);
 
         this.mapID = this.initialConfig.id;
-    },
-    
-    loadConfig: function(config) {
-        var query = Ext.urlDecode(document.location.search.substr(1));
-        var queryConfig = Ext.util.JSON.decode(query.q);
-        this.configManager = new GeoNode.ConfigManager(
-            Ext.apply({}, queryConfig, config));
-
-        GeoExplorer.superclass.loadConfig.apply(this,
-            [this.configManager.getViewerConfig()]);
     },
     
     displayXHRTrouble: function(response) {
@@ -590,7 +586,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         this.on("ready", function(){
-            if (!this.mapID) {
+            if (!this.fromLayer && !this.mapID) {
                 this.showCapabilitiesGrid();
             }
         }, this);
@@ -1664,7 +1660,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *  any configuration before applyConfig is called.
      */
     save : function(as){
-        var config = this.configManager.getConfig(this);
+        var config = this.getState();
         
         var failure = function(response, options) {
             var failureMessage = this.saveFailMessage;

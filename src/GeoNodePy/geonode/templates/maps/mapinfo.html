@@ -47,12 +47,15 @@ Ext.onReady(function() {
   <p>This map uses the following layers </p>
   <ul>
     {% for layer in layers %}
+    {% if not layer.group == "background" %}
     <li>{% autoescape off %}{{layer.local_link}}{% endautoescape %}</li> 
+    {% endif %} 
     {% endfor %}  
   </ul>    
   <h3>Manage</h3>
   <ul>
-    <li><a href="{% url geonode.maps.views.view map.id %}">Edit map or metadata</a></li> 
+    <li><a href="{% url geonode.maps.views.view map.id %}">Edit this map</a></li> 
+    <li><a href="{% url geonode.maps.views.map_controller map.id %}?describe">Edit metadata</a></li> 
     <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">Delete map</a></li>
     <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">Duplicate map</a></li>
   </ul>      
