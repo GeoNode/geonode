@@ -70,32 +70,36 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         final SecurityContext securityContext = SecurityContextHolder.getContext();
         final Authentication existingAuth = securityContext.getAuthentication();
 
+        final String gnCookie = getGeoNodeCookieValue(httpRequest);
+
         // if we still need to authenticate and we find the cookie, consult GeoNode for
         // an authentication
-        final boolean authenticationRequired = existingAuth == null
-                || !existingAuth.isAuthenticated()
-                || (existingAuth instanceof AnonymousAuthenticationToken);
+        final boolean authenticationRequired;
+        if (existingAuth == null || !existingAuth.isAuthenticated()
+                || (existingAuth instanceof AnonymousAuthenticationToken)) {
+            authenticationRequired = true;
+        } else if (existingAuth instanceof GeoNodeSessionAuthToken) {
+            Object credentials = existingAuth.getCredentials();
+            boolean stillValid = gnCookie != null && gnCookie.equals(credentials);
+            existingAuth.setAuthenticated(stillValid);
+            authenticationRequired = !stillValid;
+        } else {
+            authenticationRequired = false;
+        }
 
-        if (authenticationRequired) {
-            final Cookie gnCookie = getGeoNodeCookie(httpRequest);
+        if (authenticationRequired && gnCookie != null) {
+            try {
+                final Authentication authResult;
+                authResult = client.authenticateCookie(gnCookie);
+                securityContext.setAuthentication(authResult);
 
-            if (gnCookie != null) {
-                try {
-                    final Authentication authResult;
-
-                    final String cookieValue = gnCookie.getValue();
-                    authResult = client.authenticateCookie(cookieValue);
-                    securityContext.setAuthentication(authResult);
-
-                } catch (AuthenticationException e) {
-                    // we just go ahead and fall back on basic authentication
-                } catch (IOException e) {
-                    LOGGER.log(Level.WARNING,
-                            "Error connecting to the GeoNode server for authentication purposes", e);
-                    throw new ServletException(
-                            "Error connecting to GeoNode authentication server: " + e.getMessage(),
-                            e);
-                }
+            } catch (AuthenticationException e) {
+                // we just go ahead and fall back on basic authentication
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING,
+                        "Error connecting to the GeoNode server for authentication purposes", e);
+                // throw new ServletException("Error connecting to GeoNode authentication server: "
+                // + e.getMessage(), e);
             }
         }
 
@@ -103,11 +107,11 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    private Cookie getGeoNodeCookie(HttpServletRequest request) {
+    private String getGeoNodeCookieValue(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
                 if (GEONODE_COOKIE_NAME.equals(c.getName())) {
-                    return c;
+                    return c.getValue();
                 }
             }
         }
