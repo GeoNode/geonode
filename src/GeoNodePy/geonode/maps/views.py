@@ -185,7 +185,13 @@ def newmap(request):
     '''
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
-        map = get_object_or_404(Map,pk=mapid) 
+        map = get_object_or_404(Map,pk=mapid)
+        
+        if not request.user.has_perm('maps.view_map', obj=map):
+            return HttpResponse(loader.render_to_string('401.html', 
+                RequestContext(request, {'error_message': 
+                    _("You are not permitted to view or copy this map.")})), status=401)
+
         map.abstract = DEFAULT_ABSTRACT
         map.contact = DEFAULT_CONTACT
         map.title = DEFAULT_TITLE
