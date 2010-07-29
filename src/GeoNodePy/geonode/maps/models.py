@@ -898,17 +898,17 @@ class Map(models.Model):
     configuration.
     """
 
-    title = models.CharField(max_length=200)
+    title = models.CharField(_('Title'),max_length=200)
     """
     A display name suitable for search results and page headers
     """
 
-    abstract = models.CharField(max_length=200)
+    abstract = models.CharField(-('Abstract'),max_length=200)
     """
     A longer description of the themes in the map.
     """
 
-    contact = models.CharField(max_length=200)
+    contact = models.CharField(_('Contact'),max_length=200)
     """
     *Deprecated* A free-form text field identifying the map's creator.  Prefer
     ``owner`` over this for new code.
