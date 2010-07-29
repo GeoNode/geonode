@@ -107,7 +107,7 @@ public class DefaultSecurityClientTest extends TestCase {
         EasyMock.verify(mockHttpClient);
 
         assertNotNull(authentication);
-        assertTrue(authentication instanceof UsernamePasswordAuthenticationToken);
+        assertTrue(authentication instanceof GeoNodeSessionAuthToken);
         assertTrue(authentication.isAuthenticated());
         assertEquals("aang", authentication.getPrincipal());
 
