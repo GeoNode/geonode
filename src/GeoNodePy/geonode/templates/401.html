@@ -21,7 +21,7 @@
     {% endif %}
     </p>
     <p>
-    {% if request.user.is_authenticated %}
+    {% if not request.user.is_anonymous %}
     {% blocktrans %}Please verify that you are logged in as the correct user.{%endblocktrans%}
     {% else %}
     {% blocktrans %}Please login or register and retry.{% endblocktrans %}
