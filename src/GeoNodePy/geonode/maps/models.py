@@ -468,15 +468,15 @@ system, so know what you do :-)'
 
 class Contact(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
-    name = models.CharField('Individual Name', max_length=255, blank=True, null=True)
-    organization = models.CharField('Organization Name', max_length=255, blank=True, null=True)
-    position = models.CharField('Position Name', max_length=255, blank=True, null=True)
-    voice = models.CharField('Voice', max_length=255, blank=True, null=True)
-    fax = models.CharField('Facsimile',  max_length=255, blank=True, null=True)
-    delivery = models.CharField('Delivery Point', max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=255, blank=True, null=True)
-    area = models.CharField('Administrative Area', max_length=255, blank=True, null=True)
-    zipcode = models.CharField('Postal Code', max_length=255, blank=True, null=True)
+    name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True)
+    organization = models.CharField(_('Organization Name'), max_length=255, blank=True, null=True)
+    position = models.CharField(_('Position Name'), max_length=255, blank=True, null=True)
+    voice = models.CharField(_('Voice'), max_length=255, blank=True, null=True)
+    fax = models.CharField(_('Facsimile'),  max_length=255, blank=True, null=True)
+    delivery = models.CharField(_('Delivery Point'), max_length=255, blank=True, null=True)
+    city = models.CharField(_('City'), max_length=255, blank=True, null=True)
+    area = models.CharField(_('Administrative Area'), max_length=255, blank=True, null=True)
+    zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
 
@@ -595,40 +595,42 @@ class Layer(models.Model):
     contacts = models.ManyToManyField(Contact, through='ContactRole')
 
     # section 1
-    title = models.CharField(max_length=255)
-    date = models.DateTimeField(auto_now=True)
-    date_type = models.CharField(max_length=255,choices=[(x, x) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
-    edition = models.CharField(max_length=255, blank=True, null=True)
-    abstract = models.TextField()
-    purpose = models.TextField(null=True, blank=True)
-    maintenance_frequency = models.CharField(max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
+    title = models.CharField(_('title'), max_length=255)
+    date = models.DateTimeField(_('date'), auto_now=True)
+    
+    date_type = models.CharField(_('date type'), max_length=255,choices=[(x, x) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
+
+    edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
+    abstract = models.TextField(_('abstract'))
+    purpose = models.TextField(_('purpose'), null=True, blank=True)
+    maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
 
     # section 2
     # see poc property definition below
 
     # section 3
-    keywords = models.TextField(blank=True, null=True)
-    keywords_region = models.CharField(max_length=3, choices= COUNTRIES, default = 'USA')
-    constraints_use = models.CharField(max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
-    constraints_other = models.TextField(blank=True, null=True)
-    spatial_representation_type = models.CharField(max_length=255, choices=[(x,x) for x in SPATIAL_REPRESENTATION_TYPES], blank=True, null=True)
+    keywords = models.TextField(_('keywords'), blank=True, null=True)
+    keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
+    constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
+    constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
+    spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=[(x,x) for x in SPATIAL_REPRESENTATION_TYPES], blank=True, null=True)
 
     # Section 4
-    language = models.CharField(max_length=3, choices=ALL_LANGUAGES, default='eng')
-    topic_category = models.CharField(max_length=255, choices = [(x, x) for x in TOPIC_CATEGORIES], default = 'location')
+    language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng')
+    topic_category = models.CharField(_('topic_category'), max_length=255, choices = [(x, x) for x in TOPIC_CATEGORIES], default = 'location')
 
     # Section 5
-    temporal_extent_start = models.DateField(blank=True, null=True)
-    temporal_extent_end = models.DateField(blank=True, null=True)
-    geographic_bounding_box = models.TextField()
-    supplemental_information = models.TextField(default=DEFAULT_SUPPLEMENTAL_INFORMATION)
+    temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True)
+    temporal_extent_end = models.DateField(_('temporal extent end'), blank=True, null=True)
+    geographic_bounding_box = models.TextField(_('geographic bounding box'))
+    supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION)
 
     # Section 6
-    distribution_url = models.TextField(blank=True, null=True)
-    distribution_description = models.TextField(blank=True, null=True)
+    distribution_url = models.TextField(_('distribution URL'), blank=True, null=True)
+    distribution_description = models.TextField(_('distribution description'), blank=True, null=True)
 
     # Section 8
-    data_quality_statement = models.TextField(blank=True, null=True)
+    data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True)
 
     # Section 9
     # see metadata_author property definition below
@@ -903,7 +905,7 @@ class Map(models.Model):
     A display name suitable for search results and page headers
     """
 
-    abstract = models.CharField(-('Abstract'),max_length=200)
+    abstract = models.CharField(_('Abstract'),max_length=200)
     """
     A longer description of the themes in the map.
     """
@@ -915,31 +917,31 @@ class Map(models.Model):
     """
     
     # viewer configuration
-    zoom = models.IntegerField()
+    zoom = models.IntegerField(_('zoom'))
     """
     The zoom level to use when initially loading this map.  Zoom levels start
     at 0 (most zoomed out) and each increment doubles the resolution.
     """
 
-    projection = models.CharField(max_length=32)
+    projection = models.CharField(_('projection'),max_length=32)
     """
     The projection used for this map.  This is stored as a string with the
     projection's SRID.
     """
 
-    center_x = models.FloatField()
+    center_x = models.FloatField(_('center X'))
     """
     The x coordinate to center on when loading this map.  Its interpretation
     depends on the projection.
     """
 
-    center_y = models.FloatField()
+    center_y = models.FloatField(_('center Y'))
     """
     The y coordinate to center on when loading this map.  Its interpretation
     depends on the projection.
     """
 
-    owner = models.ForeignKey(User, blank=True, null=True)
+    owner = models.ForeignKey(User, verbose_name=_('owner'), blank=True, null=True)
     """
     The user that created/owns this map.
     """
@@ -1152,19 +1154,19 @@ class MapLayer(models.Model):
     The map containing this layer
     """
 
-    stack_order = models.IntegerField()
+    stack_order = models.IntegerField(_('stack order'))
     """
     The z-index of this layer in the map; layers with a higher stack_order will
     be drawn on top of others.
     """
 
-    format = models.CharField(null=True,max_length=200)
+    format = models.CharField(_('format'), null=True,max_length=200)
     """
     The mimetype of the image format to use for tiles (image/png, image/jpeg,
     image/gif...)
     """
 
-    name = models.CharField(null=True,max_length=200)
+    name = models.CharField(_('name'), null=True,max_length=200)
     """
     The name of the layer to load.
 
@@ -1173,44 +1175,44 @@ class MapLayer(models.Model):
     in their capabilities documents, etc.)
     """
 
-    opacity = models.FloatField(default=1.0)
+    opacity = models.FloatField(_('opacity'), default=1.0)
     """
     The opacity with which to render this layer, on a scale from 0 to 1.
     """
 
-    styles = models.CharField(null=True,max_length=200)
+    styles = models.CharField(_('styles'), null=True,max_length=200)
     """
     The name of the style to use for this layer (only useful for WMS layers.)
     """
 
-    transparent = models.BooleanField()
+    transparent = models.BooleanField(_('transparent'))
     """
     A boolean value, true if we should request tiles with a transparent background.
     """
 
-    fixed = models.BooleanField(default=False)
+    fixed = models.BooleanField(_('fixed'), default=False)
     """
     A boolean value, true if we should prevent the user from dragging and
     dropping this layer in the layer chooser.
     """
 
-    group = models.CharField(null=True,max_length=200)
+    group = models.CharField(_('group'), null=True,max_length=200)
     """
     A group label to apply to this layer.  This affects the hierarchy displayed
     in the map viewer's layer tree.
     """
 
-    visibility = models.BooleanField(default=True)
+    visibility = models.BooleanField(_('visibility'), default=True)
     """
     A boolean value, true if this layer should be visible when the map loads.
     """
 
-    ows_url = models.URLField(null=True)
+    ows_url = models.URLField(_('ows URL'), null=True)
     """
     The URL of the OWS service providing this layer, if any exists.
     """
 
-    layer_params = models.CharField(max_length=1024)
+    layer_params = models.CharField(_('layer params'), max_length=1024)
     """
     A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     passed to the GXP viewer.
@@ -1219,7 +1221,7 @@ class MapLayer(models.Model):
     (such as format, styles, etc.) then the fields override.
     """
 
-    source_params = models.CharField(max_length=1024)
+    source_params = models.CharField(_('source params'), max_length=1024)
     """
     A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
     configuration for this layer.
