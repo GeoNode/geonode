@@ -250,7 +250,7 @@ def setup_webapps(options):
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info("""GeoNode development environment successfully set up; use "paver host" to start up the server.""") 
+    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""") 
 
 
 @task
@@ -318,15 +318,17 @@ def sync_django_db(options):
 
 @task
 def generate_geoserver_token(options):
-    from random import choice
-    import string
-    chars = string.letters + string.digits + "-_!@#$*"
-    token = ''
-    for i in range(32):
-        token += choice(chars)
-    tf = open('geoserver_token', 'w')
-    tf.write(token)
-    tf.close()
+    gs_token_file = 'geoserver_token'
+    if not os.path.exists(gs_token_file):
+        from random import choice
+        import string
+        chars = string.letters + string.digits + "-_!@#$*"
+        token = ''
+        for i in range(32):
+            token += choice(chars)
+        tf = open('geoserver_token', 'w')
+        tf.write(token)
+        tf.close()
 
 @task
 def package_dir(options):
