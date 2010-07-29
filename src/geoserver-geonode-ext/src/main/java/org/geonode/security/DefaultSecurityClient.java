@@ -62,14 +62,19 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     /**
      * @see org.geonode.security.GeonodeSecurityClient#authenticateCookie(java.lang.String)
      */
-    public Authentication authenticateCookie(String cookieValue) throws AuthenticationException,
-            IOException {
+    public Authentication authenticateCookie(final String cookieValue)
+            throws AuthenticationException, IOException {
 
         final String headerName = "Cookie";
         final String headerValue = GeoNodeCookieProcessingFilter.GEONODE_COOKIE_NAME + "="
                 + cookieValue;
 
-        return authenticate(headerName, headerValue);
+        Authentication authentication = authenticate(cookieValue, headerName, headerValue);
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            authentication = new GeoNodeSessionAuthToken(authentication.getPrincipal(),
+                    authentication.getCredentials(), authentication.getAuthorities());
+        }
+        return authentication;
     }
 
     /**
@@ -82,22 +87,17 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
         final String headerValue = "Basic "
                 + new String(Base64.encodeBase64((username + ":" + password).getBytes()));
 
-        UsernamePasswordAuthenticationToken auth;
-        auth = (UsernamePasswordAuthenticationToken) authenticate(headerName, headerValue);
-        // need to set credentials
-        auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), password,
-                auth.getAuthorities());
-        return auth;
+        return authenticate(password, headerName, headerValue);
     }
 
     /**
      * @see org.geonode.security.GeonodeSecurityClient#authenticateAnonymous()
      */
     public Authentication authenticateAnonymous() throws AuthenticationException, IOException {
-        return authenticate((String[]) null);
+        return authenticate(null, (String[]) null);
     }
 
-    private Authentication authenticate(final String... requestHeaders)
+    private Authentication authenticate(final Object credentials, final String... requestHeaders)
             throws AuthenticationException, IOException {
 
         final String url = baseUrl + "data/acls";
@@ -111,12 +111,12 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
         }
 
         JSONObject json = (JSONObject) JSONSerializer.toJSON(responseBodyAsString);
-        Authentication authentication = toAuthentication(json);
+        Authentication authentication = toAuthentication(credentials, json);
         return authentication;
     }
 
     @SuppressWarnings("unchecked")
-    private Authentication toAuthentication(JSONObject json) {
+    private Authentication toAuthentication(Object credentials, JSONObject json) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         if (json.containsKey("ro")) {
             JSONArray roLayers = json.getJSONArray("ro");
@@ -148,7 +148,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
             GrantedAuthority[] grantedAuthorities = authorities
                     .toArray(new GrantedAuthority[authorities.size()]);
 
-            authentication = new UsernamePasswordAuthenticationToken(userName, null,
+            authentication = new UsernamePasswordAuthenticationToken(userName, credentials,
                     grantedAuthorities);
         }
         return authentication;
