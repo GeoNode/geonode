@@ -221,6 +221,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             fontColor: "#000000"
         };
 
+        if (!config.map) {
+            config.map = {};
+        }
+        config.map.numZoomLevels = config.map.numZoomLevels || 22;
+
         GeoExplorer.superclass.constructor.apply(this, arguments);
 
         this.mapID = this.initialConfig.id;
@@ -847,7 +852,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 });
                 if (record) {
                     if (record.get("group") === "background") {
-                        layerStore.insert(0, [record]);
+                        var pos = layerStore.queryBy(function(rec) {
+                            return rec.get("group") === "background"
+                        }).getCount();
+                        layerStore.insert(pos, [record]);
                     } else {
                         layerStore.add([record]);
                     }
