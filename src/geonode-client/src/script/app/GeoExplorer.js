@@ -194,7 +194,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 },
                                 failure: function(form, action) {
                                     form.items.each(function(f) {
-                                        f.setValue("")
+                                        f.setValue("");
                                     });
                                     form.items.get(0).focus();
                                 },
@@ -216,6 +216,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 url: "/accounts/ajax_login",
                                 waitMsgTarget: true,
                                 errorReader: {
+                                    // teach ExtJS a bit of RESTfulness
                                     read: function(response) {
                                         return {
                                             success: response.status == 200,
