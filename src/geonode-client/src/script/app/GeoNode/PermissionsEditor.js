@@ -22,8 +22,8 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                var user_select = the_pe._make_user_combo('user', 'User');
                var perm_select = the_pe._make_perm_combo('perm', 'Permission', the_pe.permissions.levels[1][0]);
                var perm_popup = new Ext.Window({
-                   width: 300,
-                   height: 150,
+                   width: 350,
+                   height: 175,
                    plain: true,
                    modal: true,
                    items: new Ext.FormPanel({
