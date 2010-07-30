@@ -51,3 +51,9 @@ def ajax_login(request):
                     status=200,
                     mimetype="text/plain"
                 )
+    else:
+        return HttpResponse(
+                "The form you submitted doesn't look like a username/password combo.",
+                mimetype="text/plain",
+                status=400
+            )
