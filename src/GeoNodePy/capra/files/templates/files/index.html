@@ -15,10 +15,12 @@
 <script src="{% geonode_media "capra_script" %}" type="text/javascript"></script>
 <script src="{% url capra.hazard.views.lang %}" type="text/javascript"></script>
 <script type="text/javascript">
+{% autoescape off %}
 Ext.onReady(function(){
   new capra.AMEGrid({renderTo: 'file_list', 
                      file_info_url: '{% url capra.files.views.index_json %}'});
 });
+{% endautoescape %}
 </script> 
 {% endblock %}
 

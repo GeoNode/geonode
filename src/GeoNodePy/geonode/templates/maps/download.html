@@ -8,6 +8,7 @@
 {% include "geonode/gxp_header.html" %}
 {{ block.super }}
 <script  type="text/javascript">
+{% autoescape off %}
         {% if map_status %} 
         var checkStatus, progress, pb, process;
 
@@ -59,12 +60,8 @@
                     }) } }); 
             
         });
-
-        {% else %} 
-          // there is no information in the map_status
         {% endif %} 
-    
-
+{% endautoescape %}
 </script>
 {% endblock %} 
 
