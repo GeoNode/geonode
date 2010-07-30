@@ -182,6 +182,7 @@ def mapJSON(request, mapid):
                 status=400
             )
 
+
 @csrf_exempt
 def newmap(request):
     '''
