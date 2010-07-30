@@ -58,6 +58,7 @@ The following steps should prepare a Python virtual environment for you::
   python bootstrap.py --no-site-packages
   source bin/activate
   paver build
+  django-admin.py createsuperuser --settings=capra.settings
   paver host 
 
 .. note:: 
@@ -71,11 +72,11 @@ The following steps should prepare a Python virtual environment for you::
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option in.
 
-After paver build sets up the basic Django application, you can run::
+This command::
 
   django-admin.py createsuperuser --settings=capra.settings
 
-to create an admin user account.  The administrative control panel is not
+will prompt you to creates an admin user account.  The administrative control panel is not
 linked from the main site, but can be accessed at http://localhost:8000/admin/.
 
 
