@@ -193,14 +193,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     Ext.Ajax.request(options);
                                 },
                                 failure: function(form, action) {
-                                    win.close();
-                                    this.displayXHRTrouble(action.response);
+                                    form.items.each(function(f) {
+                                        f.setValue("")
+                                    });
+                                    form.items.get(0).focus();
                                 },
                                 scope: this,
                             });
                         }.bind(this);
                         var win = new Ext.Window({
                             title: "GeoNode Login",
+                            modal: true,
                             width: 230,
                             autoHeight: true,
                             layout: "fit",
@@ -212,6 +215,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 bodyStyle: "padding: 10px;",
                                 url: "/accounts/ajax_login",
                                 waitMsgTarget: true,
+                                errorReader: {
+                                    read: function(response) {
+                                        return {
+                                            success: response.status == 200,
+                                            records: []
+                                        }
+                                    }
+                                },
                                 defaults: {
                                     anchor: "100%",
                                 },
