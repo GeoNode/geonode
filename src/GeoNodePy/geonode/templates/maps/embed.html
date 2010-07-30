@@ -18,6 +18,7 @@
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
+{% autoescape off %}
     var config = {
         useCapabilities: false,
         useBackgroundCapabilities: false,
@@ -31,8 +32,9 @@ Ext.onReady(function() {
         rest: "/maps/"
     };
 
-    Ext.apply(config, {{config|safe}});
+    Ext.apply(config, {{ config }});
     app = new GeoExplorer.Viewer(config);
+{% endautoescape %}
 });
 </script>
 {% endblock %}

@@ -28,7 +28,7 @@
 
 <script type="text/javascript">
 Ext.onReady(function(){
-  
+{% autoescape off %}
   var form_target = "{% url geonode.maps.views.upload_layer %}";
 
   var base_file = new Ext.ux.form.FileUploadField({
@@ -143,9 +143,8 @@ Ext.onReady(function(){
       check_shapefile();
     })
     disable_shapefile_inputs();
+{% endautoescape %}
   });
-  
-  
 </script>
 
 {% endblock %}

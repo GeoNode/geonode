@@ -19,16 +19,13 @@
 
 <script src="{% geonode_media "PrintPreview_script" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% geonode_media "PrintPreview_themes" %}css/printpreview.css" />
-{% comment %} 
-Google Earth resources
-Note: We should change this key on final deploy!
-{% endcomment %} 
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
 {{ block.super }}
 
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
+{% autoescape off %}
     var config = Ext.apply({
         useBackgroundCapabilities: false,
         proxy: "/proxy/?url=",
@@ -39,9 +36,9 @@ Ext.onReady(function() {
          */
         rest: "/maps/",
         homeUrl: "{% url geonode.views.index %}",
-        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         csrfToken: "{{ csrf_token }}"
-    }, {{config|safe}});
+    }, {{ config }});
 
     app = new GeoExplorer(config);
 
@@ -68,8 +65,7 @@ Ext.onReady(function() {
         //reset more info link
         Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.mapID)}))
     }, this);
-
-
+{% endautoescape %}
 });
 </script>
 

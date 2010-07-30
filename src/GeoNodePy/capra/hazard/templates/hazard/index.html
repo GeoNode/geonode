@@ -16,16 +16,18 @@
     <script src="{% geonode_media "capra_script" %}" type="text/javascript"></script>
     <script src="{% url capra.hazard.views.lang %}" type="text/javascript"></script>
     <script type="text/javascript">
+        {% autoescape off %}
         var app;
 
-        var hazardConfig = {{config|safe}};
+        var hazardConfig = {{ config }};
         Ext.onReady(function() {
             app = new MyHazard.Viewer({
-                GEONODE_WMS: "{{GEOSERVER_BASE_URL|safe}}wms",
+                GEONODE_WMS: "{{ GEOSERVER_BASE_URL }}wms",
                 hazardConfig: hazardConfig,
                 proxy: "/proxy?url=",
-                backgroundLayers: {{bg|safe}}
+                backgroundLayers: {{ bg }}
             });
         });
+        {% endautoescape %}
     </script>
 {% endblock %}

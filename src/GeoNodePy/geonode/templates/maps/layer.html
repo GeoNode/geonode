@@ -17,6 +17,7 @@
 {{ block.super }}
 
     <script type="text/javascript">
+{% autoescape off %}
         Ext.onReady(function() {
             var config = {
                 useBackgroundCapabilities: false,
@@ -98,6 +99,7 @@
                 items: stylesPanel
             }).show();
         }
+{% endautoescape %}
     </script>
 {% endblock %}
 
