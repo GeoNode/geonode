@@ -22,7 +22,7 @@ def lang(request):
 
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
-    user = forms.CharField()
+    username = forms.CharField()
 
 def ajax_login(request):
     if request.method != 'POST':
@@ -33,9 +33,9 @@ def ajax_login(request):
             )
     form = AjaxLoginForm(data=request.POST)
     if form.is_valid():
-        username = form.cleaned_data['user']
-        passwd = form.cleaned_data['passwd']
-        user = auth.authenticate(username, passwd)
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password']
+        user = authenticate(username=username, password=password)
         if user is None or not user.is_active:
             return HttpResponse(
                     content="bad credentials or disabled user",
