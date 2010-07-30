@@ -60,7 +60,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
              handler: function() {
                if(pe_form.getForm().isValid()) {
                  pe_form.getForm().submit({
-                     url: this.submitTo,
+                     url: the_pe.submitTo,
                      success: function(form, o) {
                        document.location = o.result.redirect_to;
                      },
