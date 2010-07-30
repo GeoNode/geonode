@@ -17,6 +17,8 @@ import datetime
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
+from StringIO import StringIO
+from xml.etree.ElementTree import parse
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
@@ -671,6 +673,41 @@ class Layer(models.Model, PermissionLevelMixin):
                 ("gml", _("GML 2.0"), "gml2")
             ]
             links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
+        elif self.resource.resource_type == "coverage":
+            try:
+                client = httplib2.Http()
+                description_url = settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
+                        "service": "WCS",
+                        "version": "1.0.0",
+                        "request": "DescribeCoverage",
+                        "coverages": self.typename
+                    })
+                response, content = client.request(description_url)
+                doc = parse(StringIO(content))
+                extent = doc.find("//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
+                low = extent.find("{http://www.opengis.net/gml}low").text.split()
+                high = extent.find("{http://www.opengis.net/gml}high").text.split()
+                w, h = [int(h) - int(l) for (h, l) in zip(high, low)]
+
+                def wcs_link(mime):
+                    return settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
+                        "service": "WCS",
+                        "version": "1.0.0",
+                        "request": "GetCoverage",
+                        "CRS": "EPSG:4326",
+                        "height": h,
+                        "width": w,
+                        "coverage": self.typename,
+                        "bbox": bbox_string,
+                        "format": mime
+                    })
+
+                types = [("tiff", "GeoTIFF", "geotiff")]
+                links.extend([(ext, name, wcs_link(mime)) for (ext, name, mime) in types])
+            except Exception, e:
+                # if something is wrong with WCS we probably don't want to link
+                # to it anyway
+                pass 
 
         def wms_link(mime):
             return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
@@ -686,7 +723,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
         types = [
             ("kmz", _("Zipped KML"), "application/vnd.google-earth.kmz+xml"),
-            ("tiff", _("GeoTiff"), "image/geotiff"),
+            ("jpg", _("JPEG"), "image/jpeg"),
             ("pdf", _("PDF"), "application/pdf"),
             ("png", _("PNG"), "image/png")
         ]
