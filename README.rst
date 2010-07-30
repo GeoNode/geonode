@@ -67,8 +67,6 @@ Once fully started, you should see a message indicating the address of your geon
   The GeoNode is an unstoppable machine
   Press CTRL-C to shut down
 
-The django administrative control panel is not linked from the main site, but can be accessed at http://localhost:8000/admin/.
-
 
 .. note:: 
 
@@ -81,6 +79,13 @@ The django administrative control panel is not linked from the main site, but ca
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option in.
 
+
+This command::
+
+  django-admin.py createsuperuser --settings=capra.settings
+
+can be used to create additional administrative user accounts.  The administrative control panel is not
+linked from the main site, but can be accessed at http://localhost:8000/admin/
 
 Options
 =======
