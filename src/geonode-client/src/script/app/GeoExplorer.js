@@ -198,7 +198,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     });
                                     form.items.get(0).focus();
                                 },
-                                scope: this,
+                                scope: this
                             });
                         }.bind(this);
                         var win = new Ext.Window({
@@ -225,7 +225,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     }
                                 },
                                 defaults: {
-                                    anchor: "100%",
+                                    anchor: "100%"
                                 },
                                 items: [{
                                     xtype: "textfield",
@@ -238,7 +238,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     xtype: "textfield",
                                     name: "password",
                                     fieldLabel: "Password",
-                                    inputType: "password",
+                                    inputType: "password"
                                 }, {
                                     xtype: "hidden",
                                     name: "csrfmiddlewaretoken",
