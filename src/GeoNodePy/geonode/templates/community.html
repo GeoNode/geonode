@@ -11,6 +11,7 @@
 {{ block.super }}
 <script type="text/javascript">
 Ext.onReady(function(){
+{% autoescape off %}
   
   var rest_url = "{%url geonode.maps.views.maps %}";
 
@@ -28,6 +29,7 @@ Ext.onReady(function(){
       })
   });
 
+{% endautoescape %}
 });
 </script> 
 {% endblock %}

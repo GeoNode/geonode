@@ -20,8 +20,8 @@
 
 <script type="text/javascript">
 Ext.onReady(function(){
-  
-  var form_target = "{% url capra.files.views.dispatch file.id %}?update"
+{% autoescape %} 
+  var form_target = "{% url capra.files.views.dispatch file.id %}?update";
 
   var base_file = new Ext.ux.form.FileUploadField({
       id: 'ame_file',
@@ -87,6 +87,7 @@ Ext.onReady(function(){
       }]
     });
   });
+{% endautoescape %}
 </script>
 {% endblock %}
 

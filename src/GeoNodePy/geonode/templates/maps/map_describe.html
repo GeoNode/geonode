@@ -6,10 +6,6 @@
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {{ block.super }}
-<script type="text/javascript">
-    Ext.onReady(function() {
-    });
-</script>
 {% endblock %}
 {% block main %}
   <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>

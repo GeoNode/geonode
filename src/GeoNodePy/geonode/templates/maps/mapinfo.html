@@ -12,6 +12,7 @@
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
+{% autoescape off %}
     var config = Ext.apply({
         useToolbar: false,
         proxy: "/proxy/?url=",
@@ -22,8 +23,9 @@ Ext.onReady(function() {
             height: 300,
             renderTo: "embedded_map"
         }
-    }, {{config|safe}});
+    }, {{ config }});
     app = new GeoExplorer.Viewer(config);
+{% endautoescape %}
 });
 </script>
 {% endblock %}
