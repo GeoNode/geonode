@@ -193,10 +193,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     Ext.Ajax.request(options);
                                 },
                                 failure: function(form, action) {
-                                    form.items.each(function(f) {
-                                        f.setValue("");
-                                    });
-                                    form.items.get(0).focus();
+                                    var username = form.items.get(0);
+                                    var password = form.items.get(1);
+                                    username.markInvalid();
+                                    password.markInvalid();
+                                    username.focus(true);
                                 },
                                 scope: this,
                             });
@@ -230,10 +231,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 items: [{
                                     xtype: "textfield",
                                     name: "username",
-                                    fieldLabel: "Username",
-                                    listeners: {
-                                        "render": function() {this.focus(false, 50);}
-                                    }
+                                    fieldLabel: "Username"
                                 }, {
                                     xtype: "textfield",
                                     name: "password",
@@ -257,6 +255,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         });
                         win.show();
                         var form = win.items.get(0);
+                        form.items.get(0).focus(false, 100);
                     } else {
                         this.displayXHRTrouble(response);
                     }
