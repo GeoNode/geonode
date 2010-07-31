@@ -790,7 +790,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
                 })],
                 autoScroll: true,
-                listeners: Ext.apply(options.listeners, {
+                listeners: Ext.apply(options.listeners || {}, {
                     "ready": function() {
                         // we don't want the Cancel and Save buttons
                         // if we cannot edit styles
