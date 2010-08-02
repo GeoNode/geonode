@@ -1482,12 +1482,20 @@ def _maps_search(query, start, limit):
 
     maps_list = []
     # TODO: 'contact' field will be made obsolete by new map ownership changes
-    for mapdict in maps.values('id','title','abstract', 'contact')[start:start+limit]:
-        mapdict['detail'] = reverse('geonode.maps.views.map_controller', args=(mapdict['id'],))
-        # TODO use new map ownership
-        # mapdict['contact'] = <the name of the map's first POC>
-        # TODO: use this once map ownership is in 
-        # mapdict['contact_detail'] = reverse(<profile view>, args=(<poc's id>,)
+    for map in maps.all()[start:start+limit]:
+        try:
+            owner_name = Contact.objects.get(user=map.owner).name
+        except:
+            owner_name = map.owner.first_name + " " + map.owner.last_name
+
+        mapdict = {
+            'id' : map.id,
+            'title' : map.title,
+            'abstract' : map.abstract,
+            'detail' : reverse('geonode.maps.views.map_controller', args=(map.id,)),
+            'owner' : owner_name,
+            'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,))
+            }
         maps_list.append(mapdict)
 
     result = {'rows': maps_list, 
