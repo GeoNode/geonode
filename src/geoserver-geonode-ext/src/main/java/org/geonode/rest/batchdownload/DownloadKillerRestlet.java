@@ -11,8 +11,8 @@ import org.restlet.data.Status;
 /**
  * Kills an ongoing batch download process.
  * <p>
- * Input: HTTP GET request to {@code <restlet end point>/<process id>}. For example: {@code
- * http://localhost:8080/geoserver/rest/process/batchdownload/kill/1001}.
+ * Input: HTTP GET request to {@code <restlet end point>/<process id>}. For example:
+ * {@code http://localhost:8080/geoserver/rest/process/batchdownload/kill/1001}.
  * </p>
  * <p>
  * Output: no content. Response status will be {@code 200 (OK)} if the process were running and has

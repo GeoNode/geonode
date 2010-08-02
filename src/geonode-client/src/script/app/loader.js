@@ -6,10 +6,10 @@
         "/static/src/script/app/Lang.js",
         "/static/src/script/app/GeoExplorer/Viewer.js",
         "/static/src/script/app/MapGrid.js",
-        "/static/src/script/app/GeoNode/ConfigManager.js",
         "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js",
         "/static/src/script/app/GeoNode/SearchTable.js",
-        "/static/src/script/app/GeoNode/MapSearchTable.js"
+        "/static/src/script/app/GeoNode/MapSearchTable.js",
+        "/static/src/script/app/GeoNode/PermissionsEditor.js"
     );
 
     var appendable = !((/MSIE/).test(navigator.userAgent) ||

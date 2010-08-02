@@ -183,8 +183,8 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
                 final int length = params.length;
                 for (int i = 0; i < length; i++) {
                     param = (Parameter) params[i];
-                    if (param.getDescriptor().getName().equals(
-                            AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName())) {
+                    if (param.getDescriptor().getName()
+                            .equals(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName())) {
                         gtParams = (GeoToolsWriteParams) param.getValue();
                     }
                 }
@@ -246,6 +246,7 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
      * 
      * @see {@link http://lists.maptools.org/pipermail/geotiff/2006-January/000213.html}
      * @see      {@http://lists.maptools.org/pipermail/geotiff/2006-January/000212.html
+     * 
      * }
      * @param crs
      *            The {@link CoordinateReferenceSystem} of the {@link GridCoverage2D} to encode.
@@ -373,14 +374,14 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
         if (monitor != null) {
             writer.addIIOWriteProgressListener(new ProgressListenerWriteAdapter(monitor));
         }
-        final IIOMetadata metadata = createGeoTiffIIOMetadata(writer, ImageTypeSpecifier
-                .createFromRenderedImage(image), geoTIFFMetadata, params);
+        final IIOMetadata metadata = createGeoTiffIIOMetadata(writer,
+                ImageTypeSpecifier.createFromRenderedImage(image), geoTIFFMetadata, params);
 
         try {
 
             //
             // IMAGEWRITE
-            //          
+            //
             writer.setOutput(outputStream);
             writer.write(writer.getDefaultStreamMetadata(params), new IIOImage(image, null,
                     metadata), params);

@@ -22,6 +22,7 @@ import java.util.zip.ZipInputStream;
 
 import junit.framework.Test;
 
+import org.geonode.GeoNodeTestSupport;
 import org.geonode.process.batchdownload.BatchDownloadFactory;
 import org.geonode.process.batchdownload.LayerReference;
 import org.geonode.process.batchdownload.MapMetadata;
@@ -33,7 +34,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
@@ -47,7 +47,7 @@ import org.restlet.data.Status;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class DownloadReadyRestletTest extends GeoServerTestSupport {
+public class DownloadReadyRestletTest extends GeoNodeTestSupport {
 
     private static final String RESTLET_PATH = RESTLET_BASE_PATH + "/download";
 

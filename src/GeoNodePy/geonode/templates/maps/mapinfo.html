@@ -1,5 +1,6 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
+{% load geonode_auth %}
 
 {% block head %} 
 {% include "geonode/ext_header.html" %}
@@ -54,9 +55,21 @@ Ext.onReady(function() {
   </ul>    
   <h3>Manage</h3>
   <ul>
-    <li><a href="{% url geonode.maps.views.view map.id %}">Edit map or metadata</a></li> 
+    {% has_obj_perm user map "maps.change_map" as can_change %}
+    {% has_obj_perm user map "maps.delete_map" as can_delete %}
+    {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
+    
+    {% if can_change %}
+    <li><a href="{% url geonode.maps.views.view map.id %}">Edit this map</a></li> 
+    <li><a href="{% url geonode.maps.views.map_controller map.id %}?describe">Edit metadata</a></li> 
+    {% endif %} 
+    {% if can_change_permissions %}
+    <li><a href="{% url edit_map_permissions map.id %}">Edit permissions</a></li>
+    {% endif %}
+    {% if can_delete %}
     <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">Delete map</a></li>
+    {% endif %}
     <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">Duplicate map</a></li>
-  </ul>      
+  </ul>
 </div> 
 {% endblock %}
