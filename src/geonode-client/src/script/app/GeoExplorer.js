@@ -182,7 +182,83 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     // exceptions are handled elsewhere
                } else {
                     this.busyMask && this.busyMask.hide();
-                    this.displayXHRTrouble(response);
+                    if (response.status === 401 && options.url.indexOf("http" !== 0)) {
+                        var submit = function() {
+                            form.getForm().submit({
+                                waitMsg: "Logging in...",
+                                success: function(form, action) {
+                                    win.close();
+                                    document.cookie = action.response.getResponseHeader("Set-Cookie");
+                                    // resend the original request
+                                    Ext.Ajax.request(options);
+                                },
+                                failure: function(form, action) {
+                                    var username = form.items.get(0);
+                                    var password = form.items.get(1);
+                                    username.markInvalid();
+                                    password.markInvalid();
+                                    username.focus(true);
+                                },
+                                scope: this
+                            });
+                        }.bind(this);
+                        var win = new Ext.Window({
+                            title: "GeoNode Login",
+                            modal: true,
+                            width: 230,
+                            autoHeight: true,
+                            layout: "fit",
+                            items: [{
+                                xtype: "form",
+                                autoHeight: true,
+                                labelWidth: 55,
+                                border: false,
+                                bodyStyle: "padding: 10px;",
+                                url: "/accounts/ajax_login",
+                                waitMsgTarget: true,
+                                errorReader: {
+                                    // teach ExtJS a bit of RESTfulness
+                                    read: function(response) {
+                                        return {
+                                            success: response.status == 200,
+                                            records: []
+                                        }
+                                    }
+                                },
+                                defaults: {
+                                    anchor: "100%"
+                                },
+                                items: [{
+                                    xtype: "textfield",
+                                    name: "username",
+                                    fieldLabel: "Username"
+                                }, {
+                                    xtype: "textfield",
+                                    name: "password",
+                                    fieldLabel: "Password",
+                                    inputType: "password"
+                                }, {
+                                    xtype: "hidden",
+                                    name: "csrfmiddlewaretoken",
+                                    value: this.csrfToken
+                                }, {
+                                    xtype: "button",
+                                    text: "Login",
+                                    inputType: "submit",
+                                    handler: submit
+                                }]
+                            }],
+                            keys: {
+                                "key": Ext.EventObject.ENTER,
+                                "fn": submit
+                            }
+                        });
+                        win.show();
+                        var form = win.items.get(0);
+                        form.items.get(0).focus(false, 100);
+                    } else {
+                        this.displayXHRTrouble(response);
+                    }
                 }
             },
             scope: this
@@ -714,7 +790,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
                 })],
                 autoScroll: true,
-                listeners: Ext.apply(options.listeners, {
+                listeners: Ext.apply(options.listeners || {}, {
                     "ready": function() {
                         // we don't want the Cancel and Save buttons
                         // if we cannot edit styles
@@ -1662,18 +1738,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     save : function(as){
         var config = this.getState();
         
-        var failure = function(response, options) {
-            var failureMessage = this.saveFailMessage;
-            if (response.status == 401) {
-                failureMessage = this.saveNotAuthorizedMessage;
-            }
-            new Ext.Window({
-                title: this.saveFailTitle,
-                style: "padding: 5px;",
-                html: failureMessage
-            }).show();
-        };
-
         if (!this.mapID || as) {
             /* create a new map */ 
             Ext.Ajax.request({
@@ -1689,7 +1753,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     this.mapID = id; //id is url, not mapID
                     this.fireEvent("saved", id);
                 }, 
-                failure: failure, 
                 scope: this
             });
         }
@@ -1703,7 +1766,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     /* nothing for now */
                     this.fireEvent("saved", this.mapID);
                 }, 
-                failure: failure, 
                 scope: this
             });         
         }

@@ -64,13 +64,13 @@ public class HazardStatisticsFactory extends SingleProcessFactory {
 
     /** Layer names. Required. Cardinality is 1..* */
     public static final Parameter<AbstractGridCoverage2DReader> DATALAYER = new Parameter<AbstractGridCoverage2DReader>(
-            "datalayer", AbstractGridCoverage2DReader.class, Text.text("Data layers"), Text
-                    .text("List of datalayers to query"), true, 1, -1, null, null);
+            "datalayer", AbstractGridCoverage2DReader.class, Text.text("Data layers"),
+            Text.text("List of datalayers to query"), true, 1, -1, null, null);
 
     @SuppressWarnings("unchecked")
     public static final Parameter<FeatureSource> POLITICAL_LAYER = new Parameter<FeatureSource>(
-            "politicalLayer", FeatureSource.class, Text.text("Political layer"), Text
-                    .text("Layer to return political info about"), false, 0, 1, null, null);
+            "politicalLayer", FeatureSource.class, Text.text("Political layer"),
+            Text.text("Layer to return political info about"), false, 0, 1, null, null);
 
     /** Layer names. Required. Cardinality is 0..* */
     public static final Parameter<String> POLITICAL_LAYER_ATTRIBUTES = new Parameter<String>(
@@ -91,8 +91,8 @@ public class HazardStatisticsFactory extends SingleProcessFactory {
 
     @SuppressWarnings("unchecked")
     public static final Parameter<Map> RESULT_STATISTICS = new Parameter<Map>("statistics",
-            Map.class, Text.text("Statistics"), Text
-                    .text("Aggregate result of datalayer statistics"));
+            Map.class, Text.text("Statistics"),
+            Text.text("Aggregate result of datalayer statistics"));
 
     /**
      * {@code List<Map<String, Object>>} with one entry per feature from the political layer that
@@ -101,12 +101,12 @@ public class HazardStatisticsFactory extends SingleProcessFactory {
      */
     @SuppressWarnings("unchecked")
     public static final Parameter<List> RESULT_POLITICAL = new Parameter<List>("political",
-            List.class, Text.text("Political"), Text
-                    .text("Political subdivision names where the staistics lie"));
+            List.class, Text.text("Political"),
+            Text.text("Political subdivision names where the staistics lie"));
 
     public static final Parameter<Geometry> RESULT_BUFER = new Parameter<Geometry>("buffer",
-            Geometry.class, Text.text("Buffer"), Text
-                    .text("The area the statistics are generated for"));
+            Geometry.class, Text.text("Buffer"),
+            Text.text("The area the statistics are generated for"));
 
     public static final Parameter<List> RESULT_POSITION = new Parameter<List>("position",
             List.class, Text.text("Position"), Text.text("The coordinates of the input geometry; "

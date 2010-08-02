@@ -21,18 +21,18 @@ import java.util.zip.ZipInputStream;
 import junit.framework.Test;
 import net.sf.json.JSONObject;
 
+import org.geonode.GeoNodeTestSupport;
 import org.geonode.process.batchdownload.BatchDownloadFactory;
 import org.geonode.process.control.ProcessController;
 import org.geonode.process.control.ProcessStatus;
 import org.geonode.process.storage.Resource;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.test.GeoServerTestSupport;
 import org.restlet.data.Status;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class DownloadLauncherRestletTest extends GeoServerTestSupport {
+public class DownloadLauncherRestletTest extends GeoNodeTestSupport {
 
     private static final String RESTLET_PATH = RESTLET_BASE_PATH + "/launch";
 
