@@ -33,7 +33,7 @@ def geoserver(request):
         return HttpResponse(
             "You must be logged in to access GeoServer",
             mimetype="text/plain",
-            status=403
+            status=401
         )
     path = request.get_full_path()[11:] # strip "/geoserver/" from path
     url = "{geoserver}{path}".format(geoserver=settings.GEOSERVER_BASE_URL,path=path)

@@ -206,8 +206,8 @@ final class BatchDownload extends AsyncProcess {
             byte[] mdRecord = mddownloader.download(metadataURL);
             return mdRecord;
         } catch (IOException e) {
-            LOGGER.log(Level.INFO, "Error getting metadtata record for "
-                    + metadataURL.toExternalForm(), e);
+            LOGGER.log(Level.INFO,
+                    "Error getting metadtata record for " + metadataURL.toExternalForm(), e);
             return null;
         }
     }

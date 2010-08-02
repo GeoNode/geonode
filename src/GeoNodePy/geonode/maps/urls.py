@@ -14,5 +14,8 @@ urlpatterns = patterns('geonode.maps.views',
     (r'^embed/$', 'embed'),
     (r'^(?P<mapid>\d+)/embed$', 'embed'),
     (r'^(?P<mapid>\d+)/data$', 'mapJSON'),
+    url(r'^(?P<mapid>\d+)/permissions$', 'view_map_permissions', name='view_map_permissions'),
+    url(r'^(?P<mapid>\d+)/permissions/edit$', 'edit_map_permissions', name='edit_map_permissions'),
     url(r'^change-poc/(?P<ids>\w+)$', 'change_poc', name="change_poc"),
+
 )
