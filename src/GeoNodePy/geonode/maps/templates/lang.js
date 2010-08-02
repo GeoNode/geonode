@@ -152,7 +152,9 @@ if (window.GeoNode && GeoNode.SearchTable) {
         searchButtonText: gettext('Search'),
         showingText: gettext('Showing'),
         loadingText: gettext("Loading..."),
-        permalinkText: gettext('permalink')
+        permalinkText: gettext('permalink'),
+        unviewableTooltip: gettext('You do not have permission to view this data'),
+        remoteTooltip: gettext('This data is stored on a remote server')    
     });
 }
 if (window.GeoNode && GeoNode.SearchTableRowExpander) {

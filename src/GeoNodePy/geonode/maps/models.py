@@ -4,6 +4,8 @@ from django.db import models
 from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
+from geonode.core.models import PermissionLevelMixin
+from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 from django.utils.html import escape
@@ -15,6 +17,8 @@ import datetime
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
+from StringIO import StringIO
+from xml.etree.ElementTree import parse
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
@@ -573,13 +577,14 @@ class LayerManager(models.Manager):
                 })
 
                 layer.save()
-                    
+                if created: 
+                    layer.set_default_permissions()
             finally:
                 pass
         # Doing a logout since we know we don't need this object anymore.
         gn.logout()
 
-class Layer(models.Model):
+class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
     """
@@ -591,6 +596,7 @@ class Layer(models.Model):
     name = models.CharField(max_length=128)
     uuid = models.CharField(max_length=36)
     typename = models.CharField(max_length=128, unique=True)
+    owner = models.ForeignKey(User, blank=True, null=True)
 
     contacts = models.ManyToManyField(Contact, through='ContactRole')
 
@@ -667,6 +673,41 @@ class Layer(models.Model):
                 ("gml", _("GML 2.0"), "gml2")
             ]
             links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
+        elif self.resource.resource_type == "coverage":
+            try:
+                client = httplib2.Http()
+                description_url = settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
+                        "service": "WCS",
+                        "version": "1.0.0",
+                        "request": "DescribeCoverage",
+                        "coverages": self.typename
+                    })
+                response, content = client.request(description_url)
+                doc = parse(StringIO(content))
+                extent = doc.find("//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
+                low = extent.find("{http://www.opengis.net/gml}low").text.split()
+                high = extent.find("{http://www.opengis.net/gml}high").text.split()
+                w, h = [int(h) - int(l) for (h, l) in zip(high, low)]
+
+                def wcs_link(mime):
+                    return settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
+                        "service": "WCS",
+                        "version": "1.0.0",
+                        "request": "GetCoverage",
+                        "CRS": "EPSG:4326",
+                        "height": h,
+                        "width": w,
+                        "coverage": self.typename,
+                        "bbox": bbox_string,
+                        "format": mime
+                    })
+
+                types = [("tiff", "GeoTIFF", "geotiff")]
+                links.extend([(ext, name, wcs_link(mime)) for (ext, name, mime) in types])
+            except Exception, e:
+                # if something is wrong with WCS we probably don't want to link
+                # to it anyway
+                pass 
 
         def wms_link(mime):
             return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
@@ -682,7 +723,7 @@ class Layer(models.Model):
 
         types = [
             ("kmz", _("Zipped KML"), "application/vnd.google-earth.kmz+xml"),
-            ("tiff", _("GeoTiff"), "image/geotiff"),
+            ("jpg", _("JPEG"), "image/jpeg"),
             ("pdf", _("PDF"), "application/pdf"),
             ("png", _("PNG"), "image/png")
         ]
@@ -892,7 +933,34 @@ class Layer(models.Model):
     def __str__(self):
         return "%s Layer" % self.typename
 
-class Map(models.Model):
+    class Meta:
+        # custom permissions,
+        # change and delete are standard in django
+        permissions = (('view_layer', 'Can view'), 
+                       ('change_layer_permissions', "Can change permissions"), )
+
+    # Permission Level Constants
+    # LEVEL_NONE inherited
+    LEVEL_READ  = 'layer_readonly'
+    LEVEL_WRITE = 'layer_readwrite'
+    LEVEL_ADMIN = 'layer_admin'
+                 
+    def set_default_permissions(self):
+        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ) 
+
+        # remove specific user permissions
+        current_perms =  self.get_all_level_info()
+        for username in current_perms['users'].keys():
+            user = User.objects.get(username=username)
+            self.set_user_level(user, self.LEVEL_NONE)
+
+        # assign owner admin privs
+        if self.owner:
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)
+
+
+class Map(models.Model, PermissionLevelMixin):
     """
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
@@ -1098,6 +1166,34 @@ class Map(models.Model):
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
+        
+    class Meta:
+        # custom permissions, 
+        # change and delete are standard in django
+        permissions = (('view_map', 'Can view'), 
+                       ('change_map_permissions', "Can change permissions"), )
+
+    # Permission Level Constants
+    # LEVEL_NONE inherited
+    LEVEL_READ  = 'map_readonly'
+    LEVEL_WRITE = 'map_readwrite'
+    LEVEL_ADMIN = 'map_admin'
+    
+    def set_default_permissions(self):
+        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_WRITE) 
+
+        # remove specific user permissions
+        current_perms =  self.get_all_level_info()
+        for username in current_perms['users'].keys():
+            user = User.objects.get(username=username)
+            self.set_user_level(user, self.LEVEL_NONE)
+
+        # assign owner admin privs
+        if self.owner:
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)    
+
+
 
 class MapLayerManager(models.Manager):
     def from_viewer_config(self, map, layer, source, ordering):

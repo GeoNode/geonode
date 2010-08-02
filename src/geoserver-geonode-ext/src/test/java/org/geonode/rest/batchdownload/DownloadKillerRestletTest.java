@@ -7,18 +7,18 @@ import java.util.Map;
 
 import junit.framework.Test;
 
+import org.geonode.GeoNodeTestSupport;
 import org.geonode.process.control.AsyncProcess;
 import org.geonode.process.control.ProcessController;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.process.ProcessException;
 import org.opengis.util.ProgressListener;
 import org.restlet.data.Status;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class DownloadKillerRestletTest extends GeoServerTestSupport {
+public class DownloadKillerRestletTest extends GeoNodeTestSupport {
 
     private static final String RESTLET_PATH = RESTLET_BASE_PATH + "/kill";
 
