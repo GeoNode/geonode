@@ -1437,8 +1437,8 @@ def maps_search(request):
         'title': <map title,
         'abstract': '...',
         'detail' : <url geonode detail page>,
-        'contact': <name of the map's point of contact>, #TODO: which one?
-        'contact_detail': <url of contact's profile page>
+        'owner': <name of the map's owner>,
+        'owner_detail': <url of owner's profile page>
       },
       ...
     ]}
@@ -1481,7 +1481,7 @@ def _maps_search(query, start, limit):
             | Q(abstract__icontains=keyword))
 
     maps_list = []
-    # TODO: 'contact' field will be made obsolete by new map ownership changes
+
     for map in maps.all()[start:start+limit]:
         try:
             owner_name = Contact.objects.get(user=map.owner).name
