@@ -200,8 +200,8 @@ public class GeoJSONParserTest extends TestCase {
 
         assertTrue(((Geometry) newFeature.getAttribute(0)).equals((Geometry) origFeature
                 .getAttribute(0)));
-        assertTrue(newFeature.getAttribute(1).toString().equals(
-                origFeature.getAttribute(1).toString()));
+        assertTrue(newFeature.getAttribute(1).toString()
+                .equals(origFeature.getAttribute(1).toString()));
         assertTrue(newFeature.getID().equals(origFeature.getID()));
     }
 

@@ -60,12 +60,13 @@
         <param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value>
     </context-param>
 
+    <!-- Use GeoNode specific filter chain -->
     <filter>
      <filter-name>Acegi Filter Chain Proxy</filter-name>
      <filter-class>org.acegisecurity.util.FilterToBeanProxy</filter-class>
      <init-param>
-       <param-name>targetClass</param-name>
-       <param-value>org.acegisecurity.util.FilterChainProxy</param-value>
+       <param-name>targetBean</param-name>
+       <param-value>geonodeFilterChainProxy</param-value>
      </init-param>
     </filter>
     

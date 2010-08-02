@@ -245,11 +245,12 @@ def setup_webapps(options):
     'install_deps',
     'setup_webapps',
     'build_js', 
+    'generate_geoserver_token',
     'sync_django_db'
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info("""GeoNode development environment successfully set up; use "paver host" to start up the server.""") 
+    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""") 
 
 
 @task
@@ -315,6 +316,19 @@ def capra_js(options):
 def sync_django_db(options):
     sh("django-admin.py syncdb --settings=capra.settings --noinput")
 
+@task
+def generate_geoserver_token(options):
+    gs_token_file = 'geoserver_token'
+    if not os.path.exists(gs_token_file):
+        from random import choice
+        import string
+        chars = string.letters + string.digits + "-_!@#$*"
+        token = ''
+        for i in range(32):
+            token += choice(chars)
+        tf = open('geoserver_token', 'w')
+        tf.write(token)
+        tf.close()
 
 @task
 def package_dir(options):
@@ -593,10 +607,10 @@ def host(options):
             stderr=jettylog
         )
     django = subprocess.Popen([
-            "django-admin.py", 
-            "runserver",
-            "--settings=capra.settings",
-            options.host.bind + ":8000"
+            "paster", 
+            "serve",
+            "--reload",
+	        "shared/dev-paste.ini"
         ],  
         stdout=djangolog,
         stderr=djangolog
@@ -608,24 +622,44 @@ def host(options):
             return True
         except Exception, e:
             return False
+    
+    def django_is_up():
+        try:
+            urllib.urlopen("http://" + options.host.bind + ":8000")
+            return True
+        except Exception, e:
+            return False
+
+    socket.setdefaulttimeout(1)
+
+    info("Django is starting up, please wait...")
+    while not django_is_up():
+        time.sleep(2)
 
     info("Logging servlet output to jetty.log and django output to django.log...")
     info("Jetty is starting up, please wait...")
-    socket.setdefaulttimeout(1)
     while not jetty_is_up():
         time.sleep(2)
 
-    sh("django-admin.py updatelayers --settings=capra.settings")
-    info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
-    info("The GeoNode is an unstoppable machine")
-    info("Press CTRL-C to shut down")
-
-    try: 
+    try:
+        sh("django-admin.py updatelayers --settings=capra.settings")
+        
+        info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
+        info("The GeoNode is an unstoppable machine")
+        info("Press CTRL-C to shut down")
         django.wait()
-    except KeyboardInterrupt:
+        info("Django process terminated, see log for details.")
+    finally:
         info("Shutting down...")
-        django.terminate()
-        mvn.terminate()
+        try:
+            django.terminate()
+        except: 
+            pass
+        try:
+            mvn.terminate()
+        except: 
+            pass
+
         django.wait()
         mvn.wait()
         sys.exit()
