@@ -250,7 +250,7 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
                 dataIndex: 'last_modified',
                 id: 'last_modified',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store) {
-                    dt = new Date(value);
+                    dt = Date.parseDate(value, 'c');
 
                     return dt.format("F j, Y");
                 }
