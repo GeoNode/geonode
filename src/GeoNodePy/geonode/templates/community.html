@@ -46,8 +46,8 @@ Ext.onReady(function(){
           </td>
         </tr>
       </table>
-      <!-- We don't yet have any 'advanced' map search features.
-           <a href="{% url maps_search %}">{% trans "Advanced Search" %}</a> -->
+      <a href="{% url maps_search %}">{% trans "All Maps" %}</a> |
+      <a href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "New Maps" %}</a>
   </form>
 </div>
 

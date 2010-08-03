@@ -22,10 +22,12 @@ import math
 import httplib2 
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
+from operator import itemgetter
 import re
 from urllib import urlencode
 from urlparse import urlparse
 import uuid
+import unicodedata
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
@@ -1419,6 +1421,8 @@ def maps_search(request):
     q - general query for keywords across all fields
     start - skip to this point in the results
     limit - max records to return
+    sort - field to sort results on
+    dir - ASC or DESC, for ascending or descending order
 
     for ajax requests, the search returns a json structure 
     like this: 
@@ -1438,7 +1442,8 @@ def maps_search(request):
         'abstract': '...',
         'detail' : <url geonode detail page>,
         'owner': <name of the map's owner>,
-        'owner_detail': <url of owner's profile page>
+        'owner_detail': <url of owner's profile page>,
+        'last_modified': <date and time of last modification>
       },
       ...
     ]}
@@ -1464,6 +1469,13 @@ def maps_search(request):
         limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
 
     result = _maps_search(query, start, limit)
+
+    sort_field = params.get('sort', '')  
+    if sort_field:
+        sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')
+        sort_dir = params.get('dir', '')
+        result['rows'] = sorted(result['rows'], key=itemgetter(sort_field), reverse=(sort_dir == "DESC"))
+
     result['success'] = True
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
@@ -1494,7 +1506,8 @@ def _maps_search(query, start, limit):
             'abstract' : map.abstract,
             'detail' : reverse('geonode.maps.views.map_controller', args=(map.id,)),
             'owner' : owner_name,
-            'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,))
+            'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,)),
+            'last_modified' : map.last_modified.isoformat()
             }
         maps_list.append(mapdict)
 
