@@ -1,4 +1,6 @@
-var MapGrid = Ext.extend(Ext.grid.GridPanel, {
+Ext.namespace("GeoNode");
+
+GeoNode.MapGrid = Ext.extend(Ext.grid.GridPanel, {
 
 
     //rest URL for getting the maps
@@ -78,11 +80,11 @@ var MapGrid = Ext.extend(Ext.grid.GridPanel, {
             }                            
         });
 
-        MapGrid.superclass.initComponent.call(this);
+        GeoNode.MapGrid.superclass.initComponent.call(this);
     },
 
     showExportWizard: function(mapid) {
-        new ExportWizard(mapid).show();
+        new gxp.EmbedMapDialog({url: this.url + mapid + "/embed"}).show();
     }
 });
 

@@ -15,7 +15,7 @@ Ext.onReady(function(){
   
   var rest_url = "{%url geonode.maps.views.maps %}";
 
-  var mapGrid = new MapGrid({
+  var mapGrid = new GeoNode.MapGrid({
       store : new Ext.data.JsonStore({
           url: rest_url,
           root: 'maps',
