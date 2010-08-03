@@ -1527,7 +1527,7 @@ def _maps_search(query, start, limit):
     next = start + limit + 1
     if next < maps.count():
          params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
+         result['next'] = reverse('geonode.maps.views.maps_search') + '?' + params
     
     return result
 
