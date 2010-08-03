@@ -6,6 +6,7 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
 
     titleHeaderText: 'UT: Title',
     contactHeaderText: "UT: Contact",
+    lastModifiedHeaderText: "UT: Last Modified",
     mapAbstractLabelText: "UT: Abstract",
     mapLinkLabelText: "UT:View this Map",
     previousText: 'UT: Prev',
@@ -39,7 +40,8 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'abstract', type: 'string'},
                 {name: 'detail', type: 'string'},
                 {name: 'owner', type: 'string'},
-                {name: 'owner_detail', type: 'string'}
+                {name: 'owner_detail', type: 'string'},
+                {name: 'last_modified', type: 'string'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -242,10 +244,20 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
                         return value;
                     }
                 }
+            },
+            {
+                header: this.lastModifiedHeaderText,
+                dataIndex: 'last_modified',
+                id: 'last_modified',
+                renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+                    dt = new Date(value);
+
+                    return dt.format("F j, Y");
+                }
             }];
     
         var colModel = new Ext.grid.ColumnModel({
-            defaults: {menuDisabled: true},
+            defaults: {menuDisabled: true, sortable: true},
             columns: columns
         });
         tableCfg.colModel = colModel;
