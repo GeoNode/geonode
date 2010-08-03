@@ -37,7 +37,7 @@ Ext.onReady(function() {
 
 <p><strong>Keywords:</strong> </p>
 <p><strong>Citation:</strong> </p>
-<p><strong>Contact:</strong> {% autoescape off %}{{map.contact}}{% endautoescape %}</p> 
+<p><strong>Contact:</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p> 
 
 {% endblock %} 
 {% block sidebar %} 
