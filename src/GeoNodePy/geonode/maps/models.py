@@ -976,6 +976,12 @@ class Map(models.Model, PermissionLevelMixin):
     A longer description of the themes in the map.
     """
 
+    contact = models.CharField(max_length=200)
+    """
+    *Deprecated* A free-form text field identifying the map's creator.  Prefer
+    ``owner`` over this for new code.
+    """
+    
     # viewer configuration
     zoom = models.IntegerField()
     """
