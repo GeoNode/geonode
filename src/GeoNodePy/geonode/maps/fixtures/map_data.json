@@ -29,7 +29,6 @@
             "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
             "center_x": -9428760.8701902702,
             "center_y": 1427430.7410345681,
-            "contact": "For more information, contact OpenGeo at http://opengeo.org/",
             "owner": 1,
             "projection": "EPSG:900913",
             "title": "GeoNode Default Map",

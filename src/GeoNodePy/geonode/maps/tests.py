@@ -21,8 +21,6 @@ for assembling and publishing web based maps.  After adding layers to the map, \
 use the Save Map button above to contribute your map to the GeoNode \
 community." 
 
-    default_contact = "For more information, contact OpenGeo at http://opengeo.org/"
-
     default_title = "GeoNode Default Map"
 
     def test_map2json(self):
@@ -53,8 +51,7 @@ community."
           "defaultSourceType": "gx_wmssource",
           "about": {
               "title": "Title",
-              "abstract": "Abstract",
-              "contact": "Contact"
+              "abstract": "Abstract"
           },
           "sources": {
             "capra": {
@@ -86,7 +83,6 @@ community."
         map.update_from_viewer(json.loads(viewer_config))
         self.assertEquals(map.title, "Title")
         self.assertEquals(map.abstract, "Abstract")
-        self.assertEquals(map.contact, "Contact")
         self.assertEquals(map.layer_set.all().count(), 1)
 
     def test_map_fetch(self):
@@ -97,7 +93,6 @@ community."
         self.assertEquals(response.status_code, 200)
         cfg = json.loads(response.content)
         self.assertEquals(cfg["about"]["abstract"], self.default_abstract) 
-        self.assertEquals(cfg["about"]["contact"], self.default_contact) 
         self.assertEquals(cfg["about"]["title"], self.default_title) 
         self.assertEquals(len(cfg["map"]["layers"]), 5) 
 
