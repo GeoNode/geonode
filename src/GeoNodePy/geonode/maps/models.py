@@ -1012,6 +1012,11 @@ class Map(models.Model, PermissionLevelMixin):
     The user that created/owns this map.
     """
 
+    last_modified = models.DateTimeField(auto_now_add=True)
+    """
+    The last time the map was modified.
+    """
+
     def __unicode__(self):
         return '%s by %s' % (self.title, self.contact)
 
