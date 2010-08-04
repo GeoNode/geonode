@@ -5,10 +5,8 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 {{ block.super }} 
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 <script type="text/javascript">
@@ -18,6 +16,7 @@
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
+{% autoescape off %}
     var config = {
         useCapabilities: false,
         useBackgroundCapabilities: false,
@@ -31,8 +30,9 @@ Ext.onReady(function() {
         rest: "/maps/"
     };
 
-    Ext.apply(config, {{config|safe}});
+    Ext.apply(config, {{ config }});
     app = new GeoExplorer.Viewer(config);
+{% endautoescape %}
 });
 </script>
 {% endblock %}
