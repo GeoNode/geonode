@@ -48,6 +48,40 @@ color: #003C4C;
 color: #d8d8d8;
 }
 
+/*-----------------------
+Boilerplate overrides
+-----------------------*/
+table.x-btn td,
+.x-panel td {
+border-bottom: 0 none transparent;
+line-height: 1em;
+}
+
+table.x-btn td.x-btn-bc,
+table.x-btn td.x-btn-tc {
+height: 1px;
+}
+
+form table,
+.x-panel table {
+margin-bottom: 0;
+}
+
+form th,
+form td {
+padding:0;
+border-bottom: 0 none transparent;
+}
+
+.x-grid3 th,
+.x-grid3 td {
+padding: 0;
+}
+
+form td {
+vertical-align: middle;
+}
+
 
 /*-----------------------
 Layout
