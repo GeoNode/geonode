@@ -294,7 +294,7 @@ def concat_js(options):
        path("../src/theme/").copytree("geonode-client/gn/theme/")
        path("../src/script/ux").copytree("geonode-client/gn/ux")
 
-       sh("jsbuild -uo geonode-client/ all.cfg") 
+       sh("jsbuild -o geonode-client/ all.cfg") 
        move("geonode-client/OpenLayers.js","geonode-client/ol/")
        move("geonode-client/GeoExt.js","geonode-client/gx/")
        move("geonode-client/gxp.js","geonode-client/gxp/")
