@@ -2,8 +2,10 @@
 {% load i18n %}
 
 {% block main %}
-    <div id="description"> <h3> {% trans "Internal Server Error" %} </h3> </div>
+  <div class="onecol">
+    <div id="description"><h3>{% trans "Internal Server Error" %}</h3></div>
     {% blocktrans %}
-        An internal error occurred.  Please try again, and if the problem continues, contact your site administrator.
+        An internal error occurred. Please try again, and if the problem continues, contact your site administrator.
     {% endblocktrans %}
+  </div>
 {% endblock %}
