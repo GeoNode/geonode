@@ -5,10 +5,8 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 {{ block.super }}
 <script src="http://maps.google.com/maps?file=api&v=2&key={{GOOGLE_API_KEY}}"></script>
 <script src="{% geonode_media "capra_script" %}" type="text/javascript"></script>
