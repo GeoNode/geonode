@@ -102,6 +102,7 @@
 {% endblock %}
 
 {% block main %}
+<div class="twocol">
 <div id="description"> <h3> {{ layer.resource.title|default:layer.typename }} </h3> </div>
 <p> <strong>{% trans "Abstract" %}:</strong> {{ layer.abstract|default:_("No abstract for this layer.") }} </p>
 
@@ -129,10 +130,11 @@
 </p>
 <p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>
 <p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
-
+</div>
 {% endblock %}
 
 {% block sidebar %}
+<div id="sidebar" class="threecol">
     <h3> {% trans "Download" %} </h3>
     <p> <strong>{% trans "Data" %}: </strong>
         {% for extension, type, link in layer.download_links %}
@@ -208,4 +210,5 @@
 			{% endif %}
         </ul>
     {% endif %}
+</div>
 {% endblock %}

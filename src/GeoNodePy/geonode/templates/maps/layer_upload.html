@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block main %}
-
+<div class="twocol">
   {% if errors %}
     <div id="errors">
       {% for error in errors %}
@@ -22,7 +22,7 @@
 
   <div id="upload_form">
   </div>
-
+</div>
 <script type="text/javascript">
 Ext.onReady(function(){
 {% autoescape off %}
@@ -148,6 +148,7 @@ Ext.onReady(function(){
 
 
 {% block sidebar %}
+<div class="threecol">
 <h3>{%trans "Instructions"  %}</h3>
 
 <p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
@@ -157,9 +158,11 @@ Ext.onReady(function(){
 <ul>
   <li>Shapefile</li>
   <li>GeoTIFF</li>
-<ul>
-<br/>  
+</ul>
+<p>
 {% blocktrans %}
-<p>Note: If you are uploading a shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
+Note: If you are uploading a shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
 {% endblocktrans %}
+</p>
+</div>
 {% endblock %}
