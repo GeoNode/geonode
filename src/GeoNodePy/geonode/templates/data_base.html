@@ -28,56 +28,54 @@ Ext.onReady(function(){
 {% block nav %} {% navbar data %} {% endblock %}
 
 {% block main %}
+<div class="twocol">
+  <div id="search_form" class="block">
 
-<div id="search_form" class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
-  <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+    <form action="{% url search %}" method="POST">
+        {% csrf_token %}
+        <table>
+          <tr>
+            <td>
+            <input type="text" id="search_query" name="q" />
+            </td>
+            <td>
+              <div id="submit_search"></div>
+            </td>
+          </tr>
+        </table>
+        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+    </form>
+  </div>
 
-  <form action="{% url search %}" method="POST">
-      {% csrf_token %}
-      <table>
-        <tr>
-          <td>
-          <input type="text" id="search_query" name="q" />
-          </td>
-          <td>
-            <div id="submit_search"></div>
-          </td>
-        </tr>
-      </table>
-      <a href="{% url search %}">{% trans "Advanced Search" %}</a>
-  </form>
+  <!--
+  <div id="keywords" class="block">
+    <h2>{% trans "Browse" %} <span class="subtitle">{% trans "by keyword" %}</span></h2>
+    <div class="keywords_col1"></div>
+    <div class="keywords_col2"></div>
+    <div class="keywords_col3"></div>
+  </div>
+  --> 
+
+  <div id="upload" class="block">
+    <h2>{% trans "Upload" %}</h2>
+    <p>{% trans "We support Shapefile and GeoTIFF uploads." %}
+    <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload a new layer"  %}</a>
+    </p>
+  </div>
+
+  <div class="block">
+    <h2>{% trans "For Developers" %}</h2>
+    {% blocktrans %} 
+    If you are interested in information about accessing this information through OGC services, please visit our
+    {% endblocktrans %}
+    <a href="{% url geonode.views.static "developer" %}">{% trans "developer page" %}</a>.
+  </div>
 </div>
-
-<!--
-<div id="keywords" class="block">
-  <h2>{% trans "Browse" %} <span class="subtitle">{% trans "by keyword" %}</span></h2>
-  <div class="keywords_col1"></div>
-  <div class="keywords_col2"></div>
-  <div class="keywords_col3"></div>
-</div>
---> 
-
-<div id="upload" class="block">
-  <h2>{% trans "Upload" %}</h2>
-  <p>{% trans "We support Shapefile and GeoTIFF uploads." %}
-  <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload a new layer"  %}</a>
-  </p>
-</div>
-
-<div class="block">
-  <h2>{% trans "For Developers" %}</h2>
-  {% blocktrans %} 
-  If you are interested in information about accessing this information through OGC services, please visit our
-  {% endblocktrans %}
-  <a href="{% url geonode.views.static "developer" %}">{% trans "developer page" %}</a>.
-</div>
-
 {% endblock %}
 
 {% block sidebar %}
-
-{% block sidebar_info %}    
+  {% block sidebar_info %}    
+  {% endblock %}
 {% endblock %}
-{% endblock %}
-
