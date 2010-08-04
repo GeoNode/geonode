@@ -29,19 +29,20 @@ Ext.onReady(function() {
 {% endblock %}
 
 {% block main %}
-<h3>Map of {{map.title}}</h3>
-<p><strong>Abstract:</strong> {{map.abstract}}</p>
+<div class="twocol">
+  <h3>Map of {{map.title}}</h3>
+  <p><strong>Abstract:</strong> {{map.abstract}}</p>
 
-<div id="embedded_map">
+  <div id="embedded_map">
+  </div>
+
+  <p><strong>Keywords:</strong> </p>
+  <p><strong>Citation:</strong> </p>
+  <p><strong>Contact:</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p> 
 </div>
-
-<p><strong>Keywords:</strong> </p>
-<p><strong>Citation:</strong> </p>
-<p><strong>Contact:</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p> 
-
 {% endblock %} 
 {% block sidebar %} 
-<div id="sidebar"> 
+<div id="sidebar" class="threecol"> 
   <h3>Download</h3>
   <p><a href="{% url geonode.maps.views.map_download map.id %}"> Download all layers included in this map</a></p>
   <h3>Layers </h3>
