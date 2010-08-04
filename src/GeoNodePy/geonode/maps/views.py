@@ -470,7 +470,8 @@ def mapdetail(request,mapid):
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
         'config': config, 
         'map': map,
-        'layers': layers
+        'layers': layers,
+        'permissions_json': _perms_info_json(map, MAP_LEV_NAMES)
     }))
 
 @csrf_exempt
