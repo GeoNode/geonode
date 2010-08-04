@@ -10,6 +10,7 @@
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
+{% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
 {% autoescape off %}
     var config = Ext.apply({
         useToolbar: false,
@@ -23,6 +24,14 @@ Ext.onReady(function() {
         }
     }, {{ config }});
     app = new GeoExplorer.Viewer(config);
+{% if can_change_permissions %}
+    new GeoNode.PermissionsEditor({
+        renderTo: "permissions_form",
+        submitTo: "{% url geonode.maps.views.edit_map_permissions map.id %}",
+        title: "{{ map.title }}",
+        permissions: {{ permissions_json }}
+    });
+{% endif %}
 {% endautoescape %}
 });
 </script>
@@ -35,7 +44,6 @@ Ext.onReady(function() {
 
   <div id="embedded_map">
   </div>
-
   <p><strong>Keywords:</strong> </p>
   <p><strong>Citation:</strong> </p>
   <p><strong>Contact:</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p> 
@@ -58,7 +66,6 @@ Ext.onReady(function() {
   <ul>
     {% has_obj_perm user map "maps.change_map" as can_change %}
     {% has_obj_perm user map "maps.delete_map" as can_delete %}
-    {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
     
     {% if can_change %}
     <li><a href="{% url geonode.maps.views.view map.id %}">Edit this map</a></li> 
@@ -72,5 +79,10 @@ Ext.onReady(function() {
     {% endif %}
     <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">Duplicate map</a></li>
   </ul>
+  <h3>Permissions</h3>
+  {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
+  {% if can_change_permissions %}
+    <div id="permissions_form"></div>
+  {% endif %}
 </div> 
 {% endblock %}

@@ -10,9 +10,8 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
         var render_to_el = Ext.get(this.renderTo);
         var the_pe = this;
         var pe_form = new Ext.FormPanel({
-          width: 500,
+          width: 'auto',
           frame: true,
-          title: gettext('Edit permissions for ' + this.title),
           autoHeight: true,
           bodyStyle: 'padding: 10px 10px 0 10px;',
           method: 'POST',
@@ -23,12 +22,12 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                var perm_select = the_pe._make_perm_combo('perm', 'Permission', the_pe.permissions.levels[1][0]);
                var perm_popup = new Ext.Window({
                    width: 350,
-                   height: 175,
+                   autoHeight: true,
+                   title: gettext('Create permission'),
                    plain: true,
                    modal: true,
                    items: new Ext.FormPanel({
                      frame: true,
-                     title: gettext('Create permission'),
                      autoHeight: true,
                      items: [user_select, perm_select]}),
                    buttons: [
@@ -86,11 +85,12 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             ]
         });
         pe_form.add(this._make_perm_combo('anonymous',
-                                     gettext('Anonymous Users'),
+                                     gettext('Anyone'),
                                      this.permissions.anonymous, 3));
         pe_form.add(this._make_perm_combo('authenticated', 
-                                     gettext('Registered Users'),
+                                     gettext('GeoNode Users'),
                                      this.permissions.authenticated));
+        pe_form.add({ html: "<hr/>" });
 
         for (var i = 0; i < this.permissions.users.length; i++) {
           var username = this.permissions.users[i][0];
@@ -98,6 +98,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
           var combo = this._make_perm_combo_for_user(username, user_level);  
           pe_form.add(combo);
         }
+
         pe_form.render(render_to_el);
     },
     
