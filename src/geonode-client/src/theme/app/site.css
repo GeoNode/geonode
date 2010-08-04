@@ -73,6 +73,8 @@ padding:0;
 border-bottom: 0 none transparent;
 }
 
+.x-toolbar-ct th,
+.x-toolbar-ct td,
 .x-grid3 th,
 .x-grid3 td {
 padding: 0;
