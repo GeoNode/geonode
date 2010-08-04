@@ -8,6 +8,7 @@
 {{ block.super }}
 <script type="text/javascript">
     Ext.onReady(function() {
+{% autoescape off %} 
         // get #poc_form and #metadata_form, and add a `onchange` handler
         // that shows the form if the blank option is selected.
 		Ext.get('id_layer-poc').on('change', function() {
@@ -24,6 +25,7 @@
 				Ext.get("metadata_form").hide();
 			}
 		});
+{% endautoescape %} 
 	});
 </script>
 {% endblock %}

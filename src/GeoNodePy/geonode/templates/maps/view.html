@@ -6,10 +6,8 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 <script type="text/javascript">
     google.load("earth", "1");
@@ -19,16 +17,13 @@
 
 <script src="{% geonode_media "PrintPreview_script" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% geonode_media "PrintPreview_themes" %}css/printpreview.css" />
-{% comment %} 
-Google Earth resources
-Note: We should change this key on final deploy!
-{% endcomment %} 
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
 {{ block.super }}
 
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
+{% autoescape off %}
     var config = Ext.apply({
         useBackgroundCapabilities: false,
         proxy: "/proxy/?url=",
@@ -39,9 +34,9 @@ Ext.onReady(function() {
          */
         rest: "/maps/",
         homeUrl: "{% url geonode.views.index %}",
-        
-        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
-    }, {{config|safe}});
+        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+        csrfToken: "{{ csrf_token }}"
+    }, {{ config }});
 
     app = new GeoExplorer(config);
 
@@ -68,8 +63,7 @@ Ext.onReady(function() {
         //reset more info link
         Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.mapID)}))
     }, this);
-
-
+{% endautoescape %}
 });
 </script>
 

@@ -7,25 +7,25 @@
 
 {% block head %}
     {% include "geonode/ext_header.html" %}
-    {% include "geonode/openlayers_header.html" %}
-    {% include "geonode/geoext_header.html" %}
-    {% include "geonode/ux_header.html" %}
-    {% include "geonode/gxp_header.html" %}
+    {% include "geonode/app_header.html" %}
+    {% include "geonode/geo_header.html" %}
     <script src="http://maps.google.com/maps?file=api&v=2&key={{GOOGLE_API_KEY}}"></script>
     {{ block.super }}
     <script src="{% geonode_media "capra_script" %}" type="text/javascript"></script>
     <script src="{% url capra.hazard.views.lang %}" type="text/javascript"></script>
     <script type="text/javascript">
+        {% autoescape off %}
         var app;
 
-        var hazardConfig = {{config|safe}};
+        var hazardConfig = {{ config }};
         Ext.onReady(function() {
             app = new MyHazard.Viewer({
-                GEONODE_WMS: "{{GEOSERVER_BASE_URL|safe}}wms",
+                GEONODE_WMS: "{{ GEOSERVER_BASE_URL }}wms",
                 hazardConfig: hazardConfig,
                 proxy: "/proxy?url=",
-                backgroundLayers: {{bg|safe}}
+                backgroundLayers: {{ bg }}
             });
         });
+        {% endautoescape %}
     </script>
 {% endblock %}

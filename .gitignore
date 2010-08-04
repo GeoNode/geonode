@@ -12,6 +12,7 @@ target
 /setuptools-0.6c11-py2.6.egg
 
 # supporting stuff pulled in by paver script
+/geoserver_token
 /development.db
 /django.log
 /gs-data/

@@ -86,8 +86,9 @@ public class ShapeZipWriter {
     /**
      * Performs the {@code query} against the provided {@code source} and writes down the resulting
      * features as a shapefile (or collection of shapefiles, one per geometry type), into the
-     * provided {@link ZipOutputStream}, reporting progress to {@code monitor} and using {@code
-     * tempDir} to temporary store the shapefiles before being compressed to the output stream.
+     * provided {@link ZipOutputStream}, reporting progress to {@code monitor} and using
+     * {@code tempDir} to temporary store the shapefiles before being compressed to the output
+     * stream.
      * 
      * @param source
      * @param query
@@ -530,9 +531,8 @@ public class ShapeZipWriter {
         try {
             sfds.createSchema(schema);
         } catch (NullPointerException e) {
-            LOGGER
-                    .warning("Error in shapefile schema. It is possible you don't have a geometry set in the output. \n"
-                            + "Please specify a <wfs:PropertyName>geom_column_name</wfs:PropertyName> in the request");
+            LOGGER.warning("Error in shapefile schema. It is possible you don't have a geometry set in the output. \n"
+                    + "Please specify a <wfs:PropertyName>geom_column_name</wfs:PropertyName> in the request");
             throw new ServiceException(
                     "Error in shapefile schema. It is possible you don't have a geometry set in the output.");
         }

@@ -108,13 +108,15 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 
 # The username and password for a user that can add and edit layer details on GeoServer
-GEOSERVER_CREDENTIALS = "admin", "geoserver"
+GEOSERVER_CREDENTIALS = "geoserver_admin", open(path_extrapolate('../../geoserver_token')).readline()[0:-1]
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
 GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
+
+AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
 
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 LOGIN_REDIRECT_URL = "/"
@@ -125,25 +127,66 @@ DEFAULT_MAP_ZOOM = 7
 
 DEFAULT_LAYERS_OWNER='admin'
 
+MAP_BASELAYERSOURCES = {
+    "any": {
+        "ptype":"gx_olsource"
+    },
+    "capra": {
+        "url":"http://localhost:8001/geoserver/wms"
+    },
+    "google":{
+        "ptype":"gx_googlesource",
+        "apiKey": GOOGLE_API_KEY
+    }
+}
+
 MAP_BASELAYERS = [{
-        'service': "wms",
-        'url': "http://maps.opengeo.org/geowebcache/service/wms",
-        'layers': [
-            'bluemarble'
-        ]}, {
-        'service': 'google',
-        'layers': [
-            'SATELLITE'
-        ]}, {
-        'service': "wms",
-        'url': "%swms" % GEOSERVER_BASE_URL,
-        'layers': [
-            'base:CA'
-        ]}
+    "source":"any",
+    "type":"OpenLayers.Layer",
+    "args":["No background"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  },{
+    "source":"any",
+    "type":"OpenLayers.Layer.WMS",
+    "group":"background",
+    "visibility": True,
+    "fixed": True,
+    "args":[
+      "bluemarble",
+      "http://maps.opengeo.org/geowebcache/service/wms",
+      {
+        "layers":["bluemarble"],
+        "format":"image/png",
+        "tiled": True,
+        "tilesOrigin":[-20037508.34,-20037508.34]
+      },
+      {"buffer":0}
     ]
-# which MAP_BASELAYER to use for the 
-# data search bounding box widget.
-SEARCH_WIDGET_BASELAYER_INDEX = 0
+  },{
+    "source":"google",
+    "group":"background",
+    "name":"SATELLITE",
+    "visibility": False,
+    "fixed": True,
+  },{
+    "source":"any",
+    "type":"OpenLayers.Layer.WMS",
+    "group":"background",
+    "visibility": False,
+    "fixed": True,
+    "args":[
+      "base:CA",
+      "http://localhost:8001/geoserver/wms",
+      {
+        "layers":["base:CA"],
+        "format":"image/png",
+        "tiled": True,
+        "tilesOrigin":[-20037508.34,-20037508.34]
+      },
+      {"buffer":0}]
+    }]
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
@@ -211,6 +254,7 @@ if DEBUG:
     if MINIFIED_RESOURCES: 
         MEDIA_LOCATIONS = {
             "ext_base": "/static/ext/",
+            "ext_lib": "/static/ext/ext-all.js",
             "ol_theme": "/static/ol/theme/default/style.css",
             "ol_script":"/static/ol/OpenLayers.js",
             "gx_themes":"/static/gx/theme/",
@@ -219,6 +263,7 @@ if DEBUG:
             "PrintPreview_themes": "/static/PrintPreview/theme/",
             "gxp_script":"/static/gxp/gxp.js",
             "gxp_theme":"/static/gxp/theme/all.css",
+            "geo_script":"/static/gn/GeoExplorer.js",
             "app_themes": "/static/gn/theme/app/",
             "app_script":"/static/gn/GeoNode.js",
             "ux_script":"/static/gn/ux.js",
@@ -227,6 +272,7 @@ if DEBUG:
     else:
         MEDIA_LOCATIONS = {
             "ext_base": "/static/externals/ext/",
+            "ext_lib": "/static/externals/ext/ext-all-debug.js",
             "ol_theme": "/static/externals/openlayers/theme/default/style.css",
             "ol_script":"/static/externals/openlayers/lib/OpenLayers.js",
             "gx_themes":"/static/externals/geoext/geoext/resources/",
@@ -235,14 +281,16 @@ if DEBUG:
             "PrintPreview_themes": "/static/externals/PrintPreview/resources/",
             "gxp_script":"/static/externals/gxp/src/script/loader.js",
             "gxp_theme":"/static/externals/gxp/src/theme/all.css",
+            "geo_script":"/static/src/script/app/geo-debug.js",
             "app_themes": "/static/src/theme/app/",
-            "app_script":"/static/src/script/app/loader.js",
+            "app_script":"/static/src/script/app/app-debug.js",
             "ux_script":"/static/src/script/ux/loader.js",
             "ux_resources":"/static/src/script/ux/",
         }
 else:
     MEDIA_LOCATIONS = {
         "ext_base": GEONODE_CLIENT_LOCATION + "/geonode-client/ext/",
+        "ext_lib": GEONODE_CLIENT_LOCATION + "/geonode-client/ext/ext-all.js",
         "ol_theme":  GEONODE_CLIENT_LOCATION + "/geonode-client/ol/theme/default/style.css",
         "ol_script": GEONODE_CLIENT_LOCATION + "/geonode-client/ol/OpenLayers.js",
         "gx_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/gx/theme/",
@@ -251,6 +299,7 @@ else:
         "PrintPreview_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/PrintPreview/theme/",
         "gxp_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gxp/gxp.js",
         "gxp_theme": GEONODE_CLIENT_LOCATION + "/geonode-client/gxp/theme/all.css",
+        "geo_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/GeoExplorer.js",
         "app_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/theme/app/",
         "app_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/GeoNode.js",
         "ux_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/ux.js",
