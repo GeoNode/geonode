@@ -976,12 +976,6 @@ class Map(models.Model, PermissionLevelMixin):
     A longer description of the themes in the map.
     """
 
-    contact = models.CharField(max_length=200)
-    """
-    *Deprecated* A free-form text field identifying the map's creator.  Prefer
-    ``owner`` over this for new code.
-    """
-    
     # viewer configuration
     zoom = models.IntegerField()
     """
@@ -1114,7 +1108,6 @@ class Map(models.Model, PermissionLevelMixin):
             'id': self.id,
             'about': {
                 'title':    escape(self.title),
-                'contact':  escape(self.contact),
                 'abstract': escape(self.abstract)
             },
             'defaultSourceType': "gx_wmssource",
@@ -1143,7 +1136,6 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
-        self.contact = conf['about']['contact']
 
         self.zoom = conf['map']['zoom']
 

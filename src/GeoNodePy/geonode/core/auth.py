@@ -1,5 +1,6 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.contenttypes.models import ContentType 
+from django.db import models
 from geonode.core.models import *
 
 class GranularBackend(ModelBackend):
@@ -28,6 +29,10 @@ class GranularBackend(ModelBackend):
         if obj is None:
             return ModelBackend.get_all_permissions(self, user_obj)
         else:
+            # does not handle objects that are not in the database.
+            if not isinstance(obj, models.Model):
+                return set()
+            
             if not hasattr(user_obj, '_obj_perm_cache'):
                 # TODO: this cache should really be bounded.
                 # repoze.lru perhaps?

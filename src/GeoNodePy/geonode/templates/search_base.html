@@ -6,10 +6,8 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 {{ block.super }}
 <script type="text/javascript">
 Ext.onReady(function(){
@@ -17,8 +15,8 @@ Ext.onReady(function(){
 
     var bbox = new GeoNode.BoundingBoxWidget({
          proxy: "/proxy/?url=",
-         background: {{ background }},
-         renderTo: 'refine',
+         viewerConfig: {{ viewer_config }},
+         renderTo: 'refine'
     });
 
     var searchTable = new GeoNode.SearchTable({

@@ -4,14 +4,13 @@
 
 {% block head %} 
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 {{ block.super }}
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
+{% autoescape off %}
     var config = Ext.apply({
         useToolbar: false,
         proxy: "/proxy/?url=",
@@ -22,8 +21,9 @@ Ext.onReady(function() {
             height: 300,
             renderTo: "embedded_map"
         }
-    }, {{config|safe}});
+    }, {{ config }});
     app = new GeoExplorer.Viewer(config);
+{% endautoescape %}
 });
 </script>
 {% endblock %}
@@ -37,7 +37,7 @@ Ext.onReady(function() {
 
 <p><strong>Keywords:</strong> </p>
 <p><strong>Citation:</strong> </p>
-<p><strong>Contact:</strong> {% autoescape off %}{{map.contact}}{% endautoescape %}</p> 
+<p><strong>Contact:</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p> 
 
 {% endblock %} 
 {% block sidebar %} 

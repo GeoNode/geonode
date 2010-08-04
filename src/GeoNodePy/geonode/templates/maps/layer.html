@@ -7,16 +7,15 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 
 <link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}colorpicker/color-picker.ux.css" />
 
 {{ block.super }}
 
     <script type="text/javascript">
+{% autoescape off %}
         Ext.onReady(function() {
             var config = {
                 useBackgroundCapabilities: false,
@@ -98,6 +97,7 @@
                 items: stylesPanel
             }).show();
         }
+{% endautoescape %}
     </script>
 {% endblock %}
 
