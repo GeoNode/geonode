@@ -16,7 +16,8 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
           bodyStyle: 'padding: 10px 10px 0 10px;',
           method: 'POST',
           buttons: [
-            {text: gettext('New Permission'), 
+            {text: gettext('Add user'), 
+             iconCls: 'add-layers',
              handler: function() {
                var user_select = the_pe._make_user_combo('user', 'User');
                var perm_select = the_pe._make_perm_combo('perm', 'Permission', the_pe.permissions.levels[1][0]);
@@ -54,35 +55,8 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                  });
                  perm_popup.show();
                }
-             },
-            {text: gettext('Save'),
-             handler: function() {
-               if(pe_form.getForm().isValid()) {
-                 pe_form.getForm().submit({
-                     url: the_pe.submitTo,
-                     success: function(form, o) {
-                       document.location = o.result.redirect_to;
-                     },
-                     failure: function(form, o) {
-                       var error_message = '<ul>';
-                       for (var i = 0; i < o.result.errors.length; i++) {
-                           error_message += '<li>' + o.result.errors[i] + '</li>'
-                       }
-                       error_message += '</ul>'
-
-                       Ext.Msg.show({
-                           title: gettext("Error"),
-                           msg: error_message,
-                           minWidth: 200,
-                           modal: true,
-                           icon: Ext.Msg.ERROR,
-                           buttons: Ext.Msg.OK
-                       });
-                    }
-                  });
-                }
-             }}
-            ]
+             }
+           ]
         });
         pe_form.add(this._make_perm_combo('anonymous',
                                      gettext('Anyone'),
@@ -98,6 +72,28 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
           var combo = this._make_perm_combo_for_user(username, user_level);  
           pe_form.add(combo);
         }
+
+        pe_form.add({ html: "<hr/>" });
+
+        var userStore = new Ext.data.Store({
+            proxy: new Ext.data.HttpProxy({
+                url: '/accounts/ajax_lookup'
+            }),
+            reader: new Ext.data.JsonReader({
+                root: 'users',
+                totalProperty: 'count',
+            }, [
+                {name: 'username', type: 'string'}
+            ])
+        });
+
+        pe_form.add(new Ext.form.ComboBox({
+            name: 'name',
+            fieldLabel: 'add user',
+            displayField: 'username',
+            store: userStore,
+            minChars: 2
+        }));
 
         pe_form.render(render_to_el);
     },

@@ -2,9 +2,11 @@ from django.conf import settings
 from geonode.maps.models import Map
 from django import forms
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+import json
 
 def index(request): 
     return render_to_response('index.html', RequestContext(request))
@@ -57,3 +59,25 @@ def ajax_login(request):
                 mimetype="text/plain",
                 status=400
             )
+
+def ajax_lookup(request):
+    if request.method != 'POST':
+        return HttpResponse(
+            content='ajax user lookup requires HTTP POST',
+            status=405,
+            mimetype='text/plain'
+        )
+    elif 'query' not in request.POST:
+        return HttpResponse(
+            content='use a field named "query" to specify a prefix to filter usernames',
+            mimetype='text/plain'
+        )
+    users = User.objects.filter(username__startswith=request.POST['query'])
+    json_dict = {
+        'users': [({'username': u.username}) for u in users],
+        'count': users.count(),
+    }
+    return HttpResponse(
+        content=json.dumps(json_dict),
+        mimetype='text/plain'
+    )
