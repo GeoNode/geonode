@@ -127,5 +127,55 @@
         }, 
         "model": "maps.maplayer", 
         "pk": 5
+    },
+    {
+        "fields": {
+            "subject": "anonymous",
+            "object_ct": ["maps", "map"],
+            "object_id": 1,
+            "role": ["map_readonly", "maps", "map"]
+        },
+        "model": "core.genericobjectrolemapping",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "subject": "authenticated",
+            "object_ct": ["maps", "map"],
+            "object_id": 1,
+            "role": ["map_readwrite", "maps", "map"]
+        },
+        "model": "core.genericobjectrolemapping",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "subject": "anonymous",
+            "object_ct": ["maps", "layer"],
+            "object_id": 1,
+            "role": ["layer_readonly", "maps", "layer"]
+        },
+        "model": "core.genericobjectrolemapping",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "subject": "authenticated",
+            "object_ct": ["maps", "layer"],
+            "object_id": 1,
+            "role": ["layer_readonly", "maps", "layer"]
+        },
+        "model": "core.genericobjectrolemapping",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "user": 1,
+            "object_ct": ["maps", "layer"],
+            "object_id": 1,
+            "role": ["layer_readwrite", "maps", "layer"]
+        },
+        "model": "core.userobjectrolemapping",
+        "pk": 1
     }
 ]
