@@ -32,17 +32,17 @@ Ext.onReady(function(){
 {% block nav %} {% navbar data %} {% endblock %}
 
 {% block main %} 
+<div class="twocol">
+  <div class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
 
-<div class="block">
-  <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
+    <div id="search_results"></div>  
 
-  <div id="search_results"></div>  
-
-  <p class="explain">{%trans "Click the <b>+</b> on any row to show map abstract." %}
-  {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
-  </p>
+    <p class="explain">{%trans "Click the <b>+</b> on any row to show map abstract." %}
+      {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
+    </p>
+  </div>
 </div>
-
 {% endblock %}
 
 {% block sidebar %}

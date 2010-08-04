@@ -42,57 +42,59 @@ Ext.onReady(function(){
 {% endblock %}
 
 {% block main %} 
+<div class="onecol">
 <!-- TODO: i18n on the text here -->
-<div class="block">
-  <h2> {% trans "Welcome" %} </h2>
-  <p>
-  {% blocktrans %}
-GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our mailing list by emailing <em>geonode@librelist.com</em>.
-  {% endblocktrans %} 
-</p>
-</div>
-<div class="block">
-  <h2> {% trans "Maps" %} </h2>
-  <p>
-  {% blocktrans %} 
-GeoNode lets you compose and share maps.  <strong>Create</strong>
-    a map with our cartography tool, or <strong>explore</strong> maps
-    shared by others.
-  {% endblocktrans %} 
-</p>
-  <div id="explore_map"></div>
-  <div id="create_map"></div>
-</div>
-<div id="data_block" class="block">
-  <h2> {% trans "Data" %} </h2>
-  <p>
-  {% blocktrans %} 
-GeoNode lets you upload, manage, and browse data.  
-    <strong>Search</strong> for data that is valuable to you, or 
-    <strong>upload</strong> your own data.
-  {% endblocktrans %} 
-</p>
+  <div class="block">
+    <h2> {% trans "Welcome" %} </h2>
+    <p>
+    {% blocktrans %}
+  GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our mailing list by emailing <em>geonode@librelist.com</em>.
+    {% endblocktrans %} 
+  </p>
+  </div>
+  <div class="block">
+    <h2> {% trans "Maps" %} </h2>
+    <p>
+    {% blocktrans %} 
+  GeoNode lets you compose and share maps.  <strong>Create</strong>
+      a map with our cartography tool, or <strong>explore</strong> maps
+      shared by others.
+    {% endblocktrans %} 
+  </p>
+    <div id="explore_map"></div>
+    <div id="create_map"></div>
+  </div>
+  <div id="data_block" class="block">
+    <h2> {% trans "Data" %} </h2>
+    <p>
+    {% blocktrans %} 
+  GeoNode lets you upload, manage, and browse data.  
+      <strong>Search</strong> for data that is valuable to you, or 
+      <strong>upload</strong> your own data.
+    {% endblocktrans %} 
+    </p>
 
-  <!-- Data search text box and button -->
+    <!-- Data search text box and button -->
 
-  <form action="{% url search %}" method="POST">
-    {% csrf_token %}
-      <table>
-        <tr>
-          <td>
-            <input type="text" id="search_query" name="q" />
-          </td>
-          <td>
-            <div id="submit_search"></div>
-          </td>
-        </tr>
-      </table>
-      <a href="{% url search %}">{% trans "Advanced Search" %}</a>
-  </form>
+    <form action="{% url search %}" method="POST">
+      {% csrf_token %}
+        <table>
+          <tr>
+            <td>
+              <input type="text" id="search_query" name="q" />
+            </td>
+            <td>
+              <div id="submit_search"></div>
+            </td>
+          </tr>
+        </table>
+        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+    </form>
   
-  <!-- Links to specialized views of data -->
-  <!-- Upload data button (link?) -->
-  <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload data"  %}</a>
+    <!-- Links to specialized views of data -->
+    <!-- Upload data button (link?) -->
+    <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload data"  %}</a>
+  </div>
 </div>
 {% endblock %}
 {% block sidebar %}
