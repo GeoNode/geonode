@@ -22,6 +22,7 @@ if (window.GeoExplorer) {
         layersPanelText: gettext("Layers"),
         legendPanelText: gettext("Legend"),
         lengthActionText: gettext("Length"),
+        loadingMapMessage: gettext("Loading Map..."),
         mapSizeLabel: gettext("Map Size"), 
         measureSplitText: gettext("Measure"),
         metaDataHeader: gettext("About this Map"),
@@ -69,8 +70,8 @@ if (window.Embed) {
   });
 }
 
-if (window.MapGrid) {
-    Ext.apply(MapGrid.prototype, {
+if (window.GeoNode && GeoNode.MapGrid) {
+    Ext.apply(GeoNode.MapGrid.prototype, {
         createMapText : gettext("Create Map"),
         exportMapText: gettext("Export Map"),
         mapAbstractLabelText: gettext("Abstract"),
@@ -96,15 +97,15 @@ if (window.GeoNode && GeoNode.ConfigManager) {
     });
 }
 
-if (window.ExportWizard) {
-    Ext.apply(ExportWizard.prototype, {
-        exportDialogMessage: gettext('<p>Your map is ready to be published to the web! </p> <p> Simply copy the following HTML to embed the map in your website: </p>'),
+if (window.gxp && gxp.EmbedMapDialog) {
+    Ext.apply(gxp.EmbedMapDialog.prototype, {
         heightLabel: gettext("Height"),
         largeSizeLabel: gettext("Large"),
         mapSizeLabel: gettext("Map Size"),
         miniSizeLabel: gettext("Mini"),
         premiumSizeLabel: gettext("Premium"),
         publishActionText: gettext("Publish Map"),
+        publishMessage: gettext('Your map is ready to be published to the web!  Simply copy the following HTML to embed the map in your website:'),
         smallSizeLabel: gettext("Small"),
         widthLabel: gettext("Width")
     });
@@ -151,7 +152,9 @@ if (window.GeoNode && GeoNode.SearchTable) {
         searchButtonText: gettext('Search'),
         showingText: gettext('Showing'),
         loadingText: gettext("Loading..."),
-        permalinkText: gettext('permalink')
+        permalinkText: gettext('permalink'),
+        unviewableTooltip: gettext('You do not have permission to view this data'),
+        remoteTooltip: gettext('This data is stored on a remote server')    
     });
 }
 if (window.GeoNode && GeoNode.SearchTableRowExpander) {

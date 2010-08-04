@@ -58,7 +58,15 @@ The following steps should prepare a Python virtual environment for you::
   python bootstrap.py --no-site-packages
   source bin/activate
   paver build
+  django-admin.py createsuperuser --settings=capra.settings
   paver host 
+
+Once fully started, you should see a message indicating the address of your geonode::
+  
+  Development GeoNode is running at http://localhost:8000/
+  The GeoNode is an unstoppable machine
+  Press CTRL-C to shut down
+
 
 .. note:: 
 
@@ -71,13 +79,13 @@ The following steps should prepare a Python virtual environment for you::
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option in.
 
-After paver build sets up the basic Django application, you can run::
+
+This command::
 
   django-admin.py createsuperuser --settings=capra.settings
 
-to create an admin user account.  The administrative control panel is not
-linked from the main site, but can be accessed at http://localhost:8000/admin/.
-
+can be used to create additional administrative user accounts.  The administrative control panel is not
+linked from the main site, but can be accessed at http://localhost:8000/admin/
 
 Options
 =======
@@ -190,3 +198,22 @@ Directory Structure
     * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
       Actually, the build script for this project is set up to create a WAR
       that includes those extensions, not just a bundle with the extension.
+
+
+GPL License
+=======
+
+GeoNode is Copyright 2010 OpenPlans.
+
+GeoNode is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+GeoNode is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GeoNode.  If not, see <http://www.gnu.org/licenses/>.

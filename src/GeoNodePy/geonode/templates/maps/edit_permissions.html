@@ -1,0 +1,37 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+
+{% block head %}
+
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+
+{{ block.super }}
+
+<script type="text/javascript">
+
+  Ext.onReady(function() {
+    var title = "{{ map.title }}";
+    {% autoescape off %}
+    var perm_info = {{ permissions_json }};
+    {% endautoescape %}
+    var form_target = "{% url geonode.maps.views.edit_map_permissions map.id %}";
+
+    new GeoNode.PermissionsEditor({
+        renderTo: "permissions_form",
+        submitTo: form_target,
+        title: title,
+        permissions: perm_info
+    });
+  });
+
+</script>
+
+{% endblock %}
+
+{% block title %} Permissions - {{ map.title }} - {{ block.super }} {% endblock %}
+
+{% block main %}
+  <div id="permissions_form"></div>
+{% endblock %}

@@ -5,14 +5,14 @@ import unittest
 import socket
 import os
 
-def isOpen(ip,port):
+def is_open(ip,port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-     s.connect((ip, int(port)))
-     s.shutdown(2)
-     return True
+        s.connect((ip, int(port)))
+        s.shutdown(2)
+        return True
     except:
-     return False
+        return False
 
 
 class GeoNodeTestRunner(DjangoTestSuiteRunner):
@@ -23,10 +23,9 @@ class GeoNodeTestRunner(DjangoTestSuiteRunner):
         self.verbosity = verbosity
         self.interactive = interactive
         self.failfast = failfast
-        # Check if a server is running in port 8080 and set the GEOSERVER flag
-        if "GEOSERVER" not in os.environ.keys():
-            if isOpen('127.0.0.1', '8001'):
-                os.environ["GEOSERVER"]="True"
+        # Check if a server is running in port 8001 and set the GEOSERVER flag
+        if "GEOSERVER" not in os.environ and is_open('127.0.0.1', '8001'):
+            os.environ["GEOSERVER"]="True"
 
     EXCLUDED_APPS = [
         # Registration complains about email
@@ -42,6 +41,9 @@ class GeoNodeTestRunner(DjangoTestSuiteRunner):
         # in some development systems (MacOSX) this is not done with the
         # default PIL install.
                      'avatar.models',
+        # Django's auth module passes in objects that aren't model instances
+        # and asks for their permissions.
+                     'django.contrib.auth.models'
         ]
 
     def build_suite(self, test_labels, extra_tests=None, **kwargs):

@@ -98,7 +98,7 @@ class FileResource implements Resource {
     }
 
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append("[").append(
-                getFile().getAbsolutePath()).append("]").toString();
+        return new StringBuilder(getClass().getSimpleName()).append("[")
+                .append(getFile().getAbsolutePath()).append("]").toString();
     }
 }
