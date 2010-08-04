@@ -1,4 +1,5 @@
 {% extends "page_layout.html" %}
+{% load geonode_auth %}
 {% load geonode_media %}
 {% load i18n %}
 
@@ -6,16 +7,15 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 
 <link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}colorpicker/color-picker.ux.css" />
 
 {{ block.super }}
 
     <script type="text/javascript">
+{% autoescape off %}
         Ext.onReady(function() {
             var config = {
                 useBackgroundCapabilities: false,
@@ -27,17 +27,12 @@
                  * maps on the server for sharing and editing.
                  */
                 rest: "/maps/",
-                wms: {
-                    "capra": "{{ GEOSERVER_BASE_URL }}wms"
-                },
-                map: {
-                    "layers": [{"wms": "capra", "name": "{{layer.typename}}"}]
-                },
-                backgroundLayers: {{ background|safe }},
+
                 portalConfig: {
                     renderTo: "preview_map",
                     height: 350
                 },
+
                 createTools: function() {
                     return [new Ext.Button({
                         tooltip: GeoExplorer.prototype.backgroundContainerText,
@@ -54,6 +49,8 @@
                     }
                 }
             };
+
+            config = Ext.apply(config, {{ viewer|safe }});
 
             app = new GeoExplorer.Viewer(config);
 
@@ -100,6 +97,7 @@
                 items: stylesPanel
             }).show();
         }
+{% endautoescape %}
     </script>
 {% endblock %}
 
@@ -185,13 +183,26 @@
 
     </p>
 
+
+
     {% if user.is_authenticated %}
+    {% has_obj_perm user layer "maps.change_layer" as can_change %}
+    {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
+    {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
+
         <h3> {% trans "Manage" %} </h3>
         <ul>
 			{% if user.is_authenticated %}
+        {% if can_change %}
                 <li><a href="?describe">{% trans "Update the description of this data" %}</a></li>
             	<li><a href="?update">{% trans "Upload a new version of this data" %}</a></li>
+        {% endif %}
+        {% if can_change_permissions %}
+        <li><a href="{% url edit_layer_permissions layer.typename %}">{% trans "Edit Permissions" %}</a></li>
+        {% endif %}
+        {% if can_delete %}
 				<li><a href="?remove">{% trans "Remove" %}</a></li>
+			  {% endif %}
 			{% else %}
 				<li>Please authenticate to update or remove layers</li>
 			{% endif %}

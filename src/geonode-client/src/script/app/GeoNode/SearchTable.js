@@ -283,6 +283,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     showingText: 'UT: Showing',
     loadingText: 'UT: Loading',
     permalinkText: 'UT: permalink',
+    unviewableTooltip: 'UT: Unviewable Data',
+    remoteTooltip: 'UT: Remote Data',
 
     constructor: function(config) {
         this.addEvents('load'); 
@@ -309,7 +311,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'attribution'},
                 {name: 'download_links'},
                 {name: 'metadata_links'},
-                {name: 'bbox'}
+                {name: 'bbox'},
+                {name: '_local'},
+                {name: '_permissions'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -462,31 +466,75 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 forceFit: true,
                 emptyText: this.noResultsText
             },
-            height: 300,
+            autoHeight: true,
             renderTo: table_el
         };
 
-
+        var unviewableTooltip = this.unviewableTooltip;
+        var remoteTooltip = this.remoteTooltip;
+        
         var columns = [
             expander,
-            {header: this.nameHeaderText,
+/*            {header: this.nameHeaderText,
              dataIndex: 'name',
+             hidden: true,
              id: 'name',
              width: 35
-            },
+            },*/
             {header: this.titleHeaderText,
              dataIndex: 'title',
              id: 'title',
              renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+                 var is_local = record.get('_local');
                  var detail = record.get('detail');
+
+                 /* do not show detail link for layers without read permission */
+                 if (is_local) {
+                     var permissions = record.get('_permissions');
+                     if (permissions.view != true) {
+                         detail = '';
+                     }
+                 }
                  if (detail) {
-                     return '<a href="' + detail + '">' + value + '</a>';
+                     detail = '<a href="' + detail + '">' + value + '</a>';
                  }
                  else {
-                     return value;
+                     detail = value;
                  }
+                 return detail;
              }
-             }];
+             },
+             {dataIndex: '_local',
+              id: 'layer_info',
+              width: 6,
+              resizable: false,
+              renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+                  var is_local = record.get('_local');
+                  var info_type = '';
+                  var tooltip = '';
+                  
+                  /* do not show detail link for layers without read permission */
+                  if (is_local) {
+                      var permissions = record.get('_permissions');
+                      if (permissions.view != true) {
+                          detail = '';
+                          info_type = 'unviewable-layer';
+                          tooltip = unviewableTooltip;
+                      }
+                      else {
+                          info_type = 'info-layer';
+                      }
+                  }
+                  else {
+                      info_type = 'remote-layer';
+                      tooltip = remoteTooltip;
+                  }
+
+                  info = '<span class="' + info_type + '" title="' + tooltip + '"></span>';
+                  return info;
+              }
+              }
+             ];
         
         if (this.trackSelection == true) {
             sm = new Ext.grid.CheckboxSelectionModel({checkOnly: true});
@@ -667,6 +715,13 @@ GeoNode.DataCartStore = Ext.extend(Ext.data.Store, {
 
 GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
 
+    /**
+     * Property: viewerConfig
+     * Options such as background layers configuration to be passed to the
+     * gxp.Viewer instance enclosed by this BoundingBoxWidget.
+     */
+    viewerConfig: null,
+
     constructor: function(config) {
         Ext.apply(this, config);
         this.activated = false;
@@ -677,20 +732,23 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
 
         var el = Ext.get(this.renderTo);
 
-        this.viewer = new GeoExplorer.Viewer({
+        var viewerConfig = {
             proxy: this.proxy,
             useCapabilities: false,
             useBackgroundCapabilities: false,
             useToolbar: false,
             useMapOverlay: false,
-            backgroundLayers: [this.background],
             portalConfig: {
                 collapsed: true,
                 border: false,
                 height: 300,
                 renderTo: el.query('.bbox-expand')[0]
             }
-        });
+        }
+
+        viewerConfig = Ext.apply(viewerConfig, this.viewerConfig)
+
+        this.viewer = new GeoExplorer.Viewer(viewerConfig);
 
          this.enabledCB = el.query('.bbox-enabled input')[0];        
          this.disable();

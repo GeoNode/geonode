@@ -6,10 +6,8 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 {{ block.super }}
 {% endblock %}
 
@@ -20,8 +18,8 @@
 
 <script type="text/javascript">
 Ext.onReady(function(){
-  
-  var form_target = "{% url capra.files.views.dispatch file.id %}?update"
+{% autoescape %} 
+  var form_target = "{% url capra.files.views.dispatch file.id %}?update";
 
   var base_file = new Ext.ux.form.FileUploadField({
       id: 'ame_file',
@@ -87,6 +85,7 @@ Ext.onReady(function(){
       }]
     });
   });
+{% endautoescape %}
 </script>
 {% endblock %}
 
