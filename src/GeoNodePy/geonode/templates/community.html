@@ -6,15 +6,15 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
 {{ block.super }}
 <script type="text/javascript">
 Ext.onReady(function(){
+{% autoescape off %}
   
   var rest_url = "{%url geonode.maps.views.maps %}";
 
-  var mapGrid = new MapGrid({
+  var mapGrid = new GeoNode.MapGrid({
       store : new Ext.data.JsonStore({
           url: rest_url,
           root: 'maps',
@@ -22,13 +22,13 @@ Ext.onReady(function(){
           fields: [
               {name: 'id', mapping: 'id'},
               {name: "title", mapping: "config.about.title"},
-              {name: "abstract", mapping: "config.about.abstract"},
-              {name: "contact", mapping: "config.about.contact"}
+              {name: "abstract", mapping: "config.about.abstract"}
           ],
           autoLoad: true
       })
   });
 
+{% endautoescape %}
 });
 </script> 
 {% endblock %}
