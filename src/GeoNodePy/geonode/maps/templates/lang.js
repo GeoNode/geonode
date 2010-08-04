@@ -70,8 +70,8 @@ if (window.Embed) {
   });
 }
 
-if (window.MapGrid) {
-    Ext.apply(MapGrid.prototype, {
+if (window.GeoNode && GeoNode.MapGrid) {
+    Ext.apply(GeoNode.MapGrid.prototype, {
         createMapText : gettext("Create Map"),
         exportMapText: gettext("Export Map"),
         mapAbstractLabelText: gettext("Abstract"),

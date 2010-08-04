@@ -36,12 +36,10 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
-DEFAULT_CONTACT = ""
 
 _default_map = Map(
     title=DEFAULT_TITLE, 
     abstract=DEFAULT_ABSTRACT,
-    contact=DEFAULT_CONTACT,
     projection="EPSG:900913",
     center_x=-9428760.8688778,
     center_y=1436891.8972581,
