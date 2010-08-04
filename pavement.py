@@ -299,6 +299,7 @@ def concat_js(options):
        move("geonode-client/GeoExt.js","geonode-client/gx/")
        move("geonode-client/gxp.js","geonode-client/gxp/")
        move("geonode-client/GeoNode.js","geonode-client/gn/")
+       move("geonode-client/GeoExplorer.js","geonode-client/gn/")
        move("geonode-client/PrintPreview.js","geonode-client/PrintPreview/")
        move("geonode-client/ux.js","geonode-client/gn/")
 

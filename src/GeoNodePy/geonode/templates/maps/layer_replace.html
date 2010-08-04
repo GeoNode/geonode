@@ -6,10 +6,7 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
 {{ block.super }}
 {% endblock %}
 
@@ -28,15 +25,11 @@
 
 <script type="text/javascript">
 Ext.onReady(function(){
-  
+{% autoescape off %}
   var form_target = "{% url geonode.maps.views.layerController layer.typename %}?update";
-  var layer_name = "{{layer.name}}";
+  var layer_name = "{{ layer.name|escapejs }}";
   
-  {% if is_featuretype %}
-  var is_featuretype = true;
-  {% else %}
-  var is_featuretype = false;
-  {% endif %}
+  var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
 
   var layer_name = new Ext.form.TextField({
     id: 'layer_name',
@@ -142,6 +135,7 @@ Ext.onReady(function(){
       }]
     });
   });
+{% endautoescape %}
 </script>
 
 {% endblock %}

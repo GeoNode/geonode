@@ -7,18 +7,18 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 {{ block.super }}
 <script src="{% geonode_media "capra_script" %}" type="text/javascript"></script>
 <script src="{% url capra.hazard.views.lang %}" type="text/javascript"></script>
 <script type="text/javascript">
+{% autoescape off %}
 Ext.onReady(function(){
   new capra.AMEGrid({renderTo: 'file_list', 
                      file_info_url: '{% url capra.files.views.index_json %}'});
 });
+{% endautoescape %}
 </script> 
 {% endblock %}
 
