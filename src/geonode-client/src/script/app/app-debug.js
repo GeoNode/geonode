@@ -2,8 +2,8 @@
 
     var jsfiles = new Array(
         "/static/src/script/app/GeoNode/DataGrid.js",
-        "/static/src/script/app/GeoNode/MapGrid.js",
         "/static/src/script/app/GeoNode/SearchTable.js",
+        "/static/src/script/app/GeoNode/MapSearchTable.js",
         "/static/src/script/app/GeoNode/PermissionsEditor.js",
         "/static/src/script/app/Lang.js"
     );
