@@ -332,7 +332,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         }]
                     });
                     details.show();
-                    this.close();
                 }
             }
         });
