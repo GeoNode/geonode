@@ -397,6 +397,17 @@ padding-left: 0.25em;
 color: #888;
 }
 
+
+/*-----------------------
+Index Elements
+-----------------------*/
+
+.content-button { 
+float:left;
+padding-right:1em;
+}
+
+
 /*-----------------------
 Data Page Search Form
 -----------------------*/
