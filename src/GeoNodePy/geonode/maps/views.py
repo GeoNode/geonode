@@ -783,7 +783,7 @@ def _handle_layer_upload(request, layer=None):
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
     """
-
+    layer_name = request.POST.get('layer_name');
     base_file = request.FILES.get('base_file');
     if not base_file:
         return [_("You must specify a layer data file to upload.")]
@@ -792,7 +792,7 @@ def _handle_layer_upload(request, layer=None):
         overwrite = False
         # XXX Give feedback instead of just replacing name
         # XXX We need a better way to remove xml-unsafe characters
-        name = base_file.name[0:-4]
+        name = layer_name
         name = name.replace(" ", "_")
         proposed_name = name
         count = 1
