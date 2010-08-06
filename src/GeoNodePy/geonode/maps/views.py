@@ -482,35 +482,6 @@ def ajax_map_permissions(request, mapid):
     )
 
 
-# XXX should not be exempt
-@csrf_exempt
-@login_required
-def edit_map_permissions(request, mapid):
-    map = get_object_or_404(Map,pk=mapid) 
-
-    if not request.user.has_perm('maps.change_map_permissions', obj=map):
-        return HttpResponse(loader.render_to_string('401.html', 
-            RequestContext(request, {'error_message':
-                _("You are not permitted to edit this map's permissions")})), status=401)
-    
-    if request.method == 'GET':
-        info = _perms_info_json(map, MAP_LEV_NAMES)
-        ctx = {'map': map, 'permissions_json': info}
-        return render_to_response("maps/edit_permissions.html", RequestContext(request, ctx))
-    elif request.method == 'POST':        
-        errors = _handle_perms_edit(request, map)
-        result = {}
-        if len(errors) > 0:
-            result['success'] = False
-            result['errors'] = errors
-        else:
-            result['success'] = True
-            result['redirect_to'] = reverse('view_map_permissions', args=(map.id,))
-        result = json.dumps(result)
-
-        return HttpResponse(result, mimetype="application/javascript")
-
-
 @login_required
 def deletemap(request, mapid):
     ''' Delete a map, and its constituent layers. '''
@@ -1084,36 +1055,6 @@ def _handle_perms_edit(request, obj):
             obj.set_user_level(user, level)
 
     return errors
-
-# XXX should not be exempt
-@csrf_exempt
-@login_required
-def edit_layer_permissions(request, layername):
-    layer = get_object_or_404(Layer,typename=layername) 
-
-    if not request.user.has_perm('maps.change_layer_permissions', obj=layer):
-        return HttpResponse(loader.render_to_string('401.html', 
-            RequestContext(request, {'error_message':
-                _("You are not permitted to edit this layer's permissions")})), status=401)
-
-    if request.method == 'GET':
-        info = _perms_info_json(layer, LAYER_LEV_NAMES)
-        ctx = {'layer': layer, 'permissions_json': info}
-        return render_to_response("maps/layer_edit_permissions.html", RequestContext(request, ctx))
-    elif request.method == 'POST':
-
-        errors = _handle_perms_edit(request, layer)
-        
-        result = {}
-        if len(errors) > 0:
-            result['success'] = False
-            result['errors'] = errors
-        else:
-            result['success'] = True
-            result['redirect_to'] = reverse('view_layer_permissions', args=(layer.typename,))
-        result = json.dumps(result)
-
-        return HttpResponse(result, mimetype="application/javascript")
 
 
 def _get_basic_auth_info(request):
