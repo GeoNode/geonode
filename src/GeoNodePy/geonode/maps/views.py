@@ -403,6 +403,45 @@ def view_map_permissions(request, mapid):
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
 
 
+def ajax_layer_permissions(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
+
+    if not request.user.has_perm("layer.change_layer_permissions", obj=map):
+        return HttpResponse(
+            'You are not allowed to change permissions for this layer',
+            status=401,
+            mimetype='text/plain'
+        )
+
+    if not request.method == 'POST':
+        return HttpResponse(
+            'You must use POST for editing layer permissions',
+            status=405,
+            mimetype='text/plain'
+        )
+
+    if "authenticated" in request.POST:
+        layer.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
+    elif "anonymous" in request.POST:
+        layer.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
+    else:
+        user_re = re.compile('^user\\.(.*)')
+        for k, level in request.POST.iteritems():
+            match = user_re.match(k)
+            if match:
+                username = match.groups()[0]
+                user = User.objects.get(username=username)
+                if level == '':
+                    layer.set_user_level(user, layer.LEVEL_NONE)
+                else:
+                    layer.set_user_level(user, level)
+
+    return HttpResponse(
+        "Permissions updated",
+        status=200,
+        mimetype='text/plain'
+    )
+
 def ajax_map_permissions(request, mapid):
     map = get_object_or_404(Map, pk=mapid)
 
@@ -753,6 +792,7 @@ def layerController(request, layername):
             "layer": layer,
             "metadata": metadata,
             "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
+            "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
 
@@ -1005,7 +1045,6 @@ def _perms_info_json(obj, level_names):
     info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
     info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
     info['users'] = sorted(info['users'].items())
-    info['all_usernames'] = [x[0] for x in User.objects.values_list('username').order_by()]
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
     return json.dumps(info)
 

@@ -72,6 +72,14 @@
             Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
                 showStyle(elem.previousSibling.value);
             });
+{% has_obj_perm user layer "layers.change_layer_permissions" as can_change_permissions %}
+{% if can_change_permissions %}
+            new GeoNode.PermissionsEditor({
+                renderTo: "permissions_form",
+                submitTo: "{% url geonode.maps.views.ajax_layer_permissions layer.typename %}",
+                permissions: {{ permissions_json }}
+            });
+{% endif %}
         });
 
         function showStyle(styleName) {
@@ -190,7 +198,6 @@
     {% if user.is_authenticated %}
     {% has_obj_perm user layer "maps.change_layer" as can_change %}
     {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
-    {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
 
         <h3> {% trans "Manage" %} </h3>
         <ul>
@@ -209,6 +216,12 @@
 				<li>Please authenticate to update or remove layers</li>
 			{% endif %}
         </ul>
+    {% endif %}
+    {% has_obj_perm user layer "layer.change_layer_permissions" as can_change_permissions %}
+    {% if can_change_permissions %}
+    <h3>{% trans "Permissions" %}</h3>
+      {% trans "Select what kind of privileges to allow." %}
+      <div id="permissions_form"</div>
     {% endif %}
 </div>
 {% endblock %}
