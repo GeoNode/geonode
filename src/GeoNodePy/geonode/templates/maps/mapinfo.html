@@ -28,6 +28,7 @@ Ext.onReady(function() {
     new GeoNode.PermissionsEditor({
         renderTo: "permissions_form",
         submitTo: "{% url geonode.maps.views.ajax_map_permissions map.id %}",
+        userLookup: "{% url geonode.views.ajax_lookup %}",
         permissions: {{ permissions_json }}
     });
 {% endif %}
