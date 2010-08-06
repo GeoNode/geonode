@@ -1046,7 +1046,7 @@ def _perms_info_json(obj, level_names):
     info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
     info['users'] = sorted(info['users'].items())
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
-    if hasattr(obj, 'owner'): info['owner'] = obj.owner.username
+    if hasattr(obj, 'owner') and obj.owner: info['owner'] = obj.owner.username
     return json.dumps(info)
 
 INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
