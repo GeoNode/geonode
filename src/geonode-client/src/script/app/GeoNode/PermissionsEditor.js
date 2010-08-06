@@ -15,6 +15,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                 {name: "displayname"}
             ]
         });
+        this.userset = {};
     },
 
     buildUserChooser: function() {
@@ -48,7 +49,10 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                             "username",
                             chooser.getValue()
                         );
-                        if (idx >= 0) {
+                        if (idx >= 0
+                            && chooser.getValue() != this.permissions.owner
+                            && !this.userset[chooser.getValue()]
+                        ) {
                             this.addUser({
                                 username: chooser.getValue(),
                                 role: this.permissions.authenticated
@@ -58,7 +62,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                     },
                     scope: this
                 }),
-                { html: "Add user", flex: 1, border: false },
+                { html: gettext("Add user"), flex: 1, border: false },
                 chooser
             ]
         }); 
@@ -98,6 +102,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
     },
 
     addUser: function(user) {
+        this.userset[user] = true;
         var up = this.userPanel;
 
         var userEditor = new Ext.Panel({
@@ -169,11 +174,11 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             border: false,
             items: [
                 this.buildGroupPermissionCombo(
-                    {displayname: 'Anyone', identifier: 'anonymous'},
+                    {displayname: gettext('Anyone'), identifier: 'anonymous'},
                     this.permissions.anonymous
                 ),
                 this.buildGroupPermissionCombo(
-                    {displayname: 'Authenticated Users', identifier: 'authenticated'},
+                    {displayname: gettext('Authenticated Users'), identifier: 'authenticated'},
                     this.permissions.authenticated
                 ),
                 {html: '<hr/>', border: false},
