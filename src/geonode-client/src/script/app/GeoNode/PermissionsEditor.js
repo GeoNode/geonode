@@ -19,7 +19,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
 
     buildUserChooser: function() {
         var userStore = new Ext.data.Store({
-            proxy: new Ext.data.HttpProxy({ url: '/accounts/ajax_lookup' }),
+            proxy: new Ext.data.HttpProxy({ url: this.userLookup }),
             reader: new Ext.data.JsonReader({
                 root: 'users',
                 totalProperty: 'count',
