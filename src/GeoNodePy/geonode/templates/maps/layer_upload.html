@@ -28,6 +28,14 @@ Ext.onReady(function(){
 {% autoescape off %}
   var form_target = "{% url geonode.maps.views.upload_layer %}";
 
+  var layer_name = new Ext.form.TextField({
+      id: 'layer_name',
+      fieldLabel: gettext('Name'),
+      name: 'layer_name',
+      emptyText: gettext('Unique name for layer.  Defaults to file name.'),
+      allowBlank: false
+  });
+
   var base_file = new Ext.ux.form.FileUploadField({
       id: 'base_file',
       emptyText: gettext('Select a layer data file'),
@@ -74,7 +82,7 @@ Ext.onReady(function(){
         anchor: '95%',
         msgTarget: 'side'
     },
-    items: [base_file, dbf_file, shx_file, prj_file],
+    items: [layer_name, base_file, dbf_file, shx_file, prj_file],
     buttons: [{
         text: gettext('Upload'),
         handler: function(){
@@ -138,6 +146,12 @@ Ext.onReady(function(){
   
     base_file.addListener('fileselected', function() {
       check_shapefile();
+
+      var main_filename = base_file.getValue();
+      var extension_index = main_filename.search(/\.\w+$/i);
+      if (extension_index != -1 && layer_name.getValue() == "") {
+          layer_name.setValue(main_filename.substring(0,extension_index));
+      }
     })
     disable_shapefile_inputs();
 {% endautoescape %}
