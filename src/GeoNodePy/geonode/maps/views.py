@@ -401,7 +401,47 @@ def view_map_permissions(request, mapid):
     ctx = _view_perms_context(map, MAP_LEV_NAMES)
     ctx['map'] = map
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
-                              
+
+
+def ajax_map_permissions(request, mapid):
+    map = get_object_or_404(Map, pk=mapid)
+
+    if not request.user.has_perm("maps.change_map_permissions", obj=map):
+        return HttpResponse(
+            'You are not allowed to change permissions for this map',
+            status=401,
+            mimetype='text/plain'
+        )
+
+    if not request.method == 'POST':
+        return HttpResponse(
+            'You must use POST for editing map permissions',
+            status=405,
+            mimetype='text/plain'
+        )
+
+    if "authenticated" in request.POST:
+        map.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
+    elif "anonymous" in request.POST:
+        map.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
+    else:
+        user_re = re.compile('^user\\.(.*)')
+        for k, level in request.POST.iteritems():
+            match = user_re.match(k)
+            if match:
+                username = match.groups()[0]
+                user = User.objects.get(username=username)
+                if level == '':
+                    map.set_user_level(user, map.LEVEL_NONE)
+                else:
+                    map.set_user_level(user, level)
+
+    return HttpResponse(
+        "Permissions updated",
+        status=200,
+        mimetype='text/plain'
+    )
+
 
 # XXX should not be exempt
 @csrf_exempt
