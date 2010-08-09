@@ -204,8 +204,8 @@ def newmap(request):
                     _("You are not permitted to view or copy this map.")})), status=401)
 
         map.abstract = DEFAULT_ABSTRACT
-        map.contact = DEFAULT_CONTACT
         map.title = DEFAULT_TITLE
+        map.owner = request.user
         config = map.viewer_json()
         del config['id']
     else:
