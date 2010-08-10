@@ -225,7 +225,14 @@ AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = False
 GEONODE_CLIENT_LOCATION = "http://demo.geonode.org/geonode-client"
 
-if DEBUG:
+SERVE_MEDIA = DEBUG;
+
+try:
+    from local_settings import *
+except ImportError:
+    print u'File local_settings.py is not found. Continuing with default settings'
+
+if SERVE_MEDIA:
     if MINIFIED_RESOURCES: 
         MEDIA_LOCATIONS = {
             "ext_base": "/static/ext/",
