@@ -916,7 +916,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             data: data
         });
 
-        var expander = new GeoExplorer.CapabilitiesRowExpander();
+        var expander = new GeoExplorer.CapabilitiesRowExpander({
+            ows: this.localGeoServerBaseUrl + "ows"
+        });
         
         var addLayers = function() {
             var key = sourceComboBox.getValue();
