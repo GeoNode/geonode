@@ -502,7 +502,7 @@ def deletemap(request, mapid):
             layer.delete()
         map.delete()
 
-        return HttpResponseRedirect(reverse("data"))
+        return HttpResponseRedirect(reverse("geonode.views.community"))
 
 def mapdetail(request,mapid): 
     '''
