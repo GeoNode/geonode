@@ -20,6 +20,12 @@ software installed and in your PATH:
   - If not, you can find the appropriate installer at
     http://subversion.apache.org/packages.html
 
+* The GEOS geometry handling library: http://trac.osgeo.org/geos/
+
+* The GDAL geographic raster access library: http://www.gdal.org/
+
+* The OGR geographic vector data access library: http://www.gdal.org/ogr/
+
 * Sun Java Development Kit 1.5 or Higher: 
   - To verify that it is available, run
     ``javac -help -version`` and verify that it reports a list of usage flags,
@@ -47,6 +53,24 @@ software installed and in your PATH:
 
   - If not, download from http://maven.apache.org/download.html/
 
+Additionally, GeoNode uses a number of native-code libraries in Python.  You
+can install these libraries manually, or allow the GeoNode setup script to
+compile them for you.   In the latter case, you will need to install a C
+compiler such as GCC, as well as any requisite development libraries.  GCC
+packages are available for Mac OSX and all Linux distributions; consult your
+operating system provider for installation instructions.
+
+The native libraries needed include:
+
+* PIL http://www.pythonware.com/products/pil/
+
+* ReportLab http://www.reportlab.com/software/opensource/rl-toolkit/
+
+* simplejson http://code.google.com/p/simplejson/
+
+For GCC, packages are available for Mac OSX and all Linux distributions;
+consult your operating system provider for installation instructions.
+
 Install
 =======
 
@@ -55,7 +79,7 @@ The following steps should prepare a Python virtual environment for you::
   git clone git://github.com/GeoNode/geonode.git geonode
   cd geonode
   git submodule update --init
-  python bootstrap.py --no-site-packages
+  python bootstrap.py --no-site-packages # see note below
   source bin/activate
   paver build
   django-admin.py createsuperuser --settings=capra.settings
