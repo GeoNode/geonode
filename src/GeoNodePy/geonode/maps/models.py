@@ -1012,7 +1012,7 @@ class Map(models.Model, PermissionLevelMixin):
     """
 
     def __unicode__(self):
-        return '%s by %s' % (self.title, self.contact)
+        return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
     @property
     def center(self):
@@ -1107,8 +1107,8 @@ class Map(models.Model, PermissionLevelMixin):
         config = {
             'id': self.id,
             'about': {
-                'title':    escape(self.title),
-                'abstract': escape(self.abstract)
+                'title':    self.title,
+                'abstract': self.abstract
             },
             'defaultSourceType': "gx_wmssource",
             'sources': sources,
