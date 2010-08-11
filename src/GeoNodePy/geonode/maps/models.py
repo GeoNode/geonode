@@ -1178,7 +1178,7 @@ class Map(models.Model, PermissionLevelMixin):
     
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_WRITE) 
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
 
         # remove specific user permissions
         current_perms =  self.get_all_level_info()
