@@ -67,8 +67,8 @@ Ext.onReady(function() {
     {% has_obj_perm user map "maps.change_map" as can_change %}
     {% has_obj_perm user map "maps.delete_map" as can_delete %}
     
+    <li><a href="{% url geonode.maps.views.view map.id %}">View or edit this map</a></li> 
     {% if can_change %}
-    <li><a href="{% url geonode.maps.views.view map.id %}">Edit this map</a></li> 
     <li><a href="{% url geonode.maps.views.map_controller map.id %}?describe">Edit metadata</a></li> 
     {% endif %} 
     {% if can_change_permissions %}
