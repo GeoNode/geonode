@@ -64,11 +64,19 @@
 {% endblock %} 
 
 {% block main %}
-    <h3>Download {{map.title}}</h3>
-    <hr />
+<div class="twocol">
+  <h3>Download {{map.title}}</h3>
+  <p>
+    {% blocktrans %}
+    Here you can download all the layers of this map that
+    are hosted on this GeoNode.  The following layers will
+    be downloaded:
+    {% endblocktrans %}
     <ol>
       {% for layer in map.layers %} 
+      {% if layer.local %}
       <li>{% autoescape off %}{{layer.local_link}} {% endautoescape %} </li>
+      {% endif %}
     {% endfor %} 
      </ol>     
      {% if map_status %} 
@@ -80,5 +88,5 @@
        <input type="submit" value="Start downloading this map" /> 
      </form>
      {% endif %} 
-
+</div>
 {% endblock %}
