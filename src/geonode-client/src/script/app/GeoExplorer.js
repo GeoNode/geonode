@@ -182,7 +182,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     // exceptions are handled elsewhere
                } else {
                     this.busyMask && this.busyMask.hide();
-                    if (response.status === 401 && options.url.indexOf("http" !== 0)) {
+                    var url = options.url;
+                    if (response.status == 401 && url.indexOf("http" != 0) &&
+                                            url.indexOf(this.proxy) === -1) {
                         var submit = function() {
                             form.getForm().submit({
                                 waitMsg: "Logging in...",
