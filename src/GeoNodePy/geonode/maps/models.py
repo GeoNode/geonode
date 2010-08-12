@@ -774,7 +774,7 @@ class Layer(models.Model, PermissionLevelMixin):
         urls = (layerURL,featureUrl,storeUrl)
 
         # GEOSERVER_CREDENTIALS
-        HTTP = httplib2.Http(".cache")
+        HTTP = httplib2.Http()
         HTTP.add_credentials(_user,_password)
 
         for u in urls:
