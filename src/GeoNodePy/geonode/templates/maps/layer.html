@@ -72,7 +72,7 @@
             Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
                 showStyle(elem.previousSibling.value);
             });
-{% has_obj_perm user layer "layers.change_layer_permissions" as can_change_permissions %}
+{% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
 {% if can_change_permissions %}
             new GeoNode.PermissionsEditor({
                 renderTo: "permissions_form",
@@ -218,7 +218,7 @@
 			{% endif %}
         </ul>
     {% endif %}
-    {% has_obj_perm user layer "layer.change_layer_permissions" as can_change_permissions %}
+    {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
     <h3>{% trans "Permissions" %}</h3>
       <p> {% trans "Select what kind of privileges to allow." %} </p>
