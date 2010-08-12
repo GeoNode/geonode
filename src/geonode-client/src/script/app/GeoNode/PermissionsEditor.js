@@ -161,10 +161,12 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
         });
 
         for (var i = 0; i < this.permissions.users.length; i++) {
-            this.addUser({
-                username: this.permissions.users[i][0],
-                role: this.permissions.users[i][1]
-            });
+            if (this.permissions.users[i][0] != this.permissions.owner) {
+                this.addUser({
+                    username: this.permissions.users[i][0],
+                    role: this.permissions.users[i][1]
+                });
+            }
         }
 
         var addUserPanel = this.buildUserChooser();
