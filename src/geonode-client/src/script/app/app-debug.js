@@ -3,6 +3,12 @@
     var jsfiles = new Array(
         "/static/src/script/app/GeoNode/DataGrid.js",
         "/static/src/script/app/GeoNode/SearchTable.js",
+        "/static/src/script/app/GeoNode/BatchDownloadWidget.js",
+        "/static/src/script/app/GeoNode/BoundingBoxWidget.js",
+        "/static/src/script/app/GeoNode/DataCart.js",
+        "/static/src/script/app/GeoNode/DataCartOps.js",
+        "/static/src/script/app/GeoNode/DataCartStore.js",
+        "/static/src/script/app/GeoNode/SearchTableRowExpander.js",
         "/static/src/script/app/GeoNode/MapSearchTable.js",
         "/static/src/script/app/GeoNode/PermissionsEditor.js",
         "/static/src/script/app/Lang.js"
