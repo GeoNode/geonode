@@ -69,7 +69,10 @@ The native libraries needed include:
 * simplejson http://code.google.com/p/simplejson/
 
 For GCC, packages are available for Mac OSX and all Linux distributions;
-consult your operating system provider for installation instructions.
+consult your operating system provider for installation instructions.  When
+build PIL from source, ensure that you have development libraries available for
+libpng, libjpeg, and libgif if you want to be able to use those formats in your
+GeoNode site.
 
 Install
 =======
