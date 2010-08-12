@@ -308,7 +308,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
     
     displayXHRTrouble: function(response) {
-        Ext.Msg.show({
+        response.status && Ext.Msg.show({
             title: this.connErrorTitleText,
             msg: this.connErrorText +
                 ": " + response.status + " " + response.statusText,
