@@ -406,7 +406,7 @@ def view_map_permissions(request, mapid):
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
 
-    if not request.user.has_perm("layer.change_layer_permissions", obj=map):
+    if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
         return HttpResponse(
             'You are not allowed to change permissions for this layer',
             status=401,
