@@ -1188,72 +1188,58 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     title: this.printWindowTitleText,
                     modal: true,
                     border: false,
-                    resizable: false
-                });
-                printWindow.add(new GeoExt.ux.PrintPreview({
-                    mapTitle: this.about["title"],
-                    comment: this.about["abstract"],
-                    printMapPanel: {
-                        map: {
-                            controls: [
-                                new OpenLayers.Control.Navigation(),
-                                new OpenLayers.Control.PanPanel(),
-                                new OpenLayers.Control.ZoomPanel(),
-                                new OpenLayers.Control.Attribution()
-                            ],
-                            eventListeners: {
-                                "preaddlayer": function(evt) {
-                                    if(evt.layer instanceof OpenLayers.Layer.Google) {
-                                        unsupportedLayers.push(evt.layer.name);
-                                        return false;
-                                    }
-                                },
-                                scope: this
+                    resizable: false,
+                    autoHeight: true,
+                    width: 360,
+                    items: [{
+                        xtype: "gxux_printpreview",
+                        autoHeight: true,
+                        mapTitle: this.about["title"],
+                        comment: this.about["abstract"],
+                        printMapPanel: {
+                            map: {
+                                controls: [
+                                    new OpenLayers.Control.Navigation({
+                                        zoomWheelEnabled: false,
+                                        zoomBoxEnabled: false
+                                    }),
+                                    new OpenLayers.Control.PanPanel(),
+                                    new OpenLayers.Control.Attribution()
+                                ],
+                                eventListeners: {
+                                    "preaddlayer": function(evt) {
+                                        if(evt.layer instanceof OpenLayers.Layer.Google) {
+                                            unsupportedLayers.push(evt.layer.name);
+                                            return false;
+                                        }
+                                    },
+                                    scope: this
+                                }
                             }
                         },
-                        items: [{
-                            xtype: "gx_zoomslider",
-                            vertical: true,
-                            height: 100,
-                            aggressive: true
-                        }]
-                    },
-                    printProvider: {
-                        capabilities: window.printCapabilities,
-                        listeners: {
-                            "beforeprint": function() {
-                                // The print module does not like array params.
-                                //TODO Remove when http://trac.geoext.org/ticket/216 is fixed.
-                                printWindow.items.get(0).printMapPanel.layers.each(function(l){
-                                    var params = l.get("layer").params;
-                                    for(var p in params) {
-                                        if (params[p] instanceof Array) {
-                                            params[p] = params[p].join(",");
+                        printProvider: {
+                            capabilities: window.printCapabilities,
+                            listeners: {
+                                "beforeprint": function() {
+                                    // The print module does not like array params.
+                                    //TODO Remove when http://trac.geoext.org/ticket/216 is fixed.
+                                    printWindow.items.get(0).printMapPanel.layers.each(function(l){
+                                        var params = l.get("layer").params;
+                                        for(var p in params) {
+                                            if (params[p] instanceof Array) {
+                                                params[p] = params[p].join(",");
+                                            }
                                         }
-                                    }
-                                })
-                            },
-                            "print": function() {printWindow.close();}
-                        }
-                    },
-                    includeLegend: true,
-                    sourceMap: this.mapPanel,
-                    legend: this.legendPanel
-                }));
-                printWindow.show();
-                
-                // measure the window content width by it's toolbar
-                printWindow.setWidth(0);
-                var tb = printWindow.items.get(0).items.get(0);
-                var w = 0;
-                tb.items.each(function(item){
-                    if(item.getEl()) {
-                        w += item.getWidth();
-                    }
-                });
-                printWindow.setWidth(
-                    Math.max(printWindow.items.get(0).printMapPanel.getWidth(),
-                    w + 20));
+                                    })
+                                },
+                                "print": function() {printWindow.close();}
+                            }
+                        },
+                        includeLegend: true,
+                        sourceMap: this.mapPanel,
+                        legend: this.legendPanel
+                    }]
+                }).show();                
                 printWindow.center();
                 
                 unsupportedLayers.length &&
