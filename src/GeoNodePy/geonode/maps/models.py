@@ -1409,8 +1409,11 @@ class ContactRole(models.Model):
         Make sure there is only one poc and author per layer
         """
         if (self.role == self.layer.poc_role) or (self.role == self.layer.metadata_author_role):
-            if self.layer.contacts.filter(contactrole__role=self.role).count() > 0:
-                 raise ValidationError('There can be only one %s for a given layer' % self.role)
+            contacts = self.layer.contacts.filter(contactrole__role=self.role)
+            if contacts.count() == 1:
+                 # only allow this if we are updating the same contact
+                 if self.contact != contacts.get():
+                     raise ValidationError('There can be only one %s for a given layer' % self.role)
         if self.contact.user is None:
             # verify that any unbound contact is only associated to one layer
             bounds = ContactRole.objects.filter(contact=self.contact).count()
