@@ -670,7 +670,11 @@ class Layer(models.Model, PermissionLevelMixin):
                 })
             types = [
                 ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
-                ("gml", _("GML 2.0"), "gml2")
+                ("gml", _("GML 2.0"), "gml2"),
+                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1"),
+                ("csv", _("CSV"), "csv"),
+                ("excel", _("Excel"), "excel"),
+                ("json", _("GeoJSON"), "json")
             ]
             links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
         elif self.resource.resource_type == "coverage":
