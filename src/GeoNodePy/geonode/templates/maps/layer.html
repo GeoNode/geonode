@@ -125,8 +125,8 @@
 <p> <strong>{% trans "Citation" %}:</strong> 
     {{ layer.constraints_use}} {{ layer.contraints_other}}
 </p>
-<p> <strong>{% trans "Contact" %}:</strong>
-    {{ layer.poc|default:_("No attribution information for this layer.") }}
+<p> <strong>{% trans "Owner" %}:</strong>
+    <a href="{{ layer.owner.get_profile.get_absolute_url }}"> {{ layer.owner.username }} </a>
 </p>
 <p> <strong>{% trans "Attributes" %}:</strong> 
     {{ layer.attribute_names|join:", " }}
