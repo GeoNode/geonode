@@ -132,7 +132,7 @@ MAP_BASELAYERSOURCES = {
         "ptype":"gx_olsource"
     },
     "capra": {
-        "url":"http://demo.geonode.org/geoserver/wms"
+        "url":"http://localhost:8001/geoserver/wms"
     },
     "google":{
         "ptype":"gx_googlesource",
