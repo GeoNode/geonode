@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "registration/base.html" %}
 {% load i18n %}
 
 {% block content %}
 <form method="post" action=".">
-   {% csrf_token %}
+	{% csrf_token %}
   {{ form.as_p }}
 
   <input type="submit" value="{% trans 'Submit' %}" />
