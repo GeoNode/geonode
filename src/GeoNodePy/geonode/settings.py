@@ -5,7 +5,7 @@ from urllib import urlencode
 _ = lambda x: x
 
 DEBUG = True
-SITENAME = "CAPRA GeoNode"
+SITENAME = "GeoNode"
 SITEURL = "http://localhost:8000/"
 TEMPLATE_DEBUG = DEBUG
 
@@ -103,7 +103,7 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
                 path_extrapolate('django/contrib/admin/templates', 'django'),
 
 
-               
+
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
 GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 
@@ -132,7 +132,7 @@ MAP_BASELAYERSOURCES = {
         "ptype":"gx_olsource"
     },
     "capra": {
-        "url":"http://localhost:8001/geoserver/wms"
+        "url":"http://demo.geonode.org/geoserver/wms"
     },
     "google":{
         "ptype":"gx_googlesource",
@@ -248,7 +248,7 @@ INSTALLED_APPS = (
 
 AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = False
-GEONODE_CLIENT_LOCATION = "http://geonode.capra.opengeo.org/geonode-client"
+GEONODE_CLIENT_LOCATION = "http://demo.geonode.org/geonode-client"
 
 if DEBUG:
     if MINIFIED_RESOURCES: 
