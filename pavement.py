@@ -34,7 +34,7 @@ options(
     sphinx=Bunch(
         docroot='docs',
         builddir="_build",
-        sourcedir="./"
+        sourcedir="source"
     ),
     virtualenv=Bunch(
         packages_to_install=[
@@ -580,12 +580,6 @@ def install_sphinx_conditionally(options):
         # have to reload doctools so it will realize sphinx is now
         # available
         sys.modules['paver.doctools'] = reload(sys.modules['paver.doctools'])
-
-
-@task
-@needs('install_sphinx_conditionally', 'checkup_spec')
-def html(options):
-    call_task('paver.doctools.html')
 
 
 @task
