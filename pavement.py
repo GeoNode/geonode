@@ -254,29 +254,11 @@ def build(options):
 
 
 @task
-@needs(['concat_js'])
+@needs(['js_dependencies'])
 def build_js(options):
     """
     Concatenate and compress application client javascript
     """
-    info('GeoNode Client Javascript is done building')
-
-
-@task
-def js_dependencies(options):
-    """
-    Fetch dependencies for the JavaScript build
-    """
-    grab("http://extjs.cachefly.net/ext-3.2.1.zip", "shared/ext-3.2.1.zip")
-    path("src/geonode-client/externals/ext").rmtree()
-    zip_extractall(zipfile.ZipFile("shared/ext-3.2.1.zip"), "src/geonode-client/externals/")
-    path("src/geonode-client/externals/ext-3.2.1").rename("src/geonode-client/externals/ext")
-
-
-@task
-@needs(['js_dependencies'])
-def concat_js(options):
-    """Compress the JavaScript resources used by the base GeoNode site."""
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
        os.makedirs("geonode-client")
@@ -302,6 +284,19 @@ def concat_js(options):
        move("geonode-client/GeoExplorer.js","geonode-client/gn/")
        move("geonode-client/PrintPreview.js","geonode-client/PrintPreview/")
        move("geonode-client/ux.js","geonode-client/gn/")
+       
+    info('GeoNode Client Javascript is done building')
+    
+
+@task
+def js_dependencies(options):
+    """
+    Fetch dependencies for the JavaScript build
+    """
+    grab("http://extjs.cachefly.net/ext-3.2.1.zip", "shared/ext-3.2.1.zip")
+    path("src/geonode-client/externals/ext").rmtree()
+    zip_extractall(zipfile.ZipFile("shared/ext-3.2.1.zip"), "src/geonode-client/externals/")
+    path("src/geonode-client/externals/ext-3.2.1").rename("src/geonode-client/externals/ext")
 
 
 @task
