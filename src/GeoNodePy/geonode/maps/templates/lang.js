@@ -29,6 +29,9 @@ if (window.GeoExplorer) {
         metaDataMapAbstract: gettext("Abstract"),
         metaDataMapContact: gettext("Contact"),
         metaDataMapId: gettext("Permalink"),
+        metadataFormCancelText : gettext("Cancel"),
+        metadataFormSaveAsCopyText : gettext("Save as Copy"),
+        metadataFormSaveText : gettext("Save"),
         metaDataMapTitle: gettext("Title"),
         miniSizeLabel: gettext("Mini"),
         navActionTipText: gettext("Pan Map"),
@@ -136,6 +139,27 @@ if (window.GeoExt && GeoExt.ux && GeoExt.ux.PrintPreview) {
         creatingPdfText: gettext("Creating PDF...")
     });
 }
+
+
+if (window.GeoNode && GeoNode.MapSearchTable) {
+    Ext.apply(GeoNode.MapSearchTable.prototype, {
+        titleHeaderText: gettext('Title'),
+        contactHeaderText: gettext("Contact"),
+        lastModifiedHeaderText: gettext("Last Modified"),
+        mapAbstractLabelText: gettext("Abstract"),
+        mapLinkLabelText: gettext("View this Map"),
+        previousText: gettext('Prev'),
+        nextText: gettext('Next'),
+        ofText: gettext('of'),
+        noResultsText: gettext('Your search did not match any items.'),
+        searchLabelText: gettext('Search Maps'),
+        searchButtonText: gettext('Search'),
+        showingText: gettext('Showing'),
+        loadingText: gettext('Loading'),
+        permalinkText: gettext('permalink'),
+    });
+}
+
 
 if (window.GeoNode && GeoNode.SearchTable) {
     Ext.apply(GeoNode.SearchTable.prototype, {
