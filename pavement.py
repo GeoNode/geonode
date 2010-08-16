@@ -254,7 +254,7 @@ def build(options):
 
 
 @task
-@needs(['concat_js','capra_js'])
+@needs(['concat_js'])
 def build_js(options):
     """
     Concatenate and compress application client javascript
@@ -305,17 +305,8 @@ def concat_js(options):
 
 
 @task
-def capra_js(options):
-    """Compress the JavaScript resources used by the CAPRA GeoNode extensions."""
-    with pushd('src/capra-client/build/'):
-       path("capra-client").rmtree()
-       path("capra-client/").makedirs()
-       sh("jsbuild -o capra-client/ all.cfg") 
-
-
-@task
 def sync_django_db(options):
-    sh("django-admin.py syncdb --settings=capra.settings --noinput")
+    sh("django-admin.py syncdb --settings=geonode.settings --noinput")
 
 @task
 def generate_geoserver_token(options):
@@ -341,7 +332,7 @@ def package_dir(options):
 
 
 @task
-@needs('package_dir', 'concat_js', 'capra_js')
+@needs('package_dir', 'concat_js')
 def package_client(options):
     """
     Package compressed client resources (JavaScript, CSS, images).
@@ -351,11 +342,6 @@ def package_client(options):
 
     with pushd('src/geonode-client/build/'):
         for file in path("geonode-client/").walkfiles():
-            print(file)
-            zip.write(file)
-    
-    with pushd('src/capra-client/build/'):
-        for file in path("capra-client/").walkfiles():
             print(file)
             zip.write(file)
 
@@ -637,7 +623,7 @@ def host(options):
         time.sleep(2)
 
     try:
-        sh("django-admin.py updatelayers --settings=capra.settings")
+        sh("django-admin.py updatelayers --settings=geonode.settings")
         
         info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
         info("The GeoNode is an unstoppable machine")
@@ -662,7 +648,7 @@ def host(options):
 
 @task
 def test(options):
-    sh("django-admin.py test --settings=capra.settings")
+    sh("django-admin.py test --settings=geonode.settings")
 
 
 def platform_options(options):
