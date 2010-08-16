@@ -1468,7 +1468,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 handler: function() {
                     var extent, layer;
                     for(var i=0, len=this.map.layers.length; i<len; ++i) {
-                        layer = this.map.layers[i];
+                        layer = this.mapPanel.map.layers[i];
                         if(layer.getVisibility()) {
                             if(extent) {
                                 extent.extend(layer.maxExtent);
