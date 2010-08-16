@@ -1,9 +1,11 @@
+{% load i18n %}
 {% load geonode_media %}
 <html>
 <head>
     <title>{% block title %}GeoNode{% endblock %}</title>
     <link rel="shortcut icon" href="{% geonode_media "app_themes" %}img/favicon.ico"/>
     {% block head %}
+  <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}boilerplate-min.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" />
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
@@ -11,19 +13,20 @@
 </head>
 <body>
     {% block body %} 
-    <div id='app-header'>
-      <div class="fullscreen clearfix" id="ja-search">
-        <form class="spanish" name="es" action="/i18n/setlang/" method="post">
-          <input type="hidden" name="language" value="es"/>
-          <button type="submit"></button>
-        </form>
-        <form class="english" name="en" action="/i18n/setlang/" method="post">
-          <input type="hidden" name="language" value="en"/>
-          <button type="submit"></button>
-        </form>
-        <a id='banner' href='{% url geonode.views.index %}'></a>
-      </div>
-    </div>        
+    <div id="header">
+      <div class="wrap selfclear">
+        <a id="logo" href="{% url geonode.views.index %}">GeoNode</a>
+        <div id="login-area">
+          {% if user.is_authenticated %}
+          <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
+          {% else %}
+          <!-- this should be updated to a url var --><a href="/accounts/login">Sign in</a>
+          {% if REGISTRATION_OPEN %} or <a href="{% url registration_register %}">{% trans "Register" %}</a>{% endif %}
+          for extra features
+          {% endif %}
+        </div>
+      </div><!-- /.wrap -->
+    </div><!-- /#header -->
     {% endblock %}
 </body>
 </html>
