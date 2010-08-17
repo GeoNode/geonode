@@ -197,6 +197,50 @@ via the command line, using a command like::
  
     mvn jetty:run-war -DGEOSERVER_DATA_DIR=/home/me/mydata/ 
 
+For Deployment
+--------------
+
+Email
+.....
+
+Adding an email gateway to GeoNode can be very useful, the two main reasons are
+the ``ADMINS`` and ``REGISTRATION_OPEN`` settings explained below.
+
+Here is a sample configuration to setup a Gmail account as the email gateway::
+
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'foo@gmail.com'
+    EMAIL_HOST_PASSWORD = 'bar'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+
+More informacion can be found in the django docs::
+
+    http://docs.djangoproject.com/en/dev/ref/settings/?from=olddocs#email-backend
+
+ADMINS
+......
+
+When ``DEBUG=False`` django will not display the usual error page, but will
+email the people in the ADMINS tuple with the error traceback::
+
+    ADMINS = (
+        ('Carlos Valderrama', 'carlos.valderrama@gmail.com'),
+        ('Diego Maradona', 'diego.maradona@gmail.com'),
+    )
+
+REGISTRATION_OPEN
+.................
+
+In order to let people autoregister to the GeoNode, set::
+
+    REGISTRATION_OPEN=True
+
+This needs email to be configured and your website's domain name properly set in
+the Sites application (the default is example.com)::
+
+    http://localhost:8000/admin/sites/site/1
 
 Directory Structure
 ===================
