@@ -10,6 +10,13 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
     keywordText: "UT:Keywords:",
     metadataEmptyText: 'UT: No metadata URLs are defined for this layer.',
     metadataText: "UT:Metadata Links:",
+
+    /**
+     * api: config[ows]
+     * ``String`` url of the OWS service providing the layers in the store.
+     * Download and preview links will be generated relative to this base URL.
+     */
+    ows: null,
     
     constructor: function (config) {
         config = config || {};
