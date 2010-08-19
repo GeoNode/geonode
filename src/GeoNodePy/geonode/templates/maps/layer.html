@@ -174,9 +174,13 @@
     <p> {% trans "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style." %}
     <br/>
     <span class="styles-list">
-        <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/><span class="style-title"> {{ layer.default_style.name|title }} </span><a href="{{ GEOSERVER_BASE_URL }}styles/{{layer.publishing.default_style.name}}.sld">SLD</a><br/>
+        <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/>
+        <span class="style-title"> {{ layer.default_style.name|title }} </span>
+        <a href="{{ layer.default_style.body_href }}">SLD</a><br/>
     {% for style in layer.styles %} 
-        <input type="radio" name="style" value="{{style.name}}"/><span class="style-title"> {{ style.name|title }} </span><a href="{{ GEOSERVER_BASE_URL }}styles/{{style.name}}.sld">SLD</a><br/>
+        <input type="radio" name="style" value="{{style.name}}"/>
+        <span class="style-title"> {{ style.name|title }} </span>
+        <a href="{{ style.body_href }}">SLD</a><br/>
     {% endfor %}
     </span>
     {% if user.is_authenticated %}
