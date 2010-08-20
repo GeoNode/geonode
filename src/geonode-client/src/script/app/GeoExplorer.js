@@ -916,7 +916,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             data: data
         });
 
-        var expander = new GeoExplorer.CapabilitiesRowExpander();
+        var expander = new GeoExplorer.CapabilitiesRowExpander({
+            ows: this.localGeoServerBaseUrl + "ows"
+        });
         
         var addLayers = function() {
             var key = sourceComboBox.getValue();
@@ -974,6 +976,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             listeners: {
                 select: function(combo, record, index) {
                     var store = this.layerSources[record.get("id")].store;
+                    expander.ows = store.url;
                     capGridPanel.reconfigure(store, capGridPanel.getColumnModel());
                     // TODO: remove the following when this Ext issue is addressed
                     // http://www.extjs.com/forum/showthread.php?100345-GridPanel-reconfigure-should-refocus-view-to-correct-scroller-height&p=471843

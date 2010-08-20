@@ -15,10 +15,12 @@
       <div class="fullscreen clearfix" id="ja-search">
         <form class="spanish" name="es" action="/i18n/setlang/" method="post">
           <input type="hidden" name="language" value="es"/>
+           {% csrf_token %}
           <button type="submit"></button>
         </form>
         <form class="english" name="en" action="/i18n/setlang/" method="post">
           <input type="hidden" name="language" value="en"/>
+          {% csrf_token %}
           <button type="submit"></button>
         </form>
         <a id='banner' href='{% url geonode.views.index %}'></a>
