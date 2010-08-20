@@ -780,7 +780,7 @@ def upload_layer(request):
         try:
             layer, errors = _handle_layer_upload(request)
         except:
-            errors = [GENERIC_UPLOAD_ERROR] 
+            errors = [GENERIC_UPLOAD_ERROR]
         
         result = {}
         if len(errors) > 0:
@@ -815,7 +815,7 @@ def _updateLayer(request, layer):
         try:
             layer, errors = _handle_layer_upload(request, layer=layer)
         except:
-            errors = [GENERIC_UPLOAD_ERROR] 
+            errors = [GENERIC_UPLOAD_ERROR]
 
         result = {}
         if len(errors) > 0:
@@ -926,6 +926,7 @@ def _handle_layer_upload(request, layer=None):
                 gs_resource.latlon_bbox = gs_resource.native_bbox
                 gs_resource.projection = "EPSG:4326"
                 cat.save(gs_resource)
+
             typename = gs_resource.store.workspace.name + ':' + gs_resource.name
             
             # if we created a new store, create a new layer
