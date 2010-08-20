@@ -327,7 +327,7 @@ def package_dir(options):
 
 
 @task
-@needs('package_dir', 'concat_js')
+@needs('package_dir', 'build_js')
 def package_client(options):
     """
     Package compressed client resources (JavaScript, CSS, images).
