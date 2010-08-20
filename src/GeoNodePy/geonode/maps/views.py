@@ -1,5 +1,6 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
+from geonode.maps.gs_helpers import fixup_style
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -945,6 +946,7 @@ def _handle_layer_upload(request, layer=None):
             layer.metadata_author = author_contact
             layer.save()
             layer.set_default_permissions()
+            fixup_style(cat, gs_resource)
         except:
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
