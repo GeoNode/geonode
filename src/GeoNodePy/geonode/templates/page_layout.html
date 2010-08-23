@@ -45,7 +45,14 @@
   </div><!-- /#main -->
   <div id="footer">
     <div class="wrap selfclear">             
-      {% block footer %}{% endblock %}
+      {% block footer %}
+      <div class="onecol">
+        Powered by <a href="http://geonode.org">{% trans "GeoNode" %}</a>
+        | <strong>{% trans "Need Help?" %}</strong>
+        <a href="{% url geonode.views.static "help" %}">{% trans "Help" %}</a> 
+        | <a href="{% url geonode.views.static "developer" %}">{% trans "Fo Developers" %}
+      </div>
+      {% endblock %}
     </div><!-- /.wrap -->
   </div><!-- /#footer -->
 </body>
