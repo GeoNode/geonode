@@ -211,6 +211,30 @@ border-top: 3px solid #cde2e8;
 border-bottom: 3px solid #cde2e8;
 }
 
+#footer .onecol {
+width: 920px;
+margin: 0 10px;
+padding: 10px 20px;
+background: #f1f6f7;
+}
+
+#footer .twocol {
+width: 600px;
+margin: 0 10px;
+padding: 10px 20px;
+float: left;
+background: #f1f6f7;
+}
+
+#footer .threecol {
+width: 260px;
+margin: 0 10px;
+padding: 10px 20px;
+float: left;
+background: #f1f6f7;
+}
+
+
 /*-----------------------
 CAPRA Styles (Does this belong in a site-specific theme?)
 -----------------------*/
