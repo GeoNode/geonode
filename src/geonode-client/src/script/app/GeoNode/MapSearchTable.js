@@ -181,6 +181,11 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
 
         var tpl = new Ext.Template('<p><b>' + this.mapAbstractLabelText + ':</b> {abstract}</p>'+ '<p><a href="/maps/{id}">' + this.mapLinkLabelText + '</a></p>');
         var expander = new Ext.grid.RowExpander({tpl: tpl});
+        expander.on("expand", function(expander, record, body, idx) {
+            Ext.select("a", Ext.get(body)).on("click", function(evt) {
+                evt.stopPropagation();
+            });
+        });
                
         tableCfg = {
             store: this.searchStore, 
@@ -189,7 +194,26 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
             viewConfig: {
                 autoFill: true, 
                 forceFit: true,
-                emptyText: this.noResultsText
+                emptyText: this.noResultsText,
+                listeners: {
+                    refresh: function(view) {
+                        Ext.select("a", Ext.get(view.mainBody)).on("click", function(evt) {
+                            evt.stopPropagation();
+                        });
+                    },
+                    rowsinserted: function(view, start, end) {
+                        for (var i = start; i < end; i++) {
+                            Ext.select("a", Ext.get(view.getRow(i))).on("click", function(evt) {
+                                evt.stopPropagation();
+                            });
+                        }
+                    },
+                    rowupdated: function(view, idx, record) {
+                        Ext.select("a", Ext.get(view.getRow(idx))).on("click", function(evt) {
+                            evt.stopPropagation();
+                        });
+                    }
+                }
             },
             autoHeight: true,
             renderTo : table_el
