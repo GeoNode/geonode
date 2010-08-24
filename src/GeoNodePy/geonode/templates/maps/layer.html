@@ -128,6 +128,9 @@
 <p> <strong>{% trans "Owner" %}:</strong>
     <a href="{{ layer.owner.get_profile.get_absolute_url }}"> {{ layer.owner.username }} </a>
 </p>
+<p> <strong>{% trans "Point of Contact" %}:</strong>
+    <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
+</p>
 <p> <strong>{% trans "Attributes" %}:</strong> 
     {{ layer.attribute_names|join:", " }}
 </p>
