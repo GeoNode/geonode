@@ -23,7 +23,6 @@ import math
 import httplib2 
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
-from operator import itemgetter
 import re
 from urllib import urlencode
 from urlparse import urlparse
@@ -1489,18 +1488,16 @@ def maps_search(request):
     except: 
         limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
 
-    result = _maps_search(query, start, limit)
 
-    sort_field = params.get('sort', '')  
-    if sort_field:
-        sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')
-        sort_dir = params.get('dir', '')
-        result['rows'] = sorted(result['rows'], key=itemgetter(sort_field), reverse=(sort_dir == "DESC"))
+    sort_field = params.get('sort', u'')
+    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')  
+    sort_dir = params.get('dir', 'ASC')
+    result = _maps_search(query, start, limit, sort_field, sort_dir)
 
     result['success'] = True
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
-def _maps_search(query, start, limit):
+def _maps_search(query, start, limit, sort_field, sort_dir):
 
     keywords = _split_query(query)
  
@@ -1512,6 +1509,10 @@ def _maps_search(query, start, limit):
         maps = maps.filter(
               Q(title__icontains=keyword)
             | Q(abstract__icontains=keyword))
+
+    if sort_field:
+        order_by = ("" if sort_dir == "ASC" else "-") + sort_field
+        maps = maps.order_by(order_by)
 
     maps_list = []
 
