@@ -75,9 +75,10 @@ class Catalog(object):
         md_doc = tpl.render(ctx)
         url = "%ssrv/en/csw" % self.base
         headers = {
-            "Content-Type": "application/xml",
+            "Content-Type": "application/xml; charset=UTF-8",
             "Accept": "text/plain"
         }
+        md_doc = md_doc.encode("utf-8")
         request = urllib2.Request(url, md_doc, headers)
         response = self.urlopen(request)
         return response
