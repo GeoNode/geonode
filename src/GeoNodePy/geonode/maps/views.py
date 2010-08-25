@@ -841,9 +841,8 @@ def _handle_layer_upload(request, layer=None):
     if layer is None:
         overwrite = False
         # XXX Give feedback instead of just replacing name
-        # XXX We need a better way to remove xml-unsafe characters
-        name = layer_name
-        name = name.replace(" ", "_")
+        xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
+        name = xml_unsafe.sub("_", layer_name)
         proposed_name = name
         count = 1
         while Layer.objects.filter(name=proposed_name).count() > 0:
