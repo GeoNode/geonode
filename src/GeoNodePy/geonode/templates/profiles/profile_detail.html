@@ -1,23 +1,30 @@
 {% extends "profiles/base.html" %}
 {% load i18n avatar_tags %}
 {% block content %}
-<div class="onecol">
+<div class="twocol">
   <h2>Profile for {{ profile.user.username }}</h2>
   {% avatar profile.user 100 %}
-  <h4>{% if user == profile.user %}<a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a>{% endif %}</h4>
+  <p><strong>{% trans "Name" %}:</strong> {{ profile.name}}</p>
+  <p><strong>{% trans "Email" %}:</strong>  {{ profile.user.email }}</p>
+  <p><strong>{% trans "Organization" %}:</strong> {{ profile.organization}}</p>
+  <p><strong>{% trans "Position" %}:</strong>: {{ profile.position}}</p>
+  <p><strong>{% trans "Voice" %}:</strong>  {{ profile.voice}}</p>
+  <p><strong>{% trans "Fax" %}:</strong> {{ profile.fax}}</p>
+  <p><strong>{% trans "Delivery" %}:</strong> {{ profile.delivery}}</p>
+  <p><strong>{% trans "Area" %}:</strong> {{ profile.area}}</p>
+  <p><strong>{% trans "Zip Code" %}:</strong> {{ profile.zipcode}}</p>
+  <p><strong>{% trans "Country" %}:</strong> {{ profile.country}}</p>
+</div>
+{% endblock %}
+{% block sidebar %}
+<div class="threecol">
+  <h3>Actions</h3>
   <ul>
-    <li>name: {{ profile.name}}</li>
-    <li>email: {{ profile.user.email }}</li>
-    <li>organization: {{ profile.organization}}</li>
-    <li>position: {{ profile.position}}</li>
-    <li>voice: {{ profile.voice}}</li>
-    <li>fax: {{ profile.fax}}</li>
-    <li>delivery: {{ profile.delivery}}</li>
-    <li>area: {{ profile.area}}</li>
-    <li>zipcode: {{ profile.zipcode}}</li>
-    <li>country: {{ profile.country}}</li>
-  </ul> 
-  <a href="{% url data_upload %}">{% trans "Upload new data" %}</a> |
-  <a href="{% url map_new %}">{% trans "Create a new map" %}</a>
+    {% if user == profile.user %}
+    <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
+    {% endif %}
+    <li><a href="{% url data_upload %}">{% trans "Upload new data" %}</a></li>
+    <li><a href="{% url map_new %}">{% trans "Create a new map" %}</a></li>
+  </ul>
 </div>
 {% endblock %}
