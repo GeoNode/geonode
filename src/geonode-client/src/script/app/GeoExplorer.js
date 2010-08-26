@@ -1196,15 +1196,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     title: this.printWindowTitleText,
                     modal: true,
                     border: false,
-                    resizable: false,
                     autoHeight: true,
-                    width: 360,
+                    resizable: false,
                     items: [{
                         xtype: "gxux_printpreview",
-                        autoHeight: true,
                         mapTitle: this.about["title"],
                         comment: this.about["abstract"],
+                        minWidth: 336,
                         printMapPanel: {
+                            height: Math.min(450, Ext.get(document.body).getHeight()-150),
+                            autoWidth: true,
                             map: {
                                 controls: [
                                     new OpenLayers.Control.Navigation({
