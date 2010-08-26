@@ -31,7 +31,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.searchStore = new Ext.data.JsonStore({
             url: this.searchURL,
             root: 'rows',
-            idProperty: 'name',
+            idProperty: 'uuid',
             remoteSort: true,
             totalProperty: 'total',
             fields: [
