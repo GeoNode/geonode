@@ -116,19 +116,8 @@ LAYER_LEV_NAMES = {
 
 @transaction.commit_manually
 def maps(request, mapid=None):
-    if request.method == 'GET' and mapid is None:
-        map_configs = [{"id": map.pk, "config": map.viewer_json()} for map in Map.objects.all()
-                       if request.user.has_perm('maps.view_map', obj=map)]
-        return HttpResponse(json.dumps({"maps": map_configs}), mimetype="application/json")
-    elif request.method == 'GET' and mapid is not None:
-        map = Map.objects.get(pk=mapid)
-        if request.user.has_perm('maps.view_map', obj=map):
-            config = map.viewer_json()
-            return HttpResponse(json.dumps(config))
-        else:
-            return HttpResponse(loader.render_to_string('401.html', 
-                RequestContext(request, {})), status=401)
-        
+    if request.method == 'GET':
+        return render_to_response('maps.html', RequestContext(request))
     elif request.method == 'POST':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -500,7 +489,7 @@ def deletemap(request, mapid):
             layer.delete()
         map.delete()
 
-        return HttpResponseRedirect(reverse("geonode.views.community"))
+        return HttpResponseRedirect(reverse("geonode.maps.views.maps"))
 
 def mapdetail(request,mapid): 
     '''

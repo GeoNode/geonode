@@ -14,7 +14,6 @@ urlpatterns = patterns('',
     # Example:
     # (r'^geonode/', include('geonode.foo.urls')),
     (r'^(?:index/?)?$', 'geonode.views.index'),
-    (r'^community/$', 'geonode.views.community'),
     (r'^(?P<page>developer|help)/?$', 'geonode.views.static'),
     (r'^lang\.js$', 'geonode.views.lang'),
     (r'^maps/', include('geonode.maps.urls')),
