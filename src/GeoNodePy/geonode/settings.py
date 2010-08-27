@@ -191,11 +191,11 @@ MAP_BASELAYERS = [{
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
 NAVBAR = \
-{'community': {'id': '%sLink',
+{'maps': {'id': '%sLink',
                'item_class': '',
                'link_class': '',
                'text': 'Maps',
-               'url': 'geonode.views.community'},
+               'url': 'geonode.maps.views.maps'},
  'data': {'id': '%sLink',
           'item_class': '',
           'link_class': '',

@@ -29,11 +29,11 @@ class GeoNodeClientTests(TestCase):
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_Community(self):
+    def test_Maps(self):
         '''Test community page renders.'''
 
         c = Client()
-        response = c.get('/community/')
+        response = c.get('/maps/')
         self.failUnlessEqual(response.status_code, 200)
 
     def test_Help(self):
