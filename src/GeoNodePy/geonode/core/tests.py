@@ -30,7 +30,7 @@ class GeoNodeClientTests(TestCase):
         self.failUnlessEqual(response.status_code, 200)
 
     def test_Maps(self):
-        '''Test community page renders.'''
+        '''Test Maps page renders.'''
 
         c = Client()
         response = c.get('/maps/')
