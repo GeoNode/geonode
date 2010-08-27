@@ -74,11 +74,11 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     }
 
     /**
-     * @return {@link CatalogMode#CHALLENGE}
+     * @return {@link CatalogMode#HIDE}
      * @see org.geoserver.security.DataAccessManager#getMode()
      */
     public CatalogMode getMode() {
-        return CatalogMode.CHALLENGE;
+        return CatalogMode.HIDE;
     }
 
     /**
