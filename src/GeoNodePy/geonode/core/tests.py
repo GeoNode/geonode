@@ -42,13 +42,6 @@ class GeoNodeClientTests(TestCase):
         c = Client()
         response = c.get('/help/')
         self.failUnlessEqual(response.status_code, 200)
-
-    def test_Files(self):
-        '''Test the files page renders.'''
- 
-        c = Client()
-        response = c.get('/files/')
-        self.failUnlessEqual(response.status_code, 200)
     
     def test_Profiles(self):
         '''Test the profiles page renders.'''
