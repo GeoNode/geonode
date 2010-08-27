@@ -201,11 +201,6 @@ NAVBAR = \
           'link_class': '',
           'text': 'Data',
           'url': "geonode.maps.views.browse_data"},
- 'help': {'id': '%sLink',
-          'item_class': '',
-          'link_class': '',
-          'text': 'Help',
-          'url': "geonode.views.static page='help'"},
 #  'index': {'id': '%sLink',
 #            'item_class': '',
 #            'link_class': '',
@@ -223,7 +218,7 @@ NAVBAR = \
           'id': '%sLink',
           'item_class': '',
           'link_class': '',
-          'visible': 'data\ncommunity\nhelp'}}
+          'visible': 'data\ncommunity'}}
 
 
 # Determines whether the minified or the "raw" JavaScript files are included.
