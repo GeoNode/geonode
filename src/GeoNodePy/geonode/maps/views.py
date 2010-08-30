@@ -895,6 +895,8 @@ def _handle_layer_upload(request, layer=None):
         create_store(name, cfg, overwrite=overwrite)
     except geoserver.catalog.UploadError:
         errors.append(_("An error occurred while loading the data."))
+        tmp = cat.get_store(name)
+        if tmp: cat.delete(tmp)
     except geoserver.catalog.ConflictingDataError:
         errors.append(_("There is already a layer with the given name."))
 
