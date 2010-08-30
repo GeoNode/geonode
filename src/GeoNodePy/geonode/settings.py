@@ -218,7 +218,7 @@ NAVBAR = \
           'id': '%sLink',
           'item_class': '',
           'link_class': '',
-          'visible': 'data\ncommunity'}}
+          'visible': 'data\nmaps'}}
 
 
 # Determines whether the minified or the "raw" JavaScript files are included.
