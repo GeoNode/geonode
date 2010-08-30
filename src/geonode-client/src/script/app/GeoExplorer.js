@@ -1680,7 +1680,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 this.save(true);
             },
             scope: this
-        }),
+        });
         var saveButton = new Ext.Button({
             text: this.metadataFormSaveText,
             disabled: !this.about.title,
