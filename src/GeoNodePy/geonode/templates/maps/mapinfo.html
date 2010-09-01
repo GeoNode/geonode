@@ -1,16 +1,17 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
+{% load geonode_auth %}
 
 {% block head %} 
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 {{ block.super }}
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
+{% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
+{% autoescape off %}
     var config = Ext.apply({
         useToolbar: false,
         proxy: "/proxy/?url=",
@@ -21,40 +22,66 @@ Ext.onReady(function() {
             height: 300,
             renderTo: "embedded_map"
         }
-    }, {{config|safe}});
+    }, {{ config }});
     app = new GeoExplorer.Viewer(config);
+{% if can_change_permissions %}
+    new GeoNode.PermissionsEditor({
+        renderTo: "permissions_form",
+        submitTo: "{% url geonode.maps.views.ajax_map_permissions map.id %}",
+        userLookup: "{% url geonode.views.ajax_lookup %}",
+        permissions: {{ permissions_json }}
+    });
+{% endif %}
+{% endautoescape %}
 });
 </script>
 {% endblock %}
 
 {% block main %}
-<h3>Map of {{map.title}}</h3>
-<p><strong>Abstract:</strong> {{map.abstract}}</p>
+<div class="twocol">
+  <h3>Map of {{map.title}}</h3>
+  <p><strong>Abstract:</strong> {{map.abstract}}</p>
 
-<div id="embedded_map">
+  <div id="embedded_map">
+  </div>
+  <p><strong>Contact:</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p> 
 </div>
-
-<p><strong>Keywords:</strong> </p>
-<p><strong>Citation:</strong> </p>
-<p><strong>Contact:</strong> {% autoescape off %}{{map.contact}}{% endautoescape %}</p> 
-
 {% endblock %} 
 {% block sidebar %} 
-<div id="sidebar"> 
+<div id="sidebar" class="threecol"> 
   <h3>Download</h3>
   <p><a href="{% url geonode.maps.views.map_download map.id %}"> Download all layers included in this map</a></p>
   <h3>Layers </h3>
   <p>This map uses the following layers </p>
   <ul>
     {% for layer in layers %}
+    {% if not layer.group == "background" %}
     <li>{% autoescape off %}{{layer.local_link}}{% endautoescape %}</li> 
+    {% endif %} 
     {% endfor %}  
   </ul>    
   <h3>Manage</h3>
   <ul>
-    <li><a href="{% url geonode.maps.views.view map.id %}">Edit map or metadata</a></li> 
+    {% has_obj_perm user map "maps.change_map" as can_change %}
+    {% has_obj_perm user map "maps.delete_map" as can_delete %}
+    
+    <li><a href="{% url geonode.maps.views.view map.id %}">View or edit this map</a></li> 
+    {% if can_change %}
+    <li><a href="{% url geonode.maps.views.map_controller map.id %}?describe">Edit metadata</a></li> 
+    {% endif %} 
+    {% if can_change_permissions %}
+    <li><a href="{% url edit_map_permissions map.id %}">Edit permissions</a></li>
+    {% endif %}
+    {% if can_delete %}
     <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">Delete map</a></li>
+    {% endif %}
     <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">Duplicate map</a></li>
-  </ul>      
+  </ul>
+  {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
+  {% if can_change_permissions %}
+  <h3>{% trans "Permissions" %}</h3>
+    <p> {% trans "Select what kind of privileges to allow." %} </p>
+    <div id="permissions_form"></div>
+  {% endif %}
 </div> 
 {% endblock %}

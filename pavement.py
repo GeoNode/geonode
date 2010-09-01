@@ -34,7 +34,7 @@ options(
     sphinx=Bunch(
         docroot='docs',
         builddir="_build",
-        sourcedir="./"
+        sourcedir="source"
     ),
     virtualenv=Bunch(
         packages_to_install=[
@@ -245,37 +245,20 @@ def setup_webapps(options):
     'install_deps',
     'setup_webapps',
     'build_js', 
+    'generate_geoserver_token',
     'sync_django_db'
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info("""GeoNode development environment successfully set up; use "paver host" to start up the server.""") 
-
-
-@task
-@needs(['concat_js','capra_js'])
-def build_js(options):
-    """
-    Concatenate and compress application client javascript
-    """
-    info('GeoNode Client Javascript is done building')
-
-
-@task
-def js_dependencies(options):
-    """
-    Fetch dependencies for the JavaScript build
-    """
-    grab("http://extjs.cachefly.net/ext-3.2.1.zip", "shared/ext-3.2.1.zip")
-    path("src/geonode-client/externals/ext").rmtree()
-    zip_extractall(zipfile.ZipFile("shared/ext-3.2.1.zip"), "src/geonode-client/externals/")
-    path("src/geonode-client/externals/ext-3.2.1").rename("src/geonode-client/externals/ext")
+    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""") 
 
 
 @task
 @needs(['js_dependencies'])
-def concat_js(options):
-    """Compress the JavaScript resources used by the base GeoNode site."""
+def build_js(options):
+    """
+    Concatenate and compress application client javascript
+    """
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
        os.makedirs("geonode-client")
@@ -298,23 +281,41 @@ def concat_js(options):
        move("geonode-client/GeoExt.js","geonode-client/gx/")
        move("geonode-client/gxp.js","geonode-client/gxp/")
        move("geonode-client/GeoNode.js","geonode-client/gn/")
+       move("geonode-client/GeoExplorer.js","geonode-client/gn/")
        move("geonode-client/PrintPreview.js","geonode-client/PrintPreview/")
        move("geonode-client/ux.js","geonode-client/gn/")
-
+       
+    info('GeoNode Client Javascript is done building')
+    
 
 @task
-def capra_js(options):
-    """Compress the JavaScript resources used by the CAPRA GeoNode extensions."""
-    with pushd('src/capra-client/build/'):
-       path("capra-client").rmtree()
-       path("capra-client/").makedirs()
-       sh("jsbuild -o capra-client/ all.cfg") 
+def js_dependencies(options):
+    """
+    Fetch dependencies for the JavaScript build
+    """
+    grab("http://extjs.cachefly.net/ext-3.2.1.zip", "shared/ext-3.2.1.zip")
+    path("src/geonode-client/externals/ext").rmtree()
+    zip_extractall(zipfile.ZipFile("shared/ext-3.2.1.zip"), "src/geonode-client/externals/")
+    path("src/geonode-client/externals/ext-3.2.1").rename("src/geonode-client/externals/ext")
 
 
 @task
 def sync_django_db(options):
-    sh("django-admin.py syncdb --settings=capra.settings --noinput")
+    sh("django-admin.py syncdb --settings=geonode.settings --noinput")
 
+@task
+def generate_geoserver_token(options):
+    gs_token_file = 'geoserver_token'
+    if not os.path.exists(gs_token_file):
+        from random import choice
+        import string
+        chars = string.letters + string.digits + "-_!@#$*"
+        token = ''
+        for i in range(32):
+            token += choice(chars)
+        tf = open('geoserver_token', 'w')
+        tf.write(token)
+        tf.close()
 
 @task
 def package_dir(options):
@@ -326,7 +327,7 @@ def package_dir(options):
 
 
 @task
-@needs('package_dir', 'concat_js', 'capra_js')
+@needs('package_dir', 'concat_js')
 def package_client(options):
     """
     Package compressed client resources (JavaScript, CSS, images).
@@ -336,11 +337,6 @@ def package_client(options):
 
     with pushd('src/geonode-client/build/'):
         for file in path("geonode-client/").walkfiles():
-            print(file)
-            zip.write(file)
-    
-    with pushd('src/capra-client/build/'):
-        for file in path("capra-client/").walkfiles():
             print(file)
             zip.write(file)
 
@@ -568,12 +564,6 @@ def install_sphinx_conditionally(options):
 
 
 @task
-@needs('install_sphinx_conditionally', 'checkup_spec')
-def html(options):
-    call_task('paver.doctools.html')
-
-
-@task
 @cmdopts([
     ('bind=', 'b', 'IP address to bind to. Default is localhost.')
 ])
@@ -593,10 +583,10 @@ def host(options):
             stderr=jettylog
         )
     django = subprocess.Popen([
-            "django-admin.py", 
-            "runserver",
-            "--settings=capra.settings",
-            options.host.bind + ":8000"
+            "paster", 
+            "serve",
+            "--reload",
+	        "shared/dev-paste.ini"
         ],  
         stdout=djangolog,
         stderr=djangolog
@@ -608,24 +598,44 @@ def host(options):
             return True
         except Exception, e:
             return False
+    
+    def django_is_up():
+        try:
+            urllib.urlopen("http://" + options.host.bind + ":8000")
+            return True
+        except Exception, e:
+            return False
+
+    socket.setdefaulttimeout(1)
+
+    info("Django is starting up, please wait...")
+    while not django_is_up():
+        time.sleep(2)
 
     info("Logging servlet output to jetty.log and django output to django.log...")
     info("Jetty is starting up, please wait...")
-    socket.setdefaulttimeout(1)
     while not jetty_is_up():
         time.sleep(2)
 
-    sh("django-admin.py updatelayers --settings=capra.settings")
-    info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
-    info("The GeoNode is an unstoppable machine")
-    info("Press CTRL-C to shut down")
-
-    try: 
+    try:
+        sh("django-admin.py updatelayers --settings=geonode.settings")
+        
+        info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
+        info("The GeoNode is an unstoppable machine")
+        info("Press CTRL-C to shut down")
         django.wait()
-    except KeyboardInterrupt:
+        info("Django process terminated, see log for details.")
+    finally:
         info("Shutting down...")
-        django.terminate()
-        mvn.terminate()
+        try:
+            django.terminate()
+        except: 
+            pass
+        try:
+            mvn.terminate()
+        except: 
+            pass
+
         django.wait()
         mvn.wait()
         sys.exit()
@@ -633,7 +643,7 @@ def host(options):
 
 @task
 def test(options):
-    sh("django-admin.py test --settings=capra.settings")
+    sh("django-admin.py test --settings=geonode.settings")
 
 
 def platform_options(options):

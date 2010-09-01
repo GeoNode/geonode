@@ -42,10 +42,15 @@
       <version>${geoserver.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>excel</artifactId>
+      <version>${geoserver.version}</version>
+    </dependency>
+    <!--dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>ftp</artifactId>
       <version>${geoserver.version}</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>web-app</artifactId>
@@ -53,6 +58,12 @@
       <version>${geoserver.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+    </dependency>
+    
 
     <!-- GeoJSON module dependencies -->
     <dependency>
@@ -95,6 +106,25 @@
       <version>${geotools.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <version>1.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>2.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymockclassextension</artifactId>
+      <version>2.3</version>
+      <scope>test</scope>
+    </dependency>
+    
     
     <!-- Jetty runner dependencies -->
     <dependency>

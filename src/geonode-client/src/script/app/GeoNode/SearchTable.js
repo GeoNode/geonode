@@ -1,271 +1,4 @@
-Ext.namespace("GeoNode");
-
-
-GeoNode.DataCartOps = Ext.extend(Ext.util.Observable, {
-
-    failureText: 'UT: Operation Failed',
-    noLayersText: 'UT: No layers are currently selected.',
-
-    constructor: function(config) {
-        Ext.apply(this, config);
-        this.doLayout();
-    },
-   
-    doLayout: function() {
-        var el = Ext.get(this.renderTo);
-        var createMapLink = Ext.get(el.query('a.create-map')[0]);
-        this.createMapForm = Ext.get(el.query('#create_map_form')[0]);
-        
-        createMapLink.on('click', function(evt) {
-            evt.preventDefault();
-            var layers = this.cart.getSelectedLayerIds();
-            if (layers && layers.length) {
-                this.createNewMap(layers);
-            }
-            else {
-                Ext.MessageBox.alert(this.failureText, this.noLayersText);
-            }
-        }, this);
-        
-        batch_links = el.query('a.batch-download');
-        for (var i = 0; i < batch_links.length; i++) {
-           var bel = Ext.get(batch_links[i]);
-           bel.on('click', function(e, t, o) {
-               e.preventDefault();
-               var layers = this.cart.getSelectedLayerIds();
-               if (layers && layers.length) {
-                   var format = Ext.get(t).getAttribute('href').substr(1);
-                   this.batchDownload(layers, format);
-               }
-               else {
-                   Ext.MessageBox.alert(this.failureText, this.noLayersText);
-               }
-           }, this);
-        }
-    },
-    
-    createNewMap: function(layerIds) {
-        var inputs = [];
-        for (var i = 0; i < layerIds.length; i++) {
-            inputs.push({
-                tag: 'input',
-                type: 'hidden',
-                name: 'layer',
-                value: layerIds[i]
-            });
-        }
-        Ext.DomHelper.overwrite(this.createMapForm, {'tag': 'div', cn: inputs});
-        this.createMapForm.dom.submit();
-    },
-    
-    batchDownload: function(layerIds, format) {
-        // alert('Batch Download');
-        new GeoNode.BatchDownloadWidget({
-            layers: layerIds,
-            format: format,
-            begin_download_url: this.begin_download_url,
-            stop_download_url: this.stop_download_url,
-            download_url: this.download_url
-        });
-    }
-    
-});
-
-
-GeoNode.BatchDownloadWidget = Ext.extend(Ext.util.Observable, {
-
-    downloadingText: 'UT: Downloading...',
-    cancelText: 'UT: Cancel',
-    windowMessageText: 'UT: Please wait',
-    
-    constructor: function(config) {
-        Ext.apply(this, config);
-        this.beginDownload();
-    },
-    
-    beginDownload: function() {
-        // XXX could confirm download here. 
-        var this_widget = this;
-        Ext.Ajax.request({
-           url: this.begin_download_url,
-           method: 'POST',
-           params: {layer: this.layers, format: this.format},
-           success: function(result) {
-               var result = Ext.util.JSON.decode(result.responseText);
-               this_widget.monitorDownload(result.id);
-           },
-           failure: function(result) {
-               //console.log(result);
-           }
-        });
-    },
-    
-    monitorDownload: function(download_id) {
-        var checkStatus; 
-        var this_widget = this;
-                
-        var pb = new Ext.ProgressBar({
-            text: this.downloadingText
-        });
-
-        var cancel_download = function() { 
-            Ext.Ajax.request({
-                url : this_widget.stop_download_url + download_id,
-                method: "GET",
-                success: function(result) {
-                    clearInterval(checkStatus);
-                },
-                failure: function(result) { 
-                    console.log(result); 
-                    clearInterval(checkStatus); // break if something fails
-                } 
-        })};
-        
-        var win = new Ext.Window({
-            width: 250,
-            height: 100,
-            plain: true,
-            modal: true,
-            closable: false,
-            hideBorders: true,
-            items: [pb],
-            buttons: [
-                {text: this.cancelText,
-                handler: function() {
-                    cancel_download();
-                    win.hide();
-                }}
-            ]
-        });
-
-
-        var update_progress = function() { 
-            Ext.Ajax.request({ 
-                url : this_widget.begin_download_url + '?id='+ download_id,
-                method: "GET",
-                success: function(result) {
-                    var process = Ext.util.JSON.decode(result.responseText);
-                    if (process["process"]["status"] === "FINISHED"){ 
-                        clearInterval(checkStatus); 
-                        pb.updateProgress(1,"Done....",true);
-                        win.close();
-                        location.href = this_widget.download_url + download_id;
-                    }
-                    else {
-                        pb.updateProgress(process["process"]["progress"]/100, this_widget.downloadingText,true); 
-                    }
-                },
-                failure: function(result) { 
-                    //console.log(result); 
-                    clearInterval(checkStatus);
-                    win.close();
-                }});
-        };
-        checkStatus = setInterval(update_progress, 1000);
-        win.show();
-    }
-     
-});
-
-
-GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
-    
-    selectedLayersText: 'UT: Selected Layers',
-    emptySelectionText: 'UT: No Layers Selected',
-    titleText: 'UT: Title',
-    clearSelectedButtonText: 'UT: Clear Selected',
-    clearAllButtonText: 'UT: Clear All',
-    
-    constructor: function(config) {
-        Ext.apply(this, config);
-        this.doLayout();
-    },
-
-    getSelectedLayerIds: function() {
-        var layerIds = [];
-        this.grid.selModel.each(function(rec) {
-            layerIds.push(rec.get('name'));
-        });
-        return layerIds;
-    },
-    
-    doLayout: function() {
-        var widgetHTML =
-        '<div class="selection-table"></div>' +
-        '<div class="selection-controls"></div>' +
-        '<div class="selection-ops></div>"';
-        
-        var el = Ext.get(this.renderTo);
-        el.update(widgetHTML);
-        var controls_el = el.query('.selection-controls')[0];
-        var table_el = el.query('.selection-table')[0];
-        var ops_el = el.query('.selection-ops')[0];
-        
-        sm = new Ext.grid.CheckboxSelectionModel({});
-        this.grid = new Ext.grid.GridPanel({
-            store: this.store,
-            viewConfig: {
-                autoFill: true,
-                forceFit: true,
-                emptyText: this.emptySelectionText,
-                deferEmptyText: false
-            },
-            height: 150,
-            renderTo: table_el,
-            selModel: sm,
-            hideHeaders: true,
-            colModel: new Ext.grid.ColumnModel({
-                defaults: {sortable: false, menuDisabled: true},
-                columns: [
-                    sm,
-                    {dataIndex: 'title'}
-                ]
-            })
-        });
-        // data cart items are initially selected
-        this.store.on('add', function(store, records, index) {
-            sm.selectRow(index, true);
-        })
-
-
-        var clearSelectedButton = new Ext.Button({
-            text: this.clearSelectedButtonText
-        });
-        clearSelectedButton.on('click', function() {
-            sm.each(function(rec) {
-                var index = this.store.indexOfId(rec.id);
-                if (index >= 0) {
-                    this.store.removeAt(index);
-                }
-            }, this);
-            this.store.reselect();
-        }, this);
-
-        
-        var clearAllButton = new Ext.Button({
-            text: this.clearAllButtonText
-        });
-        clearAllButton.on('click', function() {
-            this.store.removeAll();
-            this.store.reselect();
-        }, this);
-
-        var controlsForm = new Ext.Panel({
-             frame:false,
-             border: false,
-             layout: new Ext.layout.HBoxLayout({
-                 defaultMargins: {
-                     top: 10,
-                     bottom: 10,
-                     left: 0,
-                     right: 0
-                  }
-             }),
-             items: [clearSelectedButton, clearAllButton]
-         });
-         controlsForm.render(controls_el);
-    }
-});
+Ext.namespace("GeoNode"); 
 
 GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     selectHeaderText: 'UT: Select',
@@ -283,6 +16,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     showingText: 'UT: Showing',
     loadingText: 'UT: Loading',
     permalinkText: 'UT: permalink',
+    unviewableTooltip: 'UT: Unviewable Data',
+    remoteTooltip: 'UT: Remote Data',
 
     constructor: function(config) {
         this.addEvents('load'); 
@@ -309,7 +44,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'attribution'},
                 {name: 'download_links'},
                 {name: 'metadata_links'},
-                {name: 'bbox'}
+                {name: 'bbox'},
+                {name: '_local'},
+                {name: '_permissions'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -462,31 +199,75 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 forceFit: true,
                 emptyText: this.noResultsText
             },
-            height: 300,
+            autoHeight: true,
             renderTo: table_el
         };
 
-
+        var unviewableTooltip = this.unviewableTooltip;
+        var remoteTooltip = this.remoteTooltip;
+        
         var columns = [
             expander,
-            {header: this.nameHeaderText,
+/*            {header: this.nameHeaderText,
              dataIndex: 'name',
+             hidden: true,
              id: 'name',
              width: 35
-            },
+            },*/
             {header: this.titleHeaderText,
              dataIndex: 'title',
              id: 'title',
              renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+                 var is_local = record.get('_local');
                  var detail = record.get('detail');
+
+                 /* do not show detail link for layers without read permission */
+                 if (is_local) {
+                     var permissions = record.get('_permissions');
+                     if (permissions.view != true) {
+                         detail = '';
+                     }
+                 }
                  if (detail) {
-                     return '<a href="' + detail + '">' + value + '</a>';
+                     detail = '<a href="' + detail + '">' + value + '</a>';
                  }
                  else {
-                     return value;
+                     detail = value;
                  }
+                 return detail;
              }
-             }];
+             },
+             {dataIndex: '_local',
+              id: 'layer_info',
+              width: 6,
+              resizable: false,
+              renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+                  var is_local = record.get('_local');
+                  var info_type = '';
+                  var tooltip = '';
+                  
+                  /* do not show detail link for layers without read permission */
+                  if (is_local) {
+                      var permissions = record.get('_permissions');
+                      if (permissions.view != true) {
+                          detail = '';
+                          info_type = 'unviewable-layer';
+                          tooltip = unviewableTooltip;
+                      }
+                      else {
+                          info_type = 'info-layer';
+                      }
+                  }
+                  else {
+                      info_type = 'remote-layer';
+                      tooltip = remoteTooltip;
+                  }
+
+                  info = '<span class="' + info_type + '" title="' + tooltip + '"></span>';
+                  return info;
+              }
+              }
+             ];
         
         if (this.trackSelection == true) {
             sm = new Ext.grid.CheckboxSelectionModel({checkOnly: true});
@@ -564,195 +345,4 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
           this.updatePermalink();
 }
 
-});
-
-GeoNode.SearchTableRowExpander = Ext.extend(Ext.grid.RowExpander, {
-    errorText: 'UT: Unable to fetch layer details.',
-    loadingText: 'UT: Loading...',
-    
-    constructor: function(config) {
-        this.fetchURL = config.fetchURL; 
-        GeoNode.SearchTableRowExpander.superclass.constructor.call(this, config);
-    },
-
-    getRowClass : function(record, rowIndex, p, ds){
-        p.cols = p.cols-1;
-        return this.state[record.id] ? 'x-grid3-row-expanded' : 'x-grid3-row-collapsed';
-    },
-
-    fetchBodyContent: function(body, record, index) {
-        if(!this.enableCaching){
-            this._fetchBodyContent(body, record, index);
-        }
-        var content = this.bodyContent[record.id];
-        if(!content){
-            this._fetchBodyContent(body, record, index);
-        }
-        else {
-            body.innerHTML = content;
-        }
-    },
-    
-    _fetchBodyContent: function(body, record, index) {
-        body.innerHTML = this.loadingText;
-        var template_url = this.fetchURL + '?uuid=' + record.get('uuid');
-        var this_expander = this;
-        Ext.Ajax.request({
-            url : template_url,
-            method: "GET",
-            success: function(result) {
-                var content = result.responseText;
-                body.innerHTML = content;
-                this_expander.bodyContent[record.id] = content;
-            },
-            failure: function(result) {
-                body.innerHTML = this_expander.errorText;
-            } 
-        });
-    },
-
-    beforeExpand : function(record, body, rowIndex){
-        if(this.fireEvent('beforeexpand', this, record, body, rowIndex) !== false){
-            this.fetchBodyContent(body, record, rowIndex);
-            return true;
-        }else{
-            return false;
-        }
-    }
-});
-
-GeoNode.DataCartStore = Ext.extend(Ext.data.Store, {
-
-    constructor : function(config) {
-        this.selModel = config.selModel;
-        this.reselecting = false;
-        
-        this.selModel.on('rowselect', function(model, index, record) {
-            if (this.reselecting == true) {
-                return;
-            }
-    
-            if (this.indexOfId(record.id) == -1) {
-                this.add([record]);
-            }
-        }, this);
-        this.selModel.on('rowdeselect', function(model, index, record) {
-            if (this.reselecting == true) {
-                return;
-            }
-
-            var index = this.indexOfId(record.id)
-            if (index != -1) {
-                this.removeAt(index);
-            }
-        }, this);
-        
-        GeoNode.DataCartStore.superclass.constructor.call(this, config);
-    },
-    
-    reselect: function() {
-        this.reselecting = true;
-        this.selModel.clearSelections();
-        var store = this.selModel.grid.store;
-        this.each(function(rec) {
-            var index = store.indexOfId(rec.id);
-            if (index != -1) {
-                this.selModel.selectRow(index, true);
-            }
-            return true;
-        }, this);
-        this.reselecting = false;
-    }
-});
-
-GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
-
-    constructor: function(config) {
-        Ext.apply(this, config);
-        this.activated = false;
-        this.doLayout();
-    },
-
-    doLayout: function() {
-
-        var el = Ext.get(this.renderTo);
-
-        this.viewer = new GeoExplorer.Viewer({
-            proxy: this.proxy,
-            useCapabilities: false,
-            useBackgroundCapabilities: false,
-            useToolbar: false,
-            useMapOverlay: false,
-            backgroundLayers: [this.background],
-            portalConfig: {
-                collapsed: true,
-                border: false,
-                height: 300,
-                renderTo: el.query('.bbox-expand')[0]
-            }
-        });
-
-         this.enabledCB = el.query('.bbox-enabled input')[0];        
-         this.disable();
-         
-         Ext.get(this.enabledCB).on('click', function() {
-            if (this.enabledCB.checked == true) {
-                this.enable();
-            }
-            else {
-                this.disable();
-            }
-         }, this);
-
-    },
-    
-    isActive: function() {
-        return this.enabledCB.checked == true; 
-    },
-    
-    hasConstraint: function() {
-        return this.isActive()
-    },
-    
-    applyConstraint: function(query) {
-        /* set parameters in the search query to limit the search to the 
-         * displayed bounding box.
-         */
-        if (this.hasConstraint()) {
-            var bounds = this.viewer.mapPanel.map.getExtent();
-            bounds.transform(this.viewer.mapPanel.map.getProjectionObject(),
-                new OpenLayers.Projection("EPSG:4326"));
-            query.bbox = bounds.toBBOX();
-        }
-        else {
-            // no constraint, don't include.
-            delete query.bbox;
-        }
-    },
-    
-    initFromQuery: function(grid, query) {  
-        if (query.bbox) {
-            var bounds = OpenLayers.Bounds.fromString(query.bbox);
-            if (bounds) {
-                bounds.transform(new OpenLayers.Projection("EPSG:4326"),
-                    this.viewer.mapPanel.map.getProjectionObject());
-                this.enable();
-                this.viewer.mapPanel.map.zoomToExtent(bounds, true);
-            }
-        }
-    },
-    
-    activate: function() {
-        this.activated = true;
-    },
-    
-    enable: function() {
-        this.enabledCB.checked = true;
-        this.viewer.portal.expand();
-    }, 
-
-    disable: function() {
-        this.enabledCB.checked = false;
-        this.viewer.portal && this.viewer.portal.collapse();
-    }
 });
