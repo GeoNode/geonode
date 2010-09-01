@@ -188,6 +188,12 @@ change the line::
 
 to indicate the GeoServer URL that you want to use. 
 
+To run the Django app when Jetty is started independently, use::
+
+    paster serve --reload shared/dev-paste.ini
+
+in the base of your working directory.
+
 Alternative GeoServer Data Directories
 ......................................
 
