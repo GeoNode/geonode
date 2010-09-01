@@ -56,6 +56,8 @@ _line_template = """
   <Stroke>
     <CssParameter name="stroke">%(bg)s</CssParameter>
   </Stroke>
+</LineSymbolizer>
+<LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">%(fg)s</CssParameter>
     <CssParameter name="stroke-dasharray">2 2</CssParameter>
