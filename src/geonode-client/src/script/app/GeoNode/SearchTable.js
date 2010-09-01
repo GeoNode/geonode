@@ -270,7 +270,32 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
              ];
         
         if (this.trackSelection == true) {
-            sm = new Ext.grid.CheckboxSelectionModel({checkOnly: true});
+            sm = new Ext.grid.CheckboxSelectionModel({
+                checkOnly: true,
+                renderer: function(v, p, record){
+                    /*
+                     *  A bit of a hack. CheckboxSelectionModel's
+                     *  mousedown selection behavior
+                     *  is tied to rendered div's class.
+                     */
+                    var permissions = record.get('_permissions');
+                    if (permissions.view != true) {
+                        console.log(record)
+                        return '<div>&#160;</div>'
+                    } else {
+                        return '<div class="x-grid3-row-checker">&#160;</div>';
+                    }
+                },
+                listeners: {
+                    'beforerowselect' : function(sm, rowIndex, keepExisting, record){
+                        var permissions = record.get('_permissions');
+                        if (permissions.view != true) {
+                            return false;
+                        }
+                    }
+                }
+            });
+
             this.dataCart = new GeoNode.DataCartStore({selModel: sm});
             columns.push(sm);
             tableCfg.selModel = sm;
