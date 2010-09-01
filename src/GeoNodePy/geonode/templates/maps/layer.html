@@ -1,4 +1,5 @@
 {% extends "page_layout.html" %}
+{% load geonode_auth %}
 {% load geonode_media %}
 {% load i18n %}
 
@@ -6,16 +7,15 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 
 <link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}colorpicker/color-picker.ux.css" />
 
 {{ block.super }}
 
     <script type="text/javascript">
+{% autoescape off %}
         Ext.onReady(function() {
             var config = {
                 useBackgroundCapabilities: false,
@@ -27,17 +27,12 @@
                  * maps on the server for sharing and editing.
                  */
                 rest: "/maps/",
-                wms: {
-                    "capra": "{{ GEOSERVER_BASE_URL }}wms"
-                },
-                map: {
-                    "layers": [{"wms": "capra", "name": "{{layer.typename}}"}]
-                },
-                backgroundLayers: {{ background|safe }},
+
                 portalConfig: {
                     renderTo: "preview_map",
                     height: 350
                 },
+
                 createTools: function() {
                     return [new Ext.Button({
                         tooltip: GeoExplorer.prototype.backgroundContainerText,
@@ -54,6 +49,8 @@
                     }
                 }
             };
+
+            config = Ext.apply(config, {{ viewer|safe }});
 
             app = new GeoExplorer.Viewer(config);
 
@@ -75,6 +72,15 @@
             Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
                 showStyle(elem.previousSibling.value);
             });
+{% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
+{% if can_change_permissions %}
+            new GeoNode.PermissionsEditor({
+                renderTo: "permissions_form",
+                submitTo: "{% url geonode.maps.views.ajax_layer_permissions layer.typename %}",
+                userLookup: "{% url geonode.views.ajax_lookup %}",
+                permissions: {{ permissions_json }}
+            });
+{% endif %}
         });
 
         function showStyle(styleName) {
@@ -100,10 +106,12 @@
                 items: stylesPanel
             }).show();
         }
+{% endautoescape %}
     </script>
 {% endblock %}
 
 {% block main %}
+<div class="twocol">
 <div id="description"> <h3> {{ layer.resource.title|default:layer.typename }} </h3> </div>
 <p> <strong>{% trans "Abstract" %}:</strong> {{ layer.abstract|default:_("No abstract for this layer.") }} </p>
 
@@ -117,8 +125,8 @@
 <p> <strong>{% trans "Citation" %}:</strong> 
     {{ layer.constraints_use}} {{ layer.contraints_other}}
 </p>
-<p> <strong>{% trans "Contact" %}:</strong>
-    {{ layer.poc|default:_("No attribution information for this layer.") }}
+<p> <strong>{% trans "Owner" %}:</strong>
+    <a href="{{ layer.owner.get_profile.get_absolute_url }}"> {{ layer.owner.username }} </a>
 </p>
 <p> <strong>{% trans "Attributes" %}:</strong> 
     {{ layer.attribute_names|join:", " }}
@@ -131,10 +139,11 @@
 </p>
 <p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>
 <p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
-
+</div>
 {% endblock %}
 
 {% block sidebar %}
+<div id="sidebar" class="threecol">
     <h3> {% trans "Download" %} </h3>
     <p> <strong>{% trans "Data" %}: </strong>
         {% for extension, type, link in layer.download_links %}
@@ -185,16 +194,35 @@
 
     </p>
 
+
+
     {% if user.is_authenticated %}
+    {% has_obj_perm user layer "maps.change_layer" as can_change %}
+    {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
+
         <h3> {% trans "Manage" %} </h3>
         <ul>
 			{% if user.is_authenticated %}
+        {% if can_change %}
                 <li><a href="?describe">{% trans "Update the description of this data" %}</a></li>
             	<li><a href="?update">{% trans "Upload a new version of this data" %}</a></li>
+        {% endif %}
+        {% if can_change_permissions %}
+        <li><a href="{% url edit_layer_permissions layer.typename %}">{% trans "Edit Permissions" %}</a></li>
+        {% endif %}
+        {% if can_delete %}
 				<li><a href="?remove">{% trans "Remove" %}</a></li>
+			  {% endif %}
 			{% else %}
 				<li>Please authenticate to update or remove layers</li>
 			{% endif %}
         </ul>
     {% endif %}
+    {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
+    {% if can_change_permissions %}
+    <h3>{% trans "Permissions" %}</h3>
+      <p> {% trans "Select what kind of privileges to allow." %} </p>
+      <div id="permissions_form"</div>
+    {% endif %}
+</div>
 {% endblock %}

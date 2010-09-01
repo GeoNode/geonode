@@ -20,6 +20,12 @@ software installed and in your PATH:
   - If not, you can find the appropriate installer at
     http://subversion.apache.org/packages.html
 
+* The GEOS geometry handling library: http://trac.osgeo.org/geos/
+
+* The GDAL geographic raster access library: http://www.gdal.org/
+
+* The OGR geographic vector data access library: http://www.gdal.org/ogr/
+
 * Sun Java Development Kit 1.5 or Higher: 
   - To verify that it is available, run
     ``javac -help -version`` and verify that it reports a list of usage flags,
@@ -47,6 +53,27 @@ software installed and in your PATH:
 
   - If not, download from http://maven.apache.org/download.html/
 
+Additionally, GeoNode uses a number of native-code libraries in Python.  You
+can install these libraries manually, or allow the GeoNode setup script to
+compile them for you.   In the latter case, you will need to install a C
+compiler such as GCC, as well as any requisite development libraries.  GCC
+packages are available for Mac OSX and all Linux distributions; consult your
+operating system provider for installation instructions.
+
+The native libraries needed include:
+
+* PIL http://www.pythonware.com/products/pil/
+
+* ReportLab http://www.reportlab.com/software/opensource/rl-toolkit/
+
+* simplejson http://code.google.com/p/simplejson/
+
+For GCC, packages are available for Mac OSX and all Linux distributions;
+consult your operating system provider for installation instructions.  When
+build PIL from source, ensure that you have development libraries available for
+libpng, libjpeg, and libgif if you want to be able to use those formats in your
+GeoNode site.
+
 Install
 =======
 
@@ -55,10 +82,18 @@ The following steps should prepare a Python virtual environment for you::
   git clone git://github.com/GeoNode/geonode.git geonode
   cd geonode
   git submodule update --init
-  python bootstrap.py --no-site-packages
+  python bootstrap.py --no-site-packages # see note below
   source bin/activate
   paver build
+  django-admin.py createsuperuser --settings=capra.settings
   paver host 
+
+Once fully started, you should see a message indicating the address of your geonode::
+  
+  Development GeoNode is running at http://localhost:8000/
+  The GeoNode is an unstoppable machine
+  Press CTRL-C to shut down
+
 
 .. note:: 
 
@@ -71,13 +106,13 @@ The following steps should prepare a Python virtual environment for you::
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option in.
 
-After paver build sets up the basic Django application, you can run::
+
+This command::
 
   django-admin.py createsuperuser --settings=capra.settings
 
-to create an admin user account.  The administrative control panel is not
-linked from the main site, but can be accessed at http://localhost:8000/admin/.
-
+can be used to create additional administrative user accounts.  The administrative control panel is not
+linked from the main site, but can be accessed at http://localhost:8000/admin/
 
 Options
 =======
@@ -190,3 +225,22 @@ Directory Structure
     * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
       Actually, the build script for this project is set up to create a WAR
       that includes those extensions, not just a bundle with the extension.
+
+
+GPL License
+=======
+
+GeoNode is Copyright 2010 OpenPlans.
+
+GeoNode is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+GeoNode is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GeoNode.  If not, see <http://www.gnu.org/licenses/>.

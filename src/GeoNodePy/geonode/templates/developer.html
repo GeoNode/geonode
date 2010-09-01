@@ -9,11 +9,11 @@
 
 {% block main %}
 <div class="twocol">
-  <p>The CAPRA GeoNode is an open service built on open source software. We encourage you to build new applications using the its components and the resources it provides. This page is a starting point for developers interesting in taking full advantage of the GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>
+  <p>The GeoNode is an open service built on open source software. We encourage you to build new applications using the its components and the resources it provides. This page is a starting point for developers interesting in taking full advantage of the GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>
 
   <h4>GeoNode Software</h4>
 
-  <p>All the code that runs the GeoNode is open source. The code is available at <a href="http://svn.opengeo.org/CAPRA/">http://svn.opengeo.org/CAPRA/</a>. The issue tracker for the project is at <a href="http://projects.opengeo.org/CAPRA">http://projects.opengeo.org/CAPRA</a>.</p>
+  <p>All the code that runs the GeoNode is open source. The code is available at <a href="http://github.com/geonode/geonode">http://github.com/geonode/geonode/</a>. The issue tracker for the project is at <a href="http://projects.opengeo.org/CAPRA">http://projects.opengeo.org/CAPRA</a>.</p>
 
   <p>The GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the  projects on which it is built:</p>
   <ul>
@@ -30,16 +30,17 @@
   <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by the GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and returning it much more quickly.</p>
 
   <h4>OpenLayers Example Code</h4>
-  <p>To include a CAPRA map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>
-  <p><code>var capraLayer = new OpenLayers.Layer.WMS("CAPRA Risk Data", "http://capra.opengeo.org/geoserver/wms",{ layers: "risk:nicaragua_admin" });</code></p>
+
+  <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>
+  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS("GeoNode Risk Data", "http://demo.geonode.org/geoserver/wms",{ layers: "risk:nicaragua_admin" });</code></p>
 
   <h4>Google Maps Example Code</h4>
-  <p>To include a CAPRA map layer in a Google Map, include the layer namein the URL template.</p>
-  <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://capra.opengeo.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>
+  <p>To include a GeoNode map layer in a Google Map, include the layer namein the URL template.</p>
+  <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>
 
   <h4>Shapefile/GeoJSON/GML Output</h4>
   <p>To get data from the GeoNode web services use the WFS protocol. For example, to get the full Nicaraguan admin boundaries use:</p>
-  <p><code>http://capra.opengeo.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>
+  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>
   <p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats. The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>
 
   <h4>GeoTools Example Code</h4>
@@ -48,14 +49,14 @@
 {% endblock %}
 {% block sidebar %}
 <div class="threecol">
-  <h3>CAPRA's Web Services</h3>
-  <p>CAPRA's Web Services are available from the following URLs:</p>
+
+  <h3>GeoNode's Web Services</h3>
+  <p>GeoNode's Web Services are available from the following URLs:</p>
   <ul>
-    <li><strong>WMS:</strong> <code>http://capra.opengeo.org/geoserver/wms</code></li>
-    <li><strong>WFS:</strong> <code>http://capra.opengeo.org/geoserver/wfs</code></li>
-    <li><strong>GeoWebCache Tiles:</strong> <code>http://capra.opengeo.org/geoserver/gwc</code></li>
-    <li><strong>KML through WMS:</strong> <code>http://capra.opengeo.org/geoserver/wms/kml?layers=&lt;layername&gt;</code>
-    </li>
+    <li><strong>WMS:</strong> <code>http://demo.geonode.org/geoserver/wms</code></li>
+    <li><strong>WFS:</strong> <code>http://demo.geonode.org/geoserver/wfs</code></li>
+    <li><strong>GeoWebCache Tiles:</strong> <code>http://demo.geonode.org/geoserver/gwc</code></li>
+    <li><strong>KML through WMS:</strong> <code>http://demo.geonode.org/geoserver/wms/kml?layers=&lt;layername&gt;</code></li>
   </ul>
 </div>
 {% endblock %}

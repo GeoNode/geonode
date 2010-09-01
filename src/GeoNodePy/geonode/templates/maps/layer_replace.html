@@ -6,10 +6,7 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
 {{ block.super }}
 {% endblock %}
 
@@ -28,15 +25,11 @@
 
 <script type="text/javascript">
 Ext.onReady(function(){
-  
+{% autoescape off %}
   var form_target = "{% url geonode.maps.views.layerController layer.typename %}?update";
-  var layer_name = "{{layer.name}}";
+  var layer_name = "{{ layer.name|escapejs }}";
   
-  {% if is_featuretype %}
-  var is_featuretype = true;
-  {% else %}
-  var is_featuretype = false;
-  {% endif %}
+  var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
 
   var layer_name = new Ext.form.TextField({
     id: 'layer_name',
@@ -142,6 +135,7 @@ Ext.onReady(function(){
       }]
     });
   });
+{% endautoescape %}
 </script>
 
 {% endblock %}
@@ -150,13 +144,14 @@ Ext.onReady(function(){
 {% block sidebar %}
 <h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
 <p>{% trans "This form allows you to update the data for this layer."  %}</p>
-<p>{% trans "Updated data must be the same format as the data already in place, e.g. "  %}
-  {% if is_featuretype %}
-  a Shapefile.
-  {% else %}
-  a GeoTIFF.
-  {% endif %}
-  </p>
+<p>{% blocktrans %}
+If the new dataset omits attributes that were included in the previous version,
+or changes their types, then existing styles for the layer may not work.
+Please check your maps if the new data includes such changes.  Additionally,
+updated data must be the same format as the data already in place, e.g.
+{% endblocktrans %}
+{% if is_featuretype %} a Shapefile. {% else %} a GeoTIFF.  {% endif %}
+</p>
 <p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
 
 <h3>{% trans "This action affects the following maps:"  %}</h3>
