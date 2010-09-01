@@ -33,13 +33,22 @@ def geoserver(request):
         return HttpResponse(
             "You must be logged in to access GeoServer",
             mimetype="text/plain",
-            status=403
+            status=401
         )
     path = request.get_full_path()[11:] # strip "/geoserver/" from path
     url = "{geoserver}{path}".format(geoserver=settings.GEOSERVER_BASE_URL,path=path)
     h = httplib2.Http()    
     h.add_credentials(*settings.GEOSERVER_CREDENTIALS)
-    resp, content = h.request(url,request.method,body=request.raw_post_data,headers={"Content-Type": request.META['CONTENT_TYPE']})
+    headers = dict()
+
+    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
+        headers["Content-Type"] = request.META["CONTENT_TYPE"]
+    resp, content = h.request(
+            url,
+            request.method,
+            body=request.raw_post_data or None,
+            headers=headers
+        )
     if resp.status != 404:
         if "content-type" in resp.keys():
             return HttpResponse(content=content,status=resp.status,mimetype=resp["content-type"])

@@ -6,15 +6,12 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
 {{ block.super }}
 {% endblock %}
 
 {% block main %}
-
+<div class="twocol">
   {% if errors %}
     <div id="errors">
       {% for error in errors %}
@@ -25,11 +22,19 @@
 
   <div id="upload_form">
   </div>
-
+</div>
 <script type="text/javascript">
 Ext.onReady(function(){
-  
+{% autoescape off %}
   var form_target = "{% url geonode.maps.views.upload_layer %}";
+
+  var layer_name = new Ext.form.TextField({
+      id: 'layer_name',
+      fieldLabel: gettext('Name'),
+      name: 'layer_name',
+      emptyText: gettext('Unique name for layer.  Defaults to file name.'),
+      allowBlank: false
+  });
 
   var base_file = new Ext.ux.form.FileUploadField({
       id: 'base_file',
@@ -77,7 +82,7 @@ Ext.onReady(function(){
         anchor: '95%',
         msgTarget: 'side'
     },
-    items: [base_file, dbf_file, shx_file, prj_file],
+    items: [layer_name, base_file, dbf_file, shx_file, prj_file],
     buttons: [{
         text: gettext('Upload'),
         handler: function(){
@@ -141,17 +146,23 @@ Ext.onReady(function(){
   
     base_file.addListener('fileselected', function() {
       check_shapefile();
+
+      var main_filename = base_file.getValue();
+      var extension_index = main_filename.search(/\.\w+$/i);
+      if (extension_index != -1 && layer_name.getValue() == "") {
+          layer_name.setValue(main_filename.substring(0,extension_index));
+      }
     })
     disable_shapefile_inputs();
+{% endautoescape %}
   });
-  
-  
 </script>
 
 {% endblock %}
 
 
 {% block sidebar %}
+<div class="threecol">
 <h3>{%trans "Instructions"  %}</h3>
 
 <p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
@@ -161,9 +172,11 @@ Ext.onReady(function(){
 <ul>
   <li>Shapefile</li>
   <li>GeoTIFF</li>
-<ul>
-<br/>  
+</ul>
+<p>
 {% blocktrans %}
-<p>Note: If you are uploading a shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
+Note: If you are uploading a shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
 {% endblocktrans %}
+</p>
+</div>
 {% endblock %}

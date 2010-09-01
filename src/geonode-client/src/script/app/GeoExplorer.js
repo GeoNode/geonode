@@ -31,6 +31,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     localGeoServerBaseUrl: "",
     
     /**
+     * api: config[fromLayer]
+     * ``Boolean`` true if map view was loaded with layer parameters
+     */
+    fromLayer: false,
+
+    /**
      * private: property[mapPanel]
      * the :class:`GeoExt.MapPanel` instance for the main viewport
      */
@@ -61,12 +67,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     popupCache: null,
     
-    /** private: property[describeLayerCache]
-     *  ``Object`` Cache of parsed DescribeLayer responses for all WMS layer
-     *      sources, keyed by service URL.
-     */
-    describeLayerCache: null,
-    
     /** private: property[busyMask]
      *  ``Ext.LoadMask``
      */
@@ -87,7 +87,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorTitleText: "UT:Connection Error",
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
-    exportDialogMessage: '<p> UT: Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
     heightLabel: 'UT: Height',
     infoButtonText: "UT:Get Feature Info",
     largeSizeLabel: 'UT:Large',
@@ -100,6 +99,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     layersPanelText: "UT:Layers",
     legendPanelText: "UT:Legend",
     lengthActionText: "UT:Length",
+    loadingMapMessage: "UT:Loading Map...",
     mapSizeLabel: 'UT: Map Size', 
     measureSplitText: "UT:Measure",
     metadataFormCancelText : "UT:Cancel",
@@ -141,7 +141,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     constructor: function(config) {
         this.popupCache = {};
-        this.describeLayerCache = {};
         // add any custom application events
         this.addEvents(
             /**
@@ -183,7 +182,85 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     // exceptions are handled elsewhere
                } else {
                     this.busyMask && this.busyMask.hide();
-                    this.displayXHRTrouble(response);
+                    var url = options.url;
+                    if (response.status == 401 && url.indexOf("http" != 0) &&
+                                            url.indexOf(this.proxy) === -1) {
+                        var submit = function() {
+                            form.getForm().submit({
+                                waitMsg: "Logging in...",
+                                success: function(form, action) {
+                                    win.close();
+                                    document.cookie = action.response.getResponseHeader("Set-Cookie");
+                                    // resend the original request
+                                    Ext.Ajax.request(options);
+                                },
+                                failure: function(form, action) {
+                                    var username = form.items.get(0);
+                                    var password = form.items.get(1);
+                                    username.markInvalid();
+                                    password.markInvalid();
+                                    username.focus(true);
+                                },
+                                scope: this
+                            });
+                        }.bind(this);
+                        var win = new Ext.Window({
+                            title: "GeoNode Login",
+                            modal: true,
+                            width: 230,
+                            autoHeight: true,
+                            layout: "fit",
+                            items: [{
+                                xtype: "form",
+                                autoHeight: true,
+                                labelWidth: 55,
+                                border: false,
+                                bodyStyle: "padding: 10px;",
+                                url: "/accounts/ajax_login",
+                                waitMsgTarget: true,
+                                errorReader: {
+                                    // teach ExtJS a bit of RESTfulness
+                                    read: function(response) {
+                                        return {
+                                            success: response.status == 200,
+                                            records: []
+                                        }
+                                    }
+                                },
+                                defaults: {
+                                    anchor: "100%"
+                                },
+                                items: [{
+                                    xtype: "textfield",
+                                    name: "username",
+                                    fieldLabel: "Username"
+                                }, {
+                                    xtype: "textfield",
+                                    name: "password",
+                                    fieldLabel: "Password",
+                                    inputType: "password"
+                                }, {
+                                    xtype: "hidden",
+                                    name: "csrfmiddlewaretoken",
+                                    value: this.csrfToken
+                                }, {
+                                    xtype: "button",
+                                    text: "Login",
+                                    inputType: "submit",
+                                    handler: submit
+                                }]
+                            }],
+                            keys: {
+                                "key": Ext.EventObject.ENTER,
+                                "fn": submit
+                            }
+                        });
+                        win.show();
+                        var form = win.items.get(0);
+                        form.items.get(0).focus(false, 100);
+                    } else {
+                        this.displayXHRTrouble(response);
+                    }
                 }
             },
             scope: this
@@ -222,23 +299,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             fontColor: "#000000"
         };
 
+        if (!config.map) {
+            config.map = {};
+        }
+        config.map.numZoomLevels = config.map.numZoomLevels || 22;
+
         GeoExplorer.superclass.constructor.apply(this, arguments);
 
         this.mapID = this.initialConfig.id;
     },
     
-    loadConfig: function(config) {
-        var query = Ext.urlDecode(document.location.search.substr(1));
-        var queryConfig = Ext.util.JSON.decode(query.q);
-        this.configManager = new GeoNode.ConfigManager(
-            Ext.apply({}, queryConfig, config));
-
-        GeoExplorer.superclass.loadConfig.apply(this,
-            [this.configManager.getViewerConfig()]);
-    },
-    
     displayXHRTrouble: function(response) {
-        Ext.Msg.show({
+        response.status && Ext.Msg.show({
             title: this.connErrorTitleText,
             msg: this.connErrorText +
                 ": " + response.status + " " + response.statusText,
@@ -262,46 +334,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         }]
                     });
                     details.show();
-                    this.close();
                 }
             }
         });
-    },
-    
-    addLayerSource: function(options) {
-        var source = GeoExplorer.superclass.addLayerSource.apply(this, arguments);
-        source instanceof gxp.plugins.WMSSource && source.on("ready", function() {
-            var request = source.store.reader.raw.capability.request.describelayer;
-            if (!request) {
-                return;
-            }
-            var layers = [];
-            source.store.each(function(r) {
-                layers.push(r.get("name"));
-            });
-            Ext.Ajax.request({
-                url: source.url,
-                params: {
-                    "SERVICE": "WMS",
-                    "REQUEST": "DescribeLayer",
-                    "VERSION": source.store.reader.raw.version,
-                    "LAYERS": layers.join(",")
-                },
-                disableCaching: false,
-                success: function(response) {
-                    this.describeLayerCache[request.href] =
-                        new OpenLayers.Format.WMSDescribeLayer().read(
-                            response.responseXML &&
-                            response.responseXML.documentElement ?
-                                response.responseXML : response.responseText);
-                },
-                failure: function() {
-                    // well, bad luck, but no need to worry
-                },
-                scope: this
-            });
-        }, this);
-        return source;
     },
     
     initMapPanel: function() {
@@ -316,13 +351,38 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
         
+        var layerCount = 0;
+        
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
-            e.layer instanceof OpenLayers.Layer.WMS && !e.layer.singleTile &&
-                e.layer.maxExtent && e.layer.mergeNewParams({
+            var layer = e.layer;
+            if (layer instanceof OpenLayers.Layer.WMS) {
+                !layer.singleTile && layer.maxExtent && layer.mergeNewParams({
                     tiled: true,
-                    tilesOrigin: [e.layer.maxExtent.left, e.layer.maxExtent.bottom]
-                }
-            );
+                    tilesOrigin: [layer.maxExtent.left, layer.maxExtent.bottom]
+                });
+                layer.events.on({
+                    "loadstart": function() {
+                        layerCount++;
+                        if (!this.busyMask) {
+                            this.busyMask = new Ext.LoadMask(
+                                this.mapPanel.map.div, {
+                                    msg: this.loadingMapMessage
+                                }
+                            );
+                            this.busyMask.show();
+                        }
+                        layer.events.unregister("loadstart", this, arguments.callee);
+                    },
+                    "loadend": function() {
+                        layerCount--;
+                        if(layerCount === 0) {
+                            this.busyMask.hide();
+                        }
+                        layer.events.unregister("loadend", this, arguments.callee);
+                    },
+                    scope: this
+                })
+            } 
         });
     },
     
@@ -603,7 +663,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         this.on("ready", function(){
-            if (!this.mapID) {
+            if (!this.fromLayer && !this.mapID) {
                 this.showCapabilitiesGrid();
             }
         }, this);
@@ -618,6 +678,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         //needed for Safari
         var westPanel = new Ext.Panel({
             layout: "fit",
+            collapseMode: "mini",
+            split: true,
             items: [layersTabPanel],
             region: "west",
             width: 250
@@ -687,6 +749,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 region: "center",
                 xtype: "container",
                 layout: "fit",
+                border: false,
                 hideBorders: true,
                 items: {
                     layout: "border",
@@ -699,7 +762,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         ];
-
+        
         GeoExplorer.superclass.initPortal.apply(this, arguments);
     },
     
@@ -726,13 +789,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     this.urlPortRegEx, "$1/").indexOf(
                     this.localGeoServerBaseUrl.replace(
                     this.urlPortRegEx, "$1/")) === 0,
-                layerDescription: layerDescription,
                 plugins: [new gxp.plugins.GeoServerStyleWriter({
                     baseUrl: layerUrl.split(
                         "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
                 })],
                 autoScroll: true,
-                listeners: Ext.apply(options.listeners, {
+                listeners: Ext.apply(options.listeners || {}, {
                     "ready": function() {
                         // we don't want the Cancel and Save buttons
                         // if we cannot edit styles
@@ -762,18 +824,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // remember the layer's current style
         var initialStyle = layer.params.STYLES;
 
-        // get DescribeLayer entry
-        var layerDescription;
-        var cache = this.describeLayerCache[layerUrl];
-        if (cache) {
-            for (var i=0,len=cache.length; i<len; ++i) {
-                if (cache[i].layerName == record.get("name")) {
-                    layerDescription = cache[i];
-                    break;
-                }
-            }
-        };
-        
         createStylesDialog();
         stylesPanel = new Ext.Panel({
             autoHeight: true,
@@ -842,24 +892,31 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     initCapGrid: function(){
 
-        var source, data = [];        
+        var initialSourceId, source, data = [];        
         for (var id in this.layerSources) {
             source = this.layerSources[id];
+            if (initialSourceId === undefined &&
+                    source instanceof gxp.plugins.WMSSource &&
+                    source.url.replace(this.urlPortRegEx, "$1/").indexOf(
+                        this.localGeoServerBaseUrl.replace(
+                            this.urlPortRegEx, "$1/")) === 0) {
+                initialSourceId = id;
+            }
             if (source.store) {
                 data.push([id, this.layerSources[id].title || id]);                
             }
         }
+        // fall back to 1st source if the local GeoServer WMS is not used
+        if (initialSourceId === undefined) {
+            initialSourceId = data[0][0];
+        }
+
         var sources = new Ext.data.ArrayStore({
             fields: ["id", "title"],
             data: data
         });
 
-        var firstSource = this.layerSources[data[0][0]];
-        var expander = new GeoExplorer.CapabilitiesRowExpander({
-            ows: firstSource.url,
-            layerDescriptions: firstSource.store.reader.raw &&
-                this.describeLayerCache[firstSource.store.reader.raw.capability.request.describelayer.href]
-        });
+        var expander = new GeoExplorer.CapabilitiesRowExpander();
         
         var addLayers = function() {
             var key = sourceComboBox.getValue();
@@ -875,7 +932,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 });
                 if (record) {
                     if (record.get("group") === "background") {
-                        layerStore.insert(0, [record]);
+                        var pos = layerStore.queryBy(function(rec) {
+                            return rec.get("group") === "background"
+                        }).getCount();
+                        layerStore.insert(pos, [record]);
                     } else {
                         layerStore.add([record]);
                     }
@@ -884,7 +944,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         var capGridPanel = new Ext.grid.GridPanel({
-            store: firstSource.store,
+            store: this.layerSources[initialSourceId].store,
             layout: 'fit',
             region: 'center',
             autoScroll: true,
@@ -910,7 +970,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             allowBlank: false,
             forceSelection: true,
             mode: "local",
-            value: data[0][0],
+            value: initialSourceId,
             listeners: {
                 select: function(combo, record, index) {
                     var store = this.layerSources[record.get("id")].store;
@@ -918,9 +978,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     // TODO: remove the following when this Ext issue is addressed
                     // http://www.extjs.com/forum/showthread.php?100345-GridPanel-reconfigure-should-refocus-view-to-correct-scroller-height&p=471843
                     capGridPanel.getView().focusRow(0);
-                    expander.ows = this.layerSources[record.get("id")].url;
-                    expander.layerDescriptions = store.reader.raw &&
-                        this.describeLayerCache[store.reader.raw.capability.request.describelayer.href]
                 },
                 scope: this
             }
@@ -1136,72 +1193,58 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     title: this.printWindowTitleText,
                     modal: true,
                     border: false,
-                    resizable: false
-                });
-                printWindow.add(new GeoExt.ux.PrintPreview({
-                    mapTitle: this.about["title"],
-                    comment: this.about["abstract"],
-                    printMapPanel: {
-                        map: {
-                            controls: [
-                                new OpenLayers.Control.Navigation(),
-                                new OpenLayers.Control.PanPanel(),
-                                new OpenLayers.Control.ZoomPanel(),
-                                new OpenLayers.Control.Attribution()
-                            ],
-                            eventListeners: {
-                                "preaddlayer": function(evt) {
-                                    if(evt.layer instanceof OpenLayers.Layer.Google) {
-                                        unsupportedLayers.push(evt.layer.name);
-                                        return false;
-                                    }
-                                },
-                                scope: this
+                    resizable: false,
+                    autoHeight: true,
+                    width: 360,
+                    items: [{
+                        xtype: "gxux_printpreview",
+                        autoHeight: true,
+                        mapTitle: this.about["title"],
+                        comment: this.about["abstract"],
+                        printMapPanel: {
+                            map: {
+                                controls: [
+                                    new OpenLayers.Control.Navigation({
+                                        zoomWheelEnabled: false,
+                                        zoomBoxEnabled: false
+                                    }),
+                                    new OpenLayers.Control.PanPanel(),
+                                    new OpenLayers.Control.Attribution()
+                                ],
+                                eventListeners: {
+                                    "preaddlayer": function(evt) {
+                                        if(evt.layer instanceof OpenLayers.Layer.Google) {
+                                            unsupportedLayers.push(evt.layer.name);
+                                            return false;
+                                        }
+                                    },
+                                    scope: this
+                                }
                             }
                         },
-                        items: [{
-                            xtype: "gx_zoomslider",
-                            vertical: true,
-                            height: 100,
-                            aggressive: true
-                        }]
-                    },
-                    printProvider: {
-                        capabilities: window.printCapabilities,
-                        listeners: {
-                            "beforeprint": function() {
-                                // The print module does not like array params.
-                                //TODO Remove when http://trac.geoext.org/ticket/216 is fixed.
-                                printWindow.items.get(0).printMapPanel.layers.each(function(l){
-                                    var params = l.get("layer").params;
-                                    for(var p in params) {
-                                        if (params[p] instanceof Array) {
-                                            params[p] = params[p].join(",");
+                        printProvider: {
+                            capabilities: window.printCapabilities,
+                            listeners: {
+                                "beforeprint": function() {
+                                    // The print module does not like array params.
+                                    //TODO Remove when http://trac.geoext.org/ticket/216 is fixed.
+                                    printWindow.items.get(0).printMapPanel.layers.each(function(l){
+                                        var params = l.get("layer").params;
+                                        for(var p in params) {
+                                            if (params[p] instanceof Array) {
+                                                params[p] = params[p].join(",");
+                                            }
                                         }
-                                    }
-                                })
-                            },
-                            "print": function() {printWindow.close();}
-                        }
-                    },
-                    includeLegend: true,
-                    sourceMap: this.mapPanel,
-                    legend: this.legendPanel
-                }));
-                printWindow.show();
-                
-                // measure the window content width by it's toolbar
-                printWindow.setWidth(0);
-                var tb = printWindow.items.get(0).items.get(0);
-                var w = 0;
-                tb.items.each(function(item){
-                    if(item.getEl()) {
-                        w += item.getWidth();
-                    }
-                });
-                printWindow.setWidth(
-                    Math.max(printWindow.items.get(0).printMapPanel.getWidth(),
-                    w + 20));
+                                    })
+                                },
+                                "print": function() {printWindow.close();}
+                            }
+                        },
+                        includeLegend: true,
+                        sourceMap: this.mapPanel,
+                        legend: this.legendPanel
+                    }]
+                }).show();                
                 printWindow.center();
                 
                 unsupportedLayers.length &&
@@ -1396,7 +1439,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 tooltip: this.publishActionText,
                 handler: this.makeExportDialog,
                 scope: this,
-                iconCls: 'icon-export'
+                iconCls: 'icon-export',
+                disabled: !this.mapID
             }),
             window.printCapabilities ? printButton : "",
             "-",
@@ -1424,7 +1468,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 handler: function() {
                     var extent, layer;
                     for(var i=0, len=this.map.layers.length; i<len; ++i) {
-                        layer = this.map.layers[i];
+                        layer = this.mapPanel.map.layers[i];
                         if(layer.getVisibility()) {
                             if(extent) {
                                 extent.extend(layer.maxExtent);
@@ -1441,6 +1485,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             enable3DButton
         ];
+        !this.mapID && this.on("saved", function() {
+            // enable the "Publish Map" button
+            tools[1].enable();
+        }, this);
 
         return tools;
     },
@@ -1565,7 +1613,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     makeExportDialog: function() { 
         new Ext.Window({
-            title: "Export Map",
+            title: this.publishActionText,
             layout: "fit",
             width: 380,
             autoHeight: true,
@@ -1678,20 +1726,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *  any configuration before applyConfig is called.
      */
     save : function(as){
-        var config = this.configManager.getConfig(this);
+        var config = this.getState();
         
-        var failure = function(response, options) {
-            var failureMessage = this.saveFailMessage;
-            if (response.status == 401) {
-                failureMessage = this.saveNotAuthorizedMessage;
-            }
-            new Ext.Window({
-                title: this.saveFailTitle,
-                style: "padding: 5px;",
-                html: failureMessage
-            }).show();
-        };
-
         if (!this.mapID || as) {
             /* create a new map */ 
             Ext.Ajax.request({
@@ -1707,7 +1743,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     this.mapID = id; //id is url, not mapID
                     this.fireEvent("saved", id);
                 }, 
-                failure: failure, 
                 scope: this
             });
         }
@@ -1721,7 +1756,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     /* nothing for now */
                     this.fireEvent("saved", this.mapID);
                 }, 
-                failure: failure, 
                 scope: this
             });         
         }

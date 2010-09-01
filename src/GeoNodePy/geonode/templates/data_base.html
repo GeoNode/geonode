@@ -6,10 +6,7 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/openlayers_header.html" %}
-{% include "geonode/geoext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
 {{ block.super }}
 <script type="text/javascript">
 Ext.onReady(function(){
@@ -45,7 +42,9 @@ Ext.onReady(function(){
             </td>
           </tr>
         </table>
-        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+        <p>
+          <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+        </p>
     </form>
   </div>
 
@@ -76,8 +75,7 @@ Ext.onReady(function(){
 {% endblock %}
 
 {% block sidebar %}
-<div class="threecol">
   {% block sidebar_info %}    
   {% endblock %}
-</div>
+
 {% endblock %}

@@ -2,32 +2,23 @@
 {% load i18n %}
 {% load navbar %}
 
-{% block title %} {% trans "Community Map List" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Browse Maps" %} - {{ block.super }} {% endblock %}
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-{% include "geonode/ux_header.html" %}
-{% include "geonode/gxp_header.html" %}
+{% include "geonode/app_header.html" %}
 {{ block.super }}
 <script type="text/javascript">
 Ext.onReady(function(){
-  
-  var rest_url = "{%url geonode.maps.views.maps %}";
 
-  var mapGrid = new MapGrid({
-      store : new Ext.data.JsonStore({
-          url: rest_url,
-          root: 'maps',
-          id: 'id',
-          fields: [
-              {name: 'id', mapping: 'id'},
-              {name: "title", mapping: "config.about.title"},
-              {name: "abstract", mapping: "config.about.abstract"},
-              {name: "contact", mapping: "config.about.contact"}
-          ],
-          autoLoad: true,
-      })
-  });
+{% autoescape off %}
+  var submitForm = function() {
+      Ext.query('#search_form form')[0].submit();
+  };
+  var searchButton = new Ext.Button({renderTo: 'submit_search', text: '{% trans "Search" %}',
+                                     handler: submitForm});
+  var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
+{% endautoescape %}
 
 });
 </script> 
@@ -39,23 +30,44 @@ Ext.onReady(function(){
 
 {% block main %}
 <div class="twocol">
-  <div id="data">
-    <div id="map-browser"></div>
-  </div>          
+
+  <div id="search_form" class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
+
+    <form action="{% url maps_search %}" method="POST">
+      {% csrf_token %}
+      <table>
+        <tr>
+          <td>
+            <input type="text" id="search_query" name="q" />
+          </td>
+          <td>
+            <div id="submit_search"></div>
+          </td>
+        </tr>
+      </table>
+      <p>
+        <a href="{% url maps_search %}">{% trans "All Maps" %}</a> |
+        <a href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "New Maps" %}</a>
+      </p>
+    </form>
+  </div>
+  
+  <div id="create" class="block">
+    <h2>{% trans "Create Maps" %}</h2>
+    <p>{% trans "Use GeoNode's Map Composer application to create your own maps.  Add layers from this GeoNode or remote services, and style them." %}
+    </p>
+    <p>
+      <a href="{%url geonode.maps.views.newmap %}">{% trans "Create your own map" %}</a>
+    </p>
+  </div>
+
+  <!-- "Your Maps" button goes here -->
+  <!-- create map button goes here -->
+
 </div>
 {% endblock %}
 
 {% block sidebar %}
-<div class="threecol">
-  <h3>{% trans "Contributed Maps" %}</h3>
-  {% blocktrans %}
-  <p>Contributed Maps are made by people like you. They are made from data hosted by the CAPRA GeoNode, as well as data hosted by other entities.</p>
-  <p>You can browse the contributed maps using the grid to the left.</p>
-  <p>Click on a map to select it. Then click <b>Open Map</b> to open it in a map editor, or click <b>Export Map</b> to export it as a widget.</p>
-  <p>Click here to{% endblocktrans %}
-    <a href="{%url geonode.maps.views.newmap %}">{% trans "create your own map" %}</a>!
-  </p>
-  The sidebar contains useful, but not urgent information.  Check it out, if you like.
-</div>
 {% endblock %}
 
