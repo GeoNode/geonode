@@ -265,7 +265,7 @@ h.add_credentials(_user,_password)
 @login_required
 def map_download(request, mapid):
     """ 
-    Complicated request
+    Download all the layers of a map as a batch
     XXX To do, remove layer status once progress id done 
     This should be fix because 
     """ 
@@ -276,17 +276,26 @@ def map_download(request, mapid):
     map_status = dict()
     if request.method == 'POST': 
         url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
-        resp, content = h.request(url,'POST',body=mapObject.json)
+
+        def perm_filter(layer):
+            return request.user.has_perm('maps.view_layer', obj=layer)
+
+        mapJson = mapObject.json(perm_filter)
+
+        resp, content = h.request(url,'POST',body=mapJson)
+
         if resp.status != 404 or 400: 
             request.session["map_status"] = eval(content)
             map_status = eval(content)
         else: 
             pass # XXX fix
+
     if request.method == 'GET':
         if "map_status" in request.session and type(request.session["map_status"]) == dict:
             msg = "You already started downloading a map"
         else: 
             msg = "You should download a map" 
+
     return render_to_response('maps/download.html', RequestContext(request, {
          "map_status" : map_status,
          "map" : mapObject,
