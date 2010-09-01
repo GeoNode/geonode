@@ -28,10 +28,18 @@ display: none;
 /*-----------------------
 General Styles
 -----------------------*/
+html {
+font-size: 100%;
+}
+
 body {
 margin: 0;
 color: #111;
+line-height:1.5;
+background:#fff;
 border-bottom: 1px solid #d5d5d5;
+font-size: 75%;
+font-family:Helvetica,Arial,sans-serif;
 }
 
 a {
@@ -93,6 +101,11 @@ width: 980px;
 margin: 0 auto;
 }
 
+.x-viewport .wrap {
+width: auto; /*fullscreen Ext pages */
+margin: 0 auto;
+}
+
 #header {
 background: #00a6d3 url(img/header-bg.png) repeat-x;
 border-top: 1px solid #7a7a7a;
@@ -103,6 +116,10 @@ font-size: 1.2em;
 #header .wrap {
 min-height: 1em;
 position: relative;
+}
+
+.x-viewport #header .wrap {
+padding: 2px 10px 2px 2px;
 }
 
 #logo {
@@ -122,6 +139,10 @@ margin-top: -0.5em;
 text-align: right;
 }
 
+.x-viewport #login-area {
+right: 10px;
+}
+
 #login-area a {
 color: #fff;
 font-weight: bold;
@@ -136,6 +157,49 @@ text-decoration: underline;
 #crossbar {
 background: #003c4c;
 border-bottom: 2px solid #008cb3;
+color: #fff;
+}
+
+/* needs to match crossbar, but also have self-clearing float behavior */
+#topPanel {
+background: #003c4c;
+border-bottom: 2px solid #008cb3;
+color: #fff;
+padding: 8px 10px;
+}
+
+#topPanel :after {
+content: " ";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+
+#topPanel {
+display: inline-block; /* IE 7 */
+}
+
+#topPanel {
+display: block;
+}
+
+* html #topPanel {
+zoom: 1; /* IE < 7 */
+}
+
+#topPanel * {
+color: #fff;
+}
+
+#topPanel #map-title-header a.maplist {
+float: left;
+margin: 0 0.5em 0 0;
+}
+
+#topPanel #map-title-header strong {
+font-size: 1.35em;
+line-height: 1em;
 }
 
 #sitenav {
