@@ -18,7 +18,7 @@ from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from StringIO import StringIO
-from xml.etree.ElementTree import parse
+from xml.etree.ElementTree import parse, XML
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
@@ -770,9 +770,39 @@ class Layer(models.Model, PermissionLevelMixin):
     @property
     def attribute_names(self):
         if self.resource.resource_type == "featureType":
-            return self.resource.attributes
+            dft_url = settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
+                    "service": "wfs",
+                    "version": "1.0.0",
+                    "request": "DescribeFeatureType",
+                    "typename": self.typename
+                })
+            try:
+                http = httplib2.Http()
+                http.add_credentials(_user, _password)
+                response, body = http.request(dft_url)
+                doc = XML(body)
+                path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
+                atts = [n.attrib["name"] for n in doc.findall(path)]
+            except Exception, e:
+                atts = []
+            return atts
         elif self.resource.resource_type == "coverage":
-            return [dim.name for dim in self.resource.dimensions]
+            dc_url = settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
+                     "service": "wcs",
+                     "version": "1.1.0",
+                     "request": "DescribeCoverage",
+                     "identifiers": self.typename
+                })
+            try:
+                http = httplib2.Http()
+                http.add_credentials(_user, _password)
+                response, body = http.request(dc_url)
+                doc = XML(body)
+                path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
+                atts = [n.text for n in doc.findall(path)]
+            except Exception, e:
+                atts = []
+            return atts
 
     @property
     def display_type(self):
