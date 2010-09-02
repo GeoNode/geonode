@@ -1,5 +1,6 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
+from geonode.maps.gs_helpers import fixup_style
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -22,7 +23,6 @@ import math
 import httplib2 
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
-from operator import itemgetter
 import re
 from urllib import urlencode
 from urlparse import urlparse
@@ -116,19 +116,8 @@ LAYER_LEV_NAMES = {
 
 @transaction.commit_manually
 def maps(request, mapid=None):
-    if request.method == 'GET' and mapid is None:
-        map_configs = [{"id": map.pk, "config": map.viewer_json()} for map in Map.objects.all()
-                       if request.user.has_perm('maps.view_map', obj=map)]
-        return HttpResponse(json.dumps({"maps": map_configs}), mimetype="application/json")
-    elif request.method == 'GET' and mapid is not None:
-        map = Map.objects.get(pk=mapid)
-        if request.user.has_perm('maps.view_map', obj=map):
-            config = map.viewer_json()
-            return HttpResponse(json.dumps(config))
-        else:
-            return HttpResponse(loader.render_to_string('401.html', 
-                RequestContext(request, {})), status=401)
-        
+    if request.method == 'GET':
+        return render_to_response('maps.html', RequestContext(request))
     elif request.method == 'POST':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -183,8 +172,6 @@ def mapJSON(request, mapid):
                 status=400
             )
 
-
-@csrf_exempt
 def newmap(request):
     '''
     View that creates a new map.  
@@ -278,7 +265,7 @@ h.add_credentials(_user,_password)
 @login_required
 def map_download(request, mapid):
     """ 
-    Complicated request
+    Download all the layers of a map as a batch
     XXX To do, remove layer status once progress id done 
     This should be fix because 
     """ 
@@ -289,17 +276,26 @@ def map_download(request, mapid):
     map_status = dict()
     if request.method == 'POST': 
         url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
-        resp, content = h.request(url,'POST',body=mapObject.json)
+
+        def perm_filter(layer):
+            return request.user.has_perm('maps.view_layer', obj=layer)
+
+        mapJson = mapObject.json(perm_filter)
+
+        resp, content = h.request(url,'POST',body=mapJson)
+
         if resp.status != 404 or 400: 
             request.session["map_status"] = eval(content)
             map_status = eval(content)
         else: 
             pass # XXX fix
+
     if request.method == 'GET':
         if "map_status" in request.session and type(request.session["map_status"]) == dict:
             msg = "You already started downloading a map"
         else: 
             msg = "You should download a map" 
+
     return render_to_response('maps/download.html', RequestContext(request, {
          "map_status" : map_status,
          "map" : mapObject,
@@ -502,7 +498,7 @@ def deletemap(request, mapid):
             layer.delete()
         map.delete()
 
-        return HttpResponseRedirect(reverse("geonode.views.community"))
+        return HttpResponseRedirect(reverse("geonode.maps.views.maps"))
 
 def mapdetail(request,mapid): 
     '''
@@ -781,7 +777,7 @@ def upload_layer(request):
         try:
             layer, errors = _handle_layer_upload(request)
         except:
-            errors = [GENERIC_UPLOAD_ERROR] 
+            errors = [GENERIC_UPLOAD_ERROR]
         
         result = {}
         if len(errors) > 0:
@@ -816,7 +812,7 @@ def _updateLayer(request, layer):
         try:
             layer, errors = _handle_layer_upload(request, layer=layer)
         except:
-            errors = [GENERIC_UPLOAD_ERROR] 
+            errors = [GENERIC_UPLOAD_ERROR]
 
         result = {}
         if len(errors) > 0:
@@ -843,9 +839,8 @@ def _handle_layer_upload(request, layer=None):
     if layer is None:
         overwrite = False
         # XXX Give feedback instead of just replacing name
-        # XXX We need a better way to remove xml-unsafe characters
-        name = layer_name
-        name = name.replace(" ", "_")
+        xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
+        name = xml_unsafe.sub("_", layer_name)
         proposed_name = name
         count = 1
         while Layer.objects.filter(name=proposed_name).count() > 0:
@@ -909,6 +904,8 @@ def _handle_layer_upload(request, layer=None):
         create_store(name, cfg, overwrite=overwrite)
     except geoserver.catalog.UploadError:
         errors.append(_("An error occurred while loading the data."))
+        tmp = cat.get_store(name)
+        if tmp: cat.delete(tmp)
     except geoserver.catalog.ConflictingDataError:
         errors.append(_("There is already a layer with the given name."))
 
@@ -927,6 +924,7 @@ def _handle_layer_upload(request, layer=None):
                 gs_resource.latlon_bbox = gs_resource.native_bbox
                 gs_resource.projection = "EPSG:4326"
                 cat.save(gs_resource)
+
             typename = gs_resource.store.workspace.name + ':' + gs_resource.name
             
             # if we created a new store, create a new layer
@@ -947,6 +945,7 @@ def _handle_layer_upload(request, layer=None):
             layer.metadata_author = author_contact
             layer.save()
             layer.set_default_permissions()
+            fixup_style(cat, gs_resource)
         except:
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
@@ -1488,18 +1487,16 @@ def maps_search(request):
     except: 
         limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
 
-    result = _maps_search(query, start, limit)
 
-    sort_field = params.get('sort', '')  
-    if sort_field:
-        sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')
-        sort_dir = params.get('dir', '')
-        result['rows'] = sorted(result['rows'], key=itemgetter(sort_field), reverse=(sort_dir == "DESC"))
+    sort_field = params.get('sort', u'')
+    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')  
+    sort_dir = params.get('dir', 'ASC')
+    result = _maps_search(query, start, limit, sort_field, sort_dir)
 
     result['success'] = True
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
-def _maps_search(query, start, limit):
+def _maps_search(query, start, limit, sort_field, sort_dir):
 
     keywords = _split_query(query)
  
@@ -1511,6 +1508,10 @@ def _maps_search(query, start, limit):
         maps = maps.filter(
               Q(title__icontains=keyword)
             | Q(abstract__icontains=keyword))
+
+    if sort_field:
+        order_by = ("" if sort_dir == "ASC" else "-") + sort_field
+        maps = maps.order_by(order_by)
 
     maps_list = []
 

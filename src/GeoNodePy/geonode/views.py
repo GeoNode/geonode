@@ -16,9 +16,6 @@ def static(request, page):
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
     }))
 
-def community(request):
-    return render_to_response('community.html', RequestContext(request))
-
 def lang(request): 
     return render_to_response('lang.js', mimetype="text/javascript")
 

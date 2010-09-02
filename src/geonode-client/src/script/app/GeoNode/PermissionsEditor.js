@@ -35,7 +35,8 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             align: 'right',
             border: false,
             store: userStore,
-            displayField: 'username'
+            displayField: 'username',
+            emptyText: gettext("Type a username")
         });
 
         return new Ext.Panel({

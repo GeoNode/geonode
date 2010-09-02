@@ -2,6 +2,8 @@ import urllib, urllib2, cookielib
 from datetime import date
 from django.template import Context
 from django.template.loader import get_template
+from owslib.csw import CatalogueServiceWeb, namespaces
+from owslib.util import nspath
 from xml.dom import minidom
 from xml.etree.ElementTree import XML
 
@@ -46,7 +48,10 @@ class Catalog(object):
         self.connected = False
 
     def get_by_uuid(self, uuid):
-        pass
+        csw = CatalogueServiceWeb(self.base + "srv/en/csw")
+        csw.getrecordbyid([uuid], outputschema=namespaces["gmd"])
+        recs = csw.records
+        return recs.values()[0] if len(recs) > 0 else None
 
     def csw_request(self, layer, template):
         tpl = get_template(template)
@@ -56,9 +61,10 @@ class Catalog(object):
         md_doc = tpl.render(ctx)
         url = "%ssrv/en/csw" % self.base
         headers = {
-            "Content-Type": "application/xml",
+            "Content-Type": "application/xml; charset=UTF-8",
             "Accept": "text/plain"
         }
+        md_doc = md_doc.encode("utf-8")
         request = urllib2.Request(url, md_doc, headers)
         response = self.urlopen(request)
         return response

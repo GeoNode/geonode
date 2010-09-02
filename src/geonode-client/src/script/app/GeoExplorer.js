@@ -916,7 +916,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             data: data
         });
 
-        var expander = new GeoExplorer.CapabilitiesRowExpander();
+        var expander = new GeoExplorer.CapabilitiesRowExpander({
+            ows: this.localGeoServerBaseUrl + "ows"
+        });
         
         var addLayers = function() {
             var key = sourceComboBox.getValue();
@@ -974,6 +976,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             listeners: {
                 select: function(combo, record, index) {
                     var store = this.layerSources[record.get("id")].store;
+                    expander.ows = store.url;
                     capGridPanel.reconfigure(store, capGridPanel.getColumnModel());
                     // TODO: remove the following when this Ext issue is addressed
                     // http://www.extjs.com/forum/showthread.php?100345-GridPanel-reconfigure-should-refocus-view-to-correct-scroller-height&p=471843
@@ -1193,15 +1196,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     title: this.printWindowTitleText,
                     modal: true,
                     border: false,
-                    resizable: false,
                     autoHeight: true,
-                    width: 360,
+                    resizable: false,
                     items: [{
                         xtype: "gxux_printpreview",
-                        autoHeight: true,
                         mapTitle: this.about["title"],
                         comment: this.about["abstract"],
+                        minWidth: 336,
                         printMapPanel: {
+                            height: Math.min(450, Ext.get(document.body).getHeight()-150),
+                            autoWidth: true,
                             map: {
                                 controls: [
                                     new OpenLayers.Control.Navigation({
@@ -1632,17 +1636,28 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
         var titleField = new Ext.form.TextField({
             width: '95%',
-            fieldLabel: this.metaDataMapTitle
+            fieldLabel: this.metaDataMapTitle,
+            value: this.about.title,
+            allowBlank: false,
+            enableKeyEvents: true,
+            listeners: {
+                "valid": function() {
+                    saveAsButton.enable();
+                    saveButton.enable();
+                },
+                "invalid": function() {
+                    saveAsButton.disable();
+                    saveButton.disable();
+                }
+            }
         });
 
         var abstractField = new Ext.form.TextArea({
             width: '95%',
             height: 200,
-            fieldLabel: this.metaDataMapAbstract
+            fieldLabel: this.metaDataMapAbstract,
+            value: this.about["abstract"]
         });
-
-        titleField.setValue(this.about.title);
-        abstractField.setValue(this.about["abstract"]);
 
         var metaDataPanel = new Ext.FormPanel({
             bodyStyle: {padding: "5px"},          
@@ -1654,8 +1669,29 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         metaDataPanel.enable();
-
-        var app = this;
+        
+        var saveAsButton = new Ext.Button({
+            text: this.metadataFormSaveAsCopyText,
+            disabled: !this.about.title,
+            handler: function(e){
+                this.about.title = titleField.getValue();
+                this.about["abstract"] = abstractField.getValue();
+                this.metadataForm.hide();
+                this.save(true);
+            },
+            scope: this
+        });
+        var saveButton = new Ext.Button({
+            text: this.metadataFormSaveText,
+            disabled: !this.about.title,
+            handler: function(e){
+                this.about.title = titleField.getValue();
+                this.about["abstract"] = abstractField.getValue();
+                this.metadataForm.hide();
+                this.save();
+            },
+            scope: this
+        });
 
         this.metadataForm = new Ext.Window({
             title: this.metaDataHeader,
@@ -1666,40 +1702,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             autoHeight: true,
             bbar: [
                 "->",
-                new Ext.Button({
-                    text: this.metadataFormSaveAsCopyText,
-                    handler: function(e){
-                        this.about.title = titleField.getValue();
-                        this.about["abstract"] = abstractField.getValue();
-                        this.metadataForm.hide();
-                        this.save(true);
-                    },
-                    scope: this
-                }),
-                new Ext.Button({
-                    text: this.metadataFormSaveText,
-                    handler: function(e){
-                        this.about.title = titleField.getValue();
-                        this.about["abstract"] = abstractField.getValue();
-                        this.metadataForm.hide();
-                        this.save();
-                    },
-                    scope: this
-                }),
+                saveAsButton,
+                saveButton,
                 new Ext.Button({
                     text: this.metadataFormCancelText,
                     handler: function() {
+                        titleField.setValue(this.about.title);
+                        abstractField.setValue(this.about["abstract"]);
                         this.metadataForm.hide();
                     },
                     scope: this
                 })
-            ],
-            listeners: {
-                hide: function(win){
-                    titleField.setValue(app.about.title);
-                    abstractField.setValue(app.about["abstract"]);
-                }
-            }
+            ]
         });
     },
 
@@ -1725,7 +1739,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *  Subclasses that load config asynchronously can override this to load
      *  any configuration before applyConfig is called.
      */
-    save : function(as){
+    save: function(as){
         var config = this.getState();
         
         if (!this.mapID || as) {

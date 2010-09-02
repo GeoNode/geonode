@@ -31,7 +31,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.searchStore = new Ext.data.JsonStore({
             url: this.searchURL,
             root: 'rows',
-            idProperty: 'name',
+            idProperty: 'uuid',
             remoteSort: true,
             totalProperty: 'total',
             fields: [
@@ -208,69 +208,96 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         
         var columns = [
             expander,
-/*            {header: this.nameHeaderText,
+            /*
+            {header: this.nameHeaderText,
              dataIndex: 'name',
              hidden: true,
              id: 'name',
              width: 35
             },*/
-            {header: this.titleHeaderText,
-             dataIndex: 'title',
-             id: 'title',
-             renderer: function(value, metaData, record, rowIndex, colIndex, store) {
-                 var is_local = record.get('_local');
-                 var detail = record.get('detail');
+            {
+                header: this.titleHeaderText,
+                dataIndex: 'title',
+                id: 'title',
+                renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+                    var is_local = record.get('_local');
+                    var detail = record.get('detail');
 
-                 /* do not show detail link for layers without read permission */
-                 if (is_local) {
-                     var permissions = record.get('_permissions');
-                     if (permissions.view != true) {
-                         detail = '';
-                     }
-                 }
-                 if (detail) {
-                     detail = '<a href="' + detail + '">' + value + '</a>';
-                 }
-                 else {
-                     detail = value;
-                 }
-                 return detail;
-             }
-             },
-             {dataIndex: '_local',
-              id: 'layer_info',
-              width: 6,
-              resizable: false,
-              renderer: function(value, metaData, record, rowIndex, colIndex, store) {
-                  var is_local = record.get('_local');
-                  var info_type = '';
-                  var tooltip = '';
+                    /* do not show detail link for layers without read permission */
+                    if (is_local) {
+                        var permissions = record.get('_permissions');
+                        if (permissions.view != true) {
+                            detail = '';
+                        }
+                    }
+                    if (detail) {
+                        detail = '<a href="' + detail + '">' + value + '</a>';
+                    }
+                    else {
+                        detail = value;
+                    }
+                    return detail;
+                }
+            },
+            {
+                dataIndex: '_local',
+                id: 'layer_info',
+                width: 6,
+                resizable: false,
+                renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+                    var is_local = record.get('_local');
+                    var info_type = '';
+                    var tooltip = '';
                   
-                  /* do not show detail link for layers without read permission */
-                  if (is_local) {
-                      var permissions = record.get('_permissions');
-                      if (permissions.view != true) {
-                          detail = '';
-                          info_type = 'unviewable-layer';
-                          tooltip = unviewableTooltip;
-                      }
-                      else {
-                          info_type = 'info-layer';
-                      }
-                  }
-                  else {
-                      info_type = 'remote-layer';
-                      tooltip = remoteTooltip;
-                  }
-
-                  info = '<span class="' + info_type + '" title="' + tooltip + '"></span>';
-                  return info;
-              }
-              }
-             ];
+                    /* do not show detail link for layers without read permission */
+                    if (is_local) {
+                        var permissions = record.get('_permissions');
+                        if (permissions.view != true) {
+                            detail = '';
+                            info_type = 'unviewable-layer';
+                            tooltip = unviewableTooltip;
+                        }
+                        else {
+                            info_type = 'info-layer';
+                        }
+                    }
+                    else {
+                        info_type = 'remote-layer';
+                        tooltip = remoteTooltip;
+                    }
+                    info = '<span class="' + info_type + '" title="' + tooltip + '"></span>';
+                    return info;
+                }
+            }
+        ];
         
         if (this.trackSelection == true) {
-            sm = new Ext.grid.CheckboxSelectionModel({checkOnly: true});
+            sm = new Ext.grid.CheckboxSelectionModel({
+                checkOnly: true,
+                renderer: function(v, p, record){
+                    /*
+                     *  A bit of a hack. CheckboxSelectionModel's
+                     *  mousedown selection behavior
+                     *  is tied to rendered div's class.
+                     */
+                    var permissions = record.get('_permissions');
+                    if (permissions.view != true) {
+                        console.log(record)
+                        return '<div>&#160;</div>'
+                    } else {
+                        return '<div class="x-grid3-row-checker">&#160;</div>';
+                    }
+                },
+                listeners: {
+                    'beforerowselect' : function(sm, rowIndex, keepExisting, record){
+                        var permissions = record.get('_permissions');
+                        if (permissions.view != true) {
+                            return false;
+                        }
+                    }
+                }
+            });
+
             this.dataCart = new GeoNode.DataCartStore({selModel: sm});
             columns.push(sm);
             tableCfg.selModel = sm;

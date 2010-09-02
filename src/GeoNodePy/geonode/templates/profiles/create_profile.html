@@ -1,9 +1,11 @@
-{% include "profiles/base.html" %}
+{% extends "profiles/base.html" %}
 
-{% block content %}
-<form action="" method="post">
-{% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="Submit" />
-</form>
+{% block main %}
+<div class="twocol">
+  <form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+  </form>
+</div>
 {% endblock %}
