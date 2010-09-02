@@ -79,8 +79,11 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
     public void testNoAuth() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
                 + getLayerId(MockData.BUILDINGS));
-        assertEquals(401, resp.getErrorCode());
-        assertEquals("Basic realm=\"GeoServer Realm\"", resp.getHeader("WWW-Authenticate"));
+        // In HIDE mode restricted access gets an OGC service error as if the layer does not exist
+        assertEquals(200, resp.getErrorCode());
+        Document doc = dom(new ByteArrayInputStream(resp.getOutputStreamContent().getBytes()));
+        assertXpathEvaluatesTo("0", "count(/wfs:FeatureCollection)", doc);
+        assertNull(resp.getHeader("WWW-Authenticate"));
     }
 
     public void testAdminBasic() throws Exception {

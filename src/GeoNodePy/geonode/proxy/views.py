@@ -11,7 +11,11 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def proxy(request):
     if 'url' not in request.GET:
-        return HttpResponse('The proxy service requires a URL-encoded URL as a parameter.', status=400, content_type="text/plain")
+        return HttpResponse(
+                "The proxy service requires a URL-encoded URL as a parameter.",
+                status=400,
+                content_type="text/plain"
+                )
 
     url = urlsplit(request.GET['url'])
     locator = url.path
@@ -20,10 +24,18 @@ def proxy(request):
     if url.fragment != "":
         locator += '#' + url.fragment
 
+    headers = {}
+    if settings.SESSION_COOKIE_NAME in request.COOKIES:
+        headers["Cookie"] = request.META["HTTP_COOKIE"]
+
     conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.raw_post_data)
+    conn.request(request.method, locator, request.raw_post_data, headers)
     result = conn.getresponse()
-    response = HttpResponse(result.read(), status=result.status, content_type=result.getheader("Content-Type", "text/plain"))
+    response = HttpResponse(
+            result.read(),
+            status=result.status,
+            content_type=result.getheader("Content-Type", "text/plain")
+            )
     return response
 
 

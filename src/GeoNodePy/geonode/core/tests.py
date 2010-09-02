@@ -29,11 +29,11 @@ class GeoNodeClientTests(TestCase):
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_Community(self):
-        '''Test community page renders.'''
+    def test_Maps(self):
+        '''Test Maps page renders.'''
 
         c = Client()
-        response = c.get('/community/')
+        response = c.get('/maps/')
         self.failUnlessEqual(response.status_code, 200)
 
     def test_Help(self):
@@ -41,13 +41,6 @@ class GeoNodeClientTests(TestCase):
 
         c = Client()
         response = c.get('/help/')
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_Files(self):
-        '''Test the files page renders.'''
- 
-        c = Client()
-        response = c.get('/files/')
         self.failUnlessEqual(response.status_code, 200)
     
     def test_Profiles(self):
