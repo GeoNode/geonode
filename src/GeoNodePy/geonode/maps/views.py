@@ -825,8 +825,9 @@ def _handle_layer_upload(request, layer=None):
     """
     layer_name = request.POST.get('layer_name');
     base_file = request.FILES.get('base_file');
+
     if not base_file:
-        return [_("You must specify a layer data file to upload.")]
+        return None, [_("You must specify a layer data file to upload.")]
     
     if layer is None:
         overwrite = False
@@ -843,20 +844,21 @@ def _handle_layer_upload(request, layer=None):
         overwrite = True
         name = layer.name
 
+
     errors = []
     cat = Layer.objects.gs_catalog
     
     if not name:
-        return[_("Unable to determine layer name.")]
+        return None, [_("Unable to determine layer name.")]
 
     # shapefile upload
     elif base_file.name.lower().endswith('.shp'):
         # check that we are uploading the same resource 
         # type as the existing resource.
         if layer is not None:
-            info = cat.get_resource(name)
+            info = cat.get_resource(name, store=cat.get_store(name))
             if info.resource_type != FeatureType.resource_type:
-                return [_("This resource may only be replaced with raster data.")]
+                return None, [_("This resource may only be replaced with raster data.")]
         
         create_store = cat.create_featurestore
         dbf_file = request.FILES.get('dbf_file')
@@ -880,11 +882,10 @@ def _handle_layer_upload(request, layer=None):
         if prj_file:
             cfg['prj'] = prj_file
 
-
     # any other type of upload
     else:
         if layer is not None:
-            info = cat.get_resource(name)
+            info = cat.get_resource(name, store=cat.get_store(name))
             if info.resource_type != Coverage.resource_type:
                 return [_("This resource may only be replaced with shapefile data.")]
 
@@ -908,7 +909,8 @@ def _handle_layer_upload(request, layer=None):
         csw_record = None
         layer = None
         try:
-            gs_resource = cat.get_resource(name)
+            gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
+
             if gs_resource.latlon_bbox is None:
                 # If GeoServer couldn't figure out the projection, we just
                 # assume it's lat/lon to avoid a bad GeoServer configuration
@@ -918,7 +920,7 @@ def _handle_layer_upload(request, layer=None):
                 cat.save(gs_resource)
 
             typename = gs_resource.store.workspace.name + ':' + gs_resource.name
-            
+
             # if we created a new store, create a new layer
             layer = Layer.objects.create(name=gs_resource.name, 
                                          store=gs_resource.store.name,
@@ -938,6 +940,7 @@ def _handle_layer_upload(request, layer=None):
             layer.save()
             layer.set_default_permissions()
             fixup_style(cat, gs_resource)
+
         except:
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
