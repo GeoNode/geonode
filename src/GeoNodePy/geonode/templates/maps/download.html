@@ -44,7 +44,7 @@
                 renderTo: 'cancel',
                 handler: function() { 
                     Ext.Ajax.request({ 
-                        url : "http://localhost:8000/geoserver/rest/process/batchDownload/kill/" + process["process"]["id"], 
+                        url : "{{site}}geoserver/rest/process/batchDownload/kill/" + process["process"]["id"],
                         method: "GET",
                         success: function(result) { 
                             alert("You sucessfuly canceled the download"); 

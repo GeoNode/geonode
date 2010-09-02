@@ -27,12 +27,19 @@
 Ext.onReady(function(){
 {% autoescape off %}
   var form_target = "{% url geonode.maps.views.upload_layer %}";
-
+  var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
   var layer_name = new Ext.form.TextField({
       id: 'layer_name',
       fieldLabel: gettext('Name'),
       name: 'layer_name',
       emptyText: gettext('Unique name for layer.  Defaults to file name.'),
+      validator: function(name) {
+          if (name.search(xml_unsafe) != -1) {
+              return gettext("The layer name must consist only of letters, numbers, and underscores.");
+          } else {
+              return true;
+          }
+      },
       allowBlank: false
   });
 
@@ -150,7 +157,9 @@ Ext.onReady(function(){
       var main_filename = base_file.getValue();
       var extension_index = main_filename.search(/\.\w+$/i);
       if (extension_index != -1 && layer_name.getValue() == "") {
-          layer_name.setValue(main_filename.substring(0,extension_index));
+          var cleaned = main_filename.substring(0, extension_index);
+          cleaned = cleaned.replace(xml_unsafe, "_");
+          layer_name.setValue(cleaned);
       }
     })
     disable_shapefile_inputs();

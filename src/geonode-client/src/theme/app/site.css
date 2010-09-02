@@ -60,7 +60,8 @@ color: #d8d8d8;
 Boilerplate overrides
 -----------------------*/
 table.x-btn td,
-.x-panel td {
+.x-panel td,
+.x-toolbar-ct td {
 border-bottom: 0 none transparent;
 line-height: 1em;
 }
@@ -70,8 +71,19 @@ table.x-btn td.x-btn-tc {
 height: 1px;
 }
 
+table.x-btn td.x-btn-tl,
+table.x-btn td.x-btn-tr {
+height: 2px;
+}
+
+table.x-btn td.x-btn-tr i, 
+table.x-btn td.x-btn-tl i {
+height:2px;
+}
+
 form table,
-.x-panel table {
+.x-panel table, 
+.x-toolbar-ct table {
 margin-bottom: 0;
 }
 
@@ -274,6 +286,30 @@ background: #f1f6f7;
 border-top: 3px solid #cde2e8;
 border-bottom: 3px solid #cde2e8;
 }
+
+#footer .onecol {
+width: 920px;
+margin: 0 10px;
+padding: 10px 20px;
+background: #f1f6f7;
+}
+
+#footer .twocol {
+width: 600px;
+margin: 0 10px;
+padding: 10px 20px;
+float: left;
+background: #f1f6f7;
+}
+
+#footer .threecol {
+width: 260px;
+margin: 0 10px;
+padding: 10px 20px;
+float: left;
+background: #f1f6f7;
+}
+
 
 /*-----------------------
 CAPRA Styles (Does this belong in a site-specific theme?)
