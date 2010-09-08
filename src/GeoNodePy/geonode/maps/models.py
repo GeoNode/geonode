@@ -1079,8 +1079,7 @@ class Map(models.Model, PermissionLevelMixin):
     def local_layers(self): 
         return True
 
-    @property
-    def json(self):
+    def json(self, layer_filter):
         map_layers = MapLayer.objects.filter(map=self.id)
         layers = [] 
         for map_layer in map_layers:
@@ -1089,6 +1088,10 @@ class Map(models.Model, PermissionLevelMixin):
                 layers.append(layer)
             else: 
                 pass 
+
+        if layer_filter:
+            layers = filter(layer_filter, layers)
+
         map = { 
             "map" : { 
                 "title" : self.title, 

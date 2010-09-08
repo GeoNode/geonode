@@ -30,6 +30,7 @@
   <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by the GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and returning it much more quickly.</p>
 
   <h4>OpenLayers Example Code</h4>
+
   <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>
   <p><code>var geonodeLayer = new OpenLayers.Layer.WMS("GeoNode Risk Data", "http://demo.geonode.org/geoserver/wms",{ layers: "risk:nicaragua_admin" });</code></p>
 
@@ -48,14 +49,14 @@
 {% endblock %}
 {% block sidebar %}
 <div class="threecol">
+
   <h3>GeoNode's Web Services</h3>
   <p>GeoNode's Web Services are available from the following URLs:</p>
   <ul>
     <li><strong>WMS:</strong> <code>http://demo.geonode.org/geoserver/wms</code></li>
     <li><strong>WFS:</strong> <code>http://demo.geonode.org/geoserver/wfs</code></li>
     <li><strong>GeoWebCache Tiles:</strong> <code>http://demo.geonode.org/geoserver/gwc</code></li>
-    <li><strong>KML through WMS:</strong> <code>http://demo.geonode.org/geoserver/wms/kml?layers=&lt;layername&gt;</code>
-    </li>
+    <li><strong>KML through WMS:</strong> <code>http://demo.geonode.org/geoserver/wms/kml?layers=&lt;layername&gt;</code></li>
   </ul>
 </div>
 {% endblock %}

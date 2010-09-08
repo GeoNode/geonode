@@ -85,7 +85,7 @@ The following steps should prepare a Python virtual environment for you::
   python bootstrap.py --no-site-packages # see note below
   source bin/activate
   paver build
-  django-admin.py createsuperuser --settings=capra.settings
+  django-admin.py createsuperuser --settings=geonode.settings
   paver host 
 
 Once fully started, you should see a message indicating the address of your geonode::
@@ -109,7 +109,7 @@ Once fully started, you should see a message indicating the address of your geon
 
 This command::
 
-  django-admin.py createsuperuser --settings=capra.settings
+  django-admin.py createsuperuser --settings=geonode.settings
 
 can be used to create additional administrative user accounts.  The administrative control panel is not
 linked from the main site, but can be accessed at http://localhost:8000/admin/
