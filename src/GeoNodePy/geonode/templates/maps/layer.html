@@ -129,7 +129,22 @@
     <a href="{{ layer.owner.get_profile.get_absolute_url }}"> {{ layer.owner.username }} </a>
 </p>
 <p> <strong>{% trans "Point of Contact" %}:</strong>
+  {% if layer.poc.user %}
     <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
+  {% else %}
+    <ul>
+      <li><strong>{% trans "Name" %}:</strong> {{ layer.poc.name}}</li>
+      <li><strong>{% trans "Email" %}:</strong>  {{ layer.poc.email }}</li>
+      <li><strong>{% trans "Organization" %}:</strong> {{ layer.poc.organization}}</li>
+      <li><strong>{% trans "Position" %}:</strong>: {{ layer.poc.position}}</li>
+      <li><strong>{% trans "Voice" %}:</strong>  {{ layer.poc.voice}}</li>
+      <li><strong>{% trans "Fax" %}:</strong> {{ layer.poc.fax}}</li>
+      <li><strong>{% trans "Delivery" %}:</strong> {{ layer.poc.delivery}}</li>
+      <li><strong>{% trans "Area" %}:</strong> {{ layer.poc.area}}</li>
+      <li><strong>{% trans "Zip Code" %}:</strong> {{ layer.poc.zipcode}}</li>
+      <li><strong>{% trans "Country" %}:</strong> {{ layer.poc.country}}</li>
+    </ul>
+  {% endif %}
 </p>
 <p> <strong>{% trans "Attributes" %}:</strong> 
     {{ layer.attribute_names|join:", " }}
