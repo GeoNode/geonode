@@ -28,7 +28,7 @@ from urllib import urlencode
 from urlparse import urlparse
 import uuid
 import unicodedata
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 
@@ -172,6 +172,7 @@ def mapJSON(request, mapid):
                 status=400
             )
 
+@csrf_response_exempt            
 def newmap(request):
     '''
     View that creates a new map.  
@@ -265,7 +266,7 @@ h.add_credentials(_user,_password)
 @login_required
 def map_download(request, mapid):
     """ 
-    Complicated request
+    Download all the layers of a map as a batch
     XXX To do, remove layer status once progress id done 
     This should be fix because 
     """ 
@@ -276,17 +277,26 @@ def map_download(request, mapid):
     map_status = dict()
     if request.method == 'POST': 
         url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
-        resp, content = h.request(url,'POST',body=mapObject.json)
+
+        def perm_filter(layer):
+            return request.user.has_perm('maps.view_layer', obj=layer)
+
+        mapJson = mapObject.json(perm_filter)
+
+        resp, content = h.request(url,'POST',body=mapJson)
+
         if resp.status != 404 or 400: 
             request.session["map_status"] = eval(content)
             map_status = eval(content)
         else: 
             pass # XXX fix
+
     if request.method == 'GET':
         if "map_status" in request.session and type(request.session["map_status"]) == dict:
             msg = "You already started downloading a map"
         else: 
             msg = "You should download a map" 
+
     return render_to_response('maps/download.html', RequestContext(request, {
          "map_status" : map_status,
          "map" : mapObject,
@@ -315,7 +325,7 @@ def check_download(request):
     return HttpResponse(content=content,status=status)
 
 
-@csrf_exempt
+@csrf_response_exempt
 def batch_layer_download(request):
     """
     batch download a set of layers
@@ -511,7 +521,7 @@ def mapdetail(request,mapid):
         'permissions_json': _perms_info_json(map, MAP_LEV_NAMES)
     }))
 
-@csrf_exempt
+@csrf_response_exempt
 @login_required
 def describemap(request, mapid):
     '''
@@ -606,7 +616,7 @@ class LayerDescriptionForm(forms.Form):
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
 
-@csrf_exempt
+@csrf_response_exempt
 @login_required
 def _describe_layer(request, layer):
     if request.user.is_authenticated():
@@ -668,7 +678,7 @@ def _describe_layer(request, layer):
     else: 
         return HttpResponse("Not allowed", status=403)
 
-@csrf_exempt
+@csrf_response_exempt
 def _removeLayer(request,layer):
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.delete_layer', obj=layer):
@@ -688,7 +698,7 @@ def _removeLayer(request,layer):
     else:  
         return HttpResponse("Not allowed",status=403)
 
-@csrf_exempt
+@csrf_response_exempt
 def _changeLayerDefaultStyle(request,layer):
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.change_layer', obj=layer):
@@ -722,7 +732,7 @@ def _changeLayerDefaultStyle(request,layer):
     else:  
         return HttpResponse("Not allowed",status=403)
 
-@csrf_exempt
+@csrf_response_exempt
 def layerController(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if (request.META['QUERY_STRING'] == "describe"):
@@ -759,7 +769,7 @@ GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your dat
 Please try again, or contact and administrator if the problem continues.")
 
 @login_required
-@csrf_exempt
+@csrf_response_exempt
 def upload_layer(request):
     if request.method == 'GET':
         return render_to_response('maps/layer_upload.html',
@@ -784,7 +794,7 @@ def upload_layer(request):
 
 
 @login_required
-@csrf_exempt
+@csrf_response_exempt
 def _updateLayer(request, layer):
     if not request.user.has_perm('maps.change_layer', obj=layer):
         return HttpResponse(loader.render_to_string('401.html', 
@@ -1150,7 +1160,7 @@ def _split_query(query):
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
-@csrf_exempt
+@csrf_response_exempt
 def metadata_search(request):
     """
     handles a basic search for data using the 
@@ -1379,7 +1389,7 @@ def _build_search_result(doc):
 def browse_data(request):
     return render_to_response('data.html', RequestContext(request, {}))
 
-@csrf_exempt    
+@csrf_response_exempt    
 def search_page(request):
     # for non-ajax requests, render a generic search page
 
@@ -1421,7 +1431,7 @@ def change_poc(request, ids, template = 'maps/change_poc.html'):
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
-@csrf_exempt
+@csrf_response_exempt
 def maps_search(request):
     """
     handles a basic search for maps using the 
@@ -1543,7 +1553,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     
     return result
 
-@csrf_exempt    
+@csrf_response_exempt    
 def maps_search_page(request):
     # for non-ajax requests, render a generic search page
 
