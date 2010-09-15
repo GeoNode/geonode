@@ -137,6 +137,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         
         var minItem = this.searchParams.start + 1;
         var maxItem = minItem + this.searchParams.limit - 1;
+        if (minItem > total) {
+            minItem = total;
+        }
         if (maxItem > total) {
             maxItem = total;
         }
