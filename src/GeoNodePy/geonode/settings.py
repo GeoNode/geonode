@@ -120,10 +120,6 @@ AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
 
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 LOGIN_REDIRECT_URL = "/"
-#Default settings for map composing application.
-DEFAULT_MAP_BASE_LAYER = "base:nic_admin"
-DEFAULT_MAP_CENTER = [-84.7, 12.8]
-DEFAULT_MAP_ZOOM = 7
 
 DEFAULT_LAYERS_OWNER='admin'
 
@@ -170,23 +166,7 @@ MAP_BASELAYERS = [{
     "name":"SATELLITE",
     "visibility": False,
     "fixed": True,
-  },{
-    "source":"any",
-    "type":"OpenLayers.Layer.WMS",
-    "group":"background",
-    "visibility": False,
-    "fixed": True,
-    "args":[
-      "base:CA",
-      "http://localhost:8001/geoserver/wms",
-      {
-        "layers":["base:CA"],
-        "format":"image/png",
-        "tiled": True,
-        "tilesOrigin":[-20037508.34,-20037508.34]
-      },
-      {"buffer":0}]
-    }]
+}]
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
