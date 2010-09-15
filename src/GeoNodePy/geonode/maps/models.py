@@ -12,6 +12,7 @@ from django.utils.html import escape
 import httplib2
 import simplejson
 import urllib
+from urlparse import urlparse
 import uuid
 import datetime
 from django.contrib.auth.models import User, Permission
@@ -759,7 +760,22 @@ class Layer(models.Model, PermissionLevelMixin):
         global _wms
         if (_wms is None) or (self.typename not in _wms.contents):
             wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
-            _wms = WebMapService(wms_url)
+            netloc = urlparse(wms_url).netloc
+            http = httplib2.Http()
+            http.add_credentials(_user, _password)
+            http.authorizations.append(
+                httplib2.BasicAuthentication(
+                    (_user, _password), 
+                    netloc,
+                    wms_url,
+                    {},
+                    None,
+                    None, 
+                    http
+                )
+            )
+            response, body = http.request(wms_url)
+            _wms = WebMapService(wms_url, xml=body)
         return _wms[self.typename]
 
     def metadata_csw(self):
