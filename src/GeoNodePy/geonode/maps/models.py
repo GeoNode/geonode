@@ -1389,11 +1389,15 @@ class MapLayer(models.Model):
     """
     
     def local(self): 
-        layer = Layer.objects.filter(typename=self.name)
-        if layer.count() == 0:
-            return False
+        """
+        Tests whether this layer is served by the GeoServer instance that is
+        paired with the GeoNode site.  Currently this is based on heuristics,
+        but we try to err on the side of false negatives.
+        """
+        if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
+            return Layer.objects.filter(typename=self.name).count() != 0
         else: 
-            return True
+            return False
  
     def source_config(self):
         """
