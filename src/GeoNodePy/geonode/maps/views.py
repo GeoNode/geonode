@@ -261,7 +261,21 @@ def newmap(request):
     }))
 
 h = httplib2.Http()
-h.add_credentials(_user,_password)
+h.add_credentials(_user, _password)
+h.add_credentials(_user, _password)
+_netloc = urlparse(settings.GEOSERVER_BASE_URL).netloc
+h.authorizations.append(
+    httplib2.BasicAuthentication(
+        (_user, _password), 
+        _netloc,
+        settings.GEOSERVER_BASE_URL,
+        {},
+        None,
+        None, 
+        h
+    )
+)
+
 
 @login_required
 def map_download(request, mapid):
@@ -283,11 +297,14 @@ def map_download(request, mapid):
 
         mapJson = mapObject.json(perm_filter)
 
-        resp, content = h.request(url,'POST',body=mapJson)
+        resp, content = h.request(url, 'POST', body=mapJson)
 
-        if resp.status != 404 or 400: 
-            request.session["map_status"] = eval(content)
-            map_status = eval(content)
+        print resp
+        print content
+
+        if resp.status not in (400, 404, 417):
+            map_status = json.loads(content)
+            request.session["map_status"] = map_status
         else: 
             pass # XXX fix
 
