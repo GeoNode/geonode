@@ -70,7 +70,7 @@
             });
             
             Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
-                showStyle(elem.previousSibling.value);
+                showStyle(Ext.get(elem).prev("input").getAttribute("value"));
             });
 {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
 {% if can_change_permissions %}
