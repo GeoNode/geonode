@@ -295,9 +295,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             strokeDashstyle: "solid",
             pointRadius: 3,
             graphicName: "square",
+            fontColor: "#000000",
+            fontSize: 10,
             haloColor: "#FFFFFF",
-            fontColor: "#000000"
+            haloOpacity: 1,
+            haloRadius: 1
         };
+        
+        // set maxGetUrlLength to avoid non-compliant GET urls for WMS GetMap
+        OpenLayers.Tile.Image.prototype.maxGetUrlLength = 2048;
 
         if (!config.map) {
             config.map = {};
@@ -775,6 +781,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *      only item.
      */
     createStylesPanel: function(options) {
+        var layer = options.layerRecord.get("layer");
+
         var stylesPanel, stylesDialog;
         var createStylesDialog = function() {
             if (stylesPanel) {
@@ -783,6 +791,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     i.disable();
                 });
             }
+            var modified = false;
             stylesDialog = new gxp.WMSStylesDialog(Ext.apply({
                 style: "padding: 10px 10px 0 10px;",
                 editable: layer.url.replace(
@@ -801,13 +810,28 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         stylesDialog.editable === false &&
                             stylesPanel.getFooterToolbar().hide();
                     },
-                    "modified": function() {
-                        // enable the save button
+                    "modified": function(cmp, name) {
+                        // enable the cancel and save button
+                        stylesPanel.buttons[0].enable();
                         stylesPanel.buttons[1].enable();
+                        // instant style preview
+                        var sld = cmp.createSLD({userStyles: [name]});
+                        layer.mergeNewParams({
+                            "STYLES": null,
+                            "SLD_BODY": sld
+                        });
+                        modified = true;
                     },
-                    "styleselected": function() {
+                    "styleselected": function(cmp, name) {
                         // enable the cancel button
                         stylesPanel.buttons[0].enable();
+                        layer.mergeNewParams( modified ? {
+                            "STYLES": null,
+                            "SLD_BODY": cmp.createSLD({userStyles: [name]})
+                        } : {
+                            "STYLES": name,
+                            "SLD_BODY": null
+                        });
                     },
                     scope: this
                 })
@@ -818,7 +842,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         }.bind(this);
         
-        var layer = options.layerRecord.get("layer");
         var layerUrl = layer.url;
         
         // remember the layer's current style
@@ -834,7 +857,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 disabled: true,
                 handler: function() {
                     layer.mergeNewParams({
-                        "STYLES": initialStyle
+                        "STYLES": initialStyle,
+                        "SLD_BODY": null
                     });
                     stylesPanel.ownerCt instanceof Ext.Window ?
                         stylesPanel.ownerCt.close() :
@@ -858,6 +882,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                         rec.get("name") === initialStyle) {
                                 layer.mergeNewParams({
                                     "STYLES": styleName,
+                                    "SLD_BODY": null,
                                     "_dc": Math.random()
                                 });
                             }
