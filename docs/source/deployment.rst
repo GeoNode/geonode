@@ -20,39 +20,139 @@ GeoNode requires a Java servlet container compatible with the J2EE standard,
 <http://tomcat.apache.org/>`_ are two good free servlet containers.  See their
 web sites for installation and application deployment instructions.
 
+GeoNetwork with GeoNode Schema
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+GeoNode's GeoNetwork integration requires use of a customized metadata schema.
+The GeoNode project provides a custom build of GeoNetwork with this extra
+schema pre-installed.  This GeoNetwork is ready to run out-of-the-box; simply
+deploy using your servlet container's usual mechanism.
+
+Steps
+.....
+
+1. *Deploy* GeoNetwork to your servlet container using the normal mechanism.
+   For Tomcat and Jetty, this simply means placing ``geonetwork.war`` in the
+   webapps subdirectory of the servlet container's installation directory.
+
+2. *Configure* GeoNetwork by changing the adminstrative account password
+   through GeoNetwork's web interface.  The administrative account username and
+   password are both ``admin`` by default.
+
+3. *Remove* the sample metadata records that are included with GeoNetwork by
+   default.  To do so, you can simply perform a search with no terms, then use
+   the 'Select all' link on the search results page to select all records in
+   the GeoNetwork site.  Finally, use the 'actions on selection' menu to delete
+   the records.
+
+.. note:: 
+
+    GeoNode releases do not include the Intermap service that normally
+    accompanies GeoNetwork installations.  As a result, some JavaScript errors
+    come up while performing searches.  These are not a problem.
+
 GeoServer with GeoNode Extensions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 GeoNode's GeoServer integration requires some specific extensions to help
-GeoNode in managing GeoServer layers.  These extensions can be added to an
-existing GeoServer installation by adding the JAR files to the GeoServer's
-:file:`WEB-INF/lib/` and restarting GeoServer.  Alternatively, the GeoNode
-project provides a custom build of GeoServer with these extensions installed.
+GeoNode in managing GeoServer layers.  GeoNode releases include a GeoServer WAR
+archive with these extensions pre-installed.  However, some manual
+configuration may still be needed.
 
-GeoNetwork with GeoNode Schema
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Steps
+.....
 
-GeoNode's GeoNetwork integration requires use of a customized metadata schema
-that adds some social attributes to metadata documents.  The GeoNode project
-provides a custom build of GeoServer with this extra schema pre-installed. 
+1. *Deploy* GeoServer to your servlet container using the normal mechanism.
+   For Tomcat and Jetty, this simply means placing
+   ``geoserver-geonode-dev.war`` in the webapps subdirectory of the servlet
+   container's installation directory.
+
+2. *Configure* GeoServer with the location of the GeoNode site, used for
+   authentication (so that GeoServer can recognize logins from the main site).
+   This setting defaults to http://localhost:8000/, so if you are running
+   the GeoNode Django application on a different port, or on a different server
+   from the one running GeoServer, then you will need to change this by adding
+   a block of XML to ``WEB-INF/web.xml`` within the unpacked application
+   directory, like so::
+
+       <context-param>
+           <param-name>GEONODE_BASE_URL</param-name>
+           <param-value>http://localhost:8080/</param-value>
+       </context-param> 
+
+   The ``<param-value>`` tag should enclose the URL to the Django application
+   homepage.
 
 Static Resources
 ----------------
 
 The GeoNode project provides an archive of the minified JavaScript and CSS
 resources used in the GeoNode site.  These media can simply be served with a
-static file server such as Apache httpd or lighttpd.
+static file server such as Apache httpd or lighttpd.  See
+http://httpd.apache.org/docs/2.2/urlmapping.html and
+http://redmine.lighttpd.net/projects/lighttpd/wiki/Server.document-rootDetails
+for information on configuring Apache httpd and lighttpd to serve files,
+respectively.  Many other web servers are perfectly capable of serving these
+files; Apache httpd and lighttpd are just examples.
+
+Steps:
+......
+
+1. *Configure* a document root in your webserver, pointing to some directory on
+   your filesystem.
+
+2. *Extract* all the JavaScript and CSS files from the GeoNode release archive
+   (geonode-archive.zip) into the document root.
 
 Django Web Application
 ----------------------
 
-The GeoNode Django application should be run in mod_wsg or mod_python under
-Apache httpd.  See the Django project's deployment documentation for more
-information.
+The GeoNode Django application should run in mod_wsgi under Apache httpd.
+See the Django project's deployment documentation for more information.
+However, we highly recommend using virtualenv to sandbox the GeoNode
+dependencies from the rest of the Python software on your system.
 
-Deployment Bundles
-------------------
-The GeoNode build script includes a `make_release` task which produces a file
-archive containing the built WARs, GeoNode static media, and Django application
-with dependencies.  Such an archive can be uploaded to a server and installed
-without any further dependence on a network connection.
+Steps:
+......
+
+1. *Install virtualenv* if you do not already have it available.  It can easily
+   be installed via easy_install or pip::
+   
+       $ easy_install virtualenv
+       $ pip install virualenv
+
+2. *Prepare a sandbox* for GeoNode using virtualenv::
+
+       $ virtualenv geonode
+       $ cd geonode
+       $ source bin/activate
+
+3. *Install* the geonode python modules from the Pip bundle::
+
+       $ pip install geonode.pybundle
+
+   If this step fails, make sure that you have a working C++ compiler installed
+   and development versions of the requisite libraries, listed in the GeoNode
+   README file.
+
+4. *Configure* the geonode Django app by editing ``settings.py``.  The
+   available settings and their usage is described elsewhere in this
+   documentation.
+
+5. If running via fastcgi, you can use the django-admin.py script to launch the
+   fastcgi server for Django.  If running via WSGI, ensure that the virtualenv
+   is added to the python path for the WSGI script.  See the official `Django
+   deployment documentation
+   <http://docs.djangoproject.com/en/1.2/howto/deployment/>`_ for details.
+
+Additional Configuration
+------------------------
+
+Some other things that require tweaking:
+
+* SMTP configuration for user registration confirmation mails
+
+* Web-accessible uploads directory for user profile photos
+
+* Configuring GeoNetwork/Django to use a "real" Postgres database instead of
+  embedded ones.
