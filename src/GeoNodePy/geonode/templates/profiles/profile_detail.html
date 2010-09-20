@@ -27,4 +27,18 @@
     <li><a href="{% url map_new %}">{% trans "Create a new map" %}</a></li>
   </ul>
 </div>
+<div class="threecol">
+    <h3>{% blocktrans with user as user %}Maps by {{ user }}{% endblocktrans %}</h3>
+    {% if user.map_set.count %} 
+    <ul> {% for map in user.map_set.all %} <li> <a href="{{ map.get_absolute_url }}">{{ map.title }}</a> {% endfor %} </ul>
+    {% else %}
+      <p> {% blocktrans with user as user %} {{ user }} has not created any maps yet. {% endblocktrans %}
+    {% endif %}
+    <h3>{% blocktrans with user as user %}Layers by {{ user }}{% endblocktrans %}</h3>
+    {% if user.layer_set.count %} 
+    <ul> {% for layer in user.layer_set.all %} <li> <a href="{{ layer.get_absolute_url }}">{{ layer }}</a> {% endfor %} </ul>
+    {% else %}
+      <p> {% blocktrans with user as user %} {{ user }} has not uploaded any data yet. {% endblocktrans %}
+    {% endif %}
+</div>
 {% endblock %}
