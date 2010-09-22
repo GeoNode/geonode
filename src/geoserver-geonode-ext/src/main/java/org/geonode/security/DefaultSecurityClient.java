@@ -170,7 +170,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
         this.baseUrl = GeoServerExtensions.getProperty("GEONODE_BASE_URL", applicationContext);
         if (baseUrl == null) {
             LOGGER.log(Level.WARNING, "GEONODE_BASE_URL is not set, "
-                    + "assuming http://locahost:8000/");
+                    + "assuming http://localhost:8000/");
             baseUrl = "http://localhost:8000/";
         }
         if (!baseUrl.endsWith("/")) {
