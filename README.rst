@@ -179,7 +179,12 @@ in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
 instance at that port with the following commands::
    
     cd src/geonode-geoserver-ext/
-    mvn jetty:run-war
+    sh startup.sh
+
+.. note:: 
+    Normally, ``mvn jetty:run-war`` would be sufficient.  However, we use the
+    shell script to add some extra parameters to the JVM command-line used to
+    run Jetty in order to workaround a JVM bug that affects GeoNetwork.
 
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
@@ -199,9 +204,9 @@ Alternative GeoServer Data Directories
 
 This server defaults to using :file:`gs-data/` as the data directory by default.
 If you need you need to use an alternative data directory, you can specify it
-via the command line, using a command like::
+by editing ``startup.sh`` to specify a different data directory::
  
-    mvn jetty:run-war -DGEOSERVER_DATA_DIR=/home/me/mydata/ 
+    -DGEOSERVER_DATA_DIR=/home/me/mydata/ 
 
 For Deployment
 --------------
