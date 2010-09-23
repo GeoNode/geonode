@@ -467,8 +467,6 @@ def make_release(options):
     (production, distribution, etc)
     """
 
-    # This part of the build is svn specific...
-
     if not hasattr(options, 'skip_packaging'):
         call_task("package_all")
     if hasattr(options, 'name'):
@@ -484,9 +482,8 @@ def make_release(options):
         path('./package').copytree(out_pkg)
 
         tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
-        with pushd(out_pkg):
-            for file in path(".").walkfiles():
-                tar.add(file)
+        for file in out_pkg.walkfiles():
+            tar.add(file)
         tar.close()
 
         out_pkg.rmtree()
