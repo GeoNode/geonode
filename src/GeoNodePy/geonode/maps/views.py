@@ -261,7 +261,21 @@ def newmap(request):
     }))
 
 h = httplib2.Http()
-h.add_credentials(_user,_password)
+h.add_credentials(_user, _password)
+h.add_credentials(_user, _password)
+_netloc = urlparse(settings.GEOSERVER_BASE_URL).netloc
+h.authorizations.append(
+    httplib2.BasicAuthentication(
+        (_user, _password), 
+        _netloc,
+        settings.GEOSERVER_BASE_URL,
+        {},
+        None,
+        None, 
+        h
+    )
+)
+
 
 @login_required
 def map_download(request, mapid):
@@ -283,11 +297,14 @@ def map_download(request, mapid):
 
         mapJson = mapObject.json(perm_filter)
 
-        resp, content = h.request(url,'POST',body=mapJson)
+        resp, content = h.request(url, 'POST', body=mapJson)
 
-        if resp.status != 404 or 400: 
-            request.session["map_status"] = eval(content)
-            map_status = eval(content)
+        print resp
+        print content
+
+        if resp.status not in (400, 404, 417):
+            map_status = json.loads(content)
+            request.session["map_status"] = map_status
         else: 
             pass # XXX fix
 
@@ -297,9 +314,27 @@ def map_download(request, mapid):
         else: 
             msg = "You should download a map" 
 
+    locked_layers = []
+    remote_layers = []
+    downloadable_layers = []
+
+    for lyr in mapObject.layer_set.all():
+        if lyr.group != "background":
+            if not lyr.local():
+                remote_layers.append(lyr)
+            else:
+                ownable_layer = Layer.objects.get(typename=lyr.name)
+                if not request.user.has_perm('maps.view_layer', obj=ownable_layer):
+                    locked_layers.append(lyr)
+                else:
+                    downloadable_layers.append(lyr)
+
     return render_to_response('maps/download.html', RequestContext(request, {
          "map_status" : map_status,
          "map" : mapObject,
+         "locked_layers": locked_layers,
+         "remote_layers": remote_layers,
+         "downloadable_layers": downloadable_layers,
          "geoserver" : settings.GEOSERVER_BASE_URL,
          "site" : settings.SITEURL
     }))
