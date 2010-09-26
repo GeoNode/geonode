@@ -1231,6 +1231,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         printMapPanel: {
                             height: Math.min(450, Ext.get(document.body).getHeight()-150),
                             autoWidth: true,
+                            limitScales: true,
                             map: {
                                 controls: [
                                     new OpenLayers.Control.Navigation({
@@ -1266,7 +1267,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                         }
                                     })
                                 },
-                                "print": function() {printWindow.close();}
+                                "print": function() {printWindow.close();},
+                                "printException": function(cmp, response) {
+                                    this.displayXHRTrouble(response);
+                                },
+                                scope: this
                             }
                         },
                         includeLegend: true,
