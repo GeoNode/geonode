@@ -815,10 +815,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         stylesPanel.buttons[0].enable();
                         stylesPanel.buttons[1].enable();
                         // instant style preview
-                        var sld = cmp.createSLD({userStyles: [name]});
                         layer.mergeNewParams({
-                            "STYLES": null,
-                            "SLD_BODY": sld
+                            "STYLES": name,
+                            "SLD_BODY": cmp.createSLD({userStyles: [name]})
                         });
                         modified = true;
                     },
@@ -826,7 +825,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         // enable the cancel button
                         stylesPanel.buttons[0].enable();
                         layer.mergeNewParams( modified ? {
-                            "STYLES": null,
+                            "STYLES": name,
                             "SLD_BODY": cmp.createSLD({userStyles: [name]})
                         } : {
                             "STYLES": name,
