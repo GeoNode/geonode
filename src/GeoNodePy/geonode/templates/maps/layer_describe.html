@@ -30,6 +30,7 @@
 </script>
 {% endblock %}
 {% block main %}
+<div class="twocol">
   <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
   <form action="/data/{{layer.typename}}?describe" method="POST">
 	  {% csrf_token %}
@@ -46,4 +47,5 @@
           <input type="submit" value="{% trans "Update" %}"/>
       </ul>
   </form>
+</div>
 {% endblock %}
