@@ -102,6 +102,7 @@
                     editable: {{ user.is_authenticated|lower }},
                     listeners: {
                         "saved": function() {
+                            modified = false;
                             window.location.reload();
                         }
                     }
