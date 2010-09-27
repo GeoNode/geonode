@@ -1167,8 +1167,10 @@ class Map(models.Model, PermissionLevelMixin):
 
         def layer_config(l):
             cfg = l.layer_config()
-            source = source_lookup(l.source_config())
+            src_cfg = l.source_config();
+            source = source_lookup(src_cfg)
             if source: cfg["source"] = source
+            if src_cfg["ptype"] == "gx_wmssource": cfg["buffer"] = 0
             return cfg
 
         config = {
