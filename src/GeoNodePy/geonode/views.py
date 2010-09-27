@@ -13,7 +13,8 @@ def index(request):
 
 def static(request, page):
     return render_to_response(page + '.html', RequestContext(request, {
-        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
+        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
+        "site" : settings.SITEURL
     }))
 
 def lang(request): 
