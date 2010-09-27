@@ -16,6 +16,7 @@
 
     <script type="text/javascript">
 {% autoescape off %}
+        var styleEditor, modified = false;
         Ext.onReady(function() {
             var config = {
                 useBackgroundCapabilities: false,
@@ -27,7 +28,7 @@
                  * maps on the server for sharing and editing.
                  */
                 rest: "/maps/",
-
+                
                 portalConfig: {
                     renderTo: "preview_map",
                     height: 350
@@ -46,6 +47,12 @@
                     "ready": function() {
                         var map = app.mapPanel.map;
                         map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
+                    },
+                    "beforeunload": function() {
+                        if (modified) {
+                            styleEditor.show();
+                            return false;
+                        }
                     }
                 }
             };
@@ -87,24 +94,43 @@
             var map = app.mapPanel.map;
             var layerRecord = app.mapPanel.layers.getByLayer(
                 map.layers.slice(-1)[0]);
-            var stylesPanel = app.createStylesPanel({
-                layerRecord: layerRecord,
-                styleName: styleName,
-                editable: {{ user.is_authenticated|lower }},
-                listeners: {
-                    "saved": function() {
-                        window.location.reload();
+            var stylesPanel;
+            if (!styleEditor) {
+                stylesPanel = app.createStylesPanel({
+                    layerRecord: layerRecord,
+                    styleName: styleName,
+                    editable: {{ user.is_authenticated|lower }},
+                    listeners: {
+                        "saved": function() {
+                            window.location.reload();
+                        }
                     }
-                }
-            });
-            styleName || stylesPanel.items.get(0).addStyle();
-            new Ext.Window({
-                title: "Styles",
-                autoHeight: true,
-                width: 280,
-                bodyStyle: "background-color: white;",
-                items: stylesPanel
-            }).show();
+                });
+                stylesPanel.items.get(0).on({
+                    "modified": function() {modified = true;}
+                });
+                styleEditor = new Ext.Window({
+                    title: "Styles",
+                    autoHeight: true,
+                    width: 280,
+                    closeAction: "hide",
+                    bodyStyle: "background-color: white;",
+                    items: stylesPanel,
+                    listeners: {
+                        "beforeclose": function() {
+                            styleEditor = null;
+                        }
+                    }
+                });
+            }
+            var stylesDlg = styleEditor.items.get(0).items.get(0);
+            if (styleName && !stylesPanel) {
+                var store = stylesDlg.stylesStore;
+                var styleRec = store.getAt(store.find("name", styleName));
+                stylesDlg.changeStyle(styleRec, {updateCombo: true});
+            }
+            styleName || stylesDlg.addStyle();
+            styleEditor.show();
         }
 {% endautoescape %}
     </script>
