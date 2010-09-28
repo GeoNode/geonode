@@ -7,6 +7,7 @@
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
+<link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}fileuploadfield/css/fileuploadfield.css"/>
 {{ block.super }}
 {% endblock %}
 
@@ -24,11 +25,13 @@
   </div>
 </div>
 <script type="text/javascript">
-Ext.onReady(function(){
 {% autoescape off %}
-  var form_target = "{% url geonode.maps.views.upload_layer %}";
-  var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
-  var layer_name = new Ext.form.TextField({
+Ext.onReady(function(){
+    Ext.QuickTips.init();
+    
+    var form_target = "{% url geonode.maps.views.upload_layer %}";
+    var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
+    var layer_name = new Ext.form.TextField({
       id: 'layer_name',
       fieldLabel: gettext('Name'),
       name: 'layer_name',
@@ -41,90 +44,99 @@ Ext.onReady(function(){
           }
       },
       allowBlank: false
-  });
+    });
+    
+    var listeners = {
+        "fileselected": function(cmp, value) {
+            // remove the path from the filename - avoids C:/fakepath etc.
+            cmp.setValue(value.split(/[/\\]/).pop());
+        }
+    };
 
-  var base_file = new Ext.ux.form.FileUploadField({
-      id: 'base_file',
-      emptyText: gettext('Select a layer data file'),
-      fieldLabel: gettext('File'),
-      name: 'base_file',
-      allowBlank: false
-  });
+    var base_file = new Ext.ux.form.FileUploadField({
+        id: 'base_file',
+        emptyText: gettext('Select a layer data file'),
+        fieldLabel: gettext('File'),
+        name: 'base_file',
+        allowBlank: false,
+        listeners: listeners
+    });
 
-  var dbf_file = new Ext.ux.form.FileUploadField({
-      id: 'dbf_file',
-      emptyText: gettext('Select a .dbf data file'),
-      fieldLabel: gettext('DBF'),
-      name: 'dbf_file',
-      allowBlank: false
-  });
+    var dbf_file = new Ext.ux.form.FileUploadField({
+        id: 'dbf_file',
+        emptyText: gettext('Select a .dbf data file'),
+        fieldLabel: gettext('DBF'),
+        name: 'dbf_file',
+        allowBlank: false,
+        listeners: listeners
+    });
 
-  var shx_file = new Ext.ux.form.FileUploadField({
-      id: 'shx_file',
-      emptyText: gettext('Select a .shx data file'),
-      fieldLabel: gettext('SHX'),
-      name: 'shx_file',
-      allowBlank: false
-  });
+    var shx_file = new Ext.ux.form.FileUploadField({
+        id: 'shx_file',
+        emptyText: gettext('Select a .shx data file'),
+        fieldLabel: gettext('SHX'),
+        name: 'shx_file',
+        allowBlank: false,
+        listeners: listeners
+    });
 
-  var prj_file = new Ext.ux.form.FileUploadField({
-      id: 'prj_file',
-      emptyText: gettext('Select a .prj data file (optional)'),
-      fieldLabel: gettext('PRJ'),
-      name: 'prj_file',
-      allowBlank: true
+    var prj_file = new Ext.ux.form.FileUploadField({
+        id: 'prj_file',
+        emptyText: gettext('Select a .prj data file (optional)'),
+        fieldLabel: gettext('PRJ'),
+        name: 'prj_file',
+        allowBlank: true,
+        listeners: listeners
+    });
 
-  });
+    var fp = new Ext.FormPanel({
+        renderTo: 'upload_form',
+        fileUpload: true,
+        width: 500,
+        frame: true,
+        title: gettext('Upload Layer Data'),
+        autoHeight: true,
+        bodyStyle: 'padding: 10px 10px 0 10px;',
+        labelWidth: 50,
+        defaults: {
+            anchor: '95%',
+            msgTarget: 'side'
+        },
+        items: [layer_name, base_file, dbf_file, shx_file, prj_file, {
+            xtype: "hidden",
+            name: "csrfmiddlewaretoken",
+            value: "{{ csrf_token }}"
+        }],
+        buttons: [{
+            text: gettext('Upload'),
+            handler: function(){
+                if (fp.getForm().isValid()) {
+                    fp.getForm().submit({
+                        url: form_target,
+                        waitMsg: gettext('Uploading your data...'),
+                        success: function(fp, o) {
+                            document.location = o.result.redirect_to;
+                        },
+                        failure: function(fp, o) {
+                            error_message = '<ul>';
+                            for (var i = 0; i < o.result.errors.length; i++) {
+                                error_message += '<li>' + o.result.errors[i] + '</li>'
+                            }
+                            error_message += '</ul>'
 
-  var fp = new Ext.FormPanel({
-    renderTo: 'upload_form',
-    fileUpload: true,
-    width: 500,
-    frame: true,
-    title: gettext('Upload Layer Data'),
-    autoHeight: true,
-    bodyStyle: 'padding: 10px 10px 0 10px;',
-    labelWidth: 50,
-    defaults: {
-        anchor: '95%',
-        msgTarget: 'side'
-    },
-    items: [layer_name, base_file, dbf_file, shx_file, prj_file, {
-        xtype: "hidden",
-        name: "csrfmiddlewaretoken",
-        value: "{{ csrf_token }}"
-    }],
-    buttons: [{
-        text: gettext('Upload'),
-        handler: function(){
-            if(fp.getForm().isValid()) {
-              fp.getForm().submit({
-                  url: form_target,
-                  waitMsg: gettext('Uploading your data...'),
-                  success: function(fp, o) {
-                      document.location = o.result.redirect_to;
-                  },
-                  failure: function(fp, o) {
-                      error_message = '<ul>';
-                      for (var i = 0; i < o.result.errors.length; i++) {
-                          error_message += '<li>' + o.result.errors[i] + '</li>'
-                      }
-                      error_message += '</ul>'
-                      
-                      Ext.Msg.show({
-                          title: gettext("Error"),
-                          msg: error_message,
-                          minWidth: 200,
-                          modal: true,
-                          icon: Ext.Msg.ERROR,
-                          buttons: Ext.Msg.OK
-                      });
-                  }
-                  
-              });
+                            Ext.Msg.show({
+                                title: gettext("Error"),
+                                msg: error_message,
+                                minWidth: 200,
+                                modal: true,
+                                icon: Ext.Msg.ERROR,
+                                buttons: Ext.Msg.OK
+                            });
+                        }
+                    });
+                }
             }
-          }
-      }]
+        }]
     });
 
     var disable_shapefile_inputs = function() {
@@ -155,20 +167,20 @@ Ext.onReady(function(){
         }
     };
   
-    base_file.addListener('fileselected', function() {
-      check_shapefile();
+    base_file.addListener('fileselected', function(cmp, value) {
+        check_shapefile();
 
-      var main_filename = base_file.getValue();
-      var extension_index = main_filename.search(/\.\w+$/i);
-      if (extension_index != -1 && layer_name.getValue() == "") {
-          var cleaned = main_filename.substring(0, extension_index);
-          cleaned = cleaned.replace(xml_unsafe, "_");
-          layer_name.setValue(cleaned);
-      }
-    })
+        var main_filename = value.split(/[/\\]/).pop();
+        var extension_index = main_filename.search(/\.\w+$/i);
+        if (extension_index != -1 && layer_name.getValue() == "") {
+            var cleaned = main_filename.substring(0, extension_index);
+            cleaned = cleaned.replace(xml_unsafe, "_");
+            layer_name.setValue(cleaned);
+        }
+    });
     disable_shapefile_inputs();
+});
 {% endautoescape %}
-  });
 </script>
 
 {% endblock %}

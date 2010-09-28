@@ -42,13 +42,21 @@ Ext.onReady(function(){
 
   var form_fields = [];
 
+  var listeners = {
+      "fileselected": function(cmp, value) {
+          // remove the path from the filename - avoids C:/fakepath etc.
+          cmp.setValue(value.split(/[/\\]/).pop());
+      }
+  };
+
   if (is_featuretype) {
     var base_file = new Ext.ux.form.FileUploadField({
         id: 'base_file',
         emptyText: gettext('Select a .shp file'),
         fieldLabel: gettext('SHP'),
         name: 'base_file',
-        allowBlank: false
+        allowBlank: false,
+        listeners: listeners
     });
 
     var dbf_file = new Ext.ux.form.FileUploadField({
@@ -56,7 +64,8 @@ Ext.onReady(function(){
         emptyText: gettext('Select a .dbf data file'),
         fieldLabel: gettext('DBF'),
         name: 'dbf_file',
-        allowBlank: false
+        allowBlank: false,
+        listeners: listeners
     });
 
     var shx_file = new Ext.ux.form.FileUploadField({
@@ -64,7 +73,8 @@ Ext.onReady(function(){
         emptyText: gettext('Select a .shx data file'),
         fieldLabel: gettext('SHX'),
         name: 'shx_file',
-        allowBlank: false
+        allowBlank: false,
+        listeners: listeners
     });
 
     var prj_file = new Ext.ux.form.FileUploadField({
@@ -72,7 +82,8 @@ Ext.onReady(function(){
         emptyText: gettext('Select a .prj data file (optional)'),
         fieldLabel: gettext('PRJ'),
         name: 'prj_file',
-        allowBlank: true
+        allowBlank: true,
+        listeners: listeners
 
     });
     form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file];
@@ -83,7 +94,8 @@ Ext.onReady(function(){
         emptyText: gettext('Select a layer data file'),
         fieldLabel: gettext('File'),
         name: 'base_file',
-        allowBlank: false
+        allowBlank: false,
+        listeners: listeners
     });
     form_fields = [layer_name, base_file];
   }
