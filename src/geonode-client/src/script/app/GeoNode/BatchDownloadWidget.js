@@ -21,9 +21,6 @@ GeoNode.BatchDownloadWidget = Ext.extend(Ext.util.Observable, {
            success: function(result) {
                var result = Ext.util.JSON.decode(result.responseText);
                this_widget.monitorDownload(result.id);
-           },
-           failure: function(result) {
-               //console.log(result);
            }
         });
     },
@@ -44,7 +41,6 @@ GeoNode.BatchDownloadWidget = Ext.extend(Ext.util.Observable, {
                     clearInterval(checkStatus);
                 },
                 failure: function(result) { 
-                    console.log(result); 
                     clearInterval(checkStatus); // break if something fails
                 } 
         })};
