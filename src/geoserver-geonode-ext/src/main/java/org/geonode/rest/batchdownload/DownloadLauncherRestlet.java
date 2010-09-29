@@ -67,7 +67,24 @@ import org.restlet.resource.StringRepresentation;
  *        ]
  *  } 
  * </pre>
+ * </code> or <code>
+ * <pre>
+ *  {  map : { 
+ *           readme: "full content for the readme.tx file here...",
+ *           } 
+ *    layers: 
+ *        [
+ *          {
+ *              name:"&lt;layerName&gt;",
+ *              service: "&lt;WFS|WCS&gt;,
+ *              metadataURL: "&lt;csw request for the layer metadata?&gt;", 
+ *              serviceURL:"&lt;serviceURL&gt;" //eg, "http://geonode.org/geoserver/wfs" 
+ *          } ,...
+ *        ]
+ *  } 
+ * </pre>
  * </code>
+ * 
  * 
  * Upon successful process launching returns a JSON object with the following structure: <code>
  * <pre>
@@ -213,23 +230,33 @@ public class DownloadLauncherRestlet extends Restlet {
     }
 
     /**
+     * Takes either a {@code "readme"} property as the complete contents for the README file, or the
+     * following properties: {@code "title", "abstract", "author"}, whichever is present, in that
+     * order of precedence.
      * 
      * @param obj
+     *            the {@code "map"} json object
      * @return
      * @throws JSONException
      *             if a required json object property is not found
      */
     private MapMetadata convertMapMetadataParam(final JSONObject obj) throws JSONException {
-        String title = obj.getString("title");
-        if (title.length() == 0) {
-            throw new IllegalArgumentException("Map name is empty");
+        MapMetadata mmd;
+        if (obj.containsKey("readme")) {
+            String readme = obj.getString("readme");
+            mmd = new MapMetadata(readme);
+        } else {
+            String title = obj.getString("title");
+            if (title.length() == 0) {
+                throw new IllegalArgumentException("Map name is empty");
+            }
+            String _abstract = obj.containsKey("abstract") ? obj.getString("abstract") : null;
+            String author = obj.getString("author");
+            if (author.length() == 0) {
+                throw new IllegalArgumentException("author name is empty");
+            }
+            mmd = new MapMetadata(title, _abstract, author);
         }
-        String _abstract = obj.containsKey("abstract") ? obj.getString("abstract") : null;
-        String author = obj.getString("author");
-        if (author.length() == 0) {
-            throw new IllegalArgumentException("author name is empty");
-        }
-        MapMetadata mmd = new MapMetadata(title, _abstract, author);
         return mmd;
     }
 
