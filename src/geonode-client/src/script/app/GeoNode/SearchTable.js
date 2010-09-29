@@ -285,7 +285,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                      */
                     var permissions = record.get('_permissions');
                     if (permissions.view != true) {
-                        console.log(record)
                         return '<div>&#160;</div>'
                     } else {
                         return '<div class="x-grid3-row-checker">&#160;</div>';
