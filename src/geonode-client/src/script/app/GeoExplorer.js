@@ -859,10 +859,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     this.urlPortRegEx, "$1/").indexOf(
                     this.localGeoServerBaseUrl.replace(
                     this.urlPortRegEx, "$1/")) === 0,
-                plugins: [new gxp.plugins.GeoServerStyleWriter({
+                plugins: [{
+                    ptype: "gx_geoserverstylewriter",
                     baseUrl: layerUrl.split(
                         "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
-                })],
+                }, {
+                    ptype: "gx_wmsrasterstylesdialog"
+                }],
                 autoScroll: true,
                 listeners: Ext.apply(options.listeners || {}, {
                     "ready": function() {

@@ -183,7 +183,11 @@ final class BatchDownload extends AsyncProcess {
         zipOut.closeEntry();
     }
 
-    private byte[] getMapMetadata(MapMetadata mapDetails) {
+    private byte[] getMapMetadata(final MapMetadata mapDetails) {
+        if (null != mapDetails.getReadme()) {
+            return mapDetails.getReadme().getBytes();
+        }
+        
         StringBuilder writer = new StringBuilder();
         writer.append("Map: ");
         writer.append(mapDetails.getTitle()).append('\n');

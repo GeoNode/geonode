@@ -1110,20 +1110,25 @@ class Map(models.Model, PermissionLevelMixin):
         if layer_filter:
             layers = filter(layer_filter, layers)
 
-        map = { 
-            "map" : { 
-                "title" : self.title, 
-                "abstract" : self.abstract,
-                "author" : "The GeoNode Team",
-                }, 
-            "layers" : [ 
-                {
-                    "name" : layer.typename, 
-                    "service" : layer.service_type, 
-                    "metadataURL" : "http://localhost/fake/url/{name}".format(name=layer.name),
-                    "serviceURL" : "http://localhost/%s" %layer.name,
-                } for layer in layers ] 
+        readme = (
+            "Title: %s\n" +
+            "Author: %s\n"
+            "Abstract: %s\n"
+        ) % (self.title, "The GeoNode Team", self.abstract)
+
+        def layer_json(lyr):
+            return {
+                "name": lyr.typename,
+                "service": lyr.service_type,
+                "serviceURL": "",
+                "metadataURL": ""
             }
+
+        map = {
+            "map" : { "readme": readme },
+            "layers" : [layer_json(lyr) for lyr in layers]
+        }
+
         return simplejson.dumps(map)
 
     def viewer_json(self, *added_layers):
