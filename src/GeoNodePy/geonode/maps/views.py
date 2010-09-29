@@ -375,35 +375,30 @@ def batch_layer_download(request):
     # status monitoring is handled slightly differently.
     
     if request.method == 'POST':
+        layers = request.POST.getlist("layer")
+        layers = Layer.objects.filter(typename__in=list(layers))
 
         def layer_son(layer):
             return {
                 "name" : layer.typename, 
                 "service" : layer.service_type, 
-                "metadataURL" : "http://localhost/fake/url/{name}".format(name=layer.name),
-                "serviceURL" : "http://localhost/%s" %layer.name,
+                "metadataURL" : "",
+                "serviceURL" : ""
             } 
-            
-        
-        fake_map = { 
-            "map" : { 
-                "title" : "Batch Download", 
-                "abstract" : "Collection of layers selected from GeoNode", 
-                "author" : "The GeoNode Team",
-            }, 
-            "layers" : []
-        }
-        
 
-        for layer_id in request.POST.getlist('layer'):
-            try:
-                layer = Layer.objects.get(typename=layer_id)
-                
-                if layer is not None:
-                    fake_map['layers'].append(layer_son(layer))
-            except ObjectDoesNotExist:
-                # bad layer, skip 
-                continue
+        readme = """This data is provided by GeoNode.
+
+Contents:
+"""
+        def list_item(lyr):
+            return "%s - %s.*" % (lyr.title, lyr.name)
+
+        readme = "\n".join([readme] + [list_item(l) for l in layers])
+
+        fake_map = {
+            "map": { "readme": readme },
+            "layers" : [layer_son(lyr) for lyr in layers]
+        }
 
         url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
         resp, content = h.request(url,'POST',body=json.dumps(fake_map))
