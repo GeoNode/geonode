@@ -2,7 +2,7 @@
 
     var jsfiles = new Array(
         "/static/src/script/ux/RowExpander.js",
-        "/static/src/script/ux/FileUploadField.js",
+        "/static/src/script/ux/fileuploadfield/FileUploadField.js",
         "/static/src/script/ux/colorpicker/color-picker.ux.js",
         "/static/src/script/ux/colorpicker/ColorManager.js"
     );
