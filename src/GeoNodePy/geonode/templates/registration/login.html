@@ -9,16 +9,11 @@
 
   <form method="post" action="{% url django.contrib.auth.views.login %}">
     {% csrf_token %}
-    <p>
-        {{ form.username.label_tag }}
-        {{ form.username }}
-    </p>
-    <p>
-        {{ form.password.label_tag }}
-        {{ form.password }}
-    </p>
-    <input type="hidden" name="next" value="{{next}}" />
-    <input type="submit" value="Login"/>
+	<ul class="form">
+		  {{ form.as_ul }}
+	    <input type="hidden" name="next" value="{{next}}" />
+	    <input type="submit" value="Login"/>
+	</ul>
   </form>
 </div>
 {% endblock %}
