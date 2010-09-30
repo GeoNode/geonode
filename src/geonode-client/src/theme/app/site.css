@@ -650,6 +650,7 @@ clear: both;
 div#main form ul.form li label {
 display: block;
 font-weight: bold;
+text-transform: capitalize;
 }
 
 div#main form ul.form li input {

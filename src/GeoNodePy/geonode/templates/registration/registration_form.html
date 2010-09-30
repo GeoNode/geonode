@@ -5,9 +5,10 @@
 <div class="twocol">
   <form method="post" action=".">
     {% csrf_token %}
-    {{ form.as_p }}
-
+   <ul class="form">
+	  {{ form.as_ul }}
     <input type="submit" value="{% trans 'Submit' %}" />
+   </ul>
   </form>
 </div>
 {% endblock %}
