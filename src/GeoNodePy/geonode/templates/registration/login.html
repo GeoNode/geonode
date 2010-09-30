@@ -11,8 +11,8 @@
     {% csrf_token %}
 	<ul class="form">
 		  {{ form.as_ul }}
-	    <input type="hidden" name="next" value="{{next}}" />
-	    <input type="submit" value="Login"/>
+		<li><input type="hidden" name="next" value="{{next}}" /></li>
+	    <li><input type="submit" value="Login"/></li>
 	</ul>
   </form>
 </div>
