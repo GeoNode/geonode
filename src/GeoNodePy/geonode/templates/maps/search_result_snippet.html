@@ -8,10 +8,6 @@
 <em>{% trans "No abstract is provided for this layer." %}</em>
 {% endif %}
 </p>
-<!--
-We should have this field, but it is currently blocking on an OWSLib issue:
-http://trac.gispython.org/lab/ticket/230
-http://projects.opengeo.org/CAPRA/ticket/774
 
 <p><b>{% trans "Provided by:" %}</b>
 {% if rec.attribution.title and rec.attribution.href %}  
@@ -20,7 +16,7 @@ http://projects.opengeo.org/CAPRA/ticket/774
 <em>{% trans "No attribution information is provided for this layer." %}</em>
 {% endif %}
 </p>
--->
+
 <p><b>{% trans "Metadata Links:" %}</b>
 {% for link in rec.metadata_links %}
     <a href="{{link.2}}">{{link.1}}</a>
