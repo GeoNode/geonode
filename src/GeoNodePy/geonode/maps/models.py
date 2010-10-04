@@ -605,7 +605,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # section 1
     title = models.CharField(_('title'), max_length=255)
-    date = models.DateTimeField(_('date'), auto_now=True)
+    date = models.DateTimeField(_('date'))
     
     date_type = models.CharField(_('date type'), max_length=255,choices=[(x, x) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
 
