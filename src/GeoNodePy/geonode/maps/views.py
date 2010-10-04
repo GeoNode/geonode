@@ -69,6 +69,12 @@ class ContactForm(forms.ModelForm):
         exclude = ('user',)
 
 class LayerForm(forms.ModelForm):
+    date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
+    date.widget.widgets[0].attrs = {"class":"date"}
+    date.widget.widgets[1].attrs = {"class":"time"}
+    temporal_extent_start = forms.DateField(widget=forms.DateInput(attrs={"class":"date"}))
+    temporal_extent_end = forms.DateField(widget=forms.DateInput(attrs={"class":"date"}))
+    
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
                                  queryset = Contact.objects.exclude(user=None))
