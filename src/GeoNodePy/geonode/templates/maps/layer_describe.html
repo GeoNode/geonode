@@ -11,7 +11,11 @@
 {% autoescape off %} 
         // get #poc_form and #metadata_form, and add a `onchange` handler
         // that shows the form if the blank option is selected.
-		Ext.get('id_layer-poc').on('change', function() {
+    	if (Ext.get('id_layer-topic_category').getValue()!="") {
+    		Ext.get("id_layer-topic_category_new").up("li").hide();
+    	}
+        
+        Ext.get('id_layer-poc').on('change', function() {
 	        if (this.getValue()===""){
 			    Ext.get("poc_form").show();
 			}else{
@@ -25,6 +29,13 @@
 				Ext.get("metadata_form").hide();
 			}
 		});
+		Ext.get('id_layer-topic_category').on('change', function() {
+	        if (this.getValue()===""){
+			    Ext.get("id_layer-topic_category_new").up("li").show();
+			}else{
+				Ext.get("id_layer-topic_category_new").up("li").hide();
+			}
+		});		
 {% endautoescape %} 
 	});
 </script>
@@ -35,7 +46,7 @@
   <form action="/data/{{layer.typename}}?describe" method="POST">
 	  {% csrf_token %}
       <ul class="form">
-	      {{ layer_form.as_ul }}
+	      {{ layer_form.as_ul }}	            
           <fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Point of Contact</legend>
             {{ poc_form.as_ul }}

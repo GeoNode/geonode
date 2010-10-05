@@ -471,7 +471,7 @@ more complex) advanced view. You can even use the XML editor to \
 create custom structures, but they have to be validated by the \
 system, so know what you do :-)'
 )
-
+    
 
 class Contact(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
@@ -587,6 +587,12 @@ class LayerManager(models.Manager):
         # Doing a logout since we know we don't need this object anymore.
         gn.logout()
 
+class LayerCategory(models.Model):
+    name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
+    
+    def __str__(self):
+        return "%s" % self.name
+
 class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
@@ -626,7 +632,8 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng')
-    topic_category = models.CharField(_('topic_category'), max_length=255, choices = [(x, x) for x in TOPIC_CATEGORIES], default = 'location')
+    topic_category = models.ForeignKey(LayerCategory, blank=True, null=True)
+    searchable_fields = models.TextField(_('searchable fields'), blank=True, null=True)
 
     # Section 5
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True)
@@ -640,7 +647,10 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # Section 8
     data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True)
+    
+    
 
+    
     # Section 9
     # see metadata_author property definition below
 
@@ -1024,6 +1034,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # assign owner admin privs
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
+
 
 
 class Map(models.Model, PermissionLevelMixin):

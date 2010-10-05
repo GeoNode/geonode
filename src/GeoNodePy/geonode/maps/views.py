@@ -1,5 +1,5 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
+from geonode.maps.models import Map, Layer, LayerCategory, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style
 from geonode import geonetwork
 import geoserver
@@ -67,8 +67,19 @@ class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
         exclude = ('user',)
+        
+class LayerCategoryForm(forms.ModelForm):
+    class Meta:
+        model = LayerCategory        
 
 class LayerForm(forms.ModelForm):
+    
+    topic_category = forms.ModelChoiceField(empty_label = "Create a new category", 
+                                label = "Topic Category", required=False,
+                                queryset = LayerCategory.objects.all())
+
+    topic_category_new = forms.CharField(label = "New Category", required=False, max_length=255)
+    
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
                                  queryset = Contact.objects.exclude(user=None))
@@ -79,7 +90,7 @@ class LayerForm(forms.ModelForm):
 
     class Meta:
         model = Layer
-        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'topic_category')
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -656,6 +667,7 @@ def _describe_layer(request, layer):
                     _("You are not permitted to modify this layer's metadata")})), status=401)
         
         poc = layer.poc
+        topic_category = layer.topic_category_id
         metadata_author = layer.metadata_author
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
@@ -666,6 +678,18 @@ def _describe_layer(request, layer):
                 new_poc = layer_form.cleaned_data['poc']
                 new_author = layer_form.cleaned_data['metadata_author']
 
+
+                new_category = layer_form.cleaned_data['topic_category']
+                if new_category is None:
+                    new_category = layer_form.cleaned_data['topic_category_new']
+                    if new_category is not None:
+                        try:
+                            newLayerCategory = LayerCategory.objects.get(name=new_category)
+                        except LayerCategory.DoesNotExist:
+                            newLayerCategory = LayerCategory(name=new_category)
+                            newLayerCategory.save()
+                        new_category = newLayerCategory
+                
                 if new_poc is None:
                     poc_form = ContactForm(request.POST, prefix="poc")
                     if poc_form.has_changed and poc_form.is_valid():
@@ -677,14 +701,25 @@ def _describe_layer(request, layer):
                         new_author = author_form.save()
 
                 if new_poc is not None and new_author is not None:
+                    
                     the_layer = layer_form.save(commit=False)
                     the_layer.poc = new_poc
+                    
+                    
+                    the_layer.topic_category = new_category 
+
+                    
                     the_layer.metadata_author = new_author
                     the_layer.save()
                     return HttpResponseRedirect("/data/" + layer.typename)
 
         else:
             layer_form = LayerForm(instance=layer, prefix="layer")
+            layer_form.fields["topic_category"].initial = topic_category
+                
+            #new_category_form = LayerCategoryForm(prefix="new_category")
+            #new_category_form.hidden=True
+            
             if poc.user is None:
                 poc_form = ContactForm(instance=poc, prefix="poc")
             else:
