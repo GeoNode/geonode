@@ -2,16 +2,20 @@
 {% load geonode_auth %}
  
 <p><b>{% trans "Abstract:" %}</b>
-{% if rec.abstract %}
-  {{rec.abstract}}
+{% if rec.identification.abstract %}
+  {{rec.identification.abstract}}
 {% else %}
 <em>{% trans "No abstract is provided for this layer." %}</em>
 {% endif %}
 </p>
 
 <p><b>{% trans "Provided by:" %}</b>
-{% if rec.attribution.title and rec.attribution.href %}  
-  <a href="{{rec.attribution.href}}">{{rec.attribution.title}}</a>
+{% if rec.contact.name %} {# and rec.attribution.href %} #}
+  {% if rec.contact.onlineresource %}
+    <a href="{{ rec.contact.onlineresource.url }}">{{ rec.contact.name }}</a>
+  {% else %}
+    {{ rec.contact.name }}
+  {% endif %}
 {% else %}
 <em>{% trans "No attribution information is provided for this layer." %}</em>
 {% endif %}
@@ -26,40 +30,43 @@
 </p>
 
 <p><b>{% trans "Keywords:" %}</b>
-{% for kw in rec.keywords %}
+{% for kw in rec.identification.keywords.list %}
   {{kw}}{% if not forloop.last %}, {% endif %}
 {% empty %}
 <em>{% trans "No keywords are listed for this layer." %}</em>
 {% endfor %}
 </p>
 
-
 {% if layer_is_remote %}
   <p><b>{% trans "Download:" %}</b>
-  {% for link in rec.download_links %}
+  {% for link in extra_links.download %}
     <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
   {% empty %}
   <em>{% trans "No download URLs are defined for this layer." %}</em>
   {% endfor %}
   </p>
 
-  {% if rec.detail %}
-  <p><a href="{{rec.detail}}">{% trans "Visit originating site for more information about this layer." %}</a></p>
+  {% if rec.distribution.onlineresource.url %}
+  <p><a href="{{ rec.distribution.onlineresource.url }}">
+      {% trans "Visit originating site for more information about this layer." %}
+  </a></p>
   {% endif %}
 
 {% else %} 
   {% has_obj_perm user layer "maps.view_layer" as can_view %}
   {% if can_view %}
     <p><b>{% trans "Download:" %}</b>
-    {% for link in rec.download_links %}
+    {% for link in extra_links.download %}
       <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
     {% empty %}
     <em>{% trans "No download URLs are defined for this layer." %}</em>
     {% endfor %}
     </p>
 
-    {% if rec.detail %}
-    <p><a href="{{rec.detail}}">{% trans "Click here for more information about this layer." %}</a></p>
+    {% if rec.distribution.onlineresource.url %}
+    <p><a href="{{ rec.distribution.onlineresource.url }}">
+        {% trans "Click here for more information about this layer." %}
+    </a></p>
     {% endif %}
   {% else %}
     <p>{% trans "You do not have permission to view or download this layer" %}</p>
