@@ -145,9 +145,16 @@ MAP_BASELAYERS = [{
     "group":"background"
   },{
     "source":"any",
+    "type":"OpenLayers.Layer.OSM",
+    "args":["OpenStreetMap"],
+    "visibility": True,
+    "fixed": True,
+    "group":"background"
+  },{
+    "source":"any",
     "type":"OpenLayers.Layer.WMS",
     "group":"background",
-    "visibility": True,
+    "visibility": False,
     "fixed": True,
     "args":[
       "bluemarble",
