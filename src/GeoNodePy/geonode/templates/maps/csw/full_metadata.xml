@@ -110,11 +110,11 @@
            <gmd:date>
              <gmd:CI_Date>
                <gmd:date>
-                 <gco:DateTime>{%now "Y-m-d" %}</gco:DateTime>
+                 <gco:DateTime>{{layer.date}}</gco:DateTime>
                </gmd:date>
                <gmd:dateType>
                  <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode"
-                   codeListValue="creation" />
+                   codeListValue="{{layer.date_type}}" />
                </gmd:dateType>
              </gmd:CI_Date>
            </gmd:date>
