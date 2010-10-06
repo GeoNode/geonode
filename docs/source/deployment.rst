@@ -35,7 +35,7 @@ Steps
    For Tomcat and Jetty, this simply means placing ``geonetwork.war`` in the
    webapps subdirectory of the servlet container's installation directory.
 
-2. *Configure* GeoNetwork by changing the adminstrative account password
+2. *Configure* GeoNetwork by changing the administrative account password
    through GeoNetwork's web interface.  The administrative account username and
    password are both ``admin`` by default.
 
@@ -102,7 +102,7 @@ Steps:
    your filesystem.
 
 2. *Extract* all the JavaScript and CSS files from the GeoNode release archive
-   (geonode-archive.zip) into the document root.
+   (geonode-client.zip) into the document root.
 
 Django Web Application
 ----------------------
@@ -120,7 +120,13 @@ Steps:
    
        $ easy_install virtualenv
        $ pip install virualenv
-
+       
+mbaudier > CentOS >
+	Enable the EPEL repo (see http://fedoraproject.org/wiki/EPEL)
+	$ sudo yum install python26
+	Enable the ELGIS testing repo (http://wiki.osgeo.org/wiki/Enterprise_Linux_GIS)
+	$ sudo yum install python26-mod_wsgi python26-virtualenv
+	
 2. *Prepare a sandbox* for GeoNode using virtualenv::
 
        $ virtualenv geonode
@@ -129,15 +135,15 @@ Steps:
 
 3. *Install* the geonode python modules from the Pip bundle::
 
-       $ pip install geonode.pybundle
+       $ pip install geonode-webapp.pybundle
 
    If this step fails, make sure that you have a working C++ compiler installed
    and development versions of the requisite libraries, listed in the GeoNode
    README file.
 
-4. *Configure* the geonode Django app by editing ``settings.py``.  The
-   available settings and their usage is described elsewhere in this
-   documentation.
+4. *Configure* the geonode Django app by editing
+   ``./src/GeoNodePy/geonode/settings.py``.  The available settings and their
+   usage is described elsewhere in this documentation.
 
 5. If running via fastcgi, you can use the django-admin.py script to launch the
    fastcgi server for Django.  If running via WSGI, ensure that the virtualenv
