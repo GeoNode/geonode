@@ -174,7 +174,7 @@
        -->
        <gmd:descriptiveKeywords>
          <gmd:MD_Keywords>
-           {% for kw in layer.keywords %}
+           {% for kw in layer.keyword_list %}
            <gmd:keyword>
              <gco:CharacterString>{{kw}}</gco:CharacterString>
            </gmd:keyword>
