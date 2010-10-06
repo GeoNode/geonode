@@ -995,6 +995,9 @@ class Layer(models.Model, PermissionLevelMixin):
         self.distribution_url = meta.distribution.onlineresource.url
         self.distribution_description = meta.distribution.onlineresource.description
 
+    def keyword_list(self):
+        return self.keywords.split(" ")
+
     def set_bbox(self, box, srs=None):
         """
         Sets a bounding box based on the gsconfig native_box param.
