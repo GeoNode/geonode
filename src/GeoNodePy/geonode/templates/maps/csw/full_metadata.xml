@@ -240,7 +240,7 @@
        </gmd:extent>
        <gmd:supplementalInformation>
          <gco:CharacterString>
-            {{ layer.suplemental_information }}
+            {{ layer.supplemental_information }}
          </gco:CharacterString>
        </gmd:supplementalInformation>
      </gmd:MD_DataIdentification>
