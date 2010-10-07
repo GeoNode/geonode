@@ -1170,7 +1170,7 @@ class Map(models.Model, PermissionLevelMixin):
             src_cfg = l.source_config();
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
-            if src_cfg["ptype"] == "gx_wmssource": cfg["buffer"] = 0
+            if src_cfg.get("ptype", "gx_wmssource") == "gx_wmssource": cfg["buffer"] = 0
             return cfg
 
         config = {
