@@ -126,7 +126,6 @@ def maps(request, mapid=None):
                 status=401
             )
         try: 
-            
             map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
             map.save()
             map.set_default_permissions()
@@ -193,7 +192,7 @@ def newmap(request):
 
         map.abstract = DEFAULT_ABSTRACT
         map.title = DEFAULT_TITLE
-        map.owner = request.user
+        if request.user.is_authenticated(): map.owner = request.user
         config = map.viewer_json()
         del config['id']
     else:
