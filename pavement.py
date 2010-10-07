@@ -569,7 +569,7 @@ def host(options):
     djangolog = open("django.log", "w")
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
-            "-XX:CompileCommandFile=../../etc/hotspot_compiler",
+            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
             "-Djetty.host=" + options.host.bind,
             "-Xmx512M",
             "-XX:MaxPermSize=128m"
