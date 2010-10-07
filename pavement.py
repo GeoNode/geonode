@@ -528,7 +528,16 @@ def pip(*args):
         "cmd": full_path_pip,
         "args": " ".join(args)
     })
+    
+def ezinstall(*args):
+    full_path_ezinstall = options.config.bin / 'easy_install'
 
+    sh("%(cmd)s %(args)s" % {
+        "cmd": full_path_ezinstall,
+        "args": " ".join(args)
+    })
+
+easy_install = functools.partial(ezinstall)
 pip_install = functools.partial(pip, 'install', dl_cache)
 pip_bundle = functools.partial(pip, 'bundle', dl_cache)
 

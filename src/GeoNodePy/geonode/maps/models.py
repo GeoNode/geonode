@@ -425,27 +425,6 @@ SPATIAL_REPRESENTATION_TYPES = [
     'grid', 'steroModel', 'textTable', 'tin', 'vector'
 ]
 
-TOPIC_CATEGORIES = [
-    'biota',
-    'boundaries',
-    'climatologyMeteorologicalAtmosphere',
-    'economy',
-    'elevation',
-    'environment',
-    'farming',
-    'geoscientificInformation',
-    'health',
-    'imageryBaseMapsEarthCover',
-    'inlandWaters',
-    'intelligenceMilitary',
-    'location',
-    'oceans',
-    'planningCadastre'
-    'society',
-    'structure',
-    'transportation',
-    'utilitiesCommunication'
-]
 
 CONTACT_FIELDS = [
     "name",
@@ -471,6 +450,9 @@ more complex) advanced view. You can even use the XML editor to \
 create custom structures, but they have to be validated by the \
 system, so know what you do :-)'
 )
+    
+
+
     
 
 class Contact(models.Model):
