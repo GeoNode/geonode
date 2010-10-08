@@ -1306,7 +1306,7 @@ def _metadata_search(query, start, limit, **kw):
     # than owslib currently parses.  This could be improved by
     # improving owslib.
     results = [_build_search_result(doc) for doc in 
-               csw._records.findall('//'+nspath('Record', namespaces['csw']))]
+               csw._exml.findall('//'+nspath('Record', namespaces['csw']))]
 
     result = {'rows': results, 
               'total': csw.results['matches']}
@@ -1332,7 +1332,7 @@ def search_result_detail(request):
     uuid = request.GET.get("uuid")
     csw = get_csw()
     csw.getrecordbyid([uuid])
-    doc = csw._records.find(nspath('Record', namespaces['csw']))
+    doc = csw._exml.find(nspath('Record', namespaces['csw']))
     rec = _build_search_result(doc)
     
     try:
