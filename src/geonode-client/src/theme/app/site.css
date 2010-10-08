@@ -104,6 +104,23 @@ form td {
 vertical-align: middle;
 }
 
+.x-date-menu em {
+font-style: normal;
+}
+.x-date-menu ul,
+.x-date-menu ol,
+.x-date-menu table {
+margin: 0;
+}
+.x-date-menu th,
+.x-date-menu td {
+padding: 0;
+vertical-align: middle;
+}
+td.x-date-bottom,
+td.x-date-middle {
+padding: 4px;
+}
 
 /*-----------------------
 Layout
