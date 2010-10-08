@@ -53,6 +53,16 @@ class Catalog(object):
         recs = csw.records
         return recs.values()[0] if len(recs) > 0 else None
 
+    def url_for_uuid(self, uuid):
+        return self.base + "srv/en/csw?" + urllib.urlencode({
+            "request": "GetRecordById",
+            "service": "CSW",
+            "version": "2.0.2",
+            "id": uuid,
+            "outputschema": "http://www.isotc211.org/2005/gmd",
+            "elementsetname": "full"
+        })
+
     def csw_request(self, layer, template):
         tpl = get_template(template)
         ctx = Context({
