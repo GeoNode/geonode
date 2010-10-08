@@ -1331,9 +1331,10 @@ def _metadata_search(query, start, limit, **kw):
 def search_result_detail(request):
     uuid = request.GET.get("uuid")
     csw = get_csw()
-    csw.getrecordbyid([uuid])
-    doc = csw._exml.find(nspath('Record', namespaces['csw']))
-    rec = _build_search_result(doc)
+    csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
+    rec = csw.records.values()[0]
+    raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
+    extra_links = _extract_links(rec, raw_xml)
     
     try:
         layer = Layer.objects.get(uuid=uuid)
@@ -1344,9 +1345,49 @@ def search_result_detail(request):
 
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
+        'extra_links': extra_links,
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))
+
+def _extract_links(rec, xml):
+    download_links = []
+    dl_type_path = "/".join([
+        nspath("CI_OnlineResource", namespaces["gmd"]),
+        nspath("protocol", namespaces["gmd"]),
+        nspath("CharacterString", namespaces["gco"])
+        ])
+
+    dl_name_path = "/".join([
+        nspath("CI_OnlineResource", namespaces["gmd"]),
+        nspath("name", namespaces["gmd"]),
+        nspath("CharacterString", namespaces["gco"])
+        ])
+
+    dl_description_path = "/".join([
+        nspath("CI_OnlineResource", namespaces["gmd"]),
+        nspath("description", namespaces["gmd"]),
+        nspath("CharacterString", namespaces["gco"])
+        ])
+
+    dl_link_path = "/".join([
+        nspath("CI_OnlineResource", namespaces["gmd"]),
+        nspath("linkage", namespaces["gmd"]),
+        nspath("URL", namespaces["gmd"])
+        ])
+
+    format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
+
+    for link in xml.findall("*//" + nspath("onLine", namespaces['gmd'])):
+        if link.find(dl_type_path).text == "WWW:DOWNLOAD-1.0-http--download":
+            extension = link.find(dl_name_path).text.split('.')[-1]
+            format = format_re.match(link.find(dl_description_path).text).groups()[0]
+            url = link.find(dl_link_path).text
+            download_links.append((extension, format, url))
+    return dict(
+            download=download_links
+        )
+
 
 def _build_search_result(doc):
     """
