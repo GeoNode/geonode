@@ -51,7 +51,7 @@ software installed and in your PATH:
       Java version: 1.5.0_18
       OS name: "linux" version: "2.6.30.8-64.fc11.x86_64" arch: "amd64" Family: "unix"
 
-  - If not, download from http://maven.apache.org/download.html/
+  - If not, download from http://maven.apache.org/download.html
 
 Additionally, GeoNode uses a number of native-code libraries in Python.  You
 can install these libraries manually, or allow the GeoNode setup script to
