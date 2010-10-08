@@ -667,42 +667,43 @@ def _describe_layer(request, layer):
 
         if request.method == "POST":
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
-            if layer_form.is_valid():
-                new_poc = layer_form.cleaned_data['poc']
-                new_author = layer_form.cleaned_data['metadata_author']
-
-                if new_poc is None:
-                    poc_form = ContactForm(request.POST, prefix="poc")
-                    if poc_form.has_changed and poc_form.is_valid():
-                        new_poc = poc_form.save()
-
-                if new_author is None:
-                    author_form = ContactForm(request.POST, prefix="author")
-                    if author_form.has_changed and author_form.is_valid():
-                        new_author = author_form.save()
-
-                if new_poc is not None and new_author is not None:
-                    the_layer = layer_form.save(commit=False)
-                    the_layer.poc = new_poc
-                    the_layer.metadata_author = new_author
-                    the_layer.save()
-                    return HttpResponseRedirect("/data/" + layer.typename)
-
         else:
             layer_form = LayerForm(instance=layer, prefix="layer")
-            if poc.user is None:
-                poc_form = ContactForm(instance=poc, prefix="poc")
-            else:
-                layer_form.fields['poc'].initial = poc.id
-                poc_form = ContactForm(prefix="poc")
-                poc_form.hidden=True
 
-            if metadata_author.user is None:
-                author_form = ContactForm(instance=metadata_author, prefix="author")
-            else:
-                layer_form.fields['metadata_author'].initial = metadata_author.id
-                author_form = ContactForm(prefix="author")
-                author_form.hidden=True
+        if request.method == "POST" and layer_form.is_valid():
+            new_poc = layer_form.cleaned_data['poc']
+            new_author = layer_form.cleaned_data['metadata_author']
+
+            if new_poc is None:
+                poc_form = ContactForm(request.POST, prefix="poc")
+                if poc_form.has_changed and poc_form.is_valid():
+                    new_poc = poc_form.save()
+
+            if new_author is None:
+                author_form = ContactForm(request.POST, prefix="author")
+                if author_form.has_changed and author_form.is_valid():
+                    new_author = author_form.save()
+
+            if new_poc is not None and new_author is not None:
+                the_layer = layer_form.save(commit=False)
+                the_layer.poc = new_poc
+                the_layer.metadata_author = new_author
+                the_layer.save()
+                return HttpResponseRedirect("/data/" + layer.typename)
+
+        if poc.user is None:
+            poc_form = ContactForm(instance=poc, prefix="poc")
+        else:
+            layer_form.fields['poc'].initial = poc.id
+            poc_form = ContactForm(prefix="poc")
+            poc_form.hidden=True
+
+        if metadata_author.user is None:
+            author_form = ContactForm(instance=metadata_author, prefix="author")
+        else:
+            layer_form.fields['metadata_author'].initial = metadata_author.id
+            author_form = ContactForm(prefix="author")
+            author_form.hidden=True
 
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
