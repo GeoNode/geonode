@@ -875,6 +875,14 @@ class Layer(models.Model, PermissionLevelMixin):
             self._resource_cache = cat.get_resource(self.name, store)
         return self._resource_cache
 
+    def _get_metadata_links(self):
+        return self.resource.metadata_links
+
+    def _set_metadata_links(self, md_links):
+        self.resource.metadata_links = md_links
+
+    metadata_links = property(_get_metadata_links, _set_metadata_links)
+
     def _get_default_style(self):
         return self.publishing.default_style
 
@@ -950,12 +958,16 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.resource is None:
             return
         if hasattr(self, "_resource_cache"):
+            gn = Layer.objects.gn_catalog
             self.resource.title = self.title
             self.resource.abstract = self.abstract
             self.resource.name= self.name
+            self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
             Layer.objects.gs_catalog.save(self._resource_cache)
-        if hasattr(self, "_publishing_cache"):
-            Layer.objects.gs_catalog.save(self._publishing_cache)
+        if self.poc and self.poc.user:
+            self.publishing.attribution = str(self.poc.user)
+            self.publishing.attribution_link = self.poc.user.get_absolute_url()
+            Layer.objects.gs_catalog.save(self.publishing)
 
     def  _populate_from_gs(self):
         gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
@@ -982,6 +994,9 @@ class Layer(models.Model, PermissionLevelMixin):
         self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
         self.distribution_url = meta.distribution.onlineresource.url
         self.distribution_description = meta.distribution.onlineresource.description
+
+    def keyword_list(self):
+        return self.keywords.split(" ")
 
     def set_bbox(self, box, srs=None):
         """
