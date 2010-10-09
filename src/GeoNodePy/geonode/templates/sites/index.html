@@ -1,0 +1,94 @@
+{% extends "fullscreen.html" %}
+{% load geonode_media %}
+{% load i18n %}
+
+{% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+<script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+<script type="text/javascript">
+    google.load("earth", "1");
+</script>
+
+<link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}colorpicker/color-picker.ux.css" />
+
+<script src="{% geonode_media "PrintPreview_script" %}"></script>
+<link rel="stylesheet" type="text/css" href="{% geonode_media "PrintPreview_themes" %}css/printpreview.css" />
+<script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
+
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/{{ theSite.urlSuffix }}/boilerplate-min.css" media="screen" />
+<!--[if lte IE 6]><link rel="stylesheet" href="{% geonode_media "app_themes" %}boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/{{ siteURL }}/site.css" media="screen" />
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+<script type="text/javascript" src="{% url geonode.views.lang %}"></script>
+
+
+<script type="text/javascript">
+var app;
+Ext.onReady(function() {
+{% autoescape off %}
+    var config = Ext.apply({
+        useBackgroundCapabilities: false,
+        proxy: "/proxy/?url=",
+
+        /* The URL to a REST map configuration service.  This service 
+         * provides listing and, with an authenticated user, saving of 
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/",
+        homeUrl: "{% url geonode.views.index %}",
+        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+        csrfToken: "{{ csrf_token }}"
+    }, {{ config }});
+
+    app = new GeoExplorer(config);
+
+
+    var permalinkTemplate = new Ext.Template("{protocol}//{host}/{site}");
+    var permalink = function(id) {
+            return permalinkTemplate.apply({
+                protocol: window.location.protocol,
+                host: window.location.host,
+                site: config.site,
+                id: id
+            }) 
+        };
+
+    var moreInfoTemplate = new Ext.Template("<a class='link' href='{permalink}'> More info</a>");
+    var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
+    Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
+
+    var titleTemplate = new Ext.Template("<a class=\"maplist\" href=\"/maps/search\">Maps</a> / <strong>{title}</strong>");
+    Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}));
+
+    app.on("saved", function(id) {
+        //reset title header
+        Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}))
+
+        //reset more info link
+        Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.mapID)}))
+    }, this);
+{% endautoescape %}
+});
+</script>
+
+{% endblock %}
+
+{% block body %}
+<div id="header-wrapper">
+
+
+  {{ block.super }}
+  <div id="topPanel">
+    <div id="more-info"></div>
+    <span id="map-title-header"></span>
+  </div>
+</div>
+{% endblock body %}
+
+   {% block logos %}
+    <a id="logo" href="{{ settings.SITEURL }}/{{ theSite.urlSuffix }}">{{ theSite.title }}</a>
+   {% endblock logos %}

@@ -5,7 +5,7 @@ from urllib import urlencode
 _ = lambda x: x
 
 DEBUG = True
-SITENAME = "GeoNode"
+SITENAME = "WorldMap"
 SITEURL = "http://localhost:8000/"
 TEMPLATE_DEBUG = DEBUG
 
@@ -58,12 +58,13 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/Users/mbertrand/Development/googlecode/cga-worldmap/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://localhost:8001/geoserver/www/'
+#MEDIA_URL = 'http://localhost:8001/geoserver/www/'
+MEDIA_URL = 'http://localhost/media'
 
 GEONODE_UPLOAD_PATH = path_extrapolate('../../gs-data/www')
 
@@ -227,10 +228,11 @@ INSTALLED_APPS = (
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
+    'geonode.sites'
 )
 
 AUTH_PROFILE_MODULE = 'maps.Contact'
-REGISTRATION_OPEN = False
+REGISTRATION_OPEN = True
 GEONODE_CLIENT_LOCATION = "http://demo.geonode.org/geonode-client"
 
 SERVE_MEDIA = DEBUG;
