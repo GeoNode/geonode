@@ -122,6 +122,15 @@ td.x-date-middle {
 padding: 4px;
 }
 
+ul.x-tab-strip {
+margin: 0;
+list-style-type: inherit;
+}
+
+label {
+font-weight: inherit;
+}
+
 /*-----------------------
 Layout
 -----------------------*/
