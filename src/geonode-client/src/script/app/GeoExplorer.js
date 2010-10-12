@@ -62,9 +62,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     
     /**
      * Property: modified
-     * ``Boolean``
+     * ``Number``
      */
-    modified: false,
+    modified: 0,
 
     /**
      * Property: popupCache
@@ -449,10 +449,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.on("ready", function() {
             addLayerButton.enable();
             this.mapPanel.layers.on({
-                "update": function() {this.modified = true;},
-                "add": function() {this.modified = true;},
+                "update": function() {this.modified |= 1;},
+                "add": function() {this.modified |= 1;},
                 "remove": function(store, rec) {
-                    this.modified = true;
+                    this.modified |= 1;
                     delete this.stylesDlgCache[rec.getLayer().id];
                 },
                 scope: this
@@ -599,7 +599,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     hideMode: "offsets"
                                 },
                                 listeners: {
-                                    "change": function() {this.modified = true;},
+                                    "change": function() {this.modified |= 1;},
                                     scope: this
                                 }
                             }]
@@ -614,8 +614,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             layerRecord: record
                         });
                         stylesPanel.items.get(0).on({
-                            "styleselected": function() {this.modified = true;},
-                            "modified": function() {this.modified = true;},
+                            "styleselected": function() {this.modified |= 1;},
+                            "modified": function() {this.modified |= 2;},
                             scope: this
                         });
                         stylesPanel.setTitle("Styles");
@@ -894,6 +894,25 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 cmp.createSLD({userStyles: [name]}) : null
                         });
                     },
+                    "saved": function() {
+                        this.busyMask.hide();
+                        this.modified ^= this.modified & 2;
+                        var rec = stylesDialog.selectedStyle;
+                        var styleName = rec.get("userStyle").isDefault ?
+                            "" : rec.get("name");
+                        if (options.applySelectedStyle === true ||
+                                    styleName === initialStyle ||
+                                    rec.get("name") === initialStyle) {
+                            layer.mergeNewParams({
+                                "STYLES": styleName,
+                                "SLD_BODY": null,
+                                "_dc": Math.random()
+                            });
+                        }
+                        stylesPanel.ownerCt instanceof Ext.Window ?
+                            stylesPanel.ownerCt.close() : 
+                            createStylesDialog();
+                    },
                     scope: this
                 })
             }, options));
@@ -933,29 +952,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     this.busyMask = new Ext.LoadMask(stylesPanel.el,
                         {msg: "Applying style changes..."});
                     this.busyMask.show();
-                    stylesDialog.saveStyles({
-                        success: function() {
-                            this.busyMask.hide();
-                        },
-                        saved: function() {
-                            var rec = stylesDialog.selectedStyle;
-                            var styleName = rec.get("userStyle").isDefault ?
-                                "" : rec.get("name");
-                            if (options.applySelectedStyle === true ||
-                                        styleName === initialStyle ||
-                                        rec.get("name") === initialStyle) {
-                                layer.mergeNewParams({
-                                    "STYLES": styleName,
-                                    "SLD_BODY": null,
-                                    "_dc": Math.random()
-                                });
-                            }
-                            stylesPanel.ownerCt instanceof Ext.Window ?
-                                stylesPanel.ownerCt.close() : 
-                                createStylesDialog();
-                        },
-                        scope: this
-                    });
+                    stylesDialog.saveStyles();
                 },
                 scope: this
             }],
@@ -1577,9 +1574,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             enable3DButton
         ];
-        !this.mapID && this.on("saved", function() {
+        this.on("saved", function() {
             // enable the "Publish Map" button
             tools[1].enable();
+            this.modified ^= this.modified & 1;
         }, this);
 
         return tools;

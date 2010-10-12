@@ -73,12 +73,20 @@ class LayerCategoryForm(forms.ModelForm):
         model = LayerCategory        
 
 class LayerForm(forms.ModelForm):
+
     
     topic_category = forms.ModelChoiceField(empty_label = "Create a new category", 
                                 label = "Topic Category", required=False,
                                 queryset = LayerCategory.objects.all())
 
     topic_category_new = forms.CharField(label = "New Category", required=False, max_length=255)
+
+    date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
+    date.widget.widgets[0].attrs = {"class":"date"}
+    date.widget.widgets[1].attrs = {"class":"time"}
+    temporal_extent_start = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
+    temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
+
     
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
@@ -673,6 +681,7 @@ def _describe_layer(request, layer):
 
         if request.method == "POST":
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+<<<<<<< HEAD
             if layer_form.is_valid():
                 new_poc = layer_form.cleaned_data['poc']
                 new_author = layer_form.cleaned_data['metadata_author']
@@ -725,13 +734,45 @@ def _describe_layer(request, layer):
                 layer_form.fields['poc'].initial = poc.id
                 poc_form = ContactForm(prefix="poc")
                 poc_form.hidden=True
+=======
+        else:
+            layer_form = LayerForm(instance=layer, prefix="layer")
+>>>>>>> master
 
-            if metadata_author.user is None:
-                author_form = ContactForm(instance=metadata_author, prefix="author")
-            else:
-                layer_form.fields['metadata_author'].initial = metadata_author.id
-                author_form = ContactForm(prefix="author")
-                author_form.hidden=True
+        if request.method == "POST" and layer_form.is_valid():
+            new_poc = layer_form.cleaned_data['poc']
+            new_author = layer_form.cleaned_data['metadata_author']
+
+            if new_poc is None:
+                poc_form = ContactForm(request.POST, prefix="poc")
+                if poc_form.has_changed and poc_form.is_valid():
+                    new_poc = poc_form.save()
+
+            if new_author is None:
+                author_form = ContactForm(request.POST, prefix="author")
+                if author_form.has_changed and author_form.is_valid():
+                    new_author = author_form.save()
+
+            if new_poc is not None and new_author is not None:
+                the_layer = layer_form.save(commit=False)
+                the_layer.poc = new_poc
+                the_layer.metadata_author = new_author
+                the_layer.save()
+                return HttpResponseRedirect("/data/" + layer.typename)
+
+        if poc.user is None:
+            poc_form = ContactForm(instance=poc, prefix="poc")
+        else:
+            layer_form.fields['poc'].initial = poc.id
+            poc_form = ContactForm(prefix="poc")
+            poc_form.hidden=True
+
+        if metadata_author.user is None:
+            author_form = ContactForm(instance=metadata_author, prefix="author")
+        else:
+            layer_form.fields['metadata_author'].initial = metadata_author.id
+            author_form = ContactForm(prefix="author")
+            author_form.hidden=True
 
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
@@ -1341,7 +1382,7 @@ def _metadata_search(query, start, limit, **kw):
     # than owslib currently parses.  This could be improved by
     # improving owslib.
     results = [_build_search_result(doc) for doc in 
-               csw._records.findall('//'+nspath('Record', namespaces['csw']))]
+               csw._exml.findall('//'+nspath('Record', namespaces['csw']))]
 
     result = {'rows': results, 
               'total': csw.results['matches']}
@@ -1366,9 +1407,10 @@ def _metadata_search(query, start, limit, **kw):
 def search_result_detail(request):
     uuid = request.GET.get("uuid")
     csw = get_csw()
-    csw.getrecordbyid([uuid])
-    doc = csw._records.find(nspath('Record', namespaces['csw']))
-    rec = _build_search_result(doc)
+    csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
+    rec = csw.records.values()[0]
+    raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
+    extra_links = _extract_links(rec, raw_xml)
     
     try:
         layer = Layer.objects.get(uuid=uuid)
@@ -1379,9 +1421,49 @@ def search_result_detail(request):
 
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
+        'extra_links': extra_links,
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))
+
+def _extract_links(rec, xml):
+    download_links = []
+    dl_type_path = "/".join([
+        nspath("CI_OnlineResource", namespaces["gmd"]),
+        nspath("protocol", namespaces["gmd"]),
+        nspath("CharacterString", namespaces["gco"])
+        ])
+
+    dl_name_path = "/".join([
+        nspath("CI_OnlineResource", namespaces["gmd"]),
+        nspath("name", namespaces["gmd"]),
+        nspath("CharacterString", namespaces["gco"])
+        ])
+
+    dl_description_path = "/".join([
+        nspath("CI_OnlineResource", namespaces["gmd"]),
+        nspath("description", namespaces["gmd"]),
+        nspath("CharacterString", namespaces["gco"])
+        ])
+
+    dl_link_path = "/".join([
+        nspath("CI_OnlineResource", namespaces["gmd"]),
+        nspath("linkage", namespaces["gmd"]),
+        nspath("URL", namespaces["gmd"])
+        ])
+
+    format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
+
+    for link in xml.findall("*//" + nspath("onLine", namespaces['gmd'])):
+        if link.find(dl_type_path).text == "WWW:DOWNLOAD-1.0-http--download":
+            extension = link.find(dl_name_path).text.split('.')[-1]
+            format = format_re.match(link.find(dl_description_path).text).groups()[0]
+            url = link.find(dl_link_path).text
+            download_links.append((extension, format, url))
+    return dict(
+            download=download_links
+        )
+
 
 def _build_search_result(doc):
     """
