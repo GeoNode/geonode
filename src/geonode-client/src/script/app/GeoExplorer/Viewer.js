@@ -42,6 +42,7 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
         this.mapPanelContainer = new Ext.Panel({
             layout: "card",
             region: "center",
+            ref: "../main",
             tbar: this.toolbar,
             defaults: {
                 border: false
