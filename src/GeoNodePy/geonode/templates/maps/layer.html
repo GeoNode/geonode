@@ -19,7 +19,11 @@
         var styleEditor, modified = false;
         Ext.onReady(function() {
             var config = {
-                useBackgroundCapabilities: false,
+                tools: [{
+                    ptype: "gx_wmsgetfeatureinfo",
+                    actionTarget: "main.tbar",
+                    outputConfig: {width: 400, height: 200, panIn: false}
+                }],
                 proxy: "/proxy/?url=",
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
 
