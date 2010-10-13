@@ -585,6 +585,7 @@ class Layer(models.Model, PermissionLevelMixin):
     store = models.CharField(max_length=128)
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
+    external_url = models.URLField(blank=True, null=True)
     uuid = models.CharField(max_length=36)
     typename = models.CharField(max_length=128, unique=True)
     owner = models.ForeignKey(User, blank=True, null=True)

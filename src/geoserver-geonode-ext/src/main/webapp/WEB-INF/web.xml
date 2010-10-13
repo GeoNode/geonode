@@ -53,6 +53,11 @@
         <param-value>C:\eclipse\workspace\geoserver_trunk\cite\confCiteWFSPostGIS</param-value>
     </context-param> 
    -->
+
+    <context-param>
+       <param-name>GEONODE_BASE_URL</param-name>
+        <param-value>http://localhost:8000</param-value>
+    </context-param>
   
     <!-- pick up all spring application contexts -->
     <context-param>

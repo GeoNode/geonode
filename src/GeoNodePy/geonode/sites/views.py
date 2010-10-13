@@ -26,9 +26,6 @@ import httplib2
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
 import re
-from urllib import urlencode
-from urlparse import urlparse
-import uuid
 import unicodedata
 from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
