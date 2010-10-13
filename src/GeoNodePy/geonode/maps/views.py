@@ -1,3 +1,4 @@
+from datetime import datetime
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style
@@ -974,7 +975,9 @@ def _handle_layer_upload(request, layer=None):
                                          workspace=gs_resource.store.workspace.name,
                                          title=gs_resource.title,
                                          uuid=str(uuid.uuid4()),
-                                         owner=request.user)
+                                         owner=request.user,
+                                         date=datetime.now()
+                                       )
             # A user without a profile might be uploading this
             poc_contact, __ = Contact.objects.get_or_create(user=request.user,
                                                    defaults={"name": request.user.username })
