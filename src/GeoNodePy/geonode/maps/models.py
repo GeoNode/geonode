@@ -14,7 +14,7 @@ import simplejson
 import urllib
 from urlparse import urlparse
 import uuid
-import datetime
+from datetime import datetime
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
@@ -576,6 +576,7 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
+                    "date": datetime.now(),
                     "uuid": str(uuid.uuid4())
                 })
 
