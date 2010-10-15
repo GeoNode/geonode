@@ -694,8 +694,8 @@ def hostjetty(options):
         info("Development Geoserver/GeoNetwork is running at http://" + options.host.bind + ":8000/")
         info("The Geoserver/GeoNetwork is an unstoppable machine")
         info("Press CTRL-C to shut down")
-        django.wait()
-        info("Geoserver/GeoNetwork process terminated, see log for details.")
+        mvn.wait()
+
     finally:
         info("Shutting down...")
         try:
