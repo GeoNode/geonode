@@ -31,8 +31,15 @@ import unicodedata
 from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
+# import the logging library
+import logging
+import sys,traceback
+
+
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
+logging.debug("_user:" + _user)
+logging.debug("_password:" + _password)
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
@@ -135,6 +142,7 @@ LAYER_LEV_NAMES = {
 
 @transaction.commit_manually
 def maps(request, mapid=None):
+    logging.debug("STARTING MAPS VIEW")
     if request.method == 'GET':
         return render_to_response('maps.html', RequestContext(request))
     elif request.method == 'POST':
@@ -821,11 +829,13 @@ Please try again, or contact and administrator if the problem continues.")
 @login_required
 @csrf_exempt
 def upload_layer(request):
+    logging.debug("WTF MAN?")
     if request.method == 'GET':
         return render_to_response('maps/layer_upload.html',
                                   RequestContext(request, {}))
     elif request.method == 'POST':
         try:
+            logging.debug("Begin upload attempt")
             layer, errors = _handle_layer_upload(request)
         except:
             errors = [GENERIC_UPLOAD_ERROR]
@@ -953,17 +963,21 @@ def _handle_layer_upload(request, layer=None):
         cfg = base_file
 
     try:
+        logging.debug("about to create store")
         create_store(name, cfg, overwrite=overwrite)
     except geoserver.catalog.UploadError:
+        traceback.print_exc(file=sys.stdout)
         errors.append(_("An error occurred while loading the data."))
         tmp = cat.get_store(name)
         if tmp: cat.delete(tmp)
+
     except geoserver.catalog.ConflictingDataError:
         errors.append(_("There is already a layer with the given name."))
 
 
     # if we successfully created the store in geoserver...
     if len(errors) == 0 and layer is None:
+        logging.debug("Layer uploaded, now trying to process it...")
         gs_resource = None
         csw_record = None
         layer = None
@@ -1001,6 +1015,8 @@ def _handle_layer_upload(request, layer=None):
             fixup_style(cat, gs_resource)
 
         except:
+            #traceback.print_exc(file=sys.stdout)
+            #traceback.print_exc(file=LOG_FILENAME)
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
                 # no explicit link from the resource to the layer, bah
@@ -1131,16 +1147,22 @@ def layer_acls(request):
     # user which represents the geoserver administrator that
     # is not present in django.
     acl_user = request.user
+    #logging.debug("USER IS " + request.user)
     if 'HTTP_AUTHORIZATION' in request.META:
+        logging.debug("HTTP_AUTHORIZATION...")
         try:
             username, password = _get_basic_auth_info(request)
+            logging.debug("UserName: " + username + ",  PASS: " + password)
             acl_user = authenticate(username=username, password=password)
+
+            logging.debug("Geoserver creds: " + settings.GEOSERVER_CREDENTIALS[0] + ":" + settings.GEOSERVER_CREDENTIALS[1])
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and 
                 username == settings.GEOSERVER_CREDENTIALS[0] and
                 password == settings.GEOSERVER_CREDENTIALS[1]):
                 # great, tell geoserver it's an admin.
+                logging.debug("Geoserver admin logging on")
                 result = {
                    'rw': [],
                    'ro': [],
@@ -1150,6 +1172,7 @@ def layer_acls(request):
                 }
                 return HttpResponse(json.dumps(result), mimetype="application/json")
         except:
+            logging.debug("An error occurred while trying to authorize")
             pass
         
         if acl_user is None: 
