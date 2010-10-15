@@ -12,7 +12,9 @@ import org.acegisecurity.AuthenticationServiceException;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.util.Assert;
-
+import org.geotools.util.logging.Logging;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  * An {@link AuthenticationProvider} provider passing the username/password to GeoNode for
  * authentication
@@ -23,6 +25,8 @@ import org.springframework.util.Assert;
 public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
 
     private GeonodeSecurityClient client;
+
+    static final Logger LOGGER = Logging.getLogger(GeoNodeAuthenticationProvider.class);
 
     public GeoNodeAuthenticationProvider(GeonodeSecurityClient client) {
         this.client = client;
@@ -38,7 +42,7 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
         UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
         String username = token.getName();
         String password = (String) token.getCredentials();
-
+        LOGGER.info("GeoNodeAuthenticationProvider, username:" + username);
         try {
             return client.authenticateUserPwd(username, password);
         } catch (IOException e) {

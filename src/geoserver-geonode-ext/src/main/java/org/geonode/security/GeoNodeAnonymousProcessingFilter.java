@@ -61,6 +61,7 @@ public class GeoNodeAnonymousProcessingFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
+        LOGGER.fine("AnonymousProcessingFilter doFilter");
         final SecurityContext securityContext = SecurityContextHolder.getContext();
         final Authentication existingAuth = securityContext.getAuthentication();
 

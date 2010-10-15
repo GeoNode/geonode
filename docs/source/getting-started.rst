@@ -143,3 +143,58 @@ GeoNode development kit:
      $ . /opt/geonode-devkit-0.1-venv/bin/activate
 
 Now you can set up a new Django site with the GeoNode Django apps enabled. 
+
+
+
+#####
+Required packages on ubuntu: (besides proj, geos, gdal)
+build-essential
+
+python-dev
+subversion
+git-core
+git-svn
+
+
+sudo apt-add-repository "ppa:ubuntugis/ubuntugis-unstable"
+    postgresql-8.4-postgis
+    postgresql-server-dev-8.4
+
+sudo add-apt-repository "deb http://archive.canonical.com/ lucid partner"
+    sudo apt-get install sun-java6-jdk
+
+maven2
+apache2 libapache2-mod-python libapache2-mod-wsgi
+
+
+daemon
+wget -O /tmp/key http://hudson-ci.org/debian/hudson-ci.org.key
+sudo apt-key add /tmp/key
+wget -O /tmp/hudson.deb http://hudson-ci.org/latest/debian/hudson.deb
+sudo dpkg --install /tmp/hudson.deb
+sudo apt-get update
+sudo apt-get install hudson
+
+
+
+postfix
+mailutils
+sudo useradd -m -s /bin/bash mailer
+sudo passwd mailer
+sudo postconf -e "home_mailbox = Maildir/"
+sudo postconf -e "mailbox_command = "
+sudo /etc/init.d/postfix restart
+sudo apt-get install dovecot-imapd dovecot-pop3d
+sudo nano /etc/dovecot/dovecot.conf
+    protocols = pop3 pop3s imap imaps
+    pop3_uidl_format = %08Xu%08Xv
+
+    ## to allow remote access
+    listen = *
+
+    ## only set it to no, if the server is to be used with virtual account or internally, else ignore this setting
+    disable_plaintext_auth = no
+
+    mail_location = maildir:/home/%u/Maildir
+sudo /etc/init.d/dovecat stop
+sudo /etc/init.d/dovecat start

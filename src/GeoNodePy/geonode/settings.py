@@ -1,6 +1,11 @@
 # Django settings for GeoNode project.
 from utils import path_extrapolate
 from urllib import urlencode
+import logging
+
+
+LOG_FILENAME = '/Users/mbertrand/Development/googlecode/cga-worldmap/geonode.log'
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 _ = lambda x: x
 
