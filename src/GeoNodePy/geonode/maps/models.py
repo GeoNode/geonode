@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
-
+import re
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
@@ -584,8 +584,8 @@ class Layer(models.Model, PermissionLevelMixin):
     workspace = models.CharField(max_length=128)
     store = models.CharField(max_length=128)
     storeType = models.CharField(max_length=128)
+    #externalURL = models.URLField(blank=True, null=True)
     name = models.CharField(max_length=128)
-    external_url = models.URLField(blank=True, null=True)
     uuid = models.CharField(max_length=36)
     typename = models.CharField(max_length=128, unique=True)
     owner = models.ForeignKey(User, blank=True, null=True)
@@ -748,7 +748,12 @@ class Layer(models.Model, PermissionLevelMixin):
 
     def maps(self):
         """Return a list of all the maps that use this layer"""
+
+        #if (self.externalURL is not None and self.externalURL != ""):
+        #    local_wms = self.externalURL
+        #else:
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
+
         return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename).select_related()])
 
     def metadata(self):
@@ -1525,10 +1530,11 @@ def delete_layer(instance, sender, **kwargs):
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
-    instance.save_to_geoserver()
 
-    if kwargs['created']:
-        instance._populate_from_gs()
+    if (re.search("coverageStore|dataStore", instance.service_type)):
+        instance.save_to_geoserver()
+        if kwargs['created']:
+            instance._populate_from_gs()
 
     instance.save_to_geonetwork()
 
