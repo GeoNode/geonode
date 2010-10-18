@@ -10,7 +10,7 @@ _ = lambda x: x
 
 DEBUG = True
 SITENAME = "WorldMap"
-SITEURL = "localhost:8000"
+SITEURL = "http://localhost:8000/"
 TEMPLATE_DEBUG = DEBUG
 
 
@@ -115,13 +115,13 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8000/geoserver/"
+GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", open(path_extrapolate('../../geoserver_token')).readline()[0:-1]
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://localhost:8000/geonetwork/"
+GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
@@ -138,7 +138,7 @@ MAP_BASELAYERSOURCES = {
         "ptype":"gx_olsource"
     },
     "capra": {
-        "url":"http://localhost:8000/geoserver/wms"
+        "url":"http://localhost:8001/geoserver/wms"
     },
     "google":{
         "ptype":"gx_googlesource",
@@ -244,7 +244,7 @@ REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 7
 GEONODE_CLIENT_LOCATION = "http://localhost:8000"
 
-SERVE_MEDIA = False;
+SERVE_MEDIA = True;
 
 try:
     from local_settings import *
