@@ -195,6 +195,32 @@ div.map-overlay div.overlay-element {
     margin: 5px;
 }
 
+
+div.cga-logo-overlay {
+    z-index: 1000; 
+    position: absolute; 
+    left: 100px; 
+    bottom: 10px;
+    width:151px;
+    height:39px;
+    background: transparent;  
+}
+
+div.cga-logo-overlay-element {
+    float: left;
+    width:151px;
+    height:39px;
+    z-index: 1000; 
+    position: absolute; 
+    left: 100px; 
+    bottom: 10px;
+    width:175px;
+    height:48px;
+    display:inline;    
+    background: transparent url(img/cga-logo.png) no-repeat scroll 0 0;
+}
+
+
 div.overlay-scaleline {
     bottom: 0px;
     left: 0px;

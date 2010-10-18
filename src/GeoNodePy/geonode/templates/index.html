@@ -49,16 +49,23 @@ Ext.onReady(function(){
     <h2> {% trans "Welcome" %} </h2>
     <p>
     {% blocktrans %}
-  GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our mailing list by emailing <em>geonode@librelist.com</em>.
+<p><b>WorldMap</b> is an open source system for geospatial collaboration currently under construction. It is being built to assist academic research and teaching as well as the general public.  The system will support data discovery, analysis, visualization, editing, commenting on, and archiving of multi-disciplinary, multi-source and multi-format data, organized spatially and temporally.</p>
+
+<p>The first instance of WorldMap, focused on the continent of Africa, is called <a href="http://africamap.harvard.edu">AfricaMap</a>. Since its beta release in November of 2008, the framework has been implemented in several geographic locations with different research foci, including <a href="http://worldmap.harvard.edu/boston">metro Boston</a>,
+<a href="http://worldmap.harvard.edu/eastasia">East Asia</a>, 
+<a href="http://worldmap.harvard.edu/vtmap">Vermont</a>, 
+<a href="http://worldmap.harvard.edu/forest">Harvard Forest</a> and the 
+ <a href="http://worldmap.harvard.edu/paris">city of Paris</a>. These web mapping applications are used in courses as well as by individual researchers and include:
+</p>
     {% endblocktrans %} 
   </p>
   </div>
   <div class="block">
-    <h2> {% trans "Maps" %} </h2>
+    <h2> {% trans "Map Sites" %} </h2>
     <p>
     {% blocktrans %} 
-  GeoNode lets you compose and share maps.  <strong>Create</strong>
-      a map with our cartography tool, or <strong>explore</strong> maps
+  WorldMap lets you compose and share maps.  <strong>Create</strong>
+      a map site with our cartography tool, or <strong>explore</strong> map sites
       shared by others.
     {% endblocktrans %} 
   </p>
@@ -67,37 +74,42 @@ Ext.onReady(function(){
       <div id="create_map" class="content-button"></div>
     </div>
   </div>
-  <div id="data_block" class="block">
-    <h2> {% trans "Data" %} </h2>
-    <p>
-    {% blocktrans %} 
-  GeoNode lets you upload, manage, and browse data.  
-      <strong>Search</strong> for data that is valuable to you, or 
-      <strong>upload</strong> your own data.
-    {% endblocktrans %} 
-    </p>
+  <div id="sponsor_block" class="block">
+<p>&nbsp;</p>
 
-    <!-- Data search text box and button -->
+<p><b>Sponsors of WorldMap include:</b></p>
 
-    <form action="{% url search %}" method="POST">
-      {% csrf_token %}
-        <table>
-          <tr>
-            <td>
-              <input type="text" id="search_query" name="q" />
-            </td>
-            <td>
-              <div id="submit_search"></div>
-            </td>
-          </tr>
-        </table>
-        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
-    </form>
-  
-    <!-- Links to specialized views of data -->
-    <!-- Upload data button (link?) -->
-    <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload data"  %}</a>
-  </div>
+<p>Center for Geographic Analysis</p>
+
+<p>Committee on African Studies (AfricaMap)</p>
+
+<p>Department of African and African American Studies (AfricaMap)</p>
+
+<p>Department of Earth and Planetary Sciences (Vermont Geology Map)</p>
+
+<p>Fairbank Center for Chinese Studies (ChinaMap)</p>
+
+<p>FAS Academic Technology Group (ParisMap)</p>
+
+<p>Folger Fund (ChinaMap)</p>
+
+<p>Harvard Forest (Harvard Forest Map)</p>
+
+<p>Harvard-MIT Data Center</p>
+
+<p>Institute for Quantitative Social Science</p>
+
+<p>Milton Fund (AfricaMap)</p>
+
+<p>Provost Fund</p>
+
+<p>Radcliffe Institute for Advanced Study (BostonMap)</p>
+
+<p>Rappaport Institute for Greater Boston (BostonMap)</p>
+
+<p>W.E.B. Du Bois Institute for African and African-American Research (AfricaMap)</p>
+
+<p>Weatherhead Center for International Affairs (ChinaMap)</p>
 </div>
 {% endblock %}
 {% block sidebar %}

@@ -438,6 +438,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // TODO: make a proper component out of this
         var mapOverlay = this.createMapOverlay();
         this.mapPanel.add(mapOverlay);
+        
+        var logoOverlay = this.createLogoOverlay();
+    	this.mapPanel.add(logoOverlay);
 
         var addLayerButton = new Ext.Button({
             tooltip : this.addLayersButtonText,
@@ -1166,12 +1169,38 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.capGrid.show();
     },
 
+    /**
+     * Method:createLogoOverlay
+     * Shows the CGA logo on the map
+     * 
+     */
+    createLogoOverlay: function() {
+    
+        var cgaLogo = new Ext.BoxComponent({
+            autoEl: {
+                tag: "div",
+                cls: "cga-logo-overlay-element"
+            }
+        });
+    	/*
+        var logoOverlay = new Ext.Panel({
+            // title: "Overlay",
+            cls: 'cga-logo-overlay',
+            items: [ cgaLogo
+            ]
+        });*/
+    	return cgaLogo;
+    },
+    
+    
     /** private: method[createMapOverlay]
      * Builds the :class:`Ext.Panel` containing components to be overlaid on the
      * map, setting up the special configuration for its layout and 
      * map-friendliness.
      */
     createMapOverlay: function() {
+
+    	
         var scaleLinePanel = new Ext.BoxComponent({
             autoEl: {
                 tag: "div",
