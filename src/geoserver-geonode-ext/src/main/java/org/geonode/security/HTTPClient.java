@@ -9,7 +9,9 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.springframework.util.Assert;
-
+import org.geotools.util.logging.Logging;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  * A reentrant HTTP client used to send authentication requests to GeoNode
  * 
@@ -18,6 +20,9 @@ import org.springframework.util.Assert;
  */
 public class HTTPClient {
 
+    static final Logger LOGGER = Logging.getLogger(HTTPClient.class);
+	
+	
     private final HttpClient client;
 
     /**
@@ -29,6 +34,7 @@ public class HTTPClient {
     public HTTPClient(final int maxConnectionsPerHost, final int connectionTimeout,
             final int readTimeout) {
 
+    	LOGGER.info("---New HTTPClient---");
         Assert.isTrue(maxConnectionsPerHost > 0,
                 "maxConnectionsPerHost shall be a positive integer");
         Assert.isTrue(connectionTimeout >= 0,
@@ -52,7 +58,7 @@ public class HTTPClient {
      * @throws IOException
      */
     public String sendGET(final String url, final String[] requestHeaders) throws IOException {
-
+    	LOGGER.info("sendGET " + url);
         GetMethod get = new GetMethod(url);
         get.setFollowRedirects(true);
 
@@ -85,6 +91,7 @@ public class HTTPClient {
                 bodyAsStream.close();
             }
             responseBodyAsString = responseBody.toString();
+            LOGGER.info("responseBodyAsString:" + responseBodyAsString);
         } finally {
             get.releaseConnection();
         }

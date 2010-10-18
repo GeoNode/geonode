@@ -35,7 +35,7 @@ from django.db.models import Q
 import logging
 import sys,traceback
 
-
+logging.debug("START MAPS VIEW")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 logging.debug("_user:" + _user)
@@ -892,6 +892,7 @@ def _handle_layer_upload(request, layer=None):
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
     """
+    logging.debug("ENTER handle_layer_upload")
     layer_name = request.POST.get('layer_name');
     base_file = request.FILES.get('base_file');
 
@@ -965,6 +966,7 @@ def _handle_layer_upload(request, layer=None):
     try:
         logging.debug("about to create store")
         create_store(name, cfg, overwrite=overwrite)
+        logging.debug("store created")
     except geoserver.catalog.UploadError:
         traceback.print_exc(file=sys.stdout)
         errors.append(_("An error occurred while loading the data."))
@@ -1146,6 +1148,7 @@ def layer_acls(request):
     # the layer_acls view supports basic auth, and a special 
     # user which represents the geoserver administrator that
     # is not present in django.
+    logging.debug("Entered layer_acls")
     acl_user = request.user
     #logging.debug("USER IS " + request.user)
     if 'HTTP_AUTHORIZATION' in request.META:
@@ -1170,7 +1173,9 @@ def layer_acls(request):
                    'is_superuser':  True,
                    'is_anonymous': False
                 }
-                return HttpResponse(json.dumps(result), mimetype="application/json")
+                jsonResult = json.dumps(result)
+                logging.debug("Returning geoserver admin acls")
+                return HttpResponse(jsonResult, mimetype="application/json")
         except:
             logging.debug("An error occurred while trying to authorize")
             pass
@@ -1179,8 +1184,10 @@ def layer_acls(request):
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
                                 mimetype="text/plain")
-
-            
+    else:
+        'HTTP AUTHORIZATION NOT IN request!'
+        
+    logging.debug("Done with authorization check, creating json response")        
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():

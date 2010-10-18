@@ -3,15 +3,14 @@ from utils import path_extrapolate
 from urllib import urlencode
 import logging
 
-
-LOG_FILENAME = '/Users/mbertrand/Development/googlecode/cga-worldmap/geonode.log'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+LOG_FILENAME='/Users/mbertrand/Development/googlecode/cga-worldmap/geonode.log'
+logging.basicConfig(level = logging.FATAL,format = '%(asctime)s %(levelname)s %(message)s',filename = LOG_FILENAME,filemode = 'w')
 
 _ = lambda x: x
 
 DEBUG = True
 SITENAME = "WorldMap"
-SITEURL = "http://localhost:8000/"
+SITEURL = "localhost:8000"
 TEMPLATE_DEBUG = DEBUG
 
 
@@ -22,19 +21,17 @@ ADMINS = (
 MANAGERS = ADMINS
 
 #DATABASE_ENGINE = 'sqlite3'
-#DATABASE_NAME = 'development.db'
-#DATABASE_USER = ''             # Not used with sqlite3.
-#DATABASE_PASSWORD = ''         # Not used with sqlite3.
-#DATABASE_HOST = ''             # Not used with sqlite3.
-#DATABASE_PORT = ''             # Not used with sqlite3.
-
-DATABASE_ENGINE = 'postgresql_psycopg2'
+#DATABASE_NAME = '/home/matt/installs/geonode/src/GeoNodePy/geonode/development.db'
+DATABASE_ENGINE = 'django.db.backends.postgresql_psycopg2'
 DATABASE_NAME = 'gisdb'
 DATABASE_USER = 'africamaps'             # Not used with sqlite3.
 DATABASE_PASSWORD = 'j0kerz'         # Not used with sqlite3.
-DATABASE_HOST = ''             # Not used with sqlite3.
+DATABASE_HOST = 'localhost'             # Not used with sqlite3.
+DATABASE_PORT = '5432'             # Not used with sqlite3.
+#DATABASE_USER = ''             # Not used with sqlite3.
+#DATABASE_PASSWORD = ''         # Not used with sqlite3.
+#DATABASE_HOST = ''             # Not used with sqlite3.
 DATABASE_PORT = ''             # Not used with sqlite3.
-
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -63,13 +60,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/Library/WebServer/Documents/'
+MEDIA_ROOT = ''
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-#MEDIA_URL = 'http://localhost:8001/geoserver/www/'
-MEDIA_URL = 'http://localhost/site_media'
+MEDIA_URL = 'http://localhost:8000/geoserver/www/'
 
 GEONODE_UPLOAD_PATH = path_extrapolate('../../gs-data/www')
 
@@ -119,13 +115,13 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
+GEOSERVER_BASE_URL = "http://localhost:8000/geoserver/"
 
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", open(path_extrapolate('../../geoserver_token')).readline()[0:-1]
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
+GEONETWORK_BASE_URL = "http://localhost:8000/geonetwork/"
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
@@ -142,7 +138,7 @@ MAP_BASELAYERSOURCES = {
         "ptype":"gx_olsource"
     },
     "capra": {
-        "url":"http://localhost:8001/geoserver/wms"
+        "url":"http://localhost:8000/geoserver/wms"
     },
     "google":{
         "ptype":"gx_googlesource",
@@ -159,16 +155,9 @@ MAP_BASELAYERS = [{
     "group":"background"
   },{
     "source":"any",
-    "type":"OpenLayers.Layer.OSM",
-    "args":["OpenStreetMap"],
-    "visibility": True,
-    "fixed": True,
-    "group":"background"
-  },{
-    "source":"any",
     "type":"OpenLayers.Layer.WMS",
     "group":"background",
-    "visibility": False,
+    "visibility": True,
     "fixed": True,
     "args":[
       "bluemarble",
@@ -222,6 +211,13 @@ NAVBAR = \
           'visible': 'data\nmaps'}}
 
 
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = '%(asctime)s %(levelname)s %(message)s',
+    filename = 'geonode.log',
+    filemode = 'w'
+)
+
 # Determines whether the minified or the "raw" JavaScript files are included.
 # Only applies in development mode. (That is, when DEBUG==True)
 #MINIFIED_RESOURCES = False
@@ -240,14 +236,15 @@ INSTALLED_APPS = (
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
-    'geonode.sites'
+    'geonode.sites',
 )
 
 AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = True
-GEONODE_CLIENT_LOCATION = "http://demo.geonode.org/geonode-client"
+ACCOUNT_ACTIVATION_DAYS = 7
+GEONODE_CLIENT_LOCATION = "http://localhost:8000"
 
-SERVE_MEDIA = DEBUG;
+SERVE_MEDIA = False;
 
 try:
     from local_settings import *

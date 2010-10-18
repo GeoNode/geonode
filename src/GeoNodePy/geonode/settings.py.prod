@@ -3,11 +3,14 @@ from utils import path_extrapolate
 from urllib import urlencode
 import logging
 
+LOG_FILENAME='/tmp/geonode.log'
+logging.basicConfig(level = logging.FATAL,format = '%(asctime)s %(levelname)s %(message)s',filename = LOG_FILENAME,filemode = 'w')
+
 _ = lambda x: x
 
 DEBUG = True
-SITENAME = "GeoNode"
-SITEURL = "http://geonode.openwebmap.com/"
+SITENAME = "WorldMap"
+SITEURL = "ec2-184-73-249-247.compute-1.amazonaws.com"
 TEMPLATE_DEBUG = DEBUG
 
 
@@ -20,9 +23,9 @@ MANAGERS = ADMINS
 #DATABASE_ENGINE = 'sqlite3'
 #DATABASE_NAME = '/home/matt/installs/geonode/src/GeoNodePy/geonode/development.db'
 DATABASE_ENGINE = 'django.db.backends.postgresql_psycopg2'
-DATABASE_NAME = 'geonode'
-DATABASE_USER = 'postgres'             # Not used with sqlite3.
-DATABASE_PASSWORD = 'p3l369'         # Not used with sqlite3.
+DATABASE_NAME = 'gisdb'
+DATABASE_USER = 'africamaps'             # Not used with sqlite3.
+DATABASE_PASSWORD = 'j0kerz'         # Not used with sqlite3.
 DATABASE_HOST = 'localhost'             # Not used with sqlite3.
 DATABASE_PORT = '5432'             # Not used with sqlite3.
 #DATABASE_USER = ''             # Not used with sqlite3.
@@ -62,9 +65,9 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://geonode.openwebmap.com:8000/geoserver-geonode-dev/www/'
+MEDIA_URL = 'http://ec2-184-73-249-247.compute-1.amazonaws.com:8080/geoserver-geonode-dev/www/'
 
-GEONODE_UPLOAD_PATH = path_extrapolate('../../gs-data/www')
+GEONODE_UPLOAD_PATH = path_extrapolate('../../../../gs-data/www')
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -112,13 +115,13 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://geonode.openwebmap.com:8000/geoserver-geonode-dev/"
+GEOSERVER_BASE_URL = "http://ec2-184-73-249-247.compute-1.amazonaws.com:8080/geoserver-geonode-dev/"
 
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", open(path_extrapolate('../../geoserver_token')).readline()[0:-1]
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://geonode.openwebmap.com:8000/geonetwork/"
+GEONETWORK_BASE_URL = "http://ec2-184-73-249-247.compute-1.amazonaws.com:8080/geonetwork/"
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
@@ -135,7 +138,7 @@ MAP_BASELAYERSOURCES = {
         "ptype":"gx_olsource"
     },
     "capra": {
-        "url":"http://geonode.openwebmap.com:8000/geoserver-geonode-dev/wms"
+        "url":"http://ec2-184-73-249-247.compute-1.amazonaws.com:8080/geoserver-geonode-dev/wms"
     },
     "google":{
         "ptype":"gx_googlesource",
@@ -233,12 +236,13 @@ INSTALLED_APPS = (
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
+    'geonode.sites',
 )
 
 AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 7
-GEONODE_CLIENT_LOCATION = "http://geonode.openwebmap.com"
+GEONODE_CLIENT_LOCATION = "http://ec2-184-73-249-247.compute-1.amazonaws.com/site_media"
 
 SERVE_MEDIA = False;
 

@@ -68,11 +68,14 @@ public class GeoNodeCookieProcessingFilter implements Filter {
 
         final HttpServletRequest httpRequest = (HttpServletRequest) request;
 
+        if (httpRequest == null)
+        	LOGGER.log(Level.WARNING, "HttpRequest is NULL");
+        
         final SecurityContext securityContext = SecurityContextHolder.getContext();
         final Authentication existingAuth = securityContext.getAuthentication();
 
         final String gnCookie = getGeoNodeCookieValue(httpRequest);
-        LOGGER.fine("Cookie:" + gnCookie);
+        LOGGER.info("Cookie:" + gnCookie);
 
         // if we still need to authenticate and we find the cookie, consult GeoNode for
         // an authentication
@@ -81,7 +84,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
                 || (existingAuth instanceof AnonymousAuthenticationToken)) {
             authenticationRequired = true;
         } else if (existingAuth instanceof GeoNodeSessionAuthToken) {
-            LOGGER.fine("existingAuth instance of GeoNodeSessionAuthToken");
+            LOGGER.info("existingAuth instance of GeoNodeSessionAuthToken");
             Object credentials = existingAuth.getCredentials();
             boolean stillValid = gnCookie != null && gnCookie.equals(credentials);
             existingAuth.setAuthenticated(stillValid);
@@ -91,7 +94,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         }
 
         if (authenticationRequired && gnCookie != null) {
-            LOGGER.fine("Cookie isn't null so try to authenticate");
+            LOGGER.info("Cookie isn't null so try to authenticate");
             try {
                 final Authentication authResult;
                 authResult = client.authenticateCookie(gnCookie);
@@ -115,11 +118,15 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
                 if (GEONODE_COOKIE_NAME.equals(c.getName())) {
+                	LOGGER.info("COOKIE FOUND!");
                     return c.getValue();
                 }
             }
+        } else 
+        {
+        	LOGGER.log(Level.WARNING, "No cookies!!!!!");
         }
-
+        LOGGER.log(Level.WARNING, "GeoNode Cookie not found");
         return null;
     }
 

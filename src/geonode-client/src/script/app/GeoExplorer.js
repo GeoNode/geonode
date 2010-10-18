@@ -712,7 +712,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             items: [layerTree],
             tbar: [
                 addLayerButton,
-                Ext.apply(new Ext.Button(removeLayerAction), {text: ""}),
+                //Ext.apply(new Ext.Button(removeLayerAction), {text: ""}), //MB Don't show in toolbar
                 Ext.apply(new Ext.Button(showPropertiesAction), {text: ""})
             ]
         });
