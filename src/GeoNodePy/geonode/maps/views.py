@@ -818,6 +818,8 @@ def upload_layer(request):
             layer, errors = _handle_layer_upload(request)
         except:
             errors = [GENERIC_UPLOAD_ERROR]
+
+        logger.debug("_handle_layer_upload returned!! layer and errors are %s", (layer, errors))
         
         result = {}
         if len(errors) > 0:
@@ -828,6 +830,7 @@ def upload_layer(request):
             result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
 
         result = json.dumps(result)
+        logger.debug("layer upload - okay Django, you handle the rest.")
         return render_to_response('json_html.html',
                                   RequestContext(request, {'json': result}))
 
