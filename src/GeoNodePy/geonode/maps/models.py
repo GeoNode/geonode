@@ -577,7 +577,6 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
-                    "date": datetime.now(),
                     "uuid": str(uuid.uuid4())
                 })
 
