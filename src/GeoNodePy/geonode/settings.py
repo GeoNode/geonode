@@ -4,7 +4,7 @@ from urllib import urlencode
 import logging
 
 LOG_FILENAME='/Users/mbertrand/Development/googlecode/cga-worldmap/geonode.log'
-logging.basicConfig(level = logging.FATAL,format = '%(asctime)s %(levelname)s %(message)s',filename = LOG_FILENAME,filemode = 'w')
+logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = LOG_FILENAME,filemode = 'w')
 
 _ = lambda x: x
 
@@ -42,7 +42,7 @@ TIME_ZONE = 'America/Chicago'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
     ('en', _('English')),
@@ -147,36 +147,19 @@ MAP_BASELAYERSOURCES = {
 }
 
 MAP_BASELAYERS = [{
+    "source":"google",
+    "group":"background",
+    "name":"SATELLITE",
+    "visibility": False,
+    "fixed": True,
+},{
     "source":"any",
     "type":"OpenLayers.Layer",
     "args":["No background"],
     "visibility": False,
     "fixed": True,
     "group":"background"
-  },{
-    "source":"any",
-    "type":"OpenLayers.Layer.WMS",
-    "group":"background",
-    "visibility": True,
-    "fixed": True,
-    "args":[
-      "bluemarble",
-      "http://maps.opengeo.org/geowebcache/service/wms",
-      {
-        "layers":["bluemarble"],
-        "format":"image/png",
-        "tiled": True,
-        "tilesOrigin":[-20037508.34,-20037508.34]
-      },
-      {"buffer":0}
-    ]
-  },{
-    "source":"google",
-    "group":"background",
-    "name":"SATELLITE",
-    "visibility": False,
-    "fixed": True,
-}]
+  }]
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
@@ -210,13 +193,6 @@ NAVBAR = \
           'link_class': '',
           'visible': 'data\nmaps'}}
 
-
-logging.basicConfig(
-    level = logging.DEBUG,
-    format = '%(asctime)s %(levelname)s %(message)s',
-    filename = 'geonode.log',
-    filemode = 'w'
-)
 
 # Determines whether the minified or the "raw" JavaScript files are included.
 # Only applies in development mode. (That is, when DEBUG==True)

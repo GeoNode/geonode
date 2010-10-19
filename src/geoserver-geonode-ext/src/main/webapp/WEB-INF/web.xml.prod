@@ -50,15 +50,14 @@
     
     <context-param>
        <param-name>GEOSERVER_DATA_DIR</param-name>
-        <param-value>/home/matt/dev/python/geonode/gs-data</param-value>
+        <param-value>/opt/worldmap_data</param-value>
     </context-param> 
    
+
     <context-param>
        <param-name>GEONODE_BASE_URL</param-name>
-        <param-value>http://geonode.openwebmap.com</param-value>
+        <param-value>http://localhost</param-value>
     </context-param>
-
-
   
     <!-- pick up all spring application contexts -->
     <context-param>

@@ -1,18 +1,17 @@
-import os, sys
-sys.path.append('/home/matt/installs/geonode/lib/python2.6/site-packages')
-sys.path.append('/home/matt/installs/geonode/src')
-sys.path.append('/home/matt/installs/geonode/src/GeoNodePy')
-sys.path.append('/home/matt/installs/geonode/src/GeoNodePy/geonode')
-sys.path.append('/home/matt/installs/geonode/src/avatar')
-sys.path.append('/home/matt/installs/geonode/src/owslib')
-sys.path.append('/home/matt/installs/geonode/src/gsconfig.py/src')
+import site, os, sys
 
-#sys.path.append('/home/matt/dev/python/pinax-env/geopinax')
+site.addsitedir('/var/www/worldmap/wsgi/worldmap/lib/python2.6/site-packages')
+site.addsitedir('/var/www/worldmap/wsgi/worldmap/src')
+site.addsitedir('/var/www/worldmap/wsgi/worldmap/src/GeoNodePy')
+site.addsitedir('/var/www/worldmap/wsgi/worldmap/src/avatar')
+site.addsitedir('/var/www/worldmap/wsgi/worldmap/src/owslib')
+site.addsitedir('/var/www/worldmap/wsgi/worldmap/src/gsconfig.py/src')
+
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'
 
-import django.core.handlers.wsgi
-
-application = django.core.handlers.wsgi.WSGIHandler()
+from django.core.handlers.wsgi import WSGIHandler
+application = WSGIHandler()
 
 sys.stdout = sys.stderr
+

@@ -21,6 +21,8 @@ from django.core.exceptions import ValidationError
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 import re
+import logging
+
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
@@ -953,15 +955,21 @@ class Layer(models.Model, PermissionLevelMixin):
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
     def save_to_geoserver(self):
+        logging.debug("saving to geoserver")
         if self.resource is None:
+            logging.debug("resource is none")
             return
         if hasattr(self, "_resource_cache"):
+            logging.debug("has resource cache")
             gn = Layer.objects.gn_catalog
             self.resource.title = self.title
+            logging.debug("title is " + self.title)
             self.resource.abstract = self.abstract
             self.resource.name= self.name
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
+            logging.debug("about to save")
             Layer.objects.gs_catalog.save(self._resource_cache)
+            logging.debug("saved?")
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
             self.publishing.attribution_link = self.poc.user.get_absolute_url()
@@ -1530,12 +1538,14 @@ def delete_layer(instance, sender, **kwargs):
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
-
-    if (re.search("coverageStore|dataStore", instance.service_type)):
+    logging.debug("post save layer - " + instance.storeType)
+    if (re.search("coverageStore|dataStore", instance.storeType)):
+        logging.debug("Call save_to_geoserver")
         instance.save_to_geoserver()
+        logging.debug("Done save to geoserver")
         if kwargs['created']:
             instance._populate_from_gs()
-
+    logging.debug("save to geonetwork")
     instance.save_to_geonetwork()
 
     if kwargs['created']:

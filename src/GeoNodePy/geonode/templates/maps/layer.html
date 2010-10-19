@@ -139,7 +139,7 @@
 
 {% block main %}
 <div class="twocol">
-<div id="description"> <h3> {{ layer.resource.title|default:layer.typename }} </h3> </div>
+<div id="description"><h3> {{ layer.title|default:layer.typename }} </h3> </div>
 <p> <strong>{% trans "Abstract" %}:</strong> {{ layer.abstract|default:_("No abstract for this layer.") }} </p>
 
 <div id="preview_map"></div>

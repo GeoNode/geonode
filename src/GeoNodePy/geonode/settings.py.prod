@@ -8,30 +8,23 @@ logging.basicConfig(level = logging.FATAL,format = '%(asctime)s %(levelname)s %(
 
 _ = lambda x: x
 
-DEBUG = True
+DEBUG = False
 SITENAME = "WorldMap"
-SITEURL = "ec2-184-73-249-247.compute-1.amazonaws.com"
+SITEURL = "http://ec2-184-73-249-247.compute-1.amazonaws.com/"
 TEMPLATE_DEBUG = DEBUG
 
-
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+     ('Matt Bertrand', 'mbertrand@cga.harvard.edu'),
 )
 
 MANAGERS = ADMINS
 
-#DATABASE_ENGINE = 'sqlite3'
-#DATABASE_NAME = '/home/matt/installs/geonode/src/GeoNodePy/geonode/development.db'
 DATABASE_ENGINE = 'django.db.backends.postgresql_psycopg2'
 DATABASE_NAME = 'gisdb'
 DATABASE_USER = 'africamaps'             # Not used with sqlite3.
 DATABASE_PASSWORD = 'j0kerz'         # Not used with sqlite3.
 DATABASE_HOST = 'localhost'             # Not used with sqlite3.
 DATABASE_PORT = '5432'             # Not used with sqlite3.
-#DATABASE_USER = ''             # Not used with sqlite3.
-#DATABASE_PASSWORD = ''         # Not used with sqlite3.
-#DATABASE_HOST = ''             # Not used with sqlite3.
-DATABASE_PORT = ''             # Not used with sqlite3.
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -42,7 +35,7 @@ TIME_ZONE = 'America/Chicago'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
     ('en', _('English')),
@@ -60,14 +53,14 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/var/www/worldmap/htdocs/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://ec2-184-73-249-247.compute-1.amazonaws.com:8080/geoserver-geonode-dev/www/'
+MEDIA_URL = SITEURL + "media/"
 
-GEONODE_UPLOAD_PATH = path_extrapolate('../../../../gs-data/www')
+GEONODE_UPLOAD_PATH = path_extrapolate('/var/www/worldmap/htdocs/media')
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -115,13 +108,13 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://ec2-184-73-249-247.compute-1.amazonaws.com:8080/geoserver-geonode-dev/"
+GEOSERVER_BASE_URL = SITEURL + "geoserver-geonode-dev/"
 
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", open(path_extrapolate('../../geoserver_token')).readline()[0:-1]
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://ec2-184-73-249-247.compute-1.amazonaws.com:8080/geonetwork/"
+GEONETWORK_BASE_URL = SITEURL + "geonetwork/"
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
@@ -138,7 +131,7 @@ MAP_BASELAYERSOURCES = {
         "ptype":"gx_olsource"
     },
     "capra": {
-        "url":"http://ec2-184-73-249-247.compute-1.amazonaws.com:8080/geoserver-geonode-dev/wms"
+        "url":"http://ec2-184-73-249-247.compute-1.amazonaws.com/geoserver-geonode-dev/wms"
     },
     "google":{
         "ptype":"gx_googlesource",
@@ -242,7 +235,7 @@ INSTALLED_APPS = (
 AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 7
-GEONODE_CLIENT_LOCATION = "http://ec2-184-73-249-247.compute-1.amazonaws.com/site_media"
+GEONODE_CLIENT_LOCATION = SITEURL
 
 SERVE_MEDIA = False;
 

@@ -1444,12 +1444,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     queryVisible: true,
                     layers: [x.getLayer()],
                     eventListeners: {
-                        getfeatureinfo: function(evt) {
-                            this.displayPopup(evt, x.get("title") || x.get("name"));
+                        getfeatureinfo: function(evt) {  
+                        	this.displayPopup(evt, x.get("title") || x.get("name"));
                         },
                         scope: this
                     }
                 });
+                //alert(control.url);
                 map.addControl(control);
                 info.controls.push(control);
                 if(infoButton.pressed) {
@@ -1601,7 +1602,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
                 scope: this
             }),
-            enable3DButton
+            enable3DButton,
+            infoButton
         ];
         this.on("saved", function() {
             // enable the "Publish Map" button
@@ -1743,6 +1745,64 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }).show();
     },
 
+    
+    /** private: method[displayPopup]
+     * :param: evt: the event object from a 
+     *     :class:`OpenLayers.Control.GetFeatureInfo` control
+     * :param: title: a String to use for the title of the results section 
+     *     reporting the info to the user
+     */
+    displayPopup: function(evt, title) {
+        var popup;
+        var popupKey = evt.xy.x + "." + evt.xy.y;
+        alert(popupKey);
+
+        if (!(popupKey in this.popupCache)) {
+            var lonlat = this.map.getLonLatFromPixel(evt.xy);
+            popup = new GeoExt.Popup({
+                title: "Feature Info",
+                layout: "accordion",
+                lonlat: lonlat,
+                map: this.mapPanel,
+                width: 250,
+                height: 300,
+                listeners: {
+                    close: (function(key) {
+                        return function(panel){
+                            delete this.popupCache[key];
+                        };
+                    })(popupKey),
+                    scope: this
+                }
+            });
+            alert("popup made");
+            popup.show();
+            alert("popup shown");
+            this.popupCache[popupKey] = popup;
+        } else {
+            popup = this.popupCache[popupKey];
+            alert("getting popup cahce");
+        }
+
+        var html = evt.text;
+        alert(html);
+        if (!(html === '' || html.match(/<body>\s*<\/body>/))) {
+            popup.add({
+                title: title,
+                layout: "fit",
+                html: html,
+                autoScroll: true,
+                autoWidth: true,
+                collapsible: true
+            });
+        }
+        alert("BEGIN LAYOUT");
+        popup.doLayout();
+    },
+
+    
+    
+    
     /** private: method[initMetadataForm]
      *
      * Initialize metadata entry form.

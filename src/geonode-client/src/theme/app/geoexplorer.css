@@ -208,12 +208,10 @@ div.cga-logo-overlay {
 
 div.cga-logo-overlay-element {
     float: left;
-    width:151px;
-    height:39px;
     z-index: 1000; 
     position: absolute; 
-    left: 100px; 
-    bottom: 10px;
+    right: 10px; 
+    bottom: 100px;
     width:175px;
     height:48px;
     display:inline;    

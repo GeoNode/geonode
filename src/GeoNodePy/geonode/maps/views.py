@@ -676,6 +676,7 @@ class LayerDescriptionForm(forms.Form):
 @csrf_exempt
 @login_required
 def _describe_layer(request, layer):
+    logging.debug("describe layer")
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.change_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html', 
@@ -719,12 +720,15 @@ def _describe_layer(request, layer):
                 if author_form.has_changed and author_form.is_valid():
                     new_author = author_form.save()
 
+            logging.debug("Save anything?")
             if new_poc is not None and new_author is not None:
                 the_layer = layer_form.save(commit=False)
                 the_layer.poc = new_poc
                 the_layer.topic_category = new_category 
                 the_layer.metadata_author = new_author
+                logging.debug("About to save")
                 the_layer.save()
+                logging.debug("Saved")
                 return HttpResponseRedirect("/data/" + layer.typename)
 
             
