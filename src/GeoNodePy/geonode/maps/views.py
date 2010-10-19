@@ -34,6 +34,7 @@ from django.db.models import Q
 # import the logging library
 import logging
 import sys,traceback
+import datetime
 
 logging.debug("START MAPS VIEW")
 
@@ -691,11 +692,23 @@ def _describe_layer(request, layer):
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
         else:
             layer_form = LayerForm(instance=layer, prefix="layer")
-
+            layer_form.fields["topic_category"].initial = topic_category
+            
+            
         if request.method == "POST" and layer_form.is_valid():
             new_poc = layer_form.cleaned_data['poc']
             new_author = layer_form.cleaned_data['metadata_author']
-
+            new_category = layer_form.cleaned_data['topic_category']
+            if new_category is None:
+                    new_category = layer_form.cleaned_data['topic_category_new']
+                    if new_category is not None:
+                        try:
+                            newLayerCategory = LayerCategory.objects.get(name=new_category)
+                        except LayerCategory.DoesNotExist:
+                            newLayerCategory = LayerCategory(name=new_category)
+                            newLayerCategory.save()
+                        new_category = newLayerCategory
+            
             if new_poc is None:
                 poc_form = ContactForm(request.POST, prefix="poc")
                 if poc_form.has_changed and poc_form.is_valid():
@@ -709,10 +722,12 @@ def _describe_layer(request, layer):
             if new_poc is not None and new_author is not None:
                 the_layer = layer_form.save(commit=False)
                 the_layer.poc = new_poc
+                the_layer.topic_category = new_category 
                 the_layer.metadata_author = new_author
                 the_layer.save()
                 return HttpResponseRedirect("/data/" + layer.typename)
 
+            
         if poc.user is None:
             poc_form = ContactForm(instance=poc, prefix="poc")
         else:
@@ -989,13 +1004,11 @@ def _handle_layer_upload(request, layer=None):
             if gs_resource.latlon_bbox is None:
                 # If GeoServer couldn't figure out the projection, we just
                 # assume it's lat/lon to avoid a bad GeoServer configuration
-
                 gs_resource.latlon_bbox = gs_resource.native_bbox
                 gs_resource.projection = "EPSG:4326"
                 cat.save(gs_resource)
 
             typename = gs_resource.store.workspace.name + ':' + gs_resource.name
-
             # if we created a new store, create a new layer
             layer = Layer.objects.create(name=gs_resource.name, 
                                          store=gs_resource.store.name,
@@ -1003,6 +1016,8 @@ def _handle_layer_upload(request, layer=None):
                                          typename=typename,
                                          workspace=gs_resource.store.workspace.name,
                                          title=gs_resource.title,
+                                         geographic_bounding_box=gs_resource.latlon_bbox,
+                                         date=datetime.datetime.now(),
                                          uuid=str(uuid.uuid4()),
                                          owner=request.user)
             # A user without a profile might be uploading this
