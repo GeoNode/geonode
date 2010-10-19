@@ -21,6 +21,7 @@ Contents:
    geoserver-extensions
    geonetwork-extensions
    deployment
+   logging
 
 Indices and tables
 ==================
