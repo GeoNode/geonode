@@ -18,6 +18,7 @@ from datetime import datetime
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
+from string import lower
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 
@@ -606,9 +607,9 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # section 1
     title = models.CharField(_('title'), max_length=255)
-    date = models.DateTimeField(_('date'))
+    date = models.DateTimeField(_('date'), default = datetime.now) # passing the method itself, not the result
     
-    date_type = models.CharField(_('date type'), max_length=255,choices=[(x, x) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
+    date_type = models.CharField(_('date type'), max_length=255,choices=[(lower(x), _(x)) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
 
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
     abstract = models.TextField(_('abstract'))
