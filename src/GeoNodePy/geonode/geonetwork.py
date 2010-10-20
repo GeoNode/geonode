@@ -81,10 +81,7 @@ class Catalog(object):
 
     def create_from_layer(self, layer):
         response = self.csw_request(layer, "maps/csw/transaction_insert.xml")
-        # print layer.uuid
-        # print response.read()
         # TODO: Parse response, check for error report
-
 
         # Turn on the "view" permission (aka publish) for
         # the "all" group in GeoNetwork so that the layer
