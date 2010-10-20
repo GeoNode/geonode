@@ -237,7 +237,7 @@ SERVE_MEDIA = DEBUG;
 try:
     from local_settings import *
 except ImportError:
-    print u'File local_settings.py is not found. Continuing with default settings'
+    pass
 
 if SERVE_MEDIA:
     if MINIFIED_RESOURCES: 
