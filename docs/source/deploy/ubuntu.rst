@@ -48,7 +48,7 @@ Python::
 
   # apt-get install python python-dev
 
-Java::
+Java:
 
 For Sun/Oracle Java (recommended for better rendering performance)::
   # vi /etc/apt/sources.list

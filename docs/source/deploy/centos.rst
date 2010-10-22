@@ -142,7 +142,7 @@ Deploying GeoServer
    http://localhost:8080/geoserver-geonode-dev/ .
 
 Configuring Apache httpd
------------------------
+------------------------
 
 1. Install the httpd package::
 
