@@ -10,6 +10,7 @@ please consider writing or updating a guide.
 
 .. toctree::
 
+   /deploy/centos
    /deploy/ubuntu
 
 Java Web Applications (WARs)
