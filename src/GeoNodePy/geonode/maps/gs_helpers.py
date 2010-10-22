@@ -36,10 +36,7 @@ def _add_sld_boilerplate(symbolizer):
 
 _raster_template = """
 <RasterSymbolizer>
-  <ColorMap>
-    <ColorMapEntry color="%(bg)s" quantity="0"/>
-    <ColorMapEntry color="%(fg)s" quantity="255"/>
-  </ColorMap>
+    <Opacity>1.0</Opacity>
 </RasterSymbolizer>
 """
 
