@@ -1003,7 +1003,8 @@ def _handle_layer_upload(request, layer=None):
                                          workspace=gs_resource.store.workspace.name,
                                          title=gs_resource.title,
                                          uuid=str(uuid.uuid4()),
-                                         owner=request.user)
+                                         owner=request.user
+                                       )
             # A user without a profile might be uploading this
             poc_contact, __ = Contact.objects.get_or_create(user=request.user,
                                                    defaults={"name": request.user.username })
