@@ -1,5 +1,5 @@
 Deploying your GeoNode Site
-===========================
+***************************
 
 This page provides a high-level description of the software required to set up
 a publicly accessible GeoNode web site.  Since deployment details will vary
@@ -14,7 +14,7 @@ please consider writing or updating a guide.
    /deploy/ubuntu
 
 Java Web Applications (WARs)
-----------------------------
+============================
 
 GeoNode requires a Java servlet container compatible with the J2EE standard,
 2.5 or higher.  `Jetty <http://jetty.mortbay.org/>`_ and `Tomcat
@@ -22,7 +22,7 @@ GeoNode requires a Java servlet container compatible with the J2EE standard,
 web sites for installation and application deployment instructions.
 
 GeoNetwork with GeoNode Schema
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 GeoNode's GeoNetwork integration requires use of a customized metadata schema.
 The GeoNode project provides a custom build of GeoNetwork with this extra
@@ -30,7 +30,7 @@ schema pre-installed.  This GeoNetwork is ready to run out-of-the-box; simply
 deploy using your servlet container's usual mechanism.
 
 Steps
-.....
++++++
 
 1. *Deploy* GeoNetwork to your servlet container using the normal mechanism.
    For Tomcat and Jetty, this simply means placing ``geonetwork.war`` in the
@@ -53,7 +53,7 @@ Steps
     come up while performing searches.  These are not a problem.
 
 GeoServer with GeoNode Extensions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
 GeoNode's GeoServer integration requires some specific extensions to help
 GeoNode in managing GeoServer layers.  GeoNode releases include a GeoServer WAR
@@ -61,7 +61,7 @@ archive with these extensions pre-installed.  However, some manual
 configuration may still be needed.
 
 Steps
-.....
++++++
 
 1. *Deploy* GeoServer to your servlet container using the normal mechanism.
    For Tomcat and Jetty, this simply means placing
@@ -97,7 +97,7 @@ respectively.  Many other web servers are perfectly capable of serving these
 files; Apache httpd and lighttpd are just examples.
 
 Steps:
-......
+++++++
 
 1. *Configure* a document root in your webserver, pointing to some directory on
    your filesystem.
@@ -114,7 +114,7 @@ However, we highly recommend using virtualenv to sandbox the GeoNode
 dependencies from the rest of the Python software on your system.
 
 Steps:
-......
+++++++
 
 1. *Install virtualenv* if you do not already have it available.  It can easily
    be installed via easy_install or pip::
@@ -122,12 +122,6 @@ Steps:
        $ easy_install virtualenv
        $ pip install virualenv
        
-mbaudier > CentOS >
-	Enable the EPEL repo (see http://fedoraproject.org/wiki/EPEL)
-	$ sudo yum install python26
-	Enable the ELGIS testing repo (http://wiki.osgeo.org/wiki/Enterprise_Linux_GIS)
-	$ sudo yum install python26-mod_wsgi python26-virtualenv
-	
 2. *Prepare a sandbox* for GeoNode using virtualenv::
 
        $ virtualenv geonode
