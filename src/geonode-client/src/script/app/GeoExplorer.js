@@ -93,6 +93,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     urlPortRegEx: /^(http[s]?:\/\/[^:]*)(:80|:443)?\//,
     
+    
+    searchFields : new Array(),
+    
     //public variables for string literals needed for localization
     addLayersButtonText: "UT:Add Layers",
     areaActionText: "UT:Area",
@@ -156,6 +159,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     zoomVisibleButtonText: "UT:Zoom to Visible Extent",
 
     constructor: function(config) {
+    	this.config = config;
         this.popupCache = {};
         this.propDlgCache = {};
         this.stylesDlgCache = {};
@@ -376,6 +380,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
     
+
+	
     initMapPanel: function() {
         this.mapItems = [{
             xtype: "gx_zoomslider",
@@ -387,12 +393,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }];
         
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
-        
+        searchFields = this.searchFields;
         var layerCount = 0;
         
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
             var layer = e.layer;
-            if (layer instanceof OpenLayers.Layer.WMS) {
+            var layerfields = '';
+            //ge = self;
+
+            if (layer instanceof OpenLayers.Layer.WMS ) {
                 !layer.singleTile && layer.maxExtent && layer.mergeNewParams({
                     tiled: true,
                     tilesOrigin: [layer.maxExtent.left, layer.maxExtent.bottom]
@@ -416,6 +425,24 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             this.busyMask.hide();
                         }
                         layer.events.unregister("loadend", this, arguments.callee);
+                        if (layer.name != "HighlightWMS"){
+                    	Ext.Ajax.request({
+                    		url: "/maps/searchfields/?" + layer.params.LAYERS,
+                    		method: "POST",
+                    		params: {layername:layer.params.LAYERS},
+                    		success: function(result,request)
+                    		{
+                                var jsonData = Ext.util.JSON.decode(result.responseText);
+                                layerfields = jsonData.searchFields;
+                                
+                                searchFields[layer.params.LAYERS] = layerfields;
+                                //searchFields[layer.params.LAYERS]);
+                    		},
+                    		failure: function(result,request) {
+                               //alert('BOOM');
+                    		}
+                    		
+                    	});}
                     },
                     scope: this
                 })
@@ -487,6 +514,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 var record = getSelectedLayerRecord();
                 if(record) {
                     this.mapPanel.layers.remove(record);
+                    
+                    
                     removeLayerAction.disable();
                 }
             },
@@ -506,7 +535,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             loader: new GeoExt.tree.LayerLoader({
                 store: this.mapPanel.layers,
                 filter: function(record) {
-                    return !record.get("group") &&
+                    return record.get("group") != "background" &&
                         record.getLayer().displayInLayerSwitcher == true;
                 },
                 createNode: function(attr) {
@@ -768,6 +797,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled.each(function(item) {
                 item.disable();
             });
+            Ext.get("request-load-pnl").hide();
         }, this);
         
         this.googleEarthPanel = new gxp.GoogleEarthPanel({
@@ -1295,6 +1325,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     createTools: function() {
         var toolGroup = "toolGroup";
+        var mapPanel = this.mapPanel;
+        var busyMask = null;
         
         var printButton = new Ext.Button({
             tooltip: this.printTipText,
@@ -1424,6 +1456,192 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         });
 
+        var searchTB = new Ext.form.TextField({
+			id:'search-tb',
+			width:450,
+			emptyText:'Enter search...'
+		});
+        
+        var psHandler = function() {
+        	performSearch.call();
+        	};
+        
+        var searchBtn = new Ext.Button({
+			text:'Search',
+			handler: psHandler
+		});
+        
+    	var performSearch =  function() {
+    		
+    		
+    		// Clear out previous search results
+    		var searchCount = 0;
+            var queryableLayers = mapPanel.layers.queryBy(function(x){
+                return x.get("queryable");
+            });
+            
+            queryableLayers.each(function(x){
+            	dl = x.getLayer();
+            	if (!dl.getVisibility())
+            		{queryableLayers.remove(x);}
+            });
+            
+
+            if (queryableLayers.length == 0)
+            	{
+                Ext.MessageBox.alert('No Searchable Layers','There are currently no searchable layers on the map.  You must have at least one visible layer with searchable fields on the map.');
+                return;
+            	
+            	}
+    		
+            if (!busyMask) {
+                busyMask = new Ext.LoadMask(
+                    mapPanel.map.div, {
+                        msg: 'Searching...'
+                    }
+                );
+            }
+            busyMask.show();
+    		
+            removeHighlightLayers();
+    		searchTerm = searchTB.getValue();
+            var terms = [];
+            var matchingSearchTerm = searchTerm;
+            var re = /("[^"]+")/g;
+            var m = matchingSearchTerm.match(re);
+
+            var otherSearchTerm = searchTerm; 
+            if ( m != null ) {
+                for ( i = 0; i < m.length; i++ ) {
+                    otherSearchTerm = otherSearchTerm.replace(m[i], '');
+                    terms.push( m[i].replace(/"/g, '' ));
+                }	
+            } else {
+            }
+             
+            var whitespace_re = /\s+/;
+            otherSearchTerm = otherSearchTerm.replace(whitespace_re, ' ');
+
+            terms = terms.concat(otherSearchTerm.split(' '));
+
+
+    		
+
+            var searchFields = this.searchFields;
+            queryableLayers.each(function(x){
+            	dl = x.getLayer();
+            	if (dl.getVisibility())
+            		{
+            		
+            		var wms_url        = dl.url;
+            		wmsHighlight = new OpenLayers.Layer.WMS(
+            						"HighlightWMS",
+            						wms_url,
+            						{'layers': dl.params.LAYERS,
+            						'format':'image/png'},
+            							{
+            							    'visibility': false,
+            							    'isBaseLayer': false,
+            							    'displayInLayerSwitcher' : false
+            							}
+            						    );
+            				 
+            			mapPanel.map.addLayers([wmsHighlight]);
+
+            		
+            			//alert(dl.getURL(dl.map.mapExtent));
+        				//alert(searchFields[dl.params.LAYERS]);
+            			queryFields = searchFields[dl.params.LAYERS].split(",");
+            			//wfs = dl.url.replace("/wms", "/wfs").replace("?SERVICE=WMS&","");
+            			featureQuery="";
+            			
+            			sld = '';//'<?xml version="1.0" encoding="utf-8"?>';
+            			sld+= '<sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">';
+            			sld+= '<sld:NamedLayer><sld:Name>' + dl.params.LAYERS  +  '</sld:Name><sld:UserStyle><sld:Name>query</sld:Name><sld:FeatureTypeStyle><sld:Rule><ogc:Filter>';
+     
+            			
+            			
+            			for (i = 0; i < queryFields.length; i++)
+            				{
+            					if (queryFields[i] != "")
+            						featureQuery = featureQuery + '<ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!"><ogc:PropertyName>' + queryFields[i] + '</ogc:PropertyName><ogc:Literal>*' + searchTerm + '*</ogc:Literal></ogc:PropertyIsLike>';
+            				}
+            			
+            			if (queryFields.length > 1)
+            				{
+            					featureQuery = "<ogc:Or>"+ featureQuery + "</ogc:Or>";	
+            				}
+            			if (featureQuery.length > 0)
+            				{
+            				
+        					sld += featureQuery;
+        					
+        					
+        					sld +='</ogc:Filter><sld:PolygonSymbolizer> <sld:Fill><sld:GraphicFill> <sld:Graphic><sld:Mark> <sld:WellKnownName>shape://times</sld:WellKnownName> <sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-width">1</sld:CssParameter> </sld:Stroke></sld:Mark><sld:Size>16</sld:Size> </sld:Graphic></sld:GraphicFill> </sld:Fill>';
+
+        					
+        					//sld += '</ogc:Filter><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name="fill">#FF00FF</sld:CssParameter><sld:CssParameter name="fill-opacity">0.4</sld:CssParameter></sld:Fill>';
+        					sld += '<sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer>';
+        					sld +=	'</sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>';
+        					wmsHighlight.mergeNewParams({layers: dl.params.LAYERS, SLD_BODY: sld, TRANSPARENT: "true"});
+        					wmsHighlight.setVisibility(true);
+        					
+            				}
+
+            		}
+            	
+            });
+            
+    		if (!busyMask) {
+    			busyMask.hide();
+    		}
+    	};
+    	
+    	var reset =  function() { 
+    		searchTB.setValue('');
+            removeHighlightLayers();
+
+    	};
+    	        
+        var removeHighlightLayers  = function() {
+        	var theLayers = mapPanel.map.layers;
+        	var hLayers = [];
+            for (l = 0; l < theLayers.length; l++)
+        	{
+        		if (theLayers[l].name == "HighlightWMS"){
+        			hLayers.push(theLayers[l]);
+        			
+        		}
+        	}
+            
+            for (h = 0; h < hLayers.length; h++)
+            	{
+            		mapPanel.map.removeLayer(hLayers[h]);
+            	}
+            
+        }
+        
+		var searchBar = new Ext.Toolbar({
+			id: 'tlbr',
+			items:[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+			       '-', searchTB, 
+				' ', searchBtn,' ',{
+					xtype:'button',
+					text:'Reset',
+					handler:function(brn, e) {
+						reset();
+					}
+				},' ', '-', {
+					id: 'request-load-pnl',
+					xtype: 'panel',
+					html: '<img src="images/ajax-loader.gif" alt="Request loading...">'
+				}]
+		});
+		
+
+
+
+
         var updateInfo = function() {
             var queryableLayers = this.mapPanel.layers.queryBy(function(x){
                 return x.get("queryable");
@@ -1450,7 +1668,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         scope: this
                     }
                 });
-                //alert(control.url);
+                control.infoFormat = 'text/html';
+                control.queryVisible = 'true';
                 map.addControl(control);
                 info.controls.push(control);
                 if(infoButton.pressed) {
@@ -1603,7 +1822,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             }),
             enable3DButton,
-            infoButton
+            infoButton,
+            searchBar
         ];
         this.on("saved", function() {
             // enable the "Publish Map" button
@@ -1754,17 +1974,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     displayPopup: function(evt, title) {
         var popup;
-        var popupKey = evt.xy.x + "." + evt.xy.y;
-        alert(popupKey);
+        var popupKey = 'info' //'evt.xy.x + "." + evt.xy.y;
 
-        if (!(popupKey in this.popupCache)) {
-            var lonlat = this.map.getLonLatFromPixel(evt.xy);
-            popup = new GeoExt.Popup({
+        if ((popupKey in this.popupCache)) {
+        	popup = this.popupCache[popupKey];
+        	popup.destroy();
+        }
+            var lonlat = this.mapPanel.map.getLonLatFromPixel(evt.xy);
+        	popup = new GeoExt.Popup({
                 title: "Feature Info",
                 layout: "accordion",
-                lonlat: lonlat,
+                location: lonlat,
                 map: this.mapPanel,
-                width: 250,
+                width: 500,
                 height: 300,
                 listeners: {
                     close: (function(key) {
@@ -1775,17 +1997,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     scope: this
                 }
             });
-            alert("popup made");
             popup.show();
-            alert("popup shown");
             this.popupCache[popupKey] = popup;
-        } else {
-            popup = this.popupCache[popupKey];
-            alert("getting popup cahce");
-        }
+
 
         var html = evt.text;
-        alert(html);
+        //alert(html);
         if (!(html === '' || html.match(/<body>\s*<\/body>/))) {
             popup.add({
                 title: title,
@@ -1796,7 +2013,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 collapsible: true
             });
         }
-        alert("BEGIN LAYOUT");
         popup.doLayout();
     },
 
@@ -1826,7 +2042,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         });
-
+        
         var abstractField = new Ext.form.TextArea({
             width: '95%',
             height: 200,
@@ -1955,3 +2171,5 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
     }
 });
+
+

@@ -10,7 +10,6 @@ class UserSite(models.Model):
     owner = models.ForeignKey(User, blank=False, null=False)
     title = models.CharField(_('Site Title'), max_length=255, blank=False, null=False)
     urlSuffix = models.CharField(_('Site URL'), max_length=255, blank=False, null=False)
-    map = models.ForeignKey(Map, blank=True, null=True)
     content = models.TextField(_('Site Content'), blank=True, null=True)
     banner_image = models.ImageField(upload_to='sitemedia/' + str(urlSuffix) +'/img')
     css_file = models.FileField(upload_to='sitemedia/' + str(urlSuffix) + '/img')

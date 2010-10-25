@@ -65,7 +65,7 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://localhost:8000/geoserver/www/'
+MEDIA_URL = 'http://localhost:8001/geoserver/www/'
 
 GEONODE_UPLOAD_PATH = path_extrapolate('../../gs-data/www')
 

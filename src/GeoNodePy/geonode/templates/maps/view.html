@@ -38,9 +38,10 @@ Ext.onReady(function() {
         csrfToken: "{{ csrf_token }}"
     }, {{ config }});
 
+    
     app = new GeoExplorer(config);
 
-    var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}");
+    var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
             return permalinkTemplate.apply({
                 protocol: window.location.protocol,
@@ -49,7 +50,7 @@ Ext.onReady(function() {
             }) 
         };
 
-    var moreInfoTemplate = new Ext.Template("<a class='link' href='{permalink}'> More info</a>");
+    var moreInfoTemplate = new Ext.Template("<a class='link' href='{permalink}'> Advanced site tools</a>");
     var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
     Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
 

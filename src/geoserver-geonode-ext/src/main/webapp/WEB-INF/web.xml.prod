@@ -50,7 +50,7 @@
     
     <context-param>
        <param-name>GEOSERVER_DATA_DIR</param-name>
-        <param-value>/opt/worldmap_data</param-value>
+        <param-value>/opt/worldmap-data</param-value>
     </context-param> 
    
 

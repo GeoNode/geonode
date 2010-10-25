@@ -7,6 +7,9 @@ import simplejson
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+import logging
+
+logger = logging.getLogger("geonode.proxy.views")
 
 @csrf_exempt
 def proxy(request):
@@ -41,6 +44,8 @@ def proxy(request):
 
 @csrf_exempt
 def geoserver(request):
+    logger.info("GEOSERVER PROXY REQUEST")
+    logging.debug("GEOSEREVR PROPROPRPPROXY")
     if not (request.method in ("GET") or request.user.is_authenticated() ):
         return HttpResponse(
             "You must be logged in to access GeoServer",
@@ -48,7 +53,10 @@ def geoserver(request):
             status=401
         )
     path = request.get_full_path()[11:] # strip "/geoserver/" from path
+    logger.info("PATH IS [%s]", path)
+    
     url = "{geoserver}{path}".format(geoserver=settings.GEOSERVER_BASE_URL,path=path)
+    logger.info("URL IS [%s]", url)
     h = httplib2.Http()    
     h.add_credentials(*settings.GEOSERVER_CREDENTIALS)
     headers = dict()

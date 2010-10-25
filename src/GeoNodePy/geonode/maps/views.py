@@ -31,22 +31,13 @@ import unicodedata
 from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
-<<<<<<< HEAD
-# import the logging library
 import logging
-import sys,traceback
 import datetime
 
-logging.debug("START MAPS VIEW")
-=======
-import logging
-
 logger = logging.getLogger("geonode.maps.views")
->>>>>>> master
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
-logging.debug("_user:" + _user)
-logging.debug("_password:" + _password)
+
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
@@ -632,13 +623,17 @@ def view(request, mapid):
     The view that returns the map composer opened to
     the map with the given map ID.
     """
-    map = Map.objects.get(pk=mapid)
+    if mapid.isdigit():
+        map = Map.objects.get(pk=mapid)
+    else:
+        map = Map.objects.get(urlsuffix=mapid)
     if not request.user.has_perm('maps.view_map', obj=map):
         return HttpResponse(loader.render_to_string('401.html', 
             RequestContext(request, {'error_message': 
                 _("You are not allowed to view this map.")})), status=401)    
     
     config = map.viewer_json()
+    logger.debug("CONFIG: [%s]", str(config))
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
@@ -1068,6 +1063,26 @@ def _handle_layer_upload(request, layer=None):
             layer.set_default_permissions()
             logger.debug("Generating separate style for %s", typename)
             fixup_style(cat, gs_resource)
+            
+            logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
+            if layer.attribute_names is not None:
+                logging.debug("Attributes are not None")
+                for field in layer.attribute_names:
+                    if field is not None:
+                        logging.debug("Field is [%s]", field)
+                        if field is not None and field != "the_geom".lower() and field != "objectid".lower() and field != "gid".lower():
+                            logging.debug("Adding [%s] as a searchable field", field)
+                            if layer.searchable_fields is None:
+                                layer.searchable_fields = ""
+                            layer.searchable_fields = layer.searchable_fields + field + ","
+                if layer.searchable_fields is not None:            
+                    logging.debug("Searchable fields now set to [%s]" + layer.searchable_fields)        
+                    layer.searchable_fields = layer.searchable_fields.strip(',')
+                    logging.debug("searchable fields will be [%s]", layer.searchable_fields)
+                    layer.save();
+            else:
+                logging.debug("No attributes found")
+            
         except Exception, e:
             logger.warning("Import to Django and GeoNetwork failed: %s", str(e))
 
@@ -1203,17 +1218,17 @@ def layer_acls(request):
     # the layer_acls view supports basic auth, and a special 
     # user which represents the geoserver administrator that
     # is not present in django.
-    logging.debug("Entered layer_acls")
+    #logging.debug("Entered layer_acls")
     acl_user = request.user
     #logging.debug("USER IS " + request.user)
     if 'HTTP_AUTHORIZATION' in request.META:
-        logging.debug("HTTP_AUTHORIZATION...")
+        #logging.debug("HTTP_AUTHORIZATION...")
         try:
             username, password = _get_basic_auth_info(request)
-            logging.debug("UserName: " + username + ",  PASS: " + password)
+            #logging.debug("UserName: " + username + ",  PASS: " + password)
             acl_user = authenticate(username=username, password=password)
 
-            logging.debug("Geoserver creds: " + settings.GEOSERVER_CREDENTIALS[0] + ":" + settings.GEOSERVER_CREDENTIALS[1])
+            #logging.debug("Geoserver creds: " + settings.GEOSERVER_CREDENTIALS[0] + ":" + settings.GEOSERVER_CREDENTIALS[1])
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and 
@@ -1229,7 +1244,7 @@ def layer_acls(request):
                    'is_anonymous': False
                 }
                 jsonResult = json.dumps(result)
-                logging.debug("Returning geoserver admin acls")
+                #logging.debug("Returning geoserver admin acls")
                 return HttpResponse(jsonResult, mimetype="application/json")
         except:
             logging.debug("An error occurred while trying to authorize")
@@ -1705,7 +1720,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             'id' : map.id,
             'title' : map.title,
             'abstract' : map.abstract,
-            'detail' : reverse('geonode.maps.views.map_controller', args=(map.id,)),
+            'detail' : reverse('geonode.maps.views.view', args=(map.id,)),
             'owner' : owner_name,
             'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,)),
             'last_modified' : map.last_modified.isoformat()
@@ -1731,6 +1746,24 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
          result['next'] = reverse('geonode.maps.views.maps_search') + '?' + params
     
     return result
+
+@csrf_exempt  
+def searchFieldsJSON(request):
+    logger.debug("Enter searchFieldsJSON")
+    layername = request.POST.get('layername', False);
+    logger.debug("layername is [%s]", layername)
+    searchable_fields = ''
+    if layername:
+        try:
+            geoLayer = Layer.objects.get(typename=layername)
+            searchable_fields = geoLayer.searchable_fields
+        except: 
+            logger.debug("Could not find matching layer: [%s]", str(_))
+        sfJSON = {'searchFields' : searchable_fields}
+        return HttpResponse(json.dumps(sfJSON))
+    else:
+        logger.debug("searchFieldsJSON DID NOT WORK")
+        
 
 @csrf_exempt    
 def maps_search_page(request):
