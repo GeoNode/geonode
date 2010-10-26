@@ -211,7 +211,7 @@ div.cga-logo-overlay-element {
     z-index: 1000; 
     position: absolute; 
     right: 10px; 
-    bottom: 100px;
+    bottom: 50px;
     width:175px;
     height:48px;
     display:inline;    
@@ -365,4 +365,25 @@ div.overlay-scaleline {
 
 #more-info{ 
 float:right;
+}
+
+.featureDetailList {
+}
+.featureDetailList li {
+margin:4px 5px;
+min-height:16px;
+position:relative;
+}
+* html .featureDetailList li {
+height:16px;
+}
+.featureDetailList li label {
+font-weight:bold;
+left:0;
+position:absolute;
+top:0;
+width:150px;
+}
+.featureDetailList li span {
+margin-left:160px;
 }

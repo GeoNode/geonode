@@ -45,7 +45,7 @@
                         method: "GET",
                         success: function(result) { 
                             alert("You sucessfuly canceled the download"); 
-                            location.href = "{{site}}maps/{{map.id}}"; 
+                            location.href = "{{site}}maps/edit/{{map.id}}"; 
                             clearInterval(checkStatus);
                         },
                         failure: function(result) { 

@@ -323,9 +323,6 @@ def map_download(request, mapid):
 
         resp, content = h.request(url, 'POST', body=mapJson)
 
-        print resp
-        print content
-
         if resp.status not in (400, 404, 417):
             map_status = json.loads(content)
             request.session["map_status"] = map_status
@@ -380,7 +377,8 @@ def check_download(request):
             content = "Something Went wrong" 
             status  = 400 
     except ValueError:
-        print "No layer_status in your session"
+        # TODO: Is there any useful context we could include in this log?
+        logger.warn("User tried to check status, but has no download in progress.")
     return HttpResponse(content=content,status=status)
 
 
@@ -1048,7 +1046,8 @@ def _handle_layer_upload(request, layer=None):
                                          geographic_bounding_box=gs_resource.latlon_bbox,
                                          date=datetime.datetime.now(),
                                          uuid=str(uuid.uuid4()),
-                                         owner=request.user)
+                                         owner=request.user
+                                       )
             # A user without a profile might be uploading this
             poc_contact, __ = Contact.objects.get_or_create(user=request.user,
                                                    defaults={"name": request.user.username })
@@ -1757,6 +1756,7 @@ def searchFieldsJSON(request):
         try:
             geoLayer = Layer.objects.get(typename=layername)
             searchable_fields = geoLayer.searchable_fields
+            searchable_fields = searchable_fields.strip(",");                     
         except: 
             logger.debug("Could not find matching layer: [%s]", str(_))
         sfJSON = {'searchFields' : searchable_fields}

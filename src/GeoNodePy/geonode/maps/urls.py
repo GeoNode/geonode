@@ -7,7 +7,7 @@ js_info_dict = {
 urlpatterns = patterns('geonode.maps.views',
     (r'^$', 'maps'),
     url(r'^new$', 'newmap', name="map_new"),
-    (r'^(?P<mapid>\d+)/edit$', 'map_controller'),
+    (r'^(?P<mapid>\d+)/edit/$', 'map_controller'),
     (r'^(?P<mapid>\d+)/download/$', 'map_download'),
     (r'^check/$', 'check_download'),
     (r'^embed/$', 'embed'),

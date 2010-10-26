@@ -137,9 +137,6 @@ MAP_BASELAYERSOURCES = {
     "any": {
         "ptype":"gx_olsource"
     },
-    "capra": {
-        "url":"http://localhost:8001/geoserver/wms"
-    },
     "google":{
         "ptype":"gx_googlesource",
         "apiKey": GOOGLE_API_KEY
@@ -147,19 +144,26 @@ MAP_BASELAYERSOURCES = {
 }
 
 MAP_BASELAYERS = [{
-    "source":"google",
-    "group":"background",
-    "name":"SATELLITE",
-    "visibility": False,
-    "fixed": True,
-},{
     "source":"any",
     "type":"OpenLayers.Layer",
     "args":["No background"],
     "visibility": False,
     "fixed": True,
     "group":"background"
-  }]
+  },{
+    "source":"any",
+    "type":"OpenLayers.Layer.OSM",
+    "args":["OpenStreetMap"],
+    "visibility": True,
+    "fixed": True,
+    "group":"background"
+  },{
+    "source":"google",
+    "group":"background",
+    "name":"SATELLITE",
+    "visibility": False,
+    "fixed": True,
+}]
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 #NAVBAR = path_extrapolate('geonode/core/templatetags/navbar.ini')
@@ -225,7 +229,7 @@ SERVE_MEDIA = True;
 try:
     from local_settings import *
 except ImportError:
-    print u'File local_settings.py is not found. Continuing with default settings'
+    pass
 
 if SERVE_MEDIA:
     if MINIFIED_RESOURCES: 

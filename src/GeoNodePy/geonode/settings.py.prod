@@ -130,9 +130,6 @@ MAP_BASELAYERSOURCES = {
     "any": {
         "ptype":"gx_olsource"
     },
-    "capra": {
-        "url":"http://ec2-184-73-249-247.compute-1.amazonaws.com/geoserver-geonode-dev/wms"
-    },
     "google":{
         "ptype":"gx_googlesource",
         "apiKey": GOOGLE_API_KEY
@@ -148,21 +145,11 @@ MAP_BASELAYERS = [{
     "group":"background"
   },{
     "source":"any",
-    "type":"OpenLayers.Layer.WMS",
-    "group":"background",
+    "type":"OpenLayers.Layer.OSM",
+    "args":["OpenStreetMap"],
     "visibility": True,
     "fixed": True,
-    "args":[
-      "bluemarble",
-      "http://maps.opengeo.org/geowebcache/service/wms",
-      {
-        "layers":["bluemarble"],
-        "format":"image/png",
-        "tiled": True,
-        "tilesOrigin":[-20037508.34,-20037508.34]
-      },
-      {"buffer":0}
-    ]
+    "group":"background"
   },{
     "source":"google",
     "group":"background",

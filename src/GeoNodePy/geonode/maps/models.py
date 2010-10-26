@@ -14,10 +14,11 @@ import simplejson
 import urllib
 from urlparse import urlparse
 import uuid
-import datetime
+from datetime import datetime
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
+from string import lower
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 import re
@@ -671,9 +672,11 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # section 1
     title = models.CharField(_('title'), max_length=255)
-    date = models.DateTimeField(_('date'), blank=True, null=True)
+
+    date = models.DateTimeField(_('date'), default = datetime.now) # passing the method itself, not the result
+
     
-    date_type = models.CharField(_('date type'), max_length=255,choices=[(x, x) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
+    date_type = models.CharField(_('date type'), max_length=255,choices=[(lower(x), _(x)) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
 
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
     abstract = models.TextField(_('abstract'))
@@ -1125,8 +1128,12 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
-
-
+class LayerAttribute(models.Model):
+    layer = models.ForeignKey(Layer)
+    name = models.CharField(255)
+    title = models.CharField(255)
+    searchable = models.BooleanField(default=True)
+    
 class Map(models.Model, PermissionLevelMixin):
     """
     A Map aggregates several layers together and annotates them with a viewport

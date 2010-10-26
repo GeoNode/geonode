@@ -22,6 +22,17 @@
  * name - {String} Required WMS layer name.
  * title - {String} Optional title to display for layer.
  */
+
+var dataLayers = [];
+
+var LayerData = function(iid, isearchFields, icategory)
+	{
+		this.id = iid;
+		this.searchFields = isearchFields;
+		this.category = icategory;
+		
+	};
+
 var GeoExplorer = Ext.extend(gxp.Viewer, {
     
     /**
@@ -350,6 +361,118 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.mapID = this.initialConfig.id;
     },
     
+	onMapClick:function(e) {
+		var pixel = new OpenLayers.Pixel(e.xy.x, e.xy.y);
+		var lonlat = this.mapPanel.map.getLonLatFromPixel(pixel);
+		
+		GeoExplorer.Results.reset();
+		
+		var count = 0, successCount = 0, featureCount = 0;
+		var features = [];
+		
+        var queryableLayers = this.mapPanel.layers.queryBy(function(x){
+            return x.get("queryable");
+        });
+        
+        queryableLayers.each(function(x){
+        	if (x.getLayer().getVisibility())
+        		count++;
+        });
+        
+        var map = this.mapPanel.map;
+        
+        queryableLayers.each(function(x){
+        	var dl = x.getLayer();
+            if (dl.name != "HighlightWMS" && dl.getVisibility()){
+    				
+    					var params = { //SRS:'EPSG:4326',
+    						REQUEST: "GetFeatureInfo",
+    						EXCEPTIONS: "application/vnd.ogc.se_xml",
+    						BBOX: map.getExtent().toBBOX(),
+    						X: (e.xy.x),
+    						Y: (e.xy.y),
+    						INFO_FORMAT: 'text/html',
+    						QUERY_LAYERS: dl.params.LAYERS,
+                            FEATURE_COUNT: 50,
+    						//MAXFEATURES: '50000',
+                            //MAXFEATURES: '0',
+    						WIDTH: (map.size.w),
+    						HEIGHT: (map.size.h),
+    						VERSION: '1.1.1'
+    					};
+    					
+    					var url =  dl.getFullRequestString(params);
+    	
+    					
+    					Ext.Ajax.request({
+    						'url':url,
+    						'success':function(resp, opts) {
+    							successCount++;
+    							
+    							if(resp.responseText != '' && resp.responseText.substr(0,1) != "{") {
+    								var msg = 'The feature request returned an error.';
+    								msg += '<br />details: ' + resp.responseText;
+    								Ext.Msg.alert('Request Error',msg);
+    								return;
+    							}
+    							
+    							if(resp.responseText != '') {					
+    	                        	var featureInfo = Ext.util.JSON.decode(resp.responseText);
+    	                        	if (featureInfo.features != undefined) {
+    								featureInfo.title = x.get("title");
+    								
+    								
+    								if (dataLayers[dl.params.LAYERS].searchFields.length > 0) {
+    									featureInfo.queryfields = dataLayers[dl.params.LAYERS].searchFields.split(",");
+    									featureInfo.nameField = featureInfo.queryfields[0];
+    								} else {
+    									featureInfo.queryFields = featureInfo.columns;
+    									featureInfo.nameField = featureInfo.columns[0];
+    								}
+    	                        	for(var f = 0; f < featureInfo.features.length; f++)
+    	                        		{
+    	                        			featureInfo.features[f].wm_layer_id = featureCount;
+    	                        			featureInfo.features[f].wm_layer_title = featureInfo.title;
+    	                        			featureInfo.features[f].wm_layer_name = (featureInfo.features[f])[featureInfo.nameField];
+    	                        			featureInfo.features[f].wm_layer_type = featureInfo.layer;
+    	                        			featureCount++;
+    	                        			
+    	                        			
+    	                        		}
+    	                        	
+    								
+    								features = features.concat(featureInfo.features);
+    	                        	}
+    							}
+    							
+    							if(successCount == count) {
+    								if(features.length == 0) {
+    									Ext.Msg.alert('Map Results','No features found at this location.');
+    								} else {								
+    									GeoExplorer.Results.displayXYResults(features, e.xy);
+    								}
+    							}
+    						},
+    						'failure':function(resp, opts) {
+    							var msg = 'The feature request failed.';
+    							msg += '<br />details: ' + resp.responseText;
+    							Ext.Msg.alert('Request Failed',msg);
+    						},
+    						'headers':{},
+    						'params':{}
+    					});
+    					}
+        });
+    		if (count == 0) {
+    			Ext.Msg.alert('Searchable Layers','There are no searchable layers active.');
+    		}
+
+		
+		
+
+	},
+
+    
     displayXHRTrouble: function(response) {
         response.status && Ext.Msg.show({
             title: this.connErrorTitleText,
@@ -393,7 +516,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }];
         
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
-        searchFields = this.searchFields;
+        var searchFields = this.searchFields;
         var layerCount = 0;
         
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
@@ -425,24 +548,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             this.busyMask.hide();
                         }
                         layer.events.unregister("loadend", this, arguments.callee);
-                        if (layer.name != "HighlightWMS"){
-                    	Ext.Ajax.request({
-                    		url: "/maps/searchfields/?" + layer.params.LAYERS,
-                    		method: "POST",
-                    		params: {layername:layer.params.LAYERS},
-                    		success: function(result,request)
-                    		{
-                                var jsonData = Ext.util.JSON.decode(result.responseText);
-                                layerfields = jsonData.searchFields;
-                                
-                                searchFields[layer.params.LAYERS] = layerfields;
-                                //searchFields[layer.params.LAYERS]);
-                    		},
-                    		failure: function(result,request) {
-                               //alert('BOOM');
-                    		}
-                    		
-                    	});}
                     },
                     scope: this
                 })
@@ -478,6 +583,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         this.on("ready", function() {
             addLayerButton.enable();
+            this.mapPanel.map.events.register('click', this, this.onMapClick);
             this.mapPanel.layers.on({
                 "update": function() {this.modified |= 1;},
                 "add": function() {this.modified |= 1;},
@@ -783,6 +889,41 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             width: 250
         });
 
+        
+        
+        var gridWinPanel = new Ext.Panel({
+        	id: 'gridWinPanel',
+            collapseMode: "mini",
+            title: 'Search Results',
+            autoScroll: true,
+            split: true,
+            items: [],
+            anchor: '100% 50%'
+        });
+        
+        var gridResultsPanel = new Ext.Panel({
+        	id: 'gridResultsPanel',
+            title: 'Feature Details',        	
+            collapseMode: "mini",
+            autoScroll: true,
+            split: true,
+            items: [],
+            anchor: '100% 50%'
+        });
+        
+        var eastPanel = new Ext.Panel({
+        	id: 'queryPanel',
+            layout: "anchor",
+            collapseMode: "mini",
+            split: true,
+            items: [gridWinPanel, gridResultsPanel],
+            collapsed: true,
+            region: "east",
+            width: 250,
+        });
+        
+        
+        
         this.toolbar = new Ext.Toolbar({
             disabled: true,
             items: this.createTools()
@@ -856,7 +997,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     tbar: this.toolbar,
                     items: [
                         this.mapPanelContainer,
-                        westPanel
+                        westPanel, eastPanel
                     ]
                 }
             }
@@ -1482,7 +1623,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             
             queryableLayers.each(function(x){
             	dl = x.getLayer();
-            	if (!dl.getVisibility())
+            	if (!dl.getVisibility() || dataLayers[dl.params.LAYERS].searchFields.length == 0)
             		{queryableLayers.remove(x);}
             });
             
@@ -1527,7 +1668,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     		
 
-            var searchFields = this.searchFields;
+            
             queryableLayers.each(function(x){
             	dl = x.getLayer();
             	if (dl.getVisibility())
@@ -1551,7 +1692,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             		
             			//alert(dl.getURL(dl.map.mapExtent));
         				//alert(searchFields[dl.params.LAYERS]);
-            			queryFields = searchFields[dl.params.LAYERS].split(",");
+            			queryFields = dataLayers[dl.params.LAYERS].searchFields.split(",");
+            				//searchFields[dl.params.LAYERS].split(",");
             			//wfs = dl.url.replace("/wms", "/wfs").replace("?SERVICE=WMS&","");
             			featureQuery="";
             			
@@ -1656,25 +1798,31 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
 
             info.controls = [];
+            
             queryableLayers.each(function(x){
-                var control = new OpenLayers.Control.WMSGetFeatureInfo({
-                    url: x.getLayer().url,
-                    queryVisible: true,
-                    layers: [x.getLayer()],
-                    eventListeners: {
-                        getfeatureinfo: function(evt) {  
-                        	this.displayPopup(evt, x.get("title") || x.get("name"));
-                        },
-                        scope: this
-                    }
-                });
-                control.infoFormat = 'text/html';
-                control.queryVisible = 'true';
-                map.addControl(control);
-                info.controls.push(control);
-                if(infoButton.pressed) {
-                    control.activate();
-                }
+            	
+            	var dl = x.getLayer();
+                if (dl.name != "HighlightWMS"){
+                	Ext.Ajax.request({
+                		url: "/maps/searchfields/?" + dl.params.LAYERS,
+                		method: "POST",
+                		params: {layername:dl.params.LAYERS},
+                		success: function(result,request)
+                		{
+                            var jsonData = Ext.util.JSON.decode(result.responseText);
+                            
+                            layerfields = jsonData.searchFields;
+                            dataLayers[dl.params.LAYERS] = new LayerData(id, layerfields, null);
+                		},
+                		failure: function(result,request) {
+                           alert('BOOM');
+                		}
+                		
+                	});}
+            	
+            	//wfsQuery = dl.url.replace("/wms", "/wfs").replace("?service=wms","") + "?request=GetFeature&version=1.1.0&typeName=" + dl.params.LAYERS + "&outputFormat=JSON";
+            	
+   
             }, this);
         };
 
@@ -1973,6 +2121,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *     reporting the info to the user
      */
     displayPopup: function(evt, title) {
+    	
+    	GeoExplorer.Search.displayXYResults(evt);
+    	/*
         var popup;
         var popupKey = 'info' //'evt.xy.x + "." + evt.xy.y;
 
@@ -1981,6 +2132,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         	popup.destroy();
         }
             var lonlat = this.mapPanel.map.getLonLatFromPixel(evt.xy);
+            
+            
+            
         	popup = new GeoExt.Popup({
                 title: "Feature Info",
                 layout: "accordion",
@@ -2014,6 +2168,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
         }
         popup.doLayout();
+        */
     },
 
     
@@ -2172,4 +2327,169 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     }
 });
 
+/* --------------------------------------------------------- */
+/* Object for handling search results controls and functions */
+/* --------------------------------------------------------- */
+GeoExplorer.Results = {
+	gridWin: null,
+	resultWin: null,
+	currentFeatures: [],
+	gridMarker: null,
+	resultMarker: null,
+	reset: function() {
+		if(GeoExplorer.Results.resultWin) {
+			GeoExplorer.Results.resultWin.close();
+			GeoExplorer.Results.resultWin = null;
+		}
+		if(GeoExplorer.Results.resultMarker) {
+			AM.OL.markerLayer.removeMarker(GeoExplorer.Results.resultMarker);
+			GeoExplorer.Results.resultMarker = null;
+		}
+		if(GeoExplorer.Results.gridWin) {
+			GeoExplorer.Results.gridWin.close();
+			GeoExplorer.Results.gridWin = null;
+		}
+		if(GeoExplorer.Results.gridMarker) {
+			GeoExplorer.markerLayer.removeMarker(GeoExplorer.Results.gridMarker);
+			GeoExplorer.Results.gridMarker = null;
+		}
+	},
+	resultsToKml: function() {
+	},
+	displayXYResults: function(featureInfo, lonlat) {
+        var ep = Ext.getCmp('queryPanel');
+        var gp = Ext.getCmp('gridWinPanel');
 
+        ep.expand(true);
+        gp.removeAll(true);
+
+        //var dp = Ext.getCmp('gridResultsPanel');
+        //dp.removeAll();
+        
+		
+		var currentFeatures = featureInfo;
+		var reader = new Ext.data.JsonReader({}, [
+		                               		   {name: 'wm_layer_title'},
+		                               		   {name: 'wm_layer_name'},
+		                               		   {name: 'wm_layer_id'},
+		                               		   {name: 'wm_layer_type'}
+		                               		]);
+
+		var winWidth = 450;
+
+		
+		var startX = 50;
+
+        var gridPanel = new Ext.grid.GridPanel({
+			store:new Ext.data.GroupingStore({
+				reader: reader,
+				data: currentFeatures,
+				sortInfo:{field: 'wm_layer_name', direction: "ASC"},
+				groupField:'wm_layer_title'
+			}),
+			columns:[
+						{ id:'wm_layer_id', sortable:false, header:'FID', dataIndex:'wm_layer_id', hidden:true},
+						{ header: 'Name', sortable:true, dataIndex:'wm_layer_name', width:190 },
+						{ header:'Feature Type', dataIndex:'wm_layer_type', width:0, hidden:true },
+						{ header:'Layer', sortable:false, dataIndex:'wm_layer_title', width:0, hidden:true }
+					],			
+			view: new Ext.grid.GroupingView({
+				//forceFit:true,
+				groupTextTpl: '{group}',
+                		style: 'width: 425px'
+			}),
+			sm: new Ext.grid.RowSelectionModel({
+				singleSelect: true,
+				listeners: {
+					rowselect: { 
+						fn: function(sm, rowIndex, rec) {
+
+							GeoExplorer.Results.displaySingleResult(currentFeatures, rowIndex, rec.data);
+						} 
+					}
+				}
+			}),
+			layout: 'fit',
+			frame:false,
+			collapsible: true,
+			title: '',
+			iconCls: 'icon-grid',
+		     autoHeight:true,
+            style: 'width: 425px',
+            width: '400'
+
+			//autoExpandColumn:'name',
+		});
+
+
+        gp.add(gridPanel);
+        gp.doLayout();
+
+
+		gridPanel.getSelectionModel().selectFirstRow();
+		
+
+
+	},
+	displaySingleResult: function(currentFeatures, rowIndex, gridFeature) {
+
+        var dp = Ext.getCmp('gridResultsPanel');
+        dp.removeAll();
+        
+		if(GeoExplorer.Results.resultMarker) {
+			AM.OL.markerLayer.removeMarker(GeoExplorer.Results.resultMarker);
+		}
+		
+		var feature = null;
+		// Look for the feature in the full collection of features (the grid store only has simplified objects)
+		for(var i = 0; i < currentFeatures.length; i++) {
+			if(currentFeatures[i].wm_layer_id == gridFeature.wm_layer_id) {
+				feature = currentFeatures[i];
+			}
+		}
+		
+		if(!feature) {
+			return;
+		}
+		
+		if(GeoExplorer.Results.resultMarker) {
+			AM.OL.markerLayer.removeMarker(GeoExplorer.Results.resultMarker);
+		}
+		if(feature.longitude) {
+			var lonlat = new OpenLayers.LonLat(feature.longitude, feature.latitude);
+			lonlat = lonlat.transform(AM.OL.map.displayProjection, AM.OL.map.projection);
+			
+			GeoExplorer.Results.resultMarker = new OpenLayers.Marker(lonlat, AM.OL.markerIcon2.clone());
+			AM.OL.markerLayer.addMarker(GeoExplorer.Results.resultMarker);
+		}
+		
+		
+		
+		//var tpl = new Ext.Template(amTemplates[gridFeature.type]);
+
+        if (feature.start_d == '1899-12-30') {
+            feature.start_d = '';
+        }
+
+        if (feature.end_d == '1899-12-30') {
+            feature.end_d = '';
+        }
+
+        
+        
+		var featureHtml = this.createHTML(feature);
+		dp.update(featureHtml);
+		dp.doLayout();
+
+	},
+	
+	createHTML: function(feature) {
+		html = '<ul class="featureDetailList" id="featureDetailList">';
+		for(fkey in feature){
+			if (!(fkey in {'wm_layer_title':'', 'wm_layer_id':'','wm_layer_name':'', 'wm_layer_type':''}))			
+				html += "<li><label>" + fkey + "</label><span>" + feature[fkey] + "</span></li>";
+		}
+		html += "</ul>";
+		return html;
+	}
+}
