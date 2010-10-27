@@ -228,7 +228,7 @@ NAVBAR = \
 # Determines whether the minified or the "raw" JavaScript files are included.
 # Only applies in development mode. (That is, when DEBUG==True)
 #MINIFIED_RESOURCES = False
-MINIFIED_RESOURCES = False
+MINIFIED_RESOURCES = True
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -275,7 +275,9 @@ if MINIFIED_RESOURCES:
         "app_script":"gn/GeoNode.js",
         "ux_script":"gn/ux.js",
         "ux_resources":"gn/ux/",
-    }           
+    }
+    for key, value in MEDIA_LOCATIONS.items():
+        MEDIA_LOCATIONS[key] = "build/geonode-client/"+value
 else:
     MEDIA_LOCATIONS = {
         "ext_base": "externals/ext/",
