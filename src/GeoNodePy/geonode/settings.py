@@ -248,13 +248,10 @@ INSTALLED_APPS = (
 
 AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = False
-GEONODE_CLIENT_LOCATION = "http://demo.geonode.org/geonode-client"
-
-#root = here("..", "..", "geonode-client", "build", "geonode-client") if
-#settings.MINIFIED_RESOURCES else here("..", "..", "
-#geonode-client", "")
 
 SERVE_MEDIA = DEBUG;
+
+GEONODE_CLIENT_LOCATION = STATIC_URL
 
 try:
     from local_settings import *
