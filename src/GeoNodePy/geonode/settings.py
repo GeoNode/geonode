@@ -68,7 +68,8 @@ STATIC_URL = "/site_media/static/"
 
 # Additional directories which hold static files
 STATICFILES_DIRS = [
-    os.path.join(PROJECT_ROOT, "media"),
+#    os.path.join(PROJECT_ROOT, "media"),
+    os.path.join(PROJECT_ROOT, "..", "..", "geonode-client"),
 ]
 
 GEONODE_UPLOAD_PATH = os.path.join(STATIC_URL, "upload/")
@@ -235,6 +236,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'staticfiles',
     'django_extensions',
     'registration',
     'profiles',
@@ -259,58 +261,39 @@ try:
 except ImportError:
     pass
 
-if SERVE_MEDIA:
-    if MINIFIED_RESOURCES: 
-        MEDIA_LOCATIONS = {
-            "ext_base": "/static/ext/",
-            "ext_lib": "/static/ext/ext-all.js",
-            "ol_theme": "/static/ol/theme/default/style.css",
-            "ol_script":"/static/ol/OpenLayers.js",
-            "gx_themes":"/static/gx/theme/",
-            "gx_script":"/static/gx/GeoExt.js",
-            "PrintPreview_script":"/static/PrintPreview/PrintPreview.js",
-            "PrintPreview_themes": "/static/PrintPreview/theme/",
-            "gxp_script":"/static/gxp/gxp.js",
-            "gxp_theme":"/static/gxp/theme/all.css",
-            "geo_script":"/static/gn/GeoExplorer.js",
-            "app_themes": "/static/gn/theme/app/",
-            "app_script":"/static/gn/GeoNode.js",
-            "ux_script":"/static/gn/ux.js",
-            "ux_resources":"/static/gn/ux/",
-        }                
-    else:
-        MEDIA_LOCATIONS = {
-            "ext_base": "/static/externals/ext/",
-            "ext_lib": "/static/externals/ext/ext-all-debug.js",
-            "ol_theme": "/static/externals/openlayers/theme/default/style.css",
-            "ol_script":"/static/externals/openlayers/lib/OpenLayers.js",
-            "gx_themes":"/static/externals/geoext/geoext/resources/",
-            "gx_script":"/static/externals/geoext/geoext/lib/GeoExt.js",
-            "PrintPreview_script":"/static/externals/PrintPreview/lib/GeoExt.ux/PrintPreview.js",
-            "PrintPreview_themes": "/static/externals/PrintPreview/resources/",
-            "gxp_script":"/static/externals/gxp/src/script/loader.js",
-            "gxp_theme":"/static/externals/gxp/src/theme/all.css",
-            "geo_script":"/static/src/script/app/geo-debug.js",
-            "app_themes": "/static/src/theme/app/",
-            "app_script":"/static/src/script/app/app-debug.js",
-            "ux_script":"/static/src/script/ux/loader.js",
-            "ux_resources":"/static/src/script/ux/",
-        }
+if MINIFIED_RESOURCES: 
+    MEDIA_LOCATIONS = {
+        "ext_base": "ext/",
+        "ext_lib":  "ext/ext-all.js",
+        "ol_theme": "ol/theme/default/style.css",
+        "ol_script": "ol/OpenLayers.js",
+        "gx_themes": "gx/theme/",
+        "gx_script":"gx/GeoExt.js",
+        "PrintPreview_script":"PrintPreview/PrintPreview.js",
+        "PrintPreview_themes": "PrintPreview/theme/",
+        "gxp_script":"gxp/gxp.js",
+        "gxp_theme":"gxp/theme/all.css",
+        "geo_script":"gn/GeoExplorer.js",
+        "app_themes": "gn/theme/app/",
+        "app_script":"gn/GeoNode.js",
+        "ux_script":"gn/ux.js",
+        "ux_resources":"gn/ux/",
+    }           
 else:
     MEDIA_LOCATIONS = {
-        "ext_base": GEONODE_CLIENT_LOCATION + "/geonode-client/ext/",
-        "ext_lib": GEONODE_CLIENT_LOCATION + "/geonode-client/ext/ext-all.js",
-        "ol_theme":  GEONODE_CLIENT_LOCATION + "/geonode-client/ol/theme/default/style.css",
-        "ol_script": GEONODE_CLIENT_LOCATION + "/geonode-client/ol/OpenLayers.js",
-        "gx_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/gx/theme/",
-        "gx_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gx/GeoExt.js",
-        "PrintPreview_script": GEONODE_CLIENT_LOCATION + "/geonode-client/PrintPreview/PrintPreview.js",
-        "PrintPreview_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/PrintPreview/theme/",
-        "gxp_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gxp/gxp.js",
-        "gxp_theme": GEONODE_CLIENT_LOCATION + "/geonode-client/gxp/theme/all.css",
-        "geo_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/GeoExplorer.js",
-        "app_themes": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/theme/app/",
-        "app_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/GeoNode.js",
-        "ux_script": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/ux.js",
-        "ux_resources": GEONODE_CLIENT_LOCATION + "/geonode-client/gn/ux/",
+        "ext_base": "externals/ext/",
+        "ext_lib": "externals/ext/ext-all-debug.js",
+        "ol_theme": "externals/openlayers/theme/default/style.css",
+        "ol_script":"externals/openlayers/lib/OpenLayers.js",
+        "gx_themes":"externals/geoext/geoext/resources/",
+        "gx_script":"externals/geoext/geoext/lib/GeoExt.js",
+        "PrintPreview_script":"externals/PrintPreview/lib/GeoExt.ux/PrintPreview.js",
+        "PrintPreview_themes": "externals/PrintPreview/resources/",
+        "gxp_script":"externals/gxp/src/script/loader.js",
+        "gxp_theme":"externals/gxp/src/theme/all.css",
+        "geo_script":"src/script/app/geo-debug.js",
+        "app_themes": "src/theme/app/",
+        "app_script":"src/script/app/app-debug.js",
+        "ux_script":"src/script/ux/loader.js",
+        "ux_resources":"src/script/ux/",
     }
