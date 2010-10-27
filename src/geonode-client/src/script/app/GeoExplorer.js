@@ -120,7 +120,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     heightLabel: 'UT: Height',
     infoButtonText: "UT:Get Feature Info",
     largeSizeLabel: 'UT:Large',
-    layerAdditionLabel: "UT: or add a new server.",
+    layerAdditionLabel: "UT:+",
+    layerLocalLabel: 'UT:Add your own data',
     layerContainerText: "UT:Map Layers",
     layerPropertiesText: 'UT: Layer Properties',
     layerPropertiesTipText: 'UT: Change layer format and style',
@@ -579,13 +580,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var addLayerButton = new Ext.Button({
             tooltip : this.addLayersButtonText,
-            disabled: true,
+            disabled: false,
             iconCls: "icon-addlayers",
             handler : this.showCapabilitiesGrid,
             scope: this
         });
+        
         this.on("ready", function() {
-            addLayerButton.enable();
             this.mapPanel.map.events.register('click', this, this.onMapClick);
             this.mapPanel.layers.on({
                 "update": function() {this.modified |= 1;},
@@ -850,12 +851,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             autoScroll: true,
             border: false,
             title: this.layersContainerText,
-            items: [layerTree],
-            tbar: [
-                addLayerButton,
-                //Ext.apply(new Ext.Button(removeLayerAction), {text: ""}), //MB Don't show in toolbar
-                Ext.apply(new Ext.Button(showPropertiesAction), {text: ""})
-            ]
+            items: [layerTree]
         });
 
         this.legendPanel = new GeoExt.LegendPanel({
@@ -929,7 +925,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
         this.toolbar = new Ext.Toolbar({
             disabled: true,
-            items: this.createTools()
+            items: [                 
+            addLayerButton,
+            Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
+            this.createTools(),
+            ]
         });
 
         this.on("ready", function() {
@@ -1177,6 +1177,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ows: this.localGeoServerBaseUrl + "ows"
         });
         
+        
+        var addLocalLayers = function() {
+        	if (!this.mapID)
+    			{Ext.Msg.alert("Save your Map View", "You must save this map view before uploading your data");}
+        	else
+        		document.location.href="/data/upload?map=" + this.mapID;
+        };
+        
         var addLayers = function() {
             var key = sourceComboBox.getValue();
             var layerStore = this.mapPanel.layers;
@@ -1252,17 +1260,29 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }),
                 sourceComboBox
             ];
+            
         }
 
         if (this.proxy) {
             capGridToolbar.push(new Ext.Button({
-                text: this.layerAdditionLabel, 
+                text: this.layerAdditionLabel,
                 handler: function() {
                     newSourceWindow.show();
                 }
             }));
         }
+        
+        capGridToolbar.push('                       ');
+        
+        capGridToolbar.push(new Ext.Button({
+            text: this.layerLocalLabel, 
+            handler: addLocalLayers,
+            cls: 'x-btn-link-medium',
+            scope: this
+        }));        
 
+        capGridToolbar.width = 600;
+        
         var app = this;
         var newSourceWindow = new gxp.NewSourceWindow({
             modal: true,
@@ -1602,7 +1622,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var searchTB = new Ext.form.TextField({
 			id:'search-tb',
-			width:450,
+			width:200,
 			emptyText:'Enter search...'
 		});
         
@@ -1973,7 +1993,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             }),
             enable3DButton,
-            infoButton,
             searchBar
         ];
         this.on("saved", function() {

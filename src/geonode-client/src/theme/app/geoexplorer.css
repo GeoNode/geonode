@@ -104,6 +104,14 @@
     background-image: url(img/silk/page_white_acrobat.png);
 }
 
+.x-btn-link-medium {
+	text-decoration:underline;
+	float:right;
+	text-align:right;
+}
+
+
+
 div.report { 
     background-color: white;
     height: 100%;

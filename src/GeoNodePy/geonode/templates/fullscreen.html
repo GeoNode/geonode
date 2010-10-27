@@ -2,12 +2,13 @@
 {% load geonode_media %}
 <html>
 <head>
-
-    <title>{% block title %}GeoNode{% endblock %}</title>
+    
+    <title>{% block title %}WorldMap{% endblock %}</title>
     <link rel="shortcut icon" href="{% geonode_media "app_themes" %}img/favicon.ico"/>
-    {% block head %}
+    {% block head %}    
     <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" />
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+
     <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
     {% endblock %}
 </head>

@@ -281,7 +281,8 @@ def newmap(request):
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config), 
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'maptitle': settings.SITENAME
     }))
 
 h = httplib2.Http()
@@ -635,7 +636,8 @@ def view(request, mapid):
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'maptitle': map.title
     }))
 
 
@@ -655,7 +657,8 @@ def official_site(request, site):
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'maptitle': map.title
     }))
 
 def embed(request, mapid=None):

@@ -3,7 +3,7 @@
   <select id="selectSite" onChange="if (this.selectedIndex > 0) {document.location.href=this.options[this.selectedIndex].value}">
   	<option value="">Select a WorldMap view</option>
   	{% for officialsite in officialsites %}
-  	<option value="/{{officialsite.officalurl}}">{{officialsite.title}}</option>
+  	<option value="/{{officialsite.officialurl}}">{{officialsite.title}}</option>
   	{% endfor%}
   	<option value="{% url geonode.maps.views.maps %}">More WorldMap Views</option>
   </select>
