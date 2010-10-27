@@ -1,5 +1,15 @@
 <ul id="sitenav" class="selfclear">
-  <li class="home"><a href="{% url geonode.views.index %}">Home</a></li>
+  <li class="site_nav" style="vertical-align:middle;padding-top:5px;">
+  <select id="selectSite" onChange="if (this.selectedIndex > 0) {document.location.href=this.options[this.selectedIndex].value}">
+  	<option value="">Select a WorldMap view</option>
+  	{% for officialsite in officialsites %}
+  	<option value="/{{officialsite.officalurl}}">{{officialsite.title}}</option>
+  	{% endfor%}
+  	<option value="{% url geonode.maps.views.maps %}">More WorldMap Views</option>
+  </select>
+  </li>
+  
+  
   {% for section in sections %}
   <li class="{{section.item_class}}">
     <a class="{{section.link_class}}"

@@ -3,6 +3,7 @@ Tag for rendering a context sensitive and extendable navigation
 """
 from pprint import pformat
 from django import template
+from django.db import models
 from django.template import loader
 from django.template.defaulttags import url
 from django.utils.translation import string_concat
@@ -10,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
 from geonode.utils import ConfigMap, DictMixin
 from geonode.utils import path_extrapolate
-
+from geonode.maps.models import Map
 
 register = template.Library()
 
@@ -75,6 +76,11 @@ class NavBar(template.Node):
         token = template.Token(template.TOKEN_BLOCK, "url %s" %spec)
         return url(self.parser, token)
 
+    def compile_officialsites(self, context):
+        officialsites = Map.objects.raw("SELECT * from maps_map where officialurl is not NULL" )
+        return officialsites
+        
+
     def compile_sections(self, context):
         sections = list()
         for section in self.visible:
@@ -102,8 +108,10 @@ class NavBar(template.Node):
     #@@ cache this? doesn't change much
     def render(self, context):
         sections = self.compile_sections(context)
+        sites = self.compile_officialsites(context)
         info = dict(active=self.whereami,
                     sections=sections,
+                    officialsites=sites,
                     config=self.config)
         return loader.render_to_string(self.template, info)
 

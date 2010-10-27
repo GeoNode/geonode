@@ -1128,11 +1128,11 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
-class LayerAttribute(models.Model):
-    layer = models.ForeignKey(Layer)
-    name = models.CharField(255)
-    title = models.CharField(255)
-    searchable = models.BooleanField(default=True)
+#class LayerAttribute(models.Model):
+#    layer = models.ForeignKey(Layer)
+#    name = models.CharField(max_length=255)
+#    title = models.CharField(max_length=255)
+#    searchable = models.BooleanField(default=True)
     
 class Map(models.Model, PermissionLevelMixin):
     """

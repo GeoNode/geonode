@@ -171,13 +171,8 @@ NAVBAR = \
 {'maps': {'id': '%sLink',
                'item_class': '',
                'link_class': '',
-               'text': 'Maps',
-               'url': 'geonode.maps.views.maps'},
- 'data': {'id': '%sLink',
-          'item_class': '',
-          'link_class': '',
-          'text': 'Data',
-          'url': "geonode.maps.views.browse_data"},
+               'text': 'Create Your Own Map View',
+               'url': "geonode.maps.views.newmap"},
 #  'index': {'id': '%sLink',
 #            'item_class': '',
 #            'link_class': '',
@@ -195,7 +190,7 @@ NAVBAR = \
           'id': '%sLink',
           'item_class': '',
           'link_class': '',
-          'visible': 'data\nmaps'}}
+          'visible': 'maps'}}
 
 
 # Determines whether the minified or the "raw" JavaScript files are included.

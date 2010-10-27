@@ -515,6 +515,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             })
         }];
         
+	    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
+	    OpenLayers.Util.onImageLoadErrorColor = "transparent";
+        
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
         var searchFields = this.searchFields;
         var layerCount = 0;
