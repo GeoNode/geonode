@@ -9,4 +9,4 @@
 	url = git://github.com/GeoNode/PrintPreview.git
 [submodule "src/geonode-client/externals/gxp"]
 	path = src/geonode-client/externals/gxp
-	url = git@github.com:opengeo/gxp.git
+	url = git://github.com/opengeo/gxp.git
