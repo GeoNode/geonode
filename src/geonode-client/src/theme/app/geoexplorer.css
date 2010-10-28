@@ -46,6 +46,10 @@
     background-image: url(img/geoexplorer.png);
 }
 
+.x-btn .icon-add {
+    background-image: url(img/silk/add.png);	
+}
+
 .x-btn .icon-addlayers {
     background-image: url(img/silk/layers.png);
 }

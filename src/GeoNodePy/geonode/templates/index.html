@@ -16,17 +16,7 @@
 Ext.onReady(function(){
 {% autoescape off %}
 
-  var exploreMapButton = new Ext.Button({
-     renderTo: 'explore_map', 
-     text: '{% trans "Explore Maps" %}',
-     handler: function(){ window.location = "{% url geonode.maps.views.maps_search_page %}"; }
-  });
 
-  var createMapButton = new Ext.Button({
-     renderTo: 'create_map', 
-     text: '{% trans "Create Map" %}',
-     handler: function(){ window.location = "{% url geonode.maps.views.newmap %}"; }
-  });
 
   var submitForm = function() {
       Ext.query('#data_block form')[0].submit();
@@ -61,18 +51,14 @@ Ext.onReady(function(){
   </p>
   </div>
   <div class="block">
-    <h2> {% trans "Map Sites" %} </h2>
+    <h2> {% trans "Map Views" %} </h2>
     <p>
     {% blocktrans %} 
-  WorldMap lets you compose and share maps.  <strong>Create</strong>
-      a map site with our cartography tool, or <strong>explore</strong> map sites
+  WorldMap lets you compose and share map views.  <a href="/maps/new"><strong>Create</strong></a>
+      a map view with our cartography tool, or <a href="/maps/search"><strong>explore</strong></a> map views
       shared by others.
     {% endblocktrans %} 
   </p>
-    <div class="selfclear">
-      <div id="explore_map" class="content-button"></div>
-      <div id="create_map" class="content-button"></div>
-    </div>
   </div>
   <div id="sponsor_block" class="block">
 <p>&nbsp;</p>

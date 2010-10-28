@@ -1779,10 +1779,11 @@ def searchFieldsJSON(request):
         try:
             geoLayer = Layer.objects.get(typename=layername)
             searchable_fields = geoLayer.searchable_fields
-            searchable_fields = searchable_fields.strip(",");                     
+            searchable_fields = searchable_fields.strip(",");   
+            category =geoLayer.topic_category                  
         except: 
             logger.debug("Could not find matching layer: [%s]", str(_))
-        sfJSON = {'searchFields' : searchable_fields}
+        sfJSON = {'searchFields' : searchable_fields, 'category' : category}
         return HttpResponse(json.dumps(sfJSON))
     else:
         logger.debug("searchFieldsJSON DID NOT WORK")

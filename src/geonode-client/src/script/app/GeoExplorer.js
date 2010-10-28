@@ -121,7 +121,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     infoButtonText: "UT:Get Feature Info",
     largeSizeLabel: 'UT:Large',
     layerAdditionLabel: "UT:+",
-    layerLocalLabel: 'UT:Add your own data',
+    layerLocalLabel: 'UT:Upload your own data',
     layerContainerText: "UT:Map Layers",
     layerPropertiesText: 'UT: Layer Properties',
     layerPropertiesTipText: 'UT: Change layer format and style',
@@ -1272,10 +1272,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }));
         }
         
-        capGridToolbar.push('                       ');
-        
+        capGridToolbar.push({xtype: 'tbspacer', width: 50});
+        capGridToolbar.push("->")
         capGridToolbar.push(new Ext.Button({
-            text: this.layerLocalLabel, 
+            text: this.layerLocalLabel,
+            iconCls: 'icon-add',
             handler: addLocalLayers,
             cls: 'x-btn-link-medium',
             scope: this

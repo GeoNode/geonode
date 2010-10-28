@@ -18,7 +18,7 @@ if (window.GeoExplorer) {
         layerAdditionLabel: gettext("+"),
         layerContainerText: gettext("Map Layers"),
         layerSelectionLabel: gettext("View available data from:"),
-        layerLocalLabel: gettext("Add your own data"),
+        layerLocalLabel: gettext("Upload your own data"),
         layersContainerText: gettext("Data"),
         layersPanelText: gettext("Layers"),
         legendPanelText: gettext("Legend"),
