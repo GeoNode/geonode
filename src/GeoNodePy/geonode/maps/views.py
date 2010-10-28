@@ -31,6 +31,9 @@ import unicodedata
 from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
+import logging
+
+logger = logging.getLogger("geonode.maps.views")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
@@ -304,9 +307,6 @@ def map_download(request, mapid):
 
         resp, content = h.request(url, 'POST', body=mapJson)
 
-        print resp
-        print content
-
         if resp.status not in (400, 404, 417):
             map_status = json.loads(content)
             request.session["map_status"] = map_status
@@ -361,7 +361,8 @@ def check_download(request):
             content = "Something Went wrong" 
             status  = 400 
     except ValueError:
-        print "No layer_status in your session"
+        # TODO: Is there any useful context we could include in this log?
+        logger.warn("User tried to check status, but has no download in progress.")
     return HttpResponse(content=content,status=status)
 
 
@@ -815,6 +816,8 @@ def upload_layer(request):
             layer, errors = _handle_layer_upload(request)
         except:
             errors = [GENERIC_UPLOAD_ERROR]
+
+        logger.debug("_handle_layer_upload returned!! layer and errors are %s", (layer, errors))
         
         result = {}
         if len(errors) > 0:
@@ -825,6 +828,7 @@ def upload_layer(request):
             result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
 
         result = json.dumps(result)
+        logger.debug("layer upload - okay Django, you handle the rest.")
         return render_to_response('json_html.html',
                                   RequestContext(request, {'json': result}))
 
@@ -871,7 +875,10 @@ def _handle_layer_upload(request, layer=None):
     layer_name = request.POST.get('layer_name');
     base_file = request.FILES.get('base_file');
 
+    logger.info("Uploaded layer: [%s], base filename: [%s]", layer_name, base_file)
+
     if not base_file:
+        logger.warn("Failed upload: no basefile provided")
         return None, [_("You must specify a layer data file to upload.")]
     
     if layer is None:
@@ -885,24 +892,29 @@ def _handle_layer_upload(request, layer=None):
             proposed_name = "%s_%d" % (name, count)
             count = count + 1
         name = proposed_name
+        logger.info("Requested name already used; adjusting name [%s] => [%s]", layer_name, name)
     else:
         overwrite = True
         name = layer.name
-
+        logger.info("Using name as requested")
 
     errors = []
     cat = Layer.objects.gs_catalog
     
     if not name:
+        logger.error("Unexpected error: Layer name passed validation but is falsy: %s", name)
         return None, [_("Unable to determine layer name.")]
 
     # shapefile upload
     elif base_file.name.lower().endswith('.shp'):
+        logger.info("Upload [%s] appears to be a Shapefile", base_file)
         # check that we are uploading the same resource 
         # type as the existing resource.
         if layer is not None:
+            logger.info("Checking whether layer being replaced is a raster layer")
             info = cat.get_resource(name, store=cat.get_store(name))
             if info.resource_type != FeatureType.resource_type:
+                logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
                 return None, [_("This resource may only be replaced with raster data.")]
         
         create_store = cat.create_featurestore
@@ -911,9 +923,14 @@ def _handle_layer_upload(request, layer=None):
         prj_file = request.FILES.get('prj_file')
         
         if not dbf_file: 
+            logger.info("User tried to upload [%s] without a .dbf file", base_file)
             errors.append(_("You must specify a .dbf file when uploading a shapefile."))
         if not shx_file: 
+            logger.info("User tried to upload [%s] without a .shx file", base_file)
             errors.append(_("You must specify a .shx file when uploading a shapefile."))
+
+        if not prj_file:
+            logger.info("User tried to upload [%s] without a .prj file", base_file)
 
         if errors:
             return None, errors
@@ -929,9 +946,12 @@ def _handle_layer_upload(request, layer=None):
 
     # any other type of upload
     else:
+        logger.info("Upload [%s] appears not to be a Shapefile", base_file)
         if layer is not None:
+            logger.info("Checking whether replacement data for [%s] is raster", name)
             info = cat.get_resource(name, store=cat.get_store(name))
             if info.resource_type != Coverage.resource_type:
+                logger.warn("User tried to replace vector layer [%s] with raster data", name)
                 return [_("This resource may only be replaced with shapefile data.")]
 
         # ... we attempt to let geoserver figure it out, guessing it is coverage 
@@ -939,17 +959,24 @@ def _handle_layer_upload(request, layer=None):
         cfg = base_file
 
     try:
+        logger.debug("Starting upload of [%s] to GeoServer...", name)
         create_store(name, cfg, overwrite=overwrite)
-    except geoserver.catalog.UploadError:
+        logger.debug("Finished upload of [%s] to GeoServer...", name)
+    except geoserver.catalog.UploadError, e:
+        logger.warn("Upload failed with error: %s", str(e))
         errors.append(_("An error occurred while loading the data."))
         tmp = cat.get_store(name)
-        if tmp: cat.delete(tmp)
+        if tmp:
+            logger.info("Deleting store after failed import of [%s] into GeoServer", name)
+            cat.delete(tmp)
+            logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
     except geoserver.catalog.ConflictingDataError:
         errors.append(_("There is already a layer with the given name."))
 
 
     # if we successfully created the store in geoserver...
     if len(errors) == 0 and layer is None:
+        logger.info("Succesful import of [%s] to GeoServer. Generating metadata", name)
         gs_resource = None
         csw_record = None
         layer = None
@@ -957,6 +984,7 @@ def _handle_layer_upload(request, layer=None):
             gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
 
             if gs_resource.latlon_bbox is None:
+                logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
                 # If GeoServer couldn't figure out the projection, we just
                 # assume it's lat/lon to avoid a bad GeoServer configuration
 
@@ -965,6 +993,7 @@ def _handle_layer_upload(request, layer=None):
                 cat.save(gs_resource)
 
             typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+            logger.info("Got GeoServer info for %s, creating Django record", typename)
 
             # if we created a new store, create a new layer
             layer = Layer.objects.create(name=gs_resource.name, 
@@ -974,22 +1003,27 @@ def _handle_layer_upload(request, layer=None):
                                          workspace=gs_resource.store.workspace.name,
                                          title=gs_resource.title,
                                          uuid=str(uuid.uuid4()),
-                                         owner=request.user)
+                                         owner=request.user
+                                       )
             # A user without a profile might be uploading this
             poc_contact, __ = Contact.objects.get_or_create(user=request.user,
                                                    defaults={"name": request.user.username })
             author_contact, __ = Contact.objects.get_or_create(user=request.user,
                                                    defaults={"name": request.user.username })
+            logger.info("poc and author set to %s", poc_contact)
             layer.poc = poc_contact
             layer.metadata_author = author_contact
+            logger.debug("committing DB changes for %s", typename)
             layer.save()
+            logger.debug("Setting default permissions for %s", typename)
             layer.set_default_permissions()
+            logger.debug("Generating separate style for %s", typename)
             fixup_style(cat, gs_resource)
-
-        except:
+        except Exception, e:
+            logger.warning("Import to Django and GeoNetwork failed: %s", str(e))
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
-                # no explicit link from the resource to the layer, bah
+                logger.warning("no explicit link from the resource to [%s], bah", name)
                 gs_layer = cat.get_layer(gs_resource.name) 
                 store = gs_resource.store
                 try:
@@ -1007,13 +1041,16 @@ def _handle_layer_upload(request, layer=None):
                 except:
                     pass
             if csw_record is not None:
+                logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
                 try:
                     gn.delete(csw_record)
                 except:
                     pass
             if layer is not None:
+                logger.warning("Deleting dangling Django record for [%s] (no Django record to match)", name)
                 layer.delete()
             layer = None
+            logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
             errors.append(GENERIC_UPLOAD_ERROR)
 
     return layer, errors

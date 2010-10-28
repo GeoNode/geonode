@@ -1,5 +1,8 @@
 from itertools import cycle, izip
+import logging
 import re
+
+logger = logging.getLogger("geonode.maps.gs_helpers")
 
 _punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
 _foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"]
@@ -33,10 +36,7 @@ def _add_sld_boilerplate(symbolizer):
 
 _raster_template = """
 <RasterSymbolizer>
-  <ColorMap>
-    <ColorMapEntry color="%(bg)s" quantity="0"/>
-    <ColorMapEntry color="%(fg)s" quantity="255"/>
-  </ColorMap>
+    <Opacity>1.0</Opacity>
 </RasterSymbolizer>
 """
 
@@ -93,12 +93,18 @@ def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
 def fixup_style(cat, resource):
+    logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
+    logger.info("Found %d layers associated with [%s]", resource)
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
+            logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             fg, bg, mark = _style_contexts.next()
             sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
+            logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
+            logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
+            logger.info("Successfully updated %s", lyr)
