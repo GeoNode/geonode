@@ -7,3 +7,6 @@
 [submodule "src/geonode-client/externals/PrintPreview"]
 	path = src/geonode-client/externals/PrintPreview
 	url = git://github.com/GeoNode/PrintPreview.git
+[submodule "src/geonode-client/externals/gxp"]
+	path = src/geonode-client/externals/gxp
+	url = git@github.com:opengeo/gxp
