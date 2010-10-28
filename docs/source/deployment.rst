@@ -1,5 +1,5 @@
 Deploying your GeoNode Site
-===========================
+***************************
 
 This page provides a high-level description of the software required to set up
 a publicly accessible GeoNode web site.  Since deployment details will vary
@@ -10,10 +10,11 @@ please consider writing or updating a guide.
 
 .. toctree::
 
+   /deploy/centos
    /deploy/ubuntu
 
 Java Web Applications (WARs)
-----------------------------
+============================
 
 GeoNode requires a Java servlet container compatible with the J2EE standard,
 2.5 or higher.  `Jetty <http://jetty.mortbay.org/>`_ and `Tomcat
@@ -21,7 +22,7 @@ GeoNode requires a Java servlet container compatible with the J2EE standard,
 web sites for installation and application deployment instructions.
 
 GeoNetwork with GeoNode Schema
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 GeoNode's GeoNetwork integration requires use of a customized metadata schema.
 The GeoNode project provides a custom build of GeoNetwork with this extra
@@ -29,13 +30,13 @@ schema pre-installed.  This GeoNetwork is ready to run out-of-the-box; simply
 deploy using your servlet container's usual mechanism.
 
 Steps
-.....
++++++
 
 1. *Deploy* GeoNetwork to your servlet container using the normal mechanism.
    For Tomcat and Jetty, this simply means placing ``geonetwork.war`` in the
    webapps subdirectory of the servlet container's installation directory.
 
-2. *Configure* GeoNetwork by changing the adminstrative account password
+2. *Configure* GeoNetwork by changing the administrative account password
    through GeoNetwork's web interface.  The administrative account username and
    password are both ``admin`` by default.
 
@@ -52,7 +53,7 @@ Steps
     come up while performing searches.  These are not a problem.
 
 GeoServer with GeoNode Extensions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
 GeoNode's GeoServer integration requires some specific extensions to help
 GeoNode in managing GeoServer layers.  GeoNode releases include a GeoServer WAR
@@ -60,7 +61,7 @@ archive with these extensions pre-installed.  However, some manual
 configuration may still be needed.
 
 Steps
-.....
++++++
 
 1. *Deploy* GeoServer to your servlet container using the normal mechanism.
    For Tomcat and Jetty, this simply means placing
@@ -96,13 +97,13 @@ respectively.  Many other web servers are perfectly capable of serving these
 files; Apache httpd and lighttpd are just examples.
 
 Steps:
-......
+++++++
 
 1. *Configure* a document root in your webserver, pointing to some directory on
    your filesystem.
 
 2. *Extract* all the JavaScript and CSS files from the GeoNode release archive
-   (geonode-archive.zip) into the document root.
+   (geonode-client.zip) into the document root.
 
 Django Web Application
 ----------------------
@@ -113,14 +114,14 @@ However, we highly recommend using virtualenv to sandbox the GeoNode
 dependencies from the rest of the Python software on your system.
 
 Steps:
-......
+++++++
 
 1. *Install virtualenv* if you do not already have it available.  It can easily
    be installed via easy_install or pip::
    
        $ easy_install virtualenv
        $ pip install virualenv
-
+       
 2. *Prepare a sandbox* for GeoNode using virtualenv::
 
        $ virtualenv geonode
@@ -129,15 +130,15 @@ Steps:
 
 3. *Install* the geonode python modules from the Pip bundle::
 
-       $ pip install geonode.pybundle
+       $ pip install geonode-webapp.pybundle
 
    If this step fails, make sure that you have a working C++ compiler installed
    and development versions of the requisite libraries, listed in the GeoNode
    README file.
 
-4. *Configure* the geonode Django app by editing ``settings.py``.  The
-   available settings and their usage is described elsewhere in this
-   documentation.
+4. *Configure* the geonode Django app by editing
+   ``./src/GeoNodePy/geonode/settings.py``.  The available settings and their
+   usage is described elsewhere in this documentation.
 
 5. If running via fastcgi, you can use the django-admin.py script to launch the
    fastcgi server for Django.  If running via WSGI, ensure that the virtualenv
