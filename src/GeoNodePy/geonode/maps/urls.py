@@ -19,4 +19,5 @@ urlpatterns = patterns('geonode.maps.views',
     url(r'^(?P<mapid>\d+)/ajax-permissions$', 'ajax_map_permissions', name='ajax_map_permissions'),
     url(r'^change-poc/(?P<ids>\w+)$', 'change_poc', name="change_poc"),
     (r'^(?P<mapid>\w+)/$', 'view'),
+    (r'^(?P<mapid>\w+)/edit$', 'map_controller'),
 )

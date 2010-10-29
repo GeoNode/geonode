@@ -6,7 +6,14 @@
     <title>{% block title %}WorldMap{% endblock %}</title>
     <link rel="shortcut icon" href="{% geonode_media "app_themes" %}img/favicon.ico"/>
     {% block head %}    
-    <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" />
+    
+    
+	{% if urlsuffix %}
+    	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/{{urlsuffix}}/site.css" media="screen" />
+    {% else %}
+    	<link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" /> 
+    {% endif %}
+    
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 
     <script type="text/javascript" src="{% url geonode.views.lang %}"></script>

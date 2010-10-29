@@ -35,6 +35,7 @@ def ajax_login(request):
     if form.is_valid():
         username = form.cleaned_data['username']
         password = form.cleaned_data['password']
+
         user = authenticate(username=username, password=password)
         if user is None or not user.is_active:
             return HttpResponse(
@@ -57,6 +58,9 @@ def ajax_login(request):
                 mimetype="text/plain",
                 status=400
             )
+        
+
+            
 
 def ajax_lookup(request):
     if request.method != 'POST':

@@ -1192,9 +1192,7 @@ class Map(models.Model, PermissionLevelMixin):
     
     content = models.TextField(_('Site Content'), blank=True, null=True, default=DEFAULT_CONTENT)
     
-    banner_image = models.ImageField(upload_to='sitemedia/' + str(urlsuffix) +'/img', blank=True, null=True)
-    
-    css_file = models.FileField(upload_to='sitemedia/' + str(urlsuffix) + '/img', blank=True, null=True)
+    use_custom_template = models.BooleanField(_('Use a custom template'),default=False)
 
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))

@@ -53,6 +53,15 @@ Ext.onReady(function(){
         }
     };
 
+   
+    var map_id = new Ext.form.Hidden({
+    	id: 'mapid',
+    	value:  '{{map}}'
+    });
+    
+    
+    
+    
     var base_file = new Ext.ux.form.FileUploadField({
         id: 'base_file',
         emptyText: gettext('Select a layer data file'),
@@ -102,7 +111,7 @@ Ext.onReady(function(){
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_name, base_file, dbf_file, shx_file, prj_file, {
+        items: [layer_name, map_id, base_file, dbf_file, shx_file, prj_file, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"

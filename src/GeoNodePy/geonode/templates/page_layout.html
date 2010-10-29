@@ -6,10 +6,20 @@
 <head>
   <title>{% block title %} {{ SITENAME }} {% endblock %}</title>
   <link rel="shortcut icon" href="{% geonode_media "app_themes" %}img/favicon.ico"/>
-  {% block head %}
-  <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}boilerplate-min.css" media="screen" />
-  <!--[if lte IE 6]><link rel="stylesheet" href="{% geonode_media "app_themes" %}boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
-  <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" media="screen" />
+  {% block head %}  
+  
+  
+  	{% if urlsuffix %}
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/{{urlsuffix}}/boilerplate-min.css" media="screen" />
+    	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/{{urlsuffix}}/site.css" media="screen" />
+    	  <!--[if lte IE 6]><link rel="stylesheet" href="{% geonode_media "app_themes" %}boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+    {% else %}
+    	<link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}boilerplate-min.css" media="screen" />
+    	<link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" /> 
+    	  <!--[if lte IE 6]><link rel="stylesheet" href="{% geonode_media "app_themes" %}boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+    {% endif %}  
+  
+  
   <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
   <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
   {% endblock %}

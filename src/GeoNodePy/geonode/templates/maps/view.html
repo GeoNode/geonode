@@ -50,7 +50,7 @@ Ext.onReady(function() {
             }) 
         };
 
-    var moreInfoTemplate = new Ext.Template("<a class='link' href='{permalink}'> Advanced site tools</a>");
+
     var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
     Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
 
@@ -73,9 +73,5 @@ Ext.onReady(function() {
 {% block body %}
 <div id="header-wrapper">
   {{ block.super }}
-  <div id="topPanel">
-    <div id="more-info"></div>
-    <span id="map-title-header"></span>
-  </div>
 </div>
 {% endblock %}

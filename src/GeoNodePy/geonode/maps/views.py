@@ -33,6 +33,8 @@ from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
 import datetime
+from django.utils.encoding import iri_to_uri
+
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -85,6 +87,9 @@ class LayerForm(forms.ModelForm):
                                 queryset = LayerCategory.objects.all())
 
     topic_category_new = forms.CharField(label = "New Category", required=False, max_length=255)
+
+    map_id = forms.CharField(widget=forms.HiddenInput(), initial='', required=False)
+
 
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"date"}
@@ -182,6 +187,12 @@ def mapJSON(request, mapid):
                 mimetype="text/plain"
             )
         map = get_object_or_404(Map, pk=mapid)
+        if not request.user.has_perm('maps.edit_map', obj=map):
+            return HttpResponse(
+                "You do not have permission to save changes to this map.  Save a copy of the map instead.",
+                mimetype="text/plain",
+                status=401
+            )  
         try:
             map.update_from_viewer(request.raw_post_data)
             return HttpResponse(
@@ -196,7 +207,7 @@ def mapJSON(request, mapid):
                 status=400
             )
 
-@csrf_response_exempt            
+@csrf_exempt            
 def newmap(request):
     '''
     View that creates a new map.  
@@ -492,6 +503,17 @@ def ajax_layer_permissions(request, layername):
         mimetype='text/plain'
     )
 
+
+def ajax_map_edit_check_permissions(request, mapid):
+    mapeditlevel = 'None'
+    if not request.user.has_perm("maps.change_map_permissions", obj=map):
+        
+        return HttpResponse(
+            'You are not allowed to change permissions for this map',
+            status=401,
+            mimetype='text/plain'
+        )    
+
 def ajax_map_permissions(request, mapid):
     map = get_object_or_404(Map, pk=mapid)
 
@@ -571,7 +593,8 @@ def mapdetail(request,mapid):
         'config': config, 
         'map': map,
         'layers': layers,
-        'permissions_json': _perms_info_json(map, MAP_LEV_NAMES)
+        'permissions_json': _perms_info_json(map, MAP_LEV_NAMES),
+        'urlsuffix':get_suffix_if_custom(map)
     }))
 
 @csrf_exempt
@@ -601,21 +624,43 @@ def describemap(request, mapid):
 
     return render_to_response("maps/map_describe.html", RequestContext(request, {
         "map": map,
-        "map_form": map_form
+        "map_form": map_form,
+        "urlsuffix": get_suffix_if_custom(map)
     }))
 
+
+def get_suffix_if_custom(map):
+        if (map.use_custom_template):
+            return map.urlsuffix
+        else:
+            return None
 
 def map_controller(request, mapid):
     '''
     main view for map resources, dispatches to correct 
     view based on method and query args. 
     '''
-    if 'remove' in request.GET: 
-        return deletemap(request, mapid)
-    elif 'describe' in request.GET:
-        return describemap(request, mapid)
+    if mapid.isdigit():
+        map = Map.objects.get(pk=mapid)
     else:
-        return mapdetail(request, mapid)
+        map = Map.objects.get(urlsuffix=mapid)    
+    
+    if 'remove' in request.GET: 
+        return deletemap(request, map.id)
+    elif 'describe' in request.GET:
+        return describemap(request, map.id)
+    else:
+        return mapdetail(request, map.id)
+
+def official_site_controller(request, site):
+    '''
+    main view for map resources, dispatches to correct 
+    view based on method and query args. 
+    '''
+    map = Map.objects.get(officialurl=site)
+    return map_controller(request, str(map.id))
+
+
 
 def view(request, mapid):
     """  
@@ -633,11 +678,17 @@ def view(request, mapid):
     
     config = map.viewer_json()
     logger.debug("CONFIG: [%s]", str(config))
+
+    url_suffix = None
+    if (map.use_custom_template):
+        url_suffix = map.urlsuffix        
+    
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
-        'maptitle': map.title
+        'maptitle': map.title,
+        'urlsuffix': get_suffix_if_custom(map)
     }))
 
 
@@ -658,7 +709,8 @@ def official_site(request, site):
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
-        'maptitle': map.title
+        'maptitle': map.title,
+        'urlsuffix': map.urlsuffix
     }))
 
 def embed(request, mapid=None):
@@ -716,12 +768,17 @@ def _describe_layer(request, layer):
         else:
             layer_form = LayerForm(instance=layer, prefix="layer")
             layer_form.fields["topic_category"].initial = topic_category
+            if "map" in request.GET:
+                layer_form.fields["map_id"].initial = request.GET["map"]
             
             
         if request.method == "POST" and layer_form.is_valid():
             new_poc = layer_form.cleaned_data['poc']
             new_author = layer_form.cleaned_data['metadata_author']
             new_category = layer_form.cleaned_data['topic_category']
+            mapid = layer_form.cleaned_data['map_id']
+            logger.debug("map id is [%s]", mapid)
+            
             if new_category is None:
                     new_category = layer_form.cleaned_data['topic_category_new']
                     if new_category is not None:
@@ -751,6 +808,12 @@ def _describe_layer(request, layer):
                 logging.debug("About to save")
                 the_layer.save()
                 logging.debug("Saved")
+                
+            if mapid != '':
+                logger.debug("A map was passed on")
+                return HttpResponseRedirect("/maps/" + mapid)
+            else:             
+                logger.debug("No map value found")   
                 return HttpResponseRedirect("/data/" + layer.typename)
 
             
@@ -767,6 +830,8 @@ def _describe_layer(request, layer):
             layer_form.fields['metadata_author'].initial = metadata_author.id
             author_form = ContactForm(prefix="author")
             author_form.hidden=True
+
+        
 
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
@@ -834,7 +899,7 @@ def _changeLayerDefaultStyle(request,layer):
 @csrf_exempt
 def layerController(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
-    if (request.META['QUERY_STRING'] == "describe"):
+    if ( "describe" in request.META['QUERY_STRING'] ):
         return _describe_layer(request,layer)
     if (request.META['QUERY_STRING'] == "remove"):
         return _removeLayer(request,layer)
@@ -870,10 +935,13 @@ Please try again, or contact and administrator if the problem continues.")
 @login_required
 @csrf_exempt
 def upload_layer(request):
-    logging.debug("WTF MAN?")
+    
     if request.method == 'GET':
+        mapid = ''
+        if request.method == 'GET' and 'map' in request.GET:
+            mapid = request.GET['map']
         return render_to_response('maps/layer_upload.html',
-                                  RequestContext(request, {}))
+                                  RequestContext(request, {'map':mapid}))
     elif request.method == 'POST':
         try:
             logging.debug("Begin upload attempt")
@@ -881,7 +949,7 @@ def upload_layer(request):
         except:
             errors = [GENERIC_UPLOAD_ERROR]
 
-        logger.debug("_handle_layer_upload returned!! layer and errors are %s", (layer, errors))
+        logger.debug("_handle_layer_upload returned!! errors are %s", (errors))
         
         result = {}
         if len(errors) > 0:
@@ -889,7 +957,9 @@ def upload_layer(request):
             result['errors'] = errors
         else:
             result['success'] = True
-            result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
+            result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + '?describe'
+            if request.POST['mapid'] != '':
+                result['redirect_to'] += "&map=" + request.POST['mapid']
 
         result = json.dumps(result)
         logger.debug("layer upload - okay Django, you handle the rest.")
@@ -1104,6 +1174,16 @@ def _handle_layer_upload(request, layer=None):
                     layer.save();
             else:
                 logging.debug("No attributes found")
+                
+            if (request.POST['mapid'] != ''):
+                logging.debug("adding layer to map [%s]", request.POST['mapid'])
+                maplayer = MapLayer.objects.create(map=Map.objects.get(id=request.POST['mapid']), 
+                    name = layer.typename,
+                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                    visibility = True,
+                    stack_order = 0
+                    )
+                maplayer.save()
             
         except Exception, e:
             logger.warning("Import to Django and GeoNetwork failed: %s", str(e))
@@ -1780,10 +1860,14 @@ def searchFieldsJSON(request):
             geoLayer = Layer.objects.get(typename=layername)
             searchable_fields = geoLayer.searchable_fields
             searchable_fields = searchable_fields.strip(",");   
-            category =geoLayer.topic_category                  
+            category =geoLayer.topic_category
+            if category is not None:
+                catname = category.name
+            else:
+                catname = ''              
         except: 
             logger.debug("Could not find matching layer: [%s]", str(_))
-        sfJSON = {'searchFields' : searchable_fields, 'category' : category}
+        sfJSON = {'searchFields' : searchable_fields, 'category' : catname}
         return HttpResponse(json.dumps(sfJSON))
     else:
         logger.debug("searchFieldsJSON DID NOT WORK")

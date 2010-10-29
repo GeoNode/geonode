@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block title %} {{ map.title }} - {{ block.super }} {% endblock %}
+{% block title %} {{ map.title }} - {{urlsuffix}} - {{ block.super }} {% endblock %}
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
