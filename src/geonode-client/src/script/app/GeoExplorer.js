@@ -1938,6 +1938,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope: this
         });
 
+        
+        var advancedToolsLink = function() {
+        	if (!this.mapID)
+    			{Ext.Msg.alert("Save your Map View", "You must save this map view before using advanced map tools");}
+        	else
+        		document.location.href="/maps/" + this.mapID + "/edit";
+        };        
+        
         var tools = [
             new Ext.Button({
                 tooltip: this.saveMapText,
@@ -1994,8 +2002,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             }),
             enable3DButton,
-            searchBar
-        ];
+            searchBar,
+            '->',
+            new Ext.Button({
+                text: 'Advanced map tools',
+                handler: advancedToolsLink,
+                cls: 'x-btn-link-medium',
+                scope: this
+            })       ];
         this.on("saved", function() {
             // enable the "Publish Map" button
             tools[1].enable();
@@ -2245,7 +2259,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             handler: function(e){
                 this.about.title = titleField.getValue();
                 this.about["abstract"] = abstractField.getValue();
-                this.metadataForm.hide();
                 this.save(true);
             },
             scope: this
@@ -2255,8 +2268,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled: !this.about.title,
             handler: function(e){
                 this.about.title = titleField.getValue();
-                this.about["abstract"] = abstractField.getValue();
-                this.metadataForm.hide();
+                this.about["abstract"] = abstractField.getValue();                
                 this.save();
             },
             scope: this
@@ -2296,6 +2308,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.metadataForm.show();
     },
+    
+
 
     updateURL: function() {
         /* PUT to this url to update an existing map */
@@ -2330,6 +2344,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     id = id.match(/[\d]*$/)[0];
                     this.mapID = id; //id is url, not mapID
                     this.fireEvent("saved", id);
+                    this.metadataForm.hide();
                 }, 
                 scope: this
             });
@@ -2343,7 +2358,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 success: function(response, options) {
                     /* nothing for now */
                     this.fireEvent("saved", this.mapID);
+                    this.metadataForm.hide();
                 }, 
+                failure: function(response, options)
+                {
+                	Ext.Msg.alert('Error', response.responseText, this.showMetadataForm);
+                },                
                 scope: this
             });         
         }
