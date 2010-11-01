@@ -180,7 +180,7 @@ def mapJSON(request, mapid):
                 status=400
             )
 
-@csrf_response_exempt            
+@csrf_exempt            
 def newmap(request):
     '''
     View that creates a new map.  
