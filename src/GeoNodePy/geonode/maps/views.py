@@ -686,12 +686,20 @@ def view(request, mapid):
     if (map.use_custom_template):
         url_suffix = map.urlsuffix        
     
+    first_visit = True
+    if request.session.get('visit' + str(map.id), False):
+        first_visit = False
+    else:
+        request.session['visit' + str(map.id)] = True
+    
+    config['first_visit'] = first_visit
+    
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
         'maptitle': map.title,
-        'urlsuffix': get_suffix_if_custom(map)
+        'urlsuffix': get_suffix_if_custom(map),
     }))
 
 

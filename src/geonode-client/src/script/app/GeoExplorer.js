@@ -136,7 +136,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     metadataFormCancelText : "UT:Cancel",
     metadataFormSaveAsCopyText : "UT:Save as Copy",
     metadataFormSaveText : "UT:Save",
-    metaDataHeader: 'UT:About this Map',
+    metaDataHeader: 'UT:About this Map View',
     metaDataMapAbstract: 'UT:Abstract (brief description)',
     metaDataMapIntroText: 'UT:Introduction (tell visitors more about your map view)',
     metaDataMapTitle: 'UT:Title',
@@ -601,6 +601,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
                 scope: this
             });
+            
+            //Show the info window if it's the first time here
+            if (this.config.first_visit)
+            	this.showInfoWindow();
+            
         });
 
         var getRecordFromNode = function(node) {
@@ -1606,12 +1611,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             control: historyControl.next
         });
         
-        
+        var info = {controls: []};
         // create an info control to show introductory text window
         var infoButton = new Ext.Button({
 		tooltip: this.infoButtonText,
             iconCls: "icon-getfeatureinfo",
-            handler: this.showInfoWindow
+            handler: this.showInfoWindow,
+            scope:this
         });
 
         var searchTB = new Ext.form.TextField({
@@ -1630,8 +1636,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 		});
         
     	var performSearch =  function() {
-    		
-    		
+
     		// Clear out previous search results
     		var searchCount = 0;
             var queryableLayers = mapPanel.layers.queryBy(function(x){
@@ -1682,10 +1687,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
             terms = terms.concat(otherSearchTerm.split(' '));
 
-
-    		
-
-            
             queryableLayers.each(function(x){
             	dl = x.getLayer();
             	if (dl.getVisibility())
@@ -1717,38 +1718,25 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             			sld = '';//'<?xml version="1.0" encoding="utf-8"?>';
             			sld+= '<sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">';
             			sld+= '<sld:NamedLayer><sld:Name>' + dl.params.LAYERS  +  '</sld:Name><sld:UserStyle><sld:Name>query</sld:Name><sld:FeatureTypeStyle><sld:Rule><ogc:Filter>';
-     
-            			
-            			
             			for (i = 0; i < queryFields.length; i++)
             				{
             					if (queryFields[i] != "")
             						featureQuery = featureQuery + '<ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!"><ogc:PropertyName>' + queryFields[i] + '</ogc:PropertyName><ogc:Literal>*' + searchTerm + '*</ogc:Literal></ogc:PropertyIsLike>';
             				}
-            			
             			if (queryFields.length > 1)
             				{
             					featureQuery = "<ogc:Or>"+ featureQuery + "</ogc:Or>";	
             				}
             			if (featureQuery.length > 0)
-            				{
-            				
+            				{            				
         					sld += featureQuery;
-        					
-        					
         					sld +='</ogc:Filter><sld:PolygonSymbolizer> <sld:Fill><sld:GraphicFill> <sld:Graphic><sld:Mark> <sld:WellKnownName>shape://times</sld:WellKnownName> <sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-width">1</sld:CssParameter> </sld:Stroke></sld:Mark><sld:Size>16</sld:Size> </sld:Graphic></sld:GraphicFill> </sld:Fill>';
-
-        					
-        					//sld += '</ogc:Filter><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name="fill">#FF00FF</sld:CssParameter><sld:CssParameter name="fill-opacity">0.4</sld:CssParameter></sld:Fill>';
         					sld += '<sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer>';
         					sld +=	'</sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>';
         					wmsHighlight.mergeNewParams({layers: dl.params.LAYERS, SLD_BODY: sld, TRANSPARENT: "true"});
-        					wmsHighlight.setVisibility(true);
-        					
+        					wmsHighlight.setVisibility(true);      					
             				}
-
             		}
-            	
             });
             
     		if (!busyMask) {
@@ -1986,6 +1974,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             }),
             enable3DButton,
+            infoButton,
             searchBar,
             '->',
             new Ext.Button({
@@ -2327,6 +2316,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 this.about["urlsuffix"] = urlField.getValue();
                 this.about["introtext"] = introTextField.getValue();
                 this.save();
+                this.infoTextPanel.update(introTextField.getValue());
             },
             scope: this
         });
@@ -2357,22 +2347,25 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
 
-    initInfoTextWindow: function() {
-        var infoTextPanel = new Ext.FormPanel({
+    initInfoTextWindow: function(){
+        this.infoTextPanel = new Ext.FormPanel({
             bodyStyle: {padding: "5px"},          
             labelAlign: "top",
+            preventBodyReset: true,
+            autoScroll:true,
             html: this.about['introtext']
         });
 
-        infoTextPanel.enable();    
+        this.infoTextPanel.enable();    
         
         this.infoTextWindow = new Ext.Window({
-            title: this.infoTextHeader,
+            title: this.about.title,
             closeAction: 'hide',
-            items: infoTextPanel,
+            items: this.infoTextPanel,
             modal: true,
             width: 600,
-            autoHeight: true
+            height:600,
+            autoScroll: true
         });
     },
 
@@ -2384,7 +2377,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         if(!this.infoTextWindow) {
             this.initInfoTextWindow();
         }
-
         this.infoTextWindow.show();
     },    
     
