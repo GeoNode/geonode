@@ -26,7 +26,7 @@ if (window.GeoExplorer) {
         loadingMapMessage: gettext("Loading Map..."),
         mapSizeLabel: gettext("Map Size"), 
         measureSplitText: gettext("Measure"),
-        metaDataHeader: gettext("About this Map"),
+        metaDataHeader: gettext("About this Map View"),
         metaDataMapAbstract: gettext("Abstract (brief description)"),
         metaDataMapIntroText: gettext("Introduction (tell visitors more about your map view)"),
         metaDataMapContact: gettext("Contact"),
