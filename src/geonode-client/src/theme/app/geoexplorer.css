@@ -190,6 +190,14 @@ background-color:white;
     background-image: url(img/geosilk/pan.png);
 }
 
+
+
+.x-form-field-inline {
+	display:inline;
+	padding:0 0 30px 0;
+	margin:0px;
+}
+
 .legend-item {
     margin: 0.5em 10px;
 }

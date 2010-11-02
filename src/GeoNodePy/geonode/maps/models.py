@@ -1303,7 +1303,9 @@ class Map(models.Model, PermissionLevelMixin):
             'id': self.id,
             'about': {
                 'title':    self.title,
-                'abstract': self.abstract
+                'abstract': self.abstract,
+                'urlsuffix': self.urlsuffix,
+                'introtext' : self.content
             },
             'defaultSourceType': "gx_wmssource",
             'sources': sources,
@@ -1331,7 +1333,9 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
-
+        self.urlsuffix = conf['about']['urlsuffix']
+        self.content = conf['about']['introtext']
+        
         self.zoom = conf['map']['zoom']
 
         self.center_x = conf['map']['center'][0]

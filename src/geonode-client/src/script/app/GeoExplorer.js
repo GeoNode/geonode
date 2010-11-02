@@ -137,8 +137,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     metadataFormSaveAsCopyText : "UT:Save as Copy",
     metadataFormSaveText : "UT:Save",
     metaDataHeader: 'UT:About this Map',
-    metaDataMapAbstract: 'UT:Abstract',
+    metaDataMapAbstract: 'UT:Abstract (brief description)',
+    metaDataMapIntroText: 'UT:Introduction (tell visitors more about your map view)',
     metaDataMapTitle: 'UT:Title',
+    metaDataMapUrl: 'UT:UserUrl',
     miniSizeLabel: 'UT: Mini',
     navActionTipText: "UT:Pan Map",
     navNextAction: "UT:Zoom to Next Extent",
@@ -168,7 +170,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     zoomSelectorText: 'UT:Zoom level',
     zoomSliderTipText: "UT: Zoom Level",
     zoomToLayerExtentText: "UT:Zoom to Layer Extent",
-    zoomVisibleButtonText: "UT:Zoom to Visible Extent",
+    zoomVisibleButtonText: "UT:Zoom to Original Map Extent",
 
     constructor: function(config) {
     	this.config = config;
@@ -516,7 +518,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             })
         }];
         
-	    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
+	    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 10;
 	    OpenLayers.Util.onImageLoadErrorColor = "transparent";
         
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
@@ -570,6 +572,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 return false;
             }
         }, this);
+        
+        
 
         // TODO: make a proper component out of this
         var mapOverlay = this.createMapOverlay();
@@ -867,7 +871,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.on("ready", function(){
             if (!this.fromLayer && !this.mapID) {
-                this.showCapabilitiesGrid();
+                //this.showCapabilitiesGrid();
+            	this.showMetadataForm();
             }
         }, this);
 
@@ -1602,23 +1607,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         
         
-        // create a get feature info control
-        var info = {controls: []};
+        // create an info control to show introductory text window
         var infoButton = new Ext.Button({
 		tooltip: this.infoButtonText,
             iconCls: "icon-getfeatureinfo",
-            toggleGroup: toolGroup,
-            enableToggle: true,
-            allowDepress: false,
-            toggleHandler: function(button, pressed) {
-                for (var i = 0, len = info.controls.length; i < len; i++){
-                    if(pressed) {
-                        info.controls[i].activate();
-                    } else {
-                        info.controls[i].deactivate();
-                    }
-                }
-            }
+            handler: this.showInfoWindow
         });
 
         var searchTB = new Ext.form.TextField({
@@ -1962,6 +1955,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             window.printCapabilities ? printButton : "",
             "-",
+            /*
             new Ext.Button({
                 handler: function(){
                     this.mapPanel.map.zoomIn();
@@ -1978,26 +1972,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 iconCls: "icon-zoom-out",
                 scope: this
             }),
+            */
             navPreviousAction,
             navNextAction,
             new Ext.Button({
 		    	tooltip: this.zoomVisibleButtonText,
                 iconCls: "icon-zoom-visible",
-                handler: function() {
-                    var extent, layer;
-                    for(var i=0, len=this.map.layers.length; i<len; ++i) {
-                        layer = this.mapPanel.map.layers[i];
-                        if(layer.getVisibility()) {
-                            if(extent) {
-                                extent.extend(layer.maxExtent);
-                            } else {
-                                extent = layer.maxExtent.clone();
-                            }
-                        }
-                    }
-                    if(extent) {
-                        this.mapPanel.map.zoomToExtent(extent);
-                    }
+                handler: function() { //Set to original extent of map rather than extent of all loaded layers
+                	this.mapPanel.map.setCenter(this.initialConfig.map["center"]);
+                	this.mapPanel.map.zoomTo(this.initialConfig.map["zoom"]);
+
                 },
                 scope: this
             }),
@@ -2235,11 +2219,78 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         });
         
+        //Make sure URL is not taken; if it is, show list of taken url's that start with field value
+        Ext.apply(Ext.form.VTypes, {
+           UniqueMapId : this.mapID,
+     	   UniqueUrl: function(value, field) {
+     		   
+     		   var allowedChars = value.match(/^(\w+[-]*)+$/g);
+     		   if (!allowedChars) {
+     			   this.UniqueUrlText = "URL's can only contain letters, numbers, dashes & underscores."
+     			   return false;   
+     		   }
+     		   
+     		   Ext.Ajax.request({
+                    url: "/maps/checkurl/",
+                    method: 'POST',
+                    params : {query:value, mapid: this.UniqueMapId},
+                    success: function(response, options) {
+                    	var urlcount = Ext.decode(response.responseText).count;
+                    	if (urlcount > 0) {
+                    		this.UniqueUrlText = "The following URL's are already taken:";
+                    		var urls = Ext.decode(response.responseText).urls;
+                    		var isValid=true;
+                    		for (var u in urls) {
+                    			if (urls[u].url != undefined && urls[u].url != null)
+                    				this.UniqueUrlText+="<br/>" + urls[u].url;
+                    			if (urls[u].url == value) {
+                    				isValid=false;
+                    			}
+
+                    		}
+                    		if (!isValid)
+                    			field.markInvalid(this.UniqueUrlText);
+                    	}
+                    }, 
+                    failure: function(response, options)
+                    {
+                    	return false;
+                    	Ext.Msg.alert('Error', response.responseText, this.showMetadataForm);
+                    },                
+                    scope: this
+                });
+     		   return true;
+     		   },
+     		   
+     		   UniqueUrlText: "The following URL's are already taken, please choose another"
+     		});
+        
+        var urlField = new Ext.form.TextField({ 
+        	width:'30%',
+        	fieldLabel: this.metaDataMapUrl + "<br/><span style='font-style:italic;'>http://" + document.location.hostname + "/maps/</span>",
+        	labelSeparator:'',
+        	enableKeyEvents: true,
+        	validationEvent: 'onblur',
+        	vtype: 'UniqueUrl',
+        	itemCls:'x-form-field-inline',
+        	ctCls:'x-form-field-inline',
+        	value: this.about["urlsuffix"],
+        });
+
+        
+        
         var abstractField = new Ext.form.TextArea({
             width: '95%',
-            height: 200,
+            height: 50,
             fieldLabel: this.metaDataMapAbstract,
             value: this.about["abstract"]
+        });
+        
+        var introTextField = new Ext.form.HtmlEditor({
+            width: '95%',
+            height: 200,
+            fieldLabel: this.metaDataMapIntroText,
+            value: this.about["introtext"]
         });
 
         var metaDataPanel = new Ext.FormPanel({
@@ -2247,7 +2298,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             labelAlign: "top",
             items: [
                 titleField,
-                abstractField
+                urlField,
+                abstractField,
+                introTextField
             ]
         });
 
@@ -2259,6 +2312,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             handler: function(e){
                 this.about.title = titleField.getValue();
                 this.about["abstract"] = abstractField.getValue();
+                this.about["urlsuffix"] = urlField.getValue();
+                this.about["introtext"] = introTextField.getValue();
                 this.save(true);
             },
             scope: this
@@ -2268,7 +2323,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled: !this.about.title,
             handler: function(e){
                 this.about.title = titleField.getValue();
-                this.about["abstract"] = abstractField.getValue();                
+                this.about["abstract"] = abstractField.getValue(); 
+                this.about["urlsuffix"] = urlField.getValue();
+                this.about["introtext"] = introTextField.getValue();
                 this.save();
             },
             scope: this
@@ -2279,7 +2336,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             closeAction: 'hide',
             items: metaDataPanel,
             modal: true,
-            width: 400,
+            width: 600,
             autoHeight: true,
             bbar: [
                 "->",
@@ -2290,6 +2347,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     handler: function() {
                         titleField.setValue(this.about.title);
                         abstractField.setValue(this.about["abstract"]);
+                        urlField.setValue(this.about["urlsuffix"]);
+                        introTextField.setValue(this.about["introtext"]);
                         this.metadataForm.hide();
                     },
                     scope: this
@@ -2298,6 +2357,38 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
 
+    initInfoTextWindow: function() {
+        var infoTextPanel = new Ext.FormPanel({
+            bodyStyle: {padding: "5px"},          
+            labelAlign: "top",
+            html: this.about['introtext']
+        });
+
+        infoTextPanel.enable();    
+        
+        this.infoTextWindow = new Ext.Window({
+            title: this.infoTextHeader,
+            closeAction: 'hide',
+            items: infoTextPanel,
+            modal: true,
+            width: 600,
+            autoHeight: true
+        });
+    },
+
+
+    /** private: method[showInfoWindow]
+     *  Shows the window with intro text
+     */
+    showInfoWindow: function() {
+        if(!this.infoTextWindow) {
+            this.initInfoTextWindow();
+        }
+
+        this.infoTextWindow.show();
+    },    
+    
+    
     /** private: method[showMetadataForm]
      *  Shows the window with a metadata form
      */

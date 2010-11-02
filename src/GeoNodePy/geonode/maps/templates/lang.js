@@ -27,13 +27,15 @@ if (window.GeoExplorer) {
         mapSizeLabel: gettext("Map Size"), 
         measureSplitText: gettext("Measure"),
         metaDataHeader: gettext("About this Map"),
-        metaDataMapAbstract: gettext("Abstract"),
+        metaDataMapAbstract: gettext("Abstract (brief description)"),
+        metaDataMapIntroText: gettext("Introduction (tell visitors more about your map view)"),
         metaDataMapContact: gettext("Contact"),
         metaDataMapId: gettext("Permalink"),
         metadataFormCancelText : gettext("Cancel"),
         metadataFormSaveAsCopyText : gettext("Save as Copy"),
         metadataFormSaveText : gettext("Save"),
         metaDataMapTitle: gettext("Title"),
+        metaDataMapUrl: gettext("URL:"),
         miniSizeLabel: gettext("Mini"),
         navActionTipText: gettext("Pan Map"),
         navNextAction: gettext("Zoom to Next Extent"),
@@ -64,7 +66,7 @@ if (window.GeoExplorer) {
         zoomSelectorText: gettext("Zoom level"),
         zoomSliderTipText: gettext("Zoom Level"),
         zoomToLayerExtentText: gettext("Zoom to Layer Extent"),
-        zoomVisibleButtonText: gettext("Zoom to Visible Extent")
+        zoomVisibleButtonText: gettext("Zoom to Original Map Extent")
     });
 }
 

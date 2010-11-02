@@ -43,10 +43,12 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
+DEFAULT_URL = ""
 
 _default_map = Map(
     title=DEFAULT_TITLE, 
     abstract=DEFAULT_ABSTRACT,
+    urlsuffix=DEFAULT_URL,
     projection="EPSG:900913",
     center_x=-9428760.8688778,
     center_y=1436891.8972581,
@@ -178,7 +180,7 @@ def mapJSON(request, mapid):
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {})), status=401)
-    	return HttpResponse(json.dumps(map.viewer_json()))
+        return HttpResponse(json.dumps(map.viewer_json()))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -228,6 +230,7 @@ def newmap(request):
 
         map.abstract = DEFAULT_ABSTRACT
         map.title = DEFAULT_TITLE
+        map.urlsuffix = DEFAULT_URL
         if request.user.is_authenticated(): map.owner = request.user
         config = map.viewer_json()
         del config['id']
@@ -926,7 +929,7 @@ def layerController(request, layername):
             "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
             "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
-	    }))
+        }))
 
 
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
@@ -1822,6 +1825,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             'id' : map.id,
             'title' : map.title,
             'abstract' : map.abstract,
+            'urlsuffix' : map.urlsuffix,
             'detail' : reverse('geonode.maps.views.view', args=(map.id,)),
             'owner' : owner_name,
             'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,)),
@@ -1888,3 +1892,29 @@ def maps_search_page(request):
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))
+    
+@csrf_exempt
+def ajax_url_lookup(request):
+    if request.method != 'POST':
+        return HttpResponse(
+            content='ajax user lookup requires HTTP POST',
+            status=405,
+            mimetype='text/plain'
+        )
+    elif 'query' not in request.POST:
+        return HttpResponse(
+            content='use a field named "query" to specify a prefix to filter urls',
+            mimetype='text/plain'
+        )
+    maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
+    if request.POST['mapid'] != '':
+        maps = maps.exclude(id=request.POST['mapid'])
+    json_dict = {
+        'urls': [({'url': m.urlsuffix}) for m in maps],
+        'count': maps.count(),
+    }
+    return HttpResponse(
+        content=json.dumps(json_dict),
+        mimetype='text/plain'
+    )
+
