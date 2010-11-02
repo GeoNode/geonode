@@ -1020,7 +1020,7 @@ def _handle_layer_upload(request, layer=None):
             logger.debug("Generating separate style for %s", typename)
             fixup_style(cat, gs_resource)
         except Exception, e:
-            logger.warning("Import to Django and GeoNetwork failed: %s", str(e))
+            logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
                 logger.warning("no explicit link from the resource to [%s], bah", name)
