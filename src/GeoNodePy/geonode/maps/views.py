@@ -180,7 +180,7 @@ def mapJSON(request, mapid):
                 status=400
             )
 
-@csrf_response_exempt            
+@csrf_exempt            
 def newmap(request):
     '''
     View that creates a new map.  
@@ -814,10 +814,10 @@ def upload_layer(request):
     elif request.method == 'POST':
         try:
             layer, errors = _handle_layer_upload(request)
+            logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
         except:
+            logger.exception("_handle_layer_upload failed!")
             errors = [GENERIC_UPLOAD_ERROR]
-
-        logger.debug("_handle_layer_upload returned!! layer and errors are %s", (layer, errors))
         
         result = {}
         if len(errors) > 0:
@@ -980,78 +980,78 @@ def _handle_layer_upload(request, layer=None):
         gs_resource = None
         csw_record = None
         layer = None
-        try:
-            gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
+        with transaction.commit_on_success():
+            try:
+                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
 
-            if gs_resource.latlon_bbox is None:
-                logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
-                # If GeoServer couldn't figure out the projection, we just
-                # assume it's lat/lon to avoid a bad GeoServer configuration
+                if gs_resource.latlon_bbox is None:
+                    logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
+                    # If GeoServer couldn't figure out the projection, we just
+                    # assume it's lat/lon to avoid a bad GeoServer configuration
 
-                gs_resource.latlon_bbox = gs_resource.native_bbox
-                gs_resource.projection = "EPSG:4326"
-                cat.save(gs_resource)
+                    gs_resource.latlon_bbox = gs_resource.native_bbox
+                    gs_resource.projection = "EPSG:4326"
+                    cat.save(gs_resource)
 
-            typename = gs_resource.store.workspace.name + ':' + gs_resource.name
-            logger.info("Got GeoServer info for %s, creating Django record", typename)
+                typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+                logger.info("Got GeoServer info for %s, creating Django record", typename)
 
-            # if we created a new store, create a new layer
-            layer = Layer.objects.create(name=gs_resource.name, 
-                                         store=gs_resource.store.name,
-                                         storeType=gs_resource.store.resource_type,
-                                         typename=typename,
-                                         workspace=gs_resource.store.workspace.name,
-                                         title=gs_resource.title,
-                                         uuid=str(uuid.uuid4()),
-                                         owner=request.user
-                                       )
-            # A user without a profile might be uploading this
-            poc_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                   defaults={"name": request.user.username })
-            author_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                   defaults={"name": request.user.username })
-            logger.info("poc and author set to %s", poc_contact)
-            layer.poc = poc_contact
-            layer.metadata_author = author_contact
-            logger.debug("committing DB changes for %s", typename)
-            layer.save()
-            logger.debug("Setting default permissions for %s", typename)
-            layer.set_default_permissions()
-            logger.debug("Generating separate style for %s", typename)
-            fixup_style(cat, gs_resource)
-        except Exception, e:
-            logger.warning("Import to Django and GeoNetwork failed: %s", str(e))
-            # Something went wrong, let's try and back out any changes
-            if gs_resource is not None:
-                logger.warning("no explicit link from the resource to [%s], bah", name)
-                gs_layer = cat.get_layer(gs_resource.name) 
-                store = gs_resource.store
-                try:
-                    cat.delete(gs_layer)
-                except:
-                    pass
+                # if we created a new store, create a new layer
+                layer = Layer.objects.create(name=gs_resource.name, 
+                                             store=gs_resource.store.name,
+                                             storeType=gs_resource.store.resource_type,
+                                             typename=typename,
+                                             workspace=gs_resource.store.workspace.name,
+                                             title=gs_resource.title,
+                                             uuid=str(uuid.uuid4()),
+                                             owner=request.user
+                                           )
+                # A user without a profile might be uploading this
+                poc_contact, __ = Contact.objects.get_or_create(user=request.user,
+                                                       defaults={"name": request.user.username })
+                author_contact, __ = Contact.objects.get_or_create(user=request.user,
+                                                       defaults={"name": request.user.username })
+                logger.info("poc and author set to %s", poc_contact)
+                layer.poc = poc_contact
+                layer.metadata_author = author_contact
+                logger.debug("committing DB changes for %s", typename)
+                layer.save()
+                logger.debug("Setting default permissions for %s", typename)
+                layer.set_default_permissions()
+                logger.debug("Generating separate style for %s", typename)
+                fixup_style(cat, gs_resource)
+            except Exception, e:
+                logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
+                # Something went wrong, let's try and back out any changes
+                if gs_resource is not None:
+                    logger.warning("no explicit link from the resource to [%s], bah", name)
+                    gs_layer = cat.get_layer(gs_resource.name) 
+                    store = gs_resource.store
+                    try:
+                        cat.delete(gs_layer)
+                    except:
+                        pass
 
-                try: 
-                    cat.delete(gs_resource)
-                except:
-                    pass
+                    try: 
+                        cat.delete(gs_resource)
+                    except:
+                        pass
 
-                try: 
-                    cat.delete(store)
-                except:
-                    pass
-            if csw_record is not None:
-                logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
-                try:
-                    gn.delete(csw_record)
-                except:
-                    pass
-            if layer is not None:
-                logger.warning("Deleting dangling Django record for [%s] (no Django record to match)", name)
-                layer.delete()
-            layer = None
-            logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
-            errors.append(GENERIC_UPLOAD_ERROR)
+                    try: 
+                        cat.delete(store)
+                    except:
+                        pass
+                if csw_record is not None:
+                    logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
+                    try:
+                        gn.delete(csw_record)
+                    except:
+                        pass
+                # set layer to None, but we'll rely on db transactions instead
+                # of a manual delete to keep it out of the db
+                layer = None
+                logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
+                errors.append(GENERIC_UPLOAD_ERROR)
 
     return layer, errors
 
