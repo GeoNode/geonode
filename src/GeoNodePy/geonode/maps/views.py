@@ -40,13 +40,21 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 
+def _project_center(llcenter):
+    wkt = "POINT({x} {y})".format(x=llcenter[0],y=llcenter[1])
+    center = GEOSGeometry(wkt, srid=4326)
+    center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+    return center.x, center.y
+
+_DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
+
 _default_map = Map(
     title=DEFAULT_TITLE, 
     abstract=DEFAULT_ABSTRACT,
     projection="EPSG:900913",
-    center_x=-9428760.8688778,
-    center_y=1436891.8972581,
-    zoom=7
+    center_x=_DEFAULT_MAP_CENTER[0],
+    center_y=_DEFAULT_MAP_CENTER[1],
+    zoom=settings.DEFAULT_MAP_ZOOM
 )
 
 def _baselayer(lyr, order):
