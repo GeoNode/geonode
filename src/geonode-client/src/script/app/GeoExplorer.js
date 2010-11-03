@@ -1693,16 +1693,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             		{
             		
             		var wms_url        = dl.url;
-            		wmsHighlight = new OpenLayers.Layer.WMS(
-            						"HighlightWMS",
-            						wms_url,
-            						{'layers': dl.params.LAYERS,
-            						'format':'image/png'},
-            							{
-            							    'isBaseLayer': false,
-            							    'displayInLayerSwitcher' : false
-            							}
-            						    );
+
             				 
             			
             			queryFields = dataLayers[dl.params.LAYERS].searchFields.split(",");
@@ -1726,8 +1717,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         					sld +='</ogc:Filter><sld:PolygonSymbolizer> <sld:Fill><sld:GraphicFill> <sld:Graphic><sld:Mark> <sld:WellKnownName>shape://times</sld:WellKnownName> <sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-width">1</sld:CssParameter> </sld:Stroke></sld:Mark><sld:Size>16</sld:Size> </sld:Graphic></sld:GraphicFill> </sld:Fill>';
         					sld += '<sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer>';
         					sld +=	'</sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>';
-        					wmsHighlight.mergeNewParams({layers: dl.params.LAYERS, SLD_BODY: sld, TRANSPARENT: "true"});
-        					mapPanel.map.addLayers([wmsHighlight]);   					
+        					
+                    		wmsHighlight = new OpenLayers.Layer.WMS(
+            						"HighlightWMS",
+            						wms_url,
+            						{'layers': dl.params.LAYERS,'format':'image/png', SLD_BODY: sld, TRANSPARENT: 'true'},
+            						{'isBaseLayer': false,'displayInLayerSwitcher' : false}
+                    		);
+        					mapPanel.map.addLayers([wmsHighlight]);  
+                    		alert(wmsHighlight.getFullRequestString());
             				}
             		}
             });
