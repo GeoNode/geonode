@@ -285,7 +285,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     xtype: "hidden",
                                     name: "csrfmiddlewaretoken",
                                     value: this.csrfToken
-                                }, {
+                                },
+                                {
                                     xtype: "button",
                                     text: "Login",
                                     inputType: "submit",
@@ -567,7 +568,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     initPortal: function() {
         this.on("beforeunload", function() {
-            if (this.modified) {
+            if (this.modified && this.config["edit_map"]) {
                 this.showMetadataForm();
                 return false;
             }

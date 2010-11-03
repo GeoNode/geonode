@@ -292,6 +292,8 @@ def newmap(request):
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
+            
+        config['edit_map'] = True
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config), 
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
@@ -691,8 +693,9 @@ def view(request, mapid):
         first_visit = False
     else:
         request.session['visit' + str(map.id)] = True
-    
+            
     config['first_visit'] = first_visit
+    config['edit_map'] = request.user.has_perm('maps.edit_map', obj=map) 
     
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
