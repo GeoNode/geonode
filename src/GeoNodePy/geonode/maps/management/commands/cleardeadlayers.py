@@ -5,7 +5,11 @@ from geonode.maps.models import Layer, delete_layer
 from urllib2 import URLError
 
 class Command(BaseCommand):
-    help = 'Update the GeoNode application with data from GeoServer'
+    help = """
+    Identifies and removes layers in the Django app which don't correspond to
+    layers in the GeoServer catalog.  Such layers were created by an
+    error-handling bug in GeoNode 1.0-RC2 and earlier.
+    """
     args = '[none]'
 
     @transaction.commit_on_success()
