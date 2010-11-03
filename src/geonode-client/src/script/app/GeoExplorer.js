@@ -1693,9 +1693,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             		{
             		
             		var wms_url        = dl.url;
-
-            				 
-            			
             			queryFields = dataLayers[dl.params.LAYERS].searchFields.split(",");
             			featureQuery="";
             			
@@ -1714,18 +1711,26 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             			if (featureQuery.length > 0)
             				{            				
         					sld += featureQuery;
-        					sld +='</ogc:Filter><sld:PolygonSymbolizer> <sld:Fill><sld:GraphicFill> <sld:Graphic><sld:Mark> <sld:WellKnownName>shape://times</sld:WellKnownName> <sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-width">1</sld:CssParameter> </sld:Stroke></sld:Mark><sld:Size>16</sld:Size> </sld:Graphic></sld:GraphicFill> </sld:Fill>';
-        					sld += '<sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer>';
-        					sld +=	'</sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>';
+        					sld += '</ogc:Filter>';
+        					
+        				    //Points
+        					sld += '<PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name="fill">#FFFF00</CssParameter></Fill></Mark><Size>12</Size></Graphic></PointSymbolizer>';
+        					//Lines
+        					sld += '<LineSymbolizer><sld:Stroke><sld:CssParameter name="stroke">#FF0000</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></LineSymbolizer>';
+        					//Polygons
+        					sld += '<sld:PolygonSymbolizer><Fill><CssParameter name="fill">#FFFF00</CssParameter></Fill>';
+        					sld += '<sld:Stroke><sld:CssParameter name="stroke">#FF0000</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer>';
+     					
+        					sld += '</sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>';        					 
+        					 
         					
                     		wmsHighlight = new OpenLayers.Layer.WMS(
             						"HighlightWMS",
             						wms_url,
-            						{'layers': dl.params.LAYERS,'format':'image/png', SLD_BODY: sld, TRANSPARENT: 'true'},
+            						{'layers': dl.params.LAYERS,'format':'image/jpeg', SLD_BODY: sld, TRANSPARENT: 'true'},
             						{'isBaseLayer': false,'displayInLayerSwitcher' : false}
                     		);
         					mapPanel.map.addLayers([wmsHighlight]);  
-                    		alert(wmsHighlight.getFullRequestString());
             				}
             		}
             });
@@ -1811,7 +1816,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             dataLayers[dl.params.LAYERS] = new LayerData(id, layerfields, null);
                 		},
                 		failure: function(result,request) {
-                           alert('BOOM');
+                           alert(result.responseText);
                 		}
                 		
                 	});}
