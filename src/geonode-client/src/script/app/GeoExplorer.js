@@ -405,7 +405,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     					};
     					
     					var url =  dl.getFullRequestString(params);
-    	
+    					
     					
     					Ext.Ajax.request({
     						'url':url,
@@ -1699,20 +1699,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             						{'layers': dl.params.LAYERS,
             						'format':'image/png'},
             							{
-            							    'visibility': false,
             							    'isBaseLayer': false,
             							    'displayInLayerSwitcher' : false
             							}
             						    );
             				 
-            			mapPanel.map.addLayers([wmsHighlight]);
-
-            		
-            			//alert(dl.getURL(dl.map.mapExtent));
-        				//alert(searchFields[dl.params.LAYERS]);
+            			
             			queryFields = dataLayers[dl.params.LAYERS].searchFields.split(",");
-            				//searchFields[dl.params.LAYERS].split(",");
-            			//wfs = dl.url.replace("/wms", "/wfs").replace("?SERVICE=WMS&","");
             			featureQuery="";
             			
             			sld = '';//'<?xml version="1.0" encoding="utf-8"?>';
@@ -1734,7 +1727,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         					sld += '<sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer>';
         					sld +=	'</sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>';
         					wmsHighlight.mergeNewParams({layers: dl.params.LAYERS, SLD_BODY: sld, TRANSPARENT: "true"});
-        					wmsHighlight.setVisibility(true);      					
+        					mapPanel.map.addLayers([wmsHighlight]);   					
             				}
             		}
             });
@@ -2353,6 +2346,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             labelAlign: "top",
             preventBodyReset: true,
             autoScroll:true,
+            autoHeight:true,
             html: this.about['introtext']
         });
 
