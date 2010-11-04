@@ -1173,114 +1173,6 @@ def _handle_layer_upload(request, layer=None):
         gs_resource = None
         csw_record = None
         layer = None
-<<<<<<< HEAD
-        try:
-            gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
-
-            if gs_resource.latlon_bbox is None:
-                logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
-                # If GeoServer couldn't figure out the projection, we just
-                # assume it's lat/lon to avoid a bad GeoServer configuration
-                gs_resource.latlon_bbox = gs_resource.native_bbox
-                gs_resource.projection = "EPSG:4326"
-                cat.save(gs_resource)
-
-            typename = gs_resource.store.workspace.name + ':' + gs_resource.name
-            logger.info("Got GeoServer info for %s, creating Django record", typename)
-
-            # if we created a new store, create a new layer
-            layer = Layer.objects.create(name=gs_resource.name, 
-                                         store=gs_resource.store.name,
-                                         storeType=gs_resource.store.resource_type,
-                                         typename=typename,
-                                         workspace=gs_resource.store.workspace.name,
-                                         title=gs_resource.title,
-                                         geographic_bounding_box=gs_resource.latlon_bbox,
-                                         date=datetime.datetime.now(),
-                                         uuid=str(uuid.uuid4()),
-                                         owner=request.user
-                                       )
-            # A user without a profile might be uploading this
-            poc_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                   defaults={"name": request.user.username })
-            author_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                   defaults={"name": request.user.username })
-            logger.info("poc and author set to %s", poc_contact)
-            layer.poc = poc_contact
-            layer.metadata_author = author_contact
-            logger.debug("committing DB changes for %s", typename)
-            layer.save()
-            logger.debug("Setting default permissions for %s", typename)
-            layer.set_default_permissions()
-            logger.debug("Generating separate style for %s", typename)
-            fixup_style(cat, gs_resource)
-            
-            logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
-            if layer.attribute_names is not None:
-                logging.debug("Attributes are not None")
-                for field in layer.attribute_names:
-                    if field is not None:
-                        logging.debug("Field is [%s]", field)
-                        la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, searchable=False)
-                        la.save()
-                        if field is not None and field != "the_geom".lower() and field != "objectid".lower() and field != "gid".lower():
-                            logging.debug("Adding [%s] as a searchable field", field)
-                            if layer.searchable_fields is None:
-                                layer.searchable_fields = ""
-                            layer.searchable_fields = layer.searchable_fields + field + ","
-                if layer.searchable_fields is not None:            
-                    logging.debug("Searchable fields now set to [%s]" + layer.searchable_fields)        
-                    layer.searchable_fields = layer.searchable_fields.strip(',')
-                    logging.debug("searchable fields will be [%s]", layer.searchable_fields)
-                    layer.save();
-            else:
-                logging.debug("No attributes found")
-                
-            if (request.POST['mapid'] != ''):
-                logging.debug("adding layer to map [%s]", request.POST['mapid'])
-                maplayer = MapLayer.objects.create(map=Map.objects.get(id=request.POST['mapid']), 
-                    name = layer.typename,
-                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
-                    visibility = True,
-                    stack_order = 0
-                    )
-                maplayer.save()
-            
-        except Exception, e:
-            logger.warning("Import to Django and GeoNetwork failed: %s", str(e))
-
-            # Something went wrong, let's try and back out any changes
-            if gs_resource is not None:
-                logger.warning("no explicit link from the resource to [%s], bah", name)
-                gs_layer = cat.get_layer(gs_resource.name) 
-                store = gs_resource.store
-                try:
-                    cat.delete(gs_layer)
-                except:
-                    pass
-
-                try: 
-                    cat.delete(gs_resource)
-                except:
-                    pass
-
-                try: 
-                    cat.delete(store)
-                except:
-                    pass
-            if csw_record is not None:
-                logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
-                try:
-                    gn.delete(csw_record)
-                except:
-                    pass
-            if layer is not None:
-                logger.warning("Deleting dangling Django record for [%s] (no Django record to match)", name)
-                layer.delete()
-            layer = None
-            logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
-            errors.append(GENERIC_UPLOAD_ERROR)
-=======
         with transaction.commit_on_success():
             try:
                 gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
@@ -1321,6 +1213,26 @@ def _handle_layer_upload(request, layer=None):
                 layer.set_default_permissions()
                 logger.debug("Generating separate style for %s", typename)
                 fixup_style(cat, gs_resource)
+                logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
+                if layer.attribute_names is not None:
+                    logging.debug("Attributes are not None")
+                    for field in layer.attribute_names:
+                        if field is not None:
+                            logging.debug("Field is [%s]", field)
+                            la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, searchable=False)
+                            la.save()
+                            if field is not None and field != "the_geom".lower() and field != "objectid".lower() and field != "gid".lower():
+                                logging.debug("Adding [%s] as a searchable field", field)
+                                if layer.searchable_fields is None:
+                                    layer.searchable_fields = ""
+                                    layer.searchable_fields = layer.searchable_fields + field + ","
+                    if layer.searchable_fields is not None:            
+                        logging.debug("Searchable fields now set to [%s]" + layer.searchable_fields)        
+                        layer.searchable_fields = layer.searchable_fields.strip(',')
+                        logging.debug("searchable fields will be [%s]", layer.searchable_fields)
+                        layer.save();
+                else:
+                    logging.debug("No attributes found")                
             except Exception, e:
                 logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
                 # Something went wrong, let's try and back out any changes
@@ -1353,7 +1265,6 @@ def _handle_layer_upload(request, layer=None):
                 layer = None
                 logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
                 errors.append(GENERIC_UPLOAD_ERROR)
->>>>>>> c79e211a3ac46b47b4d6cd39ab532cdb017dcadd
 
     return layer, errors
 
