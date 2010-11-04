@@ -164,7 +164,7 @@ LAYER_LEV_NAMES = {
 
 @transaction.commit_manually
 def maps(request, mapid=None):
-    logging.debug("STARTING MAPS VIEW")
+    logger.debug("STARTING MAPS VIEW")
     if request.method == 'GET':
         return render_to_response('maps.html', RequestContext(request))
     elif request.method == 'POST':
@@ -781,7 +781,7 @@ class LayerDescriptionForm(forms.Form):
 @csrf_exempt
 @login_required
 def _describe_layer(request, layer):
-    logging.debug("describe layer")
+    logger.debug("describe layer")
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.change_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html', 
@@ -842,15 +842,15 @@ def _describe_layer(request, layer):
                 if author_form.has_changed and author_form.is_valid():
                     new_author = author_form.save()
 
-            logging.debug("Save anything?")
+            logger.debug("Save anything?")
             if new_poc is not None and new_author is not None:
                 the_layer = layer_form.save(commit=False)
                 the_layer.poc = new_poc
                 the_layer.topic_category = new_category 
                 the_layer.metadata_author = new_author
-                logging.debug("About to save")
+                logger.debug("About to save")
                 the_layer.save()
-                logging.debug("Saved")
+                logger.debug("Saved")
                 
 
                 
@@ -893,12 +893,6 @@ def _describe_layer(request, layer):
         return HttpResponse("Not allowed", status=403)
 
 
-
-def custom_attribute_field_callback(field):
-       if field.name == 'attribute':
-            return field.formfield(required=False)
-       else:
-            return field.formfield()
 
 @csrf_exempt
 def _removeLayer(request,layer):
@@ -993,7 +987,7 @@ Please try again, or contact and administrator if the problem continues.")
 @login_required
 @csrf_exempt
 def upload_layer(request):
-    
+
     if request.method == 'GET':
         mapid = ''
         if request.method == 'GET' and 'map' in request.GET:
@@ -1002,7 +996,7 @@ def upload_layer(request):
                                   RequestContext(request, {'map':mapid}))
     elif request.method == 'POST':
         try:
-            logging.debug("Begin upload attempt")
+            logger.debug("Begin upload attempt")
             layer, errors = _handle_layer_upload(request)
             logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
         except:
@@ -1064,7 +1058,7 @@ def _handle_layer_upload(request, layer=None):
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
     """
-    logging.debug("ENTER handle_layer_upload")
+    logger.debug("ENTER handle_layer_upload")
     layer_name = request.POST.get('layer_name');
     base_file = request.FILES.get('base_file');
 
@@ -1173,67 +1167,79 @@ def _handle_layer_upload(request, layer=None):
         gs_resource = None
         csw_record = None
         layer = None
-        with transaction.commit_on_success():
-            try:
-                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
+        #with transaction.commit_on_success():
+        try:
+            gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
 
-                if gs_resource.latlon_bbox is None:
-                    logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
-                    # If GeoServer couldn't figure out the projection, we just
-                    # assume it's lat/lon to avoid a bad GeoServer configuration
+            if gs_resource.latlon_bbox is None:
+                logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
+                # If GeoServer couldn't figure out the projection, we just
+                # assume it's lat/lon to avoid a bad GeoServer configuration
+                gs_resource.latlon_bbox = gs_resource.native_bbox
+                gs_resource.projection = "EPSG:4326"
+                cat.save(gs_resource)
 
-                    gs_resource.latlon_bbox = gs_resource.native_bbox
-                    gs_resource.projection = "EPSG:4326"
-                    cat.save(gs_resource)
+            typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+            logger.info("Got GeoServer info for %s, creating Django record", typename)
 
-                typename = gs_resource.store.workspace.name + ':' + gs_resource.name
-                logger.info("Got GeoServer info for %s, creating Django record", typename)
-
-                # if we created a new store, create a new layer
-                layer = Layer.objects.create(name=gs_resource.name, 
-                                             store=gs_resource.store.name,
-                                             storeType=gs_resource.store.resource_type,
-                                             typename=typename,
-                                             workspace=gs_resource.store.workspace.name,
-                                             title=gs_resource.title,
-                                             uuid=str(uuid.uuid4()),
-                                             owner=request.user
-                                           )
-                # A user without a profile might be uploading this
-                poc_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                       defaults={"name": request.user.username })
-                author_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                       defaults={"name": request.user.username })
-                logger.info("poc and author set to %s", poc_contact)
-                layer.poc = poc_contact
-                layer.metadata_author = author_contact
-                logger.debug("committing DB changes for %s", typename)
-                layer.save()
-                logger.debug("Setting default permissions for %s", typename)
-                layer.set_default_permissions()
-                logger.debug("Generating separate style for %s", typename)
-                fixup_style(cat, gs_resource)
-                logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
-                if layer.attribute_names is not None:
-                    logging.debug("Attributes are not None")
-                    for field in layer.attribute_names:
-                        if field is not None:
-                            logging.debug("Field is [%s]", field)
-                            la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, searchable=False)
-                            la.save()
-                            if field is not None and field != "the_geom".lower() and field != "objectid".lower() and field != "gid".lower():
-                                logging.debug("Adding [%s] as a searchable field", field)
-                                if layer.searchable_fields is None:
-                                    layer.searchable_fields = ""
-                                    layer.searchable_fields = layer.searchable_fields + field + ","
-                    if layer.searchable_fields is not None:            
-                        logging.debug("Searchable fields now set to [%s]" + layer.searchable_fields)        
-                        layer.searchable_fields = layer.searchable_fields.strip(',')
-                        logging.debug("searchable fields will be [%s]", layer.searchable_fields)
-                        layer.save();
-                else:
-                    logging.debug("No attributes found")                
-            except Exception, e:
+            # if we created a new store, create a new layer
+            layer = Layer.objects.create(name=gs_resource.name, 
+                                         store=gs_resource.store.name,
+                                         storeType=gs_resource.store.resource_type,
+                                         typename=typename,
+                                         workspace=gs_resource.store.workspace.name,
+                                         title=gs_resource.title,
+                                         geographic_bounding_box=gs_resource.latlon_bbox,
+                                         date=datetime.datetime.now(),
+                                         uuid=str(uuid.uuid4()),
+                                         owner=request.user
+                                       )
+            # A user without a profile might be uploading this
+            poc_contact, __ = Contact.objects.get_or_create(user=request.user,
+                                                   defaults={"name": request.user.username })
+            author_contact, __ = Contact.objects.get_or_create(user=request.user,
+                                                   defaults={"name": request.user.username })
+            logger.info("poc and author set to %s", poc_contact)
+            layer.poc = poc_contact
+            layer.metadata_author = author_contact
+            logger.debug("committing DB changes for %s", typename)
+            layer.save()
+            logger.debug("Setting default permissions for %s", typename)
+            layer.set_default_permissions()
+            logger.debug("Generating separate style for %s", typename)
+            fixup_style(cat, gs_resource)
+            
+            logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
+            if layer.attribute_names is not None:
+                logging.debug("Attributes are not None")
+                for field in layer.attribute_names:
+                    if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
+                        logging.debug("Field is [%s]", field)
+                        la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, searchable=False)
+                        la.save()
+#                        if field is not None and field != "the_geom".lower() and field != "objectid".lower() and field != "gid".lower():
+#                            logging.debug("Adding [%s] as a searchable field", field)
+#                            if layer.searchable_fields is None:
+#                                layer.searchable_fields = ""
+#                            layer.searchable_fields = layer.searchable_fields + field + ","
+#                if layer.searchable_fields is not None:            
+#                    logging.debug("Searchable fields now set to [%s]" + layer.searchable_fields)        
+#                    layer.searchable_fields = layer.searchable_fields.strip(',')
+#                    logging.debug("searchable fields will be [%s]", layer.searchable_fields)
+                layer.save();
+            else:
+                logging.debug("No attributes found")
+                
+            if (request.POST['mapid'] != ''):
+                logging.debug("adding layer to map [%s]", request.POST['mapid'])
+                maplayer = MapLayer.objects.create(map=Map.objects.get(id=request.POST['mapid']), 
+                    name = layer.typename,
+                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                    visibility = True,
+                    stack_order = 0
+                    )
+                maplayer.save()
+        except Exception, e:
                 logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
                 # Something went wrong, let's try and back out any changes
                 if gs_resource is not None:
@@ -1366,24 +1372,24 @@ def layer_acls(request):
     # the layer_acls view supports basic auth, and a special 
     # user which represents the geoserver administrator that
     # is not present in django.
-    #logging.debug("Entered layer_acls")
+    #logger.debug("Entered layer_acls")
     acl_user = request.user
-    #logging.debug("USER IS " + request.user)
+    #logger.debug("USER IS " + request.user)
     if 'HTTP_AUTHORIZATION' in request.META:
-        #logging.debug("HTTP_AUTHORIZATION...")
+        #logger.debug("HTTP_AUTHORIZATION...")
         try:
             username, password = _get_basic_auth_info(request)
-            #logging.debug("UserName: " + username + ",  PASS: " + password)
+            #logger.debug("UserName: " + username + ",  PASS: " + password)
             acl_user = authenticate(username=username, password=password)
 
-            #logging.debug("Geoserver creds: " + settings.GEOSERVER_CREDENTIALS[0] + ":" + settings.GEOSERVER_CREDENTIALS[1])
+            #logger.debug("Geoserver creds: " + settings.GEOSERVER_CREDENTIALS[0] + ":" + settings.GEOSERVER_CREDENTIALS[1])
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and 
                 username == settings.GEOSERVER_CREDENTIALS[0] and
                 password == settings.GEOSERVER_CREDENTIALS[1]):
                 # great, tell geoserver it's an admin.
-                logging.debug("Geoserver admin logging on")
+                logger.debug("Geoserver admin logging on")
                 result = {
                    'rw': [],
                    'ro': [],
@@ -1392,10 +1398,10 @@ def layer_acls(request):
                    'is_anonymous': False
                 }
                 jsonResult = json.dumps(result)
-                #logging.debug("Returning geoserver admin acls")
+                #logger.debug("Returning geoserver admin acls")
                 return HttpResponse(jsonResult, mimetype="application/json")
         except:
-            logging.debug("An error occurred while trying to authorize")
+            logger.debug("An error occurred while trying to authorize")
             pass
         
         if acl_user is None: 
@@ -1405,7 +1411,7 @@ def layer_acls(request):
     else:
         'HTTP AUTHORIZATION NOT IN request!'
         
-    logging.debug("Done with authorization check, creating json response")        
+    logger.debug("Done with authorization check, creating json response")        
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():

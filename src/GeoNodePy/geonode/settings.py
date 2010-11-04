@@ -3,8 +3,9 @@ from utils import path_extrapolate
 from urllib import urlencode
 import logging
 
-LOG_FILENAME='geonode.log'
-logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = LOG_FILENAME,filemode = 'w')
+LOG_FILENAME='/Users/mbertrand/Development/github/mbertrand/cga-worldmap/geonode.log'
+
+
 
 _ = lambda x: x
 
@@ -140,6 +141,8 @@ DEFAULT_MAP_CENTER = (-84.7, 12.8)
 # 0 = entire world;
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 7
+
+logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'w')
 
 MAP_BASELAYERSOURCES = {
     "any": {
