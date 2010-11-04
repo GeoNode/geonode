@@ -1,5 +1,5 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map, Layer, LayerCategory, MapLayer, Contact, ContactRole,Role, get_csw
+from geonode.maps.models import Map, Layer, LayerCategory, LayerAttribute, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style
 from geonode import geonetwork
 import geoserver
@@ -81,14 +81,20 @@ class LayerCategoryForm(forms.ModelForm):
     class Meta:
         model = LayerCategory        
 
+
+class LayerAttributeForm(forms.ModelForm):
+
+    class Meta:
+        model = LayerAttribute
+
 class LayerForm(forms.ModelForm):
 
     
-    topic_category = forms.ModelChoiceField(empty_label = "Create a new category", 
-                                label = "Topic Category", required=False,
-                                queryset = LayerCategory.objects.all())
-
-    topic_category_new = forms.CharField(label = "New Category", required=False, max_length=255)
+#    topic_category = forms.ModelChoiceField(empty_label = "Create a new category", 
+#                                label = "Topic Category", required=False,
+#                                queryset = LayerCategory.objects.all())
+#
+#    topic_category_new = forms.CharField(label = "New Category", required=False, max_length=255)
 
     map_id = forms.CharField(widget=forms.HiddenInput(), initial='', required=False)
 
@@ -100,6 +106,7 @@ class LayerForm(forms.ModelForm):
     temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
 
     
+    
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
                                  queryset = Contact.objects.exclude(user=None))
@@ -107,10 +114,12 @@ class LayerForm(forms.ModelForm):
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
                                              queryset = Contact.objects.exclude(user=None))
+    
+
 
     class Meta:
         model = Layer
-        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'topic_category')
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename') #, 'topic_category'
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -776,17 +785,29 @@ def _describe_layer(request, layer):
         metadata_author = layer.metadata_author
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
+        layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0)
 
+    
+        
         if request.method == "POST":
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+            attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set")            
         else:
             layer_form = LayerForm(instance=layer, prefix="layer")
             layer_form.fields["topic_category"].initial = topic_category
             if "map" in request.GET:
                 layer_form.fields["map_id"].initial = request.GET["map"]
-            
+            attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set")
+
             
         if request.method == "POST" and layer_form.is_valid():
+            if attribute_form.is_valid():
+                for form in attribute_form.cleaned_data:
+                    la = LayerAttribute.objects.get(id=int(form['id'].id))
+                    la.attribute_label = form["attribute_label"]
+                    la.searchable = form["searchable"]
+                    la.save()
+            
             new_poc = layer_form.cleaned_data['poc']
             new_author = layer_form.cleaned_data['metadata_author']
             new_category = layer_form.cleaned_data['topic_category']
@@ -823,6 +844,8 @@ def _describe_layer(request, layer):
                 the_layer.save()
                 logging.debug("Saved")
                 
+
+                
             if mapid != '':
                 logger.debug("A map was passed on")
                 return HttpResponseRedirect("/maps/" + mapid)
@@ -830,7 +853,11 @@ def _describe_layer(request, layer):
                 logger.debug("No map value found")   
                 return HttpResponseRedirect("/data/" + layer.typename)
 
-            
+        
+        
+
+
+        
         if poc.user is None:
             poc_form = ContactForm(instance=poc, prefix="poc")
         else:
@@ -852,9 +879,18 @@ def _describe_layer(request, layer):
             "layer_form": layer_form,
             "poc_form": poc_form,
             "author_form": author_form,
+            "attribute_form": attribute_form
         }))
     else: 
         return HttpResponse("Not allowed", status=403)
+
+
+
+def custom_attribute_field_callback(field):
+       if field.name == 'attribute':
+            return field.formfield(required=False)
+       else:
+            return field.formfield()
 
 @csrf_exempt
 def _removeLayer(request,layer):
@@ -1176,6 +1212,8 @@ def _handle_layer_upload(request, layer=None):
                 for field in layer.attribute_names:
                     if field is not None:
                         logging.debug("Field is [%s]", field)
+                        la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, searchable=False)
+                        la.save()
                         if field is not None and field != "the_geom".lower() and field != "objectid".lower() and field != "gid".lower():
                             logging.debug("Adding [%s] as a searchable field", field)
                             if layer.searchable_fields is None:
@@ -1873,13 +1911,15 @@ def searchFieldsJSON(request):
     if layername:
         try:
             geoLayer = Layer.objects.get(typename=layername)
-            searchable_fields = geoLayer.searchable_fields
-            searchable_fields = searchable_fields.strip(",");   
             category =geoLayer.topic_category
             if category is not None:
                 catname = category.name
             else:
-                catname = ''              
+                catname = ''  
+            if geoLayer.storeType == 'dataStore':
+                searchable_fields = geoLayer.searchable_fields
+                #for la in geoLayer.layerattribute_set:
+                #    searchable_fields.push('{attribute:"' + la.attribute + '", label:"'  + la.attribute_label + '", searchable:"' + la.searchable + '}')            
         except: 
             logger.debug("Could not find matching layer: [%s]", str(_))
         sfJSON = {'searchFields' : searchable_fields, 'category' : catname}

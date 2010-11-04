@@ -3,7 +3,7 @@ from utils import path_extrapolate
 from urllib import urlencode
 import logging
 
-LOG_FILENAME='/Users/mbertrand/Development/googlecode/cga-worldmap/geonode.log'
+LOG_FILENAME='geonode.log'
 logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = LOG_FILENAME,filemode = 'w')
 
 _ = lambda x: x

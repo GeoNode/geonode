@@ -612,10 +612,17 @@ class LayerManager(models.Manager):
                     "abstract": resource.abstract or 'No abstract provided',
                     "uuid": str(uuid.uuid4())
                 })
-
                 layer.save()
+                
+#                if layer.attribute_names is not None:
+#                    for field in layer.attribute_names:
+#                        if field is not None:
+#                            la = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, defaults={'attribute_label' : field, 'searchable': False })
+#                            la.save()                
+                
                 if created: 
                     layer.set_default_permissions()
+                    
             finally:
                 pass
         # Doing a logout since we know we don't need this object anymore.
@@ -626,6 +633,8 @@ class LayerCategory(models.Model):
     
     def __str__(self):
         return "%s" % self.name
+
+
 
 class Layer(models.Model, PermissionLevelMixin):
     """
@@ -1107,7 +1116,16 @@ class Layer(models.Model, PermissionLevelMixin):
 #    name = models.CharField(max_length=255)
 #    title = models.CharField(max_length=255)
 #    searchable = models.BooleanField(default=True)
-    
+
+class LayerAttribute(models.Model):
+    layer = models.ForeignKey(Layer, blank=False, null=False, unique=False)
+    attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
+    attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
+    searchable = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "%s" % self.attribute
+
 class Map(models.Model, PermissionLevelMixin):
     """
     A Map aggregates several layers together and annotates them with a viewport
@@ -1632,14 +1650,16 @@ def post_save_layer(instance, sender, **kwargs):
     if (re.search("coverageStore|dataStore", instance.storeType)):
         logger.debug("Call save_to_geoserver")
         instance.save_to_geoserver()
-        logger.debug("Done save to geoserver")
+        logger.debug("Done save [%s] to geoserver", instance.name)
         if kwargs['created']:
             instance._populate_from_gs()
-    logger.debug("save to geonetwork")
+    logger.debug("save [%s] to geonetwork", instance.name)
     instance.save_to_geonetwork()
-
+    logger.debug("saved [%s] to geonetwork", instance.name)
     if kwargs['created']:
+        logger.debug("populate from geonetwork")
         instance._populate_from_gn()
+        logger.debug("save instance")
         instance.save(force_update=True)
 
 signals.pre_delete.connect(delete_layer, sender=Layer)

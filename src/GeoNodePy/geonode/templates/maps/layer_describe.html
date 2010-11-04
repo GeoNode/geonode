@@ -14,9 +14,9 @@
 {% autoescape off %} 
         // get #poc_form and #metadata_form, and add a `onchange` handler
         // that shows the form if the blank option is selected.
-    	if (Ext.get('id_layer-topic_category').getValue()!="") {
+    	/*if (Ext.get('id_layer-topic_category').getValue()!="") {
     		Ext.get("id_layer-topic_category_new").up("li").hide();
-    	}
+    	}*/
         
         Ext.get('id_layer-poc').on('change', function() {
 	        if (this.getValue()===""){
@@ -31,14 +31,14 @@
 			}else{
 				Ext.get("metadata_form").hide();
 			}
-		});
+		});/*
 		Ext.get('id_layer-topic_category').on('change', function() {
 	        if (this.getValue()===""){
 			    Ext.get("id_layer-topic_category_new").up("li").show();
 			}else{
 				Ext.get("id_layer-topic_category_new").up("li").hide();
 			}
-		});		
+		});	*/	
 {% endautoescape %} 
 	});
 </script>
@@ -49,7 +49,18 @@
   <form action="/data/{{layer.typename}}?describe" method="POST">
 	  {% csrf_token %}
       <ul class="form">
-	      {{ layer_form.as_ul }}	            
+	      {{ layer_form.as_ul }}	  
+          <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
+	        <legend>Attributes</legend>
+	        {{ attribute_form.management_form }}
+	        <table><tr><th>Attribute</th><th>Searchable</th>
+	        {% for form in attribute_form.forms %}
+	        	{% if form.attribute %}
+	        	<tr><td><div style="display:none">{{form.attribute}}{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.searchable}}</td></tr>
+	        	{% endif %}
+	        {% endfor %}
+	        </table>
+          </fieldset>	                
           <fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Point of Contact</legend>
             {{ poc_form.as_ul }}
