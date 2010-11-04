@@ -612,6 +612,23 @@ class LayerManager(models.Manager):
                     "abstract": resource.abstract or 'No abstract provided',
                     "uuid": str(uuid.uuid4())
                 })
+
+
+                ## Due to a bug in GeoNode versions prior to 1.0RC2, the data
+                ## in the database may not have a valid date_type set.  The
+                ## invalid values are expected to differ from the acceptable
+                ## values only by case, so try to convert, then fallback to a
+                ## default.
+                ##
+                ## We should probably drop this adjustment in 1.1. --David Winslow
+                if layer.date_type not in Layer.VALID_DATE_TYPES:
+                    candidate = lower(layer.date_type)
+                    if candidate in Layer.VALID_DATE_TYPES:
+                        layer.date_type = candidate
+                    else:
+                        layer.date_type = Layer.VALID_DATE_TYPES[0]
+
+
                 layer.save()
                 
 #                if layer.attribute_names is not None:
@@ -640,6 +657,9 @@ class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
     """
+
+    VALID_DATE_TYPES = [(lower(x), _(x)) for x in ['Creation', 'Publication', 'Revision']]
+
     # internal fields
     objects = LayerManager()
     workspace = models.CharField(max_length=128)
@@ -659,7 +679,7 @@ class Layer(models.Model, PermissionLevelMixin):
     date = models.DateTimeField(_('date'), default = datetime.now) # passing the method itself, not the result
 
     
-    date_type = models.CharField(_('date type'), max_length=255,choices=[(lower(x), _(x)) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
+    date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication')
 
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
     abstract = models.TextField(_('abstract'))

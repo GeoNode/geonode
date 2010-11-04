@@ -39,7 +39,6 @@ options(
     virtualenv=Bunch(
         packages_to_install=[
             'http://bitbucket.org/ianb/pip/get/2cb1db7b2baf.gz#egg=pip',
-            'urlgrabber',
             'jstools',
             'virtualenv'
         ],
@@ -75,7 +74,6 @@ deploy_req_txt = """
 -r %(venv)s/shared/core-libs.txt
 -e %(venv)s/src/GeoNodePy
 """ % locals()
-
 
 @task
 def auto(options):
@@ -156,23 +154,8 @@ def post_bootstrap(options):
 #TODO Move svn urls out to a config file
 
 def grab(src, dest):
-    from urlgrabber.grabber import urlgrab, URLGrabError
-    from urlgrabber.progress import text_progress_meter
-
-    if getattr(options, 'clean', False) and os.path.exists(str(dest)):
-        (path(".") / dest).remove()
-
-    try:
-        if not os.path.exists(str(dest)):
-            urlgrab(
-                str(src), 
-                str(dest), 
-                reget='simple', 
-                progress_obj = text_progress_meter()
-            )
-    except URLGrabError, e:
-        # Eat exceptions with error code 9; these indicate that we had already finished the download
-        if e.errno != 9: raise
+    from urllib import urlretrieve
+    urlretrieve(str(src), str(dest))
 
 @task
 def setup_gs_data(options):
@@ -395,8 +378,7 @@ def create_version_name():
 @task
 def make_devkit(options):
     import virtualenv
-    from urlgrabber.grabber import urlgrab
-    from urlgrabber.progress import text_progress_meter
+    from urllib import urlretrieve
 
     (path("package") / "devkit" / "share").makedirs()
     pip_bundle("package/devkit/share/geonode-core.pybundle -r shared/devkit.requirements")
@@ -440,15 +422,13 @@ def setup_jetty(source, dest):
 """)
 
     open((path("package")/"devkit"/"go-geonode.py"), 'w').write(script)
-    urlgrab(
+    urlretrieve(
         "http://download.eclipse.org/jetty/7.0.2.v20100331/dist/jetty-distribution-7.0.2.v20100331.zip",
-        "package/devkit/share/jetty-distribution-7.0.2.v20100331.zip",
-        progress_obj = text_progress_meter()
+        "package/devkit/share/jetty-distribution-7.0.2.v20100331.zip"
     )
-    urlgrab(
+    urlretrieve(
         "http://pypi.python.org/packages/source/p/pip/pip-0.7.1.tar.gz",
-        "package/devkit/share/pip-0.7.1.tar.gz",
-        progress_obj = text_progress_meter()
+        "package/devkit/share/pip-0.7.1.tar.gz"
     )
     geoserver_target.copy("package/devkit/share")
     geonetwork_target.copy("package/devkit/share")
