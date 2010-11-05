@@ -416,9 +416,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     							successCount++;
     							
     							if(resp.responseText != '' && resp.responseText.substr(0,1) != "{") {
-    								var msg = 'The feature request returned an error.';
-    								msg += '<br />details: ' + resp.responseText;
-    								Ext.Msg.alert('Request Error',msg);
+    								//Either an error occurred or the results are from an external WMS
+    								// server, and the format could be anything, so just throw it up
+    								//in a message box.
+    								msg = resp.responseText;
+    								Ext.Msg.alert('Results for ' + x.get("title"),msg);
     								return;
     							}
     							
@@ -765,6 +767,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         prop.items.get(0).items.get(0).cascade(function(i) {
                             i instanceof Ext.form.Field && i.setDisabled(true);
                         });
+                        prop.items.get(0).items.get(0).add({html: "<a href='/data/" + layer.params.LAYERS + "'>Metadata</a>", xtype: "panel"});
+                        
+                        
                         var stylesPanel = this.createStylesPanel({
                             layerRecord: record
                         });
@@ -1641,19 +1646,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
     	var performSearch =  function() {
 
-    		// Clear out previous search results
+    		// Find queryable layers (visible with searchable fields)
     		var searchCount = 0;
             var queryableLayers = mapPanel.layers.queryBy(function(x){
                 return x.get("queryable");
             });
-            
             queryableLayers.each(function(x){
             	dl = x.getLayer();
             	if (!dl.getVisibility() || dataLayers[dl.params.LAYERS].count == 0)
             		{queryableLayers.remove(x);}
             });
-            
-
             if (queryableLayers.length == 0)
             	{
                 Ext.MessageBox.alert('No Searchable Layers','There are currently no searchable layers on the map.  You must have at least one visible layer with searchable fields on the map.');
@@ -1661,6 +1663,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             	
             	}
     		
+            //show searching modal
             if (!busyMask) {
                 busyMask = new Ext.LoadMask(
                     mapPanel.map.div, {
@@ -1670,13 +1673,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
             busyMask.show();
     		
+            //Get rid of any existing highlight layers
             removeHighlightLayers();
+            
+            //search term manipulation code, copied verbatim from existing WorldMap
     		searchTerm = searchTB.getValue();
             var terms = [];
             var matchingSearchTerm = searchTerm;
             var re = /("[^"]+")/g;
             var m = matchingSearchTerm.match(re);
-
             var otherSearchTerm = searchTerm; 
             if ( m != null ) {
                 for ( i = 0; i < m.length; i++ ) {
@@ -1684,19 +1689,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     terms.push( m[i].replace(/"/g, '' ));
                 }	
             } else {
-            }
-             
+            }          
             var whitespace_re = /\s+/;
             otherSearchTerm = otherSearchTerm.replace(whitespace_re, ' ');
-
             terms = terms.concat(otherSearchTerm.split(' '));
-
+            layers = [];
+            
+            //Create a WMS search results layer for each searchable layer
             queryableLayers.each(function(x){
             	dl = x.getLayer();
             	if (dl.getVisibility())
             		{
             		
-            		var wms_url        = dl.url;
+            		var wms_url = dl.url;
             			queryFields = [];
             			for (f=0; f < dataLayers[dl.params.LAYERS].searchFields.length; f++)
             			{
@@ -1725,28 +1730,29 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         					sld += featureQuery;
         					sld += '</ogc:Filter>';
         					
-        				    //Points
-        					
+        				    //Points        					
         					sld += '<PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name="fill">#FFFF00</CssParameter></Fill></Mark><Size>8</Size></Graphic></PointSymbolizer>';
         					//Lines
         					sld += '<LineSymbolizer><sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></LineSymbolizer>';
         					//Polygons
         					sld += '<sld:PolygonSymbolizer> <sld:Fill><sld:GraphicFill> <sld:Graphic><sld:Mark> <sld:WellKnownName>shape://times</sld:WellKnownName> <sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter>';
-        					sld += '<sld:CssParameter name="stroke-width">1</sld:CssParameter> </sld:Stroke></sld:Mark><sld:Size>16</sld:Size> </sld:Graphic></sld:GraphicFill> </sld:Fill></sld:PolygonSymbolizer>';
-        					     					
+        					sld += '<sld:CssParameter name="stroke-width">1</sld:CssParameter> </sld:Stroke></sld:Mark><sld:Size>16</sld:Size> </sld:Graphic></sld:GraphicFill> </sld:Fill></sld:PolygonSymbolizer>';        					     					
         					sld += '</sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>';        					 
         					 
         					
                     		wmsHighlight = new OpenLayers.Layer.WMS(
             						"HighlightWMS",
             						wms_url,
-            						{'layers': dl.params.LAYERS,'format':'image/jpeg', SLD_BODY: sld, TRANSPARENT: 'true'},
+            						{'layers': dl.params.LAYERS,'format':'image/png', SLD_BODY: sld, TRANSPARENT: 'true'},
             						{'isBaseLayer': false,'displayInLayerSwitcher' : false}
                     		);
-        					mapPanel.map.addLayers([wmsHighlight]);  
+                    		layers.push(wmsHighlight);
+        					
             				}
             		}
             });
+            
+            mapPanel.map.addLayers(layers);  
             
     		if (!busyMask) {
     			busyMask.hide();
