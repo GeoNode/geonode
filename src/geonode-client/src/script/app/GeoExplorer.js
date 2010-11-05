@@ -1025,8 +1025,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         };
 
+        var source = this.layerSources[initialSourceId];
+        source.store.filterBy(function(r) {
+            return !!source.getProjection(r);
+        }, this);
         var capGridPanel = new Ext.grid.GridPanel({
-            store: this.layerSources[initialSourceId].store,
+            store: source.store,
             layout: 'fit',
             region: 'center',
             autoScroll: true,
@@ -1055,7 +1059,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             value: initialSourceId,
             listeners: {
                 select: function(combo, record, index) {
-                    var store = this.layerSources[record.get("id")].store;
+                    var source = this.layerSources[record.get("id")];
+                    var store = source.store;
+                    store.filterBy(function(r) {
+                        return !!source.getProjection(r);
+                    }, this);
                     expander.ows = store.url;
                     capGridPanel.reconfigure(store, capGridPanel.getColumnModel());
                     // TODO: remove the following when this Ext issue is addressed
