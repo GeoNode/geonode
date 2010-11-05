@@ -25,11 +25,12 @@
 
 var dataLayers = [];
 
-var LayerData = function(iid, isearchFields, icategory)
+var LayerData = function(iid, isearchFields, icategory, icount)
 	{
 		this.id = iid;
 		this.searchFields = isearchFields;
 		this.category = icategory;
+		this.count = icount
 		
 	};
 
@@ -373,6 +374,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 		
 		var count = 0, successCount = 0, featureCount = 0;
 		var features = [];
+		var featureMeta = [];
 		
         var queryableLayers = this.mapPanel.layers.queryBy(function(x){
             return x.get("queryable");
@@ -427,11 +429,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     								
     								
     								if (dataLayers[dl.params.LAYERS].searchFields.length > 0) {
-    									featureInfo.queryfields = dataLayers[dl.params.LAYERS].searchFields.split(",");
-    									featureInfo.nameField = featureInfo.queryfields[0];
+    									featureInfo.queryfields = dataLayers[dl.params.LAYERS].searchFields;
+    									featureInfo.nameField = featureInfo.queryfields[0].attribute;
     								} else {
-    									featureInfo.queryFields = featureInfo.columns;
-    									featureInfo.nameField = featureInfo.columns[0];
+    									featureInfo.queryFields = [];
+    									featureInfo.nameField = [];
     								}
     	                        	for(var f = 0; f < featureInfo.features.length; f++)
     	                        		{
@@ -440,20 +442,21 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     	                        			featureInfo.features[f].wm_layer_name = (featureInfo.features[f])[featureInfo.nameField];
     	                        			featureInfo.features[f].wm_layer_type = featureInfo.layer;
     	                        			featureCount++;
-    	                        			
-    	                        			
     	                        		}
     	                        	
     								
     								features = features.concat(featureInfo.features);
     	                        	}
+    	                        	featureMeta[featureInfo.layer] = featureInfo.queryfields;
     							}
+    							
+    							//alert(featureMeta);
     							
     							if(successCount == count) {
     								if(features.length == 0) {
     									Ext.Msg.alert('Map Results','No features found at this location.');
     								} else {								
-    									GeoExplorer.Results.displayXYResults(features, e.xy);
+    									GeoExplorer.Results.displayXYResults(features, featureMeta, e.xy);
     								}
     							}
     						},
@@ -1646,7 +1649,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             
             queryableLayers.each(function(x){
             	dl = x.getLayer();
-            	if (!dl.getVisibility() || dataLayers[dl.params.LAYERS].searchFields.length == 0)
+            	if (!dl.getVisibility() || dataLayers[dl.params.LAYERS].count == 0)
             		{queryableLayers.remove(x);}
             });
             
@@ -1694,7 +1697,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             		{
             		
             		var wms_url        = dl.url;
-            			queryFields = dataLayers[dl.params.LAYERS].searchFields.split(",");
+            			queryFields = [];
+            			for (f=0; f < dataLayers[dl.params.LAYERS].searchFields.length; f++)
+            			{
+            				field = dataLayers[dl.params.LAYERS].searchFields[f]
+            				if (field.searchable)
+            					queryFields.push(field.attribute);
+            			}
+            			
+            			
             			featureQuery="";
             			
             			sld = '';//'<?xml version="1.0" encoding="utf-8"?>';
@@ -1812,10 +1823,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 		params: {layername:dl.params.LAYERS},
                 		success: function(result,request)
                 		{
-                            var jsonData = Ext.util.JSON.decode(result.responseText);
-                            
+                            var jsonData = Ext.util.JSON.decode(result.responseText);                            
                             layerfields = jsonData.searchFields;
-                            dataLayers[dl.params.LAYERS] = new LayerData(id, layerfields, null);
+                            dataLayers[dl.params.LAYERS] = new LayerData(id, jsonData.searchFields, jsonData.category, jsonData.scount);
                 		},
                 		failure: function(result,request) {
                            alert(result.responseText);
@@ -2481,7 +2491,7 @@ GeoExplorer.Results = {
 	},
 	resultsToKml: function() {
 	},
-	displayXYResults: function(featureInfo, lonlat) {
+	displayXYResults: function(featureInfo, featureMeta, lonlat) {
         var ep = Ext.getCmp('queryPanel');
         var gp = Ext.getCmp('gridWinPanel');
 
@@ -2529,7 +2539,7 @@ GeoExplorer.Results = {
 					rowselect: { 
 						fn: function(sm, rowIndex, rec) {
 
-							GeoExplorer.Results.displaySingleResult(currentFeatures, rowIndex, rec.data);
+							GeoExplorer.Results.displaySingleResult(currentFeatures, rowIndex, rec.data, featureMeta[rec.data.wm_layer_type]);
 						} 
 					}
 				}
@@ -2556,15 +2566,11 @@ GeoExplorer.Results = {
 
 
 	},
-	displaySingleResult: function(currentFeatures, rowIndex, gridFeature) {
+	displaySingleResult: function(currentFeatures, rowIndex, gridFeature, metaColumns) {
 
         var dp = Ext.getCmp('gridResultsPanel');
         dp.removeAll();
-        
-		if(GeoExplorer.Results.resultMarker) {
-			AM.OL.markerLayer.removeMarker(GeoExplorer.Results.resultMarker);
-		}
-		
+        		
 		var feature = null;
 		// Look for the feature in the full collection of features (the grid store only has simplified objects)
 		for(var i = 0; i < currentFeatures.length; i++) {
@@ -2577,43 +2583,19 @@ GeoExplorer.Results = {
 			return;
 		}
 		
-		if(GeoExplorer.Results.resultMarker) {
-			AM.OL.markerLayer.removeMarker(GeoExplorer.Results.resultMarker);
-		}
-		if(feature.longitude) {
-			var lonlat = new OpenLayers.LonLat(feature.longitude, feature.latitude);
-			lonlat = lonlat.transform(AM.OL.map.displayProjection, AM.OL.map.projection);
-			
-			GeoExplorer.Results.resultMarker = new OpenLayers.Marker(lonlat, AM.OL.markerIcon2.clone());
-			AM.OL.markerLayer.addMarker(GeoExplorer.Results.resultMarker);
-		}
-		
-		
-		
-		//var tpl = new Ext.Template(amTemplates[gridFeature.type]);
-
-        if (feature.start_d == '1899-12-30') {
-            feature.start_d = '';
-        }
-
-        if (feature.end_d == '1899-12-30') {
-            feature.end_d = '';
-        }
-
-        
-        
-		var featureHtml = this.createHTML(feature);
+		var featureHtml = this.createHTML(feature, metaColumns);
 		dp.update(featureHtml);
 		dp.doLayout();
 
 	},
 	
-	createHTML: function(feature) {
+	createHTML: function(feature, metaColumns) {
 		html = '<ul class="featureDetailList" id="featureDetailList">';
-		for(fkey in feature){
-			if (!(fkey in {'wm_layer_title':'', 'wm_layer_id':'','wm_layer_name':'', 'wm_layer_type':''}))			
-				html += "<li><label>" + fkey + "</label><span>" + feature[fkey] + "</span></li>";
-		}
+		for(c=0; c < metaColumns.length; c++)
+			{
+				column = metaColumns[c];
+				html+= "<li><label>" + column.label + "</label><span>" + feature[column.attribute] + "</span></li>";
+			}
 		html += "</ul>";
 		return html;
 	}

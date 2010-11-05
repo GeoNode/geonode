@@ -1907,7 +1907,8 @@ def searchFieldsJSON(request):
     logger.debug("Enter searchFieldsJSON")
     layername = request.POST.get('layername', False);
     logger.debug("layername is [%s]", layername)
-    searchable_fields = ''
+    searchable_fields = []
+    scount = 0;
     if layername:
         try:
             geoLayer = Layer.objects.get(typename=layername)
@@ -1917,12 +1918,16 @@ def searchFieldsJSON(request):
             else:
                 catname = ''  
             if geoLayer.storeType == 'dataStore':
-                searchable_fields = geoLayer.searchable_fields
-                #for la in geoLayer.layerattribute_set:
-                #    searchable_fields.push('{attribute:"' + la.attribute + '", label:"'  + la.attribute_label + '", searchable:"' + la.searchable + '}')            
+                #searchable_fields = geoLayer.searchable_fields
+                #logger.debug('There are [%s] attributes', geoLayer.layerattribute_set.length)
+                for la in geoLayer.layerattribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$'):
+                    searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
+                    if la.searchable:
+                        scount+=1            
         except: 
             logger.debug("Could not find matching layer: [%s]", str(_))
-        sfJSON = {'searchFields' : searchable_fields, 'category' : catname}
+        sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount}
+        logger.debug('sfJSON is [%s]', str(sfJSON))
         return HttpResponse(json.dumps(sfJSON))
     else:
         logger.debug("searchFieldsJSON DID NOT WORK")

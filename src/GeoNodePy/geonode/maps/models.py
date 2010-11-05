@@ -630,15 +630,19 @@ class LayerManager(models.Manager):
 
 
                 layer.save()
-                
-#                if layer.attribute_names is not None:
-#                    for field in layer.attribute_names:
-#                        if field is not None:
-#                            la = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, defaults={'attribute_label' : field, 'searchable': False })
-#                            la.save()                
-                
                 if created: 
-                    layer.set_default_permissions()
+                    layer.set_default_permissions()                
+
+                #Create layer attributes if they don't already exist
+                if layer.attribute_names is not None:
+                     for field in layer.attribute_names:
+                         if field is not None:
+                             la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, defaults={'attribute_label' : field, 'searchable': False })
+                             if created:
+                                 logger.debug("Created [%s] attribute for [%s]", field, layer)
+
+                
+
                     
             finally:
                 pass
