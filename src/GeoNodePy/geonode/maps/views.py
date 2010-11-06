@@ -1909,6 +1909,7 @@ def searchFieldsJSON(request):
     logger.debug("layername is [%s]", layername)
     searchable_fields = []
     scount = 0;
+    catname = '';
     if layername:
         try:
             geoLayer = Layer.objects.get(typename=layername)
@@ -1925,7 +1926,7 @@ def searchFieldsJSON(request):
                     if la.searchable:
                         scount+=1            
         except: 
-            logger.debug("Could not find matching layer: [%s]", str(_))
+            logger.debug("Could not find matching layer: [%s]", str(_))            
         sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount}
         logger.debug('sfJSON is [%s]', str(sfJSON))
         return HttpResponse(json.dumps(sfJSON))
