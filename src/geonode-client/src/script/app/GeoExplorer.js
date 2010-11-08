@@ -110,6 +110,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     layerContainerText: "UT:Map Layers",
     layerPropertiesText: 'UT: Layer Properties',
     layerPropertiesTipText: 'UT: Change layer format and style',
+    layerStylesText: 'UT:Edit Styles',
+    layerStylesTipText: 'UT:Edit layer styles',
     layerSelectionLabel: "UT:View available data from:",
     layersContainerText: "UT:Data",
     layersPanelText: "UT:Layers",
@@ -568,63 +570,84 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         }));
+        
+        createPropertiesDialog = function() {
+            var node = layerTree.getSelectionModel().getSelectedNode();
+            if (node && node.layer) {
+                var layer = node.layer;
+                var store = node.layerStore;
+                var record = store.getAt(store.findBy(function(record){
+                    return record.getLayer() === layer;
+                }));
+                var backupParams = Ext.apply({}, record.getLayer().params);
+                var prop = this.propDlgCache[layer.id];
+                if (!prop) {
+                    prop = this.propDlgCache[layer.id] = new Ext.Window({
+                        title: "Properties: " + record.getLayer().name,
+                        width: 280,
+                        autoHeight: true,
+                        closeAction: "hide",
+                        items: [{
+                            xtype: "gx_wmslayerpanel",
+                            autoHeight: true,
+                            layerRecord: record,
+                            defaults: {
+                                autoHeight: true,
+                                hideMode: "offsets"
+                            },
+                            listeners: {
+                                "change": function() {this.modified |= 1;},
+                                scope: this
+                            }
+                        }]
+                    });
+                    // disable the "About" tab's fields to indicate that they
+                    // are read-only
+                    //TODO WMSLayerPanel should be easier to configure for this
+                    prop.items.get(0).items.get(0).cascade(function(i) {
+                        i instanceof Ext.form.Field && i.setDisabled(true);
+                    });
+                    var stylesPanel = this.createStylesPanel({
+                        layerRecord: record
+                    });
+                    stylesPanel.items.get(0).on({
+                        "styleselected": function() {this.modified |= 1;},
+                        "modified": function() {this.modified |= 2;},
+                        scope: this
+                    });
+                    stylesPanel.setTitle("Styles");
+                    // add styles tab
+                    prop.items.get(0).add(stylesPanel)
+                }
+                prop.show();
+            }
+        };
 
         var showPropertiesAction = new Ext.Action({
             text: this.layerPropertiesText,
             iconCls: "icon-layerproperties",
             disabled: true,
             tooltip: this.layerPropertiesTipText,
-            handler: function() {
+            handler: createPropertiesDialog.createSequence(function() {
                 var node = layerTree.getSelectionModel().getSelectedNode();
-                if (node && node.layer) {
-                    var layer = node.layer;
-                    var store = node.layerStore;
-                    var record = store.getAt(store.findBy(function(record){
-                        return record.getLayer() === layer;
-                    }));
-                    var backupParams = Ext.apply({}, record.getLayer().params);
-                    var prop = this.propDlgCache[layer.id];
-                    if (!prop) {
-                        prop = this.propDlgCache[layer.id] = new Ext.Window({
-                            title: "Properties: " + record.getLayer().name,
-                            width: 280,
-                            autoHeight: true,
-                            closeAction: "hide",
-                            items: [{
-                                xtype: "gx_wmslayerpanel",
-                                autoHeight: true,
-                                layerRecord: record,
-                                defaults: {
-                                    autoHeight: true,
-                                    hideMode: "offsets"
-                                },
-                                listeners: {
-                                    "change": function() {this.modified |= 1;},
-                                    scope: this
-                                }
-                            }]
-                        });
-                        // disable the "About" tab's fields to indicate that they
-                        // are read-only
-                        //TODO WMSLayerPanel should be easier to configure for this
-                        prop.items.get(0).items.get(0).cascade(function(i) {
-                            i instanceof Ext.form.Field && i.setDisabled(true);
-                        });
-                        var stylesPanel = this.createStylesPanel({
-                            layerRecord: record
-                        });
-                        stylesPanel.items.get(0).on({
-                            "styleselected": function() {this.modified |= 1;},
-                            "modified": function() {this.modified |= 2;},
-                            scope: this
-                        });
-                        stylesPanel.setTitle("Styles");
-                        // add styles tab
-                        prop.items.get(0).add(stylesPanel)
-                    }
-                    prop.show();
-                }
-            },
+                this.propDlgCache[node.layer.id].items.get(0).setActiveTab(1);
+            }, this),
+            scope: this,
+            listeners: {
+                "enable": function() {showStylesAction.enable()},
+                "disable": function() {showStylesAction.disable()}
+            }
+        });
+        
+        var showStylesAction = new Ext.Action({
+            text: this.layerStylesText,
+            iconCls: "icon-layerstyles",
+            disabled: true,
+            tooltip: this.layerStylesTipText,
+            handler: createPropertiesDialog.createSequence(function() {
+                var node = layerTree.getSelectionModel().getSelectedNode();
+                this.propDlgCache[node.layer.id].items.get(0).setActiveTab(2);
+            }, this),
             scope: this
         });
 
@@ -700,7 +723,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         scope: this
                     },
                     removeLayerAction,
-                    showPropertiesAction
+                    showPropertiesAction,
+                    showStylesAction
                 ]
             })
         });
@@ -713,7 +737,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             tbar: [
                 addLayerButton,
                 Ext.apply(new Ext.Button(removeLayerAction), {text: ""}),
-                Ext.apply(new Ext.Button(showPropertiesAction), {text: ""})
+                Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
+                Ext.apply(new Ext.Button(showStylesAction), {text: ""})
             ]
         });
 
