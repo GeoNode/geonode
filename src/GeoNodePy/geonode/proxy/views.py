@@ -76,3 +76,20 @@ def geoserver(request):
             return HttpResponse(content=content,status=resp.status)
     else: 
         return HttpResponse(content="Something went wrong",status=404)
+
+
+def picasa(request):
+    url = "http://picasaweb.google.com/data/feed/base/all?thumbsize=160c&"
+    if request.method == 'GET':
+        kind = request.GET['KIND'] if request.method == 'GET' else request.POST['KIND']
+        bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
+        query = request.GET['Q'] if request.method == 'GET' else request.POST['Q'] 
+        maxResults = request.GET['MAX-RESULTS'] if request.method == 'GET' else request.POST['MAX-RESULTS']
+    coords = bbox.split(",")
+    coords[0] = coords[0] if coords[0] > -180 else -180
+    coords[2] = coords[2] if coords[2]  < 180 else 180
+    bbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
+    url = url + "kind=" + kind + "&max-results=" + maxResults + "&bbox=" + bbox + "&q=" + query
+    
+    feed_response = urllib.urlopen(url).read()
+    return HttpResponse(feed_response, mimetype="text/xml")

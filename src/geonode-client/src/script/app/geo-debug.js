@@ -3,7 +3,8 @@
     var jsfiles = new Array(
         "/static/src/script/app/GeoExplorer.js",
         "/static/src/script/app/GeoExplorer/Viewer.js",
-        "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js"
+        "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js",
+        "/static/src/script/app/GeoExplorer/FeedSource.js"
     );
 
     var appendable = !((/MSIE/).test(navigator.userAgent) ||

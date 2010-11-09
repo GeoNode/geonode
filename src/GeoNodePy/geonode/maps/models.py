@@ -1202,13 +1202,29 @@ class Map(models.Model, PermissionLevelMixin):
     """
 
     urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True, null=True)
-    
+    """
+    Alphanumeric alternative to referencing maps by id, appended to end of URL instead of id, ie http://domain/maps/someview
+    """    
     
     officialurl = models.CharField(_('Official Harvard Site URL'), max_length=255, blank=True, null=True)
+    """
+    Full URL for official/sponsored map view, ie http://domain/someview 
+    """
     
     content = models.TextField(_('Site Content'), blank=True, null=True, default=DEFAULT_CONTENT)
+    """
+    HTML content to be displayed in modal window on 1st visit 
+    """    
     
     use_custom_template = models.BooleanField(_('Use a custom template'),default=False)
+    """
+    Whether to show default banner/styles or custom ones.
+    """     
+    
+    keywords = models.CharField(_('Keywords (for Picasa and YouTube overlays)'), blank=True, null=True, max_length=255)
+    """
+    Keywords (for Picasa and YouTube overlays
+    """     
 
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
@@ -1321,7 +1337,8 @@ class Map(models.Model, PermissionLevelMixin):
                 'title':    self.title,
                 'abstract': self.abstract,
                 'urlsuffix': self.urlsuffix,
-                'introtext' : self.content
+                'introtext' : self.content,
+                'keywords' : self.keywords,
             },
             'defaultSourceType': "gx_wmssource",
             'sources': sources,

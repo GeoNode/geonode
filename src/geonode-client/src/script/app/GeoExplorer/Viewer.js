@@ -78,6 +78,43 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
         var source = GeoExplorer.superclass.addLayerSource.apply(this, arguments);
     },
 
+    /** private: method[getState]
+     *  :returns: ``Object`` Representation of the app's current state.
+     */ 
+    getState: function() {
+
+        // start with what was originally given
+        var state = Ext.apply({}, this.initialConfig);
+        
+        // update anything that can change
+        var center = this.mapPanel.map.getCenter();
+        Ext.apply(state.map, {
+            center: [center.lon, center.lat],
+            zoom: this.mapPanel.map.zoom,
+            layers: []
+        });
+        
+        // include all layer config (and add new sources)
+        this.mapPanel.layers.each(function(record){
+            var layer = record.get("layer");
+            if (layer.displayInLayerSwitcher) {
+                var id = record.get("source");
+                var source = this.layerSources[id];
+                if (!source) {
+                    throw new Error("Could not find source for layer '" + record.get("name") + "'");
+                }
+                // add layer
+                state.map.layers.push(source.getConfigForRecord(record));
+                if (!state.sources[id]) {
+                    state.sources[id] = Ext.apply({}, source.initialConfig);
+                }
+            }
+        }, this);
+        
+        return state;
+    },   
+    
+    
     /**
      * api: method[createTools]
      * Create the various parts that compose the layout.

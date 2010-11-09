@@ -34,6 +34,8 @@ var LayerData = function(iid, isearchFields, icategory, icount)
 		
 	};
 
+
+	
 var GeoExplorer = Ext.extend(gxp.Viewer, {
     
     /**
@@ -577,6 +579,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 })
             } 
         });
+        
+ 
+        
     },
     
     /**
@@ -627,7 +632,54 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (this.config.first_visit)
             	this.showInfoWindow();
             
-        	
+            picasa = new OpenLayers.Layer.WFS( "Picasa Pictures",
+            		"/picasa/",
+            		{ 'kind': 'photo', 'max-results':'250', 'q' : 'africa', 'bbox' : this.mapPanel.map.getExtent().transform(this.mapPanel.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")).toBBOX()},
+            		
+                    { format:OpenLayers.Format.GeoRSS, projection: new OpenLayers.Projection("EPSG:4326"),
+                      formatOptions: {
+                         createFeatureFromItem: function(item) {
+                            var feature = OpenLayers.Format.GeoRSS.prototype
+                                    .createFeatureFromItem.apply(this, arguments);
+                            feature.attributes.thumbnail = this.getElementsByTagNameNS(item, "http://search.yahoo.com/mrss/", "thumbnail")[0].getAttribute("url");
+                            feature.attributes.content = OpenLayers.Util.getXmlNodeValue(this.getElementsByTagNameNS(item, "*","summary")[0]);
+                            return feature;
+                        }
+                      },
+                      styleMap: new OpenLayers.StyleMap({
+                        "default": new OpenLayers.Style({externalGraphic: "${thumbnail}", pointRadius: 14}),
+                        "select": new OpenLayers.Style({pointRadius: 20})
+                    })
+         
+          });
+
+            
+                               
+            picasa_args = {'feed': 'picasa'}
+            
+            // create a layer record for this layer
+            var Record = GeoExt.data.LayerRecord.create([
+                {name: "source", type: "string"}, 
+                {name: "group", type: "string"},
+                {name: "fixed", type: "boolean"},
+                {name: "selected", type: "boolean"},
+                {name: "type", type: "string"},
+                {name: "args"}
+            ]);
+            var data = {
+                layer: picasa,
+                title: picasa.name,
+                source: "0",
+                group: "Overlays",
+                fixed: true,
+                selected: false,
+                type: "OpenLayers.Layer.WFS",
+                args: picasa_args
+            };
+            record = new Record(data, picasa.id);
+            
+                     	
+            this.mapPanel.layers.insert(this.mapPanel.layers.data.items.length, [record] );
             
         });
 
@@ -897,6 +949,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             autoScroll: true,
             ascending: false,
             map: this.mapPanel.map,
+            filter: function(record) { 
+            	return record.data.group == undefined || record.data.group != "Overlays";
+            },
             defaults: {cls: 'legend-item'}
         });
 
@@ -2305,6 +2360,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             height: 50,
             fieldLabel: this.metaDataMapAbstract,
             value: this.about["abstract"]
+        });
+        
+        var keywordsField = new Ext.form.TextField({
+        	width: '95%',
+        	value: this.about["title"]
         });
         
         var introTextField = new Ext.form.HtmlEditor({

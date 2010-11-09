@@ -12,7 +12,7 @@ def index(request):
     return render_to_response('index.html', RequestContext(request))
 
 def static(request, page):
-    return render_to_response(page + '.html', RequestContext(request, {
+    return render_to_response(page + '.html', Context(request, {
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
         "site" : settings.SITEURL
     }))
