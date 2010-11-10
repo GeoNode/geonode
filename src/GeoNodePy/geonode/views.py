@@ -12,7 +12,7 @@ def index(request):
     return render_to_response('index.html', RequestContext(request))
 
 def static(request, page):
-    return render_to_response(page + '.html', Context(request, {
+    return render_to_response(page + '.html', RequestContext(request, {
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
         "site" : settings.SITEURL
     }))
@@ -35,7 +35,6 @@ def ajax_login(request):
     if form.is_valid():
         username = form.cleaned_data['username']
         password = form.cleaned_data['password']
-
         user = authenticate(username=username, password=password)
         if user is None or not user.is_active:
             return HttpResponse(
@@ -58,9 +57,6 @@ def ajax_login(request):
                 mimetype="text/plain",
                 status=400
             )
-        
-
-            
 
 def ajax_lookup(request):
     if request.method != 'POST':
