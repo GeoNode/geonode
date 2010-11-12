@@ -80,11 +80,10 @@ def geoserver(request):
 
 def picasa(request):
     url = "http://picasaweb.google.com/data/feed/base/all?thumbsize=160c&"
-    if request.method == 'GET':
-        kind = request.GET['KIND'] if request.method == 'GET' else request.POST['KIND']
-        bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
-        query = request.GET['Q'] if request.method == 'GET' else request.POST['Q'] 
-        maxResults = request.GET['MAX-RESULTS'] if request.method == 'GET' else request.POST['MAX-RESULTS']
+    kind = request.GET['KIND'] if request.method == 'GET' else request.POST['KIND']
+    bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
+    query = request.GET['Q'] if request.method == 'GET' else request.POST['Q'] 
+    maxResults = request.GET['MAX-RESULTS'] if request.method == 'GET' else request.POST['MAX-RESULTS']
     coords = bbox.split(",")
     coords[0] = coords[0] if coords[0] > -180 else -180
     coords[2] = coords[2] if coords[2]  < 180 else 180
@@ -93,3 +92,30 @@ def picasa(request):
     
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
+
+def youtube(request):
+    url = "http://gdata.youtube.com/feeds/api/videos?v=2&prettyprint=true&"
+    bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
+    query = request.GET['Q'] if request.method == 'GET' else request.POST['Q'] 
+    maxResults = request.GET['MAX-RESULTS'] if request.method == 'GET' else request.POST['MAX-RESULTS']
+    coords = bbox.split(",")
+    coords[0] = coords[0] if coords[0] > -180 else -180
+    coords[2] = coords[2] if coords[2]  < 180 else 180
+    
+    #location would be the center of the map.
+    location = str((float(coords[3]) + float(coords[1]))/2)  + "," + str((float(coords[2]) + float(coords[0]))/2);
+        
+    #calculating the location-readius
+    R = 6378.1370;
+    PI = 3.1415926;
+    left = R*float(coords[0])/180.0/PI;
+    right = R*float(coords[2])/180.0/PI;
+    radius = (right - left)/2*2;
+    radius = 1000 if (radius > 1000) else radius;
+    url = url + "location=" + location + "&max-results=" + maxResults + "&location-radius=" + str(radius) + "km&q=" + query
+    
+    feed_response = urllib.urlopen(url).read()
+    return HttpResponse(feed_response, mimetype="text/xml")
+
+
+

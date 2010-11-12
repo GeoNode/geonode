@@ -631,8 +631,9 @@ class LayerManager(models.Manager):
 
                 layer.save()
                 if created: 
-                    layer.set_default_permissions()                
+                    layer.set_default_permissions()
 
+                                   
                 #Create layer attributes if they don't already exist
                 if layer.attribute_names is not None:
                      for field in layer.attribute_names:

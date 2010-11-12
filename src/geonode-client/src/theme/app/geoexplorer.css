@@ -66,6 +66,14 @@
     background-image: url(img/silk/information.png);
 }
 
+.x-btn .icon-picasa {
+    background-image: url(img/worldmap/picasa.png);
+}
+
+.x-btn .icon-youtube {
+    background-image: url(img/worldmap/youtube.gif);
+}
+
 .x-btn .icon-3D {
     background-image: url(img/geosilk/google_earth.png);
 }

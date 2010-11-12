@@ -632,35 +632,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (this.config.first_visit)
             	this.showInfoWindow();
             
-
-            picasaConfig = {name: "Picasa", source: "0", buffer: "0", type: "OpenLayers.Layer.WFS",  args: ["Picasa Pictures", "/picasa/", 
-            		{ 'kind': 'photo', 'max-results':'250', 'q' : 'africa', 'bbox' : this.mapPanel.map.getExtent().transform(this.mapPanel.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")).toBBOX()},
-            		{ format:OpenLayers.Format.GeoRSS, projection: new OpenLayers.Projection("EPSG:4326"),
-                        formatOptions: {
-                            createFeatureFromItem: function(item) {
-                               var feature = OpenLayers.Format.GeoRSS.prototype
-                                       .createFeatureFromItem.apply(this, arguments);
-                               feature.attributes.thumbnail = this.getElementsByTagNameNS(item, "http://search.yahoo.com/mrss/", "thumbnail")[0].getAttribute("url");
-                               feature.attributes.content = OpenLayers.Util.getXmlNodeValue(this.getElementsByTagNameNS(item, "*","summary")[0]);
-                               return feature;
-                           }
-                         },
-                         styleMap: new OpenLayers.StyleMap({
-                           "default": new OpenLayers.Style({externalGraphic: "${thumbnail}", pointRadius: 14}),
-                           "select": new OpenLayers.Style({pointRadius: 20})
-                       })
-            		}]
-            	}
-
             
-            feedSource = Ext.ComponentMgr.createPlugin(
-                    picasaConfig, "gx_olsource"
-            );
-            
-            record = feedSource.createLayerRecord(picasaConfig);
+
 
                      	
-            this.mapPanel.layers.insert(this.mapPanel.layers.data.items.length, [record] );
+
+            
             
         });
 
@@ -1231,7 +1208,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             this.urlPortRegEx, "$1/")) === 0) {
                 initialSourceId = id;
             }
-            if (source.store) {
+           if (source.store) {
                 data.push([id, this.layerSources[id].title || id]);                
             }
         }
@@ -1559,12 +1536,140 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         return mapOverlay;
     },
+    
+
 
     createTools: function() {
         var toolGroup = "toolGroup";
         var mapPanel = this.mapPanel;
         var busyMask = null;
         
+        var picasaRecord = null;  
+    	var createPicasaOverlay = function()
+    	{
+            picasaConfig = {name: "Picasa", source: "0", group: "Overlays", buffer: "0", type: "OpenLayers.Layer.WFS",  
+            		args: ["Picasa Pictures", "/picasa/", 
+                           { 'kind': 'photo', 'max-results':'250', 'q' : 'africa', 'bbox' : mapPanel.map.getExtent().transform(mapPanel.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")).toBBOX()},
+                           {  format: OpenLayers.Format.GeoRSS, projection: "EPSG:4326", displayInLayerSwitcher: false, 
+                              formatOptions: {
+                                              createFeatureFromItem: function(item) {
+                                                                     var feature = OpenLayers.Format.GeoRSS.prototype
+                                                                                   .createFeatureFromItem.apply(this, arguments);
+                                                                                    feature.attributes.thumbnail = this.getElementsByTagNameNS(item, "http://search.yahoo.com/mrss/", "thumbnail")[0].getAttribute("url");
+                                                                                    feature.attributes.content = OpenLayers.Util.getXmlNodeValue(this.getElementsByTagNameNS(item, "*","summary")[0]);
+                                                                                    return feature;
+                                                                                    }
+                                             },
+                              styleMap: new OpenLayers.StyleMap({
+                                                                 "default": new OpenLayers.Style({externalGraphic: "${thumbnail}", pointRadius: 14}),
+                                                                 "select": new OpenLayers.Style({pointRadius: 20})
+                                                               })
+                      }]
+             };
+
+                                                                                                                       
+             feedSource = Ext.ComponentMgr.createPlugin(
+                          picasaConfig, "gx_olsource"
+             );
+             picasaRecord = feedSource.createLayerRecord(picasaConfig);
+             picasaRecord.group = picasaConfig.group;
+             
+             
+     		popupControl = new OpenLayers.Control.SelectFeature(picasaRecord.getLayer(), {
+ 			   //hover:true,
+ 			   clickout: true,
+ 			   onSelect: function(feature) {
+ 			      
+ 			      var pos = feature.geometry;
+ 			      popup = new OpenLayers.Popup("popup",
+ 			                                         new OpenLayers.LonLat(pos.x, pos.y),
+ 			                                         new OpenLayers.Size(160,160),
+ 			                                         "<a target='_blank' href=" + 
+ 			                                         $(feature.attributes.content).find("a").attr("href") +"><img title='" +
+ 			                                         feature.attributes.title +"' src='" + feature.attributes.thumbnail +"' /></a>",
+ 			                                         false);
+ 			      popup.closeOnMove = true;
+ 			      popup.keepInMap = true;
+ 			      mapPanel.map.addPopup(popup);
+ 	        },
+ 	        
+ 	        onUnselect: function(feature) {
+ 	        	mapPanel.map.removePopup(popup);
+ 	            popup = null;
+ 	        }
+ 	       }); 
+             
+    		mapPanel.map.addControl(popupControl);
+    	    popupControl.activate();
+             
+             return picasaRecord;
+    	};
+
+   	
+    	
+    	
+        var youtubeRecord = null;  
+    	var createYouTubeOverlay = function()
+    	{
+            youtubeConfig = {name: "YouTube", source: "0", group: "Overlays", buffer: "0", type: "OpenLayers.Layer.WFS",  
+            		args: ["YouTube Videos", "/youtube/", 
+                           {  'max-results':'50', 'q' : 'africa', 'bbox' : mapPanel.map.getExtent().transform(mapPanel.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")).toBBOX()},
+                           { format:OpenLayers.Format.GeoRSS, projection: "EPSG:4326", displayInLayerSwitcher: false, 
+                               formatOptions: {
+                                  createFeatureFromItem: function(item) {
+                                     var feature = OpenLayers.Format.GeoRSS.prototype
+                                             .createFeatureFromItem.apply(this, arguments);
+                                     feature.attributes.thumbnail = this.getElementsByTagNameNS(item, "http://search.yahoo.com/mrss/", "thumbnail")[4].getAttribute("url");
+                                     feature.attributes.content = OpenLayers.Util.getXmlNodeValue(this.getElementsByTagNameNS(item, "*","summary")[0]);
+                                     return feature;
+                                 }
+                               },
+                               styleMap: new OpenLayers.StyleMap({
+                                 "default": new OpenLayers.Style({externalGraphic: "${thumbnail}", pointRadius: 24}),
+                                 "select": new OpenLayers.Style({pointRadius: 30})
+                             })
+
+                      }]
+             };
+
+                                                                                                                       
+             feedSource = Ext.ComponentMgr.createPlugin(
+            		 youtubeConfig, "gx_olsource"
+             );
+             youtubeRecord = feedSource.createLayerRecord(youtubeConfig);
+             youtubeRecord.group = youtubeConfig.group;
+             
+      		popupControl = new OpenLayers.Control.SelectFeature(youtubeRecord.getLayer(), {
+  			   //hover:true,
+  			   clickout: true,
+  			   onSelect: function(feature) {
+  			      
+  			      var pos = feature.geometry;
+  			      popup = new OpenLayers.Popup("popup",
+                          new OpenLayers.LonLat(pos.x, pos.y),
+                          new OpenLayers.Size(240,180),
+                          "<a target='_blank' href=" + 
+                          feature.attributes.link +"><img height='180', width='240' title='" +
+                          feature.attributes.title +"' src='" + feature.attributes.thumbnail +"' /></a>",
+                          false);
+  			      popup.closeOnMove = true;
+  			      popup.keepInMap = true;
+  			      mapPanel.map.addPopup(popup);
+  	        },
+  	        
+  	        onUnselect: function(feature) {
+  	        	mapPanel.map.removePopup(popup);
+  	            popup = null;
+  	        }
+  	       }); 
+              
+     		mapPanel.map.addControl(popupControl);
+     	    popupControl.activate();             
+             
+             return youtubeRecord;
+    	};    	
+    	
+    	
         var printButton = new Ext.Button({
             tooltip: this.printTipText,
             iconCls: "icon-print",
@@ -1682,6 +1787,42 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope:this
         });
 
+        var picasaButton = new Ext.Button({
+            	enableToggle: true,
+            	allowDepress: true,
+            	 iconCls: "icon-picasa",
+            	toggleHandler: function(button, pressed) {
+            					if(pressed) {
+            						if (picasaRecord == null) {
+            	
+            							createPicasaOverlay();
+            							mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
+            						}
+            						else picasaRecord.getLayer().setVisibility(true);
+            					} else {
+            			            picasaRecord.getLayer().setVisibility(false);
+            					}
+            			}   	
+        });
+        
+        var youtubeButton = new Ext.Button({
+        	enableToggle: true,
+        	allowDepress: true,
+        	 iconCls: "icon-youtube",
+        	toggleHandler: function(button, pressed) {
+        					if(pressed) {
+        						if (youtubeRecord == null) {
+        	
+        							createYouTubeOverlay();
+        							mapPanel.layers.insert(mapPanel.layers.data.items.length, [youtubeRecord] );
+        						}
+        						else youtubeRecord.getLayer().setVisibility(true);
+        					} else {
+        			            youtubeRecord.getLayer().setVisibility(false);
+        					}
+        			}   	
+        });
+        
         var searchTB = new Ext.form.TextField({
 			id:'search-tb',
 			width:200,
@@ -1856,6 +1997,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 		
 
 
+		
 
 
         var updateInfo = function() {
@@ -2043,6 +2185,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             enable3DButton,
             infoButton,
+            picasaButton,
+            youtubeButton,
             searchBar,
             '->',
             new Ext.Button({
