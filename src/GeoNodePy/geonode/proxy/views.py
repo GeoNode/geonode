@@ -85,10 +85,12 @@ def picasa(request):
     query = request.GET['Q'] if request.method == 'GET' else request.POST['Q'] 
     maxResults = request.GET['MAX-RESULTS'] if request.method == 'GET' else request.POST['MAX-RESULTS']
     coords = bbox.split(",")
-    coords[0] = coords[0] if coords[0] > -180 else -180
-    coords[2] = coords[2] if coords[2]  < 180 else 180
-    bbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
-    url = url + "kind=" + kind + "&max-results=" + maxResults + "&bbox=" + bbox + "&q=" + query
+    coords[0] = -180 if float(coords[0]) <= -180 else coords[0]
+    coords[2] = 180 if float(coords[2])  >= 180 else coords[2]
+    coords[1] = coords[1] if float(coords[1]) > -90 else -90
+    coords[3] = coords[3] if float(coords[3])  < 90 else 90       
+    newbbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
+    url = url + "kind=" + kind + "&max-results=" + maxResults + "&bbox=" + newbbox + "&q=" + query
     
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
@@ -99,9 +101,10 @@ def youtube(request):
     query = request.GET['Q'] if request.method == 'GET' else request.POST['Q'] 
     maxResults = request.GET['MAX-RESULTS'] if request.method == 'GET' else request.POST['MAX-RESULTS']
     coords = bbox.split(",")
-    coords[0] = coords[0] if coords[0] > -180 else -180
-    coords[2] = coords[2] if coords[2]  < 180 else 180
-    
+    coords[0] = coords[0] if float(coords[0]) > -180 else -180
+    coords[2] = coords[2] if float(coords[2])  < 180 else 180
+    coords[1] = coords[1] if float(coords[1]) > -90 else -90
+    coords[3] = coords[3] if float(coords[3])  < 90 else 90    
     #location would be the center of the map.
     location = str((float(coords[3]) + float(coords[1]))/2)  + "," + str((float(coords[2]) + float(coords[0]))/2);
         

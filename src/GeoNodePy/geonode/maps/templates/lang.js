@@ -28,6 +28,7 @@ if (window.GeoExplorer) {
         measureSplitText: gettext("Measure"),
         metaDataHeader: gettext("About this Map View"),
         metaDataMapAbstract: gettext("Abstract (brief description)"),
+        metaDataMapKeywords: gettext("Keywords (for Picasa and YouTube overlays"),
         metaDataMapIntroText: gettext("Introduction (tell visitors more about your map view)"),
         metaDataMapContact: gettext("Contact"),
         metaDataMapId: gettext("Permalink"),

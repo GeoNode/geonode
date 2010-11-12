@@ -1369,7 +1369,7 @@ class Map(models.Model, PermissionLevelMixin):
         self.abstract = conf['about']['abstract']
         self.urlsuffix = conf['about']['urlsuffix']
         self.content = conf['about']['introtext']
-        
+        self.keywords = conf['about']['keywords']
         self.zoom = conf['map']['zoom']
 
         self.center_x = conf['map']['center'][0]

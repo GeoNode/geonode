@@ -142,6 +142,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     metadataFormSaveText : "UT:Save",
     metaDataHeader: 'UT:About this Map View',
     metaDataMapAbstract: 'UT:Abstract (brief description)',
+    metaDataMapKeywords: 'UT: Keywords (for Picasa and YouTube overlays)',
     metaDataMapIntroText: 'UT:Introduction (tell visitors more about your map view)',
     metaDataMapTitle: 'UT:Title',
     metaDataMapUrl: 'UT:UserUrl',
@@ -1543,13 +1544,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var toolGroup = "toolGroup";
         var mapPanel = this.mapPanel;
         var busyMask = null;
-        
+        var keywords = this.about["keywords"] ? this.about["keywords"] : "of";
         var picasaRecord = null;  
     	var createPicasaOverlay = function()
     	{
             picasaConfig = {name: "Picasa", source: "0", group: "Overlays", buffer: "0", type: "OpenLayers.Layer.WFS",  
             		args: ["Picasa Pictures", "/picasa/", 
-                           { 'kind': 'photo', 'max-results':'250', 'q' : 'africa', 'bbox' : mapPanel.map.getExtent().transform(mapPanel.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")).toBBOX()},
+                           { 'kind': 'photo', 'max-results':'50', 'q' : keywords},
                            {  format: OpenLayers.Format.GeoRSS, projection: "EPSG:4326", displayInLayerSwitcher: false, 
                               formatOptions: {
                                               createFeatureFromItem: function(item) {
@@ -1567,6 +1568,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                       }]
              };
 
+            
+            
                                                                                                                        
              feedSource = Ext.ComponentMgr.createPlugin(
                           picasaConfig, "gx_olsource"
@@ -1791,15 +1794,20 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             	enableToggle: true,
             	allowDepress: true,
             	 iconCls: "icon-picasa",
+            	 scope:this,
             	toggleHandler: function(button, pressed) {
             					if(pressed) {
             						if (picasaRecord == null) {
             	
             							createPicasaOverlay();
-            							mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
+            							this.mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
             						}
-            						else picasaRecord.getLayer().setVisibility(true);
+            						else {
+            								this.mapPanel.map.setLayerIndex(picasaRecord.getLayer(), mapPanel.layers.data.items.length);
+            								picasaRecord.getLayer().setVisibility(true);
+            							 }
             					} else {
+            						//this.mapPanel.layers.remove(picasaRecord);
             			            picasaRecord.getLayer().setVisibility(false);
             					}
             			}   	
@@ -1816,7 +1824,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         							createYouTubeOverlay();
         							mapPanel.layers.insert(mapPanel.layers.data.items.length, [youtubeRecord] );
         						}
-        						else youtubeRecord.getLayer().setVisibility(true);
+        						else { 
+        							mapPanel.map.setLayerIndex(youtubeRecord.getLayer(), mapPanel.layers.data.items.length);
+        							youtubeRecord.getLayer().setVisibility(true);
+        						}
         					} else {
         			            youtubeRecord.getLayer().setVisibility(false);
         					}
@@ -2489,7 +2500,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
         var keywordsField = new Ext.form.TextField({
         	width: '95%',
-        	value: this.about["title"]
+        	fieldLabel: this.metaDataMapKeywords,
+        	value: this.about["keywords"]
         });
         
         var introTextField = new Ext.form.HtmlEditor({
@@ -2506,6 +2518,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 titleField,
                 urlField,
                 abstractField,
+                keywordsField,
                 introTextField
             ]
         });
@@ -2520,7 +2533,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 this.about["abstract"] = abstractField.getValue();
                 this.about["urlsuffix"] = urlField.getValue();
                 this.about["introtext"] = introTextField.getValue();
+                this.about["keywords"] = keywordsField.getValue();
                 this.save(true);
+                this.initInfoTextWindow();
             },
             scope: this
         });
@@ -2532,8 +2547,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 this.about["abstract"] = abstractField.getValue(); 
                 this.about["urlsuffix"] = urlField.getValue();
                 this.about["introtext"] = introTextField.getValue();
+                this.about["keywords"] = keywordsField.getValue();
                 this.save();
-                this.infoTextPanel.update(introTextField.getValue());
+                this.initInfoTextWindow();
             },
             scope: this
         });
@@ -2556,6 +2572,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         abstractField.setValue(this.about["abstract"]);
                         urlField.setValue(this.about["urlsuffix"]);
                         introTextField.setValue(this.about["introtext"]);
+                        keywordsField.setValue(this.about["keywords"]);
                         this.metadataForm.hide();
                     },
                     scope: this
@@ -2630,6 +2647,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
         
         var config = this.getState();
+        
         
         if (!this.mapID || as) {
             /* create a new map */ 
