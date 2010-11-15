@@ -1294,10 +1294,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 var jsonData = Ext.util.JSON.decode(result.responseText);                            
                                 dataLayers[record.name] = new LayerData(id, jsonData.searchFields, jsonData.category, jsonData.scount);
                                 record.group = jsonData.category
-                                alert(record.group);
+                                //alert(record.group);
                     		},
                     		failure: function(result,request) {
-                               alert(result.responseText);
+                               //alert(result.responseText);
                     		}
                     		
                     	});                    	
