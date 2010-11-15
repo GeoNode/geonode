@@ -1053,6 +1053,7 @@ def _updateLayer(request, layer):
     return render_to_response('json_html.html',
                               RequestContext(request, {'json': result}))
 
+@transaction.commit_manually
 def _handle_layer_upload(request, layer=None):
     """
     handle upload of layer data. if specified, the layer given is 
@@ -1167,7 +1168,6 @@ def _handle_layer_upload(request, layer=None):
         gs_resource = None
         csw_record = None
         layer = None
-        #with transaction.commit_on_success():
         try:
             gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
 
@@ -1208,6 +1208,7 @@ def _handle_layer_upload(request, layer=None):
             layer.set_default_permissions()
             logger.debug("Generating separate style for %s", typename)
             fixup_style(cat, gs_resource)
+
             
             logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
             if layer.attribute_names is not None:
@@ -1240,37 +1241,40 @@ def _handle_layer_upload(request, layer=None):
                     )
                 maplayer.save()
         except Exception, e:
-                logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
-                # Something went wrong, let's try and back out any changes
-                if gs_resource is not None:
-                    logger.warning("no explicit link from the resource to [%s], bah", name)
-                    gs_layer = cat.get_layer(gs_resource.name) 
-                    store = gs_resource.store
-                    try:
-                        cat.delete(gs_layer)
-                    except:
-                        pass
+            logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
+            transaction.rollback()
+            # Something went wrong, let's try and back out any changes
+            if gs_resource is not None:
+                logger.warning("no explicit link from the resource to [%s], bah", name)
+                gs_layer = cat.get_layer(gs_resource.name) 
+                store = gs_resource.store
+                try:
+                    cat.delete(gs_layer)
+                except:
+                    pass
 
-                    try: 
-                        cat.delete(gs_resource)
-                    except:
-                        pass
+                try: 
+                    cat.delete(gs_resource)
+                except:
+                    pass
 
-                    try: 
-                        cat.delete(store)
-                    except:
-                        pass
-                if csw_record is not None:
-                    logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
-                    try:
-                        gn.delete(csw_record)
-                    except:
-                        pass
-                # set layer to None, but we'll rely on db transactions instead
-                # of a manual delete to keep it out of the db
-                layer = None
-                logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
-                errors.append(GENERIC_UPLOAD_ERROR)
+                try: 
+                    cat.delete(store)
+                except:
+                    pass
+            if csw_record is not None:
+                logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
+                try:
+                    gn.delete(csw_record)
+                except:
+                    pass
+            # set layer to None, but we'll rely on db transactions instead
+            # of a manual delete to keep it out of the db
+            layer = None
+            logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
+            errors.append(GENERIC_UPLOAD_ERROR)
+        else:
+            transaction.commit()
 
     return layer, errors
 
@@ -1610,19 +1614,22 @@ def search_result_detail(request):
     rec = csw.records.values()[0]
     raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
     extra_links = _extract_links(rec, raw_xml)
+    category = ''
     
     try:
         layer = Layer.objects.get(uuid=uuid)
         layer_is_remote = False
+        category = layer.topic_category
     except:
         layer = None
         layer_is_remote = True
-
+        
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
         'layer': layer,
-        'layer_is_remote': layer_is_remote
+        'layer_is_remote': layer_is_remote,
+        'category' : category
     }))
 
 def _extract_links(rec, xml):

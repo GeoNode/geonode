@@ -62,6 +62,10 @@
     background-image: url(img/silk/wrench.png);
 }
 
+.x-btn .icon-layerstyles, .x-menu-item .icon-layerstyles {
+    background-image: url(img/silk/palette.png);
+}
+
 .x-btn .icon-getfeatureinfo {
     background-image: url(img/silk/information.png);
 }

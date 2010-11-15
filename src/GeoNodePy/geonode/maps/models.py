@@ -703,7 +703,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng')
-    topic_category = models.ForeignKey(LayerCategory, blank=True, null=True)
+    topic_category = models.ForeignKey(LayerCategory, blank=False, null=False)
     searchable_fields = models.TextField(_('searchable fields'), blank=True, null=True)
 
     # Section 5

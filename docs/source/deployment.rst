@@ -13,6 +13,18 @@ please consider writing or updating a guide.
    /deploy/centos
    /deploy/ubuntu
 
+
+Recommended Minimum System Requirements
+=======================================
+
+For deployment of GeoNode on a single server, the following are the bare minimum system requirements:
+
+* 2GB of RAM
+* 2.2GHz processor.  (Additional processing power may be required for multiple concurrent styling renderings)
+* 1 GB software disk usage.
+* Additional disk space for any data hosted with GeoNode and tiles cached with GeoWebCache.
+* 64-bit hardware recommended.
+
 Java Web Applications (WARs)
 ============================
 

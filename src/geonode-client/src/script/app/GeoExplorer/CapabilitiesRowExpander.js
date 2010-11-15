@@ -2,6 +2,8 @@ Ext.namespace("GeoExplorer");
 
 GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
 
+	categoryText: "UT:Category:",
+	categoryEmptyText: "UT:No category is provided for this layer.",
     abstractText: "UT:Abstract:",
     attributionEmptyText: "UT: No attribution information is provided for this layer.",
     attributionText: "UT:Provided by:",
@@ -81,6 +83,7 @@ GeoExplorer.CapabilitiesRowExpander = Ext.extend(Ext.grid.RowExpander, {
      */
     getDefaultTemplate: function() {
         return new Ext.Template(
+            '<p><b>' + this.categoryText + '</b> {category}</p>' +      		
             '<p><b>' + this.abstractText + '</b> {abstract}</p>' +
             '<p><b>' + this.attributionText + '</b> {attribution:this.attributionLink}</p>'  +
             '<p><b>' + this.metadataText + '</b> {metadataURLs:this.metadataLinks}</p>'  +

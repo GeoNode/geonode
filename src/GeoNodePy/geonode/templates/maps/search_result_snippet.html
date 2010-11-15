@@ -1,5 +1,14 @@
 {% load i18n %}
 {% load geonode_auth %}
+
+
+<p><b>{% trans "Category:" %}</b>
+{% if category %}
+  {{category}}
+{% else %}
+<em>{% trans "No category is provided for this layer." %}</em>
+{% endif %}
+</p>
  
 <p><b>{% trans "Abstract:" %}</b>
 {% if rec.identification.abstract %}

@@ -57,7 +57,9 @@ if (window.GeoExplorer) {
         smallSizeLabel: gettext("Small"),
         sourceLoadFailureMessage: gettext("Error contacting server.\n Please check the url and try again."),
         layerPropertiesText: gettext('Layer Properties'),
-        layerPropertiesTipText: gettext('Change layer format and style'),        
+        layerPropertiesTipText: gettext('Change layer format and style'),
+        layerStylesText: gettext('Edit Styles'),
+        layerStylesTipText: gettext('Edit layer styles'),
         switchTo3DActionText: gettext("Switch to Google Earth 3D Viewer"),
         unknownMapMessage: gettext("The map that you are trying to load does not exist.  Creating a new map instead."),
         unknownMapTitle: gettext("Unknown Map"),
@@ -121,6 +123,7 @@ if (window.gxp && gxp.EmbedMapDialog) {
 
 if (window.GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
     Ext.apply(GeoExplorer.CapabilitiesRowExpander.prototype, {
+    	categoryText: gettext("Category:"),
         abstractText: gettext("Abstract:"),
         attributionEmptyText: gettext("No attribution information is provided for this layer."),
         attributionText: gettext("Provided by:"),
@@ -187,6 +190,8 @@ if (window.GeoNode && GeoNode.SearchTable) {
 }
 if (window.GeoNode && GeoNode.SearchTableRowExpander) {
     Ext.apply(GeoNode.SearchTableRowExpander.prototype, {
+    	categoryText:gettext("Category"),
+    	categoryEmptyText:gettext('No category is provided for this layer.'),
         abstractText: gettext("Abstract:"),
         abstractEmptyText: gettext('No abstract is provided for this layer.'),
         attributionEmptyText: gettext("No attribution information is provided for this layer."),
