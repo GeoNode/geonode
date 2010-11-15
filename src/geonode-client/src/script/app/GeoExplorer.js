@@ -2106,7 +2106,7 @@ listeners: {
       
       var bounds = mapPanel.map.getExtent();
       var extents= bounds.transform(mapPanel.map.getProjectionObject(),displayProjection);
-      window.open ('http://www.yelp.com/search?find_desc=&ns=1&rpp=10#bbox='+extents.left+'%2C'+extents.bottom+'%2C'+extents.right+'%2C'+extents.top+'&sortby=category');
+      window.open ('http://www.yelp.com/search?find_desc=&ns=1&rpp=10#l=g:'+extents.left+'%2C'+extents.bottom+'%2C'+extents.right+'%2C'+extents.top+'&sortby=category');
    }
    else if (record.data.dataFieldName == 1){
       //http://www.bing.com/maps/default.aspx?v=2&FORM=LMLTCP&cp=42.353216~-70.989532&style=r&lvl=12&tilt=-90&dir=0&alt=-1000&phx=0&phy=0&phscl=1&encType=1
