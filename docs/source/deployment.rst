@@ -15,7 +15,7 @@ please consider writing or updating a guide.
 
 
 Recommended Minimum System Requirements
-=============================
+=======================================
 
 For deployment of GeoNode on a single server, the following are the bare minimum system requirements:
 

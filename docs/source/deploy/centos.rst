@@ -231,7 +231,14 @@ Installing mod_wsgi
 
 1. Install mod_wsgi and Apache httpd::
      
-     $ su -c 'yum install mod_wsgi'
+     $ su -c 'yum install python26_mod_wsgi'
+
+   .. note::
+       The default CentOS package repository includes a ``mod_wsgi`` package
+       which is distinct from the ``python26_mod_wsgi`` package provided by
+       ELGIS.  Since GeoNode requires Python 2.6, it will not function with the
+       default package, so please ensure that you install the package as listed
+       above.
 
 2. Create a short Python script in :file:`/opt/geonode/geonode.wsgi` to load
    the GeoNode application in Apache::
