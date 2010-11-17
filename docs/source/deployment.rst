@@ -15,7 +15,7 @@ please consider writing or updating a guide.
 
 
 Recommended Minimum System Requirements
-=======================================
+=============================
 
 For deployment of GeoNode on a single server, the following are the bare minimum system requirements:
 
@@ -189,8 +189,6 @@ Additional Configuration
 ------------------------
 
 Some other things that require tweaking:
-
-* SMTP configuration for user registration confirmation mails
 
 * Web-accessible uploads directory for user profile photos
 
