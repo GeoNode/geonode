@@ -999,6 +999,26 @@ def upload_layer(request):
             logger.debug("Begin upload attempt")
             layer, errors = _handle_layer_upload(request)
             logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
+            logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
+            if layer.attribute_names is not None:
+                logging.debug("Attributes are not None")
+                for field in layer.attribute_names:
+                    if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
+                        logging.debug("Field is [%s]", field)
+                        la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, searchable=False)
+                        la.save()
+            else:
+                logging.debug("No attributes found")
+                
+            if (request.POST['mapid'] != ''):
+                logging.debug("adding layer to map [%s]", request.POST['mapid'])
+                maplayer = MapLayer.objects.create(map=Map.objects.get(id=request.POST['mapid']), 
+                    name = layer.typename,
+                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                    visibility = True,
+                    stack_order = 0
+                    )
+                maplayer.save()
         except:
             logger.exception("_handle_layer_upload failed!")
             errors = [GENERIC_UPLOAD_ERROR]
@@ -1208,38 +1228,7 @@ def _handle_layer_upload(request, layer=None):
             layer.set_default_permissions()
             logger.debug("Generating separate style for %s", typename)
             fixup_style(cat, gs_resource)
-
-            
-            logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
-            if layer.attribute_names is not None:
-                logging.debug("Attributes are not None")
-                for field in layer.attribute_names:
-                    if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
-                        logging.debug("Field is [%s]", field)
-                        la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, searchable=False)
-                        la.save()
-#                        if field is not None and field != "the_geom".lower() and field != "objectid".lower() and field != "gid".lower():
-#                            logging.debug("Adding [%s] as a searchable field", field)
-#                            if layer.searchable_fields is None:
-#                                layer.searchable_fields = ""
-#                            layer.searchable_fields = layer.searchable_fields + field + ","
-#                if layer.searchable_fields is not None:            
-#                    logging.debug("Searchable fields now set to [%s]" + layer.searchable_fields)        
-#                    layer.searchable_fields = layer.searchable_fields.strip(',')
-#                    logging.debug("searchable fields will be [%s]", layer.searchable_fields)
-                layer.save();
-            else:
-                logging.debug("No attributes found")
-                
-            if (request.POST['mapid'] != ''):
-                logging.debug("adding layer to map [%s]", request.POST['mapid'])
-                maplayer = MapLayer.objects.create(map=Map.objects.get(id=request.POST['mapid']), 
-                    name = layer.typename,
-                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
-                    visibility = True,
-                    stack_order = 0
-                    )
-                maplayer.save()
+            layer.save();
         except Exception, e:
             logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
             transaction.rollback()
