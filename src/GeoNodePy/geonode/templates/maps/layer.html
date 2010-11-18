@@ -263,11 +263,9 @@
         {% if can_change_permissions %}
         <li><a href="{% url edit_layer_permissions layer.typename %}">{% trans "Edit Permissions" %}</a></li>
         {% endif %}
-        {% comment %}
-            {% if can_delete %}
+        {% if can_delete %}
 				<li><a href="?remove">{% trans "Remove" %}</a></li>
-			{% endif %}
-        {% endcomment %}
+			  {% endif %}
 			{% else %}
 				<li>Please authenticate to update or remove layers</li>
 			{% endif %}
