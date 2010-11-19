@@ -385,7 +385,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
       addCategoryFolder : function(category, isExpanded){
     	mapRoot = this.treeRoot.findChild("id","maplayerroot");
-    	if (category == "")
+    	if (category == "" || category == undefined || category == null)
     		category = "General";
       	if(mapRoot.findChild("text", category) == null)
       	{
@@ -2373,7 +2373,8 @@ listeners: {
                		{
                            var jsonData = Ext.util.JSON.decode(result.responseText);                            
                            layerfields = jsonData.searchFields;
-                           category = x.get("group") != "" ? x.get("group") : jsonData.category;
+                           category = x.get("group") != "" && x.get("group") != undefined && x.get("group")  ? x.get("group") : jsonData.category;
+                           x.set("group", category);
                            dataLayers[dl.params.LAYERS] = new LayerData(dl.params.LAYERS, jsonData.searchFields, category, jsonData.scount);
                            //alert(dl.params.LAYERS+":"+jsonData.category);
                            geoEx.addCategoryFolder(category, "true");
@@ -2390,6 +2391,7 @@ listeners: {
            	
   
            }, this);
+           //this.treeRoot.getOwnerTree().getLoader().load(this.treeRoot);
        };       
        
        
