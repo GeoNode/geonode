@@ -30,7 +30,8 @@ var LayerData = function(iid, isearchFields, icategory, icount)
 		this.id = iid;
 		this.searchFields = isearchFields;
 		this.category = icategory;
-		this.count = icount
+		this.count = icount;
+//		alert(this.id+":"+this.category+":"+this.count);
 		
 	};
 
@@ -108,6 +109,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     urlPortRegEx: /^(http[s]?:\/\/[^:]*)(:80|:443)?\//,
     
     
+    treeRoot : null,
+    
     searchFields : new Array(),
 
     
@@ -149,6 +152,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     metaDataMapTitle: 'UT:Title',
     metaDataMapUrl: 'UT:UserUrl',
     miniSizeLabel: 'UT: Mini',
+    renameCategoryActionText: 'UT: Rename Category',
+    renameCategoryActionTipText: 'UT: Rename this category',    
+    removeCategoryActionText: 'UT: Remove Category',
+    removeCategoryActionTipText: 'UT: Remove this category and layers',       
     navActionTipText: "UT:Pan Map",
     navNextAction: "UT:Zoom to Next Extent",
     navPreviousActionText: "UT:Zoom to Previous Extent",
@@ -373,6 +380,56 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.mapID = this.initialConfig.id;
     },
     
+    
+
+
+      addCategoryFolder : function(category, isExpanded){
+    	mapRoot = this.treeRoot.findChild("id","maplayerroot");
+    	if (category == "")
+    		category = "General";
+      	if(mapRoot.findChild("text", category) == null)
+      	{
+      	    //alert("adding category");
+      		mapRoot.appendChild(new GeoExt.tree.LayerContainer({
+              text: category,
+              group:category,
+              iconCls: "gx-folder",
+              cls: "folder",
+              expanded: isExpanded == "true",
+              loader: new GeoExt.tree.LayerLoader({
+                  store: this.mapPanel.layers,
+                  filter: function(record) {
+                      return record.get("group") == category &&
+                          record.getLayer().displayInLayerSwitcher == true;
+                  },
+                  createNode: function(attr) {
+                      var layer = attr.layer;
+                      var store = attr.layerStore;
+                      if (layer && store) {
+                          var record = store.getAt(store.findBy(function(r) {
+                              return r.getLayer() === layer;
+                          }));
+                          if (record && !record.get("queryable")) {
+                              attr.iconCls = "gx-tree-rasterlayer-icon";
+                          }
+                      }
+                      return GeoExt.tree.LayerLoader.prototype.createNode.apply(this, [attr]);
+                  }
+              }),
+              singleClickExpand: true,
+              allowDrag: true,
+              listeners: {
+                  append: function(tree, node) {
+                      node.expand();
+                  }
+              }
+          }));     
+      		//mapRoot.getOwnerTree().reload();
+      	} else if (isExpanded == "true"){
+      		(mapRoot.findChild("text", category)).expand();
+      	}
+      },
+    
 	onMapClick:function(e) {
 		var pixel = new OpenLayers.Pixel(e.xy.x, e.xy.y);
 		var lonlat = this.mapPanel.map.getLonLatFromPixel(pixel);
@@ -549,7 +606,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
 
         
-        this.mapPanel.map.events.register("preaddlayer", this, function(e) {
+        this.mapPanel.map.events.register("addLayers", this, function(e) {
             var layer = e.layer;
             var layerfields = '';
             //ge = self;
@@ -589,6 +646,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
  
         
     },
+    
+    
+
     
     /**
      * Method: initPortal
@@ -636,15 +696,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             
             //Show the info window if it's the first time here
             if (this.config.first_visit)
-            	this.showInfoWindow();
-            
-            
-
-
-                     	
-
-            
-            
+            	this.showInfoWindow();            
         });
 
         var getRecordFromNode = function(node) {
@@ -680,20 +732,23 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope: this
         });
 
-        var treeRoot = new Ext.tree.TreeNode({
+        this.treeRoot = new Ext.tree.TreeNode({
             text: "Layers",
             expanded: true,
             isTarget: false,
             allowDrop: false
         });
-        treeRoot.appendChild(new GeoExt.tree.LayerContainer({
+        
+        this.treeRoot.appendChild(new GeoExt.tree.LayerContainer({
             text: this.layerContainerText,
+            id: "maplayerroot",
             iconCls: "gx-folder",
             expanded: true,
+            group: "none",
             loader: new GeoExt.tree.LayerLoader({
                 store: this.mapPanel.layers,
                 filter: function(record) {
-                    return record.get("group") != "background" &&
+                    return record.get("group") == "none" &&
                         record.getLayer().displayInLayerSwitcher == true;
                 },
                 createNode: function(attr) {
@@ -711,7 +766,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }),
             singleClickExpand: true,
-            allowDrag: false,
+            allowDrop: true,
+            allowDrag: true,
             listeners: {
                 append: function(tree, node) {
                     node.expand();
@@ -719,7 +775,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         }));
         
-        treeRoot.appendChild(new GeoExt.tree.LayerContainer({
+        this.treeRoot.appendChild(new GeoExt.tree.LayerContainer({
             text: this.backgroundContainerText,
             iconCls: "gx-folder",
             expanded: true,
@@ -758,6 +814,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         }));
+        
+
+
+        
         
         createPropertiesDialog = function() {
             var node = layerTree.getSelectionModel().getSelectedNode();
@@ -842,13 +902,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var updateLayerActions = function(sel, node) {
             if(node && node.layer) {
+            	removeLayerAction.show();
+            	zoomLayerAction.show();
+            	showPropertiesAction.show();
+            	showStylesAction.show();
                 // allow removal if more than one non-vector layer
                 var count = this.mapPanel.layers.queryBy(function(r) {
                     return !(r.getLayer() instanceof OpenLayers.Layer.Vector);
                 }).getCount();
                 if(count > 1) {
                     removeLayerAction.enable();
+                    zoomLayerAction.enable();
                 } else {
+                	zoomLayerAction.disable();
                     removeLayerAction.disable();
                 }
                 var record = getRecordFromNode(node);
@@ -857,14 +923,91 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 } else {
                     showPropertiesAction.disable();
                 }
+        		removeCategoryAction.hide();
+        		renameAction.hide();                
             } else {
-                removeLayerAction.disable();
-                showPropertiesAction.disable();
+                removeLayerAction.hide();
+                showPropertiesAction.hide();
+                showStylesAction.hide();
+                zoomLayerAction.hide();
+                if (node)
+                	{
+                		removeCategoryAction.show();
+                		renameAction.show();
+                	}
+                
             }
         };
-
+        
+        var zoomLayerAction = new Ext.Action({
+                        text: this.zoomToLayerExtentText,
+                        disabled: true,
+                        iconCls: "icon-zoom-to",
+                        handler: function() {
+                            var node = layerTree.getSelectionModel().getSelectedNode();
+                            if(node && node.layer) {
+                                var map = this.mapPanel.map;
+                                var extent = node.layer.restrictedExtent || map.maxExtent;
+                                map.zoomToExtent(extent, true);
+                            }
+                        },
+                        scope: this
+                    })
+        
+        var renameNode = function(node) {
+        	Ext.MessageBox.prompt('Rename Category', 'New name for \"' + node.text + '\"', function(btn, text){
+        		if (btn == 'ok'){
+        			var a = node;
+        			node.setText(text);
+        			node.attributes.group = text;
+                	node.eachChild(function(n) {
+                		record = getRecordFromNode(n);
+                		if(record) {
+                            record.set("group", text);                      
+                        }
+                	});        			
+        			
+        			
+        			node.ownerTree.fireEvent('beforechildrenrendered', node.parentNode);
+        		}
+        	});
+        };
+        
+        var renameAction =new Ext.Action({
+            text: this.renameCategoryActionText,
+            iconCls: "icon-layerproperties",
+            disabled: false,
+            tooltip: this.renameCategoryActionTipText,
+            handler: function() {
+            	var node = layerTree.getSelectionModel().getSelectedNode();
+            	renameNode(node);
+            },
+            scope: this
+        });        
+        
+        
+        var removeCategoryAction = new Ext.Action({
+            text: this.removeCategoryActionText,
+            iconCls: "icon-removelayers",
+            disabled: false,
+            tooltip: this.removeCategoryActionTipText,
+            handler: function() {
+            	var node = layerTree.getSelectionModel().getSelectedNode();
+            	while (node.childNodes.length > 0){
+            		cnode = node.childNodes[0];
+            		record = getRecordFromNode(cnode);
+            		if(record) {
+                        this.mapPanel.layers.remove(record);                        
+                    }
+            	};
+            	parentNode = node.parentNode;
+            	parentNode.removeChild(node);
+            },
+            scope: this
+        });        
+        
         var layerTree = new Ext.tree.TreePanel({
-            root: treeRoot,
+            root: this.treeRoot,
             rootVisible: false,
             border: false,
             enableDD: true,
@@ -876,7 +1019,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             listeners: {
                 contextmenu: function(node, e) {
-                    if(node && node.layer) {
+                    if(node) {
                         node.select();
                         var c = node.getOwnerTree().contextMenu;
                         c.contextNode = node;
@@ -893,30 +1036,46 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         var record = store.getAt(index);
                         record.set("group", newParent.attributes.group);
                     }
-                },                
+                },  
+                beforenodedrop: function(dropEvent) {
+                  	var source_folder_id = undefined;
+                  	var dest_folder_id = undefined;
+                  	
+                    // Folders can be dragged anywhere
+                    if(dropEvent.data.node.attributes.iconCls == 'gx-folder') {
+                      return true;
+                    }
+                    
+                    // Leaf's can only be dragged within their folder
+                    source_folder_id = dropEvent.data.node.parentNode.id;
+                    if(dropEvent.target.attributes.iconCls == 'gx-folder') {
+                      dest_folder_id = dropEvent.target.attributes.group;
+                    }
+                    else {
+                      dest_folder_id = dropEvent.target.parentNode.attributes.group;
+                    
+                    }
+                    alert(dest_folder_id + ":" + dropEvent.tree.root.id);	
+                    if(source_folder_id != null &&  (dest_folder_id == undefined || dest_folder_id == "none")) {
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  },              
                 scope: this
             },
             contextMenu: new Ext.menu.Menu({
-                items: [
-                    {
-                        text: this.zoomToLayerExtentText,
-                        iconCls: "icon-zoom-to",
-                        handler: function() {
-                            var node = layerTree.getSelectionModel().getSelectedNode();
-                            if(node && node.layer) {
-                                var map = this.mapPanel.map;
-                                var extent = node.layer.restrictedExtent || map.maxExtent;
-                                map.zoomToExtent(extent, true);
-                            }
-                        },
-                        scope: this
-                    },
+                items: [ zoomLayerAction,
                     removeLayerAction,
                     showPropertiesAction,
-                    showStylesAction
-                ]
+                    showStylesAction,
+                    renameAction,
+                    removeCategoryAction
+            ]
             })
         });
+        
+
         
         var layersContainer = new Ext.Panel({
             autoScroll: true,
@@ -930,6 +1089,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 Ext.apply(new Ext.Button(showStylesAction), {text: ""})
             ]
         });
+        
+
 
         this.legendPanel = new GeoExt.LegendPanel({
             title: this.legendPanelText,
@@ -1088,6 +1249,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         ];
         
         GeoExplorer.superclass.initPortal.apply(this, arguments);
+        
+        if (this.config.treeconfig != undefined)
+    	{
+    		for (x = 0; x < this.config.treeconfig.length; x++)
+    			{
+    				if (this.config.treeconfig[x] != null)
+    					this.addCategoryFolder(this.config.treeconfig[x].group, this.config.treeconfig[x].expanded);
+    			}
+    		
+    	};
     },
     
     /** api: method[createStylesPanel]
@@ -1266,6 +1437,46 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         		document.location.href="/data/upload?map=" + this.mapID;
         };
         
+//        var treeRoot = this.treeRoot;
+//        var mapPanel = this.mapPanel;
+//        
+//        var addCategoryFolder = function(category, isExpanded){
+//        	//if(treeRoot.findChild("text", category) == null)
+//        	alert("tree " + category);
+//            treeRoot.findChild("id","maplayerroot").appendChild(new GeoExt.tree.LayerContainer({
+//                text: category,
+//                iconCls: "gx-folder",
+//                expanded: isExpanded,
+//                loader: new GeoExt.tree.LayerLoader({
+//                    store: mapPanel.layers,
+//                    filter: function(record) {
+//                        return record.get("group") == category &&
+//                            record.getLayer().displayInLayerSwitcher == true;
+//                    },
+//                    createNode: function(attr) {
+//                        var layer = attr.layer;
+//                        var store = attr.layerStore;
+//                        if (layer && store) {
+//                            var record = store.getAt(store.findBy(function(r) {
+//                                return r.getLayer() === layer;
+//                            }));
+//                            if (record && !record.get("queryable")) {
+//                                attr.iconCls = "gx-tree-rasterlayer-icon";
+//                            }
+//                        }
+//                        return GeoExt.tree.LayerLoader.prototype.createNode.apply(this, [attr]);
+//                    }
+//                }),
+//                singleClickExpand: true,
+//                allowDrag: false,
+//                listeners: {
+//                    append: function(tree, node) {
+//                        node.expand();
+//                    }
+//                }
+//            }));        	
+//        };        
+        
         var addLayers = function() {
             var key = sourceComboBox.getValue();
             var layerStore = this.mapPanel.layers;
@@ -1292,17 +1503,21 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     		success: function(result,request)
                     		{
                                 var jsonData = Ext.util.JSON.decode(result.responseText);                            
-                                dataLayers[record.name] = new LayerData(id, jsonData.searchFields, jsonData.category, jsonData.scount);
-                                record.group = jsonData.category
-                                //alert(record.group);
+                                dataLayers[record.get("name")] = new LayerData(dataLayers[record.get("name")], jsonData.searchFields, jsonData.category, jsonData.scount);
+                                record.set("group",jsonData.category);
+                                //addCategoryFolder(record.get("group"), true);
+                                layerStore.add([record]);
                     		},
                     		failure: function(result,request) {
+                    			record.set("group","none");
+                                //addCategoryFolder(record.group, true);
+                                layerStore.add([record]);
                                //alert(result.responseText);
                     		}
                     		
                     	});                    	
-
-                        layerStore.add([record]);
+                    	
+                        
                     }
                 }
             }
@@ -2126,9 +2341,58 @@ listeners: {
  }
 } }   	           ]
 });
-		
 
+       
 
+       var addInfo = function() {
+           var queryableLayers = this.mapPanel.layers.queryBy(function(x){
+               return x.get("queryable");
+           });
+
+           
+           var geoEx = this;
+           
+           var control;
+           for (var i = 0, len = info.controls.length; i < len; i++){
+               control = info.controls[i];
+               control.deactivate();  // TODO: remove when http://trac.openlayers.org/ticket/2130 is closed
+               control.destroy();
+           }
+
+           info.controls = [];
+           
+           queryableLayers.each(function(x){
+           	
+           	var dl = x.getLayer();
+               if (dl.name != "HighlightWMS"){
+               	Ext.Ajax.request({
+               		url: "/maps/searchfields/?" + dl.params.LAYERS,
+               		method: "POST",
+               		params: {layername:dl.params.LAYERS},
+               		success: function(result,request)
+               		{
+                           var jsonData = Ext.util.JSON.decode(result.responseText);                            
+                           layerfields = jsonData.searchFields;
+                           category = x.get("group") != "" ? x.get("group") : jsonData.category;
+                           dataLayers[dl.params.LAYERS] = new LayerData(dl.params.LAYERS, jsonData.searchFields, category, jsonData.scount);
+                           //alert(dl.params.LAYERS+":"+jsonData.category);
+                           geoEx.addCategoryFolder(category, "true");
+                           
+                           
+               		},
+               		failure: function(result,request) {
+                          alert(result.responseText);
+               		}
+               		
+               	});}
+           	
+           	//wfsQuery = dl.url.replace("/wms", "/wfs").replace("?service=wms","") + "?request=GetFeature&version=1.1.0&typeName=" + dl.params.LAYERS + "&outputFormat=JSON";
+           	
+  
+           }, this);
+       };       
+       
+       
         var updateInfo = function() {
             var queryableLayers = this.mapPanel.layers.queryBy(function(x){
                 return x.get("queryable");
@@ -2144,34 +2408,10 @@ listeners: {
 
             info.controls = [];
             
-            queryableLayers.each(function(x){
-            	
-            	var dl = x.getLayer();
-                if (dl.name != "HighlightWMS"){
-                	Ext.Ajax.request({
-                		url: "/maps/searchfields/?" + dl.params.LAYERS,
-                		method: "POST",
-                		params: {layername:dl.params.LAYERS},
-                		success: function(result,request)
-                		{
-                            var jsonData = Ext.util.JSON.decode(result.responseText);                            
-                            layerfields = jsonData.searchFields;
-                            dataLayers[dl.params.LAYERS] = new LayerData(id, jsonData.searchFields, jsonData.category, jsonData.scount);
-                		},
-                		failure: function(result,request) {
-                           alert(result.responseText);
-                		}
-                		
-                	});}
-            	
-            	//wfsQuery = dl.url.replace("/wms", "/wfs").replace("?service=wms","") + "?request=GetFeature&version=1.1.0&typeName=" + dl.params.LAYERS + "&outputFormat=JSON";
-            	
-   
-            }, this);
         };
 
         this.mapPanel.layers.on("update", updateInfo, this);
-        this.mapPanel.layers.on("add", updateInfo, this);
+        this.mapPanel.layers.on("add", addInfo, this);
         this.mapPanel.layers.on("remove", updateInfo, this);
 
         // create split button for measure controls
@@ -2753,6 +2993,8 @@ listeners: {
         return this.rest + this.mapID + '/data';
     },
 
+
+    
     /** api: method[save]
      *  :arg as: ''Boolean'' True if map should be "Saved as..."
      *
@@ -2767,6 +3009,14 @@ listeners: {
         
         var config = this.getState();
         
+        var treeConfig = [];
+        for (x = 0; x < this.treeRoot.firstChild.childNodes.length; x++)
+        {
+        	node = this.treeRoot.firstChild.childNodes[x];
+        	treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
+        }
+        
+        config.treeconfig = treeConfig;
         
         if (!this.mapID || as) {
             /* create a new map */ 

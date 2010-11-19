@@ -1224,9 +1224,14 @@ class Map(models.Model, PermissionLevelMixin):
     
     keywords = models.CharField(_('Keywords (for Picasa and YouTube overlays)'), blank=True, null=True, max_length=255)
     """
-    Keywords (for Picasa and YouTube overlays
+    Keywords (for Picasa and YouTube overlays)
     """     
-
+    
+    group_params = models.TextField(_('Layer Category Parameters'), blank=True, null=True)
+    """
+    Layer categories (names, expanded)
+    """    
+    
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
@@ -1348,8 +1353,12 @@ class Map(models.Model, PermissionLevelMixin):
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
-            }
+            },
         }
+
+        
+        if self.group_params:
+            config["treeconfig"] = simplejson.loads(self.group_params)
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
@@ -1379,6 +1388,8 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.featured = conf['about'].get('featured', False)
 
+        self.group_params = simplejson.dumps(conf["treeconfig"])
+        
         def source_for(layer):
             return conf["sources"][layer["source"]]
 
@@ -1616,7 +1627,6 @@ class MapLayer(models.Model):
         if self.local():
             cfg['searchfields'] = Layer.objects.get(typename=self.name).searchable_fields   
         cfg["fixed"] = self.fixed
-        if self.group: cfg["group"] = self.group
         cfg["visibility"] = self.visibility
         logger.debug("layer config for [%s] is [%s]", self.name, str(cfg))
         return cfg
