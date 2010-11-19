@@ -175,11 +175,15 @@ To allow new user registration:
        EMAIL_PORT = 587
        EMAIL_USE_TLS = True
 
-2. In the same settings file set::
+2. One week activation window::
 
-       REGISTRATION_OPEN=True
+	   ACCOUNT_ACTIVATION_DAYS = 7 
+	   
+3. In the same settings file set::
 
-3. With the Django application running, set the domain name of the service properly through the admin interface.  (This domain name is used in the account activation emails.)::
+       REGISTRATION_OPEN=True	   
+
+4. With the Django application running, set the domain name of the service properly through the admin interface.  (This domain name is used in the account activation emails.)::
 
        http://localhost:8000/admin/sites/site/1
 
