@@ -144,6 +144,14 @@ MAP_BASELAYERSOURCES = {
     }
 }
 
+# Adds WMS servers to fullscreen map server list.
+DEFAULT_MAP_WMS = {
+#    "WMS Server Name": {
+#        "ptype":"gx_wmssource",
+#        "url": "http://server.url/wms"
+#    }
+}
+
 MAP_BASELAYERS = [{
     "source":"any",
     "type":"OpenLayers.Layer",
