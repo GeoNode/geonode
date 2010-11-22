@@ -1159,7 +1159,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             items: [                 
             addLayerButton,
             Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
-            this.createTools(),
+            this.createTools()
             ]
         });
 

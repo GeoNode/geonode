@@ -167,7 +167,7 @@ if (window.GeoNode && GeoNode.MapSearchTable) {
         searchButtonText: gettext('Search'),
         showingText: gettext('Showing'),
         loadingText: gettext('Loading'),
-        permalinkText: gettext('permalink'),
+        permalinkText: gettext('permalink')
     });
 }
 
