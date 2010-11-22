@@ -704,7 +704,6 @@ class Layer(models.Model, PermissionLevelMixin):
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng')
     topic_category = models.ForeignKey(LayerCategory, blank=True, null=True)
-    searchable_fields = models.TextField(_('searchable fields'), blank=True, null=True)
 
     # Section 5
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True)
@@ -1623,9 +1622,7 @@ class MapLayer(models.Model):
         if self.opacity: cfg['opacity'] = self.opacity
         if self.styles: cfg['styles'] = self.styles
         if self.transparent: cfg['transparent'] = True
-        if self.group:cfg['group'] = self.group
-        if self.local():
-            cfg['searchfields'] = Layer.objects.get(typename=self.name).searchable_fields   
+        if self.group:cfg['group'] = self.group 
         cfg["fixed"] = self.fixed
         cfg["visibility"] = self.visibility
         logger.debug("layer config for [%s] is [%s]", self.name, str(cfg))
