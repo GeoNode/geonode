@@ -662,6 +662,7 @@ def map_controller(request, mapid):
     main view for map resources, dispatches to correct 
     view based on method and query args. 
     '''
+
     if mapid.isdigit():
         map = Map.objects.get(pk=mapid)
     else:
@@ -670,7 +671,7 @@ def map_controller(request, mapid):
     if 'remove' in request.GET: 
         return deletemap(request, map.id)
     elif 'describe' in request.GET:
-        return describemap(request, map.id)
+        return describemap(request, mapid)
     else:
         return mapdetail(request, map.id)
 
