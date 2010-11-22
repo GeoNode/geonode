@@ -1149,7 +1149,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             items: [gridWinPanel, gridResultsPanel],
             collapsed: true,
             region: "east",
-            width: 250,
+            width: 250
         });
         
         
@@ -2138,6 +2138,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
             busyMask.show();
     		
+            try{
             //Get rid of any existing highlight layers
             removeHighlightLayers();
             
@@ -2218,10 +2219,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
             
             mapPanel.map.addLayers(layers);  
+            } catch (e) {
+            	//Suppress for now
+            } finally {
+        		if (busyMask) {
+        			busyMask.hide();
+        		}
+            }
             
-    		if (!busyMask) {
-    			busyMask.hide();
-    		}
+
     	};
     	
     	var reset =  function() { 
@@ -2838,7 +2844,7 @@ listeners: {
         	vtype: 'UniqueUrl',
         	itemCls:'x-form-field-inline',
         	ctCls:'x-form-field-inline',
-        	value: this.about["urlsuffix"],
+        	value: this.about["urlsuffix"]
         });
 
         
