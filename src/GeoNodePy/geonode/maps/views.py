@@ -34,7 +34,8 @@ from django.db.models import Q
 import logging
 import datetime
 from django.utils.encoding import iri_to_uri
-
+from django.db.models.signals import pre_delete
+from geonode.maps.models import delete_layer
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -1972,3 +1973,25 @@ def ajax_url_lookup(request):
         mimetype='text/plain'
     )
 
+def updatelayers(request):
+    try:
+        Layer.objects.slurp()
+    except:
+        return HttpResponse(content=str(_), mimetype='text/plain')
+    return HttpResponse('Layers successfully slurped', mimetype='text/plain')
+
+def cleardeadlayers(request):
+        try:
+            pre_delete.disconnect(delete_layer, sender=Layer)
+            cat = Layer.objects.gs_catalog
+            storenames = [s.name for s in cat.get_stores()]
+            layernames = [l.name for l in cat.get_resources()]
+            for l in Layer.objects.all():
+                if l.store not in storenames or l.name not in layernames:
+                    l.delete()
+                    print l
+        except:
+            return HttpResponse( "Couldn't connect to GeoServer; is it running? Make sure the GEOSERVER_BASE_URL setting is set correctly.", mimetype="text/plain")
+        finally:
+            pre_delete.connect(delete_layer, sender=Layer)
+            return HttpResponse("Done clearing dead layers", mimetype='text/plain')
