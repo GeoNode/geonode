@@ -744,7 +744,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             id: "maplayerroot",
             iconCls: "gx-folder",
             expanded: true,
-            group: "none",
             loader: new GeoExt.tree.LayerLoader({
                 store: this.mapPanel.layers,
                 filter: function(record) {
@@ -1028,7 +1027,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
                 beforemovenode: function(tree, node, oldParent, newParent, index) {
                     // change the group when moving to a new container
-                    if(oldParent !== newParent) {
+                    if(node.layer && oldParent !== newParent) {
                         var store = newParent.loader.store;
                         var index = store.findBy(function(r) {
                             return r.getLayer() === node.layer;
@@ -1039,28 +1038,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },  
                 beforenodedrop: function(dropEvent) {
                   	var source_folder_id = undefined;
-                  	var dest_folder_id = undefined;
+                  	var dest_folder = undefined;
                   	
-                    // Folders can be dragged anywhere
+                    // Folders can be dragged, but not into another folder
                     if(dropEvent.data.node.attributes.iconCls == 'gx-folder') {
-                      return true;
+ 
+                        if( (dropEvent.target.attributes.iconCls == 'gx-folder' && dropEvent.point == "above") || (dropEvent.target.parentNode.attributes.iconCls == 'gx-folder' && dropEvent.point == "below")) {
+                            return true;
+                          } else {
+                            return false;
+                          }                      
                     }
-                    
-                    // Leaf's can only be dragged within their folder
-                    source_folder_id = dropEvent.data.node.parentNode.id;
-                    if(dropEvent.target.attributes.iconCls == 'gx-folder') {
-                      dest_folder_id = dropEvent.target.attributes.group;
-                    }
-                    else {
-                      dest_folder_id = dropEvent.target.parentNode.attributes.group;
-                    
-                    }
-                    alert(dest_folder_id + ":" + dropEvent.tree.root.id);	
-                    if(source_folder_id != null &&  (dest_folder_id == undefined || dest_folder_id == "none")) {
-                      return false;
-                    } else {
-                      return true;
-                    }
+
                   },              
                 scope: this
             },
@@ -1509,7 +1498,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 layerStore.add([record]);
                     		},
                     		failure: function(result,request) {
-                    			record.set("group","none");
+                    			record.set("group","General");
                                 //addCategoryFolder(record.group, true);
                                 layerStore.add([record]);
                                //alert(result.responseText);
