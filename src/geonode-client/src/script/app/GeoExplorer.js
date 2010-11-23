@@ -1491,9 +1491,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     		params: {layername:record.get("name")},
                     		success: function(result,request)
                     		{
-                                var jsonData = Ext.util.JSON.decode(result.responseText);                            
-                                dataLayers[record.get("name")] = new LayerData(dataLayers[record.get("name")], jsonData.searchFields, jsonData.category, jsonData.scount);
-                                record.set("group",jsonData.category);
+                                var jsonData = Ext.util.JSON.decode(result.responseText);      
+                                category = jsonData.category;
+                                if (!category || category = '')
+                                	category = "General";
+                                dataLayers[record.get("name")] = new LayerData(dataLayers[record.get("name")], jsonData.searchFields, category, jsonData.scount);
+                                record.set("group",category);
                                 //addCategoryFolder(record.get("group"), true);
                                 layerStore.add([record]);
                     		},
