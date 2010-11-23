@@ -1042,12 +1042,20 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                   	
                     // Folders can be dragged, but not into another folder
                     if(dropEvent.data.node.attributes.iconCls == 'gx-folder') {
- 
-                        if( (dropEvent.target.attributes.iconCls == 'gx-folder' && dropEvent.point == "above") || (dropEvent.target.parentNode.attributes.iconCls == 'gx-folder' && dropEvent.point == "below")) {
+                    	alert(dropEvent.target.attributes.iconCls + ":" + dropEvent.point + ":" + dropEvent.target.parentNode.text);
+                    	if (dropEvent.target.attributes.iconCls != "gx-folder")
+                    		dropEvent.target = dropEvent.target.parentNode;
+                        if( (dropEvent.target.attributes.iconCls == 'gx-folder' && dropEvent.point == "above") || (dropEvent.target.text != 'Background' && dropEvent.target.attributes.iconCls == 'gx-folder' && dropEvent.point == "below")) {
                             return true;
                           } else {
                             return false;
                           }                      
+                    } else {
+                    	alert(dropEvent.target.parentNode.text);
+                    	if (dropEvent.target.parentNode.text == 'Background' || dropEvent.target.parentNode.text == 'Layers')
+                    		return false;
+                    	else
+                    		return true;
                     }
 
                   },              
