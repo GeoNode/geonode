@@ -158,3 +158,15 @@ sudo nano /etc/dovecot/dovecot.conf
 sudo /etc/init.d/dovecat stop
 sudo /etc/init.d/dovecat start
 
+
+FUSE+s3fs
+sudo apt-get install autoconf libcurl4-openssl-dev libfuse-dev libselinux1-dev libsepol1-dev libxml2-dev sshfs 
+svn checkout http://s3fs.googlecode.com/svn/trunk/ s3fs
+	cd /s3fs
+	./autogen.sh
+	./configure --prfix=/usr
+	make
+	sudo make install
+
+
+

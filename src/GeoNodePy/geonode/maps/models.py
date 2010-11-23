@@ -1104,7 +1104,7 @@ class Layer(models.Model, PermissionLevelMixin):
         self.geographic_bounding_box = bbox_to_wkt(box[0], box[1], box[2], box[3], srid=srid )
 
     def get_absolute_url(self):
-        return "%sdata/%s" % (settings.SITEURL,self.typename)
+        return "%s/data/%s" % (settings.SITEURL.rstrip('/'),self.typename)
 
     def __str__(self):
         return "%s Layer" % self.typename

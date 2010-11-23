@@ -87,9 +87,6 @@ The following steps should prepare a Python virtual environment for you::
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
   
-  
-Copy the customized WMS GetFeatureInfo templates into the GeoServer data directory
-  cp src/geoserver-geonode-ext/src/custom/webapp/data/featureTypes/*.ftl  gs-data/featureTypes
 
 Start the server:
   paver host 
