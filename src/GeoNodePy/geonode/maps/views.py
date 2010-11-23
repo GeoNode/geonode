@@ -824,15 +824,15 @@ def _describe_layer(request, layer):
             mapid = layer_form.cleaned_data['map_id']
             logger.debug("map id is [%s]", mapid)
             
-            if new_category is None:
-                    new_category = layer_form.cleaned_data['topic_category_new']
-                    if new_category is not None:
-                        try:
-                            newLayerCategory = LayerCategory.objects.get(name=new_category)
-                        except LayerCategory.DoesNotExist:
-                            newLayerCategory = LayerCategory(name=new_category)
-                            newLayerCategory.save()
-                        new_category = newLayerCategory
+#            if new_category is None:
+#                    new_category = layer_form.cleaned_data['topic_category_new']
+#                    if new_category is not None:
+#                        try:
+#                            newLayerCategory = LayerCategory.objects.get(name=new_category)
+#                        except LayerCategory.DoesNotExist:
+#                            newLayerCategory = LayerCategory(name=new_category)
+#                            newLayerCategory.save()
+#                        new_category = newLayerCategory
             
             if new_poc is None:
                 poc_form = ContactForm(request.POST, prefix="poc")
