@@ -1923,8 +1923,8 @@ def searchFieldsJSON(request):
                     searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
                     if la.searchable:
                         scount+=1            
-        except: 
-            logger.debug("Could not find matching layer: [%s]", str(_))            
+        except Exception, e: 
+            logger.debug("Could not find matching layer: [%s]", str(e))            
         sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount}
         logger.debug('sfJSON is [%s]', str(sfJSON))
         return HttpResponse(json.dumps(sfJSON))

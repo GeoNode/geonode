@@ -851,7 +851,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     // disable the "About" tab's fields to indicate that they
                     // are read-only
                     //TODO WMSLayerPanel should be easier to configure for this
-                    prop.items.get(0).items.get(0).cascade(function(i) {
+                    prop.items.get(0).items.get(1).cascade(function(i) {
                         i instanceof Ext.form.Field && i.setDisabled(true);
                     });
                     prop.items.get(0).items.get(0).add({html: "<a href='/data/" + layer.params.LAYERS + "'>Metadata</a>", xtype: "panel"});
@@ -2183,8 +2183,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             			for (f=0; f < dataLayers[dl.params.LAYERS].searchFields.length; f++)
             			{
             				field = dataLayers[dl.params.LAYERS].searchFields[f]
-            				if (field.searchable)
+            				
+            				if (field.searchable == "True") {
             					queryFields.push(field.attribute);
+            				}
             			}
             			
             			
