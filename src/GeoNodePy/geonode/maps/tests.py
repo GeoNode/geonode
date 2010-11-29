@@ -116,13 +116,17 @@ community."
             self.failUnlessEqual(response.status_code, 200)
 
 
-    def dont_test_search_detail(self):
+    def test_search_detail(self):
         '''
         /data/search/detail -> Test accessing the data search detail for a layer
         Disabled due to reliance on consistent UUIDs across loads.
         '''
         if self.GEOSERVER:
             layer = Layer.objects.all()[0]
+
+            # save to geonetwork so we know the uuid is consistent between
+            # django db and geonetwork
+            layer.save_to_geonetwork()
 
             c = Client()
             response = c.get('/data/search/detail', {'uuid':layer.uuid})
