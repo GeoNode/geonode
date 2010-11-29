@@ -19,7 +19,10 @@
     },
     {
         "fields": {
-            "typename": "base:CA"
+            "typename": "base:CA",
+            "store": "CA",
+            "name": "CA",
+            "workspace": "base"
         },
         "model": "maps.layer",
         "pk": 1
