@@ -1,9 +1,22 @@
 from django.test import TestCase
-from geonode.maps.models import Map, Layer
 from django.test.client import Client
+from geonode.maps.models import Map, Layer
 from geonode.maps.views import DEFAULT_MAP_CONFIG
-import json
-import os
+from mock import Mock
+
+import json, os
+import geonode.maps.models
+
+_gs_resource = Mock()
+_gs_resource.native_bbox = [1, 2, 3, 4]
+Layer.objects.geonetwork = Mock()
+Layer.objects.gs_catalog = Mock()
+Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
+
+geonode.maps.models.get_csw = Mock()
+geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
 
 class MapTest(TestCase):
 
