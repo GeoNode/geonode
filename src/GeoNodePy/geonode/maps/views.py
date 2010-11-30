@@ -92,9 +92,17 @@ class LayerCategoryForm(forms.ModelForm):
 
 
 class LayerAttributeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(LayerAttributeForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.attribute_type != 'xsd:string':
+            self.fields['searchable'].widget.attrs['disabled'] = True
+        self.fields['attribute'].widget.attrs['readonly'] = True    
+
 
     class Meta:
         model = LayerAttribute
+        exclude = ('attribute_type',)
 
 class LayerForm(forms.ModelForm):
 
@@ -795,7 +803,7 @@ def _describe_layer(request, layer):
         metadata_author = layer.metadata_author
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
-        layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0)
+        layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm)
 
     
         
@@ -1004,10 +1012,10 @@ def upload_layer(request):
             logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
             if layer.attribute_names is not None:
                 logging.debug("Attributes are not None")
-                for field in layer.attribute_names:
+                for field, ftype in layer.attribute_names.iteritems():
                     if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
                         logging.debug("Field is [%s]", field)
-                        la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, searchable=False)
+                        la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, attribute_type=ftype, searchable=(ftype == "xsd:string"))
                         la.save()
             else:
                 logging.debug("No attributes found")
@@ -1919,7 +1927,7 @@ def searchFieldsJSON(request):
             if geoLayer.storeType == 'dataStore':
                 #searchable_fields = geoLayer.searchable_fields
                 #logger.debug('There are [%s] attributes', geoLayer.layerattribute_set.length)
-                for la in geoLayer.layerattribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$'):
+                for la in geoLayer._set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$'):
                     searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
                     if la.searchable:
                         scount+=1            

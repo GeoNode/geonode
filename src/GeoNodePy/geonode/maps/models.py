@@ -636,9 +636,9 @@ class LayerManager(models.Manager):
                                    
                 #Create layer attributes if they don't already exist
                 if layer.attribute_names is not None:
-                     for field in layer.attribute_names:
+                     for field, ftype in layer.attribute_names.iteritems():
                          if field is not None:
-                             la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, defaults={'attribute_label' : field, 'searchable': False })
+                             la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
                              if created:
                                  logger.debug("Created [%s] attribute for [%s]", field, layer)
 
@@ -886,10 +886,12 @@ class Layer(models.Model, PermissionLevelMixin):
                 response, body = http.request(dft_url)
                 doc = XML(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
-                atts = [n.attrib["name"] for n in doc.findall(path)]
+                atts = {}
+                for n in doc.findall(path):
+                    atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:
-                logger.debug("Exception occurred, returned attribute set will be empty")
-                atts = []
+                logger.debug("Exception occurred, returned attribute set will be empty: [%s]", str(e))
+                atts = {}
             logger.debug("Exiting attribute_names with feature atts [%s]", str(atts))
             return atts
         elif self.resource.resource_type == "coverage":
@@ -1145,6 +1147,7 @@ class LayerAttribute(models.Model):
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False)
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
     attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
+    attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
     searchable = models.BooleanField(default=False)
 
     def __str__(self):

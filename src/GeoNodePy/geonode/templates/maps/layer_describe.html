@@ -53,10 +53,10 @@
           <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Attributes</legend>
 	        {{ attribute_form.management_form }}
-	        <table><tr><th>Attribute</th><th>Searchable</th>
+	        <table><tr><th>Attribute</th><th>Display Title<th>Searchable</th>
 	        {% for form in attribute_form.forms %}
 	        	{% if form.attribute %}
-	        	<tr><td><div style="display:none">{{form.attribute}}{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.searchable}}</td></tr>
+	        	<tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.searchable}}</td></tr>
 	        	{% endif %}
 	        {% endfor %}
 	        </table>
