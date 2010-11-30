@@ -1042,7 +1042,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                   	
                     // Folders can be dragged, but not into another folder
                     if(dropEvent.data.node.attributes.iconCls == 'gx-folder') {
-                    	alert(dropEvent.target.attributes.iconCls + ":" + dropEvent.point + ":" + dropEvent.target.parentNode.text);
+                    	//alert(dropEvent.target.attributes.iconCls + ":" + dropEvent.point + ":" + dropEvent.target.parentNode.text);
                     	if (dropEvent.target.attributes.iconCls != "gx-folder")
                     		dropEvent.target = dropEvent.target.parentNode;
                         if( (dropEvent.target.attributes.iconCls == 'gx-folder' && dropEvent.point == "above") || (dropEvent.target.text != 'Background' && dropEvent.target.attributes.iconCls == 'gx-folder' && dropEvent.point == "below")) {
@@ -1051,7 +1051,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             return false;
                           }                      
                     } else {
-                    	alert(dropEvent.target.parentNode.text);
+                    	//alert(dropEvent.target.parentNode.text);
                     	if (dropEvent.target.parentNode.text == 'Background' || dropEvent.target.parentNode.text == 'Layers')
                     		return false;
                     	else
@@ -1479,48 +1479,72 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             var layerStore = this.mapPanel.layers;
             var source = this.layerSources[key];
             var records = capGridPanel.getSelectionModel().getSelections();
-            var record;
+            //alert(records.length);
             for (var i=0, ii=records.length; i<ii; ++i) {
-                record = source.createLayerRecord({
-                    name: records[i].get("name"),
-                    source: key,
-                    buffer: 0
-                });
-                if (record) {                	
-                    if (record.get("group") === "background") {
-                        var pos = layerStore.queryBy(function(rec) {
-                            return rec.get("group") === "background"
-                        }).getCount();
-                        layerStore.insert(pos, [record]);
-                    } else {
+            			var layer = records[i].get("name");
                     	Ext.Ajax.request({
-                    		url: "/maps/searchfields/?" + record.get("name"),
+                    		url: "/maps/searchfields/?" + records[i].get("name"),
                     		method: "POST",
-                    		params: {layername:record.get("name")},
+                    		params: {layername:records[i].get("name")},
                     		success: function(result,request)
                     		{
-                                var jsonData = Ext.util.JSON.decode(result.responseText);      
-                                category = jsonData.category;
-                                if (!category || category == '')
-                                	category = "General";
-                                dataLayers[record.get("name")] = new LayerData(dataLayers[record.get("name")], jsonData.searchFields, category, jsonData.scount);
-                                record.set("group",category);
-                                //addCategoryFolder(record.get("group"), true);
-                                layerStore.add([record]);
+                    				var layer = request.params["layername"];
+                    			    var record = source.createLayerRecord({
+                    					name: layer,
+                    					source: key,
+                    					buffer: 0
+                					});
+                					//alert(layer + " created");
+                					if (record) {                	
+                    					if (record.get("group") === "background") {
+                        					var pos = layerStore.queryBy(function(rec) {
+                            					return rec.get("group") === "background"
+                        					}).getCount();
+                        					layerStore.insert(pos, [record]);
+                    					} else {
+
+                    						//alert("Success searching fields for " + layer + ":" + result.ResponseText);
+                                			var jsonData = Ext.util.JSON.decode(result.responseText);      
+                                			category = jsonData.category;
+	                                		if (!category || category == '')
+	                                			category = "General";
+                                			dataLayers[layer] = new LayerData(dataLayers[layer], jsonData.searchFields, category, jsonData.scount);
+                                			record.set("group",category);
+                                			//addCategoryFolder(record.get("group"), true);
+                                			layerStore.add([record]);
+                                			//alert("Success adding " + layer);
+                    					}
+                					}
                     		},
                     		failure: function(result,request) {
-                    			record.set("group","General");
-                                //addCategoryFolder(record.group, true);
-                                layerStore.add([record]);
-                               //alert(result.responseText);
+                    				var layer = request.params["layername"];
+                    			    var record = source.createLayerRecord({
+                    					name: layer,
+                    					source: key,
+                    					buffer: 0
+                					});
+                					//alert(layer + " created after FAIL");
+                					if (record) {                	
+                    					if (record.get("group") === "background") {
+                        					var pos = layerStore.queryBy(function(rec) {
+                            					return rec.get("group") === "background"
+                        					}).getCount();
+                        					layerStore.insert(pos, [record]);
+                    					} else {
+	                                		category = "General";
+                                			dataLayers[layer] = new LayerData(dataLayers[layer], [], category, 0);
+                                			record.set("group",category);
+                                			//addCategoryFolder(record.get("group"), true);
+                                			layerStore.add([record]);
+                                			//alert("Success adding " + layer);
+                    					}
+                					}
                     		}
                     		
                     	});                    	
                     	
                         
                     }
-                }
-            }
         };
 
         var source = this.layerSources[initialSourceId];
