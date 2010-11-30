@@ -65,7 +65,7 @@ public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
      */
     public void imageProgress(ImageWriter source, float percentageDone) {
         if (!checkCancelled(source)) {
-            System.err.println("image progrss: " + percentageDone);
+            //System.err.println("image progrss: " + percentageDone);
             monitor.progress(percentageDone);
         }
     }
