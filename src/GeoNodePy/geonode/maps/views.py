@@ -1927,7 +1927,7 @@ def searchFieldsJSON(request):
             if geoLayer.storeType == 'dataStore':
                 #searchable_fields = geoLayer.searchable_fields
                 #logger.debug('There are [%s] attributes', geoLayer.layerattribute_set.length)
-                for la in geoLayer._set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$'):
+                for la in geoLayer.layerattribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$'):
                     searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
                     if la.searchable:
                         scount+=1            

@@ -2409,6 +2409,7 @@ listeners: {
                            if (category == "")
                         	   category = "General";
                            x.set("group", category);
+                           //alert(result.responseText);
                            dataLayers[dl.params.LAYERS] = new LayerData(dl.params.LAYERS, jsonData.searchFields, category, jsonData.scount);
                            //alert(dl.params.LAYERS+":"+jsonData.category);
                            geoEx.addCategoryFolder(category, "true");
