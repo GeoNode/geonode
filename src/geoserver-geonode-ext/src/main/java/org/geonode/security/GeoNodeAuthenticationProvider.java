@@ -49,6 +49,7 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
     /**
      * @see org.acegisecurity.providers.AuthenticationProvider#supports(java.lang.Class)
      */
+    @SuppressWarnings("rawtypes")
     public boolean supports(Class authentication) {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }

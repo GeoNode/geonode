@@ -5,6 +5,7 @@
 package org.geonode.security;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,12 +23,10 @@ import org.acegisecurity.GrantedAuthorityImpl;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
 import org.apache.commons.codec.binary.Base64;
+import org.geonode.http.GeoNodeHTTPClient;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
  * Default implementation, which actually talks to a GeoNode server (there are also mock
@@ -39,14 +38,12 @@ import org.springframework.context.ApplicationContextAware;
  * 
  * @author Andrea Aime - OpenGeo
  */
-public class DefaultSecurityClient implements GeonodeSecurityClient, ApplicationContextAware {
+public class DefaultSecurityClient implements GeonodeSecurityClient {
     static final Logger LOGGER = Logging.getLogger(DefaultSecurityClient.class);
 
-    private final HTTPClient client;
+    private final GeoNodeHTTPClient client;
 
-    private String baseUrl;
-
-    public DefaultSecurityClient(final HTTPClient httpClient) {
+    public DefaultSecurityClient(final GeoNodeHTTPClient httpClient) {
         this.client = httpClient;
     }
 
@@ -56,7 +53,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
      * @return
      */
     String getBaseUrl() {
-        return baseUrl;
+        return client.getBaseURL().toExternalForm();
     }
 
     /**
@@ -100,7 +97,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     private Authentication authenticate(final Object credentials, final String... requestHeaders)
             throws AuthenticationException, IOException {
 
-        final String url = baseUrl + "data/acls";
+        final String url = new URL(client.getBaseURL(), "data/acls").toExternalForm();
 
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Authenticating with " + Arrays.toString(requestHeaders));
@@ -152,30 +149,6 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
                     grantedAuthorities);
         }
         return authentication;
-    }
-
-    /**
-     * Looks up for the {@code GEONODE_BASE_URL} property (either a System property, a servlet
-     * context parameter or an environment variable) to be used as the base URL for the GeoNode
-     * authentication requests (for which {@code 'data/acls'} will be appended).
-     * <p>
-     * If not provided, defaults to {@code http://localhost:8000}
-     * </p>
-     * 
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     * @see GeoServerExtensions#getProperty(String, ApplicationContext)
-     */
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // determine where geonode is
-        this.baseUrl = GeoServerExtensions.getProperty("GEONODE_BASE_URL", applicationContext);
-        if (baseUrl == null) {
-            LOGGER.log(Level.WARNING, "GEONODE_BASE_URL is not set, "
-                    + "assuming http://localhost:8000/");
-            baseUrl = "http://localhost:8000/";
-        }
-        if (!baseUrl.endsWith("/")) {
-            baseUrl += "/";
-        }
     }
 
 }

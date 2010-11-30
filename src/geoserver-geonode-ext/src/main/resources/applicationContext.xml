@@ -40,21 +40,26 @@
   </bean>
 
   <bean id="processExecutorThreadFactory" class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
-    <description>ThreadFactory allowing for customizing the created threads (name, priority, etc)</description>
+    <description>ThreadFactory allowing for customizing the created
+      threads (name, priority, etc)</description>
     <constructor-arg value="Process Thread" />
     <property name="threadPriority">
-      <description>Thread priority, value from 1 to 10, defaults to 5, meaning java.lang.Thread#NORM_PRIORITY</description>
+      <description>Thread priority, value from 1 to 10, defaults to 5,
+        meaning java.lang.Thread#NORM_PRIORITY</description>
       <value>5</value>
     </property>
     <property name="daemon">
-      <description>Specify executor threads to be daemon threads so that they shutdown when the application does</description>
+      <description>Specify executor threads to be daemon threads so that
+        they shutdown when the application does</description>
       <value>true</value>
     </property>
   </bean>
 
   <bean id="processExecutor" class="org.geotools.process.ThreadPoolProcessExecutor">
-    <description>An Executor that provides methods to manage termination and methods that can produce a {@link Progress}
-      for tracking one or more asynchronous tasks.</description>
+    <description>An Executor that provides methods to manage termination
+      and methods that can produce a {@link Progress}
+      for tracking one or
+      more asynchronous tasks.</description>
     <constructor-arg value="5">
       <description>Number of process executor threads in the pool</description>
     </constructor-arg>
@@ -64,29 +69,40 @@
   </bean>
 
   <bean id="processStorageManagerFactory" class="org.geonode.process.storage.GeoServerDataDirStorageManagerFactory">
-    <description>A storage manager is a process collaborator that abstracts out the process from the place where it can
-      store temporary files. This one uses a directory inside the GeoServer data directory as the temp directory</description>
+    <description>A storage manager is a process collaborator that
+      abstracts out the process from the place where it can
+      store temporary
+      files. This one uses a directory inside the GeoServer data
+      directory
+      as the temp directory</description>
     <constructor-arg ref="resourceLoader">
-      <description>The GeoServerResourceLoader (defined in geoserver's main module) where to get the data directory
+      <description>The GeoServerResourceLoader (defined in geoserver's main
+        module) where to get the data directory
         location from</description>
     </constructor-arg>
     <constructor-arg value="process_tmp_dir">
-      <description>The name of the directory inside the geoserver data dir to use as the root for processes' temp data</description>
+      <description>The name of the directory inside the geoserver data dir
+        to use as the root for processes' temp data</description>
     </constructor-arg>
   </bean>
 
   <bean id="processController" class="org.geonode.process.control.DefaultProcessController">
-    <description>Global process manager to issue, query and kill asynchronous processes</description>
+    <description>Global process manager to issue, query and kill
+      asynchronous processes</description>
     <constructor-arg ref="processExecutor" />
     <constructor-arg ref="processStorageManagerFactory">
-      <description>factory to create storage managers for each submitted async process</description>
+      <description>factory to create storage managers for each submitted
+        async process</description>
     </constructor-arg>
     <constructor-arg value="5">
-      <description>process eviction check period in seconds. Instructs the controller to check for process eviction
-        every X seconds</description>
+      <description>process eviction check period in seconds. Instructs the
+        controller to check for process eviction
+        every
+        X seconds</description>
     </constructor-arg>
     <constructor-arg value="10">
-      <description>Process eviction timeout. Instructs the controller to remove dead processes (and any data they may be
+      <description>Process eviction timeout. Instructs the controller to
+        remove dead processes (and any data they may be
         holding) X MINUTES</description>
     </constructor-arg>
   </bean>
@@ -109,5 +125,24 @@
   </bean>
   <bean id="downloadKillerRestlet" class="org.geonode.rest.batchdownload.DownloadKillerRestlet">
     <constructor-arg ref="processController" />
+  </bean>
+
+  <bean id="geonodeHttpClient" class="org.geonode.security.HTTPClient">
+    <description>httpclient used to communicate with GeoNode through an HTTP interface</description>
+    <constructor-arg index="0">
+      <description>Max connections per host</description>
+      <value>10</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <description>Connection time out in milliseconds</description>
+      <value>1000</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <description>Read time out in milliseconds</description>
+      <value>1000</value>
+    </constructor-arg>
+  </bean>
+  <bean id="gnBatchUploadNotifier" class="org.geonode.batchupload.GeoNodeBatchUploadNotifier">
+
   </bean>
 </beans>

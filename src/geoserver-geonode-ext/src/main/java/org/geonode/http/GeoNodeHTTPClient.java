@@ -1,13 +1,23 @@
-package org.geonode.security;
+package org.geonode.http;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.logging.Logging;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 
 /**
@@ -16,9 +26,28 @@ import org.springframework.util.Assert;
  * @author groldan
  * 
  */
-public class HTTPClient {
+public class GeoNodeHTTPClient implements ApplicationContextAware {
+
+    private static final Logger LOGGER = Logging.getLogger(GeoNodeHTTPClient.class);
 
     private final HttpClient client;
+
+    /**
+     * The GeoNode base URL (on top of which to construct URL to call back GeoNode)
+     */
+    private URL baseUrl;
+
+    /**
+     * Returns the GeoNode base URL on top of which to construct URLs to hit GeoNode REST end
+     * points.
+     * <p>
+     * The URL is obtained from the GEONODE_BASE_URL property (either a System property, a servlet
+     * context parameter or an environment variable).
+     * </p>
+     */
+    public URL getBaseURL() {
+        return baseUrl;
+    }
 
     /**
      * 
@@ -26,7 +55,7 @@ public class HTTPClient {
      * @param connectionTimeout
      * @param readTimeout
      */
-    public HTTPClient(final int maxConnectionsPerHost, final int connectionTimeout,
+    public GeoNodeHTTPClient(final int maxConnectionsPerHost, final int connectionTimeout,
             final int readTimeout) {
 
         Assert.isTrue(maxConnectionsPerHost > 0,
@@ -90,5 +119,35 @@ public class HTTPClient {
         }
 
         return responseBodyAsString;
+    }
+
+    /**
+     * Looks up for the {@code GEONODE_BASE_URL} property (either a System property, a servlet
+     * context parameter or an environment variable) to be used as the base URL for the GeoNode
+     * authentication requests (for which {@code 'data/acls'} will be appended).
+     * <p>
+     * If not provided, defaults to {@code http://localhost:8000}
+     * </p>
+     * 
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     * @see GeoServerExtensions#getProperty(String, ApplicationContext)
+     */
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        // determine where geonode is
+        String url = GeoServerExtensions.getProperty("GEONODE_BASE_URL", applicationContext);
+        if (url == null) {
+            LOGGER.log(Level.WARNING, "GEONODE_BASE_URL is not set, "
+                    + "assuming http://localhost:8000/");
+            url = "http://localhost:8000/";
+        }
+        if (!url.endsWith("/")) {
+            url += "/";
+        }
+        try {
+            this.baseUrl = new URL(url);
+        } catch (MalformedURLException e) {
+            String msg = "Error fetching property GEONODE_BASE_URL: '" + url + "': ";
+            throw new BeanInitializationException(msg + e.getMessage());
+        }
     }
 }

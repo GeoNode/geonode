@@ -4,6 +4,7 @@
  */
 package org.geonode.security;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -17,6 +18,7 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
 import org.apache.commons.codec.binary.Base64;
 import org.easymock.classextension.EasyMock;
+import org.geonode.http.GeoNodeHTTPClient;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -31,34 +33,18 @@ import com.mockrunner.mock.web.MockServletContext;
  */
 public class DefaultSecurityClientTest extends TestCase {
 
-    private HTTPClient mockHttpClient;
+    private URL BASE_URL;
+
+    private GeoNodeHTTPClient mockHttpClient;
 
     private DefaultSecurityClient client;
 
     @Override
-    public void setUp() {
-        mockHttpClient = EasyMock.createNiceMock(HTTPClient.class);
+    public void setUp() throws Exception {
+        BASE_URL = new URL("http://localhost:8000");
+        mockHttpClient = EasyMock.createNiceMock(GeoNodeHTTPClient.class);
+        EasyMock.expect(mockHttpClient.getBaseURL()).andReturn(BASE_URL).anyTimes();
         client = new DefaultSecurityClient(mockHttpClient);
-        client.setApplicationContext(null);
-    }
-
-    public void testSetApplicationContext() throws Exception {
-        final String baseUrl = "http://127.0.0.1/fake";
-
-        final MockServletContext mockServletContext = new MockServletContext();
-        mockServletContext.setInitParameter("GEONODE_BASE_URL", baseUrl);
-        WebApplicationContext appCtx = new XmlWebApplicationContext() {
-            @Override
-            public ServletContext getServletContext() {
-                return mockServletContext;
-            }
-        };
-
-        client.setApplicationContext(null);
-        assertEquals("http://localhost:8000/", client.getBaseUrl());
-
-        client.setApplicationContext(appCtx);
-        assertEquals(baseUrl + "/", client.getBaseUrl());
     }
 
     public void testAuthenticateAnonymous() throws Exception {
