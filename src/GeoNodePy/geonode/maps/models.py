@@ -1204,12 +1204,12 @@ class Map(models.Model, PermissionLevelMixin):
     The last time the map was modified.
     """
 
-    urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True, null=True)
+    urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True, null=True, unique=True)
     """
     Alphanumeric alternative to referencing maps by id, appended to end of URL instead of id, ie http://domain/maps/someview
     """    
     
-    officialurl = models.CharField(_('Official Harvard Site URL'), max_length=255, blank=True, null=True)
+    officialurl = models.CharField(_('Official Harvard Site URL'), max_length=255, blank=True, null=True, unique=True)
     """
     Full URL for official/sponsored map view, ie http://domain/someview 
     """
