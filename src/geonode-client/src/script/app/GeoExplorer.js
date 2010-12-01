@@ -25,11 +25,10 @@
 
 var dataLayers = [];
 
-var LayerData = function(iid, isearchFields, icategory, icount)
+var LayerData = function(iid, isearchFields, icount)
 	{
 		this.id = iid;
 		this.searchFields = isearchFields;
-		this.category = icategory;
 		this.count = icount;
 //		alert(this.id+":"+this.category+":"+this.count);
 		
@@ -111,7 +110,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     
     treeRoot : null,
     
-    searchFields : new Array(),
+    searchFields : [],
 
     
     //public variables for string literals needed for localization
@@ -724,8 +723,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 var record = getSelectedLayerRecord();
                 if(record) {
                     this.mapPanel.layers.remove(record);
-                    
-                    
                     removeLayerAction.disable();
                 }
             },
@@ -992,15 +989,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             tooltip: this.removeCategoryActionTipText,
             handler: function() {
             	var node = layerTree.getSelectionModel().getSelectedNode();
-            	while (node.childNodes.length > 0){
-            		cnode = node.childNodes[0];
-            		record = getRecordFromNode(cnode);
-            		if(record) {
-                        this.mapPanel.layers.remove(record);                        
-                    }
-            	};
-            	parentNode = node.parentNode;
-            	parentNode.removeChild(node);
+            	if (node)
+            	{
+
+            		while (node.childNodes.length > 0){
+            			cnode = node.childNodes[0];
+            			record = getRecordFromNode(cnode);
+            			if(record) {
+                        	this.mapPanel.layers.remove(record); 
+                    	}
+            		};
+            			parentNode = node.parentNode;
+            			parentNode.removeChild(node,true);
+            	}
             },
             scope: this
         });        
@@ -1397,7 +1398,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * Constructs a window with a capabilities grid.
      */
     initCapGrid: function(){
-
+		var geoEx = this;
         var initialSourceId, source, data = [];        
         for (var id in this.layerSources) {
             source = this.layerSources[id];
@@ -1508,10 +1509,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 			category = jsonData.category;
 	                                		if (!category || category == '')
 	                                			category = "General";
-                                			dataLayers[layer] = new LayerData(dataLayers[layer], jsonData.searchFields, category, jsonData.scount);
-                                			record.set("group",category);
-                                			//addCategoryFolder(record.get("group"), true);
+                                			//dataLayers[layer] = new LayerData(dataLayers[layer], jsonData.searchFields, jsonData.scount);
+                                			record.set("group",category);                                			
                                 			layerStore.add([record]);
+                                			geoEx.addCategoryFolder(record.get("group"), "true");
                                 			//alert("Success adding " + layer);
                     					}
                 					}
@@ -1523,7 +1524,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     					source: key,
                     					buffer: 0
                 					});
-                					//alert(layer + " created after FAIL");
+                					alert(layer + " created after FAIL");
                 					if (record) {                	
                     					if (record.get("group") === "background") {
                         					var pos = layerStore.queryBy(function(rec) {
@@ -1532,11 +1533,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         					layerStore.insert(pos, [record]);
                     					} else {
 	                                		category = "General";
-                                			dataLayers[layer] = new LayerData(dataLayers[layer], [], category, 0);
-                                			record.set("group",category);
-                                			//addCategoryFolder(record.get("group"), true);
+                                			record.set("group",category);                               			
                                 			layerStore.add([record]);
-                                			//alert("Success adding " + layer);
+                                			geoEx.addCategoryFolder(record.get("group"), "true");
                     					}
                 					}
                     		}
@@ -2392,12 +2391,10 @@ listeners: {
            }
 
            info.controls = [];
-           
-           queryableLayers.each(function(x){
-           	
+           queryableLayers.each(function(x){           	
            	var dl = x.getLayer();
                if (dl.name != "HighlightWMS"){
-               	Ext.Ajax.request({
+               	  Ext.Ajax.request({
                		url: "/maps/searchfields/?" + dl.params.LAYERS,
                		method: "POST",
                		params: {layername:dl.params.LAYERS},
@@ -2409,18 +2406,17 @@ listeners: {
                            if (category == "")
                         	   category = "General";
                            x.set("group", category);
-                           //alert(result.responseText);
-                           dataLayers[dl.params.LAYERS] = new LayerData(dl.params.LAYERS, jsonData.searchFields, category, jsonData.scount);
-                           //alert(dl.params.LAYERS+":"+jsonData.category);
-                           geoEx.addCategoryFolder(category, "true");
-                           
-                           
+                           dataLayers[dl.params.LAYERS] = new LayerData(dl.params.LAYERS, jsonData.searchFields, jsonData.scount);
+                           geoEx.addCategoryFolder(category, true); 
                		},
                		failure: function(result,request) {
                           alert(result.responseText);
                		}
                		
-               	});}
+               	  });
+               	   
+                }
+               	
            	
            	//wfsQuery = dl.url.replace("/wms", "/wfs").replace("?service=wms","") + "?request=GetFeature&version=1.1.0&typeName=" + dl.params.LAYERS + "&outputFormat=JSON";
            	
