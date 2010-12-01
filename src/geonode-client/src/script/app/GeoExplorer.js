@@ -2819,8 +2819,10 @@ listeners: {
             enableKeyEvents: true,
             listeners: {
                 "valid": function() {
+                	if (urlField.isValid()) {
                     saveAsButton.enable();
                     saveButton.enable();
+                	}
                 },
                 "invalid": function() {
                     saveAsButton.disable();
@@ -2884,7 +2886,20 @@ listeners: {
         	vtype: 'UniqueUrl',
         	itemCls:'x-form-field-inline',
         	ctCls:'x-form-field-inline',
-        	value: this.about["urlsuffix"]
+        	value: this.about["urlsuffix"],
+        	listeners: {
+                "valid": function() {
+                	if (titleField.isValid())
+                	{
+                    saveAsButton.enable();
+                    saveButton.enable();
+                	}
+                },
+                "invalid": function() {
+                    saveAsButton.disable();
+                    saveButton.disable();
+                }
+            }
         });
 
         
@@ -2927,6 +2942,12 @@ listeners: {
             text: this.metadataFormSaveAsCopyText,
             disabled: !this.about.title,
             handler: function(e){
+            	if (this.about["urlsuffix"] = urlField.getValue()){
+            		Ext.Msg.alert("Chnage the URL suffix", "You must change the URL suffix before saving a copy of this map view.");
+            		urlField.markInvalid("This URL is already taken, please choose another");
+            		return false;
+            	}
+            	
                 this.about.title = titleField.getValue();
                 this.about["abstract"] = abstractField.getValue();
                 this.about["urlsuffix"] = urlField.getValue();
