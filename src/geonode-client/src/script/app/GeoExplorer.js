@@ -922,14 +922,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         		removeCategoryAction.hide();
         		renameAction.hide();                
             } else {
+            	
                 removeLayerAction.hide();
                 showPropertiesAction.hide();
                 showStylesAction.hide();
                 zoomLayerAction.hide();
-                if (node)
+                if (node  && !node.parentNode.isRoot)
                 	{
                 		removeCategoryAction.show();
                 		renameAction.show();
+                	} else
+                	{
+                		removeCategoryAction.hide();
+                		renameAction.hide();                		
                 	}
                 
             }
@@ -989,6 +994,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             tooltip: this.removeCategoryActionTipText,
             handler: function() {
             	var node = layerTree.getSelectionModel().getSelectedNode();
+            	if (node.parentNode.isRoot)
+            	{
+            		Ext.Msg.alert("Map Layers", "This category cannot be removed");
+            		return false;
+            	}
             	if (node)
             	{
 
@@ -1838,10 +1848,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var toolGroup = "toolGroup";
         var mapPanel = this.mapPanel;
         var busyMask = null;
-        var keywords = this.about["keywords"] ? this.about["keywords"] : "of";
+        var geoEx = this;
         var picasaRecord = null;  
     	var createPicasaOverlay = function()
     	{
+    		var keywords = geoEx.about["keywords"] ? geoEx.about["keywords"] : "of";
             picasaConfig = {name: "Picasa", source: "0", group: "Overlays", buffer: "0", type: "OpenLayers.Layer.WFS",  
             		args: ["Picasa Pictures", "/picasa/", 
                            { 'kind': 'photo', 'max-results':'50', 'q' : keywords},
@@ -1908,6 +1919,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var youtubeRecord = null;  
     	var createYouTubeOverlay = function()
     	{
+    		var keywords = geoEx.about["keywords"] ? geoEx.about["keywords"] : "of";
             youtubeConfig = {name: "YouTube", source: "0", group: "Overlays", buffer: "0", type: "OpenLayers.Layer.WFS",  
             		args: ["YouTube Videos", "/youtube/", 
                            {  'max-results':'50', 'q' : 'africa', 'bbox' : mapPanel.map.getExtent().transform(mapPanel.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")).toBBOX()},
@@ -2091,18 +2103,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             	 scope:this,
             	toggleHandler: function(button, pressed) {
             					if(pressed) {
-            						if (picasaRecord == null) {
-            	
-            							createPicasaOverlay();
-            							this.mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
+            						if (picasaRecord !== null) {
+            							this.mapPanel.layers.remove(picasaRecord);
             						}
-            						else {
-            								this.mapPanel.map.setLayerIndex(picasaRecord.getLayer(), mapPanel.layers.data.items.length);
-            								picasaRecord.getLayer().setVisibility(true);
-            							 }
+									createPicasaOverlay();
+            						this.mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
             					} else {
-            						//this.mapPanel.layers.remove(picasaRecord);
-            			            picasaRecord.getLayer().setVisibility(false);
+            						this.mapPanel.layers.remove(picasaRecord);
+            			            //picasaRecord.getLayer().setVisibility(false);
             					}
             			}   	
         });
@@ -2113,17 +2121,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         	 iconCls: "icon-youtube",
         	toggleHandler: function(button, pressed) {
         					if(pressed) {
-        						if (youtubeRecord == null) {
-        	
+        						if (youtubeRecord !== null) {
+        								this.mapPanel.layers.remove(youtubeRecord);
+        						}
+        						else { 
         							createYouTubeOverlay();
         							mapPanel.layers.insert(mapPanel.layers.data.items.length, [youtubeRecord] );
         						}
-        						else { 
-        							mapPanel.map.setLayerIndex(youtubeRecord.getLayer(), mapPanel.layers.data.items.length);
-        							youtubeRecord.getLayer().setVisibility(true);
-        						}
         					} else {
-        			            youtubeRecord.getLayer().setVisibility(false);
+        			            this.mapPanel.layers.remove(youtubeRecord);
         					}
         			}   	
         });
