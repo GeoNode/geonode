@@ -208,6 +208,26 @@ by editing ``startup.sh`` to specify a different data directory::
  
     -DGEOSERVER_DATA_DIR=/home/me/mydata/ 
 
+Debugging the GeoServer extension with GeoNetwork in eclipse
+------------------------------------------------------------
+When running the GeoNode python app and in need to debug GeoServer, starting the GeoServer extension's
+Start.java class won't work cause it doesn't lunch GeoNetwork and hence GeoNode itself won't completely work.
+In order to debug inside eclipse and still have a functional GeoNode you need to have both GeoServer
+and the GeoNetwork web app referenced in jetty.xml running.
+One option is to run mvn jetty:run as an external application and then attach a debugger as explained at 
+http://docs.codehaus.org/display/JETTY/Debugging+with+the+Maven+Jetty+Plugin+inside+Eclipse
+
+An easier way is to just launch mvn jetty:run from inside eclipse as follows:
+- Create a new run configuration
+- In the Main tab set the geoserver-geonode-ext as project and as Main class type org.codehaus.classworlds.Launcher
+- In the Arguments tab type jetty:run for Program Arguments and as VM Arguments type:
+-Xmx512m -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement -Dclassworlds.conf=[MAVEN_HOME]/bin/m2.conf -Dmaven.home=[MAVEN_HOME]
+Replacing [MAVEN_HOME] by the maven installation folder
+- In the Classpath tab, as the only user entry add the following external jar: [MAVEN_HOME]/boot/classworlds-1.1.jar
+- In the Source tab add the geoserver-geonode-ext project
+And voilá, run/debug that run configuration as you please. Feel free to add -o to jetty:run in the Program Arguments option for faster startup
+
+
 For Deployment
 --------------
 
