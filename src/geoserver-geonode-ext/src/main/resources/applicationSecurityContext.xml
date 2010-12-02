@@ -24,15 +24,11 @@
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
-        /wfs/**=
-        httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-        /ows/**=
-        httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
+        /wfs/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
+        /ows/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
         /wfsv/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-        /wms/**=
-        httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-        /wcs/**=
-        httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
+        /wms/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
+        /wcs/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
 
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
         #/rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter
@@ -134,4 +130,9 @@
   <!-- The custom data access manager using the GeoNode granted authorities -->
   <bean id="geonodeAccessManager" class="org.geonode.security.GeoNodeDataAccessManager" />
 
+  <bean id="gsFtpUserManager" class="org.geoserver.ftp.GSFTPUserManager"
+    depends-on="geoServer">
+    <constructor-arg ref="dataDirectory"/>
+        <property name="authenticationManager" ref="gnAuthenticationManager"/>
+  </bean>
 </beans>

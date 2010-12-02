@@ -150,4 +150,8 @@ public class GeoNodeHTTPClient implements ApplicationContextAware {
             throw new BeanInitializationException(msg + e.getMessage());
         }
     }
+
+    public void sendPOST(URL url, byte[] contents) {
+        LOGGER.warning(getClass().getSimpleName() + ".sendPOST not yet implemented");
+    }
 }

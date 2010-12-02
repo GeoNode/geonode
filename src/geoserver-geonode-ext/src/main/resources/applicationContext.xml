@@ -127,7 +127,7 @@
     <constructor-arg ref="processController" />
   </bean>
 
-  <bean id="geonodeHttpClient" class="org.geonode.security.HTTPClient">
+  <bean id="geonodeHttpClient" class="org.geonode.http.GeoNodeHTTPClient">
     <description>httpclient used to communicate with GeoNode through an HTTP interface</description>
     <constructor-arg index="0">
       <description>Max connections per host</description>
@@ -142,7 +142,14 @@
       <value>1000</value>
     </constructor-arg>
   </bean>
-  <bean id="gnBatchUploadNotifier" class="org.geonode.batchupload.GeoNodeBatchUploadNotifier">
 
+  <bean id="gnShpBatchUploadNotifier" class="org.geonode.batchupload.ShapefileWatcher">
+    <constructor-arg ref="geonodeHttpClient" />
+  </bean>
+  <bean id="gnGeoTiffBatchUploadNotifier" class="org.geonode.batchupload.GeoTiffWatcher">
+    <constructor-arg ref="geonodeHttpClient" />
+  </bean>
+  <bean id="gnVirtualFileSystemUploadNotifier" class="org.geonode.batchupload.ArchiveFileWatcher">
+    <constructor-arg ref="geonodeHttpClient" />
   </bean>
 </beans>

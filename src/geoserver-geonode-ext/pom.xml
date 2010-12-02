@@ -63,6 +63,11 @@
       <artifactId>commons-httpclient</artifactId>
       <version>3.1</version>
     </dependency>
+    <dependency>
+      <groupId>commons-vfs</groupId>
+      <artifactId>commons-vfs</artifactId>
+      <version>1.0</version>
+    </dependency>
     
 
     <!-- GeoJSON module dependencies -->
