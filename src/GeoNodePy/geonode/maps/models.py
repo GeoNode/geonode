@@ -1010,8 +1010,12 @@ class Layer(models.Model, PermissionLevelMixin):
         if meta is None:
             return
         self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
-        self.distribution_url = meta.distribution.onlineresource.url
-        self.distribution_description = meta.distribution.onlineresource.description
+        onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+        if len(onlineresources) == 1:
+            res = onlineresources[0]
+            self.distribution_url = res.url
+            self.distribution_description = res.description
+        # else: TODO
 
     def keyword_list(self):
         return self.keywords.split(" ")
