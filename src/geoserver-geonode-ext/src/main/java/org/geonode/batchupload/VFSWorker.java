@@ -18,10 +18,11 @@ import org.apache.commons.vfs.VFS;
 import org.geotools.util.logging.Logging;
 
 /**
+ * Utility to work with compressed files
  * 
  * @author groldan
  */
-public class VFSWorker {
+class VFSWorker {
 
     private static final Logger LOGGER = Logging.getLogger(VFSWorker.class);
 

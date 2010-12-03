@@ -13,8 +13,19 @@ import org.geotools.util.logging.Logging;
 import org.springframework.util.Assert;
 
 /**
- * Decorating {@link SpatialFileWatcher} that captures ZIP file uploads an notifies GeoNode of any
- * spatial file contained in the ZIP file by first uncompressing the file.
+ * Decorating {@link SpatialFileWatcher} that captures compressed or archived file uploads an
+ * notifies GeoNode of any spatial file contained in the ZIP file by first uncompressing the file.
+ * <p>
+ * Upon a file upload, this notifier uncompress the file just uploaded and then traverses the
+ * uncompressed file list by using the other {@link GeoNodeBatchUploadNotifier} extension points in
+ * the application context in order to delegate the notification to GeoNode of any spatial data
+ * file.
+ * </p>
+ * <p>
+ * This notifier supports the following file formats ZIP, GZIP, BZIP2, TAR, TAR-GZIPPED, TAR-BZIP2,
+ * JAR : by recognizing the following file extensions: {@code .zip, .tar, .tar.gz, .tgz,
+ *           .tar.bz2, .tbz2, .gz, .bz2, .jar}
+ * </p>
  * 
  * @author groldan
  */
@@ -80,7 +91,7 @@ public class ArchiveFileWatcher extends GeoNodeBatchUploadNotifier {
     }
 
     @Override
-    public void notifyUpload(final String userName, final File file, final List<File> accompanying) {
+    public void notifyUpload(final String userName, final File file) {
         LOGGER.info("Uncompressing ZIP file " + file.getAbsolutePath()
                 + " before notifying of it's contained spatial datasets...");
 
@@ -103,7 +114,7 @@ public class ArchiveFileWatcher extends GeoNodeBatchUploadNotifier {
             for (GeoNodeBatchUploadNotifier notifier : notifiers) {
                 File spatialFile = new File(filePath);
                 if (notifier.canHandle(spatialFile)) {
-                    notifier.notifyUpload(userName, spatialFile, accompanying);
+                    notifier.notifyUpload(userName, spatialFile);
                 }
             }
         }

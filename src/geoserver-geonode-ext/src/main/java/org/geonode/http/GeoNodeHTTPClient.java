@@ -6,12 +6,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
@@ -122,6 +127,36 @@ public class GeoNodeHTTPClient implements ApplicationContextAware {
     }
 
     /**
+     * 
+     * @param url
+     *            the target URL
+     * @param formParams
+     *            parameters to send as form url encoded
+     * @return HTTP status response code
+     * @throws IOException
+     *             if the POST request fails
+     */
+    public void sendPOST(final String url, Map<String, String> formParams) throws IOException {
+        PostMethod post = new PostMethod(url);
+        List<NameValuePair> data = new ArrayList<NameValuePair>(formParams.size());
+        for (Map.Entry<String, String> kvp : formParams.entrySet()) {
+            data.add(new NameValuePair(kvp.getKey(), kvp.getValue()));
+        }
+        post.setRequestBody(data.toArray(new NameValuePair[data.size()]));
+
+        try {
+            int responseCode = client.executeMethod(post);
+            if (responseCode != 200) {
+                throw new IOException("POST request to " + url + " failed: " + post.getStatusText());
+            }
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            post.releaseConnection();
+        }
+    }
+
+    /**
      * Looks up for the {@code GEONODE_BASE_URL} property (either a System property, a servlet
      * context parameter or an environment variable) to be used as the base URL for the GeoNode
      * authentication requests (for which {@code 'data/acls'} will be appended).
@@ -151,7 +186,4 @@ public class GeoNodeHTTPClient implements ApplicationContextAware {
         }
     }
 
-    public void sendPOST(URL url, byte[] contents) {
-        LOGGER.warning(getClass().getSimpleName() + ".sendPOST not yet implemented");
-    }
 }
