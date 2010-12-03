@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.acegisecurity.userdetails.UserDetails;
 import org.geonode.http.GeoNodeHTTPClient;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
@@ -91,7 +92,7 @@ public class ArchiveFileWatcher extends GeoNodeBatchUploadNotifier {
     }
 
     @Override
-    public void notifyUpload(final String userName, final File file) {
+    public void notifyUpload(final UserDetails user, final File file) {
         LOGGER.info("Uncompressing ZIP file " + file.getAbsolutePath()
                 + " before notifying of it's contained spatial datasets...");
 
@@ -114,7 +115,7 @@ public class ArchiveFileWatcher extends GeoNodeBatchUploadNotifier {
             for (GeoNodeBatchUploadNotifier notifier : notifiers) {
                 File spatialFile = new File(filePath);
                 if (notifier.canHandle(spatialFile)) {
-                    notifier.notifyUpload(userName, spatialFile);
+                    notifier.notifyUpload(user, spatialFile);
                 }
             }
         }

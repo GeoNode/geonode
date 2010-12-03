@@ -94,8 +94,7 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
     public CallbackAction onUploadEnd(UserDetails user, File workingDir, String fileName) {
         File file = new File(workingDir, fileName);
         if (canHandle(file)) {
-            String userName = user.getUsername();
-            notifyUpload(userName, file);
+            notifyUpload(user, file);
         }
         return CONTINUE;
     }
@@ -106,8 +105,7 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
     public CallbackAction onDeleteEnd(UserDetails user, File workingDir, String fileName) {
         File file = new File(workingDir, fileName);
         if (canHandle(file)) {
-            String userName = user.getUsername();
-            notifyDeletion(userName, file);
+            notifyDeletion(user, file);
         }
         return CONTINUE;
     }
@@ -118,8 +116,7 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
     public CallbackAction onAppendEnd(UserDetails user, File workingDir, String fileName) {
         File file = new File(workingDir, fileName);
         if (canHandle(file)) {
-            String userName = user.getUsername();
-            notifyUpload(userName, file);
+            notifyUpload(user, file);
         }
         return CONTINUE;
     }
@@ -130,8 +127,7 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
     public CallbackAction onRenameEnd(UserDetails user, File workingDir, File renameFrom,
             File renameTo) {
         if (canHandle(renameTo)) {
-            String userName = user.getUsername();
-            notifyMove(userName, renameFrom, renameTo, null);
+            notifyMove(user, renameFrom, renameTo, null);
         }
         return CONTINUE;
     }
@@ -148,7 +144,7 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
     /**
      * Notifies GeoNode that the given {@code file} has been uploaded by the given user
      */
-    public void notifyUpload(final String userName, final File file) {
+    public void notifyUpload(final UserDetails user, final File file) {
         LOGGER.fine("Notifying GeoNode of an upload: " + file.getAbsolutePath());
         String fileURL;
         try {
@@ -156,15 +152,14 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        notifyGeoNode(userName, Operation.UPLOAD, "file", file.getAbsolutePath(), "fileURL",
-                fileURL);
+        notifyGeoNode(user, Operation.UPLOAD, "file", file.getAbsolutePath(), "fileURL", fileURL);
         LOGGER.fine("UPLOAD notification succeeded for " + file.getAbsolutePath());
     }
 
     /**
      * Notifies GeoNode that the given {@code file} has been deleted by the given user
      */
-    public void notifyDeletion(String userName, File file) {
+    public void notifyDeletion(UserDetails user, File file) {
         LOGGER.fine("Notifying GeoNode of a deletion: " + file.getAbsolutePath());
         String fileURL;
         try {
@@ -172,15 +167,14 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        notifyGeoNode(userName, Operation.DELETE, "file", file.getAbsolutePath(), "fileURL",
-                fileURL);
+        notifyGeoNode(user, Operation.DELETE, "file", file.getAbsolutePath(), "fileURL", fileURL);
         LOGGER.fine("DELETE notification succeeded for " + file.getAbsolutePath());
     }
 
     /**
      * Notifies GeoNode that the given {@code renameFrom} file has been moved to {@code renameTo}
      */
-    public void notifyMove(String userName, File renameFrom, File renameTo, Object object) {
+    public void notifyMove(UserDetails user, File renameFrom, File renameTo, Object object) {
         LOGGER.fine("Notifying GeoNode of an moved file: " + renameFrom.getAbsolutePath() + " to "
                 + renameTo.getAbsolutePath());
         String fileURL;
@@ -192,15 +186,17 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
             throw new RuntimeException(e);
         }
 
-        notifyGeoNode(userName, Operation.MOVE, "file", renameTo.getAbsolutePath(), "fileURL",
-                fileURL, "renameFromFile", renameFrom.getAbsolutePath(), "renameFromURL",
-                fromFileURL);
+        notifyGeoNode(user, Operation.MOVE, "file", renameTo.getAbsolutePath(), "fileURL", fileURL,
+                "renameFromFile", renameFrom.getAbsolutePath(), "renameFromURL", fromFileURL);
         LOGGER.fine("MOVE notification succeeded " + renameTo.getAbsolutePath() + " was "
                 + renameFrom.getAbsolutePath());
     }
 
-    private void notifyGeoNode(final String userName, final Operation operation,
+    private void notifyGeoNode(final UserDetails user, final Operation operation,
             final String... parameters) {
+
+        String userName = user.getUsername();
+        String password = user.getPassword();
 
         String url = getGeoNodeBatchUploadURL();
         Map<String, String> params = new HashMap<String, String>();
@@ -210,7 +206,7 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
             params.put(parameters[i], parameters[i + 1]);
         }
         try {
-            httpClient.sendPOST(url, params);
+            httpClient.sendPOST(url, params, userName, password);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error notifying GeoNode. Operation: " + operation
                     + ", params: " + params, e);

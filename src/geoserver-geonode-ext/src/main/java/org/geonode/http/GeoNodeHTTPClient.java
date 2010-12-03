@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.NameValuePair;
@@ -132,12 +133,22 @@ public class GeoNodeHTTPClient implements ApplicationContextAware {
      *            the target URL
      * @param formParams
      *            parameters to send as form url encoded
+     * @param password
+     * @param userName
      * @return HTTP status response code
      * @throws IOException
      *             if the POST request fails
      */
-    public void sendPOST(final String url, Map<String, String> formParams) throws IOException {
+    public void sendPOST(final String url, Map<String, String> formParams, String userName,
+            String password) throws IOException {
+
         PostMethod post = new PostMethod(url);
+
+        final String headerName = "Authorization";
+        final String headerValue = "Basic "
+                + new String(Base64.encodeBase64((userName + ":" + password).getBytes()));
+        post.addRequestHeader(headerName, headerValue);
+
         List<NameValuePair> data = new ArrayList<NameValuePair>(formParams.size());
         for (Map.Entry<String, String> kvp : formParams.entrySet()) {
             data.add(new NameValuePair(kvp.getKey(), kvp.getValue()));
