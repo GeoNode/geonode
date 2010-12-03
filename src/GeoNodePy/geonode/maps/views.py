@@ -1707,6 +1707,7 @@ def debug(request):
     """
 
     from pprint import pformat
+    logger.setLevel(logging.DEBUG)
     logger.debug("%s Request to: %s", request.method, request.path)
     logger.debug("query params: %s", pformat(request.GET))
     logger.debug("body params: %s", pformat(request.POST))
