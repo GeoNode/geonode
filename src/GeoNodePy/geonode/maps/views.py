@@ -1696,3 +1696,20 @@ def maps_search_page(request):
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))
+
+@csrf_exempt
+def debug(request):
+    """
+    A view that just logs its output and returns an empty response.
+
+    See http://docs.djangoproject.com/en/1.2/ref/request-response/ for info on
+    available fields for logging.
+    """
+
+    from pprint import pformat
+    logger.debug("%s Request to: %s", request.method, request.path)
+    logger.debug("query params: %s", pformat(request.GET))
+    logger.debug("body params: %s", pformat(request.POST))
+    logger.debug("Raw body text: %s", pformat(request.raw_post_data))
+
+    return HttpResponse("Debugging info added to logs", mimetype="text/plain", status=200)
