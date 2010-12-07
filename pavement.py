@@ -619,6 +619,67 @@ def host(options):
 
 
 @task
+@cmdopts([
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
+])
+def hostjetty(options):
+    jettylog = open("jetty.log", "w")
+    with pushd("src/geoserver-geonode-ext"):
+        os.environ["MAVEN_OPTS"] = " ".join([
+            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement", 
+            " -Djetty.host=" + options.host.bind,
+            " -Xmx512M",
+            " -XX:MaxPermSize=128m"
+        ])
+        mvn = subprocess.Popen(
+            ["mvn", "jetty:run"],
+            stdout=jettylog,
+            stderr=jettylog
+        )
+
+    def jetty_is_up():
+        try:
+            urllib.urlopen("http://" + options.host.bind + ":8001/geoserver/web/")
+            return True
+        except Exception, e:
+            return False
+
+    def django_is_up():
+        try:
+            urllib.urlopen("http://" + options.host.bind + ":8000")
+            return True
+        except Exception, e:
+            return False
+
+    socket.setdefaulttimeout(1)
+
+
+
+    info("Logging servlet output to jetty.log...")
+    info("Jetty is starting up, please wait...")
+    while not jetty_is_up():
+        time.sleep(2)
+
+    try:
+
+
+        info("Development Geoserver/GeoNetwork is running at http://" + options.host.bind + ":8000/")
+        info("The Geoserver/GeoNetwork is an unstoppable machine")
+        info("Press CTRL-C to shut down")
+        mvn.wait()
+
+    finally:
+        info("Shutting down...")
+        try:
+            mvn.terminate()
+        except:
+            pass
+
+        mvn.wait()
+        sys.exit()
+
+
+@task
 def test(options):
     sh("django-admin.py test --settings=geonode.settings")
 

@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from utils import path_extrapolate
 
+
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -38,7 +39,7 @@ urlpatterns = patterns('',
     (r'^accounts/login', 'django.contrib.auth.views.login'),
     (r'^accounts/logout', 'django.contrib.auth.views.logout'),
     (r'^avatar/', include('avatar.urls')),
-    (r'^accounts/', include('registration.urls')),
+    (r'^accounts/', include('geonode.core.urls')),
     (r'^profiles/', include('profiles.urls')),
     (r'^(?P<site>\w+)/$', 'geonode.maps.views.official_site'),
     (r'^(?P<site>\w+)/edit$', 'geonode.maps.views.official_site_controller'),

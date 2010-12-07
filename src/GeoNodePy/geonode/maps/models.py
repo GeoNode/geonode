@@ -519,7 +519,8 @@ class Contact(models.Model):
     area = models.CharField(_('Administrative Area'), max_length=255, blank=True, null=True)
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True, unique=True)
+    is_harvard = models.BooleanField(blank=True, null=True, default=False)
 
     def clean(self):
         # the specification says that either name or organization should be provided
@@ -527,6 +528,8 @@ class Contact(models.Model):
         valid_organization = (self.organization != None and self.organization !='')
         if not (valid_name or valid_organization):
             raise ValidationError('Either name or organization should be provided')
+        if self.email and User.objects.filter(email=self.email).exclude(username=self.userbane).count():
+            raise ValidationError(u'The email address is already registered.')
 
     def get_absolute_url(self):
         return ('profiles_profile_detail', (), { 'username': self.user.username })
