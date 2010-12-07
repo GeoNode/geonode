@@ -3,7 +3,8 @@ from utils import path_extrapolate
 from urllib import urlencode
 import logging
 
-LOG_FILENAME='/Users/mbertrand/Development/github/mbertrand/cga-worldmap/geonode.log'
+
+logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'w')
 
 
 
@@ -19,19 +20,14 @@ ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
 
+
 MANAGERS = ADMINS
 
-#DATABASE_ENGINE = 'sqlite3'
-#DATABASE_NAME = '/home/matt/installs/geonode/src/GeoNodePy/geonode/development.db'
-DATABASE_ENGINE = 'django.db.backends.postgresql_psycopg2'
-DATABASE_NAME = 'gisdb'
-DATABASE_USER = 'africamaps'             # Not used with sqlite3.
-DATABASE_PASSWORD = 'j0kerz'         # Not used with sqlite3.
-DATABASE_HOST = 'localhost'             # Not used with sqlite3.
-DATABASE_PORT = '5432'             # Not used with sqlite3.
-#DATABASE_USER = ''             # Not used with sqlite3.
-#DATABASE_PASSWORD = ''         # Not used with sqlite3.
-#DATABASE_HOST = ''             # Not used with sqlite3.
+DATABASE_ENGINE = 'sqlite3'
+DATABASE_NAME = 'development.db'
+DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
+DATABASE_HOST = ''             # Not used with sqlite3.
 DATABASE_PORT = ''             # Not used with sqlite3.
 
 # Local time zone for this installation. Choices can be found here:
@@ -116,13 +112,13 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8080/geoserver-geonode-dev/"
+GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", open(path_extrapolate('../../geoserver_token')).readline()[0:-1]
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://localhost:8080/geonetwork/"
+GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
