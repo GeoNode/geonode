@@ -84,7 +84,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
-        exclude = ('user',)
+        exclude = ('user','is_harvard',)
         
 class LayerCategoryForm(forms.ModelForm):
     class Meta:

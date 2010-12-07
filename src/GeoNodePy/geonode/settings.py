@@ -218,7 +218,8 @@ INSTALLED_APPS = (
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
-    'geonode.sites',
+    'geonode.accountforms',
+    'geonode.profileforms',
 )
 
 AUTH_PROFILE_MODULE = 'maps.Contact'

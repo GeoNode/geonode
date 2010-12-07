@@ -10,7 +10,7 @@ attrs_dict = { 'class': 'required' }
 
 class UserRegistrationForm(RegistrationFormUniqueEmail):
     is_harvard = forms.ChoiceField(widget=forms.RadioSelect(), choices=((True, 'Yes'),(False, 'No')), initial=False, label="Are you affiliated with Harvard University?")
-
+    
 
     def save(self, profile_callback=None):
         new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
