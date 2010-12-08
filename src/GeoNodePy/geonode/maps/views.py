@@ -891,19 +891,19 @@ def _updateLayer(request, layer):
 @task
 def _handle_external_layer_upload(operation=None, base_file_path=None, fileURL=None, user=None):
     try:
-    #TODO Handle for uploaded tiff files
-    layer_name = os.path.splitext(os.path.split(base_file_path)[1])[0]
-    #TODO Check for UPPER or MiXeD case file extensions
+        #TODO Handle for uploaded tiff files
+        layer_name = os.path.splitext(os.path.split(base_file_path)[1])[0]
+        #TODO Check for UPPER or MiXeD case file extensions
         base_file = open(base_file_path)
-    dbf_file = open(base_file_path.replace('.shp', '.dbf'))
-    shx_file = open(base_file_path.replace('.shp', '.shx'))
-    #TODO Handle for when .prj is not included
-    prj_file = open(base_file_path.replace('.shp', '.prj'))
-    layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, dbf_file=dbf_file, shx_file=shx_file, user=user)   
-    return 0
+        dbf_file = open(base_file_path.replace('.shp', '.dbf'))
+        shx_file = open(base_file_path.replace('.shp', '.shx'))
+        #TODO Handle for when .prj is not included
+        prj_file = open(base_file_path.replace('.shp', '.prj'))
+        layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, dbf_file=dbf_file, shx_file=shx_file, user=user)   
+        return 0
     except:
-    #TODO: Add Proper Error Handling
-    return -1 
+        #TODO: Add Proper Error Handling
+        return -1 
 
 @transaction.commit_manually
 def _handle_layer_upload(layer_name=None, base_file=None, dbf_file=None, shx_file=None, prj_file=None, user=None, layer=None):
@@ -917,7 +917,7 @@ def _handle_layer_upload(layer_name=None, base_file=None, dbf_file=None, shx_fil
     try:
         user = User.objects.get(username=user)
     except Exception:
-    logger.warn("Invalid User")
+        logger.warn("Invalid User")
         return None, [_("You must specify a valid user to upload.")]
 
     if not base_file:
@@ -1737,13 +1737,17 @@ def process_external_upload(request):
     shapefiles and tiffs uploaded via geoservers embedded ftp
     """
 
-    logger.debug("Calling _handle_external_layer_upload asyncrhonously")
-    _handle_external_layer_upload.delay(operation=request.POST.get('operation'), 
-        base_file_path=request.POST.get('file'), 
-        fileURL=request.POST.get('fileURL'), 
-        user=request.POST.get('user'))
-    
-    return HttpResponse("Upload queued for processing", mimetype="text/plain", status=200)
+    try:
+        logger.debug("Calling _handle_external_layer_upload asyncrhonously")
+        _handle_external_layer_upload.delay(operation=request.POST.get('operation'), 
+            base_file_path=request.POST.get('file'), 
+            fileURL=request.POST.get('fileURL'), 
+            user=request.POST.get('user'))
+        data = {'status': 'success', 'msg': 'Upload queued for processing'}
+        return HttpResponse(json.dumps(data), mimetype='application/json')
+    except:
+        data = {'status': 'failure', 'msg': 'Failed queuing upload for processing'}
+        return HttpResponse(json.dumps(data),mimetype='application/json')
 
 @csrf_exempt
 def debug(request):
