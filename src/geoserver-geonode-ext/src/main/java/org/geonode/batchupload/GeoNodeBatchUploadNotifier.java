@@ -32,7 +32,7 @@ import org.geotools.util.logging.Logging;
  * {@link #notifyDeletion} or {@link #notifyMove} will be called accordingly.
  * </p>
  * <p>
- * The GeoNode end point {@code GEONODE_BASE_URL/debug} (@TODO: update URL) will be called with a
+ * The GeoNode end point {@code GEONODE_BASE_URL/process_upload} (@TODO: update URL) will be called with a
  * POST request containing the following form url encoded arguments:
  * <ul>
  * <li>operation: one of {@code UPLOAD|DELETE|MOVE}
@@ -135,7 +135,7 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
     private String getGeoNodeBatchUploadURL() {
         URL baseURL = this.httpClient.getBaseURL();
         try {
-            return new URL(baseURL, "debug/").toExternalForm();
+            return new URL(baseURL, "process_upload/").toExternalForm();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

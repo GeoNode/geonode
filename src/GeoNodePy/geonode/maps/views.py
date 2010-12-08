@@ -23,6 +23,7 @@ import math
 import httplib2 
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
+import os
 import re
 from urllib import urlencode
 from urlparse import urlparse
@@ -32,6 +33,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
+from celery.decorators import task
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -165,7 +167,7 @@ def mapJSON(request, mapid):
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {})), status=401)
-    	return HttpResponse(json.dumps(map.viewer_json()))
+        return HttpResponse(json.dumps(map.viewer_json()))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -807,7 +809,7 @@ def layerController(request, layername):
             "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
             "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
-	    }))
+        }))
 
 
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
@@ -821,7 +823,12 @@ def upload_layer(request):
                                   RequestContext(request, {}))
     elif request.method == 'POST':
         try:
-            layer, errors = _handle_layer_upload(request)
+            layer, errors = _handle_layer_upload(layer_name=request.POST.get('layer_name'), 
+                base_file=request.FILES.get('base_file'), 
+                dbf_file=request.FILES.get('dbf_file'),
+                shx_file=request.FILES.get('shx_file'),
+                prj_file=request.FILES.get('prj_file'),
+                user=request.user.username)
             logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
         except:
             logger.exception("_handle_layer_upload failed!")
@@ -859,7 +866,13 @@ def _updateLayer(request, layer):
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
         try:
-            layer, errors = _handle_layer_upload(request, layer=layer)
+            layer, errors = _handle_layer_upload(layer_name=request.POST.get('layer_name'), 
+                base_file=request.FILES.get('base_file'), 
+                dbf_file=request.FILES.get('dbf_file'),
+                shx_file=request.FILES.get('shx_file'),
+                prj_file=request.FILES.get('prj_file'),
+                user=request.user.username,
+                layer=layer)
         except:
             errors = [GENERIC_UPLOAD_ERROR]
 
@@ -875,16 +888,37 @@ def _updateLayer(request, layer):
     return render_to_response('json_html.html',
                               RequestContext(request, {'json': result}))
 
+@task
+def _handle_external_layer_upload(operation=None, base_file_path=None, fileURL=None, user=None):
+    try:
+    #TODO Handle for uploaded tiff files
+    layer_name = os.path.splitext(os.path.split(base_file_path)[1])[0]
+    #TODO Check for UPPER or MiXeD case file extensions
+        base_file = open(base_file_path)
+    dbf_file = open(base_file_path.replace('.shp', '.dbf'))
+    shx_file = open(base_file_path.replace('.shp', '.shx'))
+    #TODO Handle for when .prj is not included
+    prj_file = open(base_file_path.replace('.shp', '.prj'))
+    layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, dbf_file=dbf_file, shx_file=shx_file, user=user)   
+    return 0
+    except:
+    #TODO: Add Proper Error Handling
+    return -1 
+
 @transaction.commit_manually
-def _handle_layer_upload(request, layer=None):
+def _handle_layer_upload(layer_name=None, base_file=None, dbf_file=None, shx_file=None, prj_file=None, user=None, layer=None):
     """
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
     """
-    layer_name = request.POST.get('layer_name');
-    base_file = request.FILES.get('base_file');
 
     logger.info("Uploaded layer: [%s], base filename: [%s]", layer_name, base_file)
+
+    try:
+        user = User.objects.get(username=user)
+    except Exception:
+    logger.warn("Invalid User")
+        return None, [_("You must specify a valid user to upload.")]
 
     if not base_file:
         logger.warn("Failed upload: no basefile provided")
@@ -927,9 +961,6 @@ def _handle_layer_upload(request, layer=None):
                 return None, [_("This resource may only be replaced with raster data.")]
         
         create_store = cat.create_featurestore
-        dbf_file = request.FILES.get('dbf_file')
-        shx_file = request.FILES.get('shx_file')
-        prj_file = request.FILES.get('prj_file')
         
         if not dbf_file: 
             logger.info("User tried to upload [%s] without a .dbf file", base_file)
@@ -952,7 +983,7 @@ def _handle_layer_upload(request, layer=None):
         }
         if prj_file:
             cfg['prj'] = prj_file
-
+    
     # any other type of upload
     else:
         logger.info("Upload [%s] appears not to be a Shapefile", base_file)
@@ -966,6 +997,8 @@ def _handle_layer_upload(request, layer=None):
         # ... we attempt to let geoserver figure it out, guessing it is coverage 
         create_store = cat.create_coveragestore
         cfg = base_file
+    
+    logger.debug(cfg)
 
     try:
         logger.debug("Starting upload of [%s] to GeoServer...", name)
@@ -1012,13 +1045,13 @@ def _handle_layer_upload(request, layer=None):
                                          workspace=gs_resource.store.workspace.name,
                                          title=gs_resource.title,
                                          uuid=str(uuid.uuid4()),
-                                         owner=request.user
+                                         owner=user
                                        )
             # A user without a profile might be uploading this
-            poc_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                   defaults={"name": request.user.username })
-            author_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                   defaults={"name": request.user.username })
+            poc_contact, __ = Contact.objects.get_or_create(user=user,
+                                                   defaults={"name": user.username })
+            author_contact, __ = Contact.objects.get_or_create(user=user,
+                                                   defaults={"name": user.username })
             logger.info("poc and author set to %s", poc_contact)
             layer.poc = poc_contact
             layer.metadata_author = author_contact
@@ -1696,6 +1729,21 @@ def maps_search_page(request):
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))
+
+@csrf_exempt
+def process_external_upload(request):
+    """
+    A view which calls _handle_external_layer_upload to process
+    shapefiles and tiffs uploaded via geoservers embedded ftp
+    """
+
+    logger.debug("Calling _handle_external_layer_upload asyncrhonously")
+    _handle_external_layer_upload.delay(operation=request.POST.get('operation'), 
+        base_file_path=request.POST.get('file'), 
+        fileURL=request.POST.get('fileURL'), 
+        user=request.POST.get('user'))
+    
+    return HttpResponse("Upload queued for processing", mimetype="text/plain", status=200)
 
 @csrf_exempt
 def debug(request):

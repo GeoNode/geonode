@@ -37,3 +37,7 @@ pip-log.txt
 
 #Temporary files
 *~
+
+# Local Development Stuff
+shared/dev-paste-local.ini
+src/GeoNodePy/geonode/local_settings.py
