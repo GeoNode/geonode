@@ -9,13 +9,18 @@ from registration.models import RegistrationProfile
 attrs_dict = { 'class': 'required' }
 
 class UserRegistrationForm(RegistrationFormUniqueEmail):
-    is_harvard = forms.ChoiceField(widget=forms.RadioSelect(), choices=((True, 'Yes'),(False, 'No')), initial=False, label="Are you affiliated with Harvard University?")
-    
+    is_harvard = forms.TypedChoiceField(coerce=lambda x: bool(int(x)),
+                   choices=((1, 'Yes'), (0, 'No')),
+                   widget=forms.RadioSelect,
+                   initial=0, label="Are you affiliated with Harvard University?"
+                )
 
     def save(self, profile_callback=None):
         new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
         password=self.cleaned_data['password1'],
         email=self.cleaned_data['email'])
-        new_profile = Contact(user=new_user, is_harvard=self.cleaned_data['is_harvard'])
+        new_profile = Contact(user=new_user)
+        new_profile.is_harvard=self.cleaned_data['is_harvard']
         new_profile.save()
+        
         return new_user
