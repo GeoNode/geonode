@@ -48,8 +48,8 @@ def registercompleteHarvard(request, template_name='registration/registration_co
     if "harvard_username" in request.session:
         username = request.session["harvard_username"]
         logger.debug("harvard username is [%s]", username)
-        logger.debug("page referrer is [%s]", request.META['HTTP_REFERRER'])
-        if request.META['HTTP_REFERRER'] == ISITE_URL or request.META['HTTP_REFERRER'] == "http://worldmap.harvard.edu/accountforms/registercomplete":
+        logger.debug("page referrer is [%s]", request.META['HTTP_REFERER'])
+        if request.META['HTTP_REFERER'] == ISITE_URL or request.META['HTTP_REFERER'] == "http://worldmap.harvard.edu/accountforms/registercomplete":
             user = User.objects.get(username=username)
             user.is_staff = True
             user.save()
