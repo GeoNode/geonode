@@ -1,14 +1,18 @@
 package org.geonode.batchupload;
 
+import static org.geoserver.ftp.CallbackAction.CONTINUE;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.acegisecurity.userdetails.UserDetails;
 import org.geonode.http.GeoNodeHTTPClient;
+import org.geoserver.ftp.CallbackAction;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.springframework.util.Assert;
@@ -74,6 +78,14 @@ public class ArchiveFileWatcher extends GeoNodeBatchUploadNotifier {
         return canHandle;
     }
 
+    /**
+     * Overrides to do nothing, when an archive file is deleted we don't need to notify GeoNode
+     */
+    @Override
+    public CallbackAction onDeleteEnd(UserDetails user, File workingDir, String fileName) {
+        return CONTINUE;
+    }
+
     private FilenameFilter getNotifyableFiles(final List<GeoNodeBatchUploadNotifier> notifiers) {
         FilenameFilter fileNameFilter = new FilenameFilter() {
             /**
@@ -108,12 +120,12 @@ public class ArchiveFileWatcher extends GeoNodeBatchUploadNotifier {
         // traverse the extracted files and delegate as appropriate
         final List<GeoNodeBatchUploadNotifier> notifiers = getNotifiers();
         FilenameFilter fileNameFilter = getNotifyableFiles(notifiers);
-        List<String> spatialFiles = vfsWorker.listFiles(targetFolder, fileNameFilter);
+        Collection<File> spatialFiles = vfsWorker.listFilesInFolder(targetFolder, fileNameFilter);
         LOGGER.info("Uncompressed folder contains the following spatial data files: "
                 + spatialFiles);
-        for (String filePath : spatialFiles) {
+        for (File spatialFile : spatialFiles) {
             for (GeoNodeBatchUploadNotifier notifier : notifiers) {
-                File spatialFile = new File(filePath);
+                Assert.isTrue(spatialFile.exists());
                 if (notifier.canHandle(spatialFile)) {
                     notifier.notifyUpload(user, spatialFile);
                 }
