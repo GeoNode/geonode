@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
@@ -143,7 +147,7 @@ class VFSWorker {
         try {
             FileSystemManager manager = VFS.getManager();
             String sourceURI = resolveArchiveURI(archiveFile);
-            String targetURI = resolveArchiveURI(targetFolder);
+            // String targetURI = resolveArchiveURI(targetFolder);
             FileObject source = manager.resolveFile(sourceURI);
             if (manager.canCreateFileSystem(source)) {
                 source = manager.createFileSystem(source);
@@ -151,10 +155,35 @@ class VFSWorker {
             FileObject target = manager.createVirtualFileSystem(manager.resolveFile(targetFolder
                     .getAbsolutePath()));
 
-            FileSelector selector = new AllFileSelector();
+            FileSelector selector = new AllFileSelector() {
+                @Override
+                public boolean includeFile(FileSelectInfo fileInfo) {
+                    LOGGER.fine("Uncompressing " + fileInfo.getFile().getName().getFriendlyURI());
+                    return true;
+                }
+            };
             target.copyFrom(source, selector);
         } catch (FileSystemException e) {
             throw new RuntimeException(e);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public Collection<File> listFilesInFolder(final File targetFolder,
+            final FilenameFilter fileNameFilter) {
+        IOFileFilter fileFilter = new IOFileFilter() {
+
+            public boolean accept(File dir, String name) {
+                return fileNameFilter.accept(dir, name);
+            }
+
+            public boolean accept(File file) {
+                return fileNameFilter.accept(file.getParentFile(), file.getName());
+            }
+        };
+        IOFileFilter dirFilter = TrueFileFilter.INSTANCE;
+        Collection<File> listFiles = FileUtils.listFiles(targetFolder, fileFilter, dirFilter);
+        return listFiles;
+    }
+
 }
