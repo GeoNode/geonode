@@ -79,15 +79,6 @@ public abstract class GeoNodeBatchUploadNotifier extends DefaultFTPCallback {
 
     protected abstract boolean canHandle(final String filePath);
 
-    protected String extension(String fileName) {
-        int separatorIdx = fileName.lastIndexOf('.');
-        if (separatorIdx == -1) {
-            return null;
-        }
-        String extension = fileName.substring(separatorIdx + 1);
-        return extension;
-    }
-
     /**
      * Notifies GeoNode that a spatial data file has been uploaded and hence should be published
      */
