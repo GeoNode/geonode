@@ -214,3 +214,36 @@ class PermissionLevelMixin(object):
         levels['users'] = user_levels
 
         return levels
+    
+    def get_all_level_info_by_email(self):
+        """
+        returns a mapping indicating the permission levels
+        of users, anonymous users any authenticated users that
+        have specific permissions assigned to them.
+
+        if a key is not present it indicates that no level
+        has been assigned. 
+        
+        the mapping looks like: 
+        {
+            'anonymous': 'readonly', 
+            'authenticated': 'readwrite',
+            'users': {
+                <username>: 'admin'
+                ...
+            }
+        }
+        """
+        my_ct = ContentType.objects.get_for_model(self)
+
+        # get all user-specific permissions
+        user_levels = {}
+        for rm in UserObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
+            user_levels[rm.user.email] = rm.role.codename
+
+        levels = {}
+        for rm in GenericObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
+            levels[rm.subject] = rm.role.codename
+        levels['users'] = user_levels
+
+        return levels    

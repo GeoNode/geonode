@@ -36,7 +36,11 @@ import datetime
 from django.utils.encoding import iri_to_uri
 from django.db.models.signals import pre_delete
 from geonode.maps.models import delete_layer
-
+from registration.models import RegistrationProfile
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.contrib.sites.models import Site  
+    
 logger = logging.getLogger("geonode.maps.views")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -534,6 +538,48 @@ def ajax_layer_permissions(request, layername):
         mimetype='text/plain'
     )
 
+def ajax_layer_permissions_by_email(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
+
+    if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
+        return HttpResponse(
+            'You are not allowed to change permissions for this layer',
+            status=401,
+            mimetype='text/plain'
+        )
+
+    if not request.method == 'POST':
+        return HttpResponse(
+            'You must use POST for editing layer permissions',
+            status=405,
+            mimetype='text/plain'
+        )
+
+    if "authenticated" in request.POST:
+        layer.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
+    elif "anonymous" in request.POST:
+        layer.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
+    else:
+        user_re = re.compile('^user\\.(.*)')
+        for k, level in request.POST.iteritems():
+            match = user_re.match(k)
+            if match:
+                user_email = match.groups()[0]
+                try:
+                    user = User.objects.get(email=user_email)                    
+                except User.DoesNotExist:
+                    user = _create_new_user(user_email, layer.title, reverse('geonode.maps.views.layerController', args=(layer.typename,)), layer.owner_id)
+                if level == '':
+                    layer.set_user_level(user, layer.LEVEL_NONE)
+                else:
+                    layer.set_user_level(user, level)
+
+    return HttpResponse(
+        "Permissions updated",
+        status=200,
+        mimetype='text/plain'
+    )
+
 
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
@@ -584,6 +630,93 @@ def ajax_map_permissions(request, mapid):
         mimetype='text/plain'
     )
 
+def ajax_map_permissions_by_email(request, mapid):
+    map = get_object_or_404(Map, pk=mapid)
+
+    if not request.user.has_perm("maps.change_map_permissions", obj=map):
+        return HttpResponse(
+            'You are not allowed to change permissions for this map',
+            status=401,
+            mimetype='text/plain'
+        )
+
+    if not request.method == 'POST':
+        return HttpResponse(
+            'You must use POST for editing map permissions',
+            status=405,
+            mimetype='text/plain'
+        )
+
+    if "authenticated" in request.POST:
+        map.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
+    elif "anonymous" in request.POST:
+        map.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
+    else:
+        user_re = re.compile('^user\\.(.*)')
+        for k, level in request.POST.iteritems():
+            match = user_re.match(k)
+            if match:
+                user_email = match.groups()[0]
+                try:
+                    user = User.objects.get(email=user_email)
+                                     
+                except User.DoesNotExist:
+                    user = _create_new_user(user_email, map.title, reverse('geonode.maps.views.view', args=[map.id]), map.owner_id)
+                if level == '':
+                    map.set_user_level(user, map.LEVEL_NONE)
+                else:
+                    map.set_user_level(user, level)
+
+    return HttpResponse(
+        "Permissions updated",
+        status=200,
+        mimetype='text/plain'
+    )
+
+
+
+def _create_new_user(user_email, map_layer_title, map_layer_url, map_layer_owner_id):
+    
+    random_password = User.objects.make_random_password()
+    user_name = re.sub(r'\W', r'', user_email.split('@')[0])
+    user_length = len(user_name)
+    if user_length > 30:
+        user_name = user_name[0:29]
+    while len(User.objects.filter(username=user_name)) > 0:
+        user_name = user_name[0:user_length-4] + User.objects.make_random_password(length=4, allowed_chars='0123456789')
+    
+    user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, send_email=False)                    
+
+    _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id, random_password)
+    
+    return user           
+
+
+def _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id,  password):
+      
+    current_site = Site.objects.get_current()
+    user = User.objects.get(email = user_email)
+    profile = RegistrationProfile.objects.get(user=user)
+    owner = User.objects.get(id=map_layer_owner_id)
+    
+    subject = render_to_string('registration/new_user_email_subject.txt',
+                       { 'site': current_site,
+                         'owner' : (owner.get_profile().name if owner.get_profile().name else owner.email),
+                         })
+    # Email subject *must not* contain newlines
+    subject = ''.join(subject.splitlines())
+
+    message = render_to_string('registration/new_user_email.txt',
+                       { 'activation_key': profile.activation_key,
+                         'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
+                         'owner': (owner.get_profile().name if owner.get_profile().name else owner.email),
+                         'title': map_layer_title,
+                         'url' : map_layer_url,                     
+                         'site': current_site,
+                         'username': user.username,
+                         'password' : password })
+
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 @login_required
 def deletemap(request, mapid):
@@ -624,7 +757,7 @@ def mapdetail(request,mapid):
         'config': config, 
         'map': map,
         'layers': layers,
-        'permissions_json': _perms_info_json(map, MAP_LEV_NAMES),
+        'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
         'urlsuffix':get_suffix_if_custom(map)
     }))
 
@@ -1315,7 +1448,21 @@ def _perms_info_json(obj, level_names):
     info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
     info['users'] = sorted(info['users'].items())
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
-    if hasattr(obj, 'owner') and obj.owner: info['owner'] = obj.owner.username
+    if hasattr(obj, 'owner') and obj.owner: 
+        info['owner'] = obj.owner.username
+        info['owner_email'] = obj.owner.email
+    return json.dumps(info)
+
+def _perms_info_email_json(obj, level_names):
+    info = obj.get_all_level_info_by_email()
+    # these are always specified even if none
+    info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
+    info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
+    info['users'] = sorted(info['users'].items())
+    info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
+    if hasattr(obj, 'owner') and obj.owner: 
+        info['owner'] = obj.owner.username
+        info['owner_email'] = obj.owner.email
     return json.dumps(info)
 
 INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")

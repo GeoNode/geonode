@@ -18,10 +18,10 @@
     <tr><td>{% trans "Anonymous Users" %}</td><td>{{ anonymous }}</td></tr>
     <tr><td>{% trans "Registered Users" %}</td><td>{{ authenticated }}</td></tr>
     {% for username, level in users %}
-    <tr><td>User {{ username }}</td><td>{{ level }}</td></tr>
+    <tr><td>User {{ email }}</td><td>{{ level }}</td></tr>
     {% endfor %}
   </tbody>
 </table>
-<a href="{% url edit_layer_permissions layer.typename %}">Edit Permissions</a>
+<a href="{% url edit_layer_permissions_by_email layer.typename %}">Edit Permissions</a>
 
 {% endblock %}

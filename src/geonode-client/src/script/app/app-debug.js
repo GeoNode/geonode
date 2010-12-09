@@ -11,6 +11,7 @@
         "/static/src/script/app/GeoNode/SearchTableRowExpander.js",
         "/static/src/script/app/GeoNode/MapSearchTable.js",
         "/static/src/script/app/GeoNode/PermissionsEditor.js",
+        "/static/src/script/app/GeoNode/WorldMapPermissionsEditor.js",
         "/static/src/script/app/Lang.js"
     );
 

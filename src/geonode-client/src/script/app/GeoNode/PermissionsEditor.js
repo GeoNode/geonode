@@ -51,7 +51,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                             chooser.getValue()
                         );
                         if (idx >= 0
-                            && chooser.getValue() != this.permissions.owner
+                            && chooser.getValue() != this.permissions.owner_email
                             && !this.userset[chooser.getValue()]
                         ) {
                             this.addUser({

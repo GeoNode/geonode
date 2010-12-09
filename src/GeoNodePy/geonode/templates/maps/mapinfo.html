@@ -25,9 +25,9 @@ Ext.onReady(function() {
     }, {{ config }});
     app = new GeoExplorer.Viewer(config);
 {% if can_change_permissions %}
-    new GeoNode.PermissionsEditor({
+    new GeoNode.WorldMapPermissionsEditor({
         renderTo: "permissions_form",
-        submitTo: "{% url geonode.maps.views.ajax_map_permissions map.id %}",
+        submitTo: "{% url geonode.maps.views.ajax_map_permissions_by_email map.id %}",
         userLookup: "{% url geonode.views.ajax_lookup %}",
         permissions: {{ permissions_json }}
     });
@@ -65,9 +65,9 @@ Ext.onReady(function() {
     {% has_obj_perm user map "maps.change_map" as can_change %}
     {% has_obj_perm user map "maps.delete_map" as can_delete %}
     
-    <li>
+    
 	{% if map.officialurl %}
-    	<a href="{% url geonode.maps.views.official_site map.officialurl %}">
+    	<li><a href="{% url geonode.maps.views.official_site map.officialurl %}">
 	{% else %}
 		{% if map.url %}
 			<li><a href="{% url geonode.maps.views.view map.url %}">

@@ -42,6 +42,10 @@
     margin: 2px;
 }
 
+.x-span-font-eight {
+	font-size: 8pt;	
+}
+
 .x-btn .icon-geoexplorer {
     background-image: url(img/geoexplorer.png);
 }
@@ -49,6 +53,7 @@
 .x-btn .icon-add {
     background-image: url(img/silk/add.png);	
 }
+
 
 .x-btn .icon-addlayers {
     background-image: url(img/silk/layers.png);

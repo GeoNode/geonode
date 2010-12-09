@@ -81,9 +81,9 @@
             });
 {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
 {% if can_change_permissions %}
-            new GeoNode.PermissionsEditor({
+            new GeoNode.WorldMapPermissionsEditor({
                 renderTo: "permissions_form",
-                submitTo: "{% url geonode.maps.views.ajax_layer_permissions layer.typename %}",
+                submitTo: "{% url geonode.maps.views.ajax_layer_permissions_by_email layer.typename %}",
                 userLookup: "{% url geonode.views.ajax_lookup %}",
                 permissions: {{ permissions_json }}
             });
