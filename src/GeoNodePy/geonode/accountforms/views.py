@@ -26,12 +26,12 @@ def registerHarvard(request, success_url=None,
             # imports this file.
             if new_user.get_profile().is_harvard:
                 request.session["harvard_username"] = new_user.username
-                logger.debug("Set harvard username to [%s]", new_user.username)
+                logger.debug("harvard username set to [%s]", new_user.username)
                 return HttpResponseRedirect(ISITE_URL)
             else:
                 return HttpResponseRedirect(success_url or reverse('registration_complete'))
-        else:
-            form = form_class()
+    else:
+        form = form_class()
     
     if extra_context is None:
         extra_context = {}
@@ -47,8 +47,8 @@ def registercompleteHarvard(request, template_name='registration/registration_co
     
     if "harvard_username" in request.session:
         username = request.session["harvard_username"]
-        logger.debug("Harvard username is [%s]", username)
-        logger.debug("Referring URL is [%s]", request.META['HTTP_REFERRER'])
+        logger.debug("harvard username is [%s]", username)
+        logger.debug("page referrer is [%s]", request.META['HTTP_REFERRER'])
         if request.META['HTTP_REFERRER'] == ISITE_URL or request.META['HTTP_REFERRER'] == "http://worldmap.harvard.edu/accountforms/registercomplete":
             user = User.objects.get(username=username)
             user.is_staff = True
@@ -58,8 +58,6 @@ def registercompleteHarvard(request, template_name='registration/registration_co
         userProfile = user.get_profile()
         userProfile.is_harvard = user.is_staff
         userProfile.save()
-    return render_to_response(template_name)
-        
-            
-            
-            
+    else:
+        logger.debug("harvard username is not found")    
+    return render_to_response(template_name, RequestContext(request))
