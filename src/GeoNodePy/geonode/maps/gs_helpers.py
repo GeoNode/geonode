@@ -5,6 +5,8 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
+import geoserver
+from geoserver.resource import FeatureType, Coverage
 import uuid
 
 logger = logging.getLogger("geonode.maps.gs_helpers")

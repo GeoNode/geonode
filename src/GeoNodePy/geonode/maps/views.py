@@ -23,7 +23,7 @@ import math
 import httplib2 
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
-import os
+import os, sys
 import re
 from urllib import urlencode
 from urlparse import urlparse
@@ -891,16 +891,22 @@ def _updateLayer(request, layer):
 @task
 def _handle_external_layer_upload(operation=None, base_file_path=None, fileURL=None, user=None):
     try:
-        #TODO Handle for uploaded tiff files
         layer_name = os.path.splitext(os.path.split(base_file_path)[1])[0]
-        #TODO Check for UPPER or MiXeD case file extensions
         base_file = open(base_file_path)
-        dbf_file = open(base_file_path.replace('.shp', '.dbf'))
-        shx_file = open(base_file_path.replace('.shp', '.shx'))
-        #TODO Handle for when .prj is not included
-        prj_file = open(base_file_path.replace('.shp', '.prj'))
-        layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, dbf_file=dbf_file, shx_file=shx_file, user=user)   
-        return 0
+        if base_file_path.lower().endswith('.shp'):
+            #TODO Check for UPPER or MiXeD case file extensions
+            dbf_file = open(base_file_path.replace('.shp', '.dbf'))
+            shx_file = open(base_file_path.replace('.shp', '.shx'))
+            #TODO Handle for when .prj is not included
+            prj_file = open(base_file_path.replace('.shp', '.prj'))
+            layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, dbf_file=dbf_file, shx_file=shx_file, user=user)   
+        else:
+            layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, user=user)
+        if(len(errors) > 0):
+            logger.debug(errors)
+            return -1
+        else:
+            return 0
     except:
         #TODO: Add Proper Error Handling
         return -1 
@@ -1540,7 +1546,6 @@ def process_external_upload(request):
     A view which calls _handle_external_layer_upload to process
     shapefiles and tiffs uploaded via geoservers embedded ftp
     """
-
     try:
         logger.debug("Calling _handle_external_layer_upload asyncrhonously")
         _handle_external_layer_upload.delay(operation=request.POST.get('operation'), 
