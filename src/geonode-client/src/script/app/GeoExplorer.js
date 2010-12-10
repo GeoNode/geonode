@@ -2613,7 +2613,7 @@ listeners: {
             })       ];
         this.on("saved", function() {
             // enable the "Publish Map" button
-            tools[1].enable();
+            tools[2].enable();
             this.modified ^= this.modified & 1;
         }, this);
 
