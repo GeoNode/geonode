@@ -1198,85 +1198,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             Ext.get("request-load-pnl").hide();
         }, this);
         
-
-
-        var header = new Ext.Panel({
-            region: "north",
-            autoHeight: true,
-            contentEl: 'header-wrapper'
-        });
-
-        
-        var picasaMenuItem = {
-            	 text: 'Picasa',
-            	 scope:this,
-            	 checkHandler: function(menuItem, checked) {
-            					if(checked) {
-            						if (picasaRecord !== null) {
-            							this.mapPanel.layers.remove(picasaRecord);
-            						}
-									createPicasaOverlay();
-            						this.mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
-            					} else {
-            						this.mapPanel.layers.remove(picasaRecord);
-            			            //picasaRecord.getLayer().setVisibility(false);
-            					}
-            			}   	
-        };
-        
-        
-        var youtubeMenuItem = {
-        	text: 'YouTube',
-        	scope: this,
-        	checkHandler: function(menuItem, checked) {
-        					if(checked) {
-        						if (youtubeRecord !== null) {
-        								this.mapPanel.layers.remove(youtubeRecord);
-        						}
-        						else { 
-        							createYouTubeOverlay();
-        							mapPanel.layers.insert(mapPanel.layers.data.items.length, [youtubeRecord] );
-        						}
-        					} else {
-        			            this.mapPanel.layers.remove(youtubeRecord);
-        					}
-        			}   	
-        };
-        
-        var googleEarthMenuItem = {
-            text: 'Google Earth',
-            scope: this,
-            checkHandler: function(menuItem, checked) {
-                if (checked) {
-                    this.mapPanelContainer.getLayout().setActiveItem(1);
-                } else {
-                    this.mapPanelContainer.getLayout().setActiveItem(0);
-                }
-            }
-        };        
-        
-        
-       var moreButton = new Ext.Button({
-       	text: 'More...',
-        cls: "cga-logo-overlay-element",
-       	id: 'moreBtn',
-       	menu: {
-       		defaults: {
-       			checked: false
-       		},
-       		
-       		items: [
-       			picasaMenuItem,
-    			youtubeMenuItem,
-    			googleEarthMenuItem
-       		]
-       	}
-       }); 
-
-       
-       this.googleEarthPanel = new GeoExplorer.GoogleEarthPlusPanel({
+        this.googleEarthPanel = new gxp.GoogleEarthPanel({
             mapPanel: this.mapPanel,
-            menuButton: moreButton,
             listeners: {
                 "beforeadd": function(record) {
                     return record.get("group") !== "background";
@@ -1286,7 +1209,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     removeLayerAction.disable();
                     layerTree.getSelectionModel().un(
                         "beforeselect", updateLayerActions, this);
-                    
                 },
                 "hide": function() {
                     addLayerButton.enable();
@@ -1311,19 +1233,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ],
             activeItem: 0
         });
-       
-       
-    	this.mapPanel.add(moreButton);     
-    	
-        var geButton = new Ext.Button({
-       		text: 'Map View',
-        	cls: "cga-logo-overlay-element", 
-        	handler: function(a,b) {
-        		this.mapPanelContainer.getLayout().setActiveItem(0);
-        	}
-        	});
-        
-        
+
+        var header = new Ext.Panel({
+            region: "north",
+            autoHeight: true,
+            contentEl: 'header-wrapper'
+        });
+
         Lang.registerLinks();
 
         this.portalItems = [
@@ -1356,11 +1272,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     			}
     		
     	};
-    	
-
-    	    	
-    	
-    	
     },
     
     /** api: method[createStylesPanel]
@@ -2172,7 +2083,76 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope:this
         });
 
-
+        var picasaMenuItem = {
+            	 text: 'Picasa',
+            	 scope:this,
+            	 checkHandler: function(menuItem, checked) {
+            					if(checked) {
+            						if (picasaRecord !== null) {
+            							this.mapPanel.layers.remove(picasaRecord);
+            						}
+									createPicasaOverlay();
+            						this.mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
+            					} else {
+            						this.mapPanel.layers.remove(picasaRecord);
+            			            //picasaRecord.getLayer().setVisibility(false);
+            					}
+            			}   	
+        };
+        
+        
+        var youtubeMenuItem = {
+        	text: 'YouTube',
+        	scope: this,
+        	checkHandler: function(menuItem, checked) {
+        					if(checked) {
+        						if (youtubeRecord !== null) {
+        								this.mapPanel.layers.remove(youtubeRecord);
+        						}
+        						else { 
+        							createYouTubeOverlay();
+        							mapPanel.layers.insert(mapPanel.layers.data.items.length, [youtubeRecord] );
+        						}
+        					} else {
+        			            this.mapPanel.layers.remove(youtubeRecord);
+        					}
+        			}   	
+        };
+        
+        var googleEarthMenuItem = {
+            text: 'Google Earth',
+            scope: this,
+            checkHandler: function(menuItem, checked) {
+                if (checked) {
+                    this.mapPanelContainer.getLayout().setActiveItem(1);
+                } else {
+                    this.mapPanelContainer.getLayout().setActiveItem(0);
+                }
+            }
+        };        
+        
+        
+       var moreButton = new Ext.Button({
+       	text: 'More...',
+        cls: "cga-logo-overlay-element",
+       	id: 'moreBtn',
+       	menu: {
+       		defaults: {
+       			checked: false
+       		},
+       		
+       		items: [
+       			picasaMenuItem,
+    			youtubeMenuItem
+       		]
+       	}
+       
+       	
+       }); 
+        
+    	
+    	this.mapPanel.add(moreButton);
+    	
         
         var searchTB = new Ext.form.TextField({
 			id:'search-tb',
