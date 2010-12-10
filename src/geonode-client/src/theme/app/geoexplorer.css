@@ -9,6 +9,12 @@
     background-position: 0 3px;
 }
 
+.x-btn-text {
+	font-size: 8pt;
+	text-decoration: underline;
+	color: #0000FF;	
+}
+
 /* apply some margin when using the row expander */
 .x-grid3-row-body p {
     margin: 5px !important;
@@ -233,8 +239,8 @@ div.map-overlay div.overlay-element {
 }
 
 
-div.cga-logo-overlay {
-    z-index: 1000; 
+cga-logo-overlay {
+    z-index: 10000; 
     position: absolute; 
     left: 100px; 
     bottom: 10px;
@@ -243,18 +249,20 @@ div.cga-logo-overlay {
     background: transparent;  
 }
 
-div.cga-logo-overlay-element {
+.cga-logo-overlay-element {
     float: left;
     z-index: 1000; 
     position: absolute; 
-    right: 10px; 
-    bottom: 50px;
-    width:175px;
-    height:48px;
-    display:inline;    
-    background: transparent url(img/cga-logo.png) no-repeat scroll 0 0;
+    right: 50px; 
+    top: 10px;  
+    height:25px;
+    width:50px;
 }
 
+div.cga-link {
+	margin:3px;
+	font-size:8pt;	
+}
 
 div.overlay-scaleline {
     bottom: 0px;

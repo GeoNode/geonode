@@ -124,7 +124,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
     heightLabel: 'UT: Height',
-    infoButtonText: "UT:Get Feature Info",
+    infoButtonText: "UT:Map Info",
     largeSizeLabel: 'UT:Large',
     layerAdditionLabel: "UT:+",
     layerLocalLabel: 'UT:Upload your own data',
@@ -160,14 +160,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     navPreviousActionText: "UT:Zoom to Previous Extent",
     premiumSizeLabel: 'UT: Premium',
     printTipText: "UT:Print Map",
+    printBtnText: "UT:Print",
     printWindowTitleText: "UT:Print Preview",
     propertiesText: "UT:Properties",
-    publishActionText: 'UT:Publish Map',
+    publishActionText: 'UT:Link To Map',
+    publishBtnText: 'UT:Link',
     removeLayerActionText: "UT:Remove Layer",
     removeLayerActionTipText: "UT:Remove Layer",
     saveFailMessage: "UT: Sorry, your map could not be saved.",
     saveFailTitle: "UT: Error While Saving",
     saveMapText: "UT: Save Map",
+    saveMapBtnText: "UT: Save",    
     saveMapAsText: "UT: Save Map As",
     saveNotAuthorizedMessage: "UT: You Must be logged in to save this map.",
     smallSizeLabel: 'UT: Small',
@@ -667,15 +670,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var mapOverlay = this.createMapOverlay();
         this.mapPanel.add(mapOverlay);
         
-        var logoOverlay = this.createLogoOverlay();
-    	this.mapPanel.add(logoOverlay);
+//        var overlayTools = this.createOverlayTools();
+//    	this.mapPanel.add(overlayTools);
 
 
     	
         var addLayerButton = new Ext.Button({
             tooltip : this.addLayersButtonText,
             disabled: false,
-            iconCls: "icon-addlayers",
+            text: '<span class="x-btn-text">' + this.addLayersButtonText + '</span>',
             handler : this.showCapabilitiesGrid,
             scope: this
         });
@@ -1177,6 +1180,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled: true,
             items: [                 
             addLayerButton,
+            "-",
             Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
             this.createTools()
             ]
@@ -1194,8 +1198,85 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             Ext.get("request-load-pnl").hide();
         }, this);
         
-        this.googleEarthPanel = new gxp.GoogleEarthPanel({
+
+
+        var header = new Ext.Panel({
+            region: "north",
+            autoHeight: true,
+            contentEl: 'header-wrapper'
+        });
+
+        
+        var picasaMenuItem = {
+            	 text: 'Picasa',
+            	 scope:this,
+            	 checkHandler: function(menuItem, checked) {
+            					if(checked) {
+            						if (picasaRecord !== null) {
+            							this.mapPanel.layers.remove(picasaRecord);
+            						}
+									createPicasaOverlay();
+            						this.mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
+            					} else {
+            						this.mapPanel.layers.remove(picasaRecord);
+            			            //picasaRecord.getLayer().setVisibility(false);
+            					}
+            			}   	
+        };
+        
+        
+        var youtubeMenuItem = {
+        	text: 'YouTube',
+        	scope: this,
+        	checkHandler: function(menuItem, checked) {
+        					if(checked) {
+        						if (youtubeRecord !== null) {
+        								this.mapPanel.layers.remove(youtubeRecord);
+        						}
+        						else { 
+        							createYouTubeOverlay();
+        							mapPanel.layers.insert(mapPanel.layers.data.items.length, [youtubeRecord] );
+        						}
+        					} else {
+        			            this.mapPanel.layers.remove(youtubeRecord);
+        					}
+        			}   	
+        };
+        
+        var googleEarthMenuItem = {
+            text: 'Google Earth',
+            scope: this,
+            checkHandler: function(menuItem, checked) {
+                if (checked) {
+                    this.mapPanelContainer.getLayout().setActiveItem(1);
+                } else {
+                    this.mapPanelContainer.getLayout().setActiveItem(0);
+                }
+            }
+        };        
+        
+        
+       var moreButton = new Ext.Button({
+       	text: 'More...',
+        cls: "cga-logo-overlay-element",
+       	id: 'moreBtn',
+       	menu: {
+       		defaults: {
+       			checked: false
+       		},
+       		
+       		items: [
+       			picasaMenuItem,
+    			youtubeMenuItem,
+    			googleEarthMenuItem
+       		]
+       	}
+       }); 
+
+       
+       this.googleEarthPanel = new GeoExplorer.GoogleEarthPlusPanel({
             mapPanel: this.mapPanel,
+            menuButton: moreButton,
             listeners: {
                 "beforeadd": function(record) {
                     return record.get("group") !== "background";
@@ -1205,6 +1286,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     removeLayerAction.disable();
                     layerTree.getSelectionModel().un(
                         "beforeselect", updateLayerActions, this);
+                    
                 },
                 "hide": function() {
                     addLayerButton.enable();
@@ -1218,6 +1300,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.mapPanelContainer = new Ext.Panel({
             layout: "card", 
             region: "center",
+            id: "mapPnlCntr",
             defaults: {
                 // applied to each contained panel
                 border:false
@@ -1228,13 +1311,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ],
             activeItem: 0
         });
-
-        var header = new Ext.Panel({
-            region: "north",
-            autoHeight: true,
-            contentEl: 'header-wrapper'
-        });
-
+       
+       
+    	this.mapPanel.add(moreButton);     
+    	
+        var geButton = new Ext.Button({
+       		text: 'Map View',
+        	cls: "cga-logo-overlay-element", 
+        	handler: function(a,b) {
+        		this.mapPanelContainer.getLayout().setActiveItem(0);
+        	}
+        	});
+        
+        
         Lang.registerLinks();
 
         this.portalItems = [
@@ -1267,6 +1356,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     			}
     		
     	};
+    	
+
+    	    	
+    	
+    	
     },
     
     /** api: method[createStylesPanel]
@@ -1718,28 +1812,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.capGrid.show();
     },
 
-    /**
-     * Method:createLogoOverlay
-     * Shows the CGA logo on the map
-     * 
-     */
-    createLogoOverlay: function() {
-    
-        var cgaLogo = new Ext.BoxComponent({
-            autoEl: {
-                tag: "div",
-                cls: "cga-logo-overlay-element"
-            }
-        });
-    	/*
-        var logoOverlay = new Ext.Panel({
-            // title: "Overlay",
-            cls: 'cga-logo-overlay',
-            items: [ cgaLogo
-            ]
-        });*/
-    	return cgaLogo;
-    },
     
     
     /** private: method[createMapOverlay]
@@ -1749,6 +1821,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     createMapOverlay: function() {
 
+    	var cgaLink = new Ext.BoxComponent({
+    		html:'<div class="cga-link" onclick="javascript:window.open(\'http://gis.harvard.edu\', \'_blank\');"><a href="http://gis.harvard.edu">Center for Geographic Analysis</a></div>'
+    	});
     	
         var scaleLinePanel = new Ext.BoxComponent({
             autoEl: {
@@ -1826,6 +1901,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             // title: "Overlay",
             cls: 'map-overlay',
             items: [
+            	cgaLink,
                 scaleLinePanel,
                 zoomSelectorWrapper
             ]
@@ -1981,7 +2057,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     	
         var printButton = new Ext.Button({
             tooltip: this.printTipText,
-            iconCls: "icon-print",
+            text: '<span class="x-btn-text">' + this.printBtnText + '</span>',
             handler: function() {
                 var unsupportedLayers = [];
                 var printWindow = new Ext.Window({
@@ -2091,48 +2167,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // create an info control to show introductory text window
         var infoButton = new Ext.Button({
 		tooltip: this.infoButtonText,
-            iconCls: "icon-getfeatureinfo",
+            text: '<span class="x-btn-text">' + this.infoButtonText + '</span>', 
             handler: this.showInfoWindow,
             scope:this
         });
 
-        var picasaButton = new Ext.Button({
-            	enableToggle: true,
-            	allowDepress: true,
-            	 iconCls: "icon-picasa",
-            	 scope:this,
-            	toggleHandler: function(button, pressed) {
-            					if(pressed) {
-            						if (picasaRecord !== null) {
-            							this.mapPanel.layers.remove(picasaRecord);
-            						}
-									createPicasaOverlay();
-            						this.mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
-            					} else {
-            						this.mapPanel.layers.remove(picasaRecord);
-            			            //picasaRecord.getLayer().setVisibility(false);
-            					}
-            			}   	
-        });
-        
-        var youtubeButton = new Ext.Button({
-        	enableToggle: true,
-        	allowDepress: true,
-        	 iconCls: "icon-youtube",
-        	toggleHandler: function(button, pressed) {
-        					if(pressed) {
-        						if (youtubeRecord !== null) {
-        								this.mapPanel.layers.remove(youtubeRecord);
-        						}
-        						else { 
-        							createYouTubeOverlay();
-        							mapPanel.layers.insert(mapPanel.layers.data.items.length, [youtubeRecord] );
-        						}
-        					} else {
-        			            this.mapPanel.layers.remove(youtubeRecord);
-        					}
-        			}   	
-        });
+
         
         var searchTB = new Ext.form.TextField({
 			id:'search-tb',
@@ -2520,22 +2560,7 @@ listeners: {
             }});
         });
         
-        var enable3DButton = new Ext.Button({
-            iconCls:"icon-3D",
-            tooltip: this.switchTo3DActionText,
-            enableToggle: true,
-            toggleHandler: function(button, state) {
-                if (state === true) {
-                    this.mapPanelContainer.getLayout().setActiveItem(1);
-                    this.toolbar.disable();
-                    button.enable();
-                } else {
-                    this.mapPanelContainer.getLayout().setActiveItem(0);
-                    this.toolbar.enable();
-                }
-            },
-            scope: this
-        });
+
 
         
         var advancedToolsLink = function() {
@@ -2550,15 +2575,17 @@ listeners: {
                 tooltip: this.saveMapText,
                 handler: this.showMetadataForm,
                 scope: this,
-                iconCls: "icon-save"
+            	text: '<span class="x-btn-text">' + this.saveMapBtnText + '</span>'
             }),
+            "-",
             new Ext.Action({
                 tooltip: this.publishActionText,
                 handler: this.makeExportDialog,
                 scope: this,
-                iconCls: 'icon-export',
+                text: '<span class="x-btn-text">' + this.publishBtnText + '</span>',
                 disabled: !this.mapID
             }),
+            "-",
             window.printCapabilities ? printButton : "",
             "-",
             /*
@@ -2578,7 +2605,7 @@ listeners: {
                 iconCls: "icon-zoom-out",
                 scope: this
             }),
-            */
+
             navPreviousAction,
             navNextAction,
             new Ext.Button({
@@ -2591,10 +2618,10 @@ listeners: {
                 },
                 scope: this
             }),
+            
             enable3DButton,
+            */
             infoButton,
-            picasaButton,
-            youtubeButton,
             searchBar,
             jumpBar,
             '->',
