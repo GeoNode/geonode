@@ -146,7 +146,7 @@
 
 <p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>
 <p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>
-<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>
+<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition|default_if_none:_("Unspecified") }}</p>
 <p> <strong>{% trans "Topic Category" %}:</strong> {{ layer.topic_category }}</p>
 
 <p> <strong>{% trans "Citation" %}:</strong> 
