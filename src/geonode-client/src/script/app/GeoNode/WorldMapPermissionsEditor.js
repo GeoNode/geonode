@@ -148,7 +148,7 @@ GeoNode.WorldMapPermissionsEditor = Ext.extend(Ext.util.Observable, {
         });
 
         for (var i = 0; i < this.permissions.users.length; i++) {
-            if (this.permissions.users[i][0] != this.permissions.owner) {
+            if (this.permissions.users[i][0] != this.permissions.owner_email) {
                 this.addUser({
                     email: this.permissions.users[i][0],
                     role: this.permissions.users[i][1]
