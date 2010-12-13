@@ -112,13 +112,13 @@ TEMPLATE_DIRS = path_extrapolate('geonode/templates'), \
 
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
+GEOSERVER_BASE_URL = "http://localhost:8080/geoserver-geonode-dev/"
 
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", open(path_extrapolate('../../geoserver_token')).readline()[0:-1]
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
+GEONETWORK_BASE_URL = "http://localhost:8080/geonetwork/"
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
@@ -131,12 +131,12 @@ LOGIN_REDIRECT_URL = "/"
 DEFAULT_LAYERS_OWNER='admin'
 
 # Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (-84.7, 12.8)
+DEFAULT_MAP_CENTER = (0,0)
 
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
-DEFAULT_MAP_ZOOM = 7
+DEFAULT_MAP_ZOOM = 2
 
 logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'w')
 
@@ -161,14 +161,14 @@ MAP_BASELAYERS = [{
     "source":"any",
     "type":"OpenLayers.Layer.OSM",
     "args":["OpenStreetMap"],
-    "visibility": True,
+    "visibility": False,
     "fixed": True,
     "group":"background"
   },{
     "source":"google",
     "group":"background",
     "name":"SATELLITE",
-    "visibility": False,
+    "visibility": True,
     "fixed": True,
 }]
 
@@ -180,11 +180,11 @@ NAVBAR = \
                'link_class': '',
                'text': 'Create Your Own Map View',
                'url': "geonode.maps.views.newmap"},
-#  'index': {'id': '%sLink',
-#            'item_class': '',
-#            'link_class': '',
-#            'text': 'Featured Map',
-#            'url': 'geonode.views.index'},
+'help': {'id': '%sLink',
+               'item_class': '',
+               'link_class': '',
+               'text': 'Help',
+               'url': "geonode.views.static 'help'"},      
  'master': {'id': '%sLink',
             'item_class': '',
             'link_class': '',
