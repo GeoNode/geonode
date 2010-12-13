@@ -2949,11 +2949,11 @@ listeners: {
             text: this.metadataFormSaveAsCopyText,
             disabled: !this.about.title,
             handler: function(e){
-            	if (this.about["urlsuffix"] = urlField.getValue()){
+            	if (this.about["urlsuffix"] == urlField.getValue()){
             		Ext.Msg.alert("Chnage the URL suffix", "You must change the URL suffix before saving a copy of this map view.");
             		urlField.markInvalid("This URL is already taken, please choose another");
             		return false;
-            	}
+            	} else {
             	
                 this.about.title = titleField.getValue();
                 this.about["abstract"] = abstractField.getValue();
@@ -2962,6 +2962,7 @@ listeners: {
                 this.about["keywords"] = keywordsField.getValue();
                 this.save(true);
                 this.initInfoTextWindow();
+            	}
             },
             scope: this
         });
@@ -3086,6 +3087,7 @@ listeners: {
         config.treeconfig = treeConfig;
         
         if (!this.mapID || as) {
+        	alert(this.rest);
             /* create a new map */ 
             Ext.Ajax.request({
                 url: this.rest,

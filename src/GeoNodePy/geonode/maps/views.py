@@ -219,7 +219,7 @@ def mapJSON(request, mapid):
                 mimetype="text/plain"
             )
         map = get_object_or_404(Map, pk=mapid)
-        if not request.user.has_perm('maps.edit_map', obj=map):
+        if not request.user.has_perm('maps.change_map', obj=map):
             return HttpResponse(
                 "You do not have permission to save changes to this map.  Save a copy of the map instead.",
                 mimetype="text/plain",
@@ -855,7 +855,7 @@ def view(request, mapid):
         request.session['visit' + str(map.id)] = True
             
     config['first_visit'] = first_visit
-    config['edit_map'] = request.user.has_perm('maps.edit_map', obj=map) 
+    config['edit_map'] = request.user.has_perm('maps.change_map', obj=map) 
     
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
