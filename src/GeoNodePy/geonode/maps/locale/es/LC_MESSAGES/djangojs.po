@@ -2,31 +2,29 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-10-28 17:20-0400\n"
-"PO-Revision-Date: 2009-10-28 17:37-0500\n"
-"Last-Translator: Sebastian Benthall <seb@opengeo.org>\n"
+"PO-Revision-Date: 2010-12-07 14:40\n"
+"Last-Translator: <>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Translated-Using: django-rosetta 0.5.6\n"
 
-#: templates/lang.js:5
-#: templates/lang.js.py:45
+#: templates/lang.js:5 templates/lang.js.py:45
 msgid "Zoom Level"
 msgstr "Nivel de acercamiento "
 
-#: templates/lang.js:6
-#: templates/lang.js.py:15
+#: templates/lang.js:6 templates/lang.js.py:15
 msgid "Add Layers"
-msgstr "AÃ±adir capas"
+msgstr "Añadir capas"
 
-#: templates/lang.js:7
-#: templates/lang.js.py:9
+#: templates/lang.js:7 templates/lang.js.py:9
 msgid "Remove Layer"
 msgstr "Quitar capa"
 
@@ -42,14 +40,13 @@ msgstr "Capas del mapa"
 msgid "Layers"
 msgstr "Capas"
 
-#: templates/lang.js:12
-#: templates/lang.js.py:51
+#: templates/lang.js:12 templates/lang.js.py:51
 msgid "Data"
 msgstr "Datos"
 
 #: templates/lang.js:13
 msgid "Legend"
-msgstr "DescripciÃ³n"
+msgstr "Leyenda"
 
 #: templates/lang.js:14
 msgid "Available Layers"
@@ -69,15 +66,15 @@ msgstr "Paneo del mapa"
 
 #: templates/lang.js:19
 msgid "Zoom to Previous Extent"
-msgstr "Acercar al grado anterior"
+msgstr "Zoom la Extensión Anterior"
 
 #: templates/lang.js:20
 msgid "Zoom to Next Extent"
-msgstr "Acercar al grado siguiente"
+msgstr "Zoom la Extensión Siguiente"
 
 #: templates/lang.js:21
 msgid "Get Feature Info"
-msgstr "Ver informacion del rasgo"
+msgstr "Información del Get Feature "
 
 #: templates/lang.js:22
 msgid "Measure"
@@ -103,29 +100,26 @@ msgstr "Acercar al grado visibile"
 msgid "About this Map"
 msgstr "Sobre este mapa"
 
-#: templates/lang.js:28
-#: templates/lang.js.py:53
-#: templates/lang.js.py:57
+#: templates/lang.js:28 templates/lang.js.py:53 templates/lang.js.py:57
 #: templates/lang.js:72
 msgid "Title"
 msgstr "Titolo"
 
 #: templates/lang.js:29
 msgid "Contact"
-msgstr ""
+msgstr "Contacto"
 
-#: templates/lang.js:30
-#: templates/lang.js.py:58
+#: templates/lang.js:30 templates/lang.js.py:58
 msgid "Abstract"
-msgstr "Abstracto"
+msgstr "Resumen"
 
 #: templates/lang.js:31
 msgid "Tags"
-msgstr "Puntas"
+msgstr "Tags"
 
 #: templates/lang.js:32
 msgid "Permalink"
-msgstr "Permalink"
+msgstr "Enlace permanente"
 
 #: templates/lang.js:33
 msgid "Save Map"
@@ -133,11 +127,11 @@ msgstr "Guardar mapa"
 
 #: templates/lang.js:34
 msgid "This map has not yet been saved."
-msgstr "Este mapa no ha sido todavÃ­a guardado."
+msgstr "Este mapa aun no ha sido guardado."
 
 #: templates/lang.js:35
 msgid "Error While Saving"
-msgstr "Error guardando"
+msgstr "Error al guardar"
 
 #: templates/lang.js:36
 msgid "Sorry, your map could not be saved."
@@ -145,19 +139,17 @@ msgstr "Lo siento, tu mapa no ha sido guardado."
 
 #: templates/lang.js:37
 msgid "Unknown Map"
-msgstr ""
+msgstr "Mapa Desconocido"
 
 #: templates/lang.js:38
 msgid "Sorry, the map that you are trying to load does not exist.  Creating a new map instead."
-msgstr ""
+msgstr "Lo sentimos, el mapa que está intentando cargar no existe. Crear un mapa nuevo en su lugar."
 
-#: templates/lang.js:52
-#: templates/lang.js.py:71
+#: templates/lang.js:52 templates/lang.js.py:71
 msgid "Name"
 msgstr "Nombre"
 
-#: templates/lang.js:54
-#: templates/lang.js.py:73
+#: templates/lang.js:54 templates/lang.js.py:73
 msgid "Queryable"
 msgstr "Consultable"
 
@@ -175,67 +167,67 @@ msgstr "Mapa"
 
 #: templates/lang.js:60
 msgid "AME File"
-msgstr ""
+msgstr "AME Archivo"
 
 #: templates/lang.js:61
 msgid "Scenario"
-msgstr ""
+msgstr "Escenario"
 
 #: templates/lang.js:62
 msgid "Country"
-msgstr ""
+msgstr "País"
 
 #: templates/lang.js:63
 msgid "File"
-msgstr ""
+msgstr "Archivo "
 
 #: templates/lang.js:64
 msgid "Files"
-msgstr ""
+msgstr "Archivos "
 
 #: templates/lang.js:79
 msgid "Your map is ready to be published to the web!  Simply copy the following HTML to embed the map in your website:"
-msgstr ""
+msgstr "El mapa está listo para ser publicado en la web! Basta con copiar el siguiente código HTML para incrustar el mapa en su página web:"
 
 #: templates/lang.js:80
 msgid "Publish Map"
-msgstr ""
+msgstr "Publicar Mapa"
 
 #: templates/lang.js:81
 msgid "Height"
-msgstr ""
+msgstr "Altura"
 
 #: templates/lang.js:82
 msgid "Width"
-msgstr ""
+msgstr "Ancho"
 
 #: templates/lang.js:83
 msgid "Map Size"
-msgstr ""
+msgstr "Tamaño del mapa"
 
 #: templates/lang.js:84
 msgid "Mini"
-msgstr ""
+msgstr "Mini"
 
 #: templates/lang.js:85
 msgid "Small"
-msgstr ""
+msgstr "Pequeña"
 
 #: templates/lang.js:86
 msgid "Large"
-msgstr ""
+msgstr "Grande"
 
 #: templates/lang.js:87
 msgid "Premium"
-msgstr ""
+msgstr "Premium"
 
 #: templates/lang.js:94
 msgid "Abstract:"
-msgstr "Abstracto:"
+msgstr "Resumen:"
 
 #: templates/lang.js:95
 msgid "Download:"
-msgstr "Bjar archivo:"
+msgstr "Bajar archivo:"
 
 #: templates/lang.js:96
 msgid "Metadata Links:"
@@ -247,7 +239,7 @@ msgstr "Palabras claves:"
 
 #: templates/lang.js:98
 msgid "Provided by:"
-msgstr "Proviedo por:"
+msgstr "Proporcionado por:"
 
 #: templates/lang.js:99
 msgid "No metadata URLs are defined for this layer."
@@ -260,4 +252,3 @@ msgstr "No hay palabras claves en lista para esta capa."
 #: templates/lang.js:101
 msgid "No attribution information is provided for this layer."
 msgstr "No hay informacion de attribucion para esta capa."
-
