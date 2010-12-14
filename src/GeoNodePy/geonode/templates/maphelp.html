@@ -1,0 +1,54 @@
+{% load i18n %}
+{% load geonode_media %}
+<html>
+<head>
+  <link rel="shortcut icon" href="{% geonode_media "app_themes" %}img/favicon.ico"/>
+   <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}boilerplate-min.css" media="screen" />
+   <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" /> 
+   <!--[if lte IE 6]><link rel="stylesheet" href="{% geonode_media "app_themes" %}boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+  <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+  <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
+</head>
+<body>
+
+<h1>{% trans "Map User Guide" %}</h1>
+
+{% block main %} 
+<div>
+  {% blocktrans %}
+  
+  <h4 id="creating-a-map">Creating a Map</h4>
+  <p>To add data layers from WorldMap click on the "Add Layers"  link located on the left hand side of the menu bar. This will open a dialog listing all the layers available on WorldMap.</p>
+  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>
+
+  <h5>Reordering and Removing Layers</h5>
+  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>
+
+  <h5>Saving your map</h5>
+  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>
+
+  <h4 id="exporting-a-map">Exporting a Map</h4>
+  <p>Any map from WorldMap can be embedded for use in another site or blog. To embed a map:</p>
+  <ol>
+    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> 
+    <li>Choose your desired height and width for the widget in the wizard.</li> 
+    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>
+  </ol>
+  <p>This will put an interactive widget showing you map in your web page or blog post.</p>
+  <p>Note that the <a href="maps/new">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>
+
+  <h4 id="remixing-a-map">Remixing a Map</h4>
+  <p>Any map available can serve as a starting point for a new map.</p>
+  <ol>
+    <li>Open the map in the Map Composer.</li>
+    <li>Add and remove layers as you like.</li>
+    <li>Pan and zoom to highlight the area of interest.</li>
+    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>
+    <li>Save the map.</li>
+  </ol>
+  <p>You will be able to see your new map when you search for it from the <a href="maps">Maps</a> tab.</p> 
+  {% endblocktrans %} 
+</div>
+{% endblock %}
+</body>
+</html>

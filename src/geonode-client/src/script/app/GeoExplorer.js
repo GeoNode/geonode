@@ -124,6 +124,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
     heightLabel: 'UT: Height',
+    helpLabel: 'UT: Help',
     infoButtonText: "UT:Map Info",
     largeSizeLabel: 'UT:Large',
     layerAdditionLabel: "UT:+",
@@ -2083,6 +2084,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope:this
         });
 
+        var helpButton = new Ext.Button({
+		tooltip: this.helpLabel,
+            text: '<span class="x-btn-text">' + this.helpLabel + '</span>', 
+            handler: this.showHelpWindow,
+            scope:this
+        });
+        
         var picasaMenuItem = {
             	 text: 'Picasa',
             	 scope:this,
@@ -2602,6 +2610,7 @@ listeners: {
             enable3DButton,
             */
             infoButton,
+            helpButton,
             searchBar,
             jumpBar,
             '->',
@@ -3019,6 +3028,7 @@ listeners: {
         });
 
         this.infoTextPanel.enable();    
+
         
         this.infoTextWindow = new Ext.Window({
             title: this.about.title,
@@ -3028,9 +3038,32 @@ listeners: {
             width: 600,
             height:600,
             autoScroll: true
-        });
+        });        
     },
+    
+    
+    initHelpTextWindow: function(){
+            this.helpTextPanel = new Ext.FormPanel({
+            bodyStyle: {padding: "5px"},          
+            labelAlign: "top",
+            preventBodyReset: true,
+            autoScroll:true,
+            autoHeight:true,
+            autoLoad:{url:'/maphelp',scripts:true}
+        });
 
+        this.helpTextPanel.enable();            
+        
+       this.helpTextWindow = new Ext.Window({
+         title: this.helpLabel,
+         closeAction: 'hide',
+         items: this.helpTextPanel,
+         modal: true,
+         width: 600,
+         height:600,
+         autoScroll: true
+       }); 
+    },
 
     /** private: method[showInfoWindow]
      *  Shows the window with intro text
@@ -3041,6 +3074,13 @@ listeners: {
         }
         this.infoTextWindow.show();
     },    
+    
+    showHelpWindow: function() {
+         if(!this.helpTextWindow) {
+            this.initHelpTextWindow();
+        }
+        this.helpTextWindow.show();    
+    },
     
     
     /** private: method[showMetadataForm]

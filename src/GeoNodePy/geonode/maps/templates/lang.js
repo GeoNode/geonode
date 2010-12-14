@@ -13,6 +13,7 @@ if (window.GeoExplorer) {
         connErrorDetailsText: gettext("Details..."),
         exportDialogMessage: '<p>Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
         heightLabel: gettext("Height"),
+        helpLabel: gettext("Help"),
         infoButtonText: gettext("Map Info"),
         largeSizeLabel: gettext("Large"),
         layerAdditionLabel: gettext("+"),
