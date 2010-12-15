@@ -26,7 +26,6 @@ DATABASE_PORT = ''             # Not used with sqlite3.
 # Celery Settings
 CARROT_BACKEND = "ghettoq.taproot.Database"
 CELERY_IMPORTS = ("geonode.maps.views", )
-CELERY_RESULT_DBURI = "postgresql://geonode:g30n0d3@localhost/geonode"
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

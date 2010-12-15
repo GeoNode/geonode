@@ -34,6 +34,7 @@ from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
 from celery.decorators import task
+from django import db
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -890,6 +891,7 @@ def _updateLayer(request, layer):
 
 @task
 def _handle_external_layer_upload(operation=None, base_file_path=None, fileURL=None, user=None):
+    db.connection.close() #test forcibly closing db connection
     try:
         layer_name = os.path.splitext(os.path.split(base_file_path)[1])[0]
         base_file = open(base_file_path)

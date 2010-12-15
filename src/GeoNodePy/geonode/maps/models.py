@@ -577,7 +577,7 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
-                    "uuid": str(uuid.uuid4())
+                    "uuid": str(uuid.uuid1())
                 })
 
                 ## Due to a bug in GeoNode versions prior to 1.0RC2, the data

@@ -258,7 +258,7 @@ def _handle_layer_upload(layer_name=None, base_file=None, dbf_file=None, shx_fil
                                          typename=typename,
                                          workspace=gs_resource.store.workspace.name,
                                          title=gs_resource.title,
-                                         uuid=str(uuid.uuid4()),
+                                         uuid=str(uuid.uuid1()),
                                          owner=user
                                        )
             # A user without a profile might be uploading this
