@@ -6,4 +6,3 @@ http://www.reportlab.com/ftp/ReportLab_2_3.tar.gz#egg=reportlab
 django-registration
 django-profiles
 -e git+http://github.com/ericflo/django-avatar.git#egg=avatar
-mock
