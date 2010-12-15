@@ -20,7 +20,7 @@
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
 {{ block.super }}
 
-<script type="text/javascript"><!--
+<script type="text/javascript">
 var app;
 Ext.onReady(function() {
 {% autoescape off %}
@@ -50,24 +50,19 @@ Ext.onReady(function() {
             }) 
         };
 
-/*
-    var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
-    Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
 
-    var titleTemplate = new Ext.Template("<a class=\"maplist\" href=\"/maps/search\">Maps</a> / <strong>{title}</strong>");
-    Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}));
+    var titleTemplate = new Ext.Template("<a  href=\"/\">WorldMap</a><span>&nbsp;/&nbsp;{title}</span>");
+    Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: (config.about.title ? config.about.title : 'New Map')}));
 
     app.on("saved", function(id) {
         //reset title header
         Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}))
 
-        //reset more info link
-//        Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.mapID)}))
     }, this);
-*/
+
 {% endautoescape %}
 });
---></script>
+</script>
 
 {% endblock %}
 

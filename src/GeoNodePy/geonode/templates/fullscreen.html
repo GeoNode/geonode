@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load navbar %}
 {% load geonode_media %}
 <html>
 <head>
@@ -39,6 +40,11 @@
       </div><!-- /.wrap -->
     </div><!-- /#header -->
     {% endblock header-wrapper %}
+  <div id="crossbar">  		      
+      {% block nav %}
+        {% navbar master %}
+      {% endblock %}
+  </div><!-- /#crossbar -->
     {% endblock body %}
             </body>
 </html>

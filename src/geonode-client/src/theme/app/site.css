@@ -229,19 +229,8 @@ display: block;
 zoom: 1; /* IE < 7 */
 }
 
-#topPanel * {
-color: #fff;
-}
 
-#topPanel #map-title-header a.maplist {
-float: left;
-margin: 0 0.5em 0 0;
-}
 
-#topPanel #map-title-header strong {
-font-size: 1.35em;
-line-height: 1em;
-}
 
 #sitenav {
 margin: 0;
@@ -259,11 +248,21 @@ padding: 0;
 #sitenav li a {
 float: left;
 margin: 0;
-padding: 8px 10px;
+padding: 8px 0 8px 10px;
 color: #fff;
 font-weight: bold;
 text-decoration: none;
 }
+
+
+#sitenav li span  {
+float: left;
+margin: 0;
+padding: 8px 10px 8px 0;
+color: #fff;
+text-decoration: none;
+}
+
 
 #sitenav li a.current {
 background: #d8d8d8;
