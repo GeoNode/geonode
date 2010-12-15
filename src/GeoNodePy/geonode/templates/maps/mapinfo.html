@@ -75,10 +75,10 @@ Ext.onReady(function() {
 			<li><a href="{% url geonode.maps.views.view map.id %}">		
 		{% endif %}
 	{% endif %}
-	{% trans "View or edit this map" %}</a></li>
+	{% trans "Return to map" %}</a></li>
 	
     {% if can_change %}
-    <li><a href="{% url geonode.maps.views.map_controller map.id %}?describe">{% trans "Edit metadata" %}</a></li>
+    <li><a href="{% url geonode.maps.views.map_controller map.id %}/describe/">{% trans "Edit metadata" %}</a></li>
     {% endif %}
     {% if can_change_permissions %}
     <li><a href="{% url edit_map_permissions map.id %}">{% trans "Edit permissions" %}</a></li>

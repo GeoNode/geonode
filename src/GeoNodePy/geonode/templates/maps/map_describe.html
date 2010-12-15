@@ -10,7 +10,7 @@
 {% block main %}
 <div class="twocol">
   <h2> {% trans "Editing details for " %} {{ map.title }} </h2>
-  <form action="/maps/{{map.id}}?describe" method="POST">
+  <form action="/maps/{{map.id}}/edit/describe/" method="POST">
     {% csrf_token %}
     <ul class="form">
       {{ map_form.as_ul }}

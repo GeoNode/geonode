@@ -155,7 +155,7 @@ class PocForm(forms.Form):
 class MapForm(forms.ModelForm):
     class Meta:
         model = Map
-        exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner')
+        exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner', 'officialurl', 'urlsuffix', 'keywords', 'content', 'use_custom_template', 'group_params')
         widgets = {
             'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
         }
