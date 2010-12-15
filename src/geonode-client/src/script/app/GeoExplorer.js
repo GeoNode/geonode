@@ -3127,7 +3127,6 @@ listeners: {
         config.treeconfig = treeConfig;
         
         if (!this.mapID || as) {
-        	alert(this.rest);
             /* create a new map */ 
             Ext.Ajax.request({
                 url: this.rest,

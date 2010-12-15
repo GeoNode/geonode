@@ -1454,7 +1454,7 @@ class MapLayerManager(models.Manager):
         """
         layer_cfg = dict(layer)
         for k in ["format", "name", "opacity", "styles", "transparent",
-                  "fixed", "group", "visibility", "title", "source"]:
+                  "fixed", "group", "visibility", "source"]:
             if k in layer_cfg: del layer_cfg[k]
 
         source_cfg = dict(source)
