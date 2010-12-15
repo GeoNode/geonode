@@ -855,7 +855,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     prop.items.get(0).items.get(1).cascade(function(i) {
                         i instanceof Ext.form.Field && i.setDisabled(true);
                     });
-                    prop.items.get(0).items.get(0).add({html: "<a href='/data/" + layer.params.LAYERS + "'>Metadata</a>", xtype: "panel"});
+                    if (layer.params.LAYERS.indexOf("geonode") === 0) {
+                    	prop.items.get(0).items.get(0).add({html: "<a href='/data/" + layer.params.LAYERS + "'>Metadata</a>", xtype: "panel"});
+                    }
                     var stylesPanel = this.createStylesPanel({
                         layerRecord: record
                     });
@@ -1093,13 +1095,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             autoScroll: true,
             border: false,
             title: this.layersContainerText,
-            items: [layerTree],
-            tbar: [
-                addLayerButton,
-                Ext.apply(new Ext.Button(removeLayerAction), {text: ""}),
-                Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
-                Ext.apply(new Ext.Button(showStylesAction), {text: ""})
-            ]
+            items: [layerTree]
         });
         
 
@@ -1182,7 +1178,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             items: [                 
             addLayerButton,
             "-",
-            Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
             this.createTools()
             ]
         });
@@ -1813,9 +1808,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             // title: "Overlay",
             cls: 'map-overlay',
             items: [
-            	cgaLink,
                 scaleLinePanel,
-                zoomSelectorWrapper
+                zoomSelectorWrapper,
+                cgaLink
             ]
         });
 
