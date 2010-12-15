@@ -49,8 +49,10 @@ Ext.onReady(function() {
 {% endblock %}
 {% block sidebar %}
 <div id="sidebar" class="threecol">
+<!--
     <h3>{% trans "Download" %}</h3>
     <p><a href="{% url geonode.maps.views.map_download map.id %}">{% trans "Download all layers included in this map" %}</a></p>
+-->
     <h3>{% trans "Layers" %}</h3>
   <p>{% trans "This map uses the following layers" %} </p>
   <ul>
