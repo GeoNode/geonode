@@ -261,7 +261,8 @@ cga-logo-overlay {
 
 div.cga-link {
 	margin:3px;
-	font-size:8pt;	
+	font-size:8pt;
+	clear: both;	
 }
 
 div.overlay-scaleline {

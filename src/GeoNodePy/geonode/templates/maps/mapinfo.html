@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load geonode_auth %}
 
+
+{% block title %} {{map.title}} - Advanced Map Options {% endblock %}
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
@@ -9,6 +11,15 @@
 {{ block.super }}
 <script type="text/javascript">
 var app;
+var mapurl = "{% url geonode.maps.views.view map.id %}";
+{% if map.officialurl %}
+	mapurl="{% url geonode.maps.views.official_site map.officialurl %}";
+{% else %}
+	{% if map.url %}
+		mapurl="{% url geonode.maps.views.view map.url %}";
+	{% endif %}
+{% endif %}
+
 Ext.onReady(function() {
 {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
 {% autoescape off %}
@@ -32,6 +43,10 @@ Ext.onReady(function() {
         permissions: {{ permissions_json }}
     });
 {% endif %}
+
+var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;Advanced Options</span>");
+Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+
 {% endautoescape %}
 });
 </script>

@@ -44,10 +44,19 @@ Ext.onReady(function(){
       download_url: '{{site}}geoserver/rest/process/batchDownload/download/'
     });
     
+    
+
+    
     {% endautoescape %}
 });
 </script>
 {% endblock %}
+
+  {% block breadcrumb %}
+  <div id="page-breadcrumb">
+  	<span>{% trans "Search Data" %}</span>
+  </div>
+  {% endblock %}  
 
 {% block nav %} {% navbar data %} {% endblock %}
 

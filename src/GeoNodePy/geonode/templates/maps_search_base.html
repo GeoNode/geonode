@@ -25,7 +25,11 @@ Ext.onReady(function(){
 });
 </script>
 {% endblock %}
-
+  {% block breadcrumb %}
+  <div id="page-breadcrumb">
+  	<span>{% trans "Map Search Results" %}</span>
+  </div>
+  {% endblock %}  
 {% block nav %} {% navbar data %} {% endblock %}
 
 {% block main %} 

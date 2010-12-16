@@ -1,5 +1,11 @@
 {% extends "registration/base.html" %}
+{% load i18n %}
 {% block title %} GeoNode Login - {{ block.super }} {% endblock %}
+  {% block breadcrumb %}
+  <div id="page-breadcrumb">
+  	<span>{% trans "Sign In" %}</span>
+  </div>
+  {% endblock %} 
 {% block main %}
 <div class="twocol">
   <h2>GeoNode Login</h2>
@@ -15,5 +21,7 @@
 	    <li><input type="submit" value="Login"/></li>
 	</ul>
   </form>
+  <p>{% trans "Forgot your password?"%} <a href="{% url django.contrib.auth.views.password_reset %}">{% trans "Click here" %}</a></p>
+  
 </div>
 {% endblock %}

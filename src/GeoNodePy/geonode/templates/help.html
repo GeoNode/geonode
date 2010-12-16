@@ -1,8 +1,12 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 {% load navbar %}
-{% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
-
+{% block title %} {% trans "Help" %} - {{ block.super }} {% endblock %}
+  {% block breadcrumb %}
+  <div id="page-breadcrumb">
+  	<span>{% trans "Help" %}</span>
+  </div>
+  {% endblock %}  
 {% block nav %}
 {% navbar help %}
 {% endblock %}

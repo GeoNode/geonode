@@ -230,7 +230,31 @@ zoom: 1; /* IE < 7 */
 }
 
 
+#page-breadcrumb
+{
+	position:absolute;
+	top:26px;
+	left:65px;
+	vertical-align:middle;
+	line-height: 1;
+}
 
+#page-breadcrumb a {
+float: left;
+margin: 0;
+padding: 8px 0 ;
+color: #fff;
+font-weight: bold;
+text-decoration: none;
+}
+
+#page-breadcrumb span  {
+float: left;
+margin: 0;
+padding: 8px 0;
+color: #fff;
+text-decoration: none;
+}
 
 #sitenav {
 margin: 0;
@@ -242,13 +266,13 @@ line-height: 1;
 #sitenav li {
 float: left;
 margin: 0;
-padding: 0;
+padding: 0 3px;
 }
 
 #sitenav li a {
 float: left;
 margin: 0;
-padding: 8px 0 8px 10px;
+padding: 8px 0 ;
 color: #fff;
 font-weight: bold;
 text-decoration: none;
@@ -258,7 +282,7 @@ text-decoration: none;
 #sitenav li span  {
 float: left;
 margin: 0;
-padding: 8px 10px 8px 0;
+padding: 8px 0;
 color: #fff;
 text-decoration: none;
 }
