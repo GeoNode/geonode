@@ -726,7 +726,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             handler: function() {
                 var record = getSelectedLayerRecord();
                 if(record) {
-                    this.mapPanel.layers.remove(record);
+                    this.mapPanel.layers.remove(record, true);
                     removeLayerAction.disable();
                 }
             },
@@ -1012,7 +1012,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             			cnode = node.childNodes[0];
             			record = getRecordFromNode(cnode);
             			if(record) {
-                        	this.mapPanel.layers.remove(record); 
+                        	this.mapPanel.layers.remove(record,true); 
                     	}
             		};
             			parentNode = node.parentNode;
@@ -2092,12 +2092,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             	 checkHandler: function(menuItem, checked) {
             					if(checked) {
             						if (picasaRecord !== null) {
-            							this.mapPanel.layers.remove(picasaRecord);
+            							this.mapPanel.layers.remove(picasaRecord, true);
             						}
 									createPicasaOverlay();
             						this.mapPanel.layers.insert(mapPanel.layers.data.items.length, [picasaRecord] );
             					} else {
-            						this.mapPanel.layers.remove(picasaRecord);
+            						this.mapPanel.layers.remove(picasaRecord, true);
             			            //picasaRecord.getLayer().setVisibility(false);
             					}
             			}   	
@@ -2110,14 +2110,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         	checkHandler: function(menuItem, checked) {
         					if(checked) {
         						if (youtubeRecord !== null) {
-        								this.mapPanel.layers.remove(youtubeRecord);
+        								this.mapPanel.layers.remove(youtubeRecord, true);
         						}
         						else { 
         							createYouTubeOverlay();
         							mapPanel.layers.insert(mapPanel.layers.data.items.length, [youtubeRecord] );
         						}
         					} else {
-        			            this.mapPanel.layers.remove(youtubeRecord);
+        			            this.mapPanel.layers.remove(youtubeRecord, true);
         					}
         			}   	
         };
@@ -2182,7 +2182,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             queryableLayers.each(function(x){
             	dl = x.getLayer();
             	if (!dl.getVisibility() || dataLayers[dl.params.LAYERS].count == 0)
-            		{queryableLayers.remove(x);}
+            		{queryableLayers.remove(x, true);}
             });
             if (queryableLayers.length == 0)
             	{
@@ -2315,7 +2315,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             
             for (h = 0; h < hLayers.length; h++)
             	{
-            		mapPanel.map.removeLayer(hLayers[h]);
+            		mapPanel.map.removeLayer(hLayers[h],true);
             	}
             
         }
@@ -2444,14 +2444,8 @@ listeners: {
                		
                	  });
                	   
-                }
-               	
-           	
-           	//wfsQuery = dl.url.replace("/wms", "/wfs").replace("?service=wms","") + "?request=GetFeature&version=1.1.0&typeName=" + dl.params.LAYERS + "&outputFormat=JSON";
-           	
-  
+                }  
            }, this);
-           //this.treeRoot.getOwnerTree().getLoader().load(this.treeRoot);
        };       
        
        
@@ -3179,7 +3173,7 @@ GeoExplorer.Results = {
         for (l = 0; l < theLayers.length; l++)
     	{
     		if (theLayers[l].name == "hilites"){
-    			this.target.mapPanel.map.removeLayer(theLayers[l]);
+    			this.target.mapPanel.map.removeLayer(theLayers[l], true);
     			break;
     		} 
     		
