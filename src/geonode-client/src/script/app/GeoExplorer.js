@@ -2219,7 +2219,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         	};
         
         var searchBtn = new Ext.Button({
-			text:'Search',
+			text:'<span class="x-btn-text">Search</span>',
 			handler: psHandler
 		});
         
@@ -2377,7 +2377,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 			       '-', searchTB, 
 				' ', searchBtn,' ',{
 					xtype:'button',
-					text:'Reset',
+					text:'<span class="x-btn-text">Reset</span>',
 					handler:function(brn, e) {
 						reset();
 					}
@@ -2656,7 +2656,7 @@ listeners: {
             jumpBar,
             '->',
             new Ext.Button({
-                text: 'Advanced map tools',
+                text: '<span class="x-btn-text">Map Tools</span>',
                 handler: advancedToolsLink,
                 cls: 'x-btn-link-medium',
                 scope: this
