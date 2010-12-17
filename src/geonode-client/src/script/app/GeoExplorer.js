@@ -960,20 +960,29 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         },
                         scope: this
                     })
-        
+        var mpl = this.mapPanel.layers;
         var renameNode = function(node) {
         	Ext.MessageBox.prompt('Rename Category', 'New name for \"' + node.text + '\"', function(btn, text){
         		if (btn == 'ok'){
         			var a = node;
         			node.setText(text);
         			node.attributes.group = text;
+        			node.group = text;
+        			node.loader.filter =  function(record) {
+                  	alert(text);
+                      return record.get("group") == text &&
+                          record.getLayer().displayInLayerSwitcher == true;
+                  }
+        		
                 	node.eachChild(function(n) {
+                		
                 		record = getRecordFromNode(n);
                 		if(record) {
-                            record.set("group", text);                      
+                            record.set("group", text); 
+                            alert(record.get("name") + ":" + record.get("group"));
                         }
                 	});        			
-        			
+
         			
         			node.ownerTree.fireEvent('beforechildrenrendered', node.parentNode);
         		}
@@ -1075,7 +1084,23 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     		return true;
                     }
 
-                  },              
+                  },
+                  movenode: function(tree, node, oldParent, newParent, index )
+                  {
+                  	mp = this.mapPanel;
+                  	nodes = '';
+                  	x = 0;
+                  	tree.root.cascade(function(node) {  
+                  		if (node.isLeaf()) 
+                  			{
+                  				
+                  				record = getRecordFromNode(node);
+                  				nodes += node.text + ":" + x + ":" + record.get("name") + "\n"; 
+                  				x++;
+                  			} 
+                  	});
+                  	alert(nodes);
+                  },
                 scope: this
             },
             contextMenu: new Ext.menu.Menu({
