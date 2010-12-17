@@ -79,8 +79,8 @@ Install
 
 The following steps should prepare a Python virtual environment for you::
 
-  git clone git://github.com/GeoNode/geonode.git geonode
-  cd geonode
+  git clone git://github.com/mbertrand/cga-worldmap.git cga-worldmap
+  cd cga-worldmap
   git submodule update --init
   python bootstrap.py --no-site-packages # see note below
   source bin/activate
