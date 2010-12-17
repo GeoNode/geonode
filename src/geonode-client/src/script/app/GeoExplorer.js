@@ -383,7 +383,41 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.mapID = this.initialConfig.id;
     },
     
+     getNodeRecord : function(node) {
+            if(node && node.layer) {
+                var layer = node.layer;
+                var store = node.layerStore;
+                record = store.getAt(store.findBy(function(r) {
+                    return r.getLayer() === layer;
+                }));
+            }
+            return record;
+    },
+
     
+    reorderNodes : function(){
+    		        var mpl = this.mapPanel.layers;
+        	        nodes = '';
+                  	x = 0;
+                  	layerCount = this.mapPanel.layers.getCount()-1;
+                  	this.treeRoot.cascade(function(node) {  
+                  		if (node.isLeaf() && node.layer) 
+                  			{
+                		var layer = node.layer;
+                		var store = node.layerStore;
+               			record = store.getAt(store.findBy(function(r) {
+                    		return r.getLayer() === layer;
+                		 }));
+                   		 if (record.get("group") !== "background")
+                  				{
+                  					nodes += node.text + ":" + x + ":" + record.get("name") + "\n"; 
+                  					mpl.remove(record);
+                  					mpl.insert(layerCount-x, [record]);
+                  				}
+                  		x++;               		 
+            			}
+                  	});
+        },
 
 
       addCategoryFolder : function(category, isExpanded){
@@ -960,7 +994,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         },
                         scope: this
                     })
-        var mpl = this.mapPanel.layers;
+
         var renameNode = function(node) {
         	Ext.MessageBox.prompt('Rename Category', 'New name for \"' + node.text + '\"', function(btn, text){
         		if (btn == 'ok'){
@@ -969,7 +1003,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         			node.attributes.group = text;
         			node.group = text;
         			node.loader.filter =  function(record) {
-                  	alert(text);
+
                       return record.get("group") == text &&
                           record.getLayer().displayInLayerSwitcher == true;
                   }
@@ -979,7 +1013,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 		record = getRecordFromNode(n);
                 		if(record) {
                             record.set("group", text); 
-                            alert(record.get("name") + ":" + record.get("group"));
                         }
                 	});        			
 
@@ -1031,6 +1064,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope: this
         });        
         
+
+        //var geoEx = this;
         var layerTree = new Ext.tree.TreePanel({
             root: this.treeRoot,
             rootVisible: false,
@@ -1087,19 +1122,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                   },
                   movenode: function(tree, node, oldParent, newParent, index )
                   {
-                  	mp = this.mapPanel;
-                  	nodes = '';
-                  	x = 0;
-                  	tree.root.cascade(function(node) {  
-                  		if (node.isLeaf()) 
-                  			{
-                  				
-                  				record = getRecordFromNode(node);
-                  				nodes += node.text + ":" + x + ":" + record.get("name") + "\n"; 
-                  				x++;
-                  			} 
-                  	});
-                  	alert(nodes);
+                  	if (!node.layer)
+                  		this.reorderNodes();
                   },
                 scope: this
             },
@@ -1538,6 +1562,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             					return rec.get("group") === "background"
                         					}).getCount();
                         					layerStore.insert(pos, [record]);
+                        					
                     					} else {
 
                     						//alert("Success searching fields for " + layer + ":" + result.ResponseText);
@@ -1549,6 +1574,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 			record.set("group",category);                                			
                                 			layerStore.add([record]);
                                 			geoEx.addCategoryFolder(record.get("group"), "true");
+                                			geoEx.reorderNodes();
                                 			//alert("Success adding " + layer);
                     					}
                 					}
@@ -2434,7 +2460,6 @@ listeners: {
                return x.get("queryable");
            });
 
-           
            var geoEx = this;
            
            var control;
@@ -2444,6 +2469,8 @@ listeners: {
                control.destroy();
            }
 
+           
+           
            info.controls = [];
            queryableLayers.each(function(x){           	
            	var dl = x.getLayer();
