@@ -4,7 +4,6 @@
         "/static/src/script/app/GeoExplorer.js",
         "/static/src/script/app/GeoExplorer/Viewer.js",
         "/static/src/script/app/GeoExplorer/SocialExplorer.js",
-        "/static/src/script/app/GeoExplorer/GoogleEarthPlusPanel.js",
         "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js"
     );
 

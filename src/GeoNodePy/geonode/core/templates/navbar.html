@@ -5,11 +5,11 @@
   
   <li class="site_nav" style="vertical-align:middle;padding-top:5px;">
   <select id="selectSite" onChange="if (this.selectedIndex > 0) {document.location.href=this.options[this.selectedIndex].value}">
-  	<option value="">Select a WorldMap view</option>
+  	<option value="">Select Map</option>
   	{% for officialsite in officialsites %}
   	<option value="/{{officialsite.officialurl}}">{{officialsite.title}}</option>
   	{% endfor%}
-  	<option value="{% url geonode.maps.views.maps %}">More WorldMap Views</option>
+  	<option value="{% url maps_search %}?sort=last_modified&dir=DESC">More Maps</option>
   </select>
   </li>
   
