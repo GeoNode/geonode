@@ -19,4 +19,4 @@ class MediaNode(template.Node):
         self.resource = resource
 
     def render(self, context):
-        return settings.MEDIA_LOCATIONS[self.resource]
+        return settings.STATIC_URL + settings.MEDIA_LOCATIONS[self.resource]
