@@ -1,6 +1,7 @@
 """
 Tag for rendering a context sensitive and extendable navigation
 """
+import os
 from pprint import pformat
 from django import template
 from django.template import loader
@@ -9,7 +10,6 @@ from django.utils.translation import string_concat
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
 from geonode.utils import ConfigMap, DictMixin
-from geonode.utils import path_extrapolate
 
 
 register = template.Library()
@@ -51,7 +51,7 @@ def load_navbar_config(path=DEFAULT_PATH):
         from django.conf import settings
         conf = settings.NAVBAR
     except ImportError:
-        conf = path_extrapolate(path)
+        conf = os.path.join(settings.PROJECT_ROOT, path)
 
     if isinstance(conf, basestring):
         conf = dict(ConfigMap.load(conf))
@@ -117,7 +117,7 @@ class NavBar(template.Node):
 
 
 def export_default_config(path=DEFAULT_PATH):
-    conf = path_extrapolate(path)    
+    conf = os.path.join(settings.PROJECT_ROOT, path)
     conf = ConfigMap.load(conf)
     conf = prep_config(conf)
     conf = dict(conf)
