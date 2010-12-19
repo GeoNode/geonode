@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="geonode-client" default="dist" basedir=".">
+
+    <description>
+        Ready GXP Build File
+    </description>
+
+    <property name="build" location="build"/>
+
+    <target name="init">
+
+        <mkdir dir="${build}"/>
+
+        <echo message="pulling in ringo (ignore fatal warning)"/>
+        <mkdir dir="${build}/ringo"/>
+        <exec executable="git" dir="${build}/ringo" failonerror="false">
+            <arg line="clone -nq git://github.com/ringo/ringojs.git ."/>
+        </exec>
+        <exec executable="git" dir="${build}/ringo" failonerror="true">
+            <arg line="pull origin master"/>
+        </exec>
+        <exec executable="git" dir="${build}/ringo" failonerror="true">
+            <arg line="checkout e0dce2be640fc6fb43a1239d252948d10687ba9c"/>
+        </exec>
+
+        <echo message="building ringo jars"/>
+        <ant dir="${build}/ringo" target="jar"/>
+        <!-- uncomment this if you have additional jars in a lib dir
+        <copy todir="${build}/ringo/lib" flatten="true" includeEmptyDirs="false">
+            <fileset dir="lib"/>
+        </copy>
+        -->
+
+        <echo message="pulling in buildkit (ignore fatal warning)"/>
+        <mkdir dir="${build}/buildkit"/>
+        <exec executable="git" dir="${build}/buildkit" failonerror="false">
+            <arg line="clone -nq git://github.com/tschaub/buildkit.git ."/>
+        </exec>
+        <exec executable="git" dir="${build}/buildkit" failonerror="true">
+            <arg line="pull origin master"/>
+        </exec>
+        <exec executable="git" dir="${build}/buildkit" failonerror="true">
+            <arg line="checkout 86eacbd7b3bf62b8e99f46911dd5a633464b8570"/>
+        </exec>
+
+    </target>
+    
+    <target name="buildjs">
+
+        <mkdir dir="${build}/${ant.project.name}/WEB-INF/app/static/script"/>
+        <java jar="${build}/ringo/run.jar" fork="true" failonerror="true">
+            <sysproperty key="ringo.classpath" path="${build}/ringo/lib/**"/>
+            <arg path="${build}/buildkit/lib/buildkit/build.js"/>
+            <arg line="-o ${build}/${ant.project.name}/WEB-INF/app/static/script buildjs.cfg"/>
+        </java>
+
+    </target>
+    
+    <target name="dist" depends="init, buildjs, redist"/>
+    
+    <target name="redist">
+
+        <mkdir dir="${build}/${ant.project.name}"/>
+        
+        <copy todir="${build}/${ant.project.name}">
+            <fileset dir="src/main/webapp/">
+            </fileset>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/lib" flatten="true" includeEmptyDirs="false">
+            <fileset dir="${build}/ringo/lib"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app">
+            <fileset dir="app">
+                <exclude name="**/externals/**"/>
+                <exclude name="**/script/**"/>
+            </fileset>
+            <fileset dir="${build}/buildkit/lib"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF">
+            <fileset file="buildjs.cfg"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/ext">
+            <fileset dir="app/static/externals/ext"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/geoext/resources">
+            <fileset dir="app/static/externals/geoext/resources"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/openlayers/theme">
+            <fileset dir="app/static/externals/openlayers/theme"/>
+        </copy>
+        
+    </target>
+
+    <target name="war" depends="dist" description="create web archive">
+        <echo>Creating WAR file.</echo>
+        <war destfile="build/${ant.project.name}.war" webxml="src/main/webapp/WEB-INF/web.xml">
+            <fileset dir="${build}/${ant.project.name}">
+                <exclude name="**/web*.xml"/>
+            </fileset>
+        </war>
+    </target>
+
+    <target name="debug">
+        <java jar="${build}/ringo/run.jar" fork="true">
+            <sysproperty key="ringo.classpath" path="${build}/ringo/lib/**"/>
+            <arg path="app/main.js"/>
+        </java>
+    </target>
+
+    <target name="clean" description="remove previous build and all dependencies">
+        <delete dir="${build}"/>
+    </target>
+
+</project>
