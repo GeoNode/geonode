@@ -14,11 +14,21 @@ DEBUG = True
 SITENAME = "WorldMap"
 SITEURL = "http://localhost:8000/"
 TEMPLATE_DEBUG = DEBUG
+DEFAULT_FROM_EMAIL="me@me.com"
 
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
+
+#Email settings (example gmail account) for registration, passwords, etc
+#DEFAULT_FROM_EMAIL = 'your_email@gmail.com'
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_HOST_USER = 'your_email@gmail.com'
+#EMAIL_HOST_PASSWORD = 'password'
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
 
 
 MANAGERS = ADMINS
@@ -197,7 +207,7 @@ NAVBAR = \
           'id': '%sLink',
           'item_class': '',
           'link_class': '',
-          'visible': 'maps'}}
+          'visible': 'maps\nhelp'}}
 
 
 # Determines whether the minified or the "raw" JavaScript files are included.
