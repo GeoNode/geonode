@@ -1802,6 +1802,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var zoomSelectorWrapper = new Ext.Panel({
             cls: 'overlay-element overlay-scalechooser',
+            ctCls: 'transparent-panel',
             border: false 
         });
 
@@ -2188,7 +2189,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         
        var moreButton = new Ext.Button({
        	text: 'More...',
-        cls: "cga-logo-overlay-element",
+        cls: "more-overlay-element",
        	id: 'moreBtn',
        	menu: {
        		defaults: {

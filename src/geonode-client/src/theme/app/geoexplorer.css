@@ -232,17 +232,23 @@ background-color:white;
     margin: 0.5em 10px;
 }
 
+.transparent-panel {
+	background:transparent;
+}
+
 div.map-overlay {
     z-index: 1000; 
     position: absolute; 
     right: 10px; 
     bottom: 10px;
+    background:transparent;
 }
 
 div.map-overlay div.overlay-element {
     display:inline;
     float: left;
     margin: 5px;
+    background:transparent;
 }
 
 
@@ -256,7 +262,7 @@ cga-logo-overlay {
     background: transparent;  
 }
 
-.cga-logo-overlay-element {
+.more-overlay-element {
     float: left;
     z-index: 1000; 
     position: absolute; 
@@ -264,7 +270,13 @@ cga-logo-overlay {
     top: 10px;  
     height:25px;
     width:50px;
+    background: #FFF;
+    text-decoration: none;
+    border: 1px solid #000;
 }
+
+.more-overlay-element .x-btn-small td {background-image: none; text-decoration:none;}
+.more-overlay-element .x-btn-small td button {text-decoration:none;}
 
 div.cga-link {
 	margin:3px;
