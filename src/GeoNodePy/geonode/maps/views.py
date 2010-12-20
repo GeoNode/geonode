@@ -238,7 +238,7 @@ def mapJSON(request, mapid):
                 mimetype="text/plain",
                 status=400
             )
-
+@login_required
 @csrf_exempt            
 def newmap(request):
     '''
