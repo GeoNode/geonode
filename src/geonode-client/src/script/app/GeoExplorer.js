@@ -125,7 +125,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorDetailsText: "UT:Details...",
     heightLabel: 'UT: Height',
     helpLabel: 'UT: Help',
-    infoButtonText: "UT:Map Info",
+    infoButtonText: "UT:Info",
     largeSizeLabel: 'UT:Large',
     layerAdditionLabel: "UT:+",
     layerLocalLabel: 'UT:Upload your own data',
@@ -2131,12 +2131,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope:this
         });
 
-        var helpButton = new Ext.Button({
-		tooltip: this.helpLabel,
-            text: '<span class="x-btn-text">' + this.helpLabel + '</span>', 
-            handler: this.showHelpWindow,
-            scope:this
-        });
+
         
         var picasaMenuItem = {
             	 text: 'Picasa',
@@ -2591,7 +2586,12 @@ listeners: {
         });
         
 
-
+        var helpButton = new Ext.Button({
+		tooltip: this.helpLabel,
+            text: '<span class="x-btn-text">' + this.helpLabel + '</span>', 
+            handler: this.showHelpWindow,
+            scope:this
+        });
         
         var advancedToolsLink = function() {
         	if (!this.mapID)
@@ -2652,16 +2652,17 @@ listeners: {
             enable3DButton,
             */
             infoButton,
-            helpButton,
             searchBar,
             jumpBar,
             '->',
             new Ext.Button({
-                text: '<span class="x-btn-text">Map Tools</span>',
+                text: '<span class="x-btn-text">Advanced</span>',
                 handler: advancedToolsLink,
                 cls: 'x-btn-link-medium',
                 scope: this
-            })       ];
+            }),"-",
+            helpButton
+            ];
         this.on("saved", function() {
             // enable the "Publish Map" button
             tools[2].enable();
