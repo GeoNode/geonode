@@ -14,7 +14,7 @@ if (window.GeoExplorer) {
         exportDialogMessage: '<p>Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
         heightLabel: gettext("Height"),
         helpLabel: gettext("Help"),
-        infoButtonText: gettext("Map Info"),
+        infoButtonText: gettext("Info"),
         largeSizeLabel: gettext("Large"),
         layerAdditionLabel: gettext("+"),
         layerContainerText: gettext("Map Layers"),
