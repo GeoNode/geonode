@@ -2796,10 +2796,15 @@ listeners: {
             width: 380,
             autoHeight: true,
             items: [{
-                xtype: "gx_embedmapdialog",
-                url: this.rest + this.mapID + "/embed" 
+                xtype: "gx_linkembedmapdialog",
+                linkUrl: this.rest + this.about["urlsuffix"] ? this.about["urlsuffix"]: this.mapID,
+                url: this.rest + (this.about["urlsuffix"] ? this.about["urlsuffix"]: this.mapID) + "/embed" 
             }]
         }).show();
+        
+       if (this.modified){
+       	  Ext.Msg.alert('Your Map Is Not Saved', 'You have unsaved changes to your map.  This link will display your map only in it\'s last saved state');
+       }
     },
 
     
