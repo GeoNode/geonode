@@ -101,6 +101,13 @@ and control who has access to them.</p>
 
 <p>Weatherhead Center for International Affairs (ChinaMap)</p>
 </div>
+</div>
 {% endblock %}
 {% block sidebar %}
+<div id="sidebar" class="threecol">
+<h3>Featured Maps</h3>
+<div class="featmap"><a href="/boston/"><img src="{% geonode_media "app_themes" %}/img/boston-tn.png"></a><br/><a href="/boston/">Boston</a></div>
+<div  class="featmap"><img src="{% geonode_media "app_themes" %}/img/africamap-tn.png"><br/>Africa - coming soon</div>
+<div  class="featmap"><img src="{% geonode_media "app_themes" %}/img/china-tn.png"><br/>East Asia - coming soon</div>
+</div>
 {% endblock %}

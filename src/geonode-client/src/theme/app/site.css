@@ -269,6 +269,22 @@ text-decoration: none;
 font-size:10pt;
 }
 
+
+.featmap {
+	width:260px;
+	margin-bottom:auto;
+	padding:5px;
+	font-weight: bold;	
+	text-align: center;
+}
+
+.featmap a {
+	color: #18469C;
+	font-weight: bold;
+	text-align: center;	
+	align:center;
+}
+
 #sitenav {
 display:block;
 float:right;
