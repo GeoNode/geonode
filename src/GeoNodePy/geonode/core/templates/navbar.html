@@ -5,7 +5,7 @@
   
   <li class="site_nav" style="vertical-align:middle;padding-top:5px;">
   <select id="selectSite" onChange="if (this.selectedIndex > 0) {document.location.href=this.options[this.selectedIndex].value}">
-  	<option value="">Select Map</option>
+  	<option value="">Browse Maps</option>
   	{% for officialsite in officialsites %}
   	<option value="/{{officialsite.officialurl}}">{{officialsite.title}}</option>
   	{% endfor%}

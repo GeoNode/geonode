@@ -188,7 +188,7 @@ NAVBAR = \
 {'maps': {'id': '%sLink',
                'item_class': '',
                'link_class': '',
-               'text': 'Create Your Own Map View',
+               'text': 'Create Your Own Map',
                'url': "geonode.maps.views.newmap"},
 'help': {'id': '%sLink',
                'item_class': '',
