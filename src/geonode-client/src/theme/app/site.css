@@ -43,12 +43,12 @@ font-family:Helvetica,Arial,sans-serif;
 }
 
 a {
-color: #991122;
+color: #18469C;
 text-decoration: underline;
 }
 
 h1, h2, h3, h4, h5, h6 {
-color: #18469C;
+color: #000;
 }
 
 .help,
@@ -194,9 +194,8 @@ right: 10px;
 }
 
 #login-area a {
-color: #991122;
+color: #18469C;
 font-weight: bold;
-text-decoration: none;
 }
 
 #login-area a:hover,
@@ -255,7 +254,7 @@ zoom: 1; /* IE < 7 */
 float: left;
 margin: 0;
 padding: 8px 0 ;
-color: #991122;
+color: #18469C;
 font-weight: bold;
 text-decoration: none;
 font-size:10pt;

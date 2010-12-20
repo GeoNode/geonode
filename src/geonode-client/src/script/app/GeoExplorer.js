@@ -1684,7 +1684,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             text: this.layerLocalLabel,
             iconCls: 'icon-add',
             handler: addLocalLayers,
-            cls: 'x-btn-link-medium',
+            cls: 'x-btn-link-medium x-btn-text',
             scope: this
         }));        
 
@@ -1740,11 +1740,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 new Ext.Button({
                     text: this.capGridAddLayersText,
                     iconCls: "icon-addlayers",
+                    cls:'x-btn-text',
                     handler: addLayers,
                     scope : this
                 }),
                 new Ext.Button({
                     text: this.capGridDoneText,
+                    cls:'x-btn-text',
                     handler: function() {
                         this.capGrid.hide();
                     },
@@ -3004,6 +3006,7 @@ listeners: {
         
         var saveAsButton = new Ext.Button({
             text: this.metadataFormSaveAsCopyText,
+            cls:'x-btn-text',
             disabled: !this.about.title,
             handler: function(e){
             	if (this.about["urlsuffix"] == urlField.getValue()){
@@ -3025,6 +3028,7 @@ listeners: {
         });
         var saveButton = new Ext.Button({
             text: this.metadataFormSaveText,
+            cls:'x-btn-text',
             disabled: !this.about.title,
             handler: function(e){
                 this.about.title = titleField.getValue();
@@ -3051,6 +3055,7 @@ listeners: {
                 saveButton,
                 new Ext.Button({
                     text: this.metadataFormCancelText,
+                    cls:'x-btn-text',
                     handler: function() {
                         titleField.setValue(this.about.title);
                         abstractField.setValue(this.about["abstract"]);
