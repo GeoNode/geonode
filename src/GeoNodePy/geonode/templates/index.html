@@ -36,29 +36,28 @@ Ext.onReady(function(){
 <div class="twocol">
 <!-- TODO: i18n on the text here -->
   <div class="block">
-    <h2> {% trans "Welcome" %} </h2>
-    <p>
+    <h2> {% trans "Welcome to WorldMap (alpha)" %} </h2>
+
     {% blocktrans %}
-<p><b>WorldMap</b> is an open source system for geospatial collaboration currently under construction. It is being built to assist academic research and teaching as well as the general public.  The system will support data discovery, analysis, visualization, editing, commenting on, and archiving of multi-disciplinary, multi-source and multi-format data, organized spatially and temporally.</p>
+    <p>WorldMap (alpha) is an Open Source platform for collaborating with maps 
+and spatial data. The platform is being built to assist academic 
+research and teaching, but we hope many others find it useful too.</p>
 
-    {% endblocktrans %} 
-  </p>
-  </div>
-  <div class="block">
-    <h2> {% trans "Maps" %} </h2>
-    <p>
-    {% blocktrans %} 
-  WorldMap lets you compose and share map views.  <a href="/maps/new"><strong>Create</strong></a>
-      a map view with our cartography tool, or <a href="/maps/search"><strong>explore</strong></a> map views
-      shared by others.
-    {% endblocktrans %} 
-  <a href="/maps/new"><img  src="{% geonode_media "app_themes" %}/img/worldmap-screenshot.png" border="0"></a>
-  </p>
+<p>At it's core, WorldMap lets you create online maps, load data to them, 
+and control who has access to them.</p>
 
-  </div>
+<p>Get started by {% endblocktrans %}
+<a href="{% url maps_search %}?sort=last_modified&dir=DESC">
+{% blocktrans %}
+<strong>Browsing existing maps</strong></a> or <a href="/maps/new"><strong>creating a new map</strong></a>. 
+{% endblocktrans %}
+</p>
+     
+
+
   
     <div class="block">
-    <h2> {% trans "Code" %} </h2>
+    <h2> {% trans "Source Code" %} </h2>
     <p>
     {% blocktrans %} 
 	All the code for WorldMap is open source and freely available at <a href="https://github.com/cga-harvard/cga-worldmap">github</a>. 
