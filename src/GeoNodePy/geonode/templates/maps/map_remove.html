@@ -2,9 +2,28 @@
 {% load i18n %}
 
 {% block title %} {{ map.title }} - {{ block.super }} {% endblock %}
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+var app;
+var mapurl = "{% url geonode.maps.views.view map.id %}";
+{% if map.officialurl %}
+	mapurl="{% url geonode.maps.views.official_site map.officialurl %}";
+{% else %}
+	{% if map.url %}
+		mapurl="{% url geonode.maps.views.view map.url %}";
+	{% endif %}
+{% endif %}
 
+Ext.onReady(function() {
+	var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;Delete Map</span>");
+	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+});
+</script>
+{% endblock %}
 {% block main %}
-<h3>{% trans "Are you sure you want to remove"  %} <strong>{{ map.title }}</strong>?</h3>
+<h3>{% trans "Are you sure you want to delete"  %} <strong>{{ map.title }}</strong>?</h3>
 
 <form action="/maps/{{map.id}}/edit/?remove" method="POST">
 	{% csrf_token %}

@@ -5,7 +5,24 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
+
 {{ block.super }}
+<script type="text/javascript">
+var app;
+var mapurl = "{% url geonode.maps.views.view map.id %}";
+{% if map.officialurl %}
+	mapurl="{% url geonode.maps.views.official_site map.officialurl %}";
+{% else %}
+	{% if map.url %}
+		mapurl="{% url geonode.maps.views.view map.url %}";
+	{% endif %}
+{% endif %}
+
+Ext.onReady(function() {
+	var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;Edit Details</span>");
+	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+});
+</script>
 {% endblock %}
 {% block main %}
 <div class="twocol">
