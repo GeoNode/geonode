@@ -68,7 +68,7 @@ Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
     <h3>{% trans "Download" %}</h3>
     <p><a href="{% url geonode.maps.views.map_download map.id %}">{% trans "Download all layers included in this map" %}</a></p>
 -->
-    <h3>{% trans "Layers" %}</h3>
+    <h3>{% trans "Map Layers" %}</h3>
   <p>{% trans "This map uses the following layers" %} </p>
   <ul>
     {% for layer in layers %}
@@ -77,7 +77,7 @@ Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
     {% endif %}
     {% endfor %}
   </ul>
-  <h3>{% trans "Manage" %}</h3>
+  <h3>{% trans "Manage Map" %}</h3>
   <ul>
     {% has_obj_perm user map "maps.change_map" as can_change %}
     {% has_obj_perm user map "maps.delete_map" as can_delete %}
@@ -95,10 +95,10 @@ Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 	{% trans "Return to map" %}</a></li>
 	
     {% if can_change %}
-    <li><a href="{% url geonode.maps.views.map_controller map.id %}/describe/">{% trans "Edit metadata" %}</a></li>
+    <li><a href="{% url geonode.maps.views.map_controller map.id %}/describe/">{% trans "Edit map information" %}</a></li>
     {% endif %}
     {% if can_change_permissions %}
-    <li><a href="{% url edit_map_permissions map.id %}">{% trans "Edit permissions" %}</a></li>
+    <li><a href="{% url edit_map_permissions map.id %}">{% trans "Edit map permissions" %}</a></li>
     {% endif %}
     {% if can_delete %}
     <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
@@ -107,7 +107,7 @@ Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
   </ul>
   {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
   {% if can_change_permissions %}
-  <h3>{% trans "Permissions" %}</h3>
+  <h3>{% trans "Map Permissions" %}</h3>
     <p>{% trans "Select what kind of privileges to allow." %}</p>
     <div id="permissions_form"></div>
   {% endif %}
