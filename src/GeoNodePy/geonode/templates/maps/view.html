@@ -51,8 +51,8 @@ Ext.onReady(function() {
         };
 
 
-    var titleTemplate = new Ext.Template("<span>{title}</span>");
-    Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.title ? config.about.title : 'New Map View')}));
+    var titleTemplate = new Ext.Template("<span>Current Map: {title}</span>");
+    Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.title ? config.about.title : 'New Map')}));
 
     app.on("saved", function(id) {
         //reset title header
