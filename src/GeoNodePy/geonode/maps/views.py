@@ -193,7 +193,7 @@ def maps(request, mapid=None):
             map.set_default_permissions()
             map.update_from_viewer(request.raw_post_data)
             response = HttpResponse('', status=201)
-            response['Location'] = map.id
+            response['Location'] = map.officialurl if map.officialurl else (map.urlsuffix if map.urlsuffix else map.id)
             transaction.commit()
             return response
         except Exception, e:

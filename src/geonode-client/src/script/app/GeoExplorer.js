@@ -3189,6 +3189,8 @@ listeners: {
                     this.mapID = id; //id is url, not mapID
                     this.fireEvent("saved", id);
                     this.metadataForm.hide();
+                    Ext.Msg.wait('Saving Map', "Your new map is being saved...")
+                    window.location = response.getResponseHeader("Location");
                 }, 
                 scope: this
             });
