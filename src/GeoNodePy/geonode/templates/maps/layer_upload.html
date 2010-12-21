@@ -28,7 +28,7 @@
 {% autoescape off %}
 Ext.onReady(function(){
     Ext.QuickTips.init();
-    
+       
     var form_target = "{% url geonode.maps.views.upload_layer %}";
     var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
     var layer_name = new Ext.form.TextField({
@@ -56,10 +56,21 @@ Ext.onReady(function(){
    
     var map_id = new Ext.form.Hidden({
     	id: 'mapid',
-    	value:  '{{map}}'
+    	value:  '{{map.id}}'
     });
     
+
+    var mapurl = "{% url geonode.maps.views.view map.id %}";
+    {% if map.officialurl %}
+    	mapurl="{% url geonode.maps.views.official_site map.officialurl %}";
+    {% else %}
+    	{% if map.url %}
+    		mapurl="{% url geonode.maps.views.view map.url %}";
+    	{% endif %}
+    {% endif %}    
     
+	var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;Upload Data</span>");
+	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());    
     
     
     var base_file = new Ext.ux.form.FileUploadField({

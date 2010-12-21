@@ -1130,10 +1130,12 @@ def upload_layer(request):
 
     if request.method == 'GET':
         mapid = ''
+        map = None
         if request.method == 'GET' and 'map' in request.GET:
             mapid = request.GET['map']
+            map = get_object_or_404(Map,pk=mapid)
         return render_to_response('maps/layer_upload.html',
-                                  RequestContext(request, {'map':mapid}))
+                                  RequestContext(request, {'map':map}))
     elif request.method == 'POST':
         try:
             logger.debug("Begin upload attempt")
