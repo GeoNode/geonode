@@ -521,7 +521,7 @@ def install_sphinx_conditionally(options):
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
-    if options.host.client_src:
+    if hasattr(options.host, 'client_src'):
         os.environ["READYGXP_DEBUG"] = "1"
         os.environ["READYGXP_JSFILES_ROOT"] = os.path.abspath(options.host.client_src)
     with pushd("src/geoserver-geonode-ext"):
