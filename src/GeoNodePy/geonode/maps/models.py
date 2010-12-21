@@ -1354,6 +1354,7 @@ class Map(models.Model, PermissionLevelMixin):
                 'urlsuffix': self.urlsuffix,
                 'introtext' : self.content,
                 'keywords' : self.keywords,
+                'officialurl' : self.officialurl
             },
             'defaultSourceType': "gx_wmssource",
             'sources': sources,

@@ -700,7 +700,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }, this);
         
         
-
+		var geoEx = this;
         // TODO: make a proper component out of this
         var mapOverlay = this.createMapOverlay();
         this.mapPanel.add(mapOverlay);
@@ -998,6 +998,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var renameNode = function(node) {
         	Ext.MessageBox.prompt('Rename Category', 'New name for \"' + node.text + '\"', function(btn, text){
         		if (btn == 'ok'){
+        			this.modified |= 1;
         			var a = node;
         			node.setText(text);
         			node.attributes.group = text;
