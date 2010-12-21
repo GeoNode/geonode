@@ -82,11 +82,29 @@
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/ext">
             <fileset dir="app/static/externals/ext"/>
         </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/gxp/theme">
+            <fileset dir="app/static/externals/gxp/src/theme"/>
+        </copy>
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/geoext/resources">
             <fileset dir="app/static/externals/geoext/resources"/>
         </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/PrintPreview/resources">
+            <fileset dir="app/static/externals/PrintPreview/resources"/>
+        </copy>
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/openlayers/theme">
             <fileset dir="app/static/externals/openlayers/theme"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/openlayers/img">
+            <fileset dir="app/static/externals/openlayers/img"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/theme/ux/colorpicker">
+            <fileset file="app/static/script/ux/colorpicker/color-picker.ux.css"/>
+            <fileset file="app/static/script/ux/colorpicker/picker.gif"/>
+            <fileset file="app/static/script/ux/colorpicker/side_slider.jpg"/>
+            <fileset file="app/static/script/ux/colorpicker/mask.png"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/theme/ux/fileuploadfield">
+            <fileset dir="app/static/script/ux/fileuploadfield/css"/>
         </copy>
         
     </target>
