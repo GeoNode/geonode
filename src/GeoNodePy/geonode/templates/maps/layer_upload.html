@@ -1,13 +1,12 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
-{% load geonode_media %}
 
 {% block title %} {% trans "Upload Layer"  %} - {{ block.super }} {% endblock %}
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
-<link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}fileuploadfield/css/fileuploadfield.css"/>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/fileuploadfield/fileuploadfield.css"/>
 {{ block.super }}
 {% endblock %}
 
