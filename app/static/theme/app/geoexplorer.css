@@ -1,4 +1,3 @@
-
 /* don't wrap lines on any tooltips */
 .x-tip {
     white-space: nowrap;
@@ -29,14 +28,14 @@
 }
 
 .x-menu-group-item .x-menu-item-icon {
-    background: transparent url(http://extjs.cachefly.net/ext-2.2.1/resources/images/default/form/radio.gif) no-repeat 0 0;
+    background: transparent url(../../externals/ext/resources/images/default/form/radio.gif) no-repeat 0 0;
     height: 13px;
     width: 13px;
     margin: 2px;
 }
 
 .x-menu-item-checked .x-menu-group-item .x-menu-item-icon {
-    background: transparent url(http://extjs.cachefly.net/ext-2.2.1/resources/images/default/form/radio.gif) no-repeat -13px -13px;
+    background: transparent url(../../externals/ext/resources/images/default/form/radio.gif) no-repeat -13px -13px;
     height: 13px;
     width: 13px;
     margin: 2px;
@@ -205,6 +204,14 @@ div.overlay-scaleline {
     margin-top: 0px;
 }
 
+.olControlAttribution{ 
+    color: gray;
+    bottom: .5em;
+    left: .4em;
+    right: 220px;
+    font-size: smaller;
+}
+
 .olControlScaleLineTop,
 .olControlScaleLineBottom {
     font-size:10px;
@@ -213,7 +220,7 @@ div.overlay-scaleline {
 /* Pan- and Zoom- Panel Styles*/
 
 .olControlPanPanel div {
-    background-image:url(http://extjs.cachefly.net/ext-2.2.1/resources/images/gray/panel/tool-sprites.gif);
+    background-image:url(../../externals/ext/resources/images/gray/panel/tool-sprites.gif);
     height:15px;
     width:15px;
     /* workaround for button height in IE */
@@ -245,7 +252,7 @@ div.overlay-scaleline {
 }
 
 .olControlZoomPanel div {
-    background-image:url(http://extjs.cachefly.net/ext-2.2.1/resources/images/gray/panel/tool-sprites.gif);
+    background-image:url(../../externals/ext/resources/images/gray/panel/tool-sprites.gif);
     height:15px;
     width:15px;
     /* workaround for button height in IE */
