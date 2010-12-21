@@ -2801,7 +2801,7 @@ listeners: {
             autoHeight: true,
             items: [{
                 xtype: "gx_linkembedmapdialog",
-                linkUrl: this.rest + this.about["urlsuffix"] ? this.about["urlsuffix"]: this.mapID,
+                linkUrl: this.rest + (this.about["urlsuffix"] ? this.about["urlsuffix"]: this.mapID),
                 url: this.rest + (this.about["urlsuffix"] ? this.about["urlsuffix"]: this.mapID) + "/embed" 
             }]
         }).show();
