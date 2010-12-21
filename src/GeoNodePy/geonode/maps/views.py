@@ -998,7 +998,7 @@ def _describe_layer(request, layer):
                 logging.debug("adding layer to map [%s]", mapid)
                 maplayer = MapLayer.objects.create(map=Map.objects.get(id=mapid), 
                     name = layer.typename,
-                    group = layer.topic_category if layer.topic_category else 'General',
+                    group = (LayerCategory.objects.get(id=layer.topic_category).title if layer.topic_category else 'General'),
                     layer_params = '{"selected":true, "title": "' + layer.title + '"}',
                     source_params = '{"ptype": "gx_wmssource"}',
                     ows_url = settings.GEOSERVER_BASE_URL + "wms",
@@ -1373,7 +1373,6 @@ def _handle_layer_upload(request, layer=None):
             layer.set_default_permissions()
             logger.debug("Generating separate style for %s", typename)
             fixup_style(cat, gs_resource)
-            layer.save();
         except Exception, e:
             logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
             transaction.rollback()
