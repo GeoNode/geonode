@@ -218,7 +218,8 @@ def setup_geonetwork(options):
 @task
 @needs([
     'setup_geoserver',
-    'setup_geonetwork'
+    'setup_geonetwork',
+    'setup_geonode_client'
 ])
 def setup_webapps(options):
     pass
@@ -227,7 +228,6 @@ def setup_webapps(options):
 @needs([
     'install_deps',
     'setup_webapps',
-    'build_js', 
     'generate_geoserver_token',
     'sync_django_db'
 ])
@@ -237,50 +237,23 @@ def build(options):
 
 
 @task
-@needs(['js_dependencies'])
-def build_js(options):
+def setup_geonode_client(options):
     """
-    Concatenate and compress application client javascript
+    Fetch geonode-client
     """
-    with pushd('src/geonode-client/build/'):
-       path("geonode-client").rmtree()
-       os.makedirs("geonode-client")
-       path("../externals/ext").copytree("geonode-client/ext")
-       os.makedirs("geonode-client/gx")
-       path("../externals/geoext/geoext/resources").copytree("geonode-client/gx/theme")
-       os.makedirs("geonode-client/gxp")
-       path("../externals/gxp/src/theme").copytree("geonode-client/gxp/theme")
-       os.makedirs("geonode-client/PrintPreview")
-       path("../externals/PrintPreview/resources").copytree("geonode-client/PrintPreview/theme")
-       os.makedirs("geonode-client/ol") #need to split this off b/c of dumb hard coded OL paths
-       path("../externals/openlayers/theme").copytree("geonode-client/ol/theme")
-       path("../externals/openlayers/img").copytree("geonode-client/ol/img")
-       os.makedirs("geonode-client/gn")
-       path("../src/theme/").copytree("geonode-client/gn/theme/")
-       path("../src/script/ux").copytree("geonode-client/gn/ux")
+    webapps = path("./webapps")
+    if not webapps.exists():
+        webapps.mkdir()
 
-       sh("jsbuild -o geonode-client/ all.cfg") 
-       move("geonode-client/OpenLayers.js","geonode-client/ol/")
-       move("geonode-client/GeoExt.js","geonode-client/gx/")
-       move("geonode-client/gxp.js","geonode-client/gxp/")
-       move("geonode-client/GeoNode.js","geonode-client/gn/")
-       move("geonode-client/GeoExplorer.js","geonode-client/gn/")
-       move("geonode-client/PrintPreview.js","geonode-client/PrintPreview/")
-       move("geonode-client/ux.js","geonode-client/gn/")
-       
-    info('GeoNode Client Javascript is done building')
+    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_war_url'))
+    dst_war = webapps / "geonode-client.war"
+    deployed_url = webapps / "geonode-client"
+
+    grab(src_url, dst_war)
+
+    deployed_url.rmtree()
+    zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
     
-
-@task
-def js_dependencies(options):
-    """
-    Fetch dependencies for the JavaScript build
-    """
-    grab("http://extjs.cachefly.net/ext-3.2.1.zip", "shared/ext-3.2.1.zip")
-    path("src/geonode-client/externals/ext").rmtree()
-    zip_extractall(zipfile.ZipFile("shared/ext-3.2.1.zip"), "src/geonode-client/externals/")
-    path("src/geonode-client/externals/ext-3.2.1").rename("src/geonode-client/externals/ext")
-
 
 @task
 def sync_django_db(options):
@@ -542,11 +515,15 @@ def install_sphinx_conditionally(options):
 
 @task
 @cmdopts([
-    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.'),
+    ('client_src=', 's', 'geonode-client project directory, e.g. ../geonode-client/. If provided, unminified javascript resources will be used.')
 ])
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
+    if options.host.client_src:
+        os.environ["READYGXP_DEBUG"] = "1"
+        os.environ["READYGXP_JSFILES_ROOT"] = os.path.abspath(options.host.client_src)
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
