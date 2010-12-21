@@ -68,8 +68,7 @@ STATIC_URL = "/site_media/static/"
 
 # Additional directories which hold static files
 STATICFILES_DIRS = [
-#    os.path.join(PROJECT_ROOT, "media"),
-    os.path.join(PROJECT_ROOT, "..", "..", "geonode-client"),
+    os.path.join(PROJECT_ROOT, "media"),
 ]
 
 GEONODE_UPLOAD_PATH = os.path.join(STATIC_URL, "upload/")
@@ -232,12 +231,6 @@ NAVBAR = \
           'link_class': '',
           'visible': 'data\nmaps'}}
 
-
-# Determines whether the minified or the "raw" JavaScript files are included.
-# Only applies in development mode. (That is, when DEBUG==True)
-#MINIFIED_RESOURCES = False
-MINIFIED_RESOURCES = True
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -259,48 +252,10 @@ REGISTRATION_OPEN = False
 
 SERVE_MEDIA = DEBUG;
 
-GEONODE_CLIENT_LOCATION = STATIC_URL
+GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 
 try:
     from local_settings import *
 except ImportError:
     pass
 
-if MINIFIED_RESOURCES: 
-    MEDIA_LOCATIONS = {
-        "ext_base": "ext/",
-        "ext_lib":  "ext/ext-all.js",
-        "ol_theme": "ol/theme/default/style.css",
-        "ol_script": "ol/OpenLayers.js",
-        "gx_themes": "gx/theme/",
-        "gx_script":"gx/GeoExt.js",
-        "PrintPreview_script":"PrintPreview/PrintPreview.js",
-        "PrintPreview_themes": "PrintPreview/theme/",
-        "gxp_script":"gxp/gxp.js",
-        "gxp_theme":"gxp/theme/all.css",
-        "geo_script":"gn/GeoExplorer.js",
-        "app_themes": "gn/theme/app/",
-        "app_script":"gn/GeoNode.js",
-        "ux_script":"gn/ux.js",
-        "ux_resources":"gn/ux/",
-    }
-    for key, value in MEDIA_LOCATIONS.items():
-        MEDIA_LOCATIONS[key] = "build/geonode-client/"+value
-else:
-    MEDIA_LOCATIONS = {
-        "ext_base": "externals/ext/",
-        "ext_lib": "externals/ext/ext-all-debug.js",
-        "ol_theme": "externals/openlayers/theme/default/style.css",
-        "ol_script":"externals/openlayers/lib/OpenLayers.js",
-        "gx_themes":"externals/geoext/geoext/resources/",
-        "gx_script":"externals/geoext/geoext/lib/GeoExt.js",
-        "PrintPreview_script":"externals/PrintPreview/lib/GeoExt.ux/PrintPreview.js",
-        "PrintPreview_themes": "externals/PrintPreview/resources/",
-        "gxp_script":"externals/gxp/src/script/loader.js",
-        "gxp_theme":"externals/gxp/src/theme/all.css",
-        "geo_script":"src/script/app/geo-debug.js",
-        "app_themes": "src/theme/app/",
-        "app_script":"src/script/app/app-debug.js",
-        "ux_script":"src/script/ux/loader.js",
-        "ux_resources":"src/script/ux/",
-    }
