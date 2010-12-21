@@ -39,6 +39,10 @@
 				Ext.get("id_layer-topic_category_new").up("li").hide();
 			}
 		});	*/	
+		
+		var titleTemplate = new Ext.Template("<span>{{layer.typename}} Description</span>");
+		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());  		
+		
 {% endautoescape %} 
 	});
 </script>
