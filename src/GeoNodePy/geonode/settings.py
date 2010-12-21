@@ -201,11 +201,6 @@ NAVBAR = \
           'link_class': '',
           'text': 'Admin',
           'url': 'admin'},
- 'databrowse': {'id': '%sLink',
-          'item_class': '',
-          'link_class': '',
-          'text': 'DataBrowse',
-          'url': 'databrowse'},
  'index': {'id': '%sLink',
             'item_class': '',
             'link_class': '',
@@ -223,7 +218,7 @@ NAVBAR = \
           'id': '%sLink',
           'item_class': '',
           'link_class': '',
-          'visible': 'data\nmaps\ndatabrowse'}}
+          'visible': 'data\nmaps'}}
 
 
 # Determines whether the minified or the "raw" JavaScript files are included.
@@ -237,7 +232,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'django.contrib.databrowse',
     'django_extensions',
     'registration',
     'profiles',
