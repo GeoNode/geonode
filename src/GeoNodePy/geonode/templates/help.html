@@ -2,11 +2,17 @@
 {% load i18n %}
 {% load navbar %}
 {% block title %} {% trans "Help" %} - {{ block.super }} {% endblock %}
-  {% block breadcrumb %}
-  <div id="page-breadcrumb">
-  	<span>{% trans "Help" %}</span>
-  </div>
-  {% endblock %}  
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+
+Ext.onReady(function() {
+	var titleTemplate = new Ext.Template("<span>Help</span>");
+	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+});
+</script>
+{% endblock %}
 {% block nav %}
 {% navbar help %}
 {% endblock %}
