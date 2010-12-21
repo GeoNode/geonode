@@ -2316,8 +2316,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         					//Lines
         					sld += '<LineSymbolizer><sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></LineSymbolizer>';
         					//Polygons
-        					sld += '<sld:PolygonSymbolizer> <sld:Fill><sld:GraphicFill> <sld:Graphic><sld:Mark> <sld:WellKnownName>shape://times</sld:WellKnownName> <sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter>';
-        					sld += '<sld:CssParameter name="stroke-width">1</sld:CssParameter> </sld:Stroke></sld:Mark><sld:Size>16</sld:Size> </sld:Graphic></sld:GraphicFill> </sld:Fill></sld:PolygonSymbolizer>';        					     					
+        					//sld += '<sld:PolygonSymbolizer> <sld:Fill><sld:GraphicFill> <sld:Graphic><sld:Mark> <sld:WellKnownName>shape://times</sld:WellKnownName> <sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter>';
+        					//sld += '<sld:CssParameter name="stroke-width">1</sld:CssParameter> </sld:Stroke></sld:Mark><sld:Size>16</sld:Size> </sld:Graphic></sld:GraphicFill> </sld:Fill></sld:PolygonSymbolizer>';        					     					
         					sld += '</sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>';        					 
         					 
         					
@@ -2356,7 +2356,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         	var hLayers = [];
             for (l = 0; l < theLayers.length; l++)
         	{
-        		if (theLayers[l].name == "HighlightWMS"){
+        		if (theLayers[l].name == "HighlightWMS" || theLayers[l].name == "hilites"){
         			hLayers.push(theLayers[l]);
         			
         		} 
