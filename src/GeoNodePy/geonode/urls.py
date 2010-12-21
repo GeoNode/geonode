@@ -1,9 +1,11 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.contrib import databrowse
 from utils import path_extrapolate
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
+from django.contrib import databrowse
 admin.autodiscover()
 
 js_info_dict = {
@@ -38,7 +40,14 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
+<<<<<<< Updated upstream
 )
+=======
+    (r'^process_upload/', 'geonode.maps.views.process_external_upload'),
+    (r'^debug/', 'geonode.maps.views.debug'),
+    url(r'^databrowse/(.*)', databrowse.site.root, name="databrowse"),
+    )
+>>>>>>> Stashed changes
 
 #
 # Extra static file endpoint for development use
