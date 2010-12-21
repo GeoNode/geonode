@@ -998,7 +998,7 @@ def _describe_layer(request, layer):
                 logging.debug("adding layer to map [%s]", mapid)
                 maplayer = MapLayer.objects.create(map=Map.objects.get(id=mapid), 
                     name = layer.typename,
-                    group = (LayerCategory.objects.get(id=layer.topic_category).title if layer.topic_category else 'General'),
+                    group = layer.topic_category.title if layer.topic_category else 'General',
                     layer_params = '{"selected":true, "title": "' + layer.title + '"}',
                     source_params = '{"ptype": "gx_wmssource"}',
                     ows_url = settings.GEOSERVER_BASE_URL + "wms",
