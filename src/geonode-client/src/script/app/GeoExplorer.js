@@ -1622,7 +1622,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             plugins: [expander],
             colModel: new Ext.grid.ColumnModel([
                 expander,
-                {header: "Name", dataIndex: "name", width: 150, sortable: true},
                 {id: "title", header: "Title", dataIndex: "title", sortable: true}
             ]),
             listeners: {
