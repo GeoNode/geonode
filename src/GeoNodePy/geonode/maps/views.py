@@ -995,7 +995,17 @@ def _describe_layer(request, layer):
 
                 
             if mapid != '':
-                logger.debug("A map was passed on")
+                logging.debug("adding layer to map [%s]", mapid)
+                maplayer = MapLayer.objects.create(map=Map.objects.get(id=mapid), 
+                    name = layer.typename,
+                    group = layer.topic_category if layer.topic_category else 'General',
+                    layer_params = '{"selected":true, "title": "' + layer.title + '"}',
+                    source_params = '{"ptype": "gx_wmssource"}',
+                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                    visibility = True,
+                    stack_order = MapLayer.objects.filter(id=mapid).count()
+                    )
+                maplayer.save()            
                 return HttpResponseRedirect("/maps/" + mapid)
             else:             
                 logger.debug("No map value found")   
@@ -1142,25 +1152,18 @@ def upload_layer(request):
             layer, errors = _handle_layer_upload(request)
             logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
             logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
-            if layer.attribute_names is not None:
-                logging.debug("Attributes are not None")
-                for field, ftype in layer.attribute_names.iteritems():
-                    if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
-                        logging.debug("Field is [%s]", field)
-                        la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, attribute_type=ftype, searchable=(ftype == "xsd:string"))
-                        la.save()
-            else:
-                logging.debug("No attributes found")
-                
-            if (request.POST['mapid'] != ''):
-                logging.debug("adding layer to map [%s]", request.POST['mapid'])
-                maplayer = MapLayer.objects.create(map=Map.objects.get(id=request.POST['mapid']), 
-                    name = layer.typename,
-                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
-                    visibility = True,
-                    stack_order = 0
-                    )
-                maplayer.save()
+            try:
+                if layer.attribute_names is not None:
+                    logging.debug("Attributes are not None")
+                    for field, ftype in layer.attribute_names.iteritems():
+                        if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
+                            logging.debug("Field is [%s]", field)
+                            la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, attribute_type=ftype, searchable=(ftype == "xsd:string"))
+                            la.save()
+                else:
+                    logger.debug("No attributes found")
+            except:
+                    logger.debug("Attributes could not be saved")
         except:
             logger.exception("_handle_layer_upload failed!")
             errors = [GENERIC_UPLOAD_ERROR]
