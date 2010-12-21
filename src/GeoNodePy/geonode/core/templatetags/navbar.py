@@ -11,7 +11,6 @@ from django.utils.translation import ungettext
 from geonode.utils import ConfigMap, DictMixin
 from geonode.utils import path_extrapolate
 
-
 register = template.Library()
 
 DEFAULT_PATH = 'geonode/core/templatetags/navbar.ini'

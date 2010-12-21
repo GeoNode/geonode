@@ -1,8 +1,10 @@
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin
+from django.contrib import databrowse
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
@@ -45,3 +47,10 @@ admin.site.register(Layer, LayerAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(MapLayer)
 admin.site.register(Role)
+
+databrowse.site.register(Map)
+databrowse.site.register(Contact)
+databrowse.site.register(Layer)
+databrowse.site.register(ContactRole)
+databrowse.site.register(MapLayer)
+databrowse.site.register(Role)
