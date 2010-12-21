@@ -655,6 +655,7 @@ class LayerManager(models.Manager):
 
 class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
+    title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
     
     def __str__(self):
         return "%s" % self.name

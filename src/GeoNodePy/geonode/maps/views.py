@@ -730,7 +730,8 @@ def deletemap(request, mapid):
 
     if request.method == 'GET':
         return render_to_response("maps/map_remove.html", RequestContext(request, {
-            "map": map
+            'map': map,
+            'urlsuffix': get_suffix_if_custom(map)
         }))
     elif request.method == 'POST':
         layers = map.layer_set.all()
@@ -795,7 +796,7 @@ def describemap(request, mapid):
 
 def get_suffix_if_custom(map):
         if (map.use_custom_template):
-            return map.urlsuffix
+            return map.officialurl
         else:
             return None
 
@@ -842,11 +843,7 @@ def view(request, mapid):
                 _("You are not allowed to view this map.")})), status=401)    
     
     config = map.viewer_json()
-    logger.debug("CONFIG: [%s]", str(config))
-
-    url_suffix = None
-    if (map.use_custom_template):
-        url_suffix = map.urlsuffix        
+    logger.debug("CONFIG: [%s]", str(config))      
     
     first_visit = True
     if request.session.get('visit' + str(map.id), False):

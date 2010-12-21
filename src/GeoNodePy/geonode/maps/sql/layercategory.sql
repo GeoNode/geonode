@@ -1,21 +1,23 @@
-INSERT into maps_layercategory (name) VALUES ('Environmental');
-INSERT into maps_layercategory (name) VALUES ('Base Mapping');
-INSERT into maps_layercategory (name) VALUES ('Economic');
-INSERT into maps_layercategory (name) VALUES ('Ethno and Linguistic');
-INSERT into maps_layercategory (name) VALUES ('Ethno-Classification');
-INSERT into maps_layercategory (name) VALUES ('Harvard Collections');
-INSERT into maps_layercategory (name) VALUES ('Health');
-INSERT into maps_layercategory (name) VALUES ('Historic Maps 1600 to 1800');
-INSERT into maps_layercategory (name) VALUES ('Historic Maps 1800 to 1950');
-INSERT into maps_layercategory (name) VALUES ('Local Projects');
-INSERT into maps_layercategory (name) VALUES ('Period Maps');
-INSERT into maps_layercategory (name) VALUES ('Place Names');
-INSERT into maps_layercategory (name) VALUES ('Political and Population');
-INSERT into maps_layercategory (name) VALUES ('Trade');
-
-
-
-
+INSERT into maps_layercategory (name,title) VALUES ('farming', 'Farming');
+INSERT into maps_layercategory (name,title) VALUES ('biota', 'Biota');
+INSERT into maps_layercategory (name,title) VALUES ('boundaries', 'Boundaries');
+INSERT into maps_layercategory (name,title) VALUES ('climatologyMeteorologyAtmosphere', 'Climatology/Meterorology/Atmosphere');
+INSERT into maps_layercategory (name,title) VALUES ('economy', 'Economy');
+INSERT into maps_layercategory (name,title) VALUES ('elevation', 'Elevation');
+INSERT into maps_layercategory (name,title) VALUES ('health', 'Health');
+INSERT into maps_layercategory (name,title) VALUES ('environment', 'Environment');
+INSERT into maps_layercategory (name,title) VALUES ('geoscientificInformation', 'Geoscientific Information');
+INSERT into maps_layercategory (name,title) VALUES ('health', 'Health');
+INSERT into maps_layercategory (name,title) VALUES ('imageryBaseMapsEarthCover', 'Imagery/Base Maps/Earth Cover');
+INSERT into maps_layercategory (name,title) VALUES ('intelligenceMilitary', 'Intelligence/Military');
+INSERT into maps_layercategory (name,title) VALUES ('inlandWaters', 'Inland Waters');
+INSERT into maps_layercategory (name,title) VALUES ('location', 'Location');
+INSERT into maps_layercategory (name,title) VALUES ('oceans', 'Oceans');
+INSERT into maps_layercategory (name,title) VALUES ('planningCadastre', 'Planning/Cadastre');
+INSERT into maps_layercategory (name,title) VALUES ('society', 'Society');
+INSERT into maps_layercategory (name,title) VALUES ('structure', 'Structure');
+INSERT into maps_layercategory (name,title) VALUES ('transportation', 'Transportation');
+INSERT into maps_layercategory (name,title) VALUES ('utilitiesCommunication', 'Utilities/Communication');
 
 
 
