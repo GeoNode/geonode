@@ -522,8 +522,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     							successCount++;
     							
     							if(resp.responseText != '' && resp.responseText.substr(0,1) != "{") {
-    								msg = resp.responseText;
-    								Ext.Msg.alert('Results for ' + x.get("title"),msg);
+//    								msg = resp.responseText;
+//    								Ext.Msg.alert('Results for ' + x.get("title"),msg);
     								return;
     							}
     							
@@ -622,7 +622,41 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
     
+    addInfo : function() {
+           var queryableLayers = this.mapPanel.layers.queryBy(function(x){
+               return x.get("queryable");
+           });
+           var geoEx = this;
+           
 
+           queryableLayers.each(function(x){           	
+           	var dl = x.getLayer();
+               if (dl.name != "HighlightWMS" && !dataLayers[dl.params.LAYERS]){
+               	  Ext.Ajax.request({
+               		url: "/maps/searchfields/?" + dl.params.LAYERS,
+               		method: "POST",
+               		params: {layername:dl.params.LAYERS},
+               		success: function(result,request)
+               		{
+                           var jsonData = Ext.util.JSON.decode(result.responseText);                            
+                           layerfields = jsonData.searchFields;
+                           category = x.get("group") != "" && x.get("group") != undefined && x.get("group")  ? x.get("group") : jsonData.category;
+                           if (category == "")
+                        	   category = "General";
+                           x.set("group", category);
+                           dataLayers[dl.params.LAYERS] = new LayerData(dl.params.LAYERS, jsonData.searchFields, jsonData.scount);
+                           geoEx.addCategoryFolder(category, true); 
+               		},
+               		failure: function(result,request) {
+                          alert(result.responseText);
+               		}
+               		
+               	  });
+               	   
+                }
+               
+           }, this);
+       },    
 	
     initMapPanel: function() {
         this.mapItems = [{
@@ -680,7 +714,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             } 
         });
         
- 
+ 		
         
     },
     
@@ -705,6 +739,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var mapOverlay = this.createMapOverlay();
         this.mapPanel.add(mapOverlay);
         
+
 //        var overlayTools = this.createOverlayTools();
 //    	this.mapPanel.add(overlayTools);
 
@@ -719,6 +754,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         
         this.on("ready", function() {
+            this.addInfo();
+            
             this.mapPanel.map.events.register('click', this, this.onMapClick);
             
             this.mapPanel.layers.on({
@@ -1571,7 +1608,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 			category = jsonData.category;
 	                                		if (!category || category == '')
 	                                			category = "General";
-                                			//dataLayers[layer] = new LayerData(dataLayers[layer], jsonData.searchFields, jsonData.scount);
+                                			dataLayers[layer] = new LayerData(dataLayers[layer], jsonData.searchFields, jsonData.scount);
                                 			record.set("group",category);                                			
                                 			layerStore.add([record]);
                                 			geoEx.addCategoryFolder(record.get("group"), "true");
@@ -2453,72 +2490,6 @@ listeners: {
 
        
 
-       var addInfo = function() {
-           var queryableLayers = this.mapPanel.layers.queryBy(function(x){
-               return x.get("queryable");
-           });
-
-           var geoEx = this;
-           
-           var control;
-           for (var i = 0, len = info.controls.length; i < len; i++){
-               control = info.controls[i];
-               control.deactivate();  // TODO: remove when http://trac.openlayers.org/ticket/2130 is closed
-               control.destroy();
-           }
-
-           
-           
-           info.controls = [];
-           queryableLayers.each(function(x){           	
-           	var dl = x.getLayer();
-               if (dl.name != "HighlightWMS"){
-               	  Ext.Ajax.request({
-               		url: "/maps/searchfields/?" + dl.params.LAYERS,
-               		method: "POST",
-               		params: {layername:dl.params.LAYERS},
-               		success: function(result,request)
-               		{
-                           var jsonData = Ext.util.JSON.decode(result.responseText);                            
-                           layerfields = jsonData.searchFields;
-                           category = x.get("group") != "" && x.get("group") != undefined && x.get("group")  ? x.get("group") : jsonData.category;
-                           if (category == "")
-                        	   category = "General";
-                           x.set("group", category);
-                           dataLayers[dl.params.LAYERS] = new LayerData(dl.params.LAYERS, jsonData.searchFields, jsonData.scount);
-                           geoEx.addCategoryFolder(category, true); 
-               		},
-               		failure: function(result,request) {
-                          alert(result.responseText);
-               		}
-               		
-               	  });
-               	   
-                }  
-           }, this);
-       };       
-       
-       
-        var updateInfo = function() {
-            var queryableLayers = this.mapPanel.layers.queryBy(function(x){
-                return x.get("queryable");
-            });
-
-            var map = this.mapPanel.map;
-            var control;
-            for (var i = 0, len = info.controls.length; i < len; i++){
-                control = info.controls[i];
-                control.deactivate();  // TODO: remove when http://trac.openlayers.org/ticket/2130 is closed
-                control.destroy();
-            }
-
-            info.controls = [];
-            
-        };
-
-        this.mapPanel.layers.on("update", updateInfo, this);
-        this.mapPanel.layers.on("add", addInfo, this);
-        this.mapPanel.layers.on("remove", updateInfo, this);
 
         // create split button for measure controls
         var activeIndex = 0;
