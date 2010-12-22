@@ -117,6 +117,13 @@
             </fileset>
         </war>
     </target>
+    
+    <target name="zip" depends="dist" description="create zip with static files">
+        <echo>Creating ZIP file of static files</echo>
+        <zip destfile="build/${ant.project.name}.zip">
+            <fileset dir="${build}/${ant.project.name}/WEB-INF/app/static"/>
+        </zip>
+    </target>
 
     <target name="debug">
         <java jar="${build}/ringo/run.jar" fork="true">
