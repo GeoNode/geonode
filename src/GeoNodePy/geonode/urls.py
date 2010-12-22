@@ -39,7 +39,6 @@ urlpatterns = patterns('',
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
     (r'^process_upload/', 'geonode.maps.views.process_external_upload'),
-    (r'^debug/', 'geonode.maps.views.debug'),
     )
 
 #
