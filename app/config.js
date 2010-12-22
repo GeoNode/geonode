@@ -3,14 +3,15 @@ var urls = [
     [(/^\/proxy/), require("./proxy").app]
 ];
 
+var dir;
+
 // debug mode loads unminified scripts
 // assumes markup pulls in scripts under the path /servlet_name/script/
-if (java.lang.System.getProperty("READYGXP_DEBUG") || java.lang.System.getenv("READYGXP_DEBUG")) {
+if (java.lang.System.getProperty("READYGXP_DEBUG") || java.lang.System.getenv("READYGXP_FILES_ROOT")) {
     var fs = require("fs");
-    var dir = java.lang.System.getenv("READYGXP_JSFILES_ROOT");
-    var config = dir ?
-        fs.normal(fs.join(dir, "buildjs.cfg")) :
-        fs.normal(fs.join(module.directory, "..", "buildjs.cfg"));
+    dir = java.lang.System.getenv("READYGXP_FILES_ROOT") ||
+        fs.join(module.directory, "..");
+    var config = fs.normal(fs.join(dir, "buildjs.cfg"));
     urls.push(
         [(/^\/script(\/.*)/), require("./autoloader").App(config)]
     );    
@@ -48,7 +49,7 @@ function slash(config) {
 var {Response} = require("ringo/webapp/response");
 var {mimeType} = require("ringo/webapp/mime");
 function almostStatic(config) {
-    var base = getRepository(module.resolve("static"));
+    var base = getRepository(dir ? fs.join(dir, "app", "static") : module.resolve("static"));
     base.setRoot();
     return function(app) {
         return function(request) {
