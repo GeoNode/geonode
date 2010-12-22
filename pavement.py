@@ -522,8 +522,7 @@ def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
     if hasattr(options.host, 'client_src'):
-        os.environ["READYGXP_DEBUG"] = "1"
-        os.environ["READYGXP_JSFILES_ROOT"] = os.path.abspath(options.host.client_src)
+        os.environ["READYGXP_FILES_ROOT"] = os.path.abspath(options.host.client_src)
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
