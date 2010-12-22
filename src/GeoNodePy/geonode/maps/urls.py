@@ -23,7 +23,7 @@ urlpatterns = patterns('geonode.maps.views',
     url(r'^change-poc/(?P<ids>\w+)$', 'change_poc', name="change_poc"),
     (r'^updatelayers/$', 'updatelayers'),
     (r'^cleardeadlayers/$', 'cleardeadlayers'),
-    (r'^(?P<mapid>\w+)/$', 'view'),
-    (r'^(?P<mapid>\w+)/edit$', 'map_controller'),
+    (r'^(?P<mapid>\w+.*)/$', 'view'),
+    (r'^(?P<mapid>\w+.*)/edit$', 'map_controller'),
 
 )
