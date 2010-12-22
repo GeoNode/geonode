@@ -12,3 +12,4 @@ dj.paste
 -e git+git://github.com/ericflo/django-avatar.git#egg=avatar
 django-celery
 ghettoq
+psycopg2
