@@ -162,19 +162,24 @@ MAP_BASELAYERSOURCES = {
 
 MAP_BASELAYERS = [{
     "source":"any",
-    "type":"OpenLayers.Layer",
-    "args":["No background"],
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  },{
-    "source":"any",
     "type":"OpenLayers.Layer.OSM",
     "args":["OpenStreetMap"],
     "visibility": False,
     "fixed": True,
     "group":"background"
   },{
+    "source":"google",
+    "group":"background",
+    "name":"ROADMAP",
+    "visibility": False,
+    "fixed": True,
+},{
+    "source":"google",
+    "group":"background",
+    "name":"HYBRID",
+    "visibility": False,
+    "fixed": True,
+},{
     "source":"google",
     "group":"background",
     "name":"SATELLITE",
