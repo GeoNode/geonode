@@ -232,6 +232,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_extensions',
+    'notification',
     'registration',
     'profiles',
     'avatar',
@@ -240,6 +241,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'djcelery',
     'ghettoq',
+    
 )
 
 AUTH_PROFILE_MODULE = 'maps.Contact'

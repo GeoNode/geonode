@@ -35,6 +35,11 @@ from django.db.models import Q
 import logging
 from celery.decorators import task
 from django import db
+try:
+    from notification import models as notification
+except ImportError:
+    notification = None
+
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -891,8 +896,9 @@ def _updateLayer(request, layer):
 
 @task
 def _handle_external_layer_upload(operation=None, base_file_path=None, fileURL=None, user=None):
-    db.connection.close() #test forcibly closing db connection
+    db.connection.close() # forcibly close db connection, causing it to reopen
     try:
+        user = User.objects.get(username=user)
         layer_name = os.path.splitext(os.path.split(base_file_path)[1])[0]
         base_file = open(base_file_path)
         if base_file_path.lower().endswith('.shp'):
@@ -906,11 +912,16 @@ def _handle_external_layer_upload(operation=None, base_file_path=None, fileURL=N
             layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, user=user)
         if(len(errors) > 0):
             logger.debug(errors)
+            if notification:
+                notification.send([user], "upload_failed", {'layer_name': layer_name, 'errors': errors})
             return -1
         else:
+            if notification:
+                notification.send([user], "upload_successful",  {'layer_name': layer_name})
             return 0
     except:
-        #TODO: Add Proper Error Handling
+        if notification:
+            notification.send([user], "upload_failed", {'layer_name': layer_name, 'errors': str(sys.exc_info()[0])})
         return -1 
 
 @login_required
