@@ -14,7 +14,8 @@
 {% endblock %}
 
 {% block main %} 
+<ul id="noticeslist">
 {% for notice in notices %}
-{{ notice }}<br/>
+<li><a class="" id="dataLink" href="{% url notification_notice notice.id %}">{{ notice }}</a></li>
 {% endfor %}
 {% endblock %}

@@ -14,5 +14,14 @@
 {% endblock %}
 
 {% block main %} 
-{{ notice }}<br/>
+<h3>{{ notice }}</h3>
+<ul>
+<li>Date Added: {{ notice.added }}</li>
+<li>Link to layer in GeoNode</li>
+<li>Link to layer in GeoNode Admin</li>
+<li>Link to layer in GeoServer</li>
+<li>Link to layer in GeoNetwork</li>
+<li>Projection</li>
+<li><button type='button'>Mark as Read</button></li>
+</ul>
 {% endblock %}
