@@ -6,6 +6,11 @@ from utils import path_extrapolate
 from django.contrib import admin
 admin.autodiscover()
 
+from ghettoq.models import Queue, Message
+
+admin.site.register(Message, admin.ModelAdmin)
+admin.site.register(Queue, admin.ModelAdmin)
+
 js_info_dict = {
     'packages': ('geonode.maps',),
 }
