@@ -542,11 +542,19 @@ def install_sphinx_conditionally(options):
 
 @task
 @cmdopts([
-    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.'),
+    ('celery', 'c', 'Start celery (task queue) daemon?')
 ])
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
+    
+    celery = False
+    if(hasattr(options, 'celery')):
+            celery = True
+    if celery:
+        celerylog = open("celery.log", "w")
+    
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
@@ -559,6 +567,7 @@ def host(options):
             stdout=jettylog,
             stderr=jettylog
         )
+
     django = subprocess.Popen([
             "paster", 
             "serve",
@@ -568,6 +577,18 @@ def host(options):
         stdout=djangolog,
         stderr=djangolog
     )
+    if celery: 
+        celeryd = subprocess.Popen([
+            "django-admin.py",
+            "celeryd", 
+            "-v", "2",
+            "-E",
+            "-l", "DEBUG",
+            "--pidfile", "celery.pid",
+            "--settings=geonode.settings"],
+            stdout=celerylog,
+            stderr=celerylog,
+        )
 
     def jetty_is_up():
         try:
@@ -582,39 +603,76 @@ def host(options):
             return True
         except Exception, e:
             return False
+    
+    def celery_is_up():
+        try:
+            pidfile = open('celery.pid', 'r')
+            pid = int(pidfile.read().strip())
+            os.kill(pid, 0) # Does not kill process, signal 0 checks if its running
+            return True 
+        except Exception, e:
+            return False
 
     socket.setdefaulttimeout(1)
+    
+    info("Logging servlet output to jetty.log and django output to django.log...")
+    if hasattr(options, 'celery'):
+        info("Logging celery task queue output to celery.log")
+    info("")
 
     info("Django is starting up, please wait...")
     while not django_is_up():
         time.sleep(2)
+    info("Django started ...")
+    info("")
 
-    info("Logging servlet output to jetty.log and django output to django.log...")
+    if celery: 
+        info("Celery daemon is starting up, please wait...")
+        while not celery_is_up():
+            time.sleep(2)
+        info("Celery daeomon started ...")
+        info("")
+    
     info("Jetty is starting up, please wait...")
     while not jetty_is_up():
         time.sleep(2)
-
+    info("Jetty started ...")
+    info("")
+    
     try:
+        info("Running updatelayers command ...")
         sh("django-admin.py updatelayers --settings=geonode.settings")
-        
+        info("") 
         info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
         info("The GeoNode is an unstoppable machine")
         info("Press CTRL-C to shut down")
+        info("")
         django.wait()
         info("Django process terminated, see log for details.")
     finally:
         info("Shutting down...")
         try:
+            info("Django Shutting down...")
             django.terminate()
         except: 
             pass
         try:
+            info("Jetty Shutting down...")
             mvn.terminate()
         except: 
             pass
+        if celery: 
+            try:
+                info("Celery Shutting down...")
+                celeryd.terminate()
+            except: 
+                pass
 
         django.wait()
         mvn.wait()
+        if celery:
+            celeryd.wait()
+        info("Shutdown Complete")
         sys.exit()
 
 
