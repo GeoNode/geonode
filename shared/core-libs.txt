@@ -13,4 +13,4 @@ dj.paste
 django-celery
 ghettoq
 psycopg2
-notification
+django-notification
