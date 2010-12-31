@@ -1126,7 +1126,7 @@ def layerController(request, layername):
             "layer": layer,
             "metadata": metadata,
             "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
-            "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
+            "permissions_json": _perms_info_email_json(layer, LAYER_LEV_NAMES),
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
         }))
 
