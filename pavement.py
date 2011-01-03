@@ -19,7 +19,7 @@ from shutil import move
 import zipfile
 import tarfile
 import urllib
-
+import glob
 
 assert sys.version_info >= (2,6), \
        SystemError("GeoNode Build requires python 2.6 or better")
@@ -253,7 +253,6 @@ def setup_geonode_client(options):
 
     deployed_url.rmtree()
     zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
-    
 
 @task
 def sync_django_db(options):
@@ -284,9 +283,33 @@ def package_dir(options):
 
 @task
 @needs('package_dir', 'setup_geonode_client')
+@cmdopts([
+    ('use_staticfiles', 's', 'Use django-staticfiles for deploying geonode-client')
+])
 def package_client(options):
     """Package compressed client resources (JavaScript, CSS, images)."""
-    geonode_client_target_war.copy(options.deploy.out_dir)
+
+    if(hasattr(options, 'use_staticfiles')): 
+    	# Extract static files to static_location 
+    	webapps = path("./webapps")
+    	if not webapps.exists():
+        	webapps.mkdir()
+    	dst_war = webapps / "geonode-client.war"
+    	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
+    	static_location = geonode_media_dir / "static" 
+    	if(os.path.exists(static_location)):
+       		shutil.rmtree(static_location)
+    	zip = zipfile.ZipFile(dst_war)
+    	members = []
+    	for name in zip.namelist():
+        	if(name.startswith('WEB-INF/app/static')):
+               		members.append(name) 
+    	zip_extractall(zipfile.ZipFile(dst_war), static_location, members=members)
+    	for data in glob.glob(static_location / "WEB-INF/app/static/*"):
+        	shutil.move(data,static_location)
+    	shutil.rmtree(static_location / "WEB-INF")
+    else:
+    	geonode_client_target_war.copy(options.deploy.out_dir)
 
 @task
 @needs('package_dir', 'setup_geoserver')
@@ -319,8 +342,8 @@ def package_webapp(options):
     'build',
     'package_geoserver',
     'package_geonetwork',
-    'package_webapp',
     'package_client',
+    'package_webapp',
     'package_bootstrap'
 )
 def package_all(options):
