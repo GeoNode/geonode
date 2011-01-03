@@ -68,6 +68,7 @@ gs_data = "gs-data"
 geoserver_target = path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war')
 geonetwork_target = path('webapps/geonetwork.war')
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
+geonode_client_target_war = path('webapps/geonode-client.war')
 
 deploy_req_txt = """
 # NOTE... this file is generated
@@ -101,7 +102,6 @@ def install_deps(options):
         if options.config.platform == "win32":
             info("You will need to install 'PIL' and 'ReportLab' "\
                  "separately to do PDF generation")
-
 
 @task
 def bundle_deps(options):
@@ -283,21 +283,10 @@ def package_dir(options):
 
 
 @task
-@needs('package_dir', 'build_js')
+@needs('package_dir', 'setup_geonode_client')
 def package_client(options):
-    """
-    Package compressed client resources (JavaScript, CSS, images).
-    """
-    # build_dir = options.deploy.out_dir
-    zip = zipfile.ZipFile(geonode_client_target(),'w') #create zip in write mode
-
-    with pushd('src/geonode-client/build/'):
-        for file in path("geonode-client/").walkfiles():
-            print(file)
-            zip.write(file)
-
-    zip.close()
-
+    """Package compressed client resources (JavaScript, CSS, images)."""
+    geonode_client_target_war.copy(options.deploy.out_dir)
 
 @task
 @needs('package_dir', 'setup_geoserver')
