@@ -112,6 +112,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     
     searchFields : [],
 
+    gxSearchBar : null,
     
     //public variables for string literals needed for localization
     addLayersButtonText: "UT:Add Layers",
@@ -189,6 +190,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     zoomToLayerExtentText: "UT:Zoom to Layer Extent",
     zoomVisibleButtonText: "UT:Zoom to Original Map Extent",
 
+    
+    
     constructor: function(config) {
     	this.config = config;
         this.popupCache = {};
@@ -622,6 +625,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
     
+
+    
     addInfo : function() {
            var queryableLayers = this.mapPanel.layers.queryBy(function(x){
                return x.get("queryable");
@@ -648,7 +653,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                            geoEx.addCategoryFolder(category, true); 
                		},
                		failure: function(result,request) {
-                          alert(result.responseText);
+                         // alert(result.responseText);
                		}
                		
                	  });
@@ -676,13 +681,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var layerCount = 0;
         
 
+
+        
         
         this.mapPanel.map.events.register("addLayers", this, function(e) {
             var layer = e.layer;
             var layerfields = '';
             //ge = self;
-
-
             
             if (layer instanceof OpenLayers.Layer.WMS ) {
                 !layer.singleTile && layer.maxExtent && layer.mergeNewParams({
@@ -1176,7 +1181,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             })
         });
         
-
+		this.gxSearchBar = new gxp.SearchBar(this);
+		var searchPanel = new Ext.Panel({
+			anchor: "100% 5%",
+			items: [this.gxSearchBar]
+		});
         
         var layersContainer = new Ext.Panel({
             autoScroll: true,
@@ -1209,6 +1218,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }, this);
 
         var layersTabPanel = new Ext.TabPanel({
+        	anchor: "100% 95%",
             border: false,
             deferredRender: false,
             items: [layersContainer, this.legendPanel],
@@ -1217,10 +1227,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         //needed for Safari
         var westPanel = new Ext.Panel({
-            layout: "fit",
+			layout: "anchor",
             collapseMode: "mini",
             split: true,
-            items: [layersTabPanel],
+            items: [layersTabPanel,searchPanel],
             region: "west",
             width: 250
         });
@@ -1278,7 +1288,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled.each(function(item) {
                 item.disable();
             });
-            Ext.get("request-load-pnl").hide();
+            
         }, this);
         
         this.googleEarthPanel = new gxp.GoogleEarthPanel({
@@ -1624,7 +1634,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     					source: key,
                     					buffer: 0
                 					});
-                					alert(layer + " created after FAIL");
+                					//alert(layer + " created after FAIL");
                 					if (record) {                	
                     					if (record.get("group") === "background") {
                         					var pos = layerStore.queryBy(function(rec) {
@@ -2226,7 +2236,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         cls: "more-overlay-element",
        	id: 'moreBtn',
        	menu: {
-       		defaults: {
        			checked: false
        		},
        		
@@ -2234,194 +2243,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
        			picasaMenuItem,
     			youtubeMenuItem
        		]
-       	}
-       
-       	
        }); 
         
     	
     	this.mapPanel.add(moreButton);
-    	
-        
-        var searchTB = new Ext.form.TextField({
-			id:'search-tb',
-			width:200,
-			emptyText:'Enter search...'
-		});
-        
-        var psHandler = function() {
-        	performSearch.call();
-        	};
-        
-        var searchBtn = new Ext.Button({
-			text:'<span class="x-btn-text">Search</span>',
-			handler: psHandler
-		});
-        
-    	var performSearch =  function() {
-
-    		// Find queryable layers (visible with searchable fields)
-    		var searchCount = 0;
-            var queryableLayers = mapPanel.layers.queryBy(function(x){
-                return x.get("queryable");
-            });
-            queryableLayers.each(function(x){
-            	dl = x.getLayer();
-            	if (!dl.getVisibility() || dataLayers[dl.params.LAYERS].count == 0)
-            		{queryableLayers.remove(x, true);}
-            });
-            if (queryableLayers.length == 0)
-            	{
-                Ext.MessageBox.alert('No Searchable Layers','There are currently no searchable layers on the map.  You must have at least one visible layer with searchable fields on the map.');
-                return;
-            	
-            	}
-    		
-            //show searching modal
-            if (!busyMask) {
-                busyMask = new Ext.LoadMask(
-                    mapPanel.map.div, {
-                        msg: 'Searching...'
-                    }
-                );
-            }
-            busyMask.show();
-    		
-            try{
-            //Get rid of any existing highlight layers
-            removeHighlightLayers();
-            
-            //search term manipulation code, copied verbatim from existing WorldMap
-    		searchTerm = searchTB.getValue();
-            var terms = [];
-            var matchingSearchTerm = searchTerm;
-            var re = /("[^"]+")/g;
-            var m = matchingSearchTerm.match(re);
-            var otherSearchTerm = searchTerm; 
-            if ( m != null ) {
-                for ( i = 0; i < m.length; i++ ) {
-                    otherSearchTerm = otherSearchTerm.replace(m[i], '');
-                    terms.push( m[i].replace(/"/g, '' ));
-                }	
-            } else {
-            }          
-            var whitespace_re = /\s+/;
-            otherSearchTerm = otherSearchTerm.replace(whitespace_re, ' ');
-            terms = terms.concat(otherSearchTerm.split(' '));
-            layers = [];
-            
-            //Create a WMS search results layer for each searchable layer
-            queryableLayers.each(function(x){
-            	dl = x.getLayer();
-            	if (dl.getVisibility())
-            		{
-            		
-            		var wms_url = dl.url;
-            			queryFields = [];
-            			for (f=0; f < dataLayers[dl.params.LAYERS].searchFields.length; f++)
-            			{
-            				field = dataLayers[dl.params.LAYERS].searchFields[f]
-            				
-            				if (field.searchable == "True") {
-            					queryFields.push(field.attribute);
-            				}
-            			}
-            			
-            			
-            			featureQuery="";
-            			
-            			sld = '';//'<?xml version="1.0" encoding="utf-8"?>';
-            			sld+= '<sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">';
-            			sld+= '<sld:NamedLayer><sld:Name>' + dl.params.LAYERS  +  '</sld:Name><sld:UserStyle><sld:Name>query</sld:Name><sld:FeatureTypeStyle><sld:Rule><ogc:Filter>';
-            			for (i = 0; i < queryFields.length; i++)
-            				{
-            					if (queryFields[i] != "")
-            						featureQuery = featureQuery + '<ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!"><ogc:PropertyName>' + queryFields[i] + '</ogc:PropertyName><ogc:Literal>*' + searchTerm + '*</ogc:Literal></ogc:PropertyIsLike>';
-            				}
-            			if (queryFields.length > 1)
-            				{
-            					featureQuery = "<ogc:Or>"+ featureQuery + "</ogc:Or>";	
-            				}
-            			if (featureQuery.length > 0)
-            				{            				
-        					sld += featureQuery;
-        					sld += '</ogc:Filter>';
-        					
-        				    //Points        					
-        					sld += '<PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name="fill">#FFFF00</CssParameter></Fill></Mark><Size>8</Size></Graphic></PointSymbolizer>';
-        					//Lines
-        					sld += '<LineSymbolizer><sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter><sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter><sld:CssParameter name="stroke-width">2</sld:CssParameter></sld:Stroke></LineSymbolizer>';
-        					//Polygons
-        					//sld += '<sld:PolygonSymbolizer> <sld:Fill><sld:GraphicFill> <sld:Graphic><sld:Mark> <sld:WellKnownName>shape://times</sld:WellKnownName> <sld:Stroke><sld:CssParameter name="stroke">#FFFF00</sld:CssParameter>';
-        					//sld += '<sld:CssParameter name="stroke-width">1</sld:CssParameter> </sld:Stroke></sld:Mark><sld:Size>16</sld:Size> </sld:Graphic></sld:GraphicFill> </sld:Fill></sld:PolygonSymbolizer>';        					     					
-        					sld += '</sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>';        					 
-        					 
-        					
-                    		wmsHighlight = new OpenLayers.Layer.WMS(
-            						"HighlightWMS",
-            						wms_url,
-            						{'layers': dl.params.LAYERS,'format':'image/png', SLD_BODY: sld, TRANSPARENT: 'true'},
-            						{'isBaseLayer': false,'displayInLayerSwitcher' : false}
-                    		);
-                    		layers.push(wmsHighlight);
-        					
-            				}
-            		}
-            });
-            
-            mapPanel.map.addLayers(layers);  
-            } catch (e) {
-            	//Suppress for now
-            } finally {
-        		if (busyMask) {
-        			busyMask.hide();
-        		}
-            }
-            
-
-    	};
-    	
-    	var reset =  function() { 
-    		searchTB.setValue('');
-            removeHighlightLayers();
-
-    	};
-    	        
-        var removeHighlightLayers  = function() {
-        	var theLayers = mapPanel.map.layers;
-        	var hLayers = [];
-            for (l = 0; l < theLayers.length; l++)
-        	{
-        		if (theLayers[l].name == "HighlightWMS" || theLayers[l].name == "hilites"){
-        			hLayers.push(theLayers[l]);
-        			
-        		} 
-        		
-        	}
-            
-            for (h = 0; h < hLayers.length; h++)
-            	{
-            		mapPanel.map.removeLayer(hLayers[h],true);
-            	}
-            
-        }
-        
-		var searchBar = new Ext.Toolbar({
-			id: 'tlbr',
-			items:[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
-			       '-', searchTB, 
-				' ', searchBtn,' ',{
-					xtype:'button',
-					text:'<span class="x-btn-text">Reset</span>',
-					handler:function(brn, e) {
-						reset();
-					}
-				},' ', '-', {
-					id: 'request-load-pnl',
-					xtype: 'panel',
-					html: '<img src="images/ajax-loader.gif" alt="Request loading...">'
-				}]
-		});
+ 
 		
 	  var jumpstore = new Ext.data.SimpleStore({
 		        fields: ['dataFieldName', 'displayFieldName'],
@@ -2573,6 +2399,8 @@ listeners: {
         		document.location.href="/maps/" + this.mapID + "/edit";
         };        
         
+        
+        
         var tools = [
             new Ext.Button({
                 tooltip: this.saveMapText,
@@ -2625,7 +2453,6 @@ listeners: {
             enable3DButton,
             */
             infoButton,
-            searchBar,
             jumpBar,
             '->',
             new Ext.Button({
@@ -2848,6 +2675,8 @@ listeners: {
      */
     initMetadataForm: function(){
         
+    	var geoEx = this;
+    	
         var titleField = new Ext.form.TextField({
             width: '95%',
             fieldLabel: this.metaDataMapTitle,
@@ -2867,6 +2696,8 @@ listeners: {
                 }
             }
         });
+        
+
         
         //Make sure URL is not taken; if it is, show list of taken url's that start with field value
         Ext.apply(Ext.form.VTypes, {
@@ -2939,7 +2770,52 @@ listeners: {
             }
         });
 
-        
+        var checkUrlBeforeSave =  function() {
+
+            Ext.Ajax.request({
+                    url: "/maps/checkurl/",
+                    method: 'POST',
+                    params : {query:urlField.getValue(), mapid: geoEx.mapID},
+                    success: function(response, options) {
+                    	var urlcount = Ext.decode(response.responseText).count;
+                    	var rt = "";
+                    	var isValid=true;
+                    	if (urlcount > 0) {
+                    		rt = "The following URL's are already taken:";
+                    		var urls = Ext.decode(response.responseText).urls;
+                    		
+                    		for (var u in urls) {
+                    			if (urls[u].url != undefined && urls[u].url != null)
+                    				rt+="<br/>" + urls[u].url;
+                    			if (urls[u].url == urlField.getValue()) {
+                    				isValid=false;
+                    			}
+
+                    		}
+                    		if (!isValid) {
+                    			urlField.markInvalid(rt);
+                    			return false;
+                    		}
+                    			
+                    	}
+                    	if (isValid) {
+                    			geoEx.about.title = titleField.getValue();
+                				geoEx.about["abstract"] = abstractField.getValue(); 
+                				geoEx.about["urlsuffix"] = urlField.getValue();
+                				geoEx.about["introtext"] = introTextField.getValue();
+                				geoEx.about["keywords"] = keywordsField.getValue();
+                				geoEx.save();
+                				geoEx.initInfoTextWindow();   
+                    	}
+                    }, 
+                    failure: function(response, options)
+                    {
+                    	return false;
+                    	Ext.Msg.alert('Error', response.responseText, geoEx.showMetadataForm);
+                    },                
+                    scope: this
+                });	
+        };        
         
         var abstractField = new Ext.form.TextArea({
             width: '95%',
@@ -2981,18 +2857,11 @@ listeners: {
             disabled: !this.about.title,
             handler: function(e){
             	if (this.about["urlsuffix"] == urlField.getValue()){
-            		Ext.Msg.alert("Chnage the URL suffix", "You must change the URL suffix before saving a copy of this map view.");
+            		Ext.Msg.alert("Change the URL suffix", "You must change the URL suffix before saving a copy of this map view.");
             		urlField.markInvalid("This URL is already taken, please choose another");
             		return false;
             	} else {
-            	
-                this.about.title = titleField.getValue();
-                this.about["abstract"] = abstractField.getValue();
-                this.about["urlsuffix"] = urlField.getValue();
-                this.about["introtext"] = introTextField.getValue();
-                this.about["keywords"] = keywordsField.getValue();
-                this.save(true);
-                this.initInfoTextWindow();
+            		checkUrlBeforeSave();
             	}
             },
             scope: this
@@ -3002,13 +2871,7 @@ listeners: {
             cls:'x-btn-text',
             disabled: !this.about.title,
             handler: function(e){
-                this.about.title = titleField.getValue();
-                this.about["abstract"] = abstractField.getValue(); 
-                this.about["urlsuffix"] = urlField.getValue();
-                this.about["introtext"] = introTextField.getValue();
-                this.about["keywords"] = keywordsField.getValue();
-                this.save();
-                this.initInfoTextWindow();
+            	checkUrlBeforeSave();
             },
             scope: this
         });

@@ -181,6 +181,21 @@ text-decoration:none;
 font-size:24px;
 }
 
+#welcomediv
+{
+float: left;
+position:relative;
+color:#000;
+font-family: Arial;
+text-decoration:none;
+font-size:14px;
+padding-right:20px;
+}
+
+#welcomediv span {
+	font-weight: bold;	
+}
+
 #login-area {
 position: absolute;
 top: 50%;
