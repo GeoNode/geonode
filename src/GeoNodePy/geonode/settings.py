@@ -64,7 +64,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, "site_media", "static")
 
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
-STATIC_URL = "/site_media/static/"
+STATIC_URL = "/media/"
 
 # Additional directories which hold static files
 STATICFILES_DIRS = [
@@ -252,7 +252,8 @@ REGISTRATION_OPEN = False
 
 SERVE_MEDIA = DEBUG;
 
-GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
+#GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
+GEONODE_CLIENT_LOCATION = "/media/static/"
 
 try:
     from local_settings import *
