@@ -2236,6 +2236,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         cls: "more-overlay-element",
        	id: 'moreBtn',
        	menu: {
+       	    defaults: {
        			checked: false
        		},
        		
@@ -2243,6 +2244,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
        			picasaMenuItem,
     			youtubeMenuItem
        		]
+       	}       		
        }); 
         
     	

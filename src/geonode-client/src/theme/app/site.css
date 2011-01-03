@@ -196,6 +196,10 @@ padding-right:20px;
 	font-weight: bold;	
 }
 
+#wmpower {
+	display: none;
+}
+
 #login-area {
 position: absolute;
 top: 50%;
