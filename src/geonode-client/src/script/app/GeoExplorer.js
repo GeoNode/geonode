@@ -3051,7 +3051,7 @@ listeners: {
                     window.location = response.getResponseHeader("Location");
                 }, 
                 failure: function(response, options)
-                {	if (response.status = 401)
+                {	if (response.status === 401)
                 		this.loginWin.show();
                 	else
                 		Ext.Msg.alert('Error', response.responseText, this.showMetadataForm);
@@ -3071,7 +3071,7 @@ listeners: {
                     this.metadataForm.hide();
                 }, 
                 failure: function(response, options)
-                {	if (response.status = 401)
+                {	if (response.status === 401)
                 		this.loginWin.show();
                 	else
                 		Ext.Msg.alert('Error', response.responseText, this.showMetadataForm);
