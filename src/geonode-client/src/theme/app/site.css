@@ -40,6 +40,7 @@ background:#fff;
 border-bottom: 1px solid #d5d5d5;
 font-size: 75%;
 font-family:Helvetica,Arial,sans-serif;
+min-width:980px;
 }
 
 a {
