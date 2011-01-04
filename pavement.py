@@ -296,11 +296,11 @@ def package_client(options):
         src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
     	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
         dst_zip =  geonode_media_dir / "geonode-client.zip"
-        deployed_url = geonode_media_dir / "static" 
+        static_location = geonode_media_dir / "static" 
 
         grab(src_url, dst_zip)
 
-        zip_extractall(zipfile.ZipFile(dst_zip), deployed_url)
+        zip_extractall(zipfile.ZipFile(dst_zip), static_location)
         os.remove(dst_zip)
 
 @task
