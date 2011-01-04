@@ -2966,7 +2966,7 @@ listeners: {
          items: this.helpTextPanel,
          modal: true,
          width: 600,
-         height:600,
+         height:500,
          autoScroll: true
        }); 
     },
