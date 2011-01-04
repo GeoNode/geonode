@@ -135,7 +135,7 @@ font-weight: inherit;
 Layout
 -----------------------*/
 .wrap {
-width: 980px;
+width: 100%;
 margin: 0 auto;
 }
 
@@ -158,7 +158,7 @@ position: relative;
 
 .x-viewport #header .wrapmap {
 	margin: 0 auto;
-	width: 980px;
+	width: 100%;
 	display:block;
 	min-height:1em;
 	position:relative;
@@ -172,7 +172,7 @@ float: left;
 position:relative;
 top:10px;
 vertical-align:middle;
-margin:auto;
+margin:auto 20px;
 width: 141px;
 height: 50px;
 color:#991122;
@@ -205,6 +205,7 @@ position: absolute;
 top: 50%;
 right: 0;
 margin-top: -0.5em;
+margin-right:20px;
 text-align: right;
 }
 

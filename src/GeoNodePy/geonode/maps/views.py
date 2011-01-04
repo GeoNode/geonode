@@ -223,7 +223,7 @@ def mapJSON(request, mapid):
             return HttpResponse(
                 "You do not have permission to save changes to this map.  Save a copy of the map instead.",
                 mimetype="text/plain",
-                status=401
+                status=403
             )  
         try:
             map.update_from_viewer(request.raw_post_data)
@@ -2117,16 +2117,22 @@ def ajax_url_lookup(request):
             content='use a field named "query" to specify a prefix to filter urls',
             mimetype='text/plain'
         )
-    maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
-    if request.POST['mapid'] != '':
-        maps = maps.exclude(id=request.POST['mapid'])
-    json_dict = {
-        'urls': [({'url': m.urlsuffix}) for m in maps],
-        'count': maps.count(),
-    }
+    if request.POST['query'] != '':
+        maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
+        if request.POST['mapid'] != '':
+            maps = maps.exclude(id=request.POST['mapid'])
+        json_dict = {
+                         'urls': [({'url': m.urlsuffix}) for m in maps],
+                         'count': maps.count(),
+                    }
+    else:
+            json_dict = {
+                            'urls' : [],
+                             'count' : 0,
+                         }
     return HttpResponse(
-        content=json.dumps(json_dict),
-        mimetype='text/plain'
+                            content=json.dumps(json_dict),
+                            mimetype='text/plain'
     )
 
 def updatelayers(request):
