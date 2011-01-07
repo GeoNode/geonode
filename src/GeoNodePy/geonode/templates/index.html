@@ -12,24 +12,6 @@
 {% include "geonode/ext_header.html" %}
 {{ block.super }}
 
-<script type="text/javascript">
-Ext.onReady(function(){
-{% autoescape off %}
-
-
-
-  var submitForm = function() {
-      Ext.query('#data_block form')[0].submit();
-  };
-
-  var searchButton = new Ext.Button({renderTo: 'submit_search', text: '{% trans "Search" %}',
-                                     handler: submitForm});
-
-  var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
-
-{% endautoescape %}
-});
-</script>
 {% endblock %}
 
 {% block main %} 
@@ -55,9 +37,9 @@ style='mso-bidi-font-family:Arial'>Creating a Map</span></a>.<o:p></o:p></span><
 style='font-family:Arial'> </span><span style='font-size:10.0pt;font-family:
 Arial'>ALPHA</span><span style='font-family:Arial'> is an experimental platform
 designed for viewing and interpreting maps collaboratively.<span
-style='mso-spacerun:yes'><br/><br/></span>Today maps come from many sources and take
+style='mso-spacerun:yes'></span>Today maps come from many sources and take
 many forms, from paper atlases to digital satellite images to census files.<span
-style='mso-spacerun:yes'><br/><br/></span><span class=SpellE>WorldMap</span> aims to
+style='mso-spacerun:yes'></span><span class=SpellE>WorldMap</span> aims to
 pull these and other hard-to-find maps together and <span class=GramE>make</span>
 them available to researchers to explore, share, annotate, and remix. <o:p></o:p></span></p>
 
@@ -68,14 +50,14 @@ style='font-family:Arial'> combines modeling capabilities of Geographic
 Information Systems (GIS) with current web technologies, and is made available
 as </span><a href="http://en.wikipedia.org/wiki/Open-source_software"><span
 style='font-family:Arial'>Open Source</span></a><span style='font-family:Arial'>
-software.<span style='mso-spacerun:yes'><br/><br/></span>Use the hosted version of <span
+software.<span style='mso-spacerun:yes'></span>Use the hosted version of <span
 class=SpellE>WorldMap</span> here or <a
 href="https://github.com/cga-harvard/cga-worldmap"><span style='mso-bidi-font-family:
 Arial'>download</span></a> and run the application on your own server.<span
-style='mso-spacerun:yes'><br/><br/></span><span class=SpellE>WorldMap</span> stands on
+style='mso-spacerun:yes'></span><span class=SpellE>WorldMap</span> stands on
 the shoulders of other Open Source projects including <span class=SpellE>AfricaMap</span>,
 <span class=SpellE>GeoNode</span>, <span class=SpellE>OpenLayers</span>, <span
-class=SpellE>PostGIS</span>, and GEOS.<span style='mso-spacerun:yes'><br/><br/></span><span
+class=SpellE>PostGIS</span>, and GEOS.<span style='mso-spacerun:yes'></span><span
 class=SpellE>WorldMap</span> is licensed under Version 3 of the </span><a
 href="http://www.gnu.org/licenses/gpl.html"><span style='font-family:Arial'>GNU
 General Public License (GPL)</span></a><span style='font-family:Arial'>.<o:p></o:p></span></p>
