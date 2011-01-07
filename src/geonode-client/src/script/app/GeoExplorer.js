@@ -1405,8 +1405,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
             var modified = false;
             stylesDialog = this.stylesDlgCache[layer.id] =
-                                            new gxp.WMSStylesDialog(Ext.apply({
+                                            new gxp.WMSStylesDialogWithFonts(Ext.apply({
                 style: "padding: 10px 10px 0 10px;",
+                fonts: [
+        			"Arial Unicode MS",
+        			"Serif",
+        			"SansSerif",
+        			"Arial",
+        			"Courier New",
+        			"Jomolhari",
+        			"Tahoma",
+        			"Times New Roman",
+        			"Verdana"
+    			],
                 editable: layer.url.replace(
                     this.urlPortRegEx, "$1/").indexOf(
                     this.localGeoServerBaseUrl.replace(
