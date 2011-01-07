@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010 The Open Planning Project - modified to specify font list for Harvard WorldMap Alpha
+ * Copyright (c) 2010 The Open Planning Project
  */
 
 /**
@@ -9,13 +9,13 @@
 
 /** api: (define)
  *  module = gxp
- *  class = WMSStylesDialogWithFonts
+ *  class = WMSStylesDialog
  *  base_link = `Ext.Container <http://extjs.com/deploy/dev/docs/?class=Ext.Container>`_
  */
 Ext.namespace("gxp");
 
 /** api: constructor
- *  .. class:: WMSStylesDialogWithFonts(config)
+ *  .. class:: WMSStylesDialog(config)
  *   
  *      Create a dialog for selecting and layer styles. If the WMS supports
  *      GetStyles, styles can also be edited. The dialog does not provide any
@@ -23,7 +23,7 @@ Ext.namespace("gxp");
  *      configure the dialog with a :class:`gxp.plugins.StyleWriter` plugin
  *      and call the ``saveStyles`` method.
  */
-gxp.WMSStylesDialogWithFonts = Ext.extend(Ext.Container, {
+gxp.WMSStylesDialog = Ext.extend(Ext.Container, {
 
     //TODO create a StylesStore which can read styles using GetStyles. Create
     // subclasses for that store with writing capabilities, e.g.
@@ -73,7 +73,17 @@ gxp.WMSStylesDialogWithFonts = Ext.extend(Ext.Container, {
      * 
      * @type 
      */
-    fonts: null,
+    fonts: [
+        "Arial Unicode MS",
+        "Serif",
+        "SansSerif",
+        "Arial",
+        "Courier New",
+        "Jomolhari",
+        "Tahoma",
+        "Times New Roman",
+        "Verdana"
+    ],
     
     /** api: property[stylesStore]
      *  ``Ext.data.Store`` A store representing the styles returned from
@@ -925,4 +935,4 @@ gxp.WMSStylesDialogWithFonts = Ext.extend(Ext.Container, {
 });
 
 /** api: xtype = gx_wmsstylesdialog */
-Ext.reg('gx_wmsstylesdialog', gxp.WMSStylesDialogWithFonts);
+Ext.reg('gx_wmsstylesdialog', gxp.WMSStylesDialog);

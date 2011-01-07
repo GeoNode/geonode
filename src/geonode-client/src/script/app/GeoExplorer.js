@@ -1385,11 +1385,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
     
     /** api: method[createStylesPanel]
-     *  :param options: ``Object`` Options for the :class:`gxp.WMSStylesDialog`.
+     *  :param options: ``Object`` Options for the :class:`gxp.WMSStylesDialogWithFonts`.
      *      Supported options are ``layerRecord``, ``styleName``, ``editable``
      *      and ``listeners`` (except "ready", "modified" and "styleselected"
      *      listeners)
-     *  :return: ``Ext.Panel`` A panel with a :class:`gxp.WMSStylesDialog` as
+     *  :return: ``Ext.Panel`` A panel with a :class:`gxp.WMSStylesDialogWithFonts` as
      *      only item.
      */
     createStylesPanel: function(options) {
@@ -1405,19 +1405,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
             var modified = false;
             stylesDialog = this.stylesDlgCache[layer.id] =
-                                            new gxp.WMSStylesDialogWithFonts(Ext.apply({
+                                            new gxp.WMSStylesDialog(Ext.apply({
                 style: "padding: 10px 10px 0 10px;",
-                fonts: [
-        			"Arial Unicode MS",
-        			"Serif",
-        			"SansSerif",
-        			"Arial",
-        			"Courier New",
-        			"Jomolhari",
-        			"Tahoma",
-        			"Times New Roman",
-        			"Verdana"
-    			],
                 editable: layer.url.replace(
                     this.urlPortRegEx, "$1/").indexOf(
                     this.localGeoServerBaseUrl.replace(

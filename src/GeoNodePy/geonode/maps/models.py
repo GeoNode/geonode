@@ -303,6 +303,7 @@ ALL_LANGUAGES = (
     ('bul', 'Bulgarian'),
     ('bel', 'Byelorussian'),
     ('cat', 'Catalan'),
+    ('chi', 'Chinese'),
     ('cos', 'Corsican'),
     ('dan', 'Danish'),
     ('dzo', 'Dzongkha'),

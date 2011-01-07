@@ -15,7 +15,7 @@ import paver.misctasks
 import pkg_resources
 import subprocess
 import shutil
-from shutil import move
+from shutil import move,copy
 import zipfile
 import tarfile
 import urllib
@@ -244,6 +244,11 @@ def build_js(options):
     """
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
+       try:
+            os.remove("../externals/gxp/src/script/widgets/WMSStylesDialog.js")
+       except:
+           info("Original WMSStylesDialog already removed")
+       copy("../src/script/app/GeoExplorer/WMSStylesDialog.js", "../externals/gxp/src/script/widgets/")
        os.makedirs("geonode-client")
        path("../externals/ext").copytree("geonode-client/ext")
        os.makedirs("geonode-client/gx")
@@ -258,6 +263,7 @@ def build_js(options):
        os.makedirs("geonode-client/gn")
        path("../src/theme/").copytree("geonode-client/gn/theme/")
        path("../src/script/ux").copytree("geonode-client/gn/ux")
+
 
        sh("jsbuild -o geonode-client/ all.cfg") 
        move("geonode-client/OpenLayers.js","geonode-client/ol/")
