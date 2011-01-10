@@ -23,15 +23,6 @@ msgstr "Inglés"
 msgid "Spanish"
 msgstr "Español"
 
-#: core/templatetags/navbar.py:33
-#, python-format
-msgid "%r tag requires a single argument (what page should be selected in the nav?)"
-msgstr ""
-
-#: core/templatetags/navbar.py:97
-msgid "text"
-msgstr ""
-
 #: templates/community.html:5
 msgid "Community Map List"
 msgstr ""
