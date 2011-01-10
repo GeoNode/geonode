@@ -1,6 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, _handle_layer_upload, GENERIC_UPLOAD_ERROR 
+from geonode.maps.tasks import handle_external_layer_upload
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -33,13 +34,6 @@ from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
-from celery.decorators import task
-from django import db
-try:
-    from notification import models as notification
-except ImportError:
-    notification = None
-
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -894,36 +888,6 @@ def _updateLayer(request, layer):
     return render_to_response('json_html.html',
                               RequestContext(request, {'json': result}))
 
-@task
-def _handle_external_layer_upload(operation=None, base_file_path=None, fileURL=None, user=None):
-    db.connection.close() # forcibly close db connection, causing it to reopen
-    try:
-        user = User.objects.get(username=user)
-        layer_name = os.path.splitext(os.path.split(base_file_path)[1])[0]
-        base_file = open(base_file_path)
-        if base_file_path.lower().endswith('.shp'):
-            #TODO Check for UPPER or MiXeD case file extensions
-            dbf_file = open(base_file_path.replace('.shp', '.dbf'))
-            shx_file = open(base_file_path.replace('.shp', '.shx'))
-            #TODO Handle for when .prj is not included
-            prj_file = open(base_file_path.replace('.shp', '.prj'))
-            layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, dbf_file=dbf_file, shx_file=shx_file, user=user)   
-        else:
-            layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, user=user)
-        if(len(errors) > 0):
-            logger.debug(errors)
-            if notification:
-                notification.send([user], "upload_failed", {'layer_name': layer_name, 'errors': errors})
-            return -1
-        else:
-            if notification:
-                notification.send([user], "upload_successful",  {'layer_name': layer_name})
-            return 0
-    except:
-        if notification:
-            notification.send([user], "upload_failed", {'layer_name': layer_name, 'errors': str(sys.exc_info()[0])})
-        return -1 
-
 @login_required
 def view_layer_permissions(request, layername):
     layer = get_object_or_404(Layer,typename=layername) 
@@ -1556,12 +1520,12 @@ def maps_search_page(request):
 @csrf_exempt
 def process_external_upload(request):
     """
-    A view which calls _handle_external_layer_upload to process
+    A view which calls handle_external_layer_upload to process
     shapefiles and tiffs uploaded via geoservers embedded ftp
     """
     try:
-        logger.debug("Calling _handle_external_layer_upload asyncrhonously")
-        _handle_external_layer_upload.delay(operation=request.POST.get('operation'), 
+        logger.debug("Calling handle_external_layer_upload asynchronously")
+        handle_external_layer_upload.delay(operation=request.POST.get('operation'), 
             base_file_path=request.POST.get('file'), 
             fileURL=request.POST.get('fileURL'), 
             user=request.POST.get('user'))
