@@ -120,7 +120,7 @@ GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your dat
 Please try again, or contact and administrator if the problem continues.")
 
 @transaction.commit_manually
-def _handle_layer_upload(layer_name=None, base_file=None, dbf_file=None, shx_file=None, prj_file=None, user=None, layer=None):
+def _handle_layer_upload(layer_name, base_file, user, extra_files=None, layer=None):
     """
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
@@ -175,16 +175,18 @@ def _handle_layer_upload(layer_name=None, base_file=None, dbf_file=None, shx_fil
                 return None, [_("This resource may only be replaced with raster data.")]
         
         create_store = cat.create_featurestore
-        
-        if not dbf_file: 
-            logger.info("User tried to upload [%s] without a .dbf file", base_file)
-            errors.append(_("You must specify a .dbf file when uploading a shapefile."))
-        if not shx_file: 
-            logger.info("User tried to upload [%s] without a .shx file", base_file)
-            errors.append(_("You must specify a .shx file when uploading a shapefile."))
-
-        if not prj_file:
-            logger.info("User tried to upload [%s] without a .prj file", base_file)
+        if extra_files == None:
+            logger.info("User tried to upload [%s] without required shapefile components", base_file)
+            errors.append(_("You must include the component files (dbf, shx etc)  when uploading a shapefile."))
+        else:
+            if not "dbf" in extra_files: 
+                logger.info("User tried to upload [%s] without a .dbf file", base_file)
+                errors.append(_("You must specify a .dbf file when uploading a shapefile."))
+            if not "shx" in extra_files: 
+                logger.info("User tried to upload [%s] without a .shx file", base_file)
+                errors.append(_("You must specify a .shx file when uploading a shapefile."))
+            if not 'prj' in extra_files:
+                logger.info("User tried to upload [%s] without a .prj file", base_file)
 
         if errors:
             return None, errors
@@ -192,11 +194,11 @@ def _handle_layer_upload(layer_name=None, base_file=None, dbf_file=None, shx_fil
         # ... bundle the files together and send them along
         cfg = {
             'shp': base_file,
-            'dbf': dbf_file,
-            'shx': shx_file
+            'dbf': extra_files['dbf'],
+            'shx': extra_files['shx'] 
         }
-        if prj_file:
-            cfg['prj'] = prj_file
+        if 'prj' in extra_files: 
+            cfg['prj'] = extra_files['prj'] 
     
     # any other type of upload
     else:

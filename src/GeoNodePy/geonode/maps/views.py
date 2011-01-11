@@ -823,12 +823,14 @@ def upload_layer(request):
                                   RequestContext(request, {}))
     elif request.method == 'POST':
         try:
+            extra_files = {}
+            extra_files['dbf'] = request.FILES.get('dbf_file')
+            extra_files['shx'] = request.FILES.get('shx_file')
+            extra_files['prj'] = request.FILES.get('prj_file')
             layer, errors = _handle_layer_upload(layer_name=request.POST.get('layer_name'), 
                 base_file=request.FILES.get('base_file'), 
-                dbf_file=request.FILES.get('dbf_file'),
-                shx_file=request.FILES.get('shx_file'),
-                prj_file=request.FILES.get('prj_file'),
-                user=request.user.username)
+                user=request.user.username,
+                extra_files = extra_files) 
             logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
         except:
             logger.exception("_handle_layer_upload failed!")
@@ -866,11 +868,13 @@ def _updateLayer(request, layer):
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
         try:
+            extra_files = {}
+            extra_files['dbf'] = request.FILES.get('dbf_file')
+            extra_files['shx'] = request.FILES.get('shx_file')
+            extra_files['prj'] = request.FILES.get('prj_file')
             layer, errors = _handle_layer_upload(layer_name=request.POST.get('layer_name'), 
                 base_file=request.FILES.get('base_file'), 
-                dbf_file=request.FILES.get('dbf_file'),
-                shx_file=request.FILES.get('shx_file'),
-                prj_file=request.FILES.get('prj_file'),
+                extra_files = extra_files, 
                 user=request.user.username,
                 layer=layer)
         except:
@@ -1525,10 +1529,7 @@ def process_external_upload(request):
     """
     try:
         logger.debug("Calling handle_external_layer_upload asynchronously")
-        handle_external_layer_upload.delay(operation=request.POST.get('operation'), 
-            base_file_path=request.POST.get('file'), 
-            fileURL=request.POST.get('fileURL'), 
-            user=request.POST.get('user'))
+        handle_external_layer_upload.delay(base_file_path=request.POST.get('file'), user=request.POST.get('user'))
         data = {'status': 'success', 'msg': 'Upload queued for processing'}
         return HttpResponse(json.dumps(data), mimetype='application/json')
     except:
