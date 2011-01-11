@@ -1,6 +1,5 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
-{% load navbar %}
 
 {% block title %} {% trans "Search Maps" %} - {{ block.super }} {% endblock %}
 
@@ -25,8 +24,6 @@ Ext.onReady(function(){
 });
 </script>
 {% endblock %}
-
-{% block nav %} {% navbar data %} {% endblock %}
 
 {% block main %} 
 <div class="twocol">
