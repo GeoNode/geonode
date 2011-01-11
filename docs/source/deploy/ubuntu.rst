@@ -235,11 +235,11 @@ Install GeoNode Django Site
 
      # apt-get install gcc libjpeg-dev libpng-dev python-gdal python-psycopg2
 
-2. Create new directories in /var/www/ for the geonode uploads,
-   and python scripts (``htdocs``,``htdocs/uploads``,``wsgi/geonode``,
+2. Create new directories in /var/www/ for the geonode static files, uploads,
+   and python scripts (``htdocs``,``htdocs/media``, ``htdocs/uploads``,``wsgi/geonode``,
    respectively)::
 
-     # mkdir -p /var/www/geonode/{htdocs,wsgi/geonode/}
+    # mkdir -p /var/www/geonode/{htdocs,htdocs/media,wsgi/geonode/} 
 
 3. Place the Python bundle and installer scripts into the ``wsgi/geonode``
    directory::
@@ -348,7 +348,9 @@ Install GeoNode Django Site
 
         CustomLog /var/log/apache2/access.log combined
 
-        Alias /media/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/ 
+        Alias /media/static/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/static/
+        Alias /media/theme/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/theme/
+        Alias /media/ /var/www/geonode/htdocs/media/
         Alias /admin-media/ /var/www/geonode/wsgi/geonode/lib/python2.6/site-packages/django/contrib/admin/media/
 
         WSGIPassAuthorization On
