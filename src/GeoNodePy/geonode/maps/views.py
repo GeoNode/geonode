@@ -1527,6 +1527,9 @@ def process_external_upload(request):
     A view which calls handle_external_layer_upload to process
     shapefiles and tiffs uploaded via geoservers embedded ftp
     """
+    if request.META["REMOTE_ADDR"] not in settings.GEOSERVER_IP_WHITELIST:
+        return HttpResponse("Remote invocations of this service disallowed", status=403, mimetype='text/plain')
+
     try:
         logger.debug("Calling handle_external_layer_upload asynchronously")
         handle_external_layer_upload.delay(base_file_path=request.POST.get('file'), user=request.POST.get('user'))
