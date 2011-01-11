@@ -244,11 +244,6 @@ def build_js(options):
     """
     with pushd('src/geonode-client/build/'):
        path("geonode-client").rmtree()
-       try:
-            os.remove("../externals/gxp/src/script/widgets/WMSStylesDialog.js")
-       except:
-           info("Original WMSStylesDialog already removed")
-       copy("../src/script/app/GeoExplorer/WMSStylesDialog.js", "../externals/gxp/src/script/widgets/")
        os.makedirs("geonode-client")
        path("../externals/ext").copytree("geonode-client/ext")
        os.makedirs("geonode-client/gx")
