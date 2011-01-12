@@ -5,7 +5,6 @@
         "/static/src/script/app/GeoExplorer/Viewer.js",
         "/static/src/script/app/GeoExplorer/SearchBar.js",
         "/static/src/script/app/GeoExplorer/SocialExplorer.js",
-        "/static/src/script/app/GeoExplorer/LinkEmbedDialog.js",
         "/static/src/script/app/GeoExplorer/CapabilitiesRowExpander.js"
     );
 

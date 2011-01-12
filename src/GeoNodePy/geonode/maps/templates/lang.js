@@ -58,6 +58,8 @@ if (window.GeoExplorer) {
         saveMapText: gettext("Save Map"),
         saveMapBtnText: gettext("Save"),
         saveNotAuthorizedMessage: gettext("You must be logged in to save this map."),
+        shareLayerText: gettext("Layer Metadata"),
+        shareMapText: gettext("Share Map"),
         smallSizeLabel: gettext("Small"),
         sourceLoadFailureMessage: gettext("Error contacting server.\n Please check the url and try again."),
         renameCategoryActionText: gettext('Rename Category'),

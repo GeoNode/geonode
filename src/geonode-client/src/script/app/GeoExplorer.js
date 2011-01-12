@@ -179,6 +179,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     saveMapBtnText: "UT: Save",    
     saveMapAsText: "UT: Save Map As",
     saveNotAuthorizedMessage: "UT: You Must be logged in to save this map.",
+    shareLayerText: 'UT: Metadata',
+    shareMapText: 'UT: Share Map',
     smallSizeLabel: 'UT: Small',
     sourceLoadFailureMessage: 'UT: Error contacting server.\n Please check the url and try again.',
     switchTo3DActionText: "UT:Switch to Google Earth 3D Viewer",
@@ -949,7 +951,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         i instanceof Ext.form.Field && i.setDisabled(true);
                     });
                     if (layer.params.LAYERS.indexOf("geonode") === 0) {
-                    	prop.items.get(0).items.get(0).add({html: "<a href='/data/" + layer.params.LAYERS + "'>Metadata</a>", xtype: "panel"});
+                    	prop.items.get(0).items.get(0).add({html: "<a href='/data/" + layer.params.LAYERS + "'>" + this.shareLayerText + "</a>", xtype: "panel"});
                     }
                     var stylesPanel = this.createStylesPanel({
                         layerRecord: record
@@ -2486,7 +2488,7 @@ listeners: {
             jumpBar,
             '->',
             new Ext.Button({
-                text: '<span class="x-btn-text">Advanced</span>',
+                text: '<span class="x-btn-text">' + this.shareMapText + '</span>',
                 handler: advancedToolsLink,
                 cls: 'x-btn-link-medium',
                 scope: this
