@@ -34,7 +34,6 @@ http://geonode.org/ or the `GeoNode project wiki
   $ tar xvzf GeoNode-1.0-RC1.tar.gz
   GeoNode-1.0-RC1/geonetwork.war
   GeoNode-1.0-RC1/pavement.py
-  GeoNode-1.0-RC1/geonode-client.zip
   GeoNode-1.0-RC1/geonode-webapp.pybundle
   GeoNode-1.0-RC1/geoserver-geonode-dev.war
   GeoNode-1.0-RC1/bootstrap.py
@@ -237,28 +236,23 @@ Install GeoNode Django Site
      # apt-get install gcc libjpeg-dev libpng-dev python-gdal python-psycopg2
 
 2. Create new directories in /var/www/ for the geonode static files, uploads,
-   and python scripts (``htdocs``, ``htdocs/media``, ``wsgi/geonode``,
+   and python scripts (``htdocs``,``htdocs/media``, ``htdocs/uploads``,``wsgi/geonode``,
    respectively)::
 
-     # mkdir -p /var/www/geonode/{htdocs,htdocs/media,wsgi/geonode/}
+    # mkdir -p /var/www/geonode/{htdocs,htdocs/media,wsgi/geonode/} 
 
-3. Place the "static media" (aka JavaScript, CSS, and images) into the
-   ``htdocs`` directory::
-
-     # unzip GeoNode-1.0-RC1/geonode-client/ -d /var/www/geonode/htdocs/
-
-4. Place the Python bundle and installer scripts into the ``wsgi/geonode``
+3. Place the Python bundle and installer scripts into the ``wsgi/geonode``
    directory::
 
      # cp bootstrap.py geonode-webapp.pybundle pavement.py /var/www/geonode/wsgi/geonode/
 
-5. Use the bootstrap script to set up a virtualenv sandbox and install Python
+4. Use the bootstrap script to set up a virtualenv sandbox and install Python
    dependencies::
 
      # cd /var/www/geonode/wsgi/geonode
      # python bootstrap.py
 
-6. Create a file
+5. Create a file
    ``/var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/local_settings.py``
    with appropriate values for the current server, for example::
 
@@ -278,13 +272,13 @@ Install GeoNode Django Site
 
      LANGUAGE_CODE = 'en'
 
-     # the filesystem path where uploaded data should be saved
      MEDIA_ROOT = "/var/www/geonode/htdocs/media/"
 
      # the web url to get to those saved files
      MEDIA_URL = SITEURL + "media/"
 
-     GEONODE_UPLOAD_PATH = "/var/www/geonode/htdocs/media/"
+     # the filesystem path where uploaded data should be saved
+     GEONODE_UPLOAD_PATH = "/var/www/geonode/htdocs/uploads/"
 
      # secret key used in hashing, should be a long, unique string for each
      # site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
@@ -310,7 +304,7 @@ Install GeoNode Django Site
 
      GEONODE_CLIENT_LOCATION = SITEURL
 
-7. Place a wsgi launcher script in /var/www/geonode/wsgi/geonode.wsgi::
+6. Place a wsgi launcher script in /var/www/geonode/wsgi/geonode.wsgi::
 
      import site, os
 
@@ -320,11 +314,11 @@ Install GeoNode Django Site
      from django.core.handlers.wsgi import WSGIHandler
      application = WSGIHandler()
 
-8. Install the httpd package::
+7. Install the httpd package::
 
      # apt-get install apache2 libapache2-mod-wsgi
 
-9. Create a new configuration file in
+8. Create a new configuration file in
    :file:`/etc/apache2/sites-available/geonode` ::
 
      <VirtualHost *:80>
@@ -354,7 +348,8 @@ Install GeoNode Django Site
 
         CustomLog /var/log/apache2/access.log combined
 
-        Alias /geonode-client/ /var/www/geonode/htdocs/geonode-client/
+        Alias /media/static/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/static/
+        Alias /media/theme/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/theme/
         Alias /media/ /var/www/geonode/htdocs/media/
         Alias /admin-media/ /var/www/geonode/wsgi/geonode/lib/python2.6/site-packages/django/contrib/admin/media/
 
@@ -369,7 +364,7 @@ Install GeoNode Django Site
         ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
      </VirtualHost>
 
-10. Set the filesystem ownership to the Apache user for the geonode/ folder::
+9. Set the filesystem ownership to the Apache user for the geonode/ folder::
 
       # chown www-data -R /var/www/geonode/
 
@@ -386,7 +381,7 @@ Install GeoNode Django Site
 
     You should now be able to browse through the static media files using your
     web browser.  You should be able to load the GeoNode header graphic from
-    http://localhost/geonode-client/gn/theme/app/img/header-bg.png .
+    http://localhost/media/static/gn/theme/app/img/header-bg.png .
 
 12. Set up the database tables using the Django admin tool (you will be
     prompted for an admin username and account)::
