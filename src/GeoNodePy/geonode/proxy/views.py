@@ -68,3 +68,4 @@ def geoserver(request):
             return HttpResponse(content=content,status=resp.status)
     else: 
         return HttpResponse(content="Something went wrong",status=404)
+
