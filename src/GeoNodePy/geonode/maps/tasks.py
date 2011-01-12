@@ -15,6 +15,7 @@ logger = logging.getLogger("geonode.maps.tasks")
 
 @task
 def handle_external_layer_upload(base_file_path, user):
+    user = None
     db.connection.close() # forcibly close db connection, causing it to reopen
     try:
         user = User.objects.get(username=user)
@@ -39,7 +40,7 @@ def handle_external_layer_upload(base_file_path, user):
                 notification.send([user], "upload_successful",  {'layer_name': layer_name})
             return 0
     except:
-        if notification:
+        if user and notification: 
             errors = str(sys.exc_info()[0])
             notification.send([user], "upload_failed", {'layer_name': layer_name, 'errors': errors})
         return -1 
