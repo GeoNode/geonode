@@ -398,3 +398,8 @@ Prepare the Django database
    GeoServer.
 
 4. You should now be able to see the GeoNode site at http://localhost/
+
+.. note::
+
+    If you have problems uploading files, please take enable the verbose logging
+    http://docs.geonode.org/1.0/logging.html
