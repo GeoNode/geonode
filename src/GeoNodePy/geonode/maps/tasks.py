@@ -14,11 +14,11 @@ except ImportError:
 logger = logging.getLogger("geonode.maps.tasks")
 
 @task
-def handle_external_layer_upload(base_file_path, user):
-    user = None
+def handle_external_layer_upload(base_file_path, username):
+    user = None 
     db.connection.close() # forcibly close db connection, causing it to reopen
     try:
-        user = User.objects.get(username=user)
+        user = User.objects.get(username=username)
         layer_name = os.path.splitext(os.path.split(base_file_path)[1])[0]
         base_file = open(base_file_path)
         if base_file_path.lower().endswith('.shp'):

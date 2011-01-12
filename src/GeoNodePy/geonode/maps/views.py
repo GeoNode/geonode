@@ -1532,7 +1532,7 @@ def process_external_upload(request):
 
     try:
         logger.debug("Calling handle_external_layer_upload asynchronously")
-        handle_external_layer_upload.delay(base_file_path=request.POST.get('file'), user=request.POST.get('user'))
+        handle_external_layer_upload.delay(base_file_path=request.POST.get('file'), username=request.POST.get('user'))
         data = {'status': 'success', 'msg': 'Upload queued for processing'}
         return HttpResponse(json.dumps(data), mimetype='application/json')
     except:
