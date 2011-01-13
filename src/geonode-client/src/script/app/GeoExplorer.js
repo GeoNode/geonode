@@ -196,7 +196,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     zoomToLayerExtentText: "UT:Zoom to Layer Extent",
     zoomVisibleButtonText: "UT:Zoom to Original Map Extent",
 
-    
+
+    updateMapLogin: function() {
+        Ext.getCmp("shareMapButton").show();
+    },
     
     constructor: function(config) {
     	this.config = config;
@@ -226,6 +229,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 waitMsg: "Logging in...",
                                 success: function(form, action) {
                                     this.loginWin.close();
+                                    this.updateLogin();
                                     document.cookie = action.response.getResponseHeader("Set-Cookie");
                                     // resend the original request
                                     Ext.Ajax.request(options);
@@ -2430,9 +2434,26 @@ listeners: {
         	else
         		document.location.href="/maps/" + this.mapID + "/edit";
         };        
+
+        var shareMapButton = new Ext.Button({
+                id: 'shareMapButton',
+                text: '<span class="x-btn-text">' + this.shareMapText + '</span>',
+                handler: advancedToolsLink,
+                cls: 'x-btn-link-medium',
+                hidden: !this.config["edit_map"],
+                disabled: !this.mapID,
+                scope: this
+            });
         
-        
-        
+
+        var publishAction = new Ext.Action({
+                tooltip: this.publishActionText,
+                handler: this.makeExportDialog,
+                scope: this,
+                text: '<span class="x-btn-text">' + this.publishBtnText + '</span>',
+                disabled: !this.mapID
+            });
+
         var tools = [
             new Ext.Button({
                 tooltip: this.saveMapText,
@@ -2441,63 +2462,21 @@ listeners: {
             	text: '<span class="x-btn-text">' + this.saveMapBtnText + '</span>'
             }),
             "-",
-            new Ext.Action({
-                tooltip: this.publishActionText,
-                handler: this.makeExportDialog,
-                scope: this,
-                text: '<span class="x-btn-text">' + this.publishBtnText + '</span>',
-                disabled: !this.mapID
-            }),
+            publishAction,
             "-",
             window.printCapabilities ? printButton : "",
             "-",
-            /*
-            new Ext.Button({
-                handler: function(){
-                    this.mapPanel.map.zoomIn();
-                },
-                tooltip: this.zoomInActionText,
-                iconCls: "icon-zoom-in",
-                scope: this
-            }),
-            new Ext.Button({
-		    tooltip: this.zoomOutActionText,
-                handler: function(){
-                    this.mapPanel.map.zoomOut();
-                },
-                iconCls: "icon-zoom-out",
-                scope: this
-            }),
-
-            navPreviousAction,
-            navNextAction,
-            new Ext.Button({
-		    	tooltip: this.zoomVisibleButtonText,
-                iconCls: "icon-zoom-visible",
-                handler: function() { //Set to original extent of map rather than extent of all loaded layers
-                	this.mapPanel.map.setCenter(this.initialConfig.map["center"]);
-                	this.mapPanel.map.zoomTo(this.initialConfig.map["zoom"]);
-
-                },
-                scope: this
-            }),
-            
-            enable3DButton,
-            */
             infoButton,
             jumpBar,
             '->',
-            new Ext.Button({
-                text: '<span class="x-btn-text">' + this.shareMapText + '</span>',
-                handler: advancedToolsLink,
-                cls: 'x-btn-link-medium',
-                scope: this
-            }),"-",
+            shareMapButton,"-",
             helpButton
             ];
         this.on("saved", function() {
             // enable the "Publish Map" button
-            tools[2].enable();
+            publishAction.enable();
+            shareMapButton.show();
+            shareMapButton.enable();
             this.modified ^= this.modified & 1;
         }, this);
 
