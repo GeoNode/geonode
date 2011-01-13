@@ -108,3 +108,10 @@ def fixup_style(cat, resource):
             logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
             logger.info("Successfully updated %s", lyr)
+
+def cascading_delete(cat, resource):
+    lyr = cat.get_layer(resource.name)
+    store = resource.store
+    cat.delete(lyr)
+    cat.delete(resource)
+    cat.delete(store)
