@@ -537,7 +537,7 @@ class Contact(models.Model):
     get_absolute_url = models.permalink(get_absolute_url)
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.name, self.organization)
+        return u"%s (%s)" % (self.name if self.name else self.user.username, self.organization)
 
 
 def get_csw():

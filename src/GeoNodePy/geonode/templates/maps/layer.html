@@ -1,6 +1,5 @@
 {% extends "page_layout.html" %}
 {% load geonode_auth %}
-{% load geonode_media %}
 {% load i18n %}
 
 {% block title %} {{ layer.resource.title|default:layer.typename }} - {{ block.super }} {% endblock %}
@@ -10,7 +9,7 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 
-<link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}colorpicker/color-picker.ux.css" />
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
 
 {{ block.super }}
 
@@ -19,7 +18,6 @@
         var styleEditor, modified = false;
         Ext.onReady(function() {
             var config = {
-                useBackgroundCapabilities: false,
                 proxy: "/proxy/?url=",
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
 

@@ -20,7 +20,7 @@
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
 
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/{{ theSite.urlSuffix }}/boilerplate-min.css" media="screen" />
-<!--[if lte IE 6]><link rel="stylesheet" href="{% geonode_media "app_themes" %}boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+<!--[if lte IE 6]><link rel="stylesheet" href="{{STATIC_URL}}themeboilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/{{ theSite.urlSuffix }}/site.css" media="screen" />
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script type="text/javascript" src="{% url geonode.views.lang %}"></script>

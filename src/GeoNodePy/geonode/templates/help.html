@@ -1,7 +1,5 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
-{% load navbar %}
-{% load geonode_media %}
 {% block title %} {% trans "Help" %} - {{ block.super }} {% endblock %}
 {% block head %}
 {% include "geonode/ext_header.html" %}
@@ -14,9 +12,7 @@ Ext.onReady(function() {
 });
 </script>
 {% endblock %}
-{% block nav %}
-{% navbar help %}
-{% endblock %}
+
 
 {% block main %} 
 <div class="twocol">
@@ -121,9 +117,9 @@ right of the main page, then click "Register".<o:p></o:p></span></p>
 </v:shapetype><v:shape id="_x0000_i1025" type="#_x0000_t75" style='width:127pt;
  height:134pt' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image001.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image001.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=127 height=134
-src="{% geonode_media "app_themes" %}/img/help/image002.jpg" v:shapes="_x0000_i1025"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image002.jpg" v:shapes="_x0000_i1025"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -157,9 +153,9 @@ style='font-family:Arial'>.<o:p></o:p></span></p>
  id="Picture_x0020_10" o:spid="_x0000_i1026" type="#_x0000_t75" style='width:242pt;
  height:69pt;visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image003.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image003.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=242 height=69
-src="{% geonode_media "app_themes" %}/img/help/image004.jpg" v:shapes="Picture_x0020_10"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image004.jpg" v:shapes="Picture_x0020_10"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -175,9 +171,9 @@ view the profile of the author and contact information, click Contact name.<o:p>
  id="Picture_x0020_1" o:spid="_x0000_i1027" type="#_x0000_t75" alt="more_maps.png"
  style='width:376pt;height:104pt;visibility:visible' o:bordertopcolor="this"
  o:borderleftcolor="this" o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image005.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image005.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=376 height=104
-src="{% geonode_media "app_themes" %}/img/help/image006.png" alt="more_maps.png" v:shapes="Picture_x0020_1"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image006.png" alt="more_maps.png" v:shapes="Picture_x0020_1"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -203,9 +199,9 @@ Properties"<o:p></o:p></span></p>
  id="_x0000_i1028" type="#_x0000_t75" style='width:190pt;height:102pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image007.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image007.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=190 height=102
-src="{% geonode_media "app_themes" %}/img/help/image008.jpg" v:shapes="_x0000_i1028"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image008.jpg" v:shapes="_x0000_i1028"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -216,9 +212,9 @@ select the "About" tab.<o:p></o:p></span></p>
  id="_x0000_i1029" type="#_x0000_t75" style='width:145pt;height:117pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image009.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image009.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=145 height=117
-src="{% geonode_media "app_themes" %}/img/help/image010.jpg" v:shapes="_x0000_i1029"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image010.jpg" v:shapes="_x0000_i1029"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -231,9 +227,9 @@ way down the right side), a section titled "Manage Layer".<o:p></o:p></span></p>
  id="_x0000_i1030" type="#_x0000_t75" style='width:166pt;height:60pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image011.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image011.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=166 height=60
-src="{% geonode_media "app_themes" %}/img/help/image012.jpg" v:shapes="_x0000_i1030"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image012.jpg" v:shapes="_x0000_i1030"><![endif]><o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-family:Arial'>Click "Update the
 description of this data" to open the metadata form for the Layer.<o:p></o:p></span></p>
@@ -256,9 +252,9 @@ Properties"<o:p></o:p></span></p>
  id="_x0000_i1031" type="#_x0000_t75" style='width:190pt;height:102pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image007.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image007.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=190 height=102
-src="{% geonode_media "app_themes" %}/img/help/image013.jpg" v:shapes="_x0000_i1031"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image013.jpg" v:shapes="_x0000_i1031"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -267,9 +263,9 @@ select the "About" tab.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-family:Arial'><b><!--[if gte vml 1]><v:shape
  id="_x0000_i1032" type="#_x0000_t75" style='width:145pt;height:117pt'>
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image009.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image009.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=145 height=117
-src="{% geonode_media "app_themes" %}/img/help/image014.jpg" v:shapes="_x0000_i1032"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image014.jpg" v:shapes="_x0000_i1032"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -284,9 +280,9 @@ to download.<o:p></o:p></span></p>
  id="_x0000_i1033" type="#_x0000_t75" style='width:173pt;height:67pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image015.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image015.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=173 height=67
-src="{% geonode_media "app_themes" %}/img/help/image016.jpg" v:shapes="_x0000_i1033"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image016.jpg" v:shapes="_x0000_i1033"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -303,9 +299,9 @@ style="mso-spacerun: yes">&nbsp; </span><o:p></o:p></span></p>
  id="_x0000_i1034" type="#_x0000_t75" style='width:86pt;height:17pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image017.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image017.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=86 height=17
-src="{% geonode_media "app_themes" %}/img/help/image018.jpg" v:shapes="_x0000_i1034"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image018.jpg" v:shapes="_x0000_i1034"><![endif]><o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-family:Arial'>If you are signed in a new
 map will be created for you and you will be presented with a blank Map form in
@@ -315,9 +311,9 @@ which you can provide title, URL, abstract, keywords, and description.<o:p></o:p
  id="Picture_x0020_7" o:spid="_x0000_i1035" type="#_x0000_t75" alt="save_map3.png"
  style='width:324pt;height:276pt;visibility:visible' o:bordertopcolor="this"
  o:borderleftcolor="this" o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image019.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image019.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=324 height=276
-src="{% geonode_media "app_themes" %}/img/help/image020.png" alt="save_map3.png" v:shapes="Picture_x0020_7"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image020.png" alt="save_map3.png" v:shapes="Picture_x0020_7"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -372,9 +368,9 @@ located at the top left.<o:p></o:p></span></p>
 <p class=MsoNormal><span style='font-family:Arial'><!--[if gte vml 1]><v:shape
  id="Picture_x0020_13" o:spid="_x0000_i1036" type="#_x0000_t75" style='width:158pt;
  height:24pt;visibility:visible'>
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image021.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image021.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=158 height=24
-src="{% geonode_media "app_themes" %}/img/help/image022.jpg" v:shapes="Picture_x0020_13"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image022.jpg" v:shapes="Picture_x0020_13"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -395,9 +391,9 @@ the form, click "Save as Copy" at the bottom.<o:p></o:p></span></p>
  id="_x0000_i1037" type="#_x0000_t75" alt="save_copy.png" style='width:326pt;
  height:272pt;visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image023.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image023.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=326 height=272
-src="{% geonode_media "app_themes" %}/img/help/image024.png" alt="save_copy.png" v:shapes="_x0000_i1037"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image024.png" alt="save_copy.png" v:shapes="_x0000_i1037"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -416,9 +412,9 @@ Advanced page.<o:p></o:p></span></p>
  id="_x0000_i1038" type="#_x0000_t75" style='width:82pt;height:19pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image025.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image025.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=82 height=19
-src="{% geonode_media "app_themes" %}/img/help/image026.jpg" v:shapes="_x0000_i1038"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image026.jpg" v:shapes="_x0000_i1038"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -430,9 +426,9 @@ permissions to the Map, duplicating a Map, and deleting a Map. <o:p></o:p></span
  id="_x0000_i1039" type="#_x0000_t75" style='width:136pt;height:210pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image027.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image027.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=136 height=210
-src="{% geonode_media "app_themes" %}/img/help/image028.jpg" v:shapes="_x0000_i1039"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image028.jpg" v:shapes="_x0000_i1039"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -492,9 +488,9 @@ Category". <o:p></o:p></span></p>
  id="Picture_x0020_4" o:spid="_x0000_i1040" type="#_x0000_t75" style='width:192pt;
  height:91pt;visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image029.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image029.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=192 height=91
-src="{% geonode_media "app_themes" %}/img/help/image030.jpg" v:shapes="Picture_x0020_4"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image030.jpg" v:shapes="Picture_x0020_4"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -506,9 +502,9 @@ also be selected from this pulldown.<o:p></o:p></span></p>
  id="Picture_x0020_0" o:spid="_x0000_i1041" type="#_x0000_t75" alt="add_layer.png"
  style='width:372pt;height:188pt;visibility:visible' o:bordertopcolor="this"
  o:borderleftcolor="this" o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image031.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image031.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=372 height=188
-src="{% geonode_media "app_themes" %}/img/help/image032.png" alt="add_layer.png" v:shapes="Picture_x0020_0"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image032.png" alt="add_layer.png" v:shapes="Picture_x0020_0"><![endif]><o:p></o:p></span></p>
 
 
 <a name="upload"></a>
@@ -521,9 +517,9 @@ style="mso-spacerun: yes">&nbsp; </span><o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-family:Arial'><!--[if gte vml 1]><v:shape
  id="_x0000_i1042" type="#_x0000_t75" style='width:369pt;height:184pt'>
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image033.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image033.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=369 height=184
-src="{% geonode_media "app_themes" %}/img/help/image034.png" v:shapes="_x0000_i1042"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image034.png" v:shapes="_x0000_i1042"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -543,9 +539,9 @@ uploading a Shape File you must individually select the .shp, .dbf, .shx, and
  id="_x0000_i1043" type="#_x0000_t75" style='width:276pt;height:112pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image035.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image035.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=276 height=112
-src="{% geonode_media "app_themes" %}/img/help/image036.jpg" v:shapes="_x0000_i1043"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image036.jpg" v:shapes="_x0000_i1043"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -578,9 +574,9 @@ Properties"<o:p></o:p></span></p>
  id="_x0000_i1044" type="#_x0000_t75" style='width:190pt;height:102pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image007.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image007.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=190 height=102
-src="{% geonode_media "app_themes" %}/img/help/image037.jpg" v:shapes="_x0000_i1044"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image037.jpg" v:shapes="_x0000_i1044"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -589,9 +585,9 @@ select the "About" tab.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-family:Arial'><b><!--[if gte vml 1]><v:shape
  id="_x0000_i1045" type="#_x0000_t75" style='width:145pt;height:117pt'>
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image009.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image009.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=145 height=117
-src="{% geonode_media "app_themes" %}/img/help/image038.jpg" v:shapes="_x0000_i1045"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image038.jpg" v:shapes="_x0000_i1045"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -611,9 +607,9 @@ permission controls.<o:p></o:p></span></p>
  id="_x0000_i1046" type="#_x0000_t75" style='width:164pt;height:153pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image039.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image039.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=164 height=153
-src="{% geonode_media "app_themes" %}/img/help/image040.jpg" v:shapes="_x0000_i1046"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image040.jpg" v:shapes="_x0000_i1046"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -662,9 +658,9 @@ click on it and select "Remove Layer".<o:p></o:p></span></p>
  id="_x0000_i1047" type="#_x0000_t75" style='width:199pt;height:158pt;
  visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image041.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image041.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=199 height=158
-src="{% geonode_media "app_themes" %}/img/help/image042.jpg" v:shapes="_x0000_i1047"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image042.jpg" v:shapes="_x0000_i1047"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -681,9 +677,9 @@ Properties".<o:p></o:p></span></p>
  id="_x0000_i1048" type="#_x0000_t75" style='width:242pt;height:127pt;
  visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image043.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image043.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=242 height=127
-src="{% geonode_media "app_themes" %}/img/help/image044.jpg" v:shapes="_x0000_i1048"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image044.jpg" v:shapes="_x0000_i1048"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -695,9 +691,9 @@ the bar to set the desired transparency level.<o:p></o:p></span></p>
  id="_x0000_i1049" type="#_x0000_t75" style='width:454pt;height:147pt;
  visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image045.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image045.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=454 height=147
-src="{% geonode_media "app_themes" %}/img/help/image046.jpg" v:shapes="_x0000_i1049"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image046.jpg" v:shapes="_x0000_i1049"><![endif]><o:p></o:p></span></p>
 
 
 <a name="styles"></a>
@@ -712,9 +708,9 @@ layer and selecting "Edit Styles".<span style="mso-spacerun: yes">&nbsp;
  id="Picture_x0020_16" o:spid="_x0000_i1050" type="#_x0000_t75" style='width:214pt;
  height:132pt;visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image047.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image047.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=214 height=132
-src="{% geonode_media "app_themes" %}/img/help/image048.jpg" v:shapes="Picture_x0020_16"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image048.jpg" v:shapes="Picture_x0020_16"><![endif]><o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-family:Arial'>(Styles can only be set for
 vector layers which are stored on WorldMap servers.<span style="mso-spacerun:
@@ -733,9 +729,9 @@ modify, add, remove, or duplicate a rule.<span style="mso-spacerun: yes">&nbsp;
  id="_x0000_i1051" type="#_x0000_t75" style='width:177pt;height:233pt;
  visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image049.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image049.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=177 height=233
-src="{% geonode_media "app_themes" %}/img/help/image050.jpg" v:shapes="_x0000_i1051"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image050.jpg" v:shapes="_x0000_i1051"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -756,9 +752,9 @@ include the stroke option.<b><o:p></o:p></b></span></p>
  id="_x0000_i1052" type="#_x0000_t75" style='width:181pt;height:199pt;
  visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image051.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image051.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=181 height=199
-src="{% geonode_media "app_themes" %}/img/help/image052.jpg" v:shapes="_x0000_i1052"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image052.jpg" v:shapes="_x0000_i1052"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -773,9 +769,9 @@ style="mso-spacerun: yes">&nbsp;&nbsp; </span><o:p></o:p></span></p>
  id="_x0000_i1053" type="#_x0000_t75" style='width:184pt;height:235pt;
  visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image053.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image053.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=184 height=235
-src="{% geonode_media "app_themes" %}/img/help/image054.jpg" v:shapes="_x0000_i1053"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image054.jpg" v:shapes="_x0000_i1053"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -788,9 +784,9 @@ Scale" option and set your criteria.<o:p></o:p></span></p>
  id="_x0000_i1054" type="#_x0000_t75" style='width:186pt;height:136pt;
  visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image055.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image055.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=186 height=136
-src="{% geonode_media "app_themes" %}/img/help/image056.jpg" v:shapes="_x0000_i1054"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image056.jpg" v:shapes="_x0000_i1054"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -803,9 +799,9 @@ style="mso-spacerun: yes">&nbsp; </span>Add a new condition by clicking "add
 condition" and remove a condition by clicking the red circle <!--[if gte vml 1]><v:shape
  id="Picture_x0020_19" o:spid="_x0000_i1055" type="#_x0000_t75" style='width:13pt;
  height:13pt;visibility:visible'>
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image057.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image057.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=13 height=13
-src="{% geonode_media "app_themes" %}/img/help/image058.jpg" v:shapes="Picture_x0020_19"><![endif]>.<span
+src="{{STATIC_URL}}theme/img/help/image058.jpg" v:shapes="Picture_x0020_19"><![endif]>.<span
 style="mso-spacerun: yes">&nbsp;&nbsp; </span>Add a new group of conditions by
 clicking "add group".<o:p></o:p></span></p>
 
@@ -813,9 +809,9 @@ clicking "add group".<o:p></o:p></span></p>
  id="_x0000_i1056" type="#_x0000_t75" style='width:186pt;height:132pt;
  visibility:visible' o:bordertopcolor="this" o:borderleftcolor="this"
  o:borderbottomcolor="this" o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image059.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image059.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=186 height=132
-src="{% geonode_media "app_themes" %}/img/help/image060.jpg" v:shapes="_x0000_i1056"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image060.jpg" v:shapes="_x0000_i1056"><![endif]><o:p></o:p></b></span></p>
 
 
 
@@ -832,9 +828,9 @@ link to add the map to a web page.<o:p></o:p></span></p>
  id="_x0000_i1057" type="#_x0000_t75" style='width:179pt;height:17pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image061.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image061.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=179 height=17
-src="{% geonode_media "app_themes" %}/img/help/image062.jpg" v:shapes="_x0000_i1057"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image062.jpg" v:shapes="_x0000_i1057"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -861,9 +857,9 @@ widget showing you map in your web page or blog post.<o:p></o:p></span></p>
  id="_x0000_i1058" type="#_x0000_t75" style='width:233pt;height:153pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image063.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image063.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=233 height=153
-src="{% geonode_media "app_themes" %}/img/help/image064.jpg" v:shapes="_x0000_i1058"><![endif]><o:p></o:p></span></p>
+src="{{STATIC_URL}}theme/img/help/image064.jpg" v:shapes="_x0000_i1058"><![endif]><o:p></o:p></span></p>
 
 
 
@@ -878,9 +874,9 @@ open the printing tool.<o:p></o:p></span></p>
  id="_x0000_i1059" type="#_x0000_t75" style='width:3in;height:365pt'
  o:bordertopcolor="this" o:borderleftcolor="this" o:borderbottomcolor="this"
  o:borderrightcolor="this">
- <v:imagedata src="{% geonode_media "app_themes" %}/img/help/image065.png" o:title=""/>
+ <v:imagedata src="{{STATIC_URL}}theme/img/help/image065.png" o:title=""/>
 </v:shape><![endif]--><![if !vml]><img border=0 width=216 height=365
-src="{% geonode_media "app_themes" %}/img/help/image066.jpg" v:shapes="_x0000_i1059"><![endif]><o:p></o:p></b></span></p>
+src="{{STATIC_URL}}theme/img/help/image066.jpg" v:shapes="_x0000_i1059"><![endif]><o:p></o:p></b></span></p>
 </div>
 
 </div>

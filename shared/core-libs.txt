@@ -10,6 +10,5 @@ PasteDeploy
 PasteScript
 dj.paste
 -e git+git://github.com/ericflo/django-avatar.git#egg=avatar
-
-
-
+mock
+django-staticfiles

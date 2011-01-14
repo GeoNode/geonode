@@ -19,7 +19,7 @@ from shutil import move,copy
 import zipfile
 import tarfile
 import urllib
-
+import glob
 
 assert sys.version_info >= (2,6), \
        SystemError("GeoNode Build requires python 2.6 or better")
@@ -68,6 +68,7 @@ gs_data = "gs-data"
 geoserver_target = path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war')
 geonetwork_target = path('webapps/geonetwork.war')
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
+geonode_client_target_war = path('webapps/geonode-client.war')
 
 deploy_req_txt = """
 # NOTE... this file is generated
@@ -101,7 +102,6 @@ def install_deps(options):
         if options.config.platform == "win32":
             info("You will need to install 'PIL' and 'ReportLab' "\
                  "separately to do PDF generation")
-
 
 @task
 def bundle_deps(options):
@@ -218,7 +218,8 @@ def setup_geonetwork(options):
 @task
 @needs([
     'setup_geoserver',
-    'setup_geonetwork'
+    'setup_geonetwork',
+    'setup_geonode_client'
 ])
 def setup_webapps(options):
     pass
@@ -227,7 +228,6 @@ def setup_webapps(options):
 @needs([
     'install_deps',
     'setup_webapps',
-    'build_js', 
     'generate_geoserver_token',
     'sync_django_db'
 ])
@@ -237,51 +237,21 @@ def build(options):
 
 
 @task
-@needs(['js_dependencies'])
-def build_js(options):
+def setup_geonode_client(options):
     """
-    Concatenate and compress application client javascript
+    Fetch geonode-client
     """
-    with pushd('src/geonode-client/build/'):
-       path("geonode-client").rmtree()
-       os.makedirs("geonode-client")
-       path("../externals/ext").copytree("geonode-client/ext")
-       os.makedirs("geonode-client/gx")
-       path("../externals/geoext/geoext/resources").copytree("geonode-client/gx/theme")
-       os.makedirs("geonode-client/gxp")
-       path("../externals/gxp/src/theme").copytree("geonode-client/gxp/theme")
-       os.makedirs("geonode-client/PrintPreview")
-       path("../externals/PrintPreview/resources").copytree("geonode-client/PrintPreview/theme")
-       os.makedirs("geonode-client/ol") #need to split this off b/c of dumb hard coded OL paths
-       path("../externals/openlayers/theme").copytree("geonode-client/ol/theme")
-       path("../externals/openlayers/img").copytree("geonode-client/ol/img")
-       os.makedirs("geonode-client/gn")
-       path("../src/theme/").copytree("geonode-client/gn/theme/")
-       path("../src/script/ux").copytree("geonode-client/gn/ux")
+    webapps = path("./webapps")
+    if not webapps.exists():
+        webapps.mkdir()
+    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_war_url'))
+    dst_war = webapps / "geonode-client.war"
+    deployed_url = webapps / "geonode-client"
 
+    grab(src_url, dst_war)
 
-       sh("jsbuild -o geonode-client/ all.cfg") 
-       move("geonode-client/OpenLayers.js","geonode-client/ol/")
-       move("geonode-client/GeoExt.js","geonode-client/gx/")
-       move("geonode-client/gxp.js","geonode-client/gxp/")
-       move("geonode-client/GeoNode.js","geonode-client/gn/")
-       move("geonode-client/GeoExplorer.js","geonode-client/gn/")
-       move("geonode-client/PrintPreview.js","geonode-client/PrintPreview/")
-       move("geonode-client/ux.js","geonode-client/gn/")
-       
-    info('GeoNode Client Javascript is done building')
-    
-
-@task
-def js_dependencies(options):
-    """
-    Fetch dependencies for the JavaScript build
-    """
-    grab("http://extjs.cachefly.net/ext-3.2.1.zip", "shared/ext-3.2.1.zip")
-    path("src/geonode-client/externals/ext").rmtree()
-    zip_extractall(zipfile.ZipFile("shared/ext-3.2.1.zip"), "src/geonode-client/externals/")
-    path("src/geonode-client/externals/ext-3.2.1").rename("src/geonode-client/externals/ext")
-
+    deployed_url.rmtree()
+    zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
 
 @task
 def sync_django_db(options):
@@ -311,21 +281,26 @@ def package_dir(options):
 
 
 @task
-@needs('package_dir', 'build_js')
+@needs('package_dir', 'setup_geonode_client')
+@cmdopts([
+    ('use_war', 'w', 'Use a war to deploy geonode-client')
+])
 def package_client(options):
-    """
-    Package compressed client resources (JavaScript, CSS, images).
-    """
-    # build_dir = options.deploy.out_dir
-    zip = zipfile.ZipFile(geonode_client_target(),'w') #create zip in write mode
+    """Package compressed client resources (JavaScript, CSS, images)."""
 
-    with pushd('src/geonode-client/build/'):
-        for file in path("geonode-client/").walkfiles():
-            print(file)
-            zip.write(file)
+    if(hasattr(options, 'use_war')): 
+    	geonode_client_target_war.copy(options.deploy.out_dir)
+    else:
+        # Extract static files to static_location 
+        src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
+    	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
+        dst_zip =  geonode_media_dir / "geonode-client.zip"
+        static_location = geonode_media_dir / "static" 
 
-    zip.close()
+        grab(src_url, dst_zip)
 
+        zip_extractall(zipfile.ZipFile(dst_zip), static_location)
+        os.remove(dst_zip)
 
 @task
 @needs('package_dir', 'setup_geoserver')
@@ -358,8 +333,8 @@ def package_webapp(options):
     'build',
     'package_geoserver',
     'package_geonetwork',
-    'package_webapp',
     'package_client',
+    'package_webapp',
     'package_bootstrap'
 )
 def package_all(options):
@@ -543,11 +518,14 @@ def install_sphinx_conditionally(options):
 
 @task
 @cmdopts([
-    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.'),
+    ('client_src=', 's', 'geonode-client project directory, e.g. ../geonode-client/. If provided, unminified javascript resources will be used.')
 ])
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
+    if hasattr(options.host, 'client_src'):
+        os.environ["READYGXP_FILES_ROOT"] = os.path.abspath(options.host.client_src)
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",

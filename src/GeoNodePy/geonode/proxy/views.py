@@ -78,6 +78,7 @@ def geoserver(request):
         return HttpResponse(content="Something went wrong",status=404)
 
 
+
 def picasa(request):
     url = "http://picasaweb.google.com/data/feed/base/all?thumbsize=160c&"
     kind = request.GET['KIND'] if request.method == 'GET' else request.POST['KIND']
@@ -119,6 +120,4 @@ def youtube(request):
     
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
-
-
 
