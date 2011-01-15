@@ -244,11 +244,11 @@ def setup_geonode_client(options):
     webapps = path("./webapps")
     if not webapps.exists():
         webapps.mkdir()
-    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_war_url'))
+    
     dst_war = webapps / "geonode-client.war"
     deployed_url = webapps / "geonode-client"
 
-    grab(src_url, dst_war)
+    copy("src/externals/geonode-client.war", dst_war)
 
     deployed_url.rmtree()
     zip_extractall(zipfile.ZipFile(dst_war), deployed_url)

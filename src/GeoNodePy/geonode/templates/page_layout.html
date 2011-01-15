@@ -57,7 +57,9 @@
   				<option value="{% url maps_search %}?sort=last_modified&dir=DESC">More Maps</option>
   			</select>
   		</li>
-
+          <li class="sitenav-divider"><span>|</span></li>
+                <li class=""><a class="" id="mapLink" href="/maps/new">Create New Map</a></li>
+                <li class="sitenav-divider"><span>|</span></li>
 		<li class=""><a class="" id="dataLink" href="{% url geonode.views.static page='help'%}">Help</a></li>
       {% endblock %}
     </div><!-- /.wrap -->
