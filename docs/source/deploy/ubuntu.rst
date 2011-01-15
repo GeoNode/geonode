@@ -95,15 +95,9 @@ Deploying GeoServer
 1. Move :file:`geoserver-geonode-dev.war` from the GeoNode release archive into
    the Tomcat deployment directory::
 
-
      $ sudo cp /tmp/GeoNode-1.0/geoserver-geonode-dev.war /var/lib/tomcat6/webapps/
 
-2. Tomcat will normally auto-deploy WARs upon startup, but in order to make
-   some configuration changes, unpack it manually::
-
-     $ cd /opt/apache-tomcat-6.0.29/webapps && unzip geoserver-geonode-dev.war -d geoserver-geonode-dev
-
-3. GeoServer uses the Django web application to authenticate users.  By
+2. GeoServer uses the Django web application to authenticate users.  By
    default, it will look for GeoNode at http://localhost:8000/ but we will be
    running the Django application on http://localhost:80/ so we have to
    configure GeoServer to look at that URL.  To do so, edit
@@ -123,7 +117,7 @@ Deploying GeoServer
    In that case you need to set explicitly the name of the virtual host, for example:
    http://geonode.mycompany.net
 
-4. Move the GeoServer "data directory" outside of the servlet container to
+3. Move the GeoServer "data directory" outside of the servlet container to
    avoid having it overwritten on later upgrades::
 
      <context-param>
@@ -286,7 +280,7 @@ Install GeoNode Django Site
      The local_settings.py approach is a Django idiom to help customizing websites, it works because
      the last line of ``src/GeoNodePy/geonode/settings.py`` imports it if it exists. 
 
-7. Place a wsgi launcher script in /opt/geonode_data/wsgi/geonode.wsgi::
+7. Place a wsgi launcher script in :file:`/opt/geonode_data/wsgi/geonode.wsgi` ::
 
      import os
      os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'
@@ -349,9 +343,10 @@ Install GeoNode Django Site
 
       $ sudo ln -s /opt/geonode_data/geonode.apache /etc/apache2/sites-available/geonode
 
-10. Set the filesystem ownership to the Apache user for the geonode/htdocs and wsgi folders::
+10. Set the filesystem ownership to the Apache user for the geonode_data static and wsgi folders::
 
       $ sudo chown www-data -R /opt/geonode_data/{static,wsgi}
+
 
 11. Disable the default site that comes with apache, enable the one just
     created, and activate the WSGI and HTTP Proxy modules for apache::
