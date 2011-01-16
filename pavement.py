@@ -15,7 +15,7 @@ import paver.misctasks
 import pkg_resources
 import subprocess
 import shutil
-from shutil import move,copy
+from shutil import move,copy,rmtree
 import zipfile
 import tarfile
 import urllib
@@ -292,7 +292,7 @@ def package_client(options):
     	geonode_client_target_war.copy(options.deploy.out_dir)
     else:
         deployed_war = "webapps/geonode-client/WEB-INF/app/static"
-        static_location = geonode_media_dir / "static"
+        static_location = "src/GeoNodePy/geonode/media/static"
         rmtree(static_location)
         path(deployed_war).copytree(static_location)
 
