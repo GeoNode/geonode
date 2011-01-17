@@ -244,7 +244,7 @@ def setup_geonode_client(options):
     webapps = path("./webapps")
     if not webapps.exists():
         webapps.mkdir()
-    
+
     dst_war = webapps / "geonode-client.war"
     deployed_url = webapps / "geonode-client"
 

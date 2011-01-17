@@ -152,6 +152,9 @@ GEONETWORK_CREDENTIALS = "admin", "admin"
 AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
 
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
+GOOGLE_ANALYTICS_ID = "UA-XXXXXXXX-1"
+
+
 LOGIN_REDIRECT_URL = "/"
 
 DEFAULT_LAYERS_OWNER='admin'
@@ -254,10 +257,27 @@ ACCOUNT_ACTIVATION_DAYS = 7
 GEONODE_CLIENT_LOCATION = "http://localhost:8000"
 
 
-SERVE_MEDIA = True;
+SERVE_MEDIA = True
 
 GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 #GEONODE_CLIENT_LOCATION = "/media/static/"
+
+
+
+
+#Google Analytics
+#Make this code an empty string if you DONT intend to use it;
+# if you do use it replace UA-XXXXXXXX-1 with your own ID
+GOOGLE_ANALYTICS_CODE = "<script type='text/javascript'>\n\
+        var _gaq = _gaq || [];\n\
+        _gaq.push(['_setAccount', 'UA-XXXXXXXX-1']);\n\
+        _gaq.push(['_trackPageview']);\n\
+        (function() {\n\
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;\n\
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n\
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);\n\
+        })();\n\
+    </script>"
 
 try:
     from local_settings import *

@@ -6,6 +6,7 @@ def resource_urls(request):
         GEONODE_CLIENT_LOCATION = settings.GEONODE_CLIENT_LOCATION,
         GEOSERVER_BASE_URL = settings.GEOSERVER_BASE_URL,
         GOOGLE_API_KEY = settings.GOOGLE_API_KEY,
+        GOOGLE_ANALYTICS_CODE = settings.GOOGLE_ANALYTICS_CODE,
         SITENAME = settings.SITENAME,
         REGISTRATION_OPEN = settings.REGISTRATION_OPEN,
     )
