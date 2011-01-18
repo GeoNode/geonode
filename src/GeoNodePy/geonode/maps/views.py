@@ -993,8 +993,9 @@ def _handle_layer_upload(request, layer=None):
             gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
 
             if gs_resource.latlon_bbox is None:
-                delete_cascading(cat, gs_resource)
-                logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
+                cascading_delete(cat, gs_resource)
+                logger.warn("GeoServer failed to detect the projection for layer [%s]. Cancelling import", name)
+                errors.append(_("GeoNode could not detect the projection for %(layer).  Import is cancelled.") % { 'layer': name })
             else:
                 typename = gs_resource.store.workspace.name + ':' + gs_resource.name
                 logger.info("Got GeoServer info for %s, creating Django record", typename)
