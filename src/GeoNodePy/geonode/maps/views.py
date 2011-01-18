@@ -888,7 +888,12 @@ def embed(request, mapid=None):
     if mapid is None:
         config = DEFAULT_MAP_CONFIG
     else:
-        map = Map.objects.get(pk=mapid)
+
+        if mapid.isdigit():
+            map = Map.objects.get(pk=mapid)
+        else:
+            map = Map.objects.get(urlsuffix=mapid)
+
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
         
