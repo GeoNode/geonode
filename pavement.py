@@ -518,6 +518,7 @@ def install_sphinx_conditionally(options):
 
 
 @task
+@needs('package_client')
 @cmdopts([
     ('bind=', 'b', 'IP address to bind to. Default is localhost.'),
     ('client_src=', 's', 'geonode-client project directory, e.g. ../geonode-client/. If provided, unminified javascript resources will be used.')
