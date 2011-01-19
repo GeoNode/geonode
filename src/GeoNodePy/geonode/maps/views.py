@@ -1,6 +1,6 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
-from geonode.maps.gs_helpers import fixup_style
+from geonode.maps.gs_helpers import fixup_style, cascading_delete
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -993,41 +993,37 @@ def _handle_layer_upload(request, layer=None):
             gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
 
             if gs_resource.latlon_bbox is None:
-                logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
-                # If GeoServer couldn't figure out the projection, we just
-                # assume it's lat/lon to avoid a bad GeoServer configuration
+                cascading_delete(cat, gs_resource)
+                logger.warn("GeoServer failed to detect the projection for layer [%s]. Cancelling import", name)
+                errors.append(_("GeoNode could not detect the projection for %(layer)s.  Import is cancelled.") % { 'layer': name })
+            else:
+                typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+                logger.info("Got GeoServer info for %s, creating Django record", typename)
 
-                gs_resource.latlon_bbox = gs_resource.native_bbox
-                gs_resource.projection = "EPSG:4326"
-                cat.save(gs_resource)
-
-            typename = gs_resource.store.workspace.name + ':' + gs_resource.name
-            logger.info("Got GeoServer info for %s, creating Django record", typename)
-
-            # if we created a new store, create a new layer
-            layer = Layer.objects.create(name=gs_resource.name, 
-                                         store=gs_resource.store.name,
-                                         storeType=gs_resource.store.resource_type,
-                                         typename=typename,
-                                         workspace=gs_resource.store.workspace.name,
-                                         title=gs_resource.title,
-                                         uuid=str(uuid.uuid4()),
-                                         owner=request.user
-                                       )
-            # A user without a profile might be uploading this
-            poc_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                   defaults={"name": request.user.username })
-            author_contact, __ = Contact.objects.get_or_create(user=request.user,
-                                                   defaults={"name": request.user.username })
-            logger.info("poc and author set to %s", poc_contact)
-            layer.poc = poc_contact
-            layer.metadata_author = author_contact
-            logger.debug("committing DB changes for %s", typename)
-            layer.save()
-            logger.debug("Setting default permissions for %s", typename)
-            layer.set_default_permissions()
-            logger.debug("Generating separate style for %s", typename)
-            fixup_style(cat, gs_resource)
+                # if we created a new store, create a new layer
+                layer = Layer.objects.create(name=gs_resource.name, 
+                                             store=gs_resource.store.name,
+                                             storeType=gs_resource.store.resource_type,
+                                             typename=typename,
+                                             workspace=gs_resource.store.workspace.name,
+                                             title=gs_resource.title,
+                                             uuid=str(uuid.uuid4()),
+                                             owner=request.user
+                                           )
+                # A user without a profile might be uploading this
+                poc_contact, __ = Contact.objects.get_or_create(user=request.user,
+                                                       defaults={"name": request.user.username })
+                author_contact, __ = Contact.objects.get_or_create(user=request.user,
+                                                       defaults={"name": request.user.username })
+                logger.info("poc and author set to %s", poc_contact)
+                layer.poc = poc_contact
+                layer.metadata_author = author_contact
+                logger.debug("committing DB changes for %s", typename)
+                layer.save()
+                logger.debug("Setting default permissions for %s", typename)
+                layer.set_default_permissions()
+                logger.debug("Generating separate style for %s", typename)
+                fixup_style(cat, gs_resource)
         except Exception, e:
             logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
             transaction.rollback()
