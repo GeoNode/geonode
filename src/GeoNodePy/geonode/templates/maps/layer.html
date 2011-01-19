@@ -1,6 +1,5 @@
 {% extends "page_layout.html" %}
 {% load geonode_auth %}
-{% load geonode_media %}
 {% load i18n %}
 
 {% block title %} {{ layer.resource.title|default:layer.typename }} - {{ block.super }} {% endblock %}
@@ -10,7 +9,7 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 
-<link rel="stylesheet" type="text/css" href="{% geonode_media "ux_resources" %}colorpicker/color-picker.ux.css" />
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
 
 {{ block.super }}
 
@@ -263,9 +262,11 @@
         {% if can_change_permissions %}
         <li><a href="{% url edit_layer_permissions layer.typename %}">{% trans "Edit Permissions" %}</a></li>
         {% endif %}
-        {% if can_delete %}
+        {% comment %}
+            {% if can_delete %}
 				<li><a href="?remove">{% trans "Remove" %}</a></li>
-			  {% endif %}
+			{% endif %}
+        {% endcomment %}
 			{% else %}
 				<li>Please authenticate to update or remove layers</li>
 			{% endif %}
