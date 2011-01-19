@@ -48,7 +48,12 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
                 border: false
             },
             items: [
-                this.mapPanel,
+                this.mapPanel
+            ],
+            activeItem: 0
+        });
+        if (window.google && google.earth) {
+            this.mapPanelContainer.add(
                 new gxp.GoogleEarthPanel({
                     mapPanel: this.mapPanel,
                     listeners: {
@@ -57,9 +62,8 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
                         }
                     }
                 })
-            ],
-            activeItem: 0
-        });
+            );
+        }
 
         this.portalItems = [
             this.mapPanelContainer
