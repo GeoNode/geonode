@@ -229,7 +229,8 @@ def setup_webapps(options):
     'install_deps',
     'setup_webapps',
     'generate_geoserver_token',
-    'sync_django_db'
+    'sync_django_db',
+    'package_client'
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
@@ -334,7 +335,6 @@ def package_webapp(options):
     'build',
     'package_geoserver',
     'package_geonetwork',
-    'package_client',
     'package_webapp',
     'package_bootstrap'
 )
@@ -529,7 +529,7 @@ def host(options):
         os.environ["READYGXP_FILES_ROOT"] = os.path.abspath(options.host.client_src)
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
-            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
+            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
             "-Djetty.host=" + options.host.bind,
             "-Xmx512M",
             "-XX:MaxPermSize=128m"
