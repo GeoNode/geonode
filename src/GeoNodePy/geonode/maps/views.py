@@ -1163,17 +1163,19 @@ def upload_layer(request):
             logger.debug("Begin upload attempt")
             layer, errors = _handle_layer_upload(request)
             logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
-            logging.debug("Save all attrbute names as searchable by defaul texcept geometry")
+            logger.debug("Save all attrbute names as searchable by defaul texcept geometry")
             try:
+                #Add new layer attributes if they dont already exist
                 if layer.attribute_names is not None:
-                    logging.debug("Attributes are not None")
+                    logger.debug("Attributes are not None")
                     for field, ftype in layer.attribute_names.iteritems():
                         if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
-                            logging.debug("Field is [%s]", field)
+                            logger.debug("Field is [%s]", field)
                             la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, attribute_type=ftype, searchable=(ftype == "xsd:string"))
                             la.save()
                 else:
                     logger.debug("No attributes found")
+
             except:
                     logger.debug("Attributes could not be saved")
         except:
@@ -1215,6 +1217,36 @@ def _updateLayer(request, layer):
     elif request.method == 'POST':
         try:
             layer, errors = _handle_layer_upload(request, layer=layer)
+            try:
+                #Delete layer attributes if they no longer exist in an updated layer
+                for la in LayerAttribute.objects.filter(layer=layer):
+                    lafound = False
+                    if layer.attribute_names is not None:
+                        for field, ftype in layer.attribute_names.iteritems():
+                            if field == la.attribute:
+                                lafound = True
+                    if not lafound:
+                        logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name)
+                        la.delete()
+
+                #Add new layer attributes if they dont already exist
+                if layer.attribute_names is not None:
+                    logger.debug("Attributes are not None")
+                    for field, ftype in layer.attribute_names.iteritems():
+                        if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
+                            logger.debug("Field is [%s]", field)
+                            las = LayerAttribute.objects.filter(layer=layer, attribute=field)
+                            if len(las) == 0:
+                                la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, attribute_type=ftype, searchable=(ftype == "xsd:string"))
+                                la.save()
+                else:
+                    logger.debug("No attributes found")
+
+
+            except Exception, ex:
+                    logger.debug("Attributes could not be saved:[%s]", str(ex))
+
+
         except:
             errors = [GENERIC_UPLOAD_ERROR]
 
@@ -1555,7 +1587,7 @@ def layer_acls(request):
                 username == settings.GEOSERVER_CREDENTIALS[0] and
                 password == settings.GEOSERVER_CREDENTIALS[1]):
                 # great, tell geoserver it's an admin.
-                logger.debug("Geoserver admin logging on")
+                #logger.debug("Geoserver admin logging on")
                 result = {
                    'rw': [],
                    'ro': [],

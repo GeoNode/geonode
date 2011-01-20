@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block title %} {{ layer.typename }} - {{ block.super }} {% endblock %}
+{% block title %} {{ layer.title|default:layer.typename }} - {{ block.super }} {% endblock %}
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
@@ -39,17 +39,16 @@
 				Ext.get("id_layer-topic_category_new").up("li").hide();
 			}
 		});	*/	
-		
-		var titleTemplate = new Ext.Template("<span>{{layer.typename}} Description</span>");
-		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());  		
-		
-{% endautoescape %} 
+        var titleTemplate = new Ext.Template("<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} Details</a><span>&nbsp;/&nbsp;Edit</span>");
+		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+
+{% endautoescape %}
 	});
 </script>
 {% endblock %}
 {% block main %}
 <div class="twocol">
-  <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
+  <h2> {% trans "Editing details for " %} {{ layer.title|default:layer.typename }} </h2>
   <form action="/data/{{layer.typename}}?describe" method="POST">
 	  {% csrf_token %}
       <ul class="form">

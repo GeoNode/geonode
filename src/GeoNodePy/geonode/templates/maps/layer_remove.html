@@ -3,6 +3,23 @@
 
 {% block title %} {{ layer.typename }} - {{ block.super }} {% endblock %}
 
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+
+{{ block.super }}
+<script type="text/javascript">
+    Ext.onReady(function() {
+{% autoescape off %}
+         var titleTemplate = new Ext.Template("<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} Details</a><span>&nbsp;/&nbsp;Edit</span>");
+		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+
+{% endautoescape %}
+	});
+</script>
+{% endblock %}
+
+
 {% block main %}
 
 <h3>{% trans "Are you sure you want to remove"  %} <strong>{{layer.typename}}</strong>?</h3>

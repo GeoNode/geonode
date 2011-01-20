@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block main %}
-
+<div class="twocol">
   {% if errors %}
     <div id="errors">
       {% for error in errors %}
@@ -18,6 +18,18 @@
       {% endfor %}
     </div>
   {% endif %}
+
+    <h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
+<p>{% trans "This form allows you to update the data for this layer."  %}</p>
+<p>{% blocktrans %}
+If the new dataset omits attributes that were included in the previous version,
+or changes their types, then existing styles for the layer may not work.
+Please check your maps if the new data includes such changes.  Additionally,
+updated data must be the same format as the data already in place, e.g.
+{% endblocktrans %}
+{% if is_featuretype %} a Shapefile. {% else %} a GeoTIFF.  {% endif %}
+</p>
+<p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
 
   <div id="upload_form">
   </div>
@@ -146,24 +158,19 @@ Ext.onReady(function(){
       }]
     });
   });
+
+         var titleTemplate = new Ext.Template("<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} </a><span>&nbsp;/&nbsp;Update</span>");
+		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+
 {% endautoescape %}
 </script>
-
+</div>
 {% endblock %}
 
 
 {% block sidebar %}
-<h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
-<p>{% trans "This form allows you to update the data for this layer."  %}</p>
-<p>{% blocktrans %}
-If the new dataset omits attributes that were included in the previous version,
-or changes their types, then existing styles for the layer may not work.
-Please check your maps if the new data includes such changes.  Additionally,
-updated data must be the same format as the data already in place, e.g.
-{% endblocktrans %}
-{% if is_featuretype %} a Shapefile. {% else %} a GeoTIFF.  {% endif %}
-</p>
-<p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
+<div class="threecol">
+
 
 <h3>{% trans "This action affects the following maps:"  %}</h3>
 <p>
@@ -186,4 +193,5 @@ updated data must be the same format as the data already in place, e.g.
   <li>GeoTIFF</li>
   {% endif %}
 <ul>
+</div>
 {% endblock %}

@@ -1,4 +1,4 @@
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role
+from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin
 from django.http import HttpResponseRedirect
@@ -40,9 +40,21 @@ class LayerAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(reverse('change_poc', kwargs={"ids": "_".join(selected)}))
     change_poc.short_description = "Change the point of contact for the selected layers"
 
+class LayerCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'title')
+    list_display_links = ('name', 'title')
+
+
+class LayerAttributeAdmin(admin.ModelAdmin):
+    list_display = ('attribute', 'attribute_label', 'layer', 'attribute_type', 'searchable')
+    list_filter  = ('layer', 'searchable', 'attribute_type')
+
 admin.site.register(Map, MapAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(Layer, LayerAdmin)
+admin.site.register(LayerCategory, LayerCategoryAdmin)
+admin.site.register(LayerAttribute, LayerAttributeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(MapLayer)
 admin.site.register(Role)
+
