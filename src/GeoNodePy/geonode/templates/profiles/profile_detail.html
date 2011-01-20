@@ -22,26 +22,24 @@
 {% endblock %}
 {% block sidebar %}
 <div class="threecol">
-  <h3>Actions</h3>
+    <h3>{% trans "Actions" %}</h3>
   <ul>
     {% if user == profile.user %}
     <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
     {% endif %}
     <li><a href="{% url map_new %}">{% trans "Create a new map" %}</a></li>
   </ul>
-</div>
-<div class="threecol">
-    <h3>{% blocktrans with profile.user as user %}Maps by {{ user }}{% endblocktrans %}</h3>
-    {% if profile.user.map_set.count %}
-    <ul> {% for map in profile.user.map_set.all %} <li> <a href="{{ map.get_absolute_url }}">{{ map.title }}</a> {% endfor %} </ul>
-    {% else %}
-      <p> {% blocktrans with profile.user as user %} {{ user }} has not created any maps yet. {% endblocktrans %}
-    {% endif %}
-    <h3>{% blocktrans with profile.user as user %}Layers by {{ user }}{% endblocktrans %}</h3>
-    {% if profile.user.layer_set.count %}
-    <ul> {% for layer in profile.user.layer_set.all %} <li> <a href="{{ layer.get_absolute_url }}">{{ layer }}</a> {% endfor %} </ul>
-    {% else %}
-      <p> {% blocktrans with profile.user as user %} {{ user }} has not uploaded any data yet. {% endblocktrans %}
-    {% endif %}
+  <h3>{% blocktrans with profile.user as user %}Maps by {{ user }}{% endblocktrans %}</h3>
+  {% if profile.user.map_set.count %}
+  <ul> {% for map in profile.user.map_set.all %} <li> <a href="{{ map.get_absolute_url }}">{{ map.title }}</a> {% endfor %} </ul>
+  {% else %}
+    <p> {% blocktrans with profile.user as user %} {{ user }} has not created any maps yet. {% endblocktrans %}
+  {% endif %}
+  <h3>{% blocktrans with profile.user as user %}Layers by {{ user }}{% endblocktrans %}</h3>
+  {% if profile.user.layer_set.count %}
+  <ul> {% for layer in profile.user.layer_set.all %} <li> <a href="{{ layer.get_absolute_url }}">{{ layer }}</a> {% endfor %} </ul>
+  {% else %}
+    <p> {% blocktrans with profile.user as user %} {{ user }} has not uploaded any data yet. {% endblocktrans %}
+  {% endif %}
 </div>
 {% endblock %}

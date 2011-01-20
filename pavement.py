@@ -229,7 +229,8 @@ def setup_webapps(options):
     'install_deps',
     'setup_webapps',
     'generate_geoserver_token',
-    'sync_django_db'
+    'sync_django_db',
+    'package_client'
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
@@ -329,7 +330,6 @@ def package_webapp(options):
     'build',
     'package_geoserver',
     'package_geonetwork',
-    'package_client',
     'package_webapp',
     'package_bootstrap'
 )
