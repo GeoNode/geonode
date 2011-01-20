@@ -1,4 +1,4 @@
-from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, HARVARD_USERS
 from geonode.maps.models import Map, Layer, LayerCategory, LayerAttribute, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style
 from geonode import geonetwork
@@ -515,8 +515,9 @@ def ajax_layer_permissions(request, layername):
             status=405,
             mimetype='text/plain'
         )
-
-    if "authenticated" in request.POST:
+    if "harvard" in request.POST:
+        layer.set_gen_level(HARVARD_USERS, request.POST['harvard'])
+    elif "authenticated" in request.POST:
         layer.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
     elif "anonymous" in request.POST:
         layer.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
@@ -554,8 +555,9 @@ def ajax_layer_permissions_by_email(request, layername):
             status=405,
             mimetype='text/plain'
         )
-
-    if "authenticated" in request.POST:
+    if "harvard" in request.POST:
+        layer.set_gen_level(HARVARD_USERS, request.POST['harvard'])
+    elif "authenticated" in request.POST:
         layer.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
     elif "anonymous" in request.POST:
         layer.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
@@ -608,7 +610,9 @@ def ajax_map_permissions(request, mapid):
             mimetype='text/plain'
         )
 
-    if "authenticated" in request.POST:
+    if "harvard" in request.POST:
+        map.set_gen_level(HARVARD_USERS, request.POST['harvard'])
+    elif "authenticated" in request.POST:
         map.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
     elif "anonymous" in request.POST:
         map.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
@@ -647,7 +651,9 @@ def ajax_map_permissions_by_email(request, mapid):
             mimetype='text/plain'
         )
 
-    if "authenticated" in request.POST:
+    if "harvard" in request.POST:
+        map.set_gen_level(HARVARD_USERS, request.POST['harvard'])
+    elif "authenticated" in request.POST:
         map.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
     elif "anonymous" in request.POST:
         map.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
@@ -1438,6 +1444,7 @@ def _view_perms_context(obj, level_names):
         return level_names.get(l, _("???"))
     ctx[ANONYMOUS_USERS] = lname(ctx.get(ANONYMOUS_USERS, obj.LEVEL_NONE))
     ctx[AUTHENTICATED_USERS] = lname(ctx.get(AUTHENTICATED_USERS, obj.LEVEL_NONE))
+    ctx[HARVARD_USERS] = lname(ctx.get(HARVARD_USERS, obj.LEVEL_NONE))
 
     ulevs = []
     for u, l in ctx['users'].items():
@@ -1452,6 +1459,7 @@ def _perms_info_json(obj, level_names):
     # these are always specified even if none
     info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
     info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
+    info[HARVARD_USERS] = info.get(HARVARD_USERS, obj.LEVEL_NONE)
     info['users'] = sorted(info['users'].items())
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
     if hasattr(obj, 'owner') and obj.owner: 
@@ -1464,6 +1472,7 @@ def _perms_info_email_json(obj, level_names):
     # these are always specified even if none
     info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
     info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
+    info[HARVARD_USERS] = info.get(HARVARD_USERS, obj.LEVEL_NONE)
     info['users'] = sorted(info['users'].items())
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
     if hasattr(obj, 'owner') and obj.owner: 
@@ -1486,6 +1495,10 @@ def _handle_perms_edit(request, obj):
     if not all_auth_level in valid_pl:
         errors.append(_("Registered Users") + ": " + INVALID_PERMISSION_MESSAGE)
 
+    harvard_level = params[HARVARD_USERS]
+    if not harvard_level in valid_pl:
+        errors.append(_("Harvard Users") + ": " + INVALID_PERMISSION_MESSAGE)
+        
     kpat = re.compile("^u_(.*)_level$")
     ulevs = {}
     for k, level in params.items(): 
@@ -1500,6 +1513,7 @@ def _handle_perms_edit(request, obj):
     if len(errors) == 0: 
         obj.set_gen_level(ANONYMOUS_USERS, anon_level)
         obj.set_gen_level(AUTHENTICATED_USERS, all_auth_level)
+        obj.set_gen_level(HARVARD_USERS, harvard_level)
         
         for username, level in ulevs.items():
             user = User.objects.get(username=username)

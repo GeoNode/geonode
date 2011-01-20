@@ -74,7 +74,10 @@ class GranularBackend(ModelBackend):
         obj_perms = set()
         generic_roles = [ANONYMOUS_USERS]
         if not user_obj.is_anonymous():
-            generic_roles.append(AUTHENTICATED_USERS)        
+            generic_roles.append(AUTHENTICATED_USERS)
+            profile = user_obj.get_profile()
+            if profile and profile.is_harvard:
+                generic_roles.append(HARVARD_USERS)
         obj_perms.update(self._get_generic_obj_perms(generic_roles, obj))
         
         ct = ContentType.objects.get_for_model(obj)
@@ -101,6 +104,9 @@ class GranularBackend(ModelBackend):
         generic_roles = [ANONYMOUS_USERS]
         if not user_obj.is_anonymous():
             generic_roles.append(AUTHENTICATED_USERS)
+            profile = user_obj.get_profile()
+            if profile and profile.is_harvard:
+                generic_roles.append(HARVARD_USERS)
             obj_ids.update([x[0] for x in UserObjectRoleMapping.objects.filter(user=user_obj,
                                                                                role__permissions=perm,
                                                                                object_ct=ct).values_list('object_id')])

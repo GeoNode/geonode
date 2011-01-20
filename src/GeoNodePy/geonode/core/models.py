@@ -63,9 +63,11 @@ class UserObjectRoleMapping(models.Model):
 # implicitly defined 'generic' groups of users 
 ANONYMOUS_USERS = 'anonymous'
 AUTHENTICATED_USERS = 'authenticated'
+HARVARD_USERS = 'harvard'
 GENERIC_GROUP_NAMES = {
     ANONYMOUS_USERS: _('Anonymous Users'),
-    AUTHENTICATED_USERS: _('Registered Users')
+    AUTHENTICATED_USERS: _('Registered Users'),
+    HARVARD_USERS: _('Harvard Users')
 }
 
 class GenericObjectRoleMapping(models.Model):
