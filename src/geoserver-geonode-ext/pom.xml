@@ -1,7 +1,7 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengeo</groupId>
-  <artifactId>geonode-geoserver-ext</artifactId>A
+  <artifactId>geonode-geoserver-ext</artifactId>
   <packaging>jar</packaging>
   <version>0.1-SNAPSHOT</version>
   <name>GeoNode GeoServer Extensions</name>

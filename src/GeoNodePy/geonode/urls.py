@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
-from utils import path_extrapolate
+from staticfiles.urls import staticfiles_urlpatterns
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -48,17 +48,6 @@ urlpatterns = patterns('',
     (r'^debug/', 'geonode.maps.views.debug'),
 )
 
-#
 # Extra static file endpoint for development use
 if settings.SERVE_MEDIA:
-    import os
-    def here(*x): 
-        return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
-
-    root = here("..", "..", "geonode-client", "build", "geonode-client") if settings.MINIFIED_RESOURCES else here("..", "..", "geonode-client", "")
-    urlpatterns += patterns('',
-        (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': root}),
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': path_extrapolate('django/contrib/admin/media', 'django')})
-    )
-
-
+    urlpatterns += staticfiles_urlpatterns()

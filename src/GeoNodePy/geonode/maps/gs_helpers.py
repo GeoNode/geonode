@@ -314,3 +314,10 @@ def _handle_layer_upload(layer_name, base_file, user, extra_files=None, layer=No
             transaction.commit()
 
     return layer, errors
+
+def cascading_delete(cat, resource):
+    lyr = cat.get_layer(resource.name)
+    store = resource.store
+    cat.delete(lyr)
+    cat.delete(resource)
+    cat.delete(store)
