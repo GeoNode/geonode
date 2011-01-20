@@ -1,12 +1,7 @@
-<<<<<<< HEAD
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, HARVARD_USERS
-from geonode.maps.models import Map, Layer, LayerCategory, LayerAttribute, MapLayer, Contact, ContactRole,Role, get_csw
-from geonode.maps.gs_helpers import fixup_style
-=======
-from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete
->>>>>>> 7ec623e058c4c3d8c1bf9b264d438fac1ec8a70d
+
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
