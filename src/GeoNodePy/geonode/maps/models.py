@@ -21,6 +21,7 @@ from django.core.exceptions import ValidationError
 from string import lower
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
+from gs_helpers import cascading_delete
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
@@ -848,23 +849,7 @@ class Layer(models.Model, PermissionLevelMixin):
         }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
-        layerURL = "%srest/layers/%s.xml" % (settings.GEOSERVER_BASE_URL,self.name)
-        if self.storeType == "dataStore":
-            featureUrl = "%srest/workspaces/%s/datastores/%s/featuretypes/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store, self.name)
-            storeUrl = "%srest/workspaces/%s/datastores/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store)
-        elif self.storeType == "coverageStore":
-            featureUrl = "%srest/workspaces/%s/coveragestores/%s/coverages/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store, self.name)
-            storeUrl = "%srest/workspaces/%s/coveragestores/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store)
-        urls = (layerURL,featureUrl,storeUrl)
-
-        # GEOSERVER_CREDENTIALS
-        HTTP = httplib2.Http()
-        HTTP.add_credentials(_user,_password)
-
-        for u in urls:
-            output = HTTP.request(u,"DELETE")
-            if output[0]["status"][0] == '4':
-                raise RuntimeError("Unable to remove from Geoserver: %s" % output[1])
+        cascading_delete(Layer.objects.gs_catalog, self.resource)
 
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
