@@ -294,10 +294,8 @@ def package_client(options):
     else:
         deployed_war = "webapps/geonode-client/WEB-INF/app/static"
         static_location = "src/GeoNodePy/geonode/media/static"
-        rmtree(static_location)
+	rmtree(static_location, True)
         path(deployed_war).copytree(static_location)
-
-
 
 @task
 @needs('package_dir', 'setup_geoserver')
