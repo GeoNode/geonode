@@ -19,38 +19,9 @@ Ext.onReady(function() {
 
 <div class=Section1>
 
-<a name="about-worldmap"></a>
-<p class=MsoNormal><span style='font-size:14.0pt;font-family:Arial'>About
-WorldMap<o:p></o:p></span></p>
 
-
-
-<p class=MsoNormal><span style='font-family:Arial'>WorldMap is an experimental
-platform designed for viewing and interpreting maps collaboratively.<span
-style="mso-spacerun: yes">&nbsp; </span>Today maps come from many sources and
-exist in many forms, from paper atlases to digital satellite images to census
-data files.<span style="mso-spacerun: yes">&nbsp; </span>WorldMap aims to pull
-these and other hard-to-find maps together and put them in the hands of
-researchers. <o:p></o:p></span></p>
-
-
-
-<p class=MsoNormal><span style='font-family:Arial'>WorldMap combines the
-spatial modeling capabilities of a Geographic Information System (GIS) with
-current web technologies, and is made available as </span><a
-href="http://en.wikipedia.org/wiki/Open-source_software"><span
-style='font-family:Arial'>Open Source</span></a><span style='font-family:Arial'>
-software.<span style="mso-spacerun: yes">&nbsp; </span>Use the hosted version
-of WorldMap at http://worldmap.harvard.edu or </span><a
-href="https://github.com/cga-harvard/cga-worldmap"><span style='font-family:Arial'>download</span></a><span
-style='font-family:Arial'> and install the application on your own server.<span
-style="mso-spacerun: yes">&nbsp; </span>WorldMap stands on the shoulders of
-other Open Source projects including AfricaMap, GeoNode, OpenLayers, PostGIS,
-and GEOS.<span style="mso-spacerun: yes">&nbsp; </span>WorldMap is licensed
-under Version 3 of the </span><a href="http://www.gnu.org/licenses/gpl.html"><span
-style='font-family:Arial'>GNU General Public License (GPL)</span></a><span
-style='font-family:Arial'>.<o:p></o:p></span></p>
-
+<p class=MsoNormal><span style='font-size:14.0pt;font-family:Arial'>WorldMap
+Help<o:p></o:p></span></p>
 
 <a name="what-map"></a>
 <p class=MsoNormal><span style='font-family:Arial'><b>What is a Map?<o:p></o:p></b></span></p>
@@ -64,7 +35,7 @@ private, made accessible to a few, or made public.<span style="mso-spacerun:
 yes">&nbsp; </span><o:p></o:p></span></p>
 
 
-<a name="what-layers"></a>
+<a name="what-layer"></a>
 <p class=MsoNormal><span style='font-family:Arial'><b>What are Layers?<o:p></o:p></b></span></p>
 
 <p class=MsoNormal><span style='font-family:Arial'>In WorldMap you can add
@@ -73,18 +44,6 @@ represented in your Map, and control who can see your Map and the Layers inside
 it.<span style="mso-spacerun: yes">&nbsp; </span>The Layers you add to your Map
 can be uploaded from your hard drive or they can be layers already loaded to
 WorldMap.<span style="mso-spacerun: yes">&nbsp; </span><o:p></o:p></span></p>
-
-
-
-
-
-<p class=MsoNormal><span style='font-family:Arial'><b>------------------------------------------------------------------------------<o:p></o:p></b></span></p>
-
-<a name="help-worldmap"></a>
-<p class=MsoNormal><span style='font-size:14.0pt;font-family:Arial'>WorldMap
-Help<o:p></o:p></span></p>
-
-
 
 
 <a name="register"></a>
@@ -884,18 +843,14 @@ src="{{STATIC_URL}}theme/img/help/image066.jpg" v:shapes="_x0000_i1059"><![endif
 
 {% block sidebar %}
 <div class="threecol">
-  <h3>{% trans "WorldMap Help" %}</h3>
+  <h3>{% trans "Topics" %}</h3>
   {% blocktrans %} 
-  <p>This page provides helpful information about how to use WorldMap. You can use the links below to navigate to what you want to know.</p>
-  <ul>
-    <li><a href="#about-worldmap">About WorldMap</a>
-    	<ul>
-    		<li><a href="#what-map">What is a Map?</a>
-    		<li><a href="#what-layer">What are Layers?</a>    		
-    	</ul>
-    </li>
-    <li><a href="#help-worldmap">WorldMap Help</a>
+  <p>Use the links below to 
+navigate to a topic.</p>
+
     <ul>
+    <li><a href="#what-map">What is a Map?</a>
+    <li><a href="#what-layer">What are Layers?</a>   
     <li><a href="#register">Registration and Login</a></li>
     <li><a href="#browse">Browse Maps</a></li>
     <li><a href="#metadata">Layer Metadata</a></li>
@@ -914,8 +869,7 @@ src="{{STATIC_URL}}theme/img/help/image066.jpg" v:shapes="_x0000_i1059"><![endif
                                                 <li><a href="#print">Print a Map</a></li>
                                 
     </ul>
-    </li>
-  </ul>
+
   {% endblocktrans %}
 </div>
 {% endblock %}
