@@ -9,9 +9,8 @@ import logging
 
 logger = logging.getLogger("geonode.accountforms.views")
 
-ISITE_URL = "http://about.africamap.harvard.edu/icb/icb.do?keyword=k28501&pageid=icb.page129893&pageContentId=icb.pagecontent795722&state=maximize&login=yes"
 
-def registerHarvard(request, success_url=None,
+def registerOrganizationUser(request, success_url=None,
              form_class=UserRegistrationForm, profile_callback=None,
              template_name='registration/registration_form.html',
              extra_context=None):
@@ -24,10 +23,10 @@ def registerHarvard(request, success_url=None,
             # a default value using reverse() will cause circular-import
             # problems with the default URLConf for this application, which
             # imports this file.
-            if new_user.get_profile().is_harvard:
-                request.session["harvard_username"] = new_user.username
-                logger.debug("harvard username set to [%s]", new_user.username)
-                return HttpResponseRedirect(ISITE_URL)
+            if new_user.get_profile().is_org_member:
+                request.session["group_username"] = new_user.username
+                logger.debug("group username set to [%s]", new_user.username)
+                return HttpResponseRedirect(settings.CUSTOM_ORG_AUTH_URL)
             else:
                 return HttpResponseRedirect(success_url or reverse('registration_complete'))
     else:
@@ -43,21 +42,22 @@ def registerHarvard(request, success_url=None,
                               context_instance=context)# Create your views here.
 
 
-def registercompleteHarvard(request, template_name='registration/registration_complete.html',):
+def registercompleteOrganizationUser(request, template_name='registration/registration_complete.html',):
 
-    if "harvard_username" in request.session:
-        username = request.session["harvard_username"]
+    if "group_username" in request.session:
+        username = request.session["org_username"]
         user = User.objects.get(username=username)
         userProfile = user.get_profile()
         if user:
-            logger.debug("harvard username is [%s]", username)
+            logger.debug("org username is [%s]", username)
             logger.debug("page referrer is [%s]", request.META['HTTP_REFERER'])
-            if 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'] == ISITE_URL or request.META['HTTP_REFERER'] == "http://worldmap.harvard.edu/accounts/registercomplete/":
-                userProfile.is_harvard = True
+            #Referer of worldmap.harvard.edu/.../registercomplete is a hack until domain name is transferred to AWS
+            if 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'] == settings.CUSTOM_GROUP_AUTH_URL or request.META['HTTP_REFERER'] == "http://worldmap.harvard.edu/accounts/registercomplete/":
+                userProfile.is_org_member = True
                 userProfile.save()
                 del request.session["harvard_username"]
             else:
-                userProfile.is_harvard = False
+                userProfile.is_org_member = False
                 userProfile.save()
     else:
         logger.debug("harvard username is not found")

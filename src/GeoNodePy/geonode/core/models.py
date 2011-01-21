@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
+from django.conf import settings
 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
@@ -63,11 +63,11 @@ class UserObjectRoleMapping(models.Model):
 # implicitly defined 'generic' groups of users 
 ANONYMOUS_USERS = 'anonymous'
 AUTHENTICATED_USERS = 'authenticated'
-HARVARD_USERS = 'harvard'
+CUSTOM_GROUP_USERS = 'customgroup'
 GENERIC_GROUP_NAMES = {
     ANONYMOUS_USERS: _('Anonymous Users'),
     AUTHENTICATED_USERS: _('Registered Users'),
-    HARVARD_USERS: _('Harvard Users')
+    CUSTOM_GROUP_USERS: _(settings.CUSTOM_GROUP_NAME)
 }
 
 class GenericObjectRoleMapping(models.Model):

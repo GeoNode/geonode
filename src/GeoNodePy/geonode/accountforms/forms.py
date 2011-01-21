@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from registration.forms import RegistrationFormUniqueEmail
 from django.utils.translation import ugettext_lazy as _
@@ -9,10 +10,11 @@ from registration.models import RegistrationProfile
 attrs_dict = { 'class': 'required' }
 
 class UserRegistrationForm(RegistrationFormUniqueEmail):
-    is_harvard = forms.TypedChoiceField(coerce=lambda x: bool(int(x)),
-                   choices=((1, 'Yes'), (0, 'No')),
+    if (settings.USE_CUSTOM_ORG_AUTHORIZATION):
+        is_org_member = forms.TypedChoiceField(coerce=lambda x: bool(int(x)),
+                   choices=((1, _(u'Yes')), (0, _(u'No'))),
                    widget=forms.RadioSelect,
-                   initial=0, label="Are you affiliated with Harvard University?"
+                   initial=0, label="(u'Are you affiliated with')" + settings.CUSTOM_GROUP_NAME
                 )
 
     username = forms.RegexField(regex=r'^\w+$',
@@ -36,7 +38,8 @@ class UserRegistrationForm(RegistrationFormUniqueEmail):
         password=self.cleaned_data['password1'],
         email=self.cleaned_data['email'])
         new_profile = Contact(user=new_user)
-        new_profile.is_harvard=self.cleaned_data['is_harvard']
+        if (settings.USE_CUSTOM_ORG_AUTHORIZATION):
+            new_profile.is_org_member=self.cleaned_data['is_org_member']
         new_profile.save()
         
         return new_user

@@ -7,7 +7,6 @@ INSERT into maps_layercategory (name,title) VALUES ('elevation', 'Elevation');
 INSERT into maps_layercategory (name,title) VALUES ('health', 'Health');
 INSERT into maps_layercategory (name,title) VALUES ('environment', 'Environment');
 INSERT into maps_layercategory (name,title) VALUES ('geoscientificInformation', 'Geoscientific Information');
-INSERT into maps_layercategory (name,title) VALUES ('health', 'Health');
 INSERT into maps_layercategory (name,title) VALUES ('imageryBaseMapsEarthCover', 'Imagery/Base Maps/Earth Cover');
 INSERT into maps_layercategory (name,title) VALUES ('intelligenceMilitary', 'Intelligence/Military');
 INSERT into maps_layercategory (name,title) VALUES ('inlandWaters', 'Inland Waters');

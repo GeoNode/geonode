@@ -28,8 +28,8 @@ class GranularBackend(ModelBackend):
         """
         if not user_obj.is_anonymous:
             profile = user_obj.get_profile()
-            if profile.is_harvard and profile.harvard_expiration_dt < datetime.today().date():
-                profile.is_harvard = False
+            if profile.is_org_member and profile.member_expiration_dt < datetime.today().date():
+                profile.is_org_member = False
                 profile.save()
 
         if obj is None:
@@ -82,8 +82,8 @@ class GranularBackend(ModelBackend):
         if not user_obj.is_anonymous():
             generic_roles.append(AUTHENTICATED_USERS)
             profile = user_obj.get_profile()
-            if profile and profile.is_harvard:
-                generic_roles.append(HARVARD_USERS)
+            if profile and profile.is_org_member:
+                generic_roles.append(CUSTOM_GROUP_USERS)
         obj_perms.update(self._get_generic_obj_perms(generic_roles, obj))
         
         ct = ContentType.objects.get_for_model(obj)
@@ -111,8 +111,8 @@ class GranularBackend(ModelBackend):
         if not user_obj.is_anonymous():
             generic_roles.append(AUTHENTICATED_USERS)
             profile = user_obj.get_profile()
-            if profile and profile.is_harvard:
-                generic_roles.append(HARVARD_USERS)
+            if profile and profile.is_org_member:
+                generic_roles.append(CUSTOM_GROUP_USERS)
             obj_ids.update([x[0] for x in UserObjectRoleMapping.objects.filter(user=user_obj,
                                                                                role__permissions=perm,
                                                                                object_ct=ct).values_list('object_id')])

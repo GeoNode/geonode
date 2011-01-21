@@ -5,7 +5,7 @@ from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
-from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, HARVARD_USERS
+from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 from django.utils.html import escape
@@ -522,7 +522,7 @@ class Contact(models.Model):
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True, unique=True)
     is_org_member = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
-    harvard_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
+    member_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
 
     def clean(self):
         # the specification says that either name or organization should be provided
@@ -633,9 +633,8 @@ class LayerManager(models.Manager):
                     else:
                         layer.date_type = Layer.VALID_DATE_TYPES[0]
 
-
                 layer.save()
-                if created: 
+		if created: 
                     layer.set_default_permissions()
 
                                    
@@ -1135,7 +1134,7 @@ class Layer(models.Model, PermissionLevelMixin):
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
         self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ) 
-        self.set_gen_level(HARVARD_USERS, self.LEVEL_READ)
+        self.set_gen_level(CUSTOM_GROUP_USERS, self.LEVEL_READ)
 
         # remove specific user permissions
         current_perms =  self.get_all_level_info()

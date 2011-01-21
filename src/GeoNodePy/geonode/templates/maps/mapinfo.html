@@ -40,6 +40,7 @@ Ext.onReady(function() {
         renderTo: "permissions_form",
         submitTo: "{% url geonode.maps.views.ajax_map_permissions_by_email map.id %}",
         userLookup: "{% url geonode.views.ajax_lookup %}",
+        customGroup: "{{ customGroup }}",
         permissions: {{ permissions_json }}
     });
 {% endif %}

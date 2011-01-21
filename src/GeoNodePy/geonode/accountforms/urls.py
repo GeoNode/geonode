@@ -4,16 +4,16 @@ from django.contrib.auth import views as auth_views
 
 from registration.views import activate
 from registration.views import register
-from geonode.accountforms.views import registerHarvard, registercompleteHarvard
+from geonode.accountforms.views import registerOrganizationUser, registercompleteOrganizationUser
 from geonode.accountforms.forms import UserRegistrationForm
 
 urlpatterns = patterns('',
                        url(r'^register/$',
-                           registerHarvard,
+                           registerOrganizationUser,
                            {'form_class' : UserRegistrationForm},
                            name='registration_register'),
                        url(r'^registercomplete/$',
-                           registercompleteHarvard,
+                           registercompleteOrganizationUser,
                            name='registration_complete'),
                        (r'', include('registration.urls')),
                        )
