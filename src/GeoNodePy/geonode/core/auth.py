@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.contenttypes.models import ContentType 
 from django.db import models
@@ -25,7 +26,12 @@ class GranularBackend(ModelBackend):
     def get_all_permissions(self, user_obj, obj=None):
         """
         """
-        
+        if not user_obj.is_anonymous:
+            profile = user_obj.get_profile()
+            if profile.is_harvard and profile.harvard_expiration_dt < datetime.today().date():
+                profile.is_harvard = False
+                profile.save()
+
         if obj is None:
             return ModelBackend.get_all_permissions(self, user_obj)
         else:

@@ -522,6 +522,7 @@ class Contact(models.Model):
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True, unique=True)
     is_harvard = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
+    harvard_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=True)
 
     def clean(self):
         # the specification says that either name or organization should be provided

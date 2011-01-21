@@ -14,6 +14,6 @@ urlpatterns = patterns('',
                            name='registration_register'),
                        url(r'^registercomplete/$',
                            registercompleteHarvard,
-                           name='registration_complete'),                                                      
+                           name='registration_complete'),
                        (r'', include('registration.urls')),
                        )
