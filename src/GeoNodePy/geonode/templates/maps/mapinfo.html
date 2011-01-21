@@ -45,7 +45,7 @@ Ext.onReady(function() {
     });
 {% endif %}
 
-var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;Advanced Options</span>");
+var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;Share</span>");
 Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 
 {% endautoescape %}

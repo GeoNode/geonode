@@ -858,6 +858,10 @@ def view(request, mapid):
         first_visit = False
     else:
         request.session['visit' + str(map.id)] = True
+    
+    #Remember last visited map
+    request.session['lastmap'] = map.id
+    request.session['lastmapTitle'] = map.title
             
     config['first_visit'] = first_visit
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map) 
@@ -1050,7 +1054,9 @@ def _describe_layer(request, layer):
             "layer_form": layer_form,
             "poc_form": poc_form,
             "author_form": author_form,
-            "attribute_form": attribute_form
+            "attribute_form": attribute_form,
+            "lastmap" : request.session.get("lastmap"),
+            "lastmapTitle" : request.session.get("lastmapTitle") 
         }))
     else: 
         return HttpResponse("Not allowed", status=403)
@@ -1067,7 +1073,9 @@ def _removeLayer(request,layer):
         
         if (request.method == 'GET'):
             return render_to_response('maps/layer_remove.html',RequestContext(request, {
-                "layer": layer
+                "layer": layer,
+                "lastmap" : request.session.get("lastmap"),
+                "lastmapTitle" : request.session.get("lastmapTitle") 
             }))
         if (request.method == 'POST'):
             layer.delete()
@@ -1141,7 +1149,9 @@ def layerController(request, layername):
             "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
             "permissions_json": _perms_info_email_json(layer, LAYER_LEV_NAMES),
             "customGroup": settings.CUSTOM_GROUP_NAME,
-            "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
+            "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
+            "lastmap" : request.session.get("lastmap"),
+            "lastmapTitle" : request.session.get("lastmapTitle") 
         }))
 
 
@@ -1215,7 +1225,9 @@ def _updateLayer(request, layer):
         
         return render_to_response('maps/layer_replace.html',
                                   RequestContext(request, {'layer': layer,
-                                                           'is_featuretype': is_featuretype}))
+                                                           'is_featuretype': is_featuretype,
+                                                           'lastmap' : request.session.get("lastmap"),
+                                                           'lastmapTitle' : request.session.get("lastmapTitle")}))
     elif request.method == 'POST':
         try:
             layer, errors = _handle_layer_upload(request, layer=layer)

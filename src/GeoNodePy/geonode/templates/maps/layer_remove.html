@@ -11,7 +11,13 @@
 <script type="text/javascript">
     Ext.onReady(function() {
 {% autoescape off %}
-         var titleTemplate = new Ext.Template("<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} Details</a><span>&nbsp;/&nbsp;Edit</span>");
+var mapCrumb = "";
+if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
+	{
+		mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
+	}        	
+
+		var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}}</a><span>&nbsp;/&nbsp;Remove</span>");
 		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 
 {% endautoescape %}

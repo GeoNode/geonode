@@ -19,7 +19,7 @@ var mapurl = "{% url geonode.maps.views.view map.id %}";
 {% endif %}
 
 Ext.onReady(function() {
-	var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;Edit Details</span>");
+	var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;</span><a  href=\"" + mapurl + "edit/\">Share</a><span>&nbsp;/&nbsp;Edit Details</span>");
 	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 });
 </script>

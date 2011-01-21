@@ -159,7 +159,13 @@ Ext.onReady(function(){
     });
   });
 
-         var titleTemplate = new Ext.Template("<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} </a><span>&nbsp;/&nbsp;Update</span>");
+var mapCrumb = "";
+if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
+	{
+		mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
+	}        	
+
+		var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} </a><span>&nbsp;/&nbsp;Update</span>");
 		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 
 {% endautoescape %}
