@@ -14,7 +14,7 @@ class UserRegistrationForm(RegistrationFormUniqueEmail):
         is_org_member = forms.TypedChoiceField(coerce=lambda x: bool(int(x)),
                    choices=((1, _(u'Yes')), (0, _(u'No'))),
                    widget=forms.RadioSelect,
-                   initial=0, label="(u'Are you affiliated with')" + settings.CUSTOM_GROUP_NAME
+                   initial=0, label=settings.CUSTOM_ORG_AUTH_TEXT
                 )
 
     username = forms.RegexField(regex=r'^\w+$',

@@ -280,10 +280,10 @@ GOOGLE_ANALYTICS_CODE = "<script type='text/javascript'>\n\
     </script>"
 
 #Set name of additional permissions group (besides anonymous and authenticated)
-CUSTOM_GROUP_NAME = 'Harvard_WM Users'
+CUSTOM_GROUP_NAME = 'Organization Users'
 
 #If you want to redirect members of your organization to a separate authentication system when registering, change the following settings
-USE_CUSTOM_ORG_AUTHORIZATION = False
+USE_CUSTOM_ORG_AUTHORIZATION = True
 CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_ORG_AUTH_URL = ''
