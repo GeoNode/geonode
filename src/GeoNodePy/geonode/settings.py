@@ -180,13 +180,18 @@ MAP_BASELAYERSOURCES = {
 }
 
 MAP_BASELAYERS = [{
-    "source":"any",
-    "type":"OpenLayers.Layer.OSM",
-    "args":["OpenStreetMap"],
+    "source":"google",
+    "group":"background",
+    "name":"SATELLITE",
     "visibility": False,
     "fixed": True,
-    "group":"background"
-  },{
+},{
+    "source":"google",
+    "group":"background",
+    "name":"TERRAIN",
+    "visibility": True,
+    "fixed": True,
+},{
     "source":"google",
     "group":"background",
     "name":"ROADMAP",
@@ -199,12 +204,13 @@ MAP_BASELAYERS = [{
     "visibility": False,
     "fixed": True,
 },{
-    "source":"google",
-    "group":"background",
-    "name":"SATELLITE",
-    "visibility": True,
+    "source":"any",
+    "type":"OpenLayers.Layer.OSM",
+    "args":["OpenStreetMap"],
+    "visibility": False,
     "fixed": True,
-}]
+    "group":"background"
+  }]
 
 # NAVBAR expects a dict of dicts or a path to an ini file
 NAVBAR = \
