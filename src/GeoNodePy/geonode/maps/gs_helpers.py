@@ -112,6 +112,9 @@ def fixup_style(cat, resource):
 def cascading_delete(cat, resource):
     lyr = cat.get_layer(resource.name)
     store = resource.store
+    styles = lyr.styles + [lyr.default_style]
     cat.delete(lyr)
+    for s in styles:
+        cat.delete(s, purge=True)
     cat.delete(resource)
     cat.delete(store)
