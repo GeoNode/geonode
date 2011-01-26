@@ -146,9 +146,10 @@ margin: 0 auto;
 }
 
 #header {
-background: #FFFFFF url(img/header-gradient.png) repeat-x; 
+background: #FFFFFF;
+            //url(img/header-gradient.png) repeat-x; 
 border-top: 1px solid #7a7a7a;
-border-bottom: 2px solid #000000;
+// border-bottom: 2px solid #000000;
 font-size: 1.2em;
 }
 
@@ -663,6 +664,14 @@ table.permissions td {
 	border-bottom: 1px solid #ccc;
 }
 
+.olControlAttribution{ 
+color:gray;
+bottom: .5em;
+left: .4em;
+right: 220px;
+font-size: smaller;
+}
+
 .login-widget{ 
 margin-top: 30px;
 margin-right: 10px;
@@ -774,3 +783,14 @@ padding: 0 4px;
 span.style-title {
 cursor: pointer;
 }
+
+.testbgcolor
+{
+background-color: #FFFF00;
+}
+
+.testbgcolor2
+{
+background-color: #FF0000;
+}
+
