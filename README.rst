@@ -1,11 +1,11 @@
 =========
- GeoNode/WorldMap
+ WorldMap
 =========
 
 Build Requirements
 ==================
 
-Before starting work on the GeoNode, you will need to have the following
+Before starting work on WorldMap, you will need to have the following
 software installed and in your PATH:
 
 * The git command-line client, version 1.5.3 or higher:
@@ -40,7 +40,7 @@ software installed and in your PATH:
     ``Python 2.6``
   - If not, download from http://python.org/download/
   - Python must be compiled w/ SSL support and sqlite support to
-    support the geonode development setup.  Installing the sqlite and
+    support the WorldMap development setup.  Installing the sqlite and
     openssl development headers before building Python will suffice.
 
 * Apache Maven 2.0.10 or Later:
@@ -53,8 +53,8 @@ software installed and in your PATH:
 
   - If not, download from http://maven.apache.org/download.html
 
-Additionally, GeoNode uses a number of native-code libraries in Python.  You
-can install these libraries manually, or allow the GeoNode setup script to
+Additionally, WorldMap uses a number of native-code libraries in Python.  You
+can install these libraries manually, or allow the WorldMap setup script to
 compile them for you.   In the latter case, you will need to install a C
 compiler such as GCC, as well as any requisite development libraries.  GCC
 packages are available for Mac OSX and all Linux distributions; consult your
@@ -72,7 +72,7 @@ For GCC, packages are available for Mac OSX and all Linux distributions;
 consult your operating system provider for installation instructions.  When
 build PIL from source, ensure that you have development libraries available for
 libpng, libjpeg, and libgif if you want to be able to use those formats in your
-GeoNode site.
+WorldMap site.
 
 Install
 =======
@@ -92,7 +92,7 @@ Start the server:
   paver host 
 
 
-Once fully started, you should see a message indicating the address of your geonode::
+Once fully started, you should see a message indicating the address of your WorldMap::
   
   Development GeoNode is running at http://localhost:8000/
   The GeoNode is an unstoppable machine
@@ -135,7 +135,7 @@ make sure to use::
    $ paver concat_js 
    $ paver capra_js
 
-to update the built script directories for the base GeoNode site and the CAPRA
+to update the built script directories for the base WorldMap site and the CAPRA
 extensions, respectively.
 
 VirtualBox Setup
@@ -162,13 +162,13 @@ following needs to be done before running ``paver host``:
 
     $ paver host -b 192.168.56.1
 
-* Now GeoNode is available in your browser at http://192.168.56.1:8000/
+* Now WorldMap is available in your browser at http://192.168.56.1:8000/
 
 
 For Java Developers
 -------------------
 
-How GeoNode Finds GeoServer
+How WorldMap Finds GeoServer
 ...........................
 
 Java Developers can point the application at a particular GeoServer instance by
@@ -218,7 +218,7 @@ For Deployment
 Email
 .....
 
-Adding an email gateway to GeoNode can be very useful, the two main reasons are
+Adding an email gateway to WorldMap can be very useful, the two main reasons are
 the ``ADMINS`` and ``REGISTRATION_OPEN`` settings explained below.
 
 Here is a sample configuration to setup a Gmail account as the email gateway::
@@ -248,7 +248,7 @@ email the people in the ADMINS tuple with the error traceback::
 REGISTRATION_OPEN
 .................
 
-In order to let people autoregister to the GeoNode, set::
+In order to let people autoregister to the WorldMap, set::
 
     REGISTRATION_OPEN=True
 
@@ -257,49 +257,22 @@ the Sites application (the default is example.com)::
 
     http://localhost:8000/admin/sites/site/1
 
-Directory Structure
-===================
-
-* docs/ - ? I think this is to help paver find our docs so whit doesn't have
-  to maintain two checkouts to build them.
-* hazard.json - a data dump for the hazard categories
-* package - this directory is where distributable bundles of the GeoNode pieces
-  end up (in theory? I don't think we used this for the most recent deployment)
-* pavement.py - the main build script for everything
-* paver-minilib.zip - a zip archive of the paver library used by pavement.py
-* setup.py - a shim to make the entire GeoNode source tree look like a Python
-  package.  This probably should not be there since our Python modules have
-  their own source tree with a setup.py now.
-* shared/ - where "build configuration" lives.  This includes some dependency
-  lists for the Python modules and stuff like the ini file with the location
-  of the sample data archive.
-* src/ - where the source code for the actual project lives.  This is divided
-  up like so:
-    * capra-client/ - the JavaScript/CSS for CAPRA-specific extensions
-      (MyHazard) to the GeoNode core
-    * geonode-client/ - the JavaScript/CSS for general apps (the Map editor,
-      search, embedded viewer...)
-    * GeoNodePy/ - the Python/Django modules.  Inside, geonode/ is the "core"
-      and capra/ contains CAPRA-specific extensions.
-    * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
-      Actually, the build script for this project is set up to create a WAR
-      that includes those extensions, not just a bundle with the extension.
 
 
 GPL License
 =======
 
-GeoNode is Copyright 2010 OpenPlans.
-
-GeoNode is free software: you can redistribute it and/or modify
+WorldMap is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-GeoNode is distributed in the hope that it will be useful,
+WorldMap is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GeoNode.  If not, see <http://www.gnu.org/licenses/>.
+along with WorldMap.  If not, see <http://www.gnu.org/licenses/>.
+
+GeoNode is Copyright 2010 OpenPlans.
