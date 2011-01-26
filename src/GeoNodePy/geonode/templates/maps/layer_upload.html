@@ -27,7 +27,7 @@
 {% autoescape off %}
 Ext.onReady(function(){
     Ext.QuickTips.init();
-       
+
     var form_target = "{% url geonode.maps.views.upload_layer %}";
     var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
     var layer_name = new Ext.form.TextField({
@@ -44,7 +44,7 @@ Ext.onReady(function(){
       },
       allowBlank: false
     });
-    
+
     var listeners = {
         "fileselected": function(cmp, value) {
             // remove the path from the filename - avoids C:/fakepath etc.
@@ -52,12 +52,12 @@ Ext.onReady(function(){
         }
     };
 
-   
+
     var map_id = new Ext.form.Hidden({
     	id: 'mapid',
     	value:  '{{map.id}}'
     });
-    
+
 
     var mapurl = "{% url geonode.maps.views.view map.id %}";
     {% if map.officialurl %}
@@ -66,12 +66,12 @@ Ext.onReady(function(){
     	{% if map.url %}
     		mapurl="{% url geonode.maps.views.view map.url %}";
     	{% endif %}
-    {% endif %}    
-    
+    {% endif %}
+
 	var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;Upload Data</span>");
-	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());    
-    
-    
+	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+
+
     var base_file = new Ext.ux.form.FileUploadField({
         id: 'base_file',
         emptyText: gettext('Select a layer data file'),
@@ -164,7 +164,7 @@ Ext.onReady(function(){
         shx_file.disable();
         shx_file.el.parent('.x-form-item').hide();
         prj_file.disable();
-        prj_file.el.parent('.x-form-item').hide();      
+        prj_file.el.parent('.x-form-item').hide();
     };
 
     var enable_shapefile_inputs = function() {
@@ -175,7 +175,7 @@ Ext.onReady(function(){
         prj_file.enable();
         prj_file.el.parent('.x-form-item').show();
     };
-  
+
     var check_shapefile = function() {
         var main_filename = base_file.getValue();
         if (main_filename.search(/\.shp$/i) != -1) {
@@ -185,7 +185,7 @@ Ext.onReady(function(){
             disable_shapefile_inputs();
         }
     };
-  
+
     base_file.addListener('fileselected', function(cmp, value) {
         check_shapefile();
 
