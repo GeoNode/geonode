@@ -3,25 +3,24 @@ var urls = [
     [(/^\/proxy/), require("./proxy").app]
 ];
 
-// path mappings for debug mode
-var pathMappings = {
-    "/externals/gxp/theme/": "/externals/gxp/src/theme/",
-    "/theme/ux/colorpicker/": "/script/ux/colorpicker/",
-    "/theme/ux/fileuploadfield/": "/script/ux/fileuploadfield/css/"
-};
-
-var dir;
+var dir, pathMappings;
 
 // debug mode loads unminified scripts
 // assumes markup pulls in scripts under the path /servlet_name/script/
-if (java.lang.System.getProperty("READYGXP_DEBUG") || java.lang.System.getenv("READYGXP_FILES_ROOT")) {
+if (java.lang.System.getProperty("READYGXP_DEBUG")) {
     var fs = require("fs");
-    dir = java.lang.System.getenv("READYGXP_FILES_ROOT") ||
-        fs.join(module.directory, "..");
+    dir = fs.join(module.directory, "..");
     var config = fs.normal(fs.join(dir, "buildjs.cfg"));
     urls.push(
         [(/^\/script(\/.*)/), require("./autoloader").App(config)]
     );    
+
+    // path mappings for debug mode
+    pathMappings = {
+        "/externals/gxp/theme/": "/externals/gxp/src/theme/",
+        "/theme/ux/colorpicker/": "/script/ux/colorpicker/",
+        "/theme/ux/fileuploadfield/": "/script/ux/fileuploadfield/css/"
+    };
 }
 
 exports.urls = urls;
@@ -47,7 +46,6 @@ function slash(config) {
                     };
                 }
             }
-
             return app(request);
         };
     };
@@ -71,10 +69,12 @@ function almostStatic(config) {
                     path += "index.html";
                 }
             
-                for (var p in pathMappings) {
-                    if (path.indexOf(p) == 0) {
-                        path = path.replace(p, pathMappings[p]);
-                        break;
+                if (pathMappings) {
+                    for (var p in pathMappings) {
+                        if (path.indexOf(p) == 0) {
+                            path = path.replace(p, pathMappings[p]);
+                            break;
+                        }
                     }
                 }
 
