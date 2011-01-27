@@ -32,7 +32,9 @@ ADMINS = (
 # progress in your Django app -- if you have a front-end proxy like
 # nginx or lighttpd, Django doesn't need to be involved in the upload
 # tracking.
-#FILE_UPLOAD_HANDLERS = ('geonode.maps.upload_handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
+#FILE_UPLOAD_HANDLERS = ('geonode.maps.upload_handlers.UploadProgressCachedHandler',
+#                        'django.core.files.uploadhandler.MemoryFileUploadHandler',
+#'django.core.files.uploadhandler.TemporaryFileUploadHandler',)
 
 
 MANAGERS = ADMINS

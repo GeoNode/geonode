@@ -166,7 +166,9 @@ def setup_gs_data(options):
         shared.mkdir()
 
     dst_url = shared / "geonode-geoserver-data.zip"
-    grab(src_url, dst_url)
+
+    if not dst_url.exists:
+        grab(src_url, dst_url)
 
     if getattr(options, 'clean', False): path(gs_data).rmtree()
     if not path(gs_data).exists(): unzip_file(dst_url, gs_data)
@@ -199,11 +201,12 @@ def setup_geonetwork(options):
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
-    grab(src_url, dst_url)
+
     if not dst_war.exists():
+        grab(src_url, dst_url)
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
-        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
+            zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
 
     # Update the ISO 19139 profile to the latest version
     path(schema_url).rmtree()
@@ -213,7 +216,8 @@ def setup_geonetwork(options):
     src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
     dst_url = webapps / "intermap.war"
 
-    grab(src_url, dst_url)
+    if not dst_url.exists:
+        grab(src_url, dst_url)
 
 @task
 @needs([

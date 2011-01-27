@@ -119,6 +119,7 @@ Ext.onReady(function(){
     });
 
     var fp = new Ext.FormPanel({
+        formId: 'up_form',
         renderTo: 'upload_form',
         fileUpload: true,
         width: 500,
@@ -142,7 +143,6 @@ Ext.onReady(function(){
                 if (fp.getForm().isValid()) {
                     fp.getForm().submit({
                         url: form_target,
-                        waitMsg: gettext('Uploading your data...'),
                         success: function(fp, o) {
                             document.location = o.result.redirect_to;
                         },
@@ -211,7 +211,35 @@ Ext.onReady(function(){
 });
 {% endautoescape %}
 </script>
-
+<script type="text/javascript" charset="utf-8">
+//<![CDATA[
+$(document).ready(function() {
+    $(function() {
+        $('#up_form').uploadProgress({
+            jqueryPath: "{{ GEONODE_CLIENT_LOCATION }}script/jquery.js",
+            progressBar: '#progress_indicator',
+            progressUrl: '{% url upload_progress %}',
+            start: function() {
+                $("#up_form").hide();
+                filename = $("#ext-gen25").val().split(/[\/\\]/).pop();
+                $("#progress_filename").html('Uploading ' + filename + "...");
+                $("#progress_container").show();
+            },
+            uploadProgressPath: "{{ GEONODE_CLIENT_LOCATION }}script/GeoUploadProgress.js",
+            uploading: function(upload) {
+                if (upload.percents == 100) {
+                    window.clearTimeout(this.timer);
+                    $("#progress_filename").html('Processing ' + filename + "...");
+                } else {
+                    $("#progress_filename").html('Uploading ' + filename + ': ' + upload.percents + '%');
+                }
+            },
+            interval: 1000
+        });
+    });
+});
+//]]>
+</script>
 {% endblock %}
 
 
@@ -235,32 +263,4 @@ Note: If you are uploading a shapefile, first select the .SHP file.  You will be
 </div>
 {% endblock %}
 
-<script type="text/javascript" charset="utf-8">
-//<![CDATA[
-$(document).ready(function() {
-    $(function() {
-        $('#upload_form').uploadProgress({
-            jqueryPath: "https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js",
-            progressBar: '#progress_indicator',
-            progressUrl: '{% url upload_progress %}',
-            start: function() {
-                $("#upload_form").hide();
-                filename = $("#id_file").val().split(/[\/\\]/).pop();
-                $("#progress_filename").html('Uploading ' + filename + "...");
-                $("#progress_container").show();
-            },
-            uploadProgressPath: "{{ GEONODE_CLIENT_LOCATION }}script/GeoUploadProgress.js",
-            uploading: function(upload) {
-                if (upload.percents == 100) {
-                    window.clearTimeout(this.timer);
-                    $("#progress_filename").html('Processing ' + filename + "...");
-                } else {
-                    $("#progress_filename").html('Uploading ' + filename + ': ' + upload.percents + '%');
-                }
-            },
-            interval: 1000
-        });
-    });
-});
-//]]>
-</script>
+
