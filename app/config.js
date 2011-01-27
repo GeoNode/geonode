@@ -3,6 +3,13 @@ var urls = [
     [(/^\/proxy/), require("./proxy").app]
 ];
 
+// path mappings for debug mode
+var pathMappings = {
+    "/externals/gxp/theme/": "/externals/gxp/src/theme/",
+    "/theme/ux/colorpicker/": "/script/ux/colorpicker/",
+    "/theme/ux/fileuploadfield/": "/script/ux/fileuploadfield/css/"
+};
+
 var dir;
 
 // debug mode loads unminified scripts
@@ -40,6 +47,7 @@ function slash(config) {
                     };
                 }
             }
+
             return app(request);
         };
     };
@@ -62,6 +70,14 @@ function almostStatic(config) {
                 if (path.charAt(path.length-1) === "/") {
                     path += "index.html";
                 }
+            
+                for (var p in pathMappings) {
+                    if (path.indexOf(p) == 0) {
+                        path = path.replace(p, pathMappings[p]);
+                        break;
+                    }
+                }
+
                 if (path.length > 1) {
                     var resource = base.getResource(path);
                     if (resource && resource.exists()) {
