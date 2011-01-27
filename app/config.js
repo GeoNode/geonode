@@ -51,8 +51,6 @@ var {mimeType} = require("ringo/webapp/mime");
 function almostStatic(config) {
     var base = getRepository(dir ? fs.join(dir, "app", "static") : module.resolve("static"));
     base.setRoot();
-    var altBase = getRepository(module.resolve("static"));
-    altBase.setRoot();
     return function(app) {
         return function(request) {
             var match = false;
@@ -65,12 +63,7 @@ function almostStatic(config) {
                     path += "index.html";
                 }
                 if (path.length > 1) {
-                    // try static resources from READYGXP_FILES_ROOT
                     var resource = base.getResource(path);
-                    if (resource && !resource.exists()) {
-                        // fallback to static resources inside the war
-                        resource = altBase.getResource(path);
-                    }
                     if (resource && resource.exists()) {
                         return Response.static(resource, mimeType(path, "text/plain"));
                     }
