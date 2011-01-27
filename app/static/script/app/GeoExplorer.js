@@ -177,6 +177,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             "beforeunload"
         );
 
+        // add old ptypes
+        Ext.preg("gx_wmssource", gxp.plugins.WMSSource);
+        Ext.preg("gx_olsource", gxp.plugins.OLSource);
+        Ext.preg("gx_googlesource", gxp.plugins.GoogleSource);
+        
         // global request proxy and error handling
         Ext.util.Observable.observeClass(Ext.data.Connection);
         Ext.data.Connection.on({
@@ -587,7 +592,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         autoHeight: true,
                         closeAction: "hide",
                         items: [{
-                            xtype: "gx_wmslayerpanel",
+                            xtype: "gxp_wmslayerpanel",
                             autoHeight: true,
                             layerRecord: record,
                             defaults: {
@@ -769,6 +774,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var westPanel = new Ext.Panel({
             layout: "fit",
             collapseMode: "mini",
+            header: false,
             split: true,
             items: [layersTabPanel],
             region: "west",
@@ -885,11 +891,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     this.localGeoServerBaseUrl.replace(
                     this.urlPortRegEx, "$1/")) === 0,
                 plugins: [{
-                    ptype: "gx_geoserverstylewriter",
+                    ptype: "gxp_geoserverstylewriter",
                     baseUrl: layerUrl.split(
                         "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
                 }, {
-                    ptype: "gx_wmsrasterstylesdialog"
+                    ptype: "gxp_wmsrasterstylesdialog"
                 }],
                 autoScroll: true,
                 listeners: Ext.apply(options.listeners || {}, {
@@ -1126,7 +1132,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 "server-added": function(url) {
                     newSourceWindow.setLoading();
                     this.addLayerSource({
-                        config: {url: url}, // assumes default of gx_wmssource
+                        config: {url: url}, // assumes default of gxp_wmssource
                         callback: function(id) {
                             // add to combo and select
                             var record = new sources.recordType({
@@ -1684,7 +1690,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             width: 380,
             autoHeight: true,
             items: [{
-                xtype: "gx_embedmapdialog",
+                xtype: "gxp_embedmapdialog",
                 url: this.rest + this.mapID + "/embed" 
             }]
         }).show();
