@@ -62,7 +62,6 @@ var libLoader = function(section, order) {
 };
 
 var scriptLoader = function(root, script) {
-    var jsfilesRoot = java.lang.System.getenv("READYGXP_FILES_ROOT");
     return function(env) {
         var path = FS.join(root, script);
         var body = FS.read(path);
