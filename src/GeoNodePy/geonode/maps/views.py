@@ -881,20 +881,7 @@ def official_site(request, site):
     the map with the given official site url.
     """
     map = Map.objects.get(officialurl=site)
-    if not request.user.has_perm('maps.view_map', obj=map):
-        return HttpResponse(loader.render_to_string('401.html', 
-            RequestContext(request, {'error_message': 
-                _("You are not allowed to view this map.")})), status=401)    
-    
-    config = map.viewer_json()
-    logger.debug("CONFIG: [%s]", str(config))
-    return render_to_response('maps/view.html', RequestContext(request, {
-        'config': json.dumps(config),
-        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
-        'maptitle': map.title,
-        'urlsuffix': map.urlsuffix
-    }))
+    return view(request, str(map.id))
 
 def embed(request, mapid=None):
     if mapid is None:
