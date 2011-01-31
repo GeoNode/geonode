@@ -28,6 +28,14 @@ ADMINS = (
 #EMAIL_PORT = 587
 #EMAIL_USE_TLS = True
 
+# FILE_UPLOAD_HANDLERS is only necessary if you want to track upload
+# progress in your Django app -- if you have a front-end proxy like
+# nginx or lighttpd, Django doesn't need to be involved in the upload
+# tracking.
+#FILE_UPLOAD_HANDLERS = ('geonode.maps.upload_handlers.UploadProgressCachedHandler',
+#                        'django.core.files.uploadhandler.MemoryFileUploadHandler',
+#'django.core.files.uploadhandler.TemporaryFileUploadHandler',)
+
 
 MANAGERS = ADMINS
 

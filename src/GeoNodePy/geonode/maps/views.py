@@ -583,16 +583,24 @@ def ajax_layer_permissions_by_email(request, layername):
         mimetype='text/plain'
     )
 
+def ajax_layer_edit_check(request, layername):
+    layer = get_object_or_404(Layer, name=layername);
+    return HttpResponse(
+            str(request.user.has_perm("layers.change_layer", obj=layer)),
+            status=200,
+            mimetype='text/plain'
+        )
+
 
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
     if not request.user.has_perm("maps.change_map_permissions", obj=map):
-        
+
         return HttpResponse(
             'You are not allowed to change permissions for this map',
             status=401,
             mimetype='text/plain'
-        )    
+        )
 
 def ajax_map_permissions(request, mapid):
     map = get_object_or_404(Map, pk=mapid)
@@ -891,7 +899,7 @@ def embed(request, mapid=None):
         if mapid.isdigit():
             map = Map.objects.get(pk=mapid)
         else:
-            map = Map.objects.get(urlsuffix=mapid)
+            map = Map.objects.get(urlsuffix=mapid)\
 
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
@@ -2110,11 +2118,15 @@ def searchFieldsJSON(request):
     layername = request.POST.get('layername', False);
     logger.debug("layername is [%s]", layername)
     searchable_fields = []
-    scount = 0;
+    scount = 0
+    editable = False
     catname = '';
     if layername:
         try:
             geoLayer = Layer.objects.get(typename=layername)
+            
+            editable = request.user.is_authenticated() and request.user.has_perm('maps.change_layer', obj=geoLayer)
+            
             category =geoLayer.topic_category
             if category is not None:
                 catname = category.name
@@ -2129,7 +2141,7 @@ def searchFieldsJSON(request):
                         scount+=1            
         except Exception, e: 
             logger.debug("Could not find matching layer: [%s]", str(e))            
-        sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount}
+        sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount, 'editable' : str(editable)}
         logger.debug('sfJSON is [%s]', str(sfJSON))
         return HttpResponse(json.dumps(sfJSON))
     else:
@@ -2205,3 +2217,18 @@ def cleardeadlayers(request):
         finally:
             pre_delete.connect(delete_layer, sender=Layer)
             return HttpResponse("Done clearing dead layers", mimetype='text/plain')
+
+def upload_progress(request):
+    """
+    Return JSON object with information about the progress of an upload.
+    """
+    if 'HTTP_X_PROGRESS_ID' in request.META:
+        progress_id = request.META['HTTP_X_PROGRESS_ID']
+        from django.utils import simplejson
+        cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
+        data = cache.get(cache_key)
+        json = simplejson.dumps(data)
+        return HttpResponse(json)
+    else:
+        logging.error("Received progress report request without X-Progress-ID header. request.META: %s" % request.META)
+        return HttpResponseBadRequest('Server Error: You must provide X-Progress-ID header or query param.')
