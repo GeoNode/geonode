@@ -587,12 +587,12 @@ def ajax_layer_permissions_by_email(request, layername):
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
     if not request.user.has_perm("maps.change_map_permissions", obj=map):
-        
+
         return HttpResponse(
             'You are not allowed to change permissions for this map',
             status=401,
             mimetype='text/plain'
-        )    
+        )
 
 def ajax_map_permissions(request, mapid):
     map = get_object_or_404(Map, pk=mapid)
@@ -881,20 +881,7 @@ def official_site(request, site):
     the map with the given official site url.
     """
     map = Map.objects.get(officialurl=site)
-    if not request.user.has_perm('maps.view_map', obj=map):
-        return HttpResponse(loader.render_to_string('401.html', 
-            RequestContext(request, {'error_message': 
-                _("You are not allowed to view this map.")})), status=401)    
-    
-    config = map.viewer_json()
-    logger.debug("CONFIG: [%s]", str(config))
-    return render_to_response('maps/view.html', RequestContext(request, {
-        'config': json.dumps(config),
-        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
-        'maptitle': map.title,
-        'urlsuffix': map.urlsuffix
-    }))
+    return view(request, str(map.id))
 
 def embed(request, mapid=None):
     if mapid is None:
@@ -904,7 +891,7 @@ def embed(request, mapid=None):
         if mapid.isdigit():
             map = Map.objects.get(pk=mapid)
         else:
-            map = Map.objects.get(urlsuffix=mapid)
+            map = Map.objects.get(urlsuffix=mapid)\
 
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
@@ -2123,11 +2110,15 @@ def searchFieldsJSON(request):
     layername = request.POST.get('layername', False);
     logger.debug("layername is [%s]", layername)
     searchable_fields = []
-    scount = 0;
+    scount = 0
+    editable = False
     catname = '';
     if layername:
         try:
             geoLayer = Layer.objects.get(typename=layername)
+            
+            editable = request.user.is_authenticated() and request.user.has_perm('maps.change_layer', obj=geoLayer)
+            
             category =geoLayer.topic_category
             if category is not None:
                 catname = category.name
@@ -2142,7 +2133,7 @@ def searchFieldsJSON(request):
                         scount+=1            
         except Exception, e: 
             logger.debug("Could not find matching layer: [%s]", str(e))            
-        sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount}
+        sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount, 'editable' : str(editable)}
         logger.debug('sfJSON is [%s]', str(sfJSON))
         return HttpResponse(json.dumps(sfJSON))
     else:
