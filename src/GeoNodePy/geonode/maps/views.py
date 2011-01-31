@@ -583,6 +583,14 @@ def ajax_layer_permissions_by_email(request, layername):
         mimetype='text/plain'
     )
 
+def ajax_layer_edit_check(request, layername):
+    layer = get_object_or_404(Layer, name=layername);
+    return HttpResponse(
+            str(request.user.has_perm("layers.change_layer", obj=layer)),
+            status=200,
+            mimetype='text/plain'
+        )
+
 
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
