@@ -167,7 +167,7 @@ def setup_gs_data(options):
 
     dst_url = shared / "geonode-geoserver-data.zip"
 
-    if not dst_url.exists:
+    if not dst_url.exists():
         grab(src_url, dst_url)
 
     if getattr(options, 'clean', False): path(gs_data).rmtree()
