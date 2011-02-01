@@ -1,193 +1,225 @@
 Ext.namespace("GeoNode");
 GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
+    // how do we determine permissions for viewing? one of:
+    // ANYONE - all users can view
+    // REGISTERED - all logged-in users can view
+    // EDITORS - all users in the editor list can view
+    viewMode: 'EDITORS', 
+
+    // how do we determine permissions for editing? one of:
+    // REGISTERED - all logged-in users can edit
+    // EDITORS - all users in the editor list can view
+    editMode: 'LIST',
+
+    // a Store with the users that have editor permission
+    editors: null,
+
+    // a GeoNode.UserSelector widget for the editor list
+    editorChooser: null,
+
+    // a Store with the users that have manager permission
+    managers: null,
+
+    // a GeoNode.UserSelector widget for the manager list
+    managerChooser: null,
+
     constructor: function(config) {
         Ext.apply(this, config);
-        this.initPermissionStore();
+        this.initStores();
+        this.readPermissions(config.permissions);
         this.doLayout();
     },
 
-    initPermissionStore: function() {
-        this.permissionStore = new Ext.data.ArrayStore({
-            data: this.permissions.levels,
-            idIndex: 0,
-            fields: [
-                {name: "identifier"},
-                {name: "displayname"}
-            ]
-        });
-        this.userset = {};
-    },
-
-    buildUserChooser: function() {
-        var userStore = new Ext.data.Store({
-            proxy: new Ext.data.HttpProxy({ url: this.userLookup }),
+    initStores: function(config) {
+        this.editors = new Ext.data.Store({
             reader: new Ext.data.JsonReader({
                 root: 'users',
                 totalProperty: 'count',
                 fields: [{name: 'username'}]
-            })
+            }),
+            listeners: {
+                add: this.saveToServer,
+                remove: this.saveToServer,
+                update: this.saveToServer,
+                scope: this
+            }
         });
-
-        var chooser = new Ext.form.ComboBox({ 
-            width: 120,
-            typeAhead: true,
-            minChars: 2,
-            align: 'right',
-            border: false,
-            store: userStore,
-            displayField: 'username',
-            emptyText: gettext("Type a username")
+        this.managers = new Ext.data.Store({
+            reader: new Ext.data.JsonReader({
+                root: 'users',
+                totalProperty: 'count',
+                fields: [{name: 'username'}]
+            }),
+            listeners: {
+                add: this.saveToServer,
+                remove: this.saveToServer,
+                update: this.saveToServer,
+                scope: this
+            }
         });
+    },
 
+    buildUserChooser: function(cfg) {
+        var finalConfig = { userLookup: this.userLookup };
+        Ext.apply(finalConfig, cfg);
+
+        return new GeoNode.UserSelector(finalConfig);
+    },
+
+    buildViewPermissionChooser: function() {
         return new Ext.Panel({
             border: false,
-            layout: 'hbox',
+            bwrapCfg: { tag: 'p' },
             items: [
-                new Ext.Button({
-                    iconCls: 'icon-addlayers',
-                    handler: function() {
-                        var idx = chooser.getStore().findExact(
-                            "username",
-                            chooser.getValue()
-                        );
-                        if (idx >= 0
-                            && chooser.getValue() != this.permissions.owner
-                            && !this.userset[chooser.getValue()]
-                        ) {
-                            this.addUser({
-                                username: chooser.getValue(),
-                                role: this.permissions.authenticated
-                            });
-                        }
-                        chooser.setValue(null);
+                {html: "<strong>Who can view this data?</strong>", flex: 1, border: false},
+                { xtype: 'radiogroup', columns: 1, value: this.viewMode, items: [
+                    { xtype: 'radio', name: 'viewmode', inputValue: 'ANYONE', boxLabel: 'Anyone'},
+                    { xtype: 'radio', name: 'viewmode', inputValue: 'REGISTERED', boxLabel: 'Any registered user'},
+                    { xtype: 'radio', name: 'viewmode', inputValue: 'EDITORS', boxLabel: 'Only users who can edit'}
+                ], listeners: {
+                    change: function(grp, checked) {
+                        this.viewMode = checked.inputValue;
+                        this.saveToServer();
                     },
                     scope: this
-                }),
-                { html: gettext("Add user"), flex: 1, border: false },
-                chooser
+                }}, 
             ]
         }); 
     },
 
-    buildGroupPermissionCombo: function(group, permission) {
-        return new Ext.Panel({
-            border: false,
-            layout: 'hbox',
-            items: [
-                {html: group.displayname, flex: 1, border: false},
-                new Ext.form.ComboBox({ 
-                    width: 120,
-                    align: 'right',
-                    border: false,
-                    store: this.permissionStore,
-                    value: permission,
-                    displayField: "displayname",
-                    valueField: "identifier",
-                    mode: 'local',
-                    editable: false,
-                    triggerAction: 'all',
-                    listeners: {
-                        select: function(cb, rec, idx) {
-                            var params = {};
-                            params[group.identifier] = rec.get('identifier');
-                            Ext.Ajax.request({
-                                params: params,
-                                url: this.submitTo
-                            });
-                        },
-                        scope: this
-                    }
-                })
-            ]
-        }); 
-    },
-
-    addUser: function(user) {
-        this.userset[user] = true;
-        var up = this.userPanel;
-
-        var userEditor = new Ext.Panel({
-            border: false,
-            layout: 'hbox',
-            items: [
-                new Ext.Button({
-                    iconCls: 'icon-removelayers',
-                    handler: function() {
-                        var params = {};
-                        params['user.' + user.username] = "";
-                        Ext.Ajax.request({
-                            params: params,
-                            url: this.submitTo,
-                            success: function() {
-                                up.remove(userEditor);
-                            }
-                        });
+    buildEditPermissionChooser: function() {
+        this.editorChooser = this.buildUserChooser({
+            store: this.editors,
+            availableUserConfig: {
+                listeners: {
+                    load: function(store, recs, opts) {
+                        store.filterBy(function(rec) {
+                            return this.editors.findExact("username", rec.get("username")) == -1 
+                                && this.managers.findExact("username", rec.get("username")) == -1;
+                        }, this);
                     },
                     scope: this
-                }),
-                { flex: 1, html: user.username, border: false },
-                new Ext.form.ComboBox({ 
-                    width: 120,
-                    align: 'right',
-                    border: false,
-                    store: this.permissionStore,
-                    displayField: "displayname",
-                    valueField: "identifier",
-                    value: user.role,
-                    mode: 'local',
-                    editable: false,
-                    triggerAction: 'all',
-                    listeners: {
-                        select: function(cb, rec, index) {
-                            var params = {};
-                            params["user." + user.username] = rec.get("identifier");
-                            Ext.Ajax.request({
-                                params: params,
-                                url: this.submitTo
-                            });
-                        },
-                        scope: this
-                    }
-                })
-            ]
+                }
+            }
         });
 
-        this.userPanel.add(userEditor);
-        this.userPanel.doLayout();
+        this.editorChooser.setDisabled(this.editMode !== 'LIST');
+
+        return new Ext.Panel({
+            border: false, 
+            bwrapCfg: { tag: 'p' },
+            items: [
+                {html: "<strong>Who can edit this data?</strong>", flex: 1, border: false},
+                { xtype: 'radiogroup', columns: 1, value: this.editMode, items: [
+                    { xtype: 'radio', name: 'editmode', inputValue: 'REGISTERED', boxLabel: 'Any registered user' },
+                    { xtype: 'radio', name: 'editmode', inputValue: 'LIST', boxLabel: 'Only the following users or groups:' }
+                ], listeners: {
+                    change: function(grp, checked) {
+                        this.editMode = checked.inputValue;
+                        this.editorChooser.setDisabled(this.editMode !== 'LIST');
+                        this.saveToServer();
+                    },
+                    scope: this
+                }},
+                this.editorChooser.panel
+            ]
+        });
+    },
+
+    buildManagePermissionChooser: function() {
+        this.managerChooser = this.buildUserChooser({
+            store: this.managers,
+            availableUserConfig: {
+                listeners: {
+                    load: function(store, recs, opts) {
+                        store.filterBy(function(rec) {
+                            return this.editors.findExact("username", rec.get("username")) == -1
+                                && this.managers.findExact("username", rec.get("username")) == -1;
+                        }, this);
+                    },
+                    scope: this
+                }
+            }
+        });
+        return new Ext.Panel({
+            border: false, 
+            bwrapCfg: { tag: 'p' },
+            items: [
+                {html: "<strong>Who can manage this data?</strong>", flex: 1, border: false},
+                this.managerChooser.panel
+            ]
+        });
+    },
+
+    readPermissions: function(json) {
+        if (json['authenticated'] == 'layer_readwrite') {
+            this.editMode = 'REGISTERED';
+        } else if (json['authenticated'] == 'layer_readonly') {
+            this.viewMode = 'REGISTERED';
+        }
+
+        if (json['anonymous'] == 'layer_readonly') {
+            this.viewMode = 'ANYONE';
+        }
+
+        for (var i = 0; i < json.users.length; i++) {
+            if (json.users[i][1] === 'layer_readwrite') {
+                this.editors.add(new this.editors.recordType({username: json.users[i][0]}, i + 500));
+            } else if (json.users[i][1] === 'layer_admin') {
+                this.managers.add(new this.managers.recordType({username: json.users[i][0]}, i + 500));
+            }
+        }
+    },
+
+    // write out permissions to a JSON string, suitable for sending back to the mothership
+    writePermissions: function() {
+        var anonymousPermissions, authenticatedPermissions, perUserPermissions;
+        if (this.viewMode === 'ANYONE') {
+            anonymousPermissions = 'layer_readonly';
+        } else {
+            anonymousPermissions = '_none';
+        }
+
+        console.log(this.editMode);
+        if (this.editMode === 'REGISTERED') {
+            authenticatedPermissions = 'layer_readwrite';
+        } else if (this.viewMode === 'REGISTERED') {
+            authenticatedPermissions = 'layer_readonly';
+        } else {
+            authenticatedPermissions = '_none';
+        }
+
+        perUserPermissions = [];
+        if (this.editMode === 'LIST') {
+            this.editors.each(function(rec) {
+                perUserPermissions.push([rec.get("username"), 'layer_readwrite']);
+            });
+        }
+
+        this.managers.each(function(rec) {
+            perUserPermissions.push([rec.get("username"), 'layer_admin']);
+        });
+
+        return {
+            anonymous: anonymousPermissions,
+            authenticated: authenticatedPermissions,
+            users: perUserPermissions
+        };
+    },
+
+    saveToServer: function() {
+        var perms = this.writePermissions();
+        Ext.Ajax.request({ url: this.submitTo, jsonData: perms });
     },
 
     doLayout: function() {
-        this.userPanel = new Ext.Panel({
-            border: false
-        });
-
-        for (var i = 0; i < this.permissions.users.length; i++) {
-            if (this.permissions.users[i][0] != this.permissions.owner) {
-                this.addUser({
-                    username: this.permissions.users[i][0],
-                    role: this.permissions.users[i][1]
-                });
-            }
-        }
-
-        var addUserPanel = this.buildUserChooser();
-
         this.container = new Ext.Panel({
             renderTo: this.renderTo,
             border: false,
             items: [
-                this.buildGroupPermissionCombo(
-                    {displayname: gettext('Anyone'), identifier: 'anonymous'},
-                    this.permissions.anonymous
-                ),
-                this.buildGroupPermissionCombo(
-                    {displayname: gettext('Authenticated Users'), identifier: 'authenticated'},
-                    this.permissions.authenticated
-                ),
-                {html: '<hr/>', border: false},
-                this.userPanel,
-                {html: '<hr/>', border: false},
-                addUserPanel
+                this.buildViewPermissionChooser(),
+                this.buildEditPermissionChooser(),
+                this.buildManagePermissionChooser()
             ]
         });
     }
