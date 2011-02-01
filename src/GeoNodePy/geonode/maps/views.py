@@ -1029,7 +1029,7 @@ def _handle_layer_upload(request, layer=None):
                 logger.debug("Setting default permissions for %s", typename)
                 layer.set_default_permissions()
                 logger.debug("Generating separate style for %s", typename)
-                fixup_style(cat, gs_resource)
+                fixup_style(cat, gs_resource, request.FILES.get('sld_file'))
         except Exception, e:
             logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
             transaction.rollback()
