@@ -876,26 +876,30 @@ def _updateLayer(request, layer):
     return render_to_response('json_html.html',
                               RequestContext(request, {'json': result}))
 
+
+_suffix = re.compile(r"\.[^.]*$", re.IGNORECASE)
+_xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
+
 @transaction.commit_manually
 def _handle_layer_upload(request, layer=None):
     """
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
     """
-    layer_name = request.POST.get('layer_name');
     base_file = request.FILES.get('base_file');
 
-    logger.info("Uploaded layer: [%s], base filename: [%s]", layer_name, base_file)
+    logger.info("Uploaded layer; base filename: [%s]", base_file)
 
     if not base_file:
         logger.warn("Failed upload: no basefile provided")
         return None, [_("You must specify a layer data file to upload.")]
+
+    layer_name = _suffix.sub("", base_file.name)
     
     if layer is None:
         overwrite = False
         # XXX Give feedback instead of just replacing name
-        xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
-        name = xml_unsafe.sub("_", layer_name)
+        name = _xml_unsafe.sub("_", layer_name)
         proposed_name = name
         count = 1
         while Layer.objects.filter(name=proposed_name).count() > 0:
@@ -1007,7 +1011,8 @@ def _handle_layer_upload(request, layer=None):
                                              storeType=gs_resource.store.resource_type,
                                              typename=typename,
                                              workspace=gs_resource.store.workspace.name,
-                                             title=gs_resource.title,
+                                             title = request.POST.get('layer_title') or gs_resource.title,
+                                             abstract = request.POST.get('abstract') or gs_resource.abstract,
                                              uuid=str(uuid.uuid4()),
                                              owner=request.user
                                            )
