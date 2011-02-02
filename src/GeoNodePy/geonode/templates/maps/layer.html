@@ -81,9 +81,14 @@
 {% if can_change_permissions %}
             new GeoNode.PermissionsEditor({
                 renderTo: "permissions_form",
-                submitTo: "{% url geonode.maps.views.ajax_layer_permissions layer.typename %}",
                 userLookup: "{% url geonode.views.ajax_lookup %}",
-                permissions: {{ permissions_json }}
+                permissions: {{ permissions_json }},
+                listeners: {
+                    updated: function(perms) {
+                        var submitTo = "{% url geonode.maps.views.ajax_layer_permissions layer.typename %}";
+                        Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
+                    }
+                }
             });
 {% endif %}
         });
