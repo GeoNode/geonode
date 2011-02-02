@@ -6,8 +6,13 @@
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/fileuploadfield/fileuploadfield.css"/>
 {{ block.super }}
+<script type="text/javascript">
+Ext.onReady(function() {
+});
+</script>
 {% endblock %}
 
 {% block main %}
@@ -59,7 +64,7 @@ Ext.onReady(function(){
         emptyText: gettext('Select a .dbf data file'),
         fieldLabel: gettext('DBF'),
         name: 'dbf_file',
-        allowBlank: false,
+        allowBlank: true,
         listeners: listeners
     });
 
@@ -68,7 +73,7 @@ Ext.onReady(function(){
         emptyText: gettext('Select a .shx data file'),
         fieldLabel: gettext('SHX'),
         name: 'shx_file',
-        allowBlank: false,
+        allowBlank: true,
         listeners: listeners
     });
 
@@ -97,6 +102,10 @@ Ext.onReady(function(){
         allowBlank: true
     });
 
+    var permissionsField = new Ext.form.Hidden({
+        name: "permissions"
+    });
+
     var fp = new Ext.FormPanel({
         renderTo: 'upload_form',
         fileUpload: true,
@@ -109,7 +118,7 @@ Ext.onReady(function(){
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, abstractField, {
+        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, abstractField, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"
@@ -147,12 +156,16 @@ Ext.onReady(function(){
     });
 
     var disable_shapefile_inputs = function() {
+        dbf_file.allowBlank = true;
+        shx_file.allowBlank = true;
         dbf_file.hide();
         shx_file.hide();
         prj_file.hide();
     };
 
     var enable_shapefile_inputs = function() {
+        dbf_file.allowBlank = false;
+        shx_file.allowBlank = false;
         dbf_file.show();
         shx_file.show();
         prj_file.show();
@@ -171,6 +184,22 @@ Ext.onReady(function(){
         check_shapefile();
     });
     disable_shapefile_inputs();
+
+    var permissionsEditor = new GeoNode.PermissionsEditor({
+        renderTo: "permissions_form",
+        userLookup: "{% url geonode.views.ajax_lookup %}",
+        listeners: {
+            updated: function(pe) {
+                permissionsField.setValue(Ext.util.JSON.encode(pe.writePermissions()));
+            }
+        },
+        permissions: {
+            anonymous: 'layer_readonly',
+            authenticated: 'layer_readonly',
+            users:[]
+        },
+    });
+    permissionsEditor.fireEvent("updated", permissionsEditor);
 });
 {% endautoescape %}
 </script>
@@ -180,20 +209,7 @@ Ext.onReady(function(){
 
 {% block sidebar %}
 <div class="threecol">
-<h3>{%trans "Instructions"  %}</h3>
+<h3>{%trans "Permissions"  %}</h3>
 
-<p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
-
-<h3>{% trans "Supported Formats"  %}</h3>
-
-<ul>
-  <li>Shapefile</li>
-  <li>GeoTIFF</li>
-</ul>
-<p>
-{% blocktrans %}
-Note: If you are uploading a shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
-{% endblocktrans %}
-</p>
-</div>
+<div id="permissions_form"></div>
 {% endblock %}

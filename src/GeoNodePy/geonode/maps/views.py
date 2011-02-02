@@ -443,6 +443,17 @@ def view_map_permissions(request, mapid):
     ctx['map'] = map
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
 
+def set_layer_permissions(layer, perm_spec):
+    if "authenticated" in perm_spec:
+        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+    if "anonymous" in perm_spec:
+        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    for username, level in perm_spec['users']:
+        user = User.objects.get(username=username)
+        if level == '':
+            layer.set_user_level(user, layer.LEVEL_NONE)
+        else:
+            layer.set_user_level(user, level)
 
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -462,17 +473,7 @@ def ajax_layer_permissions(request, layername):
         )
 
     permission_spec = json.loads(request.raw_post_data)
-
-    if "authenticated" in permission_spec:
-        layer.set_gen_level(AUTHENTICATED_USERS, permission_spec['authenticated'])
-    if "anonymous" in permission_spec:
-        layer.set_gen_level(ANONYMOUS_USERS, permission_spec['anonymous'])
-    for username, level in permission_spec['users']:
-        user = User.objects.get(username=username)
-        if level == '':
-            layer.set_user_level(user, layer.LEVEL_NONE)
-        else:
-            layer.set_user_level(user, level)
+    set_layer_permissions(layer, permission_spec)
 
     return HttpResponse(
         "Permissions updated",
@@ -1007,8 +1008,8 @@ def _handle_layer_upload(request, layer=None):
                                              storeType=gs_resource.store.resource_type,
                                              typename=typename,
                                              workspace=gs_resource.store.workspace.name,
-                                             title = request.POST.get('layer_title') or gs_resource.title,
-                                             abstract = request.POST.get('abstract') or gs_resource.abstract,
+                                             title = request.POST.get('layer_title') or gs_resource.title or gs_resource.name,
+                                             abstract = request.POST.get('abstract', ""),
                                              uuid=str(uuid.uuid4()),
                                              owner=request.user
                                            )
@@ -1022,8 +1023,12 @@ def _handle_layer_upload(request, layer=None):
                 layer.metadata_author = author_contact
                 logger.debug("committing DB changes for %s", typename)
                 layer.save()
-                logger.debug("Setting default permissions for %s", typename)
-                layer.set_default_permissions()
+                logger.debug("Setting permissions for %s [%s]", typename, request.POST.get("permissions"))
+                try:
+                    perm_spec = json.loads(request.POST["permissions"])
+                    set_layer_permissions(layer, perm_spec)
+                except:
+                    layer.set_default_permissions()
                 logger.debug("Generating separate style for %s", typename)
                 fixup_style(cat, gs_resource, request.FILES.get('sld_file'))
         except Exception, e:
