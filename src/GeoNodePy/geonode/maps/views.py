@@ -1106,10 +1106,16 @@ def _perms_info_json(obj, level_names):
     return json.dumps(_perms_info(obj, level_names))
 
 def _fix_map_perms_for_editor(info):
-    def fix(x): return "layer" + x[len("map"):] 
+    perms = {
+        Map.LEVEL_READ: Layer.LEVEL_READ,
+        Map.LEVEL_WRITE: Layer.LEVEL_WRITE,
+        Map.LEVEL_ADMIN: Layer.LEVEL_ADMIN,
+    }
+
+    def fix(x): return perms.get(x, "_none")
 
     info[ANONYMOUS_USERS] = fix(info[ANONYMOUS_USERS])
-    info[AUTHENTICATED_USERS] = fix(info[ANONYMOUS_USERS])
+    info[AUTHENTICATED_USERS] = fix(info[AUTHENTICATED_USERS])
     info['users'] = [(u, fix(level)) for u, level in info['users']]
 
     return info
