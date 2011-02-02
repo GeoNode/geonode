@@ -25,7 +25,7 @@ GeoNode.UserSelector = Ext.extend(Ext.util.Observable, {
             this.store = new Ext.data.ArrayStore({
                 idIndex: 0,
                 fields: ['username'],
-                data: [['dwins'], ['rpenate'], ['sbenthall']],
+                data: [],
             });
         }
     },
@@ -53,11 +53,10 @@ GeoNode.UserSelector = Ext.extend(Ext.util.Observable, {
         this.selectedUsers = new Ext.DataView({
             store: this.store,
             itemSelector: 'div.user_item',
-            tpl: new Ext.XTemplate('<div><tpl for="."> <div class="user_item"><button class="x-btn icon-addlayers remove-button">X</button>{username}</div></tpl></div>'),
+            tpl: new Ext.XTemplate('<div><tpl for="."> <div class="x-btn user_item"><button class="icon-removelayers remove-button">&nbsp;</button>{username}</div></tpl></div>'),
             plugins: [plugin],
             autoHeight: true,
-            multiSelect: true,
-            emptyText: 'No users in list'
+            multiSelect: true
         });
 
         function addSelectedUser() {

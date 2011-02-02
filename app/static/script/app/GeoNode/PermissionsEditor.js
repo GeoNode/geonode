@@ -71,11 +71,11 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             border: false,
             bwrapCfg: { tag: 'p' },
             items: [
-                {html: "<strong>Who can view this data?</strong>", flex: 1, border: false},
+                {html: "<strong>" + gettext("Who can view this data?") + "</strong>", flex: 1, border: false},
                 { xtype: 'radiogroup', columns: 1, value: this.viewMode, items: [
-                    { xtype: 'radio', name: 'viewmode', inputValue: 'ANYONE', boxLabel: 'Anyone'},
-                    { xtype: 'radio', name: 'viewmode', inputValue: 'REGISTERED', boxLabel: 'Any registered user'},
-                    { xtype: 'radio', name: 'viewmode', inputValue: 'EDITORS', boxLabel: 'Only users who can edit'}
+                    { xtype: 'radio', name: 'viewmode', inputValue: 'ANYONE', boxLabel: gettext( 'Anyone')},
+                    { xtype: 'radio', name: 'viewmode', inputValue: 'REGISTERED', boxLabel: gettext('Any registered user')},
+                    { xtype: 'radio', name: 'viewmode', inputValue: 'EDITORS', boxLabel: gettext('Only users who can edit')}
                 ], listeners: {
                     change: function(grp, checked) {
                         this.viewMode = checked.inputValue;
@@ -109,10 +109,10 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             border: false, 
             bwrapCfg: { tag: 'p' },
             items: [
-                {html: "<strong>Who can edit this data?</strong>", flex: 1, border: false},
+                {html: "<strong>" +  gettext('Who can edit this data?') + "</strong>", flex: 1, border: false},
                 { xtype: 'radiogroup', columns: 1, value: this.editMode, items: [
-                    { xtype: 'radio', name: 'editmode', inputValue: 'REGISTERED', boxLabel: 'Any registered user' },
-                    { xtype: 'radio', name: 'editmode', inputValue: 'LIST', boxLabel: 'Only the following users or groups:' }
+                    { xtype: 'radio', name: 'editmode', inputValue: 'REGISTERED', boxLabel: gettext('Any registered user')},
+                    { xtype: 'radio', name: 'editmode', inputValue: 'LIST', boxLabel: gettext('Only the following users or groups:')}
                 ], listeners: {
                     change: function(grp, checked) {
                         this.editMode = checked.inputValue;
@@ -145,7 +145,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             border: false, 
             bwrapCfg: { tag: 'p' },
             items: [
-                {html: "<strong>Who can manage this data?</strong>", flex: 1, border: false},
+                {html: "<strong>" +  gettext('Who can manage this data?') + "</strong>", flex: 1, border: false},
                 this.managerChooser.panel
             ]
         });
@@ -180,7 +180,6 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             anonymousPermissions = '_none';
         }
 
-        console.log(this.editMode);
         if (this.editMode === 'REGISTERED') {
             authenticatedPermissions = 'layer_readwrite';
         } else if (this.viewMode === 'REGISTERED') {

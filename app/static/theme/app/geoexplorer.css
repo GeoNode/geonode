@@ -350,6 +350,12 @@ div.overlay-scaleline {
     padding: 5px;
 }
 
+.user_item button {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+}
+
 #more-info{ 
 float:right;
 }
