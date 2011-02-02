@@ -71,7 +71,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             border: false,
             bwrapCfg: { tag: 'p' },
             items: [
-                {html: "<strong>" + gettext("Who can view this data?") + "</strong>", flex: 1, border: false},
+                {html: "<strong>" + gettext("Who can view and download this data?") + "</strong>", flex: 1, border: false},
                 { xtype: 'radiogroup', columns: 1, value: this.viewMode, items: [
                     { xtype: 'radio', name: 'viewmode', inputValue: 'ANYONE', boxLabel: gettext( 'Anyone')},
                     { xtype: 'radio', name: 'viewmode', inputValue: 'REGISTERED', boxLabel: gettext('Any registered user')},
@@ -145,7 +145,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             border: false, 
             bwrapCfg: { tag: 'p' },
             items: [
-                {html: "<strong>" +  gettext('Who can manage this data?') + "</strong>", flex: 1, border: false},
+                {html: "<strong>" +  gettext('Who can manage and edit this data?') + "</strong>", flex: 1, border: false},
                 this.managerChooser.panel
             ]
         });
