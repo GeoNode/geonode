@@ -25,12 +25,17 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
 
     constructor: function(config) {
         Ext.apply(this, config);
+        this.addEvents({ 'updated': true });
+        GeoNode.PermissionsEditor.superclass.constructor.call(this, config);
         this.initStores();
         this.readPermissions(config.permissions);
         this.doLayout();
     },
 
     initStores: function(config) {
+        var notifyOfUpdate = (function(t) {
+            return function() { return t.fireEvent("updated", t); }
+        })(this);
         this.editors = new Ext.data.Store({
             reader: new Ext.data.JsonReader({
                 root: 'users',
@@ -38,10 +43,9 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                 fields: [{name: 'username'}]
             }),
             listeners: {
-                add: this.saveToServer,
-                remove: this.saveToServer,
-                update: this.saveToServer,
-                scope: this
+                add: notifyOfUpdate,
+                remove: notifyOfUpdate,
+                update: notifyOfUpdate
             }
         });
         this.managers = new Ext.data.Store({
@@ -51,10 +55,9 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                 fields: [{name: 'username'}]
             }),
             listeners: {
-                add: this.saveToServer,
-                remove: this.saveToServer,
-                update: this.saveToServer,
-                scope: this
+                add: notifyOfUpdate,
+                remove: notifyOfUpdate,
+                update: notifyOfUpdate
             }
         });
     },
@@ -79,7 +82,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                 ], listeners: {
                     change: function(grp, checked) {
                         this.viewMode = checked.inputValue;
-                        this.saveToServer();
+                        this.fireEvent("updated", this);
                     },
                     scope: this
                 }}, 
@@ -117,7 +120,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                     change: function(grp, checked) {
                         this.editMode = checked.inputValue;
                         this.editorChooser.setDisabled(this.editMode !== 'LIST');
-                        this.saveToServer();
+                        this.fireEvent("updated", this);
                     },
                     scope: this
                 }},
@@ -152,6 +155,8 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
     },
 
     readPermissions: function(json) {
+        this.editors.suspendEvents();
+        this.managers.suspendEvents();
         if (json['authenticated'] == 'layer_readwrite') {
             this.editMode = 'REGISTERED';
         } else if (json['authenticated'] == 'layer_readonly') {
@@ -169,6 +174,9 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
                 this.managers.add(new this.managers.recordType({username: json.users[i][0]}, i + 500));
             }
         }
+
+        this.editors.resumeEvents();
+        this.managers.resumeEvents();
     },
 
     // write out permissions to a JSON string, suitable for sending back to the mothership
@@ -204,11 +212,6 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
             authenticated: authenticatedPermissions,
             users: perUserPermissions
         };
-    },
-
-    saveToServer: function() {
-        var perms = this.writePermissions();
-        Ext.Ajax.request({ url: this.submitTo, jsonData: perms });
     },
 
     doLayout: function() {
