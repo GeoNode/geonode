@@ -465,15 +465,14 @@ def ajax_layer_permissions(request, layername):
 
     if "authenticated" in permission_spec:
         layer.set_gen_level(AUTHENTICATED_USERS, permission_spec['authenticated'])
-    elif "anonymous" in permission_spec:
+    if "anonymous" in permission_spec:
         layer.set_gen_level(ANONYMOUS_USERS, permission_spec['anonymous'])
-    else:
-        for username, level in permission_spec['users']:
-            user = User.objects.get(username=username)
-            if level == '':
-                layer.set_user_level(user, layer.LEVEL_NONE)
-            else:
-                layer.set_user_level(user, level)
+    for username, level in permission_spec['users']:
+        user = User.objects.get(username=username)
+        if level == '':
+            layer.set_user_level(user, layer.LEVEL_NONE)
+        else:
+            layer.set_user_level(user, level)
 
     return HttpResponse(
         "Permissions updated",
