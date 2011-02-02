@@ -1011,8 +1011,8 @@ def _handle_layer_upload(request, layer=None):
                                              storeType=gs_resource.store.resource_type,
                                              typename=typename,
                                              workspace=gs_resource.store.workspace.name,
-                                             title = request.POST.get('layer_title') or gs_resource.title,
-                                             abstract = request.POST.get('abstract') or gs_resource.abstract,
+                                             title = request.POST.get('layer_title') or gs_resource.title or gs_resource.name,
+                                             abstract = request.POST.get('abstract', ""),
                                              uuid=str(uuid.uuid4()),
                                              owner=request.user
                                            )
@@ -1026,8 +1026,12 @@ def _handle_layer_upload(request, layer=None):
                 layer.metadata_author = author_contact
                 logger.debug("committing DB changes for %s", typename)
                 layer.save()
-                logger.debug("Setting default permissions for %s", typename)
-                layer.set_default_permissions()
+                logger.debug("Setting permissions for %s [%s]", typename, request.POST.get("permissions"))
+                try:
+                    perm_spec = json.loads(request.POST["permissions"])
+                    set_layer_permissions(layer, perm_spec)
+                except:
+                    layer.set_default_permissions()
                 logger.debug("Generating separate style for %s", typename)
                 fixup_style(cat, gs_resource, request.FILES.get('sld_file'))
         except Exception, e:
