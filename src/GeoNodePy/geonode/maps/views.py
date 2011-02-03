@@ -700,11 +700,15 @@ def _create_new_user(user_email, map_layer_title, map_layer_url, map_layer_owner
     while len(User.objects.filter(username=user_name)) > 0:
         user_name = user_name[0:user_length-4] + User.objects.make_random_password(length=4, allowed_chars='0123456789')
     
-    user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, send_email=False)                    
+    new_user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, send_email=False)
 
-    _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id, random_password)
+    if new_user:
+        new_profile = Contact(user=new_user, name=new_user.username, email=new_user.email)
+        new_profile.save()
+
+        _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id, random_password)
     
-    return user           
+    return new_user
 
 
 def _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id,  password):
