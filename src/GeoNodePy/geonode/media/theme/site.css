@@ -437,6 +437,14 @@ background-image: url(img/silk/map_add.png);
 background-image: url(img/silk/map_magnify.png);
 }
 
+.x-btn .icon-delete { 
+    background-image: url(img/silk/delete.png);
+}
+
+.x-btn .icon-security { 
+    background-image: url(img/silk/lock.png);
+}
+
 a.download { 
 background-repeat:no-repeat;
 padding-left: 18px;
