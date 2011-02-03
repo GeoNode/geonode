@@ -25,8 +25,6 @@
 {% block sidebar %}
 <div class="twocol">
     <h2> {% trans "Maps & Data" %} </h2>
-    <span>{% trans "Remove selected" %}</span>
-    <span>{% trans "Change permissions on selected" %}</span>
     <div id="assets"></div>
 </div>
 <script type="text/javascript">
@@ -49,7 +47,6 @@ Ext.onReady(function() {
         store: assets,
         emptyText: gettext("This user hasn't uploaded any data yet."),
         autoHeight: true,
-        renderTo: 'assets',
         multiSelect: true,
         columns: [
           {% if user == profile.user %}
@@ -106,6 +103,50 @@ Ext.onReady(function() {
             }
         }
     });
+
+    var tools = {
+        layout: 'hbox',
+        unstyled: true,
+        items: [
+            { xtype: 'button',
+              text: gettext("Remove selected"),
+              iconCls: 'icon-delete',
+              handler: function() {
+                  Ext.Msg.confirm(
+                      gettext("Delete layers"),
+                      gettext("You're about to delete several layers and maps.  Is that really what you want to do?"),
+                      function(btn) {
+                          if (btn == 'yes') {
+                          }
+                      }
+                  );
+              }
+            },
+            { xtype: 'button',
+              text: gettext("Change permissions on selected"),
+              iconCls: 'icon-security',
+              handler: function() {
+                  Ext.Msg.confirm(
+                      gettext("Change permissions"),
+                      gettext("You're about to change permissions on several layers.  Is that really what you want to do?"),
+                      function(btn) {
+                          if (btn == 'yes') {
+                          }
+                      }
+                  );
+              }
+            }
+        ]
+    }
+
+    new Ext.Panel({
+        border: false,
+        renderTo: 'assets',
+        items: [tools, assetView]
+    });
+
+    // <div id=>{% trans "Remove selected" %}</span>
+    // <span>{% trans "Change permissions on selected" %}</span>
 });
 </script>
 {% endblock %}
