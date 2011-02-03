@@ -696,3 +696,26 @@ padding: 0 4px;
 span.style-title {
 cursor: pointer;
 }
+
+.x-list-body .data-type, .x-list-body .data-delete, .x-list-body .data-edit {
+    height: 16px; width: 16px;
+}
+
+.x-list-body .data-type.layer {
+    background-image: url(img/silk/page_green.png); 
+}
+
+.x-list-body .data-type.map {
+    background-image: url(img/silk/map.png); 
+}
+
+.x-list-body .data-edit {
+    background-image: url(img/silk/pencil.png);
+}
+
+.x-list-body .data-delete {
+    background-image: url(img/silk/delete.png);
+}
+
+.x-list-body dl { margin: 0; }
+
