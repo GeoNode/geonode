@@ -1,42 +1,111 @@
 {% extends "profiles/base.html" %}
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{{ block.super }}
+{% endblock %}
 {% load i18n avatar_tags %}
 {% block content %}
-<div class="twocol">
-  <h2>Profile for {{ profile.user.username }}</h2>
-  {% avatar profile.user 100 %}
-  <p><strong>{% trans "Name" %}:</strong> {{ profile.name}}</p>
-  <p><strong>{% trans "Email" %}:</strong>  {{ profile.user.email }}</p>
-  <p><strong>{% trans "Organization" %}:</strong> {{ profile.organization}}</p>
-  <p><strong>{% trans "Position" %}:</strong>: {{ profile.position}}</p>
-  <p><strong>{% trans "Voice" %}:</strong>  {{ profile.voice}}</p>
-  <p><strong>{% trans "Fax" %}:</strong> {{ profile.fax}}</p>
-  <p><strong>{% trans "Delivery" %}:</strong> {{ profile.delivery}}</p>
-  <p><strong>{% trans "Area" %}:</strong> {{ profile.area}}</p>
-  <p><strong>{% trans "Zip Code" %}:</strong> {{ profile.zipcode}}</p>
-  <p><strong>{% trans "Country" %}:</strong> {{ profile.country}}</p>
-</div>
-{% endblock %}
-{% block sidebar %}
 <div class="threecol">
-    <h3>{% trans "Actions" %}</h3>
+  <div style="float: right">{% avatar profile.user 70 %}</div>
+  <h2>{{ profile.name }}</h2>
+  {% if user == profile.user %}
+  <h3>{% trans "Actions" %}</h3>
   <ul>
-    {% if user == profile.user %}
-    <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
-    {% endif %}
     <li><a href="{% url data_upload %}">{% trans "Upload new data" %}</a></li>
     <li><a href="{% url map_new %}">{% trans "Create a new map" %}</a></li>
   </ul>
-  <h3>{% blocktrans with profile.user as user %}Maps by {{ user }}{% endblocktrans %}</h3>
-  {% if profile.user.map_set.count %}
-  <ul> {% for map in profile.user.map_set.all %} <li> <a href="{{ map.get_absolute_url }}">{{ map.title }}</a> {% endfor %} </ul>
-  {% else %}
-    <p> {% blocktrans with profile.user as user %} {{ user }} has not created any maps yet. {% endblocktrans %}
-  {% endif %}
-  <h3>{% blocktrans with profile.user as user %}Layers by {{ user }}{% endblocktrans %}</h3>
-  {% if profile.user.layer_set.count %}
-  <ul> {% for layer in profile.user.layer_set.all %} <li> <a href="{{ layer.get_absolute_url }}">{{ layer }}</a> {% endfor %} </ul>
-  {% else %}
-    <p> {% blocktrans with profile.user as user %} {{ user }} has not uploaded any data yet. {% endblocktrans %}
+  <h3>{% trans "Settings" %}</h3>
+  <ul>
+    <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
+  </ul>
   {% endif %}
 </div>
+{% endblock %}
+{% block sidebar %}
+<div class="twocol">
+    <h2> {% trans "Maps & Data" %} </h2>
+    <span>{% trans "Remove selected" %}</span>
+    <span>{% trans "Change permissions on selected" %}</span>
+    <div id="assets"></div>
+</div>
+<script type="text/javascript">
+Ext.onReady(function() {
+    var assets = new Ext.data.Store({
+        reader: new Ext.data.ArrayReader({
+            fields: [ "type", "href", "title", "date" ]
+        }),
+        data: [
+        {% for lyr in profile.user.layer_set.all %}
+        ["layer", "{{ lyr.get_absolute_url }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|escapejs }}"]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        {% if profile.user.layer_set.count and profile.user.map_set.count %},{% endif %}
+        {% for map in profile.user.map_set.all %}
+        ["map", "{{ map.get_absolute_url }}", "{{ map.title|escapejs }}", "{{ map.last_modified|escapejs }}"]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        ]
+    });
+    var assetView = new Ext.list.ListView({
+        store: assets,
+        emptyText: gettext("This user hasn't uploaded any data yet."),
+        autoHeight: true,
+        renderTo: 'assets',
+        multiSelect: true,
+        columns: [
+          {% if user == profile.user %}
+            { tpl: "<input type='checkbox' class='data-selection'>&nbsp;</input>", width: 0.05 },
+          {% endif %}
+            { header: gettext('Type'), tpl: "<div class='data-type {type}'>&nbsp;</div>", width: 0.06 },
+            { header: gettext('Title'), dataIndex: 'title', autoExpand: true,
+              tpl: "<a href='{href}'> {title} </a>" },
+            { header: gettext('Date'), dataIndex: 'date', width: 0.25 }
+          {% if user == profile.user %}  ,
+            { tpl: "<div class='data-edit'>&nbsp;</div>", width: 0.05 },
+            { tpl: "<div class='data-delete'>&nbsp;</div>", width: 0.05 }
+          {% endif %}
+        ], 
+        listeners: {
+            selectionchange: function(view, selections) {
+                var cbs = view.getEl().query("input.data-selection[type='checkbox']");
+                for (var i = 0; i < cbs.length; i++) {
+                    cbs[i].checked = null;
+                }
+                for (var i = 0; i < selections.length; i++) {
+                    var cb = Ext.get(selections[i]).query("input.data-selection[type='checkbox']")[0];
+                    cb.checked = 'checked';
+                }
+            },
+            render: function(listview)  {
+                function doToRecord(act) {
+                    return function(evt, target) {
+                        var item = listview.findItemFromChild(target);
+                        var idx = listview.indexOf(item);
+                        var rec = listview.getStore().getAt(idx);
+                        act(rec);
+                    }
+                }
+                var view = doToRecord(function(rec) {
+                    window.location = rec.get("href");
+                });
+                var edit = doToRecord(function(rec) {
+                    var link = rec.get("href");
+                    if (rec.get("type") === "map") {
+                        link += "/view";
+                    } else {
+                        link += "?describe";
+                    }
+                    window.location = link;
+                });
+                var delete_ = doToRecord(function(rec) {
+                    var link = rec.get("href") + "?remove";
+                    window.location = link;
+                });
+                listview.getEl().on("click", view, this, { delegate: 'a' });
+                listview.getEl().on("click", edit, this, { delegate: '.data-edit' });
+                listview.getEl().on("click", delete_, this, { delegate: '.data-delete' });
+            }
+        }
+    });
+});
+</script>
 {% endblock %}
