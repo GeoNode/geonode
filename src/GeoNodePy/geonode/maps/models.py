@@ -524,6 +524,17 @@ class Contact(models.Model):
     is_org_member = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
     member_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
 
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
+
+
     def clean(self):
         # the specification says that either name or organization should be provided
         valid_name = (self.name != None and self.name != '')
@@ -660,7 +671,17 @@ class LayerManager(models.Manager):
 class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
     title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
-    
+
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
+
     def __str__(self):
         return "%s" % self.name
 
@@ -726,7 +747,15 @@ class Layer(models.Model, PermissionLevelMixin):
     # Section 8
     data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True)
     
-    
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
 
     
     # Section 9
@@ -1159,6 +1188,16 @@ class LayerAttribute(models.Model):
     attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
     searchable = models.BooleanField(default=False)
 
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
+
     def __str__(self):
         return "%s" % self.attribute
 
@@ -1208,7 +1247,13 @@ class Map(models.Model, PermissionLevelMixin):
     The user that created/owns this map.
     """
 
-    last_modified = models.DateTimeField(auto_now_add=True)
+
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the map was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
     """
     The last time the map was modified.
     """
@@ -1588,7 +1633,18 @@ class MapLayer(models.Model):
     If this dictionary conflicts with options that are stored in other fields
     (such as ows_url) then the fields override.
     """
-    
+
+
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """    
+
     def local(self): 
         """
         Tests whether this layer is served by the GeoServer instance that is
@@ -1664,6 +1720,16 @@ class Role(models.Model):
     """
     value = models.CharField('Role', choices= [(x, x) for x in ROLE_VALUES], max_length=255, unique=True)
     permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
+
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
 
     def __unicode__(self):
         return self.get_value_display()
