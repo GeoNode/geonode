@@ -584,7 +584,7 @@ def ajax_layer_permissions_by_email(request, layername):
     )
 
 def ajax_layer_edit_check(request, layername):
-    layer = get_object_or_404(Layer, name=layername);
+    layer = get_object_or_404(Layer, typename=layername);
     return HttpResponse(
             str(request.user.has_perm("maps.change_layer", obj=layer)),
             status=200,
@@ -1965,6 +1965,27 @@ def search_page(request):
     map = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
 
     return render_to_response('search.html', RequestContext(request, {
+        'init_search': json.dumps(params or {}),
+        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASELAYERS)),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        "site" : settings.SITEURL
+    }))
+
+
+
+def addlayers(request):
+    # for non-ajax requests, render a generic search page
+
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
+    map = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
+
+    return render_to_response('addlayers.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
         'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASELAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
