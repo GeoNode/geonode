@@ -1132,7 +1132,6 @@ def layerController(request, layername):
                     _("You are not permitted to view this layer")})), status=401)
         
         metadata = layer.metadata_csw()
-
         maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
         # center/zoom don't matter; the viewer will center on the layer bounds
@@ -1515,6 +1514,7 @@ def _perms_info_email_json(obj, level_names):
     if hasattr(obj, 'owner') and obj.owner: 
         info['owner'] = obj.owner.username
         info['owner_email'] = obj.owner.email
+    logging.debug(str(info))
     return json.dumps(info)
 
 INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
@@ -2077,8 +2077,13 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     for map in maps.all()[start:start+limit]:
         try:
             owner_name = Contact.objects.get(user=map.owner).name
+            if not owner_name:
+                owner_name = map.owner.username
         except:
-            owner_name = map.owner.first_name + " " + map.owner.last_name
+            if map.owner.first_name:
+                owner_name = map.owner.first_name + " " + map.owner.last_name
+            else:
+                owner_name = map.owner.username
 
         mapdict = {
             'id' : map.id,
@@ -2124,9 +2129,7 @@ def searchFieldsJSON(request):
     if layername:
         try:
             geoLayer = Layer.objects.get(typename=layername)
-            
-            editable = request.user.is_authenticated() and request.user.has_perm('maps.change_layer', obj=geoLayer)
-            
+
             category =geoLayer.topic_category
             if category is not None:
                 catname = category.name
@@ -2141,7 +2144,7 @@ def searchFieldsJSON(request):
                         scount+=1            
         except Exception, e: 
             logger.debug("Could not find matching layer: [%s]", str(e))            
-        sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount, 'editable' : str(editable)}
+        sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount}
         logger.debug('sfJSON is [%s]', str(sfJSON))
         return HttpResponse(json.dumps(sfJSON))
     else:
