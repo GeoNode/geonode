@@ -31,15 +31,16 @@
 Ext.onReady(function() {
     var assets = new Ext.data.Store({
         reader: new Ext.data.ArrayReader({
-            fields: [ "type", "href", "title", "date" ]
+            idIndex: 0,
+            fields: ["id", "type", "href", "title", "date"]
         }),
         data: [
         {% for lyr in profile.user.layer_set.all %}
-        ["layer", "{{ lyr.get_absolute_url }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|escapejs }}"]{% if not forloop.last %},{% endif %}
+        ["{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|escapejs }}"]{% if not forloop.last %},{% endif %}
         {% endfor %}
         {% if profile.user.layer_set.count and profile.user.map_set.count %},{% endif %}
         {% for map in profile.user.map_set.all %}
-        ["map", "{{ map.get_absolute_url }}", "{{ map.title|escapejs }}", "{{ map.last_modified|escapejs }}"]{% if not forloop.last %},{% endif %}
+        ["{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}", "{{ map.title|escapejs }}", "{{ map.last_modified|escapejs }}"]{% if not forloop.last %},{% endif %}
         {% endfor %}
         ]
     });
@@ -104,6 +105,25 @@ Ext.onReady(function() {
         }
     });
 
+    function serialize() {
+        var list = { layers: [], maps: [] };
+        var selection = assetView.getSelectedRecords();
+
+        for (var i = 0; i < selection.length; i++) {
+            var rec = selection[i],
+                type = rec.get("type"),
+                id = rec.get("id");
+
+            if (type === "layer") {
+                list.layers.push(id);
+            } else if (type === "map") {
+                list.maps.push(id);
+            }
+        };
+        
+        return list;
+    }
+
     var tools = {
         layout: 'hbox',
         unstyled: true,
@@ -114,9 +134,11 @@ Ext.onReady(function() {
               handler: function() {
                   Ext.Msg.confirm(
                       gettext("Delete layers"),
-                      gettext("You're about to delete several layers and maps.  Is that really what you want to do?"),
+                      gettext("You're about to delete multiple layers and maps.  Is that really what you want to do?"),
                       function(btn) {
                           if (btn == 'yes') {
+                              var deletionList = serialize();
+                              console && console.log(deletionList);
                           }
                       }
                   );
@@ -131,6 +153,37 @@ Ext.onReady(function() {
                       gettext("You're about to change permissions on several layers.  Is that really what you want to do?"),
                       function(btn) {
                           if (btn == 'yes') {
+                              var activeList = serialize();
+                              var editor = new GeoNode.PermissionsEditor({
+                                  userLookup: "{% url geonode.views.ajax_lookup %}",
+                                  permissions: { users:[] }
+                              });
+                              editor.container.padding = 5;
+                              var saveButton = new Ext.Button({
+                                  xtype: 'button',
+                                  text: gettext("Apply changes"),
+                                  handler: function() {
+                                      var spec = serialize();
+                                      spec.permissions = editor.writePermissions();
+                                      Ext.Ajax.request({
+                                          url: '/api/bulk-set-permissions',
+                                          method: 'post',
+                                          data: spec,
+                                          success: function() { alert("success!") },
+                                          failure: function() { alert("failure") }
+                                      });
+                                  }
+                              });
+                              var win = new Ext.Window({
+                                  title: gettext("Permissions"),
+                                  modal: true,
+                                  items: [ editor.container, {
+                                      padding: 5,
+                                      border: false,
+                                      items: [ saveButton ]
+                                  }]
+                              });
+                              win.show();
                           }
                       }
                   );
