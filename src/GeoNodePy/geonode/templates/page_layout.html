@@ -1,4 +1,7 @@
 {% load i18n %}
+{% load officialsites %}
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
@@ -48,13 +51,15 @@
     </div><!-- /.wrap -->
   </div><!-- /#header --> 
   <div id="crossbar">
-    <div class="wrap selfclear">             
+    <div class="wrap selfclear">
+
       {% block nav %}
+      {% official_sites master %}
       <ul id="sitenav" class="selfclear">
   		<li class="site_nav" style="vertical-align:middle;padding-top:5px;">
   			<select id="selectSite" onChange="if (this.selectedIndex > 0) {document.location.href=this.options[this.selectedIndex].value}">
   				<option value="">Browse Maps</option>
-  				{% for officialsite in officialsites %}
+  				{% for officialsite in official_sites %}
   					<option value="/{{officialsite.officialurl}}">{{officialsite.title}}</option>
   				{% endfor%}
   				<option value="{% url maps_search %}?sort=last_modified&dir=DESC">More Maps</option>
