@@ -559,7 +559,7 @@ def mapdetail(request,mapid):
         'config': config, 
         'map': map,
         'layers': layers,
-        'permissions_json': _perms_info_json(map, MAP_LEV_NAMES)
+        'permissions_json': json.dumps(_fix_map_perms_for_editor(_perms_info(map, MAP_LEV_NAMES)))
     }))
 
 @csrf_exempt
@@ -1090,15 +1090,29 @@ def _view_perms_context(obj, level_names):
 
     return ctx
 
-def _perms_info_json(obj, level_names):
+def _perms_info(obj, level_names):
     info = obj.get_all_level_info()
     # these are always specified even if none
     info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
     info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
     info['users'] = sorted(info['users'].items())
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
-    if hasattr(obj, 'owner') and obj.owner: info['owner'] = obj.owner.username
-    return json.dumps(info)
+    if hasattr(obj, 'owner') and obj.owner is not None:
+        info['owner'] = obj.owner.username
+    return info
+       
+
+def _perms_info_json(obj, level_names):
+    return json.dumps(_perms_info(obj, level_names))
+
+def _fix_map_perms_for_editor(info):
+    def fix(x): return "layer" + x[len("map"):] 
+
+    info[ANONYMOUS_USERS] = fix(info[ANONYMOUS_USERS])
+    info[AUTHENTICATED_USERS] = fix(info[ANONYMOUS_USERS])
+    info['users'] = [(u, fix(level)) for u, level in info['users']]
+
+    return info
 
 INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 def _handle_perms_edit(request, obj):
