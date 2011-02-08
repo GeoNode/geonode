@@ -46,7 +46,6 @@ Ext.onReady(function() {
     });
     var assetView = new Ext.list.ListView({
         store: assets,
-        emptyText: gettext("This user hasn't uploaded any data yet."),
         autoHeight: true,
         multiSelect: true,
         columns: [
@@ -137,8 +136,15 @@ Ext.onReady(function() {
                       gettext("You're about to delete multiple layers and maps.  Is that really what you want to do?"),
                       function(btn) {
                           if (btn == 'yes') {
-                              var deletionList = serialize();
-                              console && console.log(deletionList);
+                              var spec = serialize();
+                              Ext.Ajax.request({
+                                  url: '/data/api/batch_delete',
+                                  method: 'post',
+                                  jsonData: spec,
+                                  success: function() {
+                                      assetView.getStore().remove(assetView.getSelectedRecords());
+                                  }
+                              });
                           }
                       }
                   );
@@ -166,9 +172,9 @@ Ext.onReady(function() {
                                       var spec = serialize();
                                       spec.permissions = editor.writePermissions();
                                       Ext.Ajax.request({
-                                          url: '/api/bulk-set-permissions',
+                                          url: '/data/api/batch_permissions',
                                           method: 'post',
-                                          data: spec,
+                                          jsonData: spec,
                                           success: function() { alert("success!") },
                                           failure: function() { alert("failure") }
                                       });
