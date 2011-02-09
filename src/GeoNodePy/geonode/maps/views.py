@@ -497,21 +497,23 @@ def ajax_map_permissions(request, mapid):
             mimetype='text/plain'
         )
 
-    if "authenticated" in request.POST:
-        map.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
-    elif "anonymous" in request.POST:
-        map.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
-    else:
-        user_re = re.compile('^user\\.(.*)')
-        for k, level in request.POST.iteritems():
-            match = user_re.match(k)
-            if match:
-                username = match.groups()[0]
-                user = User.objects.get(username=username)
-                if level == '':
-                    map.set_user_level(user, map.LEVEL_NONE)
-                else:
-                    map.set_user_level(user, level)
+    spec = json.loads(request.raw_post_data)
+    _perms = {
+        Layer.LEVEL_READ: Map.LEVEL_READ,
+        Layer.LEVEL_WRITE: Map.LEVEL_WRITE,
+        Layer.LEVEL_ADMIN: Map.LEVEL_ADMIN,
+    }
+
+    def perms(x):
+        return _perms.get(x, Map.LEVEL_NONE)
+
+    if "anonymous" in spec:
+        map.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
+    if "authenticated" in spec:
+        map.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
+    for username, level in spec['users']:
+        user = User.objects.get(username = username)
+        map.set_user_level(user, perms(level))
 
     return HttpResponse(
         "Permissions updated",
