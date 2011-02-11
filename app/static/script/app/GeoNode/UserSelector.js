@@ -31,6 +31,7 @@ GeoNode.UserSelector = Ext.extend(Ext.util.Observable, {
     },
 
     doLayout: function() {
+        var owner = this.owner;
         var plugin = (function() {
             var view;
             function init(v) {
@@ -44,7 +45,11 @@ GeoNode.UserSelector = Ext.extend(Ext.util.Observable, {
 
             function removeItem(e, target) {
                 var item = view.findItemFromChild(target);
-                view.store.removeAt(view.indexOf(item));
+                var idx = view.indexOf(item);
+                var rec = view.store.getAt(idx);
+                if (rec.get("username") !== owner) {
+                    view.store.removeAt(view.indexOf(item));
+                }
             }
 
             return { init: init };

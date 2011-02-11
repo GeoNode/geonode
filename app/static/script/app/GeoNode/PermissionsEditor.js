@@ -63,7 +63,7 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
     },
 
     buildUserChooser: function(cfg) {
-        var finalConfig = { userLookup: this.userLookup };
+        var finalConfig = { owner: this.permissions.owner, userLookup: this.userLookup };
         Ext.apply(finalConfig, cfg);
 
         return new GeoNode.UserSelector(finalConfig);
