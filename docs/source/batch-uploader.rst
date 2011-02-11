@@ -24,7 +24,8 @@ it as a database back end when running a task queue in production.
 A proper relational database service (postgresql, mysql etc) should be
 used. This functionality has only been tested with PostgreSQL which 
 requires the use of the psycopg2 python module for interacting with the
-database service.
+database service. The django database is configured in 
+src/GeoNode/geonode/settings.py or src/GeoNode/geonode/local_settings.py
 
 psycopg2 - http://initd.org/psycopg/
 
