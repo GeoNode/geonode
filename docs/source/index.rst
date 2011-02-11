@@ -20,6 +20,7 @@ Contents:
    geonode-javascript
    geoserver-extensions
    geonetwork-extensions
+   batch-uploader
    deployment
    logging
 
