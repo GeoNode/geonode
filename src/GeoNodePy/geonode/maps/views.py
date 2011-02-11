@@ -443,6 +443,15 @@ def view_map_permissions(request, mapid):
     ctx['map'] = map
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
 
+def set_layer_permissions(layer, perm_spec):
+    if "authenticated" in perm_spec:
+        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+    if "anonymous" in perm_spec:
+        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    users = [n for (n, p) in perm_spec['users']]
+    layer.get_user_levels().exclude(user__username__in = users).delete()
+    for username, level in perm_spec['users']:
+        user = User.objects.get(username=username)
 
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -462,17 +471,7 @@ def ajax_layer_permissions(request, layername):
         )
 
     permission_spec = json.loads(request.raw_post_data)
-
-    if "authenticated" in permission_spec:
-        layer.set_gen_level(AUTHENTICATED_USERS, permission_spec['authenticated'])
-    if "anonymous" in permission_spec:
-        layer.set_gen_level(ANONYMOUS_USERS, permission_spec['anonymous'])
-    for username, level in permission_spec['users']:
-        user = User.objects.get(username=username)
-        if level == '':
-            layer.set_user_level(user, layer.LEVEL_NONE)
-        else:
-            layer.set_user_level(user, level)
+    set_layer_permissions(layer, permission_spec)
 
     return HttpResponse(
         "Permissions updated",
@@ -511,6 +510,8 @@ def ajax_map_permissions(request, mapid):
         map.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
     if "authenticated" in spec:
         map.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
+    users = [n for (n, p) in spec["users"]]
+    map.get_user_levels().exclude(user__username__in = users).delete()
     for username, level in spec['users']:
         user = User.objects.get(username = username)
         map.set_user_level(user, perms(level))
