@@ -449,9 +449,10 @@ def set_layer_permissions(layer, perm_spec):
     if "anonymous" in perm_spec:
         layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
     users = [n for (n, p) in perm_spec['users']]
-    layer.get_user_levels().exclude(user__username__in = users).delete()
+    layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
     for username, level in perm_spec['users']:
         user = User.objects.get(username=username)
+        layer.set_user_level(user, level)
 
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -511,7 +512,7 @@ def ajax_map_permissions(request, mapid):
     if "authenticated" in spec:
         map.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
     users = [n for (n, p) in spec["users"]]
-    map.get_user_levels().exclude(user__username__in = users).delete()
+    map.get_user_levels().exclude(user__username__in = users + [map.owner]).delete()
     for username, level in spec['users']:
         user = User.objects.get(username = username)
         map.set_user_level(user, perms(level))
