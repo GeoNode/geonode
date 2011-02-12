@@ -16,7 +16,7 @@ if (window.GeoExplorer) {
         helpLabel: gettext("Help"),
         infoButtonText: gettext("About"),
         largeSizeLabel: gettext("Large"),
-        layerAdditionLabel: gettext("+"),
+        layerAdditionLabel: gettext("Add WMS Server"),
         layerContainerText: gettext("Map Layers"),
         layerSelectionLabel: gettext("View available data from:"),
         layerLocalLabel: gettext("Upload your own data"),
@@ -221,7 +221,8 @@ if (window.GeoNode && GeoNode.DataCart) {
         emptySelectionText: gettext('No Layers Selected'),
         titleText: gettext('Title'),
         clearSelectedButtonText: gettext('Clear Selected'),
-        clearAllButtonText: gettext('Clear All') 
+        clearAllButtonText: gettext('Clear All'),
+        addLayersButtonText: gettext('Add Selected Layers')
     });
 }
 

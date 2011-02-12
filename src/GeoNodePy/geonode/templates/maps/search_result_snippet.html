@@ -62,8 +62,8 @@
   {% endif %}
 
 {% else %} 
-  {% has_obj_perm user layer "maps.view_layer" as can_view %}
-  {% if can_view %}
+  {% has_obj_perm user layer "maps.edit_layer" as can_edit %}
+  {% if can_edit %}
     <p><b>{% trans "Download:" %}</b>
     {% for link in extra_links.download %}
       <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
@@ -78,6 +78,6 @@
     </a></p>
     {% endif %}
   {% else %}
-    <p>{% trans "You do not have permission to view or download this layer" %}</p>
+    <p>{% trans "You do not have permission to download this layer" %}</p>
   {% endif %}
 {% endif %}

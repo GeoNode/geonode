@@ -14,10 +14,11 @@
 </script>
 
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
-
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/fileuploadfield/fileuploadfield.css"/>
 <script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/PrintPreview/resources/css/printpreview.css" />
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
+
 {{ block.super }}
 
 <script type="text/javascript">
@@ -61,6 +62,9 @@ Ext.onReady(function() {
 
     }, this);
 
+
+
+
 {% endautoescape %}
 });
 </script>
@@ -70,5 +74,50 @@ Ext.onReady(function() {
 {% block body %}
 <div id="header-wrapper">
   {{ block.super }}
+
+    <div id="dataTabs" class="x-hidden">
+
+<div id="searchDiv" style="background-color:#fff;width:800px;">
+<div style="float:left;position:relative;margin:10px;width:580px;">
+  <div class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+
+    <div id="search_results"></div>
+
+  </div>
+
+  <div class="block wrap selfclear">
+  <h3>Selected Data</h3>
+  <div id="selection">
+    <div id="data_cart"></div>
+    </div>
+    <div id="data_ops">
+    </div>
+  </div>
+
+
+</div>
+
+
+
+<div style="position:relative;float:right;width:200px">
+  <div id="refine" class="block">
+    <h3>{% trans "Refine Search" %}</h3>
+    <div class="bbox-controls">
+      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
+      <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
+      <div class="bbox-expand">
+      </div>
+    </div>
+    <div class="search-button">Refine</div>
+  </div>
+
+</div>
+</div>
+        <div id="externalDiv"></div>
+        <div id="uploadDiv"></div>
+    </div>
+
 </div>
 {% endblock %}
+
