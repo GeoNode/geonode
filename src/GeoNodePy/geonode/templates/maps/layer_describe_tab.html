@@ -141,15 +141,15 @@
 
                                 var uPanel = Ext.getCmp("worldmap_update_panel");
                                 uPanel.load({url:'/data/upload'});
-                                var uWindow = Ext.getCmp("ge_searchWindow");
+                                //var uWindow = Ext.getCmp("ge_searchWindow");
 
 
                                 var geoEx = window.app;
-                                geoEx.reloadWorldMapSource();
+                                //geoEx.reloadWorldMapSource();
                                 var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name'}]);
                                 var thisLayerRec = new LayerRec({title: '{{ layer.title }}', name: '{{ layer.typename }}'});
 
-                                geoEx.addWorldMapLayers([thisLayerRec]);
+                                geoEx.reloadWorldMapSource([thisLayerRec]);
                                 
                             
                     },
