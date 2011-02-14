@@ -954,62 +954,75 @@ def _describe_layer(request, layer):
 
     
         
-        if request.method == "POST":
-            layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
-            attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set")            
-        else:
+        if request.method == "GET":
             layer_form = LayerForm(instance=layer, prefix="layer")
             layer_form.fields["topic_category"].initial = topic_category
             if "map" in request.GET:
                 layer_form.fields["map_id"].initial = request.GET["map"]
             attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set")
 
-            
-        if request.method == "POST" and layer_form.is_valid():
-            if attribute_form.is_valid():
-                for form in attribute_form.cleaned_data:
-                    la = LayerAttribute.objects.get(id=int(form['id'].id))
-                    la.attribute_label = form["attribute_label"]
-                    la.searchable = form["searchable"]
-                    la.save()
-            
-            new_poc = layer_form.cleaned_data['poc']
-            new_author = layer_form.cleaned_data['metadata_author']
-            new_category = layer_form.cleaned_data['topic_category']
-            mapid = layer_form.cleaned_data['map_id']
-            logger.debug("map id is [%s]", mapid)
 
-#            if new_category is None:
-#                    new_category = layer_form.cleaned_data['topic_category_new']
-#                    if new_category is not None:
-#                        try:
-#                            newLayerCategory = LayerCategory.objects.get(name=new_category)
-#                        except LayerCategory.DoesNotExist:
-#                            newLayerCategory = LayerCategory(name=new_category)
-#                            newLayerCategory.save()
-#                        new_category = newLayerCategory
+        if request.method == "POST":
+            layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+            attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set")
+            if layer_form.is_valid():
+                if attribute_form.is_valid():
+                    for form in attribute_form.cleaned_data:
+                        la = LayerAttribute.objects.get(id=int(form['id'].id))
+                        la.attribute_label = form["attribute_label"]
+                        la.searchable = form["searchable"]
+                        la.save()
             
-            if new_poc is None:
-                poc_form = ContactForm(request.POST, prefix="poc")
-                if poc_form.has_changed and poc_form.is_valid():
-                    new_poc = poc_form.save()
+                new_poc = layer_form.cleaned_data['poc']
+                new_author = layer_form.cleaned_data['metadata_author']
+                new_category = layer_form.cleaned_data['topic_category']
+                mapid = layer_form.cleaned_data['map_id']
+                logger.debug("map id is [%s]", mapid)
 
-            if new_author is None:
-                author_form = ContactForm(request.POST, prefix="author")
-                if author_form.has_changed and author_form.is_valid():
-                    new_author = author_form.save()
 
-            logger.debug("Save anything?")
-            if new_poc is not None and new_author is not None:
-                the_layer = layer_form.save(commit=False)
-                the_layer.poc = new_poc
-                the_layer.topic_category = new_category 
-                the_layer.metadata_author = new_author
-                logger.debug("About to save")
-                the_layer.save()
-                logger.debug("Saved")
-                
-        
+                if new_poc is None:
+                    poc_form = ContactForm(request.POST, prefix="poc")
+                    if poc_form.has_changed and poc_form.is_valid():
+                        new_poc = poc_form.save()
+
+                if new_author is None:
+                    author_form = ContactForm(request.POST, prefix="author")
+                    if author_form.has_changed and author_form.is_valid():
+                        new_author = author_form.save()
+
+                logger.debug("Save anything?")
+                if new_poc is not None and new_author is not None:
+                    the_layer = layer_form.save(commit=False)
+                    the_layer.poc = new_poc
+                    the_layer.topic_category = new_category
+                    the_layer.metadata_author = new_author
+                    logger.debug("About to save")
+                    the_layer.save()
+                    logger.debug("Saved")
+
+
+                if request.is_ajax():
+                    return HttpResponse('success', status=200)
+                elif mapid != '':
+                    logging.debug("adding layer to map [%s]", mapid)
+                    maplayer = MapLayer.objects.create(map=Map.objects.get(id=mapid),
+                        name = layer.typename,
+                        group = layer.topic_category.title if layer.topic_category else 'General',
+                        layer_params = '{"selected":true, "title": "' + layer.title + '"}',
+                        source_params = '{"ptype": "gx_wmssource"}',
+                        ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                        visibility = True,
+                        stack_order = MapLayer.objects.filter(id=mapid).count()
+                    )
+                    maplayer.save()
+                    return HttpResponseRedirect("/maps/" + mapid)
+                else:
+                    logger.debug("No map value found")
+                    return HttpResponseRedirect("/data/" + layer.typename)
+
+
+
+
         if poc.user is None:
             poc_form = ContactForm(instance=poc, prefix="poc")
         else:
@@ -1024,136 +1037,31 @@ def _describe_layer(request, layer):
             author_form = ContactForm(prefix="author")
             author_form.hidden=True
 
+        if request.method == 'POST' and not layer_form.is_valid() and request.is_ajax():
+#                form_html = layer_form.as_ul()
+#                data = {'form_html': form_html}
+#                data = json.dumps(data)
+                data = render_to_response("maps/layer_describe_tab.html", RequestContext(request, {
+                "layer": layer,
+                "layer_form": layer_form,
+                "poc_form": poc_form,
+                "author_form": author_form,
+                "attribute_form": attribute_form,
+                "lastmap" : request.session.get("lastmap"),
+                "lastmapTitle" : request.session.get("lastmapTitle")
+                }))
+                return HttpResponse(data, status=412)
 
-        if mapid != '':
-                logging.debug("adding layer to map [%s]", mapid)
-                maplayer = MapLayer.objects.create(map=Map.objects.get(id=mapid),
-                    name = layer.typename,
-                    group = layer.topic_category.title if layer.topic_category else 'General',
-                    layer_params = '{"selected":true, "title": "' + layer.title + '"}',
-                    source_params = '{"ptype": "gx_wmssource"}',
-                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
-                    visibility = True,
-                    stack_order = MapLayer.objects.filter(id=mapid).count()
-                    )
-                maplayer.save()
-                return HttpResponseRedirect("/maps/" + mapid)
-        else:
-                logger.debug("No map value found")
-                return HttpResponseRedirect("/data/" + layer.typename)
-
-        return render_to_response("maps/layer_describe.html", RequestContext(request, {
+        if 'tab' in request.GET:
+            return render_to_response("maps/layer_describe_tab.html", RequestContext(request, {
             "layer": layer,
             "layer_form": layer_form,
             "poc_form": poc_form,
             "author_form": author_form,
             "attribute_form": attribute_form,
             "lastmap" : request.session.get("lastmap"),
-            "lastmapTitle" : request.session.get("lastmapTitle") 
+            "lastmapTitle" : request.session.get("lastmapTitle")
         }))
-    else: 
-        return HttpResponse("Not allowed", status=403)
-
-@csrf_exempt
-@login_required
-def _describe_layer_tab(request, layer):
-    logger.debug("describe layer tab")
-    if request.user.is_authenticated():
-        if not request.user.has_perm('maps.change_layer', obj=layer):
-            return HttpResponse(loader.render_to_string('401.html',
-                RequestContext(request, {'error_message':
-                    _("You are not permitted to modify this layer's metadata")})), status=401)
-
-        poc = layer.poc
-        topic_category = layer.topic_category_id
-        metadata_author = layer.metadata_author
-        poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
-        metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
-        layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm)
-
-
-
-        if request.method == "POST":
-            layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
-            attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set")
-        else:
-            layer_form = LayerForm(instance=layer, prefix="layer")
-            layer_form.fields["topic_category"].initial = topic_category
-            if "map" in request.GET:
-                layer_form.fields["map_id"].initial = request.GET["map"]
-            attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set")
-
-
-        if request.method == "POST" and layer_form.is_valid():
-            if attribute_form.is_valid():
-                for form in attribute_form.cleaned_data:
-                    la = LayerAttribute.objects.get(id=int(form['id'].id))
-                    la.attribute_label = form["attribute_label"]
-                    la.searchable = form["searchable"]
-                    la.save()
-
-            new_poc = layer_form.cleaned_data['poc']
-            new_author = layer_form.cleaned_data['metadata_author']
-            new_category = layer_form.cleaned_data['topic_category']
-
-            if new_poc is None:
-                poc_form = ContactForm(request.POST, prefix="poc")
-                if poc_form.has_changed and poc_form.is_valid():
-                    new_poc = poc_form.save()
-
-            if new_author is None:
-                author_form = ContactForm(request.POST, prefix="author")
-                if author_form.has_changed and author_form.is_valid():
-                    new_author = author_form.save()
-
-            logger.debug("Save anything?")
-            if new_poc is not None and new_author is not None:
-                the_layer = layer_form.save(commit=False)
-                the_layer.poc = new_poc
-                the_layer.topic_category = new_category
-                the_layer.metadata_author = new_author
-                logger.debug("About to save")
-                the_layer.save()
-                logger.debug("Saved")
-
-
-
-#            if mapid != '':
-#                logging.debug("adding layer to map [%s]", mapid)
-#                maplayer = MapLayer.objects.create(map=Map.objects.get(id=mapid),
-#                    name = layer.typename,
-#                    group = layer.topic_category.title if layer.topic_category else 'General',
-#                    layer_params = '{"selected":true, "title": "' + layer.title + '"}',
-#                    source_params = '{"ptype": "gx_wmssource"}',
-#                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
-#                    visibility = True,
-#                    stack_order = MapLayer.objects.filter(id=mapid).count()
-#                    )
-#                maplayer.save()
-#                return HttpResponseRedirect("/maps/" + mapid)
-#            else:
-#                logger.debug("No map value found")
-#                return HttpResponseRedirect("/data/" + layer.typename)
-
-
-
-
-
-
-        if poc.user is None:
-            poc_form = ContactForm(instance=poc, prefix="poc")
-        else:
-            layer_form.fields['poc'].initial = poc.id
-            poc_form = ContactForm(prefix="poc")
-            poc_form.hidden=True
-
-        if metadata_author.user is None:
-            author_form = ContactForm(instance=metadata_author, prefix="author")
-        else:
-            layer_form.fields['metadata_author'].initial = metadata_author.id
-            author_form = ContactForm(prefix="author")
-            author_form.hidden=True
-
 
 
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
@@ -1167,6 +1075,8 @@ def _describe_layer_tab(request, layer):
         }))
     else:
         return HttpResponse("Not allowed", status=403)
+
+
 
 
 @csrf_exempt
@@ -1263,11 +1173,13 @@ def layerController(request, layername):
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
+
 @login_required
 @csrf_exempt
 def upload_layer(request):
 
     if request.method == 'GET':
+
         mapid = ''
         map = None
         if request.method == 'GET':
@@ -1310,7 +1222,9 @@ def upload_layer(request):
         else:
             result['success'] = True
             result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + '?describe'
-            if request.POST['mapid'] and request.POST['mapid'] != '':
+            if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
+               result['redirect_to'] += "&tab=true"
+            elif 'mapid' in request.POST and request.POST['mapid'] != '':
                 result['redirect_to'] += "&map=" + request.POST['mapid']
 
         result = json.dumps(result)

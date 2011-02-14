@@ -43,6 +43,10 @@ font-family:Helvetica,Arial,sans-serif;
 min-width:980px;
 }
 
+
+
+
+
 a {
 color: #18469C;
 text-decoration: underline;
@@ -56,6 +60,55 @@ color: #000;
 .secondary {
 color: #d8d8d8;
 }
+
+#tab {
+background: #fff url(img/main-bg.png) repeat-x;
+border-bottom: 1px solid #d5d5d5;
+}
+
+#tab .wrap {
+padding: 10px 0 0;
+}
+
+div#tab form ul.form {
+width:500px;
+list-style-type: none;
+}
+
+div#tab form ul.form li {
+margin-bottom: 1.5em;
+clear: both;
+}
+
+div#tab form ul.form li label {
+display: block;
+font-weight: bold;
+text-transform: capitalize;
+}
+
+div#tab form ul.form li input {
+}
+
+div#tab form ul.form ul.errorlist {
+list-style-type: none;
+margin: 0;
+margin-top: 2px;
+font-weight:bold;
+color: Red;
+float: right;
+}
+
+div#tab form ul.form fieldset {
+border: 1px solid #333;
+padding: 10px;
+margin-bottom: 10px
+}
+
+div#tab form ul.form fieldset legend{
+font-weight: bold;
+padding: 0 4px;
+}
+
 
 /*-----------------------
 Boilerplate overrides
@@ -758,6 +811,8 @@ div#main form ul.form ul.errorlist {
 list-style-type: none;
 margin: 0;
 margin-top: 2px;
+font-weight:bold;
+color: Red;
 float: right;
 }
 

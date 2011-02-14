@@ -58,7 +58,7 @@
   <form action="/data/{{layer.typename}}?describe" method="POST">
 	  {% csrf_token %}
       <ul class="form">
-	      {{ layer_form.as_ul }}	  
+	      {{ layer_form.as_ul }}
           <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Attributes</legend>
 	        {{ attribute_form.management_form }}

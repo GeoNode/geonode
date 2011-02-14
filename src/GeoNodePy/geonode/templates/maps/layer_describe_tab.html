@@ -1,9 +1,63 @@
+{% load i18n %}
 
-  <h2> {% trans "Editing details for " %} {{ layer.title|default:layer.typename }} </h2>
-  <form action="/data/{{layer.typename}}?describe" method="POST">
+
+<style type="text/css" >
+    #tab {
+        padding:20px;
+    }
+
+    #tab .wrap {
+    padding: 10px 0 0;
+    }
+
+    div#tab form ul.form {
+    list-style-type: none;
+    }
+
+    div#tab form ul.form li {
+    margin-bottom: 1.5em;
+    clear: both;
+    }
+
+    div#tab form ul.form li label {
+    display: block;
+    font-weight: bold;
+    text-transform: capitalize;
+    }
+
+    div#tab form ul.form li input {
+    }
+
+    div#tab form ul.form ul.errorlist {
+    list-style-type: none;
+    margin: 0;
+    margin-top: 2px;
+    float: right;
+    }
+
+    div#tab form ul.form fieldset {
+    border: 1px solid #333;
+    padding: 10px;
+    margin-bottom: 10px
+    }
+
+    div#tab form ul.form fieldset legend{
+    font-weight: bold;
+    padding: 0 4px;
+    }
+
+    h2{font-size:2em;margin-bottom:0.75em}
+</style>
+
+
+<div id="tab">
+  <h2> {% trans "Details for" %} {{ layer.title|default:layer.typename }} </h2>
+  <form action="/data/{{layer.typename}}?describe" method="POST" id="worldmap_describe_form">
 	  {% csrf_token %}
-      <ul class="form">
+      <ul class="form" id="worldmap_describe_form_ul">
 	      {{ layer_form.as_ul }}
+      </ul>
+      <ul class="form">
           <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Attributes</legend>
 	        {{ attribute_form.management_form }}
@@ -23,14 +77,15 @@
 	        <legend>Metadata Provider</legend>
             {{ author_form.as_ul }}
           </fieldset>
-          <input type="submit" value="{% trans "Update" %}" onclick="ajaxSubmit();return false;"/>
       </ul>
+       <div align="center">
+            <input type="submit" value="{% trans "Update" %}" onclick="ajaxSubmit();return false;"/>
+       </div>
   </form>
 
 <script type="text/javascript">
 {% autoescape off %}
-
-        // get #poc_form and #metadata_form, and add a `onchange` handler
+            // get #poc_form and #metadata_form, and add a `onchange` handler
         // that shows the form if the blank option is selected.
     	/*if (Ext.get('id_layer-topic_category').getValue()!="") {
     		Ext.get("id_layer-topic_category_new").up("li").hide();
@@ -49,8 +104,7 @@
 			}else{
 				Ext.get("metadata_form").hide();
 			}
-		});/*
-
+		});
 
     // Extify form fields
     Ext.select("input[type='text']").each(function(el) {
@@ -76,6 +130,47 @@
 			Ext.get("metadata_form").hide();
 		}
 	});
+
+
+    var ajaxSubmit = function() {
+     		   Ext.Ajax.request({
+                    url: "/data/{{layer.typename}}?describe",
+                    method: 'POST',
+                    params : Ext.Ajax.serializeForm(Ext.get("worldmap_describe_form")),
+                    success: function(response, options) {
+
+                                var uPanel = Ext.getCmp("worldmap_update_panel");
+                                uPanel.load({url:'/data/upload'});
+                                var uWindow = Ext.getCmp("ge_searchWindow");
+
+
+                                var geoEx = window.app;
+                                geoEx.reloadWorldMapSource();
+                                var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name'}]);
+                                var thisLayerRec = new LayerRec({title: '{{ layer.title }}', name: '{{ layer.typename }}'});
+
+                                geoEx.addWorldMapLayers([thisLayerRec]);
+                                
+                            
+                    },
+                    failure: function(response, options)
+                    {
+                            var uPanel = Ext.getCmp("worldmap_update_panel");
+                            uPanel.update(response.responseText, true);
+
+                            Ext.Msg.show({
+                                title: gettext("Error"),
+                                msg: gettext("Please review your submission and correct the indicated problems."),
+                                minWidth: 200,
+                                modal: true,
+                                icon: Ext.Msg.ERROR,
+                                buttons: Ext.Msg.OK
+                            });
+                    uPanel.body.scrollTo('top',0);
+                    },
+                    scope: this
+                });
+    }
 {% endautoescape %}
 </script>
-{% endblock %}
+</div>
