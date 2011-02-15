@@ -1126,8 +1126,8 @@ class Layer(models.Model, PermissionLevelMixin):
         if meta is None:
             return
         self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
-        self.distribution_url = meta.distribution.onlineresource.url
-        self.distribution_description = meta.distribution.onlineresource.description
+        self.distribution_url = meta.distribution.online[0].url
+        self.distribution_description = meta.distribution.online[0].description
 
     def keyword_list(self):
         return self.keywords.split(" ")
@@ -1787,7 +1787,13 @@ def post_save_layer(instance, sender, **kwargs):
     logger.debug("saved [%s] to geonetwork", instance.name)
     if kwargs['created']:
         logger.debug("populate from geonetwork")
-        instance._populate_from_gn()
+        try:
+            instance._populate_from_gn()
+        except:
+            logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
+            instance.delete_from_geonetwork()
+            logger.warning("Deleted geonetwork record for [%s]", instance.name)
+            raise
         logger.debug("save instance")
         instance.save(force_update=True)
 

@@ -1,36 +1,35 @@
 
 {% load i18n %}
 
+<div style="padding:20px;">
+
+<div style="position:relative;float:left;width:500px;">
 <h3>{%trans "Instructions"  %}</h3>
 
 <p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
 
-<h3>{% trans "Supported Formats"  %}</h3>
 
-<ul>
-  <li>Shapefile</li>
-  <li>GeoTIFF</li>
-</ul>
 <p>
 {% blocktrans %}
 Note: If you are uploading a shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
 {% endblocktrans %}
 </p>
+<br/><br/>
+</div>
 
+<div style="position:relative;float:left;padding-left:10px;">
+    <h3>{% trans "Supported Formats"  %}</h3>
 
-  {% if errors %}
-    <div id="errors">
-      {% for error in errors %}
-        <div>{{ error }}</div>
-      {% endfor %}
+    <ul>
+      <li>Shapefile</li>
+      <li>GeoTIFF</li>
+    </ul>
     </div>
-  {% endif %}
 
-
-  <div id="upload_form">
+<div id="upload_form" style="clear:both;">
   </div>
 
-
+</div>
 
 
 

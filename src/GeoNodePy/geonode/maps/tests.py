@@ -15,8 +15,8 @@ Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
 geonode.maps.models.get_csw = Mock()
 geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online[0].url = "http://example.com/"
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online[0].description= "bogus data"
 
 class MapTest(TestCase):
 

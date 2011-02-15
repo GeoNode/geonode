@@ -55,8 +55,8 @@
   {% endfor %}
   </p>
 
-  {% if rec.distribution.onlineresource.url %}
-  <p><a href="{{ rec.distribution.onlineresource.url }}">
+  {% if rec.distribution.online.0.url %}
+  <p><a href="{{ rec.distribution.online.0.url }}">
       {% trans "Visit originating site for more information about this layer." %}
   </a></p>
   {% endif %}
@@ -66,18 +66,19 @@
   {% if can_edit %}
     <p><b>{% trans "Download:" %}</b>
     {% for link in extra_links.download %}
-      <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
+      <a href="{{link.2}}" class="download {{link.0}}" target="_download">{{link.1}}</a>
     {% empty %}
     <em>{% trans "No download URLs are defined for this layer." %}</em>
     {% endfor %}
     </p>
-
-    {% if rec.distribution.onlineresource.url %}
-    <p><a href="{{ rec.distribution.onlineresource.url }}">
-        {% trans "Click here for more information about this layer." %}
-    </a></p>
-    {% endif %}
   {% else %}
     <p>{% trans "You do not have permission to download this layer" %}</p>
   {% endif %}
+
+    {% if rec.distribution.online.0.url %}
+    <p><a href="{{ rec.distribution.online.0.url }}">
+        {% trans "Click here for more information about this layer." %}
+    </a></p>
+    {% endif %}
+
 {% endif %}

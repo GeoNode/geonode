@@ -133,6 +133,7 @@
 
 
     var ajaxSubmit = function() {
+               Ext.MessageBox.wait('Saving ...');
      		   Ext.Ajax.request({
                     url: "/data/{{layer.typename}}?describe",
                     method: 'POST',
@@ -150,11 +151,12 @@
                                 var thisLayerRec = new LayerRec({title: '{{ layer.title }}', name: '{{ layer.typename }}'});
 
                                 geoEx.reloadWorldMapSource([thisLayerRec]);
-                                
+                                Ext.MessageBox.hide();
                             
                     },
                     failure: function(response, options)
                     {
+                            Ext.MessageBox.hide();
                             var uPanel = Ext.getCmp("worldmap_update_panel");
                             uPanel.update(response.responseText, true);
 
