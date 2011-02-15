@@ -39,7 +39,8 @@ Ext.onReady(function() {
         csrfToken: "{{ csrf_token }}"
     }, {{ config }});
 
-    
+
+
     app = new GeoExplorer(config);
 
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");

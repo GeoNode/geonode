@@ -878,7 +878,7 @@ def view(request, mapid):
     config['first_visit'] = first_visit
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map) 
 
-    
+
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
