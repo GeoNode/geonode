@@ -56,7 +56,7 @@ options(
         paver_command_line='post_bootstrap'      
     ),
     host=Bunch(
-        bind='localhost'
+    	bind='localhost'
     )
 )
 
@@ -166,9 +166,7 @@ def setup_gs_data(options):
         shared.mkdir()
 
     dst_url = shared / "geonode-geoserver-data.zip"
-
-    if not dst_url.exists():
-        grab(src_url, dst_url)
+    grab(src_url, dst_url)
 
     if getattr(options, 'clean', False): path(gs_data).rmtree()
     if not path(gs_data).exists(): unzip_file(dst_url, gs_data)
@@ -201,12 +199,11 @@ def setup_geonetwork(options):
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
-
+    grab(src_url, dst_url)
     if not dst_war.exists():
-        grab(src_url, dst_url)
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
-            zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
+        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
 
     # Update the ISO 19139 profile to the latest version
     path(schema_url).rmtree()
@@ -216,8 +213,7 @@ def setup_geonetwork(options):
     src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
     dst_url = webapps / "intermap.war"
 
-    if not dst_url.exists:
-        grab(src_url, dst_url)
+    grab(src_url, dst_url)
 
 @task
 @needs([
@@ -591,67 +587,6 @@ def host(options):
             pass
 
         django.wait()
-        mvn.wait()
-        sys.exit()
-
-
-@task
-@cmdopts([
-    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
-])
-def hostjetty(options):
-    jettylog = open("jetty.log", "w")
-    with pushd("src/geoserver-geonode-ext"):
-        os.environ["MAVEN_OPTS"] = " ".join([
-            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement", 
-            " -Djetty.host=" + options.host.bind,
-            " -Xmx512M",
-            " -XX:MaxPermSize=128m"
-        ])
-        mvn = subprocess.Popen(
-            ["mvn", "jetty:run"],
-            stdout=jettylog,
-            stderr=jettylog
-        )
-
-    def jetty_is_up():
-        try:
-            urllib.urlopen("http://" + options.host.bind + ":8001/geoserver/web/")
-            return True
-        except Exception, e:
-            return False
-
-    def django_is_up():
-        try:
-            urllib.urlopen("http://" + options.host.bind + ":8000")
-            return True
-        except Exception, e:
-            return False
-
-    socket.setdefaulttimeout(1)
-
-
-
-    info("Logging servlet output to jetty.log...")
-    info("Jetty is starting up, please wait...")
-    while not jetty_is_up():
-        time.sleep(2)
-
-    try:
-
-
-        info("Development Geoserver/GeoNetwork is running at http://" + options.host.bind + ":8000/")
-        info("The Geoserver/GeoNetwork is an unstoppable machine")
-        info("Press CTRL-C to shut down")
-        mvn.wait()
-
-    finally:
-        info("Shutting down...")
-        try:
-            mvn.terminate()
-        except:
-            pass
-
         mvn.wait()
         sys.exit()
 
