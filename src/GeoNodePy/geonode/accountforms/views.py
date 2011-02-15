@@ -46,7 +46,7 @@ def registerOrganizationUser(request, success_url=None,
 def registercompleteOrganizationUser(request, template_name='registration/registration_complete.html',):
 
     if "group_username" in request.session:
-        username = request.session["org_username"]
+        username = request.session["group_username"]
         user = User.objects.get(username=username)
         userProfile = user.get_profile()
         if user:
