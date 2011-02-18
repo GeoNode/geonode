@@ -1,6 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
-from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole,Role, get_csw
+from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole,Role, get_csw, Permalink
 from geonode.maps.gs_helpers import fixup_style, cascading_delete
+from geonode.maps.encode import num_encode, num_decode
 
 from geonode import geonetwork
 import geoserver
@@ -33,6 +34,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
+import simplejson
 import datetime
 from django.utils.encoding import iri_to_uri
 from django.db.models.signals import pre_delete
@@ -846,6 +848,44 @@ def official_site_controller(request, site):
     map = Map.objects.get(officialurl=site)
     return map_controller(request, str(map.id))
 
+def permalink_view(request, permalink):
+
+    decodedid = num_decode(permalink)
+    permalink = get_object_or_404(Permalink, pk=decodedid)
+    logger.debug('CONFIG: [%s]', permalink.config)
+    config = simplejson.loads(permalink.config)
+    config['edit_map'] = True
+
+    return render_to_response('maps/view.html', RequestContext(request, {
+        'config': json.dumps(config),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'maptitle': config['about']['title'],
+        'urlsuffix': None,
+    }))
+
+
+def permalink_create(request):
+
+    conf = request.raw_post_data
+
+    if isinstance(conf, basestring):
+        config = simplejson.loads(conf)
+        mapid = config['id'] or 0
+        permalink = Permalink.objects.create(config=conf,map_id=mapid)
+        return HttpResponse(num_encode(permalink.id), mimetype="text/plain")
+    else:
+        return HttpResponse("Invalid JSON", mimetype="text/plain", status=500)
+
+def permalink_embed(request, permalink):
+
+    decodedid = num_decode(permalink)
+    permalink = get_object_or_404(Permalink, pk=decodedid)
+    config = simplejson.loads(permalink.config)
+
+    return render_to_response('maps/embed.html', RequestContext(request, {
+        'config': json.dumps(config)
+    }))
 
 
 def view(request, mapid):
@@ -2284,3 +2324,4 @@ def upload_progress(request):
     else:
         logger.error("Received progress report request without X-Progress-ID header. request.META: %s" % request.META)
         return HttpResponseBadRequest('Server Error: You must provide X-Progress-ID header or query param.')
+

@@ -1201,6 +1201,26 @@ class LayerAttribute(models.Model):
     def __str__(self):
         return "%s" % self.attribute
 
+
+class Permalink(models.Model):
+    map_id = models.IntegerField(_('Map'))
+    """
+    The ID of the map this permalink was generated from (not foreign key because may want to keep permalink even when original map is destroyed).
+    """
+
+    config = models.TextField(_('JSON Configuration'))
+    """
+    Map configuration in JSON format
+    """
+    
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the map was created.
+    """
+
+
+
+
 class Map(models.Model, PermissionLevelMixin):
     """
     A Map aggregates several layers together and annotates them with a viewport
