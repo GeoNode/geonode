@@ -278,13 +278,13 @@ def setup_geonode_client(options):
     if not webapps.exists():
         webapps.mkdir()
 
-    dst_war = webapps / "geonode-client.war"
+    dst_zip = webapps / "geonode-client.zip"
     deployed_url = webapps / "geonode-client"
 
-    copy("src/externals/geonode-client.war", dst_war)
+    copy("src/externals/geonode-client.zip", dst_zip)
 
     deployed_url.rmtree()
-    zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
+    zip_extractall(zipfile.ZipFile(dst_zip), deployed_url)
 
 @task
 def sync_django_db(options):
@@ -324,10 +324,15 @@ def package_client(options):
     if(hasattr(options, 'use_war')): 
     	geonode_client_target_war.copy(options.deploy.out_dir)
     else:
-        deployed_war = "webapps/geonode-client/WEB-INF/app/static"
-        static_location = "src/GeoNodePy/geonode/media/static"
-	rmtree(static_location, True)
-        path(deployed_war).copytree(static_location)
+        # Extract static files to static_location
+    	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
+        dst_zip =  geonode_media_dir / "geonode-client.zip"
+        static_location = geonode_media_dir / "static"
+
+
+        copy("src/externals/geonode-client.zip", dst_zip)
+        zip_extractall(zipfile.ZipFile(dst_zip), static_location)
+        os.remove(dst_zip)
 
 @task
 @needs('package_dir', 'setup_geoserver')
@@ -568,7 +573,7 @@ def host(options):
             "paster", 
             "serve",
             "--reload",
-            "shared/dev-paste.ini"
+	        "shared/dev-paste.ini"
         ],  
         stdout=djangolog,
         stderr=djangolog
