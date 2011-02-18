@@ -21,6 +21,5 @@
     </ogc:PropertyIsEqualTo> 
    </ogc:Filter> 
   </csw:Constraint> 
-
  </csw:Update> 
 </csw:Transaction>

@@ -136,6 +136,157 @@
         ],
         "content_type": ["maps", "layer"]
     }
-}
-
+},
+    {
+        "fields": {
+            "title": "Farming",
+            "name": "farming"
+        },
+        "model": "maps.layercategory",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "title": "Biota",
+            "name": "biota"
+        },
+        "model": "maps.layercategory",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "title": "Boundaries",
+            "name": "boundaries"
+        },
+        "model": "maps.layercategory",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "title": "Climatology/Meterorology/Atmosphere",
+            "name": "climatologyMeteorologyAtmosphere"
+        },
+        "model": "maps.layercategory",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "title": "Economy",
+            "name": "economy"
+        },
+        "model": "maps.layercategory",
+        "pk": 5
+    },
+    {
+        "fields": {
+            "title": "Elevation",
+            "name": "elevation"
+        },
+        "model": "maps.layercategory",
+        "pk": 6
+    },
+    {
+        "fields": {
+            "title": "Health",
+            "name": "health"
+        },
+        "model": "maps.layercategory",
+        "pk": 7
+    },
+    {
+        "fields": {
+            "title": "Environment",
+            "name": "environment"
+        },
+        "model": "maps.layercategory",
+        "pk": 8
+    },
+    {
+        "fields": {
+            "title": "Geoscientific Information",
+            "name": "geoscientificInformation"
+        },
+        "model": "maps.layercategory",
+        "pk": 9
+    },
+    {
+        "fields": {
+            "title": "Imagery/Base Maps/Earth Cover",
+            "name": "imageryBaseMapsEarthCover"
+        },
+        "model": "maps.layercategory",
+        "pk": 10
+    },
+    {
+        "fields": {
+            "title": "Inland Waters",
+            "name": "inlandWaters"
+        },
+        "model": "maps.layercategory",
+        "pk": 11
+    },
+    {
+        "fields": {
+            "title": "Location",
+            "name": "location"
+        },
+        "model": "maps.layercategory",
+        "pk": 12
+    },
+    {
+        "fields": {
+            "title": "Oceans",
+            "name": "oceans"
+        },
+        "model": "maps.layercategory",
+        "pk":13
+    },
+    {
+        "fields": {
+            "title": "Planning/Cadastre",
+            "name": "planningCadastre"
+        },
+        "model": "maps.layercategory",
+        "pk": 14
+    },
+    {
+        "fields": {
+            "title": "Society",
+            "name": "society"
+        },
+        "model": "maps.layercategory",
+        "pk": 15
+    },
+    {
+        "fields": {
+            "title": "Structure",
+            "name": "structure"
+        },
+        "model": "maps.layercategory",
+        "pk": 16
+    },
+    {
+        "fields": {
+            "title": "Transportation",
+            "name": "transportation"
+        },
+        "model": "maps.layercategory",
+        "pk": 17
+    },
+    {
+        "fields": {
+            "title": "Utilities/Communication",
+            "name": "utilitiesCommunication"
+        },
+        "model": "maps.layercategory",
+        "pk": 18
+    },
+    {
+        "fields": {
+            "title": "Intelligence/Military",
+            "name": "intelligenceMilitary"
+        },
+        "model": "maps.layercategory",
+        "pk": 19
+    }
 ]

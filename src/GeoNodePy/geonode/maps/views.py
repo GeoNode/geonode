@@ -863,8 +863,7 @@ def view(request, mapid):
                 _("You are not allowed to view this map.")})), status=401)    
     
     config = map.viewer_json()
-    logger.debug("CONFIG: [%s]", str(config))      
-    
+
     first_visit = True
     if request.session.get('visit' + str(map.id), False):
         first_visit = False
@@ -877,6 +876,7 @@ def view(request, mapid):
             
     config['first_visit'] = first_visit
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map) 
+    logger.debug("CONFIG: [%s]", str(config))
 
 
     return render_to_response('maps/view.html', RequestContext(request, {
@@ -1004,7 +1004,7 @@ def _describe_layer(request, layer):
                 if request.is_ajax():
                     return HttpResponse('success', status=200)
                 elif mapid != '':
-                    logging.debug("adding layer to map [%s]", mapid)
+                    logger.debug("adding layer to map [%s]", mapid)
                     maplayer = MapLayer.objects.create(map=Map.objects.get(id=mapid),
                         name = layer.typename,
                         group = layer.topic_category.title if layer.topic_category else 'General',
@@ -1037,10 +1037,8 @@ def _describe_layer(request, layer):
             author_form = ContactForm(prefix="author")
             author_form.hidden=True
 
+        #Deal with a form submission via ajax
         if request.method == 'POST' and not layer_form.is_valid() and request.is_ajax():
-#                form_html = layer_form.as_ul()
-#                data = {'form_html': form_html}
-#                data = json.dumps(data)
                 data = render_to_response("maps/layer_describe_tab.html", RequestContext(request, {
                 "layer": layer,
                 "layer_form": layer_form,
@@ -1052,6 +1050,7 @@ def _describe_layer(request, layer):
                 }))
                 return HttpResponse(data, status=412)
 
+        #Display the view in a panel tab
         if 'tab' in request.GET:
             return render_to_response("maps/layer_describe_tab.html", RequestContext(request, {
             "layer": layer,
@@ -1063,7 +1062,7 @@ def _describe_layer(request, layer):
             "lastmapTitle" : request.session.get("lastmapTitle")
         }))
 
-
+        #Display the view on a regular page
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
             "layer_form": layer_form,
@@ -1543,7 +1542,7 @@ def _perms_info_email_json(obj, level_names):
     if hasattr(obj, 'owner') and obj.owner: 
         info['owner'] = obj.owner.username
         info['owner_email'] = obj.owner.email
-    logging.debug(str(info))
+    logger.debug(str(info))
     return json.dumps(info)
 
 INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
@@ -1945,7 +1944,7 @@ def _build_search_result(doc):
             'miny': min(rec.bbox.miny, rec.bbox.maxy),
             'maxy': max(rec.bbox.miny, rec.bbox.maxy)
         }
-    
+
     # XXX these could be exposed in owslib record...
     # locate all download links
     format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
@@ -2283,5 +2282,5 @@ def upload_progress(request):
         json = simplejson.dumps(data)
         return HttpResponse(json)
     else:
-        logging.error("Received progress report request without X-Progress-ID header. request.META: %s" % request.META)
+        logger.error("Received progress report request without X-Progress-ID header. request.META: %s" % request.META)
         return HttpResponseBadRequest('Server Error: You must provide X-Progress-ID header or query param.')

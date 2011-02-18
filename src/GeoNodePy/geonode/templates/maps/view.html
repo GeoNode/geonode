@@ -41,7 +41,7 @@ Ext.onReady(function() {
 
 
 
-    app = new GeoExplorer(config);
+    app = new GeoExplorer(config, true);
 
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
@@ -62,6 +62,9 @@ Ext.onReady(function() {
 
 
     }, this);
+
+
+
 
 
 
