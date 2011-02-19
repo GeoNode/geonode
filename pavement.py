@@ -250,7 +250,7 @@ def setup_geonetwork_new(options):
 @task
 @needs([
     'setup_geoserver',
-    'setup_geonetwork_new',
+    'setup_geonetwork',
     'setup_geonode_client'
 ])
 def setup_webapps(options):
@@ -274,16 +274,12 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    webapps = path("./webapps")
-    if not webapps.exists():
-        webapps.mkdir()
+    deployed_url = path("./src/GeoNodePy/geonode/media/static")
+    if not deployed_url.exists():
+        deployed_url.mkdir()
 
-    dst_zip = webapps / "geonode-client.zip"
-    deployed_url = webapps / "geonode-client"
-
+    dst_zip = deployed_url / "geonode-client.zip"
     copy("src/externals/geonode-client.zip", dst_zip)
-
-    deployed_url.rmtree()
     zip_extractall(zipfile.ZipFile(dst_zip), deployed_url)
 
 @task

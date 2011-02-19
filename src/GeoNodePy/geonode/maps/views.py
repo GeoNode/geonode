@@ -849,7 +849,9 @@ def official_site_controller(request, site):
     return map_controller(request, str(map.id))
 
 def permalink_view(request, permalink):
-
+    """
+    View a permalinked map
+    """
     decodedid = num_decode(permalink)
     permalink = get_object_or_404(Permalink, pk=decodedid)
     logger.debug('CONFIG: [%s]', permalink.config)
@@ -867,7 +869,9 @@ def permalink_view(request, permalink):
 
 
 def permalink_create(request):
-
+    """
+    Create a permalinked map
+    """
     conf = request.raw_post_data
 
     if isinstance(conf, basestring):
@@ -879,7 +883,9 @@ def permalink_create(request):
         return HttpResponse("Invalid JSON", mimetype="text/plain", status=500)
 
 def permalink_embed(request, permalink):
-
+    """
+    Embed a permalinked map
+    """
     decodedid = num_decode(permalink)
     permalink = get_object_or_404(Permalink, pk=decodedid)
     config = simplejson.loads(permalink.config)
