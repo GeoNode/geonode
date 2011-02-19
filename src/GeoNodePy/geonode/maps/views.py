@@ -855,7 +855,7 @@ def permalink_view(request, permalink):
     logger.debug('CONFIG: [%s]', permalink.config)
     config = simplejson.loads(permalink.config)
     config['id'] = None
-    config['edit_map'] = True
+    config['edit_map'] = False
 
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
