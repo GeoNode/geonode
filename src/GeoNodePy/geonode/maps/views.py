@@ -1,5 +1,5 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
-from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole,Role, get_csw, Permalink
+from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot
 from geonode.maps.gs_helpers import fixup_style, cascading_delete
 from geonode.maps.encode import num_encode, num_decode
 
@@ -230,6 +230,7 @@ def mapJSON(request, mapid):
             )  
         try:
             map.update_from_viewer(request.raw_post_data)
+            MapSnapshot.objects.create(config=request.raw_post_data,map=Map.objects.get(id=map.id),user=request.user)
             return HttpResponse(
                 "Map successfully updated.", 
                 mimetype="text/plain",
@@ -848,27 +849,8 @@ def official_site_controller(request, site):
     map = Map.objects.get(officialurl=site)
     return map_controller(request, str(map.id))
 
-def permalink_view(request, permalink):
-    """
-    View a permalinked map
-    """
-    decodedid = num_decode(permalink)
-    permalink = get_object_or_404(Permalink, pk=decodedid)
-    logger.debug('CONFIG: [%s]', permalink.config)
-    config = simplejson.loads(permalink.config)
-    config['id'] = None
-    config['edit_map'] = False
 
-    return render_to_response('maps/view.html', RequestContext(request, {
-        'config': json.dumps(config),
-        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
-        'maptitle': config['about']['title'],
-        'urlsuffix': None,
-    }))
-
-
-def permalink_create(request):
+def snapshot_create(request):
     """
     Create a permalinked map
     """
@@ -876,26 +858,23 @@ def permalink_create(request):
 
     if isinstance(conf, basestring):
         config = simplejson.loads(conf)
-        mapid = config['id'] or 0
-        permalink = Permalink.objects.create(config=conf,map_id=mapid)
-        return HttpResponse(num_encode(permalink.id), mimetype="text/plain")
+        mapid = config['id']
+        snapshot = MapSnapshot.objects.create(config=conf,map=Map.objects.get(id=mapid))
+        return HttpResponse(num_encode(snapshot.id), mimetype="text/plain")
     else:
         return HttpResponse("Invalid JSON", mimetype="text/plain", status=500)
 
-def permalink_embed(request, permalink):
-    """
-    Embed a permalinked map
-    """
-    decodedid = num_decode(permalink)
-    permalink = get_object_or_404(Permalink, pk=decodedid)
-    config = simplejson.loads(permalink.config)
 
-    return render_to_response('maps/embed.html', RequestContext(request, {
-        'config': json.dumps(config)
-    }))
+def ajax_snapshot_history(request):
+
+    mapid = request.POST.get('mapid', False)
+    map = Map.objects.get(pk=mapid)
+    history = [snapshot.json() for snapshot in map.snapshots]
+    return HttpResponse(json.dumps(history), mimetype="text/plain")
 
 
-def view(request, mapid):
+
+def view(request, mapid, snapshot=None):
     """  
     The view that returns the map composer opened to
     the map with the given map ID.
@@ -907,9 +886,18 @@ def view(request, mapid):
     if not request.user.has_perm('maps.view_map', obj=map):
         return HttpResponse(loader.render_to_string('401.html', 
             RequestContext(request, {'error_message': 
-                _("You are not allowed to view this map.")})), status=401)    
+                _("You are not allowed to view this map.")})), status=401)
     
-    config = map.viewer_json()
+    if snapshot is None:
+        config = map.viewer_json()
+    else:
+            decodedid = num_decode(snapshot)
+            snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
+            logger.debug('CONFIG: [%s]', snapshot.config)
+            if snapshot.map == map:
+                config = simplejson.loads(snapshot.config)
+            else:
+                config = map.viewer_json()
 
     first_visit = True
     if request.session.get('visit' + str(map.id), False):
@@ -943,20 +931,29 @@ def official_site(request, site):
     map = Map.objects.get(officialurl=site)
     return view(request, str(map.id))
 
-def embed(request, mapid=None):
-    if mapid is None:
+def embed(request, mapid=None, snapshot=None):
+    if mapid is None and permalink is None:
         config = DEFAULT_MAP_CONFIG
     else:
 
         if mapid.isdigit():
             map = Map.objects.get(pk=mapid)
         else:
-            map = Map.objects.get(urlsuffix=mapid)\
+            map = Map.objects.get(urlsuffix=mapid)
 
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
-        
-        config = map.viewer_json()
+        if snapshot is None:
+            config = map.viewer_json()
+        else:
+            decodedid = num_decode(snapshot)
+            snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
+            logger.debug('CONFIG: [%s]', snapshot.config)
+            if snapshot.map == map:
+                config = simplejson.loads(snapshot.config)
+            else:
+                config = map.viewer_json()
+
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))
@@ -2277,6 +2274,7 @@ def ajax_url_lookup(request):
             mimetype='text/plain'
         )
     if request.POST['query'] != '':
+        forbiddenUrls = ['new','view',]
         maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
         if request.POST['mapid'] != '':
             maps = maps.exclude(id=request.POST['mapid'])

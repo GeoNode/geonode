@@ -23,7 +23,7 @@ from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 import re
 import logging
-
+from geonode.maps.encode import num_encode
 
 logger = logging.getLogger("geonode.maps.models")
 
@@ -1202,25 +1202,6 @@ class LayerAttribute(models.Model):
         return "%s" % self.attribute
 
 
-class Permalink(models.Model):
-    map_id = models.IntegerField(_('Map'))
-    """
-    The ID of the map this permalink was generated from (not foreign key because may want to keep permalink even when original map is destroyed).
-    """
-
-    config = models.TextField(_('JSON Configuration'))
-    """
-    Map configuration in JSON format
-    """
-    
-    created_dttm = models.DateTimeField(auto_now_add=True)
-    """
-    The date/time the map was created.
-    """
-
-
-
-
 class Map(models.Model, PermissionLevelMixin):
     """
     A Map aggregates several layers together and annotates them with a viewport
@@ -1323,6 +1304,11 @@ class Map(models.Model, PermissionLevelMixin):
     def layers(self):
         layers = MapLayer.objects.filter(map=self.id)
         return  [layer for layer in layers]
+
+    @property
+    def snapshots(self):
+        snapshots = MapSnapshot.objects.exclude(user=None).filter(map=self.id)
+        return [snapshot for snapshot in snapshots]
 
     @property
     def local_layers(self): 
@@ -1513,6 +1499,34 @@ class Map(models.Model, PermissionLevelMixin):
             self.set_user_level(self.owner, self.LEVEL_ADMIN)    
 
 
+class MapSnapshot(models.Model):
+    map = models.ForeignKey(Map)
+    """
+    The ID of the map this snapshot was generated from.
+    """
+
+    config = models.TextField(_('JSON Configuration'))
+    """
+    Map configuration in JSON format
+    """
+
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the snapshot was created.
+    """
+
+    user = models.ForeignKey(User, blank=True, null=True)
+    """
+    The user who created the snapshot.
+    """
+
+    def json(self):
+        return {
+                "map": self.map.id,
+                "created": self.created_dttm.isoformat(),
+                "user": self.user.username if self.user else None,
+                "snapshot": num_encode(self.id)
+        }
 
 class MapLayerManager(models.Manager):
     def from_viewer_config(self, map, layer, source, ordering):

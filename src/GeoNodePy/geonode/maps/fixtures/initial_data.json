@@ -4,7 +4,9 @@
     "model": "maps.role", 
     "fields": {
         "value": "pointOfContact", 
-        "permissions": []
+        "permissions": [],
+        "created_dttm": "2011-01-01",
+        "last_modified" : "2011-01-01"
     }
 }, 
 {
@@ -12,7 +14,9 @@
     "model": "maps.role", 
     "fields": {
         "value": "author", 
-        "permissions": []
+        "permissions": [],
+        "created_dttm": "2011-01-01",
+        "last_modified" : "2011-01-01"
     }
 },
 {
@@ -30,7 +34,9 @@
         "position": null, 
         "organization": "GeoNode", 
         "voice": null, 
-        "email": null
+        "email": null,
+        "created_dttm": "2011-01-01",
+        "last_modified" : "2011-01-01"
     }
 }, 
 {
@@ -48,7 +54,9 @@
         "position": null, 
         "organization": "Geonode", 
         "voice": null, 
-        "email": null
+        "email": null,
+        "created_dttm": "2011-01-01",
+        "last_modified" : "2011-01-01"
     }
 },
 {
@@ -140,7 +148,8 @@
     {
         "fields": {
             "title": "Farming",
-            "name": "farming"
+            "name": "farming",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 1
@@ -148,7 +157,8 @@
     {
         "fields": {
             "title": "Biota",
-            "name": "biota"
+            "name": "biota",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 2
@@ -156,7 +166,8 @@
     {
         "fields": {
             "title": "Boundaries",
-            "name": "boundaries"
+            "name": "boundaries",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 3
@@ -164,7 +175,8 @@
     {
         "fields": {
             "title": "Climatology/Meterorology/Atmosphere",
-            "name": "climatologyMeteorologyAtmosphere"
+            "name": "climatologyMeteorologyAtmosphere",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 4
@@ -172,7 +184,8 @@
     {
         "fields": {
             "title": "Economy",
-            "name": "economy"
+            "name": "economy",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 5
@@ -180,7 +193,8 @@
     {
         "fields": {
             "title": "Elevation",
-            "name": "elevation"
+            "name": "elevation",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 6
@@ -188,7 +202,8 @@
     {
         "fields": {
             "title": "Health",
-            "name": "health"
+            "name": "health",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 7
@@ -196,7 +211,8 @@
     {
         "fields": {
             "title": "Environment",
-            "name": "environment"
+            "name": "environment",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 8
@@ -204,7 +220,8 @@
     {
         "fields": {
             "title": "Geoscientific Information",
-            "name": "geoscientificInformation"
+            "name": "geoscientificInformation",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 9
@@ -212,7 +229,8 @@
     {
         "fields": {
             "title": "Imagery/Base Maps/Earth Cover",
-            "name": "imageryBaseMapsEarthCover"
+            "name": "imageryBaseMapsEarthCover",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 10
@@ -220,7 +238,8 @@
     {
         "fields": {
             "title": "Inland Waters",
-            "name": "inlandWaters"
+            "name": "inlandWaters",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 11
@@ -228,7 +247,8 @@
     {
         "fields": {
             "title": "Location",
-            "name": "location"
+            "name": "location",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 12
@@ -236,7 +256,8 @@
     {
         "fields": {
             "title": "Oceans",
-            "name": "oceans"
+            "name": "oceans",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk":13
@@ -244,7 +265,8 @@
     {
         "fields": {
             "title": "Planning/Cadastre",
-            "name": "planningCadastre"
+            "name": "planningCadastre",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 14
@@ -252,7 +274,8 @@
     {
         "fields": {
             "title": "Society",
-            "name": "society"
+            "name": "society",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 15
@@ -260,7 +283,8 @@
     {
         "fields": {
             "title": "Structure",
-            "name": "structure"
+            "name": "structure",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 16
@@ -268,7 +292,8 @@
     {
         "fields": {
             "title": "Transportation",
-            "name": "transportation"
+            "name": "transportation",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 17
@@ -276,7 +301,8 @@
     {
         "fields": {
             "title": "Utilities/Communication",
-            "name": "utilitiesCommunication"
+            "name": "utilitiesCommunication",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 18
@@ -284,7 +310,8 @@
     {
         "fields": {
             "title": "Intelligence/Military",
-            "name": "intelligenceMilitary"
+            "name": "intelligenceMilitary",
+            "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
         "pk": 19
