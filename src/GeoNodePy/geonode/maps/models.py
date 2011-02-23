@@ -1525,7 +1525,7 @@ class MapSnapshot(models.Model):
                 "map": self.map.id,
                 "created": self.created_dttm.isoformat(),
                 "user": self.user.username if self.user else None,
-                "snapshot": num_encode(self.id)
+                "url": num_encode(self.id)
         }
 
 class MapLayerManager(models.Manager):

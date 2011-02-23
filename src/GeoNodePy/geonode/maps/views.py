@@ -865,9 +865,7 @@ def snapshot_create(request):
         return HttpResponse("Invalid JSON", mimetype="text/plain", status=500)
 
 
-def ajax_snapshot_history(request):
-
-    mapid = request.POST.get('mapid', False)
+def ajax_snapshot_history(request, mapid):
     map = Map.objects.get(pk=mapid)
     history = [snapshot.json() for snapshot in map.snapshots]
     return HttpResponse(json.dumps(history), mimetype="text/plain")
