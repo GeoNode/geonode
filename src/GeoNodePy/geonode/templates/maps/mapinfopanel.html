@@ -1,0 +1,55 @@
+
+{% load i18n %}
+{% load geonode_auth %}
+
+
+
+
+
+
+    {% has_obj_perm user map "maps.change_map" as can_change %}
+    {% has_obj_perm user map "maps.delete_map" as can_delete %}
+
+  {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
+  {% if can_change_permissions %}
+<div style="padding:10px;">
+  <h3>{% trans "Map Permissions" %}</h3>
+    <p>{% trans "Select what kind of privileges to allow." %}</p>
+    <div id="permissions_form"></div>
+</div>
+  {% endif %}
+
+
+
+
+<div style="padding:10px;">
+  <h3>{% trans "Manage Map" %}</h3>
+  <ul>
+    {% if can_delete %}
+    <li><a href="#" onclick="Ext.MessageBox.confirm('{% trans "Delete map" %}', '{% trans "Are you sure you want to delete this map?" %}', handleResponse);return false;">{% trans "Delete map" %}</a></li>
+    {% endif %}
+  </ul>
+</div>
+
+<script type="text/javascript">
+{% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
+{% autoescape off %}
+{% if can_change_permissions %}
+    new GeoNode.WorldMapPermissionsEditor({
+        renderTo: "permissions_form",
+        submitTo: "{% url geonode.maps.views.ajax_map_permissions_by_email map.id %}",
+        userLookup: "{% url geonode.views.ajax_lookup %}",
+        customGroup: "{{ customGroup }}",
+        permissions: {{ permissions_json }}
+    });
+{% endif %}
+
+
+ function handleResponse(btn){
+        if (btn == 'yes'){
+            window.location = "{% url geonode.maps.views.map_controller map.id %}?removenow";
+        }
+    };
+
+{% endautoescape %}
+</script>
