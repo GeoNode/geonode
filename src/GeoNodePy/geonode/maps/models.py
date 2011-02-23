@@ -1500,7 +1500,7 @@ class Map(models.Model, PermissionLevelMixin):
 
 
 class MapSnapshot(models.Model):
-    map = models.ForeignKey(Map)
+    map = models.ForeignKey(Map, related_name="snapshot_set")
     """
     The ID of the map this snapshot was generated from.
     """

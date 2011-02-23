@@ -763,6 +763,27 @@ def deletemap(request, mapid):
 
         return HttpResponseRedirect(reverse("geonode.maps.views.maps"))
 
+@login_required
+def deletemapnow(request, mapid):
+    ''' Delete a map, and its constituent layers. '''
+    map = get_object_or_404(Map,pk=mapid)
+
+    if not request.user.has_perm('maps.delete_map', obj=map):
+        return HttpResponse(loader.render_to_string('401.html',
+            RequestContext(request, {'error_message':
+                _("You are not permitted to delete this map.")})), status=401)
+
+    layers = map.layer_set.all()
+    for layer in layers:
+        layer.delete()
+
+    snapshots = map.snapshot_set.all()
+    for snapshot in snapshots:
+        snapshot.delete()
+    map.delete()
+
+    return HttpResponseRedirect(reverse("geonode.maps.views.maps"))
+
 def mapdetail(request,mapid): 
     '''
     The view that show details of each map
@@ -775,14 +796,32 @@ def mapdetail(request,mapid):
      
     config = map.viewer_json()
     config = json.dumps(config)
-    layers = MapLayer.objects.filter(map=map.id) 
+    layers = MapLayer.objects.filter(map=map.id)
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
-        'config': config, 
+        'config': config,
         'map': map,
         'layers': layers,
         'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
         'customGroup': settings.CUSTOM_GROUP_NAME,
         'urlsuffix':get_suffix_if_custom(map)
+    }))
+
+
+def map_share(request,mapid):
+    '''
+    The view that shows map permissions in a window from map
+    '''
+    map = get_object_or_404(Map,pk=mapid)
+    if not request.user.has_perm('maps.view_map', obj=map):
+        return HttpResponse(loader.render_to_string('401.html',
+            RequestContext(request, {'error_message':
+                _("You are not allowed to view this map.")})), status=401)
+
+
+    return render_to_response("maps/mapinfopanel.html", RequestContext(request, {
+        "map": map,
+        'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
+        'customGroup': settings.CUSTOM_GROUP_NAME
     }))
 
 @csrf_exempt
@@ -833,8 +872,9 @@ def map_controller(request, mapid):
         map = Map.objects.get(pk=mapid)
     else:
         map = Map.objects.get(urlsuffix=mapid)    
-    
-    if 'remove' in request.GET: 
+    if 'removenow' in request.GET:
+        return deletemapnow(request, map.id)
+    elif 'remove' in request.GET:
         return deletemap(request, map.id)
     elif 'describe' in request.GET:
         return describemap(request, mapid)
