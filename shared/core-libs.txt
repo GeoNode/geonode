@@ -16,3 +16,4 @@ psycopg2
 django-notification
 mock
 django-staticfiles
+django-kombu

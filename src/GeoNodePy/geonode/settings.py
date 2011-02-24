@@ -25,7 +25,7 @@ DATABASE_HOST = ''             # Not used with sqlite3.
 DATABASE_PORT = ''             # Not used with sqlite3.
 
 # Celery Settings
-CARROT_BACKEND = "ghettoq.taproot.Database"
+CARROT_BACKEND = "django"
 CELERY_IMPORTS = ("geonode.maps.tasks", )
 
 # Local time zone for this installation. Choices can be found here:
@@ -254,7 +254,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'djcelery',
     'ghettoq',
-    
+    'djkombu',    
 )
 
 AUTH_PROFILE_MODULE = 'maps.Contact'
