@@ -1,1 +1,1 @@
-{% load i18n %}{% blocktrans %}{{ notice }} {{ layer_name }}{% endblocktrans %}
+{% load i18n %}{% blocktrans %}{{ notice }} {{ layer_name }} {{ errors }}{% endblocktrans %}

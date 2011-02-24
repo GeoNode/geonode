@@ -26,7 +26,11 @@ def handle_external_layer_upload(base_file_path, username):
             extra_files = {}
             extra_files['dbf'] = open(base_file_path.replace('.shp', '.dbf'))
             extra_files['shx'] = open(base_file_path.replace('.shp', '.shx'))
-            extra_files['prj'] = open(base_file_path.replace('.shp', '.prj'))
+            try:
+                extra_files['prj'] = open(base_file_path.replace('.shp', '.prj'))
+            except:
+                # prj file not required
+                pass
             layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, user=user, extra_files=extra_files)   
         else:
             layer, errors = _handle_layer_upload(layer_name=layer_name, base_file=base_file, user=user)
@@ -43,4 +47,4 @@ def handle_external_layer_upload(base_file_path, username):
         if user and notification: 
             errors = str(sys.exc_info()[0])
             notification.send([user], "upload_failed", {'layer_name': layer_name, 'errors': errors})
-        return -1 
+        return -2 
