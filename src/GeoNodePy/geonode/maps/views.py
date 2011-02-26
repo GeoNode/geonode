@@ -826,7 +826,8 @@ def upload_layer(request):
             extra_files = {}
             extra_files['dbf'] = request.FILES.get('dbf_file')
             extra_files['shx'] = request.FILES.get('shx_file')
-            extra_files['prj'] = request.FILES.get('prj_file')
+            if('prj_file' in request.FILES):
+                extra_files['prj'] = request.FILES.get('prj_file')
             layer, errors = _handle_layer_upload(layer_name=request.POST.get('layer_name'), 
                 base_file=request.FILES.get('base_file'), 
                 user=request.user.username,
