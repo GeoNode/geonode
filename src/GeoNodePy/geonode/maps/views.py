@@ -1012,7 +1012,7 @@ def _handle_layer_upload(request, layer=None):
                                              typename=typename,
                                              workspace=gs_resource.store.workspace.name,
                                              title = request.POST.get('layer_title') or gs_resource.title or gs_resource.name,
-                                             abstract = request.POST.get('abstract', ""),
+                                             abstract = request.POST.get('abstract') or gs_resource.abstract,
                                              uuid=str(uuid.uuid4()),
                                              owner=request.user
                                            )
