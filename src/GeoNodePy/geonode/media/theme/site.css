@@ -705,23 +705,29 @@ span.style-title {
 cursor: pointer;
 }
 
-.x-list-body .data-type, .x-list-body .data-delete, .x-list-body .data-edit {
+.x-grid3-col .data-type, .x-grid3-col .data-delete, .x-grid3-col .data-edit {
     height: 16px; width: 16px;
 }
 
-.x-list-body .data-type.layer {
+.x-grid3-col .data-type.layer {
     background-image: url(img/silk/page_green.png); 
 }
 
-.x-list-body .data-type.map {
+.x-grid3-col .data-type.map {
     background-image: url(img/silk/map.png); 
 }
 
-.x-list-body .data-edit {
+.x-grid3-col .data-edit {
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
     background-image: url(img/silk/pencil.png);
 }
 
-.x-list-body .data-delete {
+.x-grid3-col .data-delete {
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
     background-image: url(img/silk/delete.png);
 }
 

@@ -44,41 +44,43 @@ Ext.onReady(function() {
         {% endfor %}
         ]
     });
-    var assetView = new Ext.list.ListView({
+
+    var cb = new Ext.grid.CheckboxSelectionModel();
+    var assetView = new Ext.grid.GridPanel({
         store: assets,
         autoHeight: true,
-        multiSelect: true,
-        columns: [
-          {% if user == profile.user %}
-            { tpl: "<input type='checkbox' class='data-selection'>&nbsp;</input>", width: 0.05 },
-          {% endif %}
-            { header: gettext('Type'), tpl: "<div class='data-type {type}'>&nbsp;</div>", width: 0.06 },
-            { header: gettext('Title'), dataIndex: 'title', autoExpand: true,
-              tpl: "<a href='{href}'> {title} </a>" },
-            { header: gettext('Date'), dataIndex: 'date', width: 0.25 }
-          {% if user == profile.user %}  ,
-            { tpl: "<div class='data-edit'>&nbsp;</div>", width: 0.05 },
-            { tpl: "<div class='data-delete'>&nbsp;</div>", width: 0.05 }
-          {% endif %}
-        ], 
+        border: false,
+        viewConfig: {
+            forceFit: true
+        },
+        hideCollapseTool: true,
+        header: false,
+        sm: cb,
+        colModel: new Ext.grid.ColumnModel({
+            defaults: { xtype: 'templatecolumn' },
+            columns: [
+             {% if user == profile.user %}
+               cb,
+             {% endif %}
+               { header: gettext('Type'), tpl: "<div class='data-type {type}'>&nbsp;</div>", width: 10 },
+               { header: gettext('Title'), dataIndex: 'title', autoExpand: true,
+                 tpl: "<a href='{href}'> {title} </a>" },
+               { header: gettext('Date'), dataIndex: 'date', width: 30, xtype: 'datecolumn' }
+             {% if user == profile.user %},
+               { tpl: "<span class='data-edit'>&nbsp;</span><span class='data-delete'>&nbsp;</span>", width: 15 }
+             {% endif %}
+            ]
+        }),
         listeners: {
-            selectionchange: function(view, selections) {
-                var cbs = view.getEl().query("input.data-selection[type='checkbox']");
-                for (var i = 0; i < cbs.length; i++) {
-                    cbs[i].checked = null;
-                }
-                for (var i = 0; i < selections.length; i++) {
-                    var cb = Ext.get(selections[i]).query("input.data-selection[type='checkbox']")[0];
-                    cb.checked = 'checked';
-                }
-            },
-            render: function(listview)  {
+            render: function(grid)  {
                 function doToRecord(act) {
                     return function(evt, target) {
-                        var item = listview.findItemFromChild(target);
-                        var idx = listview.indexOf(item);
-                        var rec = listview.getStore().getAt(idx);
-                        act(rec);
+                        var elem = evt.getTarget('.x-grid3-row');
+                        if (elem) {
+                            var idx = elem.rowIndex;
+                            var rec = grid.getStore().getAt(idx);
+                            act(rec);
+                        }
                     }
                 }
                 var view = doToRecord(function(rec) {
@@ -97,9 +99,9 @@ Ext.onReady(function() {
                     var link = rec.get("href") + "?remove";
                     window.location = link;
                 });
-                listview.getEl().on("click", view, this, { delegate: 'a' });
-                listview.getEl().on("click", edit, this, { delegate: '.data-edit' });
-                listview.getEl().on("click", delete_, this, { delegate: '.data-delete' });
+                grid.getEl().on("click", view, this, { delegate: 'a' });
+                grid.getEl().on("click", edit, this, { delegate: '.data-edit' });
+                grid.getEl().on("click", delete_, this, { delegate: '.data-delete' });
             }
         }
     });
@@ -154,45 +156,37 @@ Ext.onReady(function() {
               text: gettext("Change permissions on selected"),
               iconCls: 'icon-security',
               handler: function() {
-                  Ext.Msg.confirm(
-                      gettext("Change permissions"),
-                      gettext("You're about to change permissions on several layers.  Is that really what you want to do?"),
-                      function(btn) {
-                          if (btn == 'yes') {
-                              var activeList = serialize();
-                              var editor = new GeoNode.PermissionsEditor({
-                                  userLookup: "{% url geonode.views.ajax_lookup %}",
-                                  permissions: { users:[] }
-                              });
-                              editor.container.padding = 5;
-                              var saveButton = new Ext.Button({
-                                  xtype: 'button',
-                                  text: gettext("Apply changes"),
-                                  handler: function() {
-                                      var spec = serialize();
-                                      spec.permissions = editor.writePermissions();
-                                      Ext.Ajax.request({
-                                          url: '/data/api/batch_permissions',
-                                          method: 'post',
-                                          jsonData: spec,
-                                          success: function() { alert("success!") },
-                                          failure: function() { alert("failure") }
-                                      });
-                                  }
-                              });
-                              var win = new Ext.Window({
-                                  title: gettext("Permissions"),
-                                  modal: true,
-                                  items: [ editor.container, {
-                                      padding: 5,
-                                      border: false,
-                                      items: [ saveButton ]
-                                  }]
-                              });
-                              win.show();
-                          }
+                  var activeList = serialize();
+                  var editor = new GeoNode.PermissionsEditor({
+                      userLookup: "{% url geonode.views.ajax_lookup %}",
+                      permissions: { users:[] }
+                  });
+                  editor.container.padding = 5;
+                  var saveButton = new Ext.Button({
+                      xtype: 'button',
+                      text: gettext("Apply changes"),
+                      handler: function() {
+                          var spec = serialize();
+                          spec.permissions = editor.writePermissions();
+                          Ext.Ajax.request({
+                              url: '/data/api/batch_permissions',
+                              method: 'post',
+                              jsonData: spec,
+                              success: function() { alert("success!") },
+                              failure: function() { alert("failure") }
+                          });
                       }
-                  );
+                  });
+                  var win = new Ext.Window({
+                      title: gettext("Permissions"),
+                      modal: true,
+                      items: [ editor.container, {
+                          padding: 5,
+                          border: false,
+                          items: [ saveButton ]
+                      }]
+                  });
+                  win.show();
               }
             }
         ]
