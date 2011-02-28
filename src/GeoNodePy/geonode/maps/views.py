@@ -1722,3 +1722,92 @@ def maps_search_page(request):
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))
+
+def batch_permissions(request):
+    if not request.user.is_authenticated:
+        return HttpResponse("You must log in to change permissions", status=401) 
+
+    if request.method != "POST":
+        return HttpResponse("Permissions API requires POST requests", status=405)
+
+    spec = json.loads(request.raw_post_data)
+
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        for lyr in lyrs:
+            if not request.user.has_perm("maps.change_layer_permissions", obj=lyr):
+                return HttpResponse("User not authorized to change layer permissions", status=403)
+
+    if "maps" in spec:
+        maps = Map.objects.filter(pk__in = spec['maps'])
+        for map in maps:
+            if not request.user.has_perm("maps.change_map_permissions", obj=map):
+                return HttpResponse("User not authorized to change map permissions", status=403)
+
+    anon_level = spec['permissions'].get("anonymous")
+    auth_level = spec['permissions'].get("authenticated")
+    users = spec['permissions'].get('users', [])
+    user_names = [x for (x, y) in users]
+
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        valid_perms = ['layer_readwrite', 'layer_readonly']
+        if anon_level not in valid_perms:
+            anon_level = "_none"
+        if auth_level not in valid_perms:
+            auth_level = "_none"
+        for lyr in lyrs:
+            lyr.get_user_levels().exclude(user__username__in = user_names + [layer.owner.username]).delete()
+            lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
+            lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
+            for user, user_level in users:
+                if user_level not in valid_perms:
+                    user_level = "_none"
+                lyr.set_user_level(user, user_level)
+
+    if "maps" in spec:
+        maps = Map.objects.filter(pk__in = spec['maps'])
+        valid_perms = dict(
+                layer_readwrite = 'map_readwrite',
+                layer_readonly = 'map_readonly')
+
+        for map in maps:
+            map.get_user_levels().exclude(user__username__in = user_names + [map.owner.username]).delete()
+            map.set_gen_level(ANONYMOUS_USERS, valid_perms.get(anon_level, "_none"))
+            map.set_gen_level(AUTHENTICATED_USERS, valid_perms.get(auth_level, "_none"))
+            for user, user_level in spec['permissions'].get("users", []):
+                lyr.set_user_level(user, valid_perms.get(user_level, "_none"))
+
+    return HttpResponse("Not implemented yet")
+
+def batch_delete(request):
+    if not request.user.is_authenticated:
+        return HttpResponse("You must log in to delete layers", status=401) 
+
+    if request.method != "POST":
+        return HttpResponse("Delete API requires POST requests", status=405)
+
+    spec = json.loads(request.raw_post_data)
+
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        for lyr in lyrs:
+            if not request.user.has_perm("maps.delete_layer", obj=lyr):
+                return HttpResponse("User not authorized to delete layer", status=403)
+
+    if "maps" in spec:
+        maps = Map.objects.filter(pk__in = spec['maps'])
+        for map in maps:
+            if not request.user.has_perm("maps.delete_map", obj=map):
+                return HttpResponse("User not authorized to delete map", status=403)
+
+    if "layers" in spec:
+        Layer.objects.filter(pk__in = spec["layers"]).delete()
+
+    if "maps" in spec:
+        Map.objects.filter(pk__in = spec["maps"]).delete()
+
+    nlayers = len(spec.get('layers', []))
+    nmaps = len(spec.get('maps', []))
+
+    return HttpResponse("Deleted %d layers and %d maps" % (nlayers, nmaps))
