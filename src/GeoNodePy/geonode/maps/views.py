@@ -2181,7 +2181,7 @@ def searchFieldsJSON(request):
 
             category =geoLayer.topic_category
             if category is not None:
-                catname = category.name
+                catname = category.title
             else:
                 catname = ''  
             if geoLayer.storeType == 'dataStore':
