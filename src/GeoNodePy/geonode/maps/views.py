@@ -42,12 +42,11 @@ from geonode.maps.models import delete_layer
 from registration.models import RegistrationProfile
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.contrib.sites.models import Site  
+from django.contrib.sites.models import Site
 
 logger = logging.getLogger("geonode.maps.views")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
-
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
@@ -92,7 +91,7 @@ class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
         exclude = ('user','is_org_member',)
-        
+
 class LayerCategoryForm(forms.ModelForm):
     class Meta:
         model = LayerCategory        
@@ -129,8 +128,6 @@ class LayerForm(forms.ModelForm):
     temporal_extent_start = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
     temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
 
-    
-    
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
                                  queryset = Contact.objects.exclude(user=None))
@@ -138,8 +135,6 @@ class LayerForm(forms.ModelForm):
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
                                              queryset = Contact.objects.exclude(user=None))
-    
-
 
     class Meta:
         model = Layer
@@ -180,7 +175,6 @@ LAYER_LEV_NAMES = {
 
 @transaction.commit_manually
 def maps(request, mapid=None):
-    logger.debug("STARTING MAPS VIEW")
     if request.method == 'GET':
         return render_to_response('maps.html', RequestContext(request))
     elif request.method == 'POST':
@@ -213,7 +207,7 @@ def mapJSON(request, mapid):
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {})), status=401)
-        return HttpResponse(json.dumps(map.viewer_json()))
+    	return HttpResponse(json.dumps(map.viewer_json()))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -1020,7 +1014,6 @@ class LayerDescriptionForm(forms.Form):
 @csrf_exempt
 @login_required
 def _describe_layer(request, layer):
-    logger.debug("describe layer")
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.change_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html', 
@@ -1157,9 +1150,6 @@ def _describe_layer(request, layer):
     else:
         return HttpResponse("Not allowed", status=403)
 
-
-
-
 @csrf_exempt
 def _removeLayer(request,layer):
     if request.user.is_authenticated():
@@ -1234,6 +1224,7 @@ def layerController(request, layername):
                     _("You are not permitted to view this layer")})), status=401)
         
         metadata = layer.metadata_csw()
+
         maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
         # center/zoom don't matter; the viewer will center on the layer bounds
@@ -1254,11 +1245,9 @@ def layerController(request, layername):
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
-
 @login_required
 @csrf_exempt
 def upload_layer(request):
-
     if request.method == 'GET':
 
         mapid = ''
@@ -1689,24 +1678,17 @@ def layer_acls(request):
     # the layer_acls view supports basic auth, and a special 
     # user which represents the geoserver administrator that
     # is not present in django.
-    #logger.debug("Entered layer_acls")
     acl_user = request.user
-    #logger.debug("USER IS " + request.user)
     if 'HTTP_AUTHORIZATION' in request.META:
-        #logger.debug("HTTP_AUTHORIZATION...")
         try:
             username, password = _get_basic_auth_info(request)
-            #logger.debug("UserName: " + username + ",  PASS: " + password)
             acl_user = authenticate(username=username, password=password)
-
-            #logger.debug("Geoserver creds: " + settings.GEOSERVER_CREDENTIALS[0] + ":" + settings.GEOSERVER_CREDENTIALS[1])
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and 
                 username == settings.GEOSERVER_CREDENTIALS[0] and
                 password == settings.GEOSERVER_CREDENTIALS[1]):
                 # great, tell geoserver it's an admin.
-                #logger.debug("Geoserver admin logging on")
                 result = {
                    'rw': [],
                    'ro': [],
@@ -1718,16 +1700,13 @@ def layer_acls(request):
                 #logger.debug("Returning geoserver admin acls")
                 return HttpResponse(jsonResult, mimetype="application/json")
         except:
-            logger.debug("An error occurred while trying to authorize")
             pass
         
         if acl_user is None: 
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
                                 mimetype="text/plain")
-    else:
-        'HTTP AUTHORIZATION NOT IN request!'
-        
+
     logger.debug("Done with authorization check, creating json response")        
     all_readable = set()
     all_writable = set()
@@ -2248,7 +2227,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     
     return result
 
-@csrf_exempt  
+@csrf_exempt
 def searchFieldsJSON(request):
     logger.debug("Enter searchFieldsJSON")
     layername = request.POST.get('layername', False);
@@ -2263,7 +2242,7 @@ def searchFieldsJSON(request):
 
             category =geoLayer.topic_category
             if category is not None:
-                catname = category.name
+                catname = category.title
             else:
                 catname = ''  
             if geoLayer.storeType == 'dataStore':

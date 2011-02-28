@@ -55,7 +55,7 @@ def registercompleteOrganizationUser(request, template_name='registration/regist
             #Referer of worldmap.harvard.edu/.../registercomplete is a hack until domain name is transferred to AWS
             if 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'] == settings.CUSTOM_AUTH_URL or request.META['HTTP_REFERER'] == "http://worldmap.harvard.edu/accounts/registercomplete/":
                 userProfile.is_org_member = True
-                userProfile.member_expiration_dt = datettime.today() + datetime.timedelta(days=365)
+                userProfile.member_expiration_dt = datetime.today() + timedelta(days=365)
                 userProfile.save()
                 del request.session["group_username"]
             else:

@@ -149,7 +149,6 @@
                                 //geoEx.reloadWorldMapSource();
                                 var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name'}]);
                                 var thisLayerRec = new LayerRec({title: '{{ layer.title }}', name: '{{ layer.typename }}'});
-
                                 geoEx.reloadWorldMapSource([thisLayerRec]);
                                 Ext.MessageBox.hide();
                             

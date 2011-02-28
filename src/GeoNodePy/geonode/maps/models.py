@@ -629,7 +629,6 @@ class LayerManager(models.Manager):
                     "uuid": str(uuid.uuid4())
                 })
 
-
                 ## Due to a bug in GeoNode versions prior to 1.0RC2, the data
                 ## in the database may not have a valid date_type set.  The
                 ## invalid values are expected to differ from the acceptable
@@ -699,7 +698,6 @@ class Layer(models.Model, PermissionLevelMixin):
     workspace = models.CharField(max_length=128)
     store = models.CharField(max_length=128)
     storeType = models.CharField(max_length=128)
-    #externalURL = models.URLField(blank=True, null=True)
     name = models.CharField(max_length=128)
     uuid = models.CharField(max_length=36)
     typename = models.CharField(max_length=128, unique=True)
@@ -709,10 +707,8 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # section 1
     title = models.CharField(_('title'), max_length=255)
-
     date = models.DateTimeField(_('date'), default = datetime.now) # passing the method itself, not the result
 
-    
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication')
 
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
@@ -872,12 +868,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
     def maps(self):
         """Return a list of all the maps that use this layer"""
-
-        #if (self.externalURL is not None and self.externalURL != ""):
-        #    local_wms = self.externalURL
-        #else:
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
-
         return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename).select_related()])
 
     def metadata(self):
@@ -1175,11 +1166,6 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
-#class LayerAttribute(models.Model):
-#    layer = models.ForeignKey(Layer)
-#    name = models.CharField(max_length=255)
-#    title = models.CharField(max_length=255)
-#    searchable = models.BooleanField(default=True)
 
 class LayerAttribute(models.Model):
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False)
