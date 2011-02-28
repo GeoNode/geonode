@@ -156,16 +156,12 @@ Ext.onReady(function(){
     });
 
     var disable_shapefile_inputs = function() {
-        dbf_file.allowBlank = true;
-        shx_file.allowBlank = true;
         dbf_file.hide();
         shx_file.hide();
         prj_file.hide();
     };
 
     var enable_shapefile_inputs = function() {
-        dbf_file.allowBlank = false;
-        shx_file.allowBlank = false;
         dbf_file.show();
         shx_file.show();
         prj_file.show();
