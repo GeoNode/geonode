@@ -58,7 +58,7 @@ GeoNode.UserSelector = Ext.extend(Ext.util.Observable, {
         this.selectedUsers = new Ext.DataView({
             store: this.store,
             itemSelector: 'div.user_item',
-            tpl: new Ext.XTemplate('<div><tpl for="."> <div class="x-btn user_item"><button class="icon-removelayers remove-button">&nbsp;</button>{username}</div></tpl></div>'),
+            tpl: new Ext.XTemplate('<div><tpl for="."> <div class="x-btn user_item"><button class="icon-removeuser remove-button">&nbsp;</button>{username}</div></tpl></div>'),
             plugins: [plugin],
             autoHeight: true,
             multiSelect: true
@@ -76,7 +76,7 @@ GeoNode.UserSelector = Ext.extend(Ext.util.Observable, {
         }
 
         this.addButton = new Ext.Button({ 
-            iconCls: 'icon-addlayers',
+            iconCls: 'icon-adduser',
             handler: addSelectedUser,
             scope: this
         });
