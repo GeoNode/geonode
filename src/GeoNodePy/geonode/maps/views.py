@@ -48,6 +48,7 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
+DEFAULT_URL = ""
 
 def _project_center(llcenter):
     wkt = "POINT({x} {y})".format(x=llcenter[0],y=llcenter[1])
