@@ -601,8 +601,8 @@ def map_controller(request, mapid):
     main view for map resources, dispatches to correct 
     view based on method and query args. 
     '''
-    # if 'remove' in request.GET: 
-    #     return deletemap(request, mapid)
+    if 'remove' in request.GET: 
+        return deletemap(request, mapid)
     if 'describe' in request.GET:
         return describemap(request, mapid)
     else:
