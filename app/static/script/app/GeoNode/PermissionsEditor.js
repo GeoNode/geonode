@@ -23,6 +23,13 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
     // a GeoNode.UserSelector widget for the manager list
     managerChooser: null,
 
+    levels: {
+        'admin': 'layer_admin',
+        'readwrite': 'layer_readwrite',
+        'readonly': 'layer_readonly',
+        'none': '_none'
+    },
+
     constructor: function(config) {
         Ext.apply(this, config);
         this.addEvents({ 'updated': true });
@@ -157,20 +164,20 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
     readPermissions: function(json) {
         this.editors.suspendEvents();
         this.managers.suspendEvents();
-        if (json['authenticated'] == 'layer_readwrite') {
+        if (json['authenticated'] == this.levels['readwrite']) {
             this.editMode = 'REGISTERED';
-        } else if (json['authenticated'] == 'layer_readonly') {
+        } else if (json['authenticated'] == this.levels['readonly']) {
             this.viewMode = 'REGISTERED';
         }
 
-        if (json['anonymous'] == 'layer_readonly') {
+        if (json['anonymous'] == this.levels['readonly']) {
             this.viewMode = 'ANYONE';
         }
 
         for (var i = 0; i < json.users.length; i++) {
-            if (json.users[i][1] === 'layer_readwrite') {
+            if (json.users[i][1] === this.levels['readwrite']) {
                 this.editors.add(new this.editors.recordType({username: json.users[i][0]}, i + 500));
-            } else if (json.users[i][1] === 'layer_admin') {
+            } else if (json.users[i][1] === this.levels['admin']) {
                 this.managers.add(new this.managers.recordType({username: json.users[i][0]}, i + 500));
             }
         }
@@ -183,29 +190,29 @@ GeoNode.PermissionsEditor = Ext.extend(Ext.util.Observable, {
     writePermissions: function() {
         var anonymousPermissions, authenticatedPermissions, perUserPermissions;
         if (this.viewMode === 'ANYONE') {
-            anonymousPermissions = 'layer_readonly';
+            anonymousPermissions = this.levels['readonly'];
         } else {
-            anonymousPermissions = '_none';
+            anonymousPermissions = this.levels['_none'];
         }
 
         if (this.editMode === 'REGISTERED') {
-            authenticatedPermissions = 'layer_readwrite';
+            authenticatedPermissions = this.levels['readwrite'];
         } else if (this.viewMode === 'REGISTERED') {
-            authenticatedPermissions = 'layer_readonly';
+            authenticatedPermissions = this.levels['readonly'];
         } else {
-            authenticatedPermissions = '_none';
+            authenticatedPermissions = this.levels['_none'];
         }
 
         perUserPermissions = [];
         if (this.editMode === 'LIST') {
             this.editors.each(function(rec) {
-                perUserPermissions.push([rec.get("username"), 'layer_readwrite']);
-            });
+                perUserPermissions.push([rec.get("username"), this.levels['readwrite']]);
+            }, this);
         }
 
         this.managers.each(function(rec) {
-            perUserPermissions.push([rec.get("username"), 'layer_admin']);
-        });
+            perUserPermissions.push([rec.get("username"), this.levels['admin']]);
+        }, this);
 
         return {
             anonymous: anonymousPermissions,
