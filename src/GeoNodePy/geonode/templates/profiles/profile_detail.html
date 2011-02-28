@@ -108,7 +108,7 @@ Ext.onReady(function() {
 
     function serialize() {
         var list = { layers: [], maps: [] };
-        var selection = assetView.getSelectedRecords();
+        var selection = assetView.getSelectionModel().getSelections();
 
         for (var i = 0; i < selection.length; i++) {
             var rec = selection[i],
@@ -144,7 +144,7 @@ Ext.onReady(function() {
                                   method: 'post',
                                   jsonData: spec,
                                   success: function() {
-                                      assetView.getStore().remove(assetView.getSelectedRecords());
+                                      assetView.getStore().remove(assetView.getSelectionModel().getSelections());
                                   }
                               });
                           }
@@ -197,9 +197,6 @@ Ext.onReady(function() {
         renderTo: 'assets',
         items: [tools, assetView]
     });
-
-    // <div id=>{% trans "Remove selected" %}</span>
-    // <span>{% trans "Change permissions on selected" %}</span>
 });
 </script>
 {% endblock %}
