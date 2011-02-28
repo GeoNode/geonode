@@ -731,5 +731,19 @@ cursor: pointer;
     background-image: url(img/silk/delete.png);
 }
 
+.x-btn .icon-adduser {
+    background-image: url(img/silk/add.png);
+}
+
+.x-btn .icon-removeuser {
+    background-image: url(img/silk/delete.png);
+}
+
+.user_item button {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+}
+
 .x-list-body dl { margin: 0; }
 
