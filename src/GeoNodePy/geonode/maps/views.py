@@ -454,6 +454,17 @@ def set_layer_permissions(layer, perm_spec):
         user = User.objects.get(username=username)
         layer.set_user_level(user, level)
 
+def set_map_permissions(m, perm_spec):
+    if "authenticated" in perm_spec:
+        m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+    if "anonymous" in perm_spec:
+        m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    users = [n for (n, p) in perm_spec['users']]
+    m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
+    for username, level in perm_spec['users']:
+        user = User.objects.get(username=username)
+        m.set_user_level(user, level)
+
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
 
@@ -498,24 +509,26 @@ def ajax_map_permissions(request, mapid):
         )
 
     spec = json.loads(request.raw_post_data)
-    _perms = {
-        Layer.LEVEL_READ: Map.LEVEL_READ,
-        Layer.LEVEL_WRITE: Map.LEVEL_WRITE,
-        Layer.LEVEL_ADMIN: Map.LEVEL_ADMIN,
-    }
+    set_map_permissions(map, spec)
 
-    def perms(x):
-        return _perms.get(x, Map.LEVEL_NONE)
+    # _perms = {
+    #     Layer.LEVEL_READ: Map.LEVEL_READ,
+    #     Layer.LEVEL_WRITE: Map.LEVEL_WRITE,
+    #     Layer.LEVEL_ADMIN: Map.LEVEL_ADMIN,
+    # }
 
-    if "anonymous" in spec:
-        map.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
-    if "authenticated" in spec:
-        map.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
-    users = [n for (n, p) in spec["users"]]
-    map.get_user_levels().exclude(user__username__in = users + [map.owner]).delete()
-    for username, level in spec['users']:
-        user = User.objects.get(username = username)
-        map.set_user_level(user, perms(level))
+    # def perms(x):
+    #     return _perms.get(x, Map.LEVEL_NONE)
+
+    # if "anonymous" in spec:
+    #     map.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
+    # if "authenticated" in spec:
+    #     map.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
+    # users = [n for (n, p) in spec["users"]]
+    # map.get_user_levels().exclude(user__username__in = users + [map.owner]).delete()
+    # for username, level in spec['users']:
+    #     user = User.objects.get(username = username)
+    #     map.set_user_level(user, perms(level))
 
     return HttpResponse(
         "Permissions updated",
@@ -563,7 +576,7 @@ def mapdetail(request,mapid):
         'config': config, 
         'map': map,
         'layers': layers,
-        'permissions_json': json.dumps(_fix_map_perms_for_editor(_perms_info(map, MAP_LEV_NAMES)))
+        'permissions_json': json.dumps(_perms_info(map, MAP_LEV_NAMES))
     }))
 
 @csrf_exempt
@@ -1731,7 +1744,7 @@ def batch_permissions(request):
         return HttpResponse("Permissions API requires POST requests", status=405)
 
     spec = json.loads(request.raw_post_data)
-
+    
     if "layers" in spec:
         lyrs = Layer.objects.filter(pk__in = spec['layers'])
         for lyr in lyrs:
@@ -1757,7 +1770,7 @@ def batch_permissions(request):
         if auth_level not in valid_perms:
             auth_level = "_none"
         for lyr in lyrs:
-            lyr.get_user_levels().exclude(user__username__in = user_names + [layer.owner.username]).delete()
+            lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
             lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
             lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
             for user, user_level in users:
@@ -1767,16 +1780,21 @@ def batch_permissions(request):
 
     if "maps" in spec:
         maps = Map.objects.filter(pk__in = spec['maps'])
-        valid_perms = dict(
-                layer_readwrite = 'map_readwrite',
-                layer_readonly = 'map_readonly')
+        valid_perms = ['layer_readwrite', 'layer_readonly']
+        if anon_level not in valid_perms:
+            anon_level = "_none"
+        if auth_level not in valid_perms:
+            auth_level = "_none"
+        anon_level = anon_level.replace("layer", "map")
+        auth_level = auth_level.replace("layer", "map")
 
-        for map in maps:
-            map.get_user_levels().exclude(user__username__in = user_names + [map.owner.username]).delete()
-            map.set_gen_level(ANONYMOUS_USERS, valid_perms.get(anon_level, "_none"))
-            map.set_gen_level(AUTHENTICATED_USERS, valid_perms.get(auth_level, "_none"))
+        for m in maps:
+            m.get_user_levels().exclude(user__username__in = user_names + [m.owner.username]).delete()
+            m.set_gen_level(ANONYMOUS_USERS, anon_level)
+            m.set_gen_level(AUTHENTICATED_USERS, auth_level)
             for user, user_level in spec['permissions'].get("users", []):
-                lyr.set_user_level(user, valid_perms.get(user_level, "_none"))
+                user_level = user_level.replace("layer", "map")
+                m.set_user_level(user, valid_perms.get(user_level, "_none"))
 
     return HttpResponse("Not implemented yet")
 
