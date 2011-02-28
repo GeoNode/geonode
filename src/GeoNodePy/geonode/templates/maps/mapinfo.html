@@ -26,6 +26,12 @@ Ext.onReady(function() {
     app = new GeoExplorer.Viewer(config);
 {% if can_change_permissions %}
     new GeoNode.PermissionsEditor({
+        levels: {
+            'admin': 'map_admin',
+            'readwrite': 'map_readwrite',
+            'readonly': 'map_readonly',
+            '_none': '_none'
+        },
         renderTo: "permissions_form",
         userLookup: "{% url geonode.views.ajax_lookup %}",
         permissions: {{ permissions_json }},
