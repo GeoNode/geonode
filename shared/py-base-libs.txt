@@ -4,3 +4,4 @@ werkzeug
 django-extensions
 httplib2
 psycopg2
+gdal
