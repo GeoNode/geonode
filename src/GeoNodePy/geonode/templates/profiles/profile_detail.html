@@ -29,23 +29,37 @@
 </div>
 <script type="text/javascript">
 Ext.onReady(function() {
+    var mapsAndLayers = [];
+    {% for lyr in profile.user.layer_set.all %}
+    mapsAndLayers.push(["lyr.{{ lyr.pk|escapejs }}", "{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|escapejs }}"]);
+    {% endfor %}
+    {% for map in profile.user.map_set.all %}
+    mapsAndLayers.push(["map.{{ map.pk|escapejs }}", "{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}", "{{ map.title|escapejs }}", "{{ map.last_modified|escapejs }}"]);
+    {% endfor %}
+
     var assets = new Ext.data.Store({
         reader: new Ext.data.ArrayReader({
             idIndex: 0,
-            fields: ["id", "type", "href", "title", "date"]
+            fields: ["pk", "id", "type", "href", "title", "date"]
         }),
-        data: [
-        {% for lyr in profile.user.layer_set.all %}
-        ["{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|escapejs }}"]{% if not forloop.last %},{% endif %}
-        {% endfor %}
-        {% if profile.user.layer_set.count and profile.user.map_set.count %},{% endif %}
-        {% for map in profile.user.map_set.all %}
-        ["{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}", "{{ map.title|escapejs }}", "{{ map.last_modified|escapejs }}"]{% if not forloop.last %},{% endif %}
-        {% endfor %}
-        ]
+        data: mapsAndLayers
     });
 
     var cb = new Ext.grid.CheckboxSelectionModel();
+    var columns = [
+       { header: gettext('Type'), tpl: "<div class='data-type {type}'>&nbsp;</div>", width: 10 },
+       { header: gettext('Title'), dataIndex: 'title', autoExpand: true, tpl: "<a href='{href}'> {title} </a>" },
+       { header: gettext('Date'), dataIndex: 'date', width: 30, xtype: 'datecolumn' }
+    ]
+
+    {% if user == profile.user %}
+        columns.unshift(cb);
+        columns.push({
+            tpl: "<span class='data-edit'>&nbsp;</span><span class='data-delete'>&nbsp;</span>",
+            width: 15
+        });
+    {% endif %} 
+
     var assetView = new Ext.grid.GridPanel({
         store: assets,
         autoHeight: true,
@@ -58,18 +72,7 @@ Ext.onReady(function() {
         sm: cb,
         colModel: new Ext.grid.ColumnModel({
             defaults: { xtype: 'templatecolumn' },
-            columns: [
-             {% if user == profile.user %}
-               cb,
-             {% endif %}
-               { header: gettext('Type'), tpl: "<div class='data-type {type}'>&nbsp;</div>", width: 10 },
-               { header: gettext('Title'), dataIndex: 'title', autoExpand: true,
-                 tpl: "<a href='{href}'> {title} </a>" },
-               { header: gettext('Date'), dataIndex: 'date', width: 30, xtype: 'datecolumn' }
-             {% if user == profile.user %},
-               { tpl: "<span class='data-edit'>&nbsp;</span><span class='data-delete'>&nbsp;</span>", width: 15 }
-             {% endif %}
-            ]
+            columns: columns
         }),
         listeners: {
             render: function(grid)  {
@@ -125,6 +128,7 @@ Ext.onReady(function() {
         return list;
     }
 
+    {% if user == profile.user %}
     var tools = {
         layout: 'hbox',
         unstyled: true,
@@ -171,9 +175,7 @@ Ext.onReady(function() {
                           Ext.Ajax.request({
                               url: '/data/api/batch_permissions',
                               method: 'post',
-                              jsonData: spec,
-                              success: function() { alert("success!") },
-                              failure: function() { alert("failure") }
+                              jsonData: spec
                           });
                       }
                   });
@@ -197,6 +199,13 @@ Ext.onReady(function() {
         renderTo: 'assets',
         items: [tools, assetView]
     });
+    {% else %}
+    new Ext.Panel({
+        border: false,
+        renderTo: 'assets',
+        items: [assetView]
+    });
+    {% endif %}
 });
 </script>
 {% endblock %}
