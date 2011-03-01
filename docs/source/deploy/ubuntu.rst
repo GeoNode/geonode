@@ -100,7 +100,7 @@ Deploying GeoServer
    default, it will look for GeoNode at http://localhost:8000/ but we will be
    running the Django application on http://localhost:80/ so we have to
    configure GeoServer to look at that URL.  To do so, edit
-   :file:`/opt/apache-tomcat-6.0.29/webapps/geoserver-geonode-dev/WEB-INF/web.xml` 
+   :file:`/var/lib/tomcat6/webapps/geoserver-geonode-dev/WEB-INF/web.xml` 
    and add a context-parameter::
 
      <context-param>
@@ -119,7 +119,7 @@ Deploying GeoServer
    GeoServer requires a particular directory structure in data directories, so
    also copy the template datadir from the tomcat webapps directory::
 
-     # cp -R /opt/apache-tomcat-6.0.29/webapps/geoserver-geonode-dev/data/ /opt/geoserver_data
+     # cp -R /var/lib/tomcat6/webapps/geoserver-geonode-dev/data/ /opt/geoserver_data
      # chown tomcat6 -R /opt/geoserver_data/
 
 4. Restart tomcat
@@ -299,7 +299,7 @@ Install GeoNode Django Site
 
         CustomLog /var/log/apache2/access.log combined
 
-        Alias /media/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/theme/
+        Alias /media/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/
         Alias /admin-media/ /var/www/geonode/wsgi/geonode/lib/python2.6/site-packages/django/contrib/admin/media/
 
         WSGIPassAuthorization On
