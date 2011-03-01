@@ -603,7 +603,7 @@ def map_controller(request, mapid):
     '''
     if 'remove' in request.GET: 
         return deletemap(request, mapid)
-    elif 'describe' in request.GET:
+    if 'describe' in request.GET:
         return describemap(request, mapid)
     else:
         return mapdetail(request, mapid)
