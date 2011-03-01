@@ -247,6 +247,16 @@ INSTALLED_APPS = (
     'geonode.proxy',
 )
 
+def get_user_url(u):
+    from django.contrib.sites.models import Site
+    s = Site.objects.get_current()
+    return "http://" + s.domain + "/profiles/" + u.username
+
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': get_user_url
+}
+
 AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = False
 
