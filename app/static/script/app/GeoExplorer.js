@@ -123,7 +123,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     metaDataMapAbstract: 'UT:Abstract',
     metaDataMapTitle: 'UT:Title',
     miniSizeLabel: 'UT: Mini',
-    navActionTipText: "UT:Pan Map",
     premiumSizeLabel: 'UT: Premium',
     printTipText: "UT:Print Map",
     printWindowTitleText: "UT:Print Preview",
@@ -1390,18 +1389,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope: this
         });
 
-        // create a navigation control
-        var navAction = new GeoExt.Action({
-            tooltip: this.navActionTipText,
-            iconCls: "icon-pan",
-            enableToggle: true,
-            pressed: true,
-            allowDepress: false,
-            control: new OpenLayers.Control.Navigation(),
-            map: this.mapPanel.map,
-            toggleGroup: toolGroup
-        });
-        
         var enable3DButton = new Ext.Button({
             iconCls:"icon-3D",
             tooltip: this.switchTo3DActionText,
