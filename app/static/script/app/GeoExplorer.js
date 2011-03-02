@@ -822,13 +822,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     return record.get("group") !== "background";
                 },
                 "show": function() {
-                    // TODO
+                    // TODO disable tree top toolbar (AddLayers etc.)
                     removeLayerAction.disable();
                     layerTree.getSelectionModel().un(
                         "beforeselect", updateLayerActions, this);
                 },
                 "hide": function() {
-                    // TODO
+                    // TODO enable tree top toolbar (AddLayers etc.)
                     updateLayerActions();
                     layerTree.getSelectionModel().on(
                         "beforeselect", updateLayerActions, this);
