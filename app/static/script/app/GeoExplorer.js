@@ -103,7 +103,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
     heightLabel: 'UT: Height',
-    infoButtonText: "UT:Get Feature Info",
     largeSizeLabel: 'UT:Large',
     layerAdditionLabel: "UT: or add a new server.",
     layerContainerText: "UT:Map Layers",
@@ -1403,63 +1402,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             toggleGroup: toolGroup
         });
         
-        // create a get feature info control
-        var info = {controls: []};
-        var infoButton = new Ext.Button({
-		tooltip: this.infoButtonText,
-            iconCls: "icon-getfeatureinfo",
-            toggleGroup: toolGroup,
-            enableToggle: true,
-            allowDepress: false,
-            toggleHandler: function(button, pressed) {
-                for (var i = 0, len = info.controls.length; i < len; i++){
-                    if(pressed) {
-                        info.controls[i].activate();
-                    } else {
-                        info.controls[i].deactivate();
-                    }
-                }
-            }
-        });
-
-        var updateInfo = function() {
-            var queryableLayers = this.mapPanel.layers.queryBy(function(x){
-                return x.get("queryable");
-            });
-
-            var map = this.mapPanel.map;
-            var control;
-            for (var i = 0, len = info.controls.length; i < len; i++){
-                control = info.controls[i];
-                control.deactivate();  // TODO: remove when http://trac.openlayers.org/ticket/2130 is closed
-                control.destroy();
-            }
-
-            info.controls = [];
-            queryableLayers.each(function(x){
-                var control = new OpenLayers.Control.WMSGetFeatureInfo({
-                    url: x.getLayer().url,
-                    queryVisible: true,
-                    layers: [x.getLayer()],
-                    eventListeners: {
-                        getfeatureinfo: function(evt) {
-                            this.displayPopup(evt, x.get("title") || x.get("name"));
-                        },
-                        scope: this
-                    }
-                });
-                map.addControl(control);
-                info.controls.push(control);
-                if(infoButton.pressed) {
-                    control.activate();
-                }
-            }, this);
-        };
-
-        this.mapPanel.layers.on("update", updateInfo, this);
-        this.mapPanel.layers.on("add", updateInfo, this);
-        this.mapPanel.layers.on("remove", updateInfo, this);
-
         var enable3DButton = new Ext.Button({
             iconCls:"icon-3D",
             tooltip: this.switchTo3DActionText,
