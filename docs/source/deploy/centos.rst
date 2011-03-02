@@ -81,11 +81,11 @@ Tomcat Servlet container was already installed with yum in previous step
 
     JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
 
-2. Set tomcat to start on boot 
+2. Set tomcat to start on boot:: 
    
     $ chkconfig tomcat5 on
 
-3. Start Tomcat
+3. Start Tomcat::
 
     $ service tomcat5 start
 
@@ -335,7 +335,7 @@ Installing mod_wsgi
 Prepare the Django database
 ---------------------------
 
-1. Initialize postgres and set it to start on boot 
+1. Initialize postgres and set it to start on boot:: 
 
     $ service postgresql initdb
     $ service postgresql start
@@ -347,8 +347,8 @@ Prepare the Django database
     $ createdb geonode && createuser -s -P geonode 
     $ exit
 
-3.  Edit the ``pg_hba.conf`` file to use password based authentication, change
-         `ident, sameuser` to `md5`::
+3. Edit the ``pg_hba.conf`` file to use password based authentication, change
+   `ident, sameuser` to `md5`::
 
      $ vim /var/lib/pgsql/data/pg_hba.conf
 
