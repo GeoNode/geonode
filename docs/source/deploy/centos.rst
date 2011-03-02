@@ -314,7 +314,7 @@ Prepare the Django database
 
 1. Initdb and create geonode user and database. 
    Use the password specified in the local_settings.py file created
-   in an earlier step.
+   in an earlier step::
 
     $ service postgresql initdb
     $ service postgresql start
