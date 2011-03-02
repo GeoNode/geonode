@@ -148,8 +148,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     unsupportedLayersTitleText: 'UT:Unsupported Layers',
     unsupportedLayersText: 'UT:The following layers cannot be printed:',
     widthLabel: 'UT: Width',
-    zoomInActionText: "UT:Zoom In",
-    zoomOutActionText: "UT:Zoom Out",
     zoomSelectorText: 'UT:Zoom level',
     zoomSliderTipText: "UT: Zoom Level",
     zoomToLayerExtentText: "UT:Zoom to Layer Extent",
@@ -157,11 +155,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     constructor: function(config) {
 
         config.tools = [{
-            ptype: "gxp_zoomtoextent",
-            actionTarget: {target: "paneltbar", index: 8}
+            ptype: "gxp_zoom",
+            actionTarget: {target: "paneltbar", index: 4}
         }, {
             ptype: "gxp_navigationhistory",
             actionTarget: {target: "paneltbar", index: 6}
+        }, {
+            ptype: "gxp_zoomtoextent",
+            actionTarget: {target: "paneltbar", index: 8}
         }];
 
         this.popupCache = {};
@@ -1562,22 +1563,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             window.printCapabilities ? printButton : "",
             "-",
-            new Ext.Button({
-                handler: function(){
-                    this.mapPanel.map.zoomIn();
-                },
-                tooltip: this.zoomInActionText,
-                iconCls: "icon-zoom-in",
-                scope: this
-            }),
-            new Ext.Button({
-		    tooltip: this.zoomOutActionText,
-                handler: function(){
-                    this.mapPanel.map.zoomOut();
-                },
-                iconCls: "icon-zoom-out",
-                scope: this
-            }),
             enable3DButton
         ];
         this.on("saved", function() {
