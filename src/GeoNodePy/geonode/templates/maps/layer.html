@@ -142,17 +142,24 @@
 
 <div id="preview_map"></div>
 
-<p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>
-<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>
-<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>
-<p> <strong>{% trans "Topic Category" %}:</strong> {{ layer.topic_category }}</p>
+{% if layer.edition %}<p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>{% endif %}
+{% if layer.edition %}<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>{% endif %}
+{% if layer.edition %}<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>{% endif %}
+{% if layer.edition %}<p> <strong>{% trans "Topic Category" %}:</strong> {{ layer.topic_category }}</p>{% endif %}
 
+{% if layer.constraints_use or layer.constraints_other %}
 <p> <strong>{% trans "Citation" %}:</strong> 
     {{ layer.constraints_use}} {{ layer.contraints_other}}
 </p>
+{% endif %}
+
+{% if layer.owner %}
 <p> <strong>{% trans "Owner" %}:</strong>
     <a href="{{ layer.owner.get_profile.get_absolute_url }}"> {{ layer.owner.username }} </a>
 </p>
+{% endif %}
+
+{% if layer.poc %}
 <p> <strong>{% trans "Point of Contact" %}:</strong>
   {% if layer.poc.user %}
     <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
@@ -171,17 +178,29 @@
     </ul>
   {% endif %}
 </p>
+{% endif %}
+
+{% if layer.attribute_names %}
 <p> <strong>{% trans "Attributes" %}:</strong> 
     {{ layer.attribute_names|join:", " }}
 </p>
+{% endif %}
+
+{% if layer.supplemental_information %}
 <p> <strong>{% trans "Supplemental Information" %}:</strong> 
     {{ layer.supplemental_information }}
 </p>
+{% endif %}
+
+{% if layer.data_quality_statement %}
 <p> <strong>{% trans "Data Quality Statement" %}:</strong> 
     {{ layer.data_quality_statement }}
 </p>
-<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>
-<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
+{% endif %}
+
+{% if layer.attribute_names %}<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>{% endif %}
+{% if layer.metadata.crsOptions %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>{% endif %}
+
 </div>
 {% endblock %}
 
