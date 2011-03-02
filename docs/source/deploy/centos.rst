@@ -24,18 +24,18 @@ The stack used is:
 Download GeoNode Release Archive
 --------------------------------
 
-You can get the latest release from http://geonode.org/ or the `GeoNode project
-wiki <http://projects.opengeo.org/CAPRA/>`_ .  You can unpack it like::
+You can get the latest release from http://dev.geonode.org/release/ or 
+the `GeoNode project wiki <http://dev.geonode.org/trac/>`_ .  
+You can unpack it like::
 
-  $ tar xvzf GeoNode-1.0-beta.tar.gz
-  GeoNode-1.0-beta/geonetwork.war
-  GeoNode-1.0-beta/pavement.py
-  GeoNode-1.0-beta/geonode-client.zip
-  GeoNode-1.0-beta/geonode-webapp.pybundle
-  GeoNode-1.0-beta/geoserver-geonode-dev.war
-  GeoNode-1.0-beta/bootstrap.py
-  GeoNode-1.0-beta/deploy-libs.txt
-  GeoNode-1.0-beta/deploy.ini.ex
+  $ tar xvzf GeoNode-1.0.1.tar.gz
+  GeoNode-1.0.1/geonetwork.war
+  GeoNode-1.0.1/pavement.py
+  GeoNode-1.0.1/geonode-webapp.pybundle
+  GeoNode-1.0.1/geoserver-geonode-dev.war
+  GeoNode-1.0.1/bootstrap.py
+  GeoNode-1.0.1/deploy-libs.txt
+  GeoNode-1.0.1/deploy.ini.ex
 
 Runtimes
 --------
@@ -59,18 +59,18 @@ Servlet Container Installation
 
 1. Fetch the Tomcat archive from http://tomcat.apache.org/downloads/ ::
 
-     $ wget http://ftp.wayne.edu/apache//tomcat/tomcat-6/v6.0.29/bin/apache-tomcat-6.0.29.zip
+     $ wget http://ftp.wayne.edu/apache//tomcat/tomcat-6/v6.0.32/bin/apache-tomcat-6.0.32.zip
  
 2. Unpack the archive to :file:`/opt/apache-tomcat-{version}`; for example
-   :file:`/opt/apache-tomcat-6.0.26/` ::
+   :file:`/opt/apache-tomcat-6.0.32/` ::
 
-     $ unzip apache-tomcat-6.0.29.zip -d /opt/apache-tomcat-6.0.29/
+     $ unzip apache-tomcat-6.0.32.zip -d /opt/apache-tomcat-6.0.32/
 
 3. Ensure the startup scripts are executable::
 
-     $ chmod +x /opt/apache-tomcat-6.0.29/bin/*.sh
+     $ chmod +x /opt/apache-tomcat-6.0.32/bin/*.sh
 
-4. Edit :file:`/opt/apache-tomcat-6.0.29/bin/catalina.sh` to set the
+4. Edit :file:`/opt/apache-tomcat-6.0.32/bin/catalina.sh` to set the
    ``JAVA_HOME`` environment variable which is required to help Tomcat find
    some Java utilities.  This file starts with a long prologue comment
    documenting the environment variables which control various aspects of
@@ -81,7 +81,7 @@ Servlet Container Installation
 
    And insert a line following it specifying the appropriate value::
 
-     JAVA_HOME=/opt/sun-java-1.6.0_22/
+     JAVA_HOME=/usr/java/jdk1.6.0_14/jre/
 
    In this same file, also set ``JAVA_OPTS`` to increase the available RAM and
    work around a JVM bug which affects GeoNetwork::
@@ -95,7 +95,11 @@ Servlet Container Installation
 
 5. You can now start Tomcat with the included startup script::
 
-     $ /opt/apache-tomcat-6.0.29/bin/catalina.sh start
+     $ /opt/apache-tomcat-6.0.32/bin/catalina.sh start
+
+6. Tomcat init scripts in /etc/init.d/tomcat6
+
+     $ todo
 
 Deploying GeoNetwork
 --------------------
@@ -103,7 +107,7 @@ Deploying GeoNetwork
 1. Move :file:`geonetwork.war` from the GeoNode release archive into the Tomcat
    deployment directory::
 
-     $ mv /tmp/GeoNode-1.0-beta/geonetwork.war /opt/apache-tomcat-6.0.29/webapps/
+     $ mv GeoNode-1.0.1/geonetwork.war /opt/apache-tomcat-6.0.32/webapps/
 
 2. Tomcat will automatically extract the archive and start up the GeoNetwork
    service.  However, the administrative account will be using the default
@@ -117,13 +121,13 @@ Deploying GeoServer
 1. Move :file:`geoserver-geonode-dev.war` from the GeoNode release archive into
    the Tomcat deployment directory::
 
-     $ mv /tmp/GeoNode-1.0-beta/geoserver-geonode-dev.war /opt/apache-tomcat-6.0.29/webapps/
+     $ mv GeoNode-1.0.1/geoserver-geonode-dev.war /opt/apache-tomcat-6.0.32/webapps/
 
 2. GeoServer uses the Django web application to authenticate users.  By
    default, it will look for GeoNode at http://localhost:8000/ but we will be
    running the Django application on http://localhost:80/ so we have to
    configure GeoServer to look at that URL.  To do so, edit
-   :file:`/opt/apache-tomcat-6.0.29/webapps/geoserver-geonode-dev/WEB-INF/web.xml` 
+   :file:`/opt/apache-tomcat-6.0.32/webapps/geoserver-geonode-dev/WEB-INF/web.xml` 
    and add a context-parameter::
 
      <context-param>
@@ -134,9 +138,9 @@ Deploying GeoServer
 3. After modifying ``web.xml`` you will need to restart Tomcat for changes to
    take effect::
 
-     $ /opt/apache-tomcat-6.0.29/bin/catalina.sh stop &&
+     $ /opt/apache-tomcat-6.0.32/bin/catalina.sh stop &&
        sleep 30 &&
-       /opt/apache-tomcat-6.0.29/bin/catalina.sh start
+       /opt/apache-tomcat-6.0.32/bin/catalina.sh start
 
 4. You should now be able to visit the GeoServer web interface at
    http://localhost:8080/geoserver-geonode-dev/ .
@@ -152,29 +156,35 @@ Configuring Apache httpd
    web application files, including a subdirectory for 'media' such as CSS
    stylesheets and JavaScript scripts::
 
-     $ mkdir -p /opt/geonode/apache/media/
+     $ mkdir -p /opt/geonode/apache/
 
-3. Extract the :file:`geonode-client.zip` archive from the geonode release
-   archive into the media directory that was just created::
-
-     $ unzip /tmp/GeoNode-1.0-beta/geonode-client.zip -d /opt/geonode/apache/media/
-
-4. Create a new configuration file in :file:`/etc/httpd/conf.d/geonode.conf` ::
+3. Create a new configuration file in :file:`/etc/httpd/conf.d/geonode.conf` ::
 
      DocumentRoot "/opt/geonode/apache"
-     Alias /media "/opt/geonode/apache/media"
-     Alias /static "/opt/geonode/apache/static"
+
      <Directory "/opt/geonode/apache">
          AllowOverride None
          Order allow,deny
          Allow from all
      </Directory>
 
-5. Start up the web server::
+     <Proxy *>
+        Order allow,deny
+        Allow from all
+     </Proxy>
+     
+     ProxyPreserveHost On
+
+     ProxyPass /geoserver-geonode-dev http://localhost:8080/geoserver-geonode-dev
+     ProxyPassReverse /geoserver-geonode-dev http://localhost:8080/geoserver-geonode-dev
+     ProxyPass /geonetwork http://localhost:8080/geonetwork
+     ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
+
+4. Start up the web server::
 
      $ service httpd start
 
-6. You should now be able to browse through the static media files using your
+5. You should now be able to browse through the static media files using your
    web browser.  You should be able to load the GeoNode header graphic from
    http://localhost/media/geonode-client/gn/theme/app/img/header-bg.png .
 
@@ -186,7 +196,7 @@ Installing the GeoNode Django Application
 
 2. Install ``virtualenv``::
 
-     $ su -c 'yum install python26-virtualenv'
+     $ su -c 'yum install python-virtualenv'
 
 3. Create a new virtualenv sandbox for the geonode application::
      
@@ -198,7 +208,7 @@ Installing the GeoNode Django Application
      $ cd /opt/geonode/sandbox/
      $ source bin/activate
      $ easy_install pip
-     $ pip install /tmp/GeoNode-1.0-beta/geonode-webapp.pybundle
+     $ pip install GeoNode-1.0.1/geonode-webapp.pybundle
 
 5. Create a file with random text (this is used for internal HTTP transactions
    between the Django application and GeoServer)::
@@ -207,35 +217,43 @@ Installing the GeoNode Django Application
 
 6. Finally, create a Python file at
    :file:`/opt/geonode/sandbox/src/GeoNodePy/geonode/local_settings.py` to
-   contain settings for the local deployment::
+   contain settings for the local deployment. Replace localhost with 
+   the domain name or IP address of the server::
+
+     MEDIA_ROOT = '/opt/geonode/apache/media/'
 
      DEBUG = False
      SERVE_MEDIA = False
      MINIFIED_RESOURCES = True
 
-     DATABASE_NAME = '/opt/geonode/production.db'
-
-     GEONODE_CLIENT_LOCATION = "http://demo.geonode.org/media/"
-
-     GEOSERVER_BASE_URL = "http://localhost:8080/geoserver-geonode-dev/"
-     GEONETWORK_BASE_URL = "http://localhost:8080/geonetwork/"
-
-     MEDIA_URL = 'http://demo.geonode.org/static/'
-     GEONODE_UPLOAD_PATH = '/opt/geonode/apache/static/'
+     DATABASE_NAME = '/opt/geonode/db/production.db'
 
      SITEURL = "http://localhost/"
+
+     GEONODE_CLIENT_LOCATION = SITEURL + 'media/static/'
+
+     GEOSERVER_BASE_URL = SITEURL + "geoserver-geonode-dev/"
+     GEONETWORK_BASE_URL = SITEURL + "geonetwork/"
+
+     MEDIA_URL = SITEURL + "media/"
+
+     GEONODE_UPLOAD_PATH = '/opt/geonode/apache/static/'
+
      MEDIA_ROOT = '/opt/geonode/apache/media/'
+
+     ADMIN_MEDIA_PREFIX = ("/admin-media/")
+
 
 Installing mod_wsgi
 -------------------
 
 1. Install mod_wsgi and Apache httpd::
      
-     $ su -c 'yum install python26_mod_wsgi'
+     $ su -c 'yum install python26-mod_wsgi'
 
    .. note::
        The default CentOS package repository includes a ``mod_wsgi`` package
-       which is distinct from the ``python26_mod_wsgi`` package provided by
+       which is distinct from the ``python26-mod_wsgi`` package provided by
        ELGIS.  Since GeoNode requires Python 2.6, it will not function with the
        default package, so please ensure that you install the package as listed
        above.
@@ -262,6 +280,9 @@ Installing mod_wsgi
 4. Edit the configuration file :file:`/etc/httpd/conf.d/geonode.conf` that was
    created earlier and add on to the end::
 
+     Alias /media "/opt/geonode/sandbox/src/GeoNodePy/geonode/media"
+     Alias /admin-media/ /opt/geonode/sandbox/lib/python2.6/site-packages/django/contrib/admin/media/
+     
      WSGIDaemonProcess geonode python-path=/opt/geonode/sandbox/lib/python2.6/site-packages
      WSGIScriptAlias / /opt/geonode/geonode.wsgi
      WSGISocketPrefix /var/run/wsgi
