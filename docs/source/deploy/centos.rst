@@ -132,7 +132,7 @@ Deploying GeoServer
      </context-param>
 
 4. GeoServer requires a particular directory structure in data directories, so 
-   also copy the template datadir from the tomcat webapps directory:
+   also copy the template datadir from the tomcat webapps directory::
    
      $ mkdir -p /opt/geoserver_data
      $ cp -rp /var/lib/tomcat5/webapps/geoserver-geonode-dev/data/* /opt/geoserver_data/.
@@ -195,7 +195,7 @@ its configuration are necessary.
      $ service httpd start
 
 4. You should now be able to browse the http server and verify that the proxied tomcat
-   services are working properly.
+   services are working properly::
 
      http://localhost/geonetwork/
      http://localhost/geoserver-geonode-dev/
@@ -203,18 +203,18 @@ its configuration are necessary.
 Installing the GeoNode Django Application
 -----------------------------------------
 
-1. Copy GeoNode release files to application directory
+1. Copy GeoNode release files to application directory::
 
      $ cp GeoNode-1.0.1/bootstrap.py /var/www/geonode/wsgi/geonode/.
      $ cp GeoNode-1.0.1/geonode-webapp.pybundle /var/www/geonode/wsgi/geonode/.
      $ cp GeoNode-1.0.1/pavement.py /var/www/geonode/wsgi/geonode/.
 
-2. Run the bootstrap script
+2. Run the bootstrap script::
 
      $ cd /var/www/geonode/wsgi/geonode
      $ python26 bootstrap.py
 
-3. Install required psycopg2 dependency
+3. Install required psycopg2 dependency::
 
      $ cd /var/www/geonode/wsgi/geonode
      $ source bin/activate
