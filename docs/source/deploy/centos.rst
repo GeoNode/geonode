@@ -124,16 +124,19 @@ Deploying GeoServer
 3. Change GEOSERVER_DATA_DIR in the file 
    :file`/var/lib/tomcat5/webapps/geoserver-geonode-dev/WEB-INF/web.xml`
    by uncommenting the block below and setting the param-value to 
-   /opt/geoserver_data
+   /opt/geoserver_data::
 
      <context-param>
         <param-name>GEOSERVER_DATA_DIR</param-name>
         <param-value>/opt/geoserver_data</param-value>
      </context-param>
 
-    $ mkdir -p /opt/geoserver_data
-    $ cp -rp /var/lib/tomcat5/webapps/geoserver-geonode-dev/data/* /opt/geoserver_data/.
-    $ chown tomcat. /opt/geoserver_data/ -R
+4. GeoServer requires a particular directory structure in data directories, so 
+   also copy the template datadir from the tomcat webapps directory:
+   
+     $ mkdir -p /opt/geoserver_data
+     $ cp -rp /var/lib/tomcat5/webapps/geoserver-geonode-dev/data/* /opt/geoserver_data/.
+     $ chown tomcat. /opt/geoserver_data/ -R
 
 4. After modifying ``web.xml`` you will need to restart Tomcat for changes to
    take effect::
@@ -202,20 +205,20 @@ Installing the GeoNode Django Application
 
 1. Copy GeoNode release files to application directory
 
-    $ cp GeoNode-1.0.1/bootstrap.py /var/www/geonode/wsgi/geonode/.
-    $ cp GeoNode-1.0.1/geonode-webapp.pybundle /var/www/geonode/wsgi/geonode/.
-    $ cp GeoNode-1.0.1/pavement.py /var/www/geonode/wsgi/geonode/.
+     $ cp GeoNode-1.0.1/bootstrap.py /var/www/geonode/wsgi/geonode/.
+     $ cp GeoNode-1.0.1/geonode-webapp.pybundle /var/www/geonode/wsgi/geonode/.
+     $ cp GeoNode-1.0.1/pavement.py /var/www/geonode/wsgi/geonode/.
 
 2. Run the bootstrap script
 
-   $ cd /var/www/geonode/wsgi/geonode
-   $ python26 bootstrap.py
+     $ cd /var/www/geonode/wsgi/geonode
+     $ python26 bootstrap.py
 
 3. Install required psycopg2 dependency
 
-   $ cd /var/www/geonode/wsgi/geonode
-   $ source bin/activate
-   $ pip install http://initd.org/psycopg/tarballs/PSYCOPG-2-2/psycopg2-2.2.0.tar.gz
+     $ cd /var/www/geonode/wsgi/geonode
+     $ source bin/activate
+     $ pip install http://initd.org/psycopg/tarballs/PSYCOPG-2-2/psycopg2-2.2.0.tar.gz
 
 4. Create a Local Settings Python file at
    :file:`/opt/geonode/sandbox/src/GeoNodePy/geonode/local_settings.py` to
