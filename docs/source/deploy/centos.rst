@@ -50,11 +50,13 @@ Install Dependencies
      <http://fedoraproject.org/wiki/EPEL>`_ project.  Follow the instructions from
      the wiki to activate the EPEL repository::
 
+     # # The command below is an example, please adjust based on your exact version of CentOS
      $ su -c 'rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm'
 
      Enable the `ELGIS testing repository
      <http://wiki.osgeo.org/wiki/Enterprise_Linux_GIS>`_::
 
+     # # The command below is an example, please adjust based on your exact version of CentOS
      $ su -c 'rpm -Uvh http://elgis.argeo.org/repos/5/elgis-release-5-5_0.noarch.rpm'
 
 2. Install Java Runtime
@@ -63,8 +65,7 @@ Install Dependencies
      the `Oracle installation instructions
      <http://www.oracle.com/technetwork/java/javase/install-linux-self-extracting-142296.html>`_
      While other JRE versions will work, Oracle's is recommended for performance
-     reasons.  For the purposes of this guide we will assume that the JRE is
-     installed to :file:`/opt/sun-java-1.6.0_22/`
+     reasons.  
 
 3. Install Dependencies with yum::
 
@@ -80,6 +81,15 @@ Tomcat Servlet container was already installed with yum in previous step
    Edit the file :file:`/etc/sysconfig/tomcat5` and add the following.::
 
     JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
+  
+    .. note::
+ 
+      The Java options used are as follows: 
+      * ``-Xmx1024m`` tells Java to use 1GB of RAM instead of the default value
+      * ``-XX:MaxPermSize=256M`` increase the amount of space used for
+        "permgen", needed to run geonetwork/geoserver.
+      * ``-XX:CompileCommand=...`` is a workaround for a JVM bug that affects
+        GeoNetwork; see http://trac.osgeo.org/geonetwork/ticket/301
 
 2. Set tomcat to start on boot:: 
    
@@ -138,6 +148,12 @@ Deploying GeoServer
        <param-name>GEONODE_BASE_URL</param-name>
        <param-value>http://localhost/</param-value>
      </context-param>
+
+.. note::
+
+   If you have more than one website running in apache, using ``http://localhost/`` will not work.
+   In that case you need to set explicitly the name of the virtual host, for example:
+   http://geonode.mycompany.net/
 
 3. Move the GeoServer "data directory" outside of the servlet container to
    avoid having it overwritten on later upgrades. Edit the file
@@ -228,7 +244,8 @@ Installing the GeoNode Django Application
      $ cp GeoNode-1.0.1/geonode-webapp.pybundle /var/www/geonode/wsgi/geonode/.
      $ cp GeoNode-1.0.1/pavement.py /var/www/geonode/wsgi/geonode/.
 
-2. Run the bootstrap script::
+2. Run the bootstrap script to set up a virtualenv sandbox and install Python
+   dependencies:: 
 
      $ cd /var/www/geonode/wsgi/geonode
      $ python26 bootstrap.py
@@ -240,9 +257,8 @@ Installing the GeoNode Django Application
      $ pip install http://initd.org/psycopg/tarballs/PSYCOPG-2-2/psycopg2-2.2.0.tar.gz
 
 4. Create a Local Settings Python file at
-   :file:`/opt/geonode/sandbox/src/GeoNodePy/geonode/local_settings.py` to
-   contain settings for the local deployment. Replace localhost in the SITE_URL
-   param with the domain name or IP address of the server::
+   :file:`/var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/local_settings.py` to
+   contain settings for the local server. for example:: 
 
      DEBUG = TEMPLATE_DEBUG = False
      MINIFIED_RESOURCES = True
@@ -299,8 +315,8 @@ Installing the GeoNode Django Application
      The local_settings.py approach is a Django idiom to help customizing websites, it works because
      the last line of ``src/GeoNodePy/geonode/settings.py`` imports it if it exists.
 
-Installing mod_wsgi
--------------------
+Installing and Configuring mod_wsgi
+-----------------------------------
 
 1. Create a short Python script in :file:`/var/www/geonode/wsgi/geonode.wsgi` to load
    the GeoNode application in Apache::
