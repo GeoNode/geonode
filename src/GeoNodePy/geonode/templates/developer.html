@@ -45,13 +45,13 @@
 {% block sidebar %}
 <div class="threecol">
 
-  <h3>GeoNode's Web Services</h3>
-  <p>GeoNode's Web Services are available from the following URLs:</p>
+  <h3>{% trans "GeoNode's Web Services" %}</h3>
+  <p>{% trans "GeoNode's Web Services are available from the following URLs:" %}</p>
   <ul>
-    <li><strong>WMS:</strong> <a href="{{site}}geoserver/wms">{{site}}geoserver/wms</a></li>
-    <li><strong>WFS:</strong> <a href="{{site}}/geoserver/wfs">{{site}}/geoserver/wfs</a></li>
-    <li><strong>CSW:</strong> <a href="{{site}}geonetwork/srv/en/csw">{{site}}geonetwork/srv/en/csw</a></li>
-    <li><strong>GeoWebCache Tiles:</strong> <a href="{{site}}/geoserver/gwc">{{site}}/geoserver/gwc</a></li>
+    <li><strong>{% trans "Dynamic tiles via WMS:" %}</strong> <a href="{{GEOSERVER_BASE_URL}}wms?request=GetCapabilities&version=1.1.1&service=WMS">WMS 1.1.1</a></li>
+    <li><strong>{% trans "Vector data via WFS:" %}</strong> <a href="{{GEOSERVER_BASE_URL}}wfs?request=GetCapabilities&version=1.1.0&service=WFS">WFS 1.1.0</a></li>
+    <li><strong>{% trans "Metadata search via CSW:" %}</strong> <a href="{{GEONETWORK_BASE_URL}}srv/en/csw?request=GetCapabilities&version=2.0.2&service=CSW">CSW 2.0.2</a></li>
+    <li><strong>{% trans "Cached tiles via WMTS:" %}</strong> <a href="{{GEOSERVER_BASE_URL}}gwc/service/wmts?service=WMTS&request=GetCapabilities&version=1.0.0">WMTS 1.0.0</a></li>
   </ul>
 </div>
 {% endblock %}

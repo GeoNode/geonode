@@ -229,7 +229,8 @@ def setup_webapps(options):
     'install_deps',
     'setup_webapps',
     'generate_geoserver_token',
-    'sync_django_db'
+    'sync_django_db',
+    'package_client'
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
@@ -241,18 +242,17 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    webapps = path("./webapps")
-    if not webapps.exists():
-        webapps.mkdir()
+    static = path("./src/GeoNodePy/geonode/media/static")
+    if not static.exists():
+        static.mkdir()
 
-    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_war_url'))
-    dst_war = webapps / "geonode-client.war"
-    deployed_url = webapps / "geonode-client"
+    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
+    dst_zip = static / "geonode-client.zip"
 
-    grab(src_url, dst_war)
+    grab(src_url, dst_zip)
 
-    deployed_url.rmtree()
-    zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
+    zip_extractall(zipfile.ZipFile(dst_zip), static)
+    dst_zip.remove()
 
 @task
 def sync_django_db(options):
@@ -334,7 +334,6 @@ def package_webapp(options):
     'build',
     'package_geoserver',
     'package_geonetwork',
-    'package_client',
     'package_webapp',
     'package_bootstrap'
 )
@@ -520,17 +519,14 @@ def install_sphinx_conditionally(options):
 @task
 @needs('package_client')
 @cmdopts([
-    ('bind=', 'b', 'IP address to bind to. Default is localhost.'),
-    ('client_src=', 's', 'geonode-client project directory, e.g. ../geonode-client/. If provided, unminified javascript resources will be used.')
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
 ])
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
-    if hasattr(options.host, 'client_src'):
-        os.environ["READYGXP_FILES_ROOT"] = os.path.abspath(options.host.client_src)
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
-            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
+            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
             "-Djetty.host=" + options.host.bind,
             "-Xmx512M",
             "-XX:MaxPermSize=128m"
