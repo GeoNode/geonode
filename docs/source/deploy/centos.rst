@@ -50,13 +50,13 @@ Install Dependencies
      <http://fedoraproject.org/wiki/EPEL>`_ project.  Follow the instructions from
      the wiki to activate the EPEL repository::
 
-     # # The command below is an example, please adjust based on your exact version of CentOS
+     $ # The command below is an example, please adjust based on your exact version of CentOS
      $ su -c 'rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm'
 
      Enable the `ELGIS testing repository
      <http://wiki.osgeo.org/wiki/Enterprise_Linux_GIS>`_::
 
-     # # The command below is an example, please adjust based on your exact version of CentOS
+     $ # The command below is an example, please adjust based on your exact version of CentOS
      $ su -c 'rpm -Uvh http://elgis.argeo.org/repos/5/elgis-release-5-5_0.noarch.rpm'
 
 2. Install Java Runtime
