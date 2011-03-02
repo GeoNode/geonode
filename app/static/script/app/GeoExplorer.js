@@ -94,17 +94,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     urlPortRegEx: /^(http[s]?:\/\/[^:]*)(:80|:443)?\//,
     
     //public variables for string literals needed for localization
-    addLayersButtonText: "UT:Add Layers",
     backgroundContainerText: "UT:Background",
-    capGridAddLayersText: "UT:Add Layers",
-    capGridDoneText: "UT:Done",
-    capGridText: "UT:Available Layers",
     connErrorTitleText: "UT:Connection Error",
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
     heightLabel: 'UT: Height',
     largeSizeLabel: 'UT:Large',
-    layerAdditionLabel: "UT: or add a new server.",
     layerContainerText: "UT:Map Layers",
     layerPropertiesText: 'UT: Layer Properties',
     layerPropertiesTipText: 'UT: Change layer format and style',
@@ -158,6 +153,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }, {
             ptype: "gxp_zoomtoextent",
             actionTarget: {target: "paneltbar", index: 8}
+        }, {
+            ptype: "gxp_addlayers",
+            actionTarget: {target: "treetbar", index: 0}
         }];
 
         this.popupCache = {};
@@ -450,15 +448,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var mapOverlay = this.createMapOverlay();
         this.mapPanel.add(mapOverlay);
 
-        var addLayerButton = new Ext.Button({
-            tooltip : this.addLayersButtonText,
-            disabled: true,
-            iconCls: "icon-addlayers",
-            handler : this.showCapabilitiesGrid,
-            scope: this
-        });
         this.on("ready", function() {
-            addLayerButton.enable();
             this.mapPanel.layers.on({
                 "update": function() {this.modified |= 1;},
                 "add": function() {this.modified |= 1;},
@@ -743,12 +733,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             border: false,
             title: this.layersContainerText,
             items: [layerTree],
-            tbar: [
-                addLayerButton,
-                Ext.apply(new Ext.Button(removeLayerAction), {text: ""}),
-                Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
-                Ext.apply(new Ext.Button(showStylesAction), {text: ""})
-            ]
+            tbar: {
+                id: 'treetbar', items: [
+                    Ext.apply(new Ext.Button(removeLayerAction), {text: ""}),
+                    Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
+                    Ext.apply(new Ext.Button(showStylesAction), {text: ""})
+                ]
+            }
         });
 
         this.legendPanel = new GeoExt.LegendPanel({
@@ -763,8 +754,29 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         this.on("ready", function(){
+            var startSourceId = null;
+            for (var id in this.layerSources) {
+                source = this.layerSources[id];
+                    if (source.store && source instanceof gxp.plugins.WMSSource &&
+                        source.url.replace(this.urlPortRegEx, "$1/").indexOf(
+                        this.localGeoServerBaseUrl.replace(
+                            this.urlPortRegEx, "$1/")) === 0) {
+                        startSourceId = id;
+                    }
+            }
+            // find the add layers plugin
+            var addLayers = null;
+            for (var key in this.tools) {
+                var tool = this.tools[key];
+                if (tool.ptype === "gxp_addlayers") {
+                    addLayers = tool;
+                    addLayers.startSourceId = startSourceId;
+                }
+            }
             if (!this.fromLayer && !this.mapID) {
-                this.showCapabilitiesGrid();
+                if (addLayers !== null) {
+                    addLayers.showCapabilitiesGrid();
+                }
             }
         }, this);
 
@@ -810,13 +822,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     return record.get("group") !== "background";
                 },
                 "show": function() {
-                    addLayerButton.disable();
+                    // TODO
                     removeLayerAction.disable();
                     layerTree.getSelectionModel().un(
                         "beforeselect", updateLayerActions, this);
                 },
                 "hide": function() {
-                    addLayerButton.enable();
+                    // TODO
                     updateLayerActions();
                     layerTree.getSelectionModel().on(
                         "beforeselect", updateLayerActions, this);
@@ -1000,214 +1012,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         });
         return stylesPanel;
-    },
-
-    /**
-     * Method: initCapGrid
-     * Constructs a window with a capabilities grid.
-     */
-    initCapGrid: function(){
-
-        var initialSourceId, source, data = [];        
-        for (var id in this.layerSources) {
-            source = this.layerSources[id];
-            if (initialSourceId === undefined &&
-                    source instanceof gxp.plugins.WMSSource &&
-                    source.url.replace(this.urlPortRegEx, "$1/").indexOf(
-                        this.localGeoServerBaseUrl.replace(
-                            this.urlPortRegEx, "$1/")) === 0) {
-                initialSourceId = id;
-            }
-            if (source.store) {
-                data.push([id, this.layerSources[id].title || id]);                
-            }
-        }
-        // fall back to 1st source if the local GeoServer WMS is not used
-        if (initialSourceId === undefined) {
-            initialSourceId = data[0][0];
-        }
-
-        var sources = new Ext.data.ArrayStore({
-            fields: ["id", "title"],
-            data: data
-        });
-
-        var expander = new GeoExplorer.CapabilitiesRowExpander({
-            ows: this.localGeoServerBaseUrl + "ows"
-        });
-        
-        var addLayers = function() {
-            var key = sourceComboBox.getValue();
-            var layerStore = this.mapPanel.layers;
-            var source = this.layerSources[key];
-            var records = capGridPanel.getSelectionModel().getSelections();
-            var record;
-            for (var i=0, ii=records.length; i<ii; ++i) {
-                record = source.createLayerRecord({
-                    name: records[i].get("name"),
-                    source: key,
-                    buffer: 0
-                });
-                if (record) {
-                    if (record.get("group") === "background") {
-                        var pos = layerStore.queryBy(function(rec) {
-                            return rec.get("group") === "background"
-                        }).getCount();
-                        layerStore.insert(pos, [record]);
-                    } else {
-                        layerStore.add([record]);
-                    }
-                }
-            }
-        };
-
-        var source = this.layerSources[initialSourceId];
-        source.store.filterBy(function(r) {
-            return !!source.getProjection(r);
-        }, this);
-        var capGridPanel = new Ext.grid.GridPanel({
-            store: source.store,
-            layout: 'fit',
-            region: 'center',
-            autoScroll: true,
-            autoExpandColumn: "title",
-            plugins: [expander],
-            colModel: new Ext.grid.ColumnModel([
-                expander,
-                {header: "Name", dataIndex: "name", width: 150, sortable: true},
-                {id: "title", header: "Title", dataIndex: "title", sortable: true}
-            ]),
-            listeners: {
-                rowdblclick: addLayers,
-                scope: this
-            }
-        });
-
-        var sourceComboBox = new Ext.form.ComboBox({
-            store: sources,
-            valueField: "id",
-            displayField: "title",
-            triggerAction: "all",
-            editable: false,
-            allowBlank: false,
-            forceSelection: true,
-            mode: "local",
-            value: initialSourceId,
-            listeners: {
-                select: function(combo, record, index) {
-                    var source = this.layerSources[record.get("id")];
-                    var store = source.store;
-                    store.filterBy(function(r) {
-                        return !!source.getProjection(r);
-                    }, this);
-                    expander.ows = store.url;
-                    capGridPanel.reconfigure(store, capGridPanel.getColumnModel());
-                    // TODO: remove the following when this Ext issue is addressed
-                    // http://www.extjs.com/forum/showthread.php?100345-GridPanel-reconfigure-should-refocus-view-to-correct-scroller-height&p=471843
-                    capGridPanel.getView().focusRow(0);
-                },
-                scope: this
-            }
-        });
-
-        var capGridToolbar = null;
-
-        if (this.proxy || this.layerSources.getCount() > 1) {
-            capGridToolbar = [
-                new Ext.Toolbar.TextItem({
-                    text: this.layerSelectionLabel
-                }),
-                sourceComboBox
-            ];
-        }
-
-        if (this.proxy) {
-            capGridToolbar.push(new Ext.Button({
-                text: this.layerAdditionLabel, 
-                handler: function() {
-                    newSourceWindow.show();
-                }
-            }));
-        }
-
-        var app = this;
-        var newSourceWindow = new gxp.NewSourceWindow({
-            modal: true,
-            listeners: {
-                "server-added": function(url) {
-                    newSourceWindow.setLoading();
-                    this.addLayerSource({
-                        config: {url: url}, // assumes default of gxp_wmssource
-                        callback: function(id) {
-                            // add to combo and select
-                            var record = new sources.recordType({
-                                id: id,
-                                title: this.layerSources[id].title || "Untitled" // TODO: titles
-                            });
-                            sources.insert(0, [record]);
-                            sourceComboBox.onSelect(record, 0);
-                            newSourceWindow.hide();
-                        },
-                        failure: function() {
-                            // TODO: wire up success/failure
-                            newSourceWindow.setError("Error contacting server.\nPlease check the url and try again.");
-                        },
-                        scope: this
-                    });
-                },
-                scope: this
-            },
-            // hack to get the busy mask so we can close it in case of a
-            // communication failure
-            addSource: function(url, success, failure, scope) {
-                app.busyMask = scope.loadMask;
-            }
-        });
-        
-        this.capGrid = new Ext.Window({
-            title: this.capGridText,
-            closeAction: 'hide',
-            layout: 'border',
-            height: 300,
-            width: 600,
-            modal: true,
-            items: [
-                capGridPanel
-            ],
-            tbar: capGridToolbar,
-            bbar: [
-                "->",
-                new Ext.Button({
-                    text: this.capGridAddLayersText,
-                    iconCls: "icon-addlayers",
-                    handler: addLayers,
-                    scope : this
-                }),
-                new Ext.Button({
-                    text: this.capGridDoneText,
-                    handler: function() {
-                        this.capGrid.hide();
-                    },
-                    scope: this
-                })
-            ],
-            listeners: {
-                hide: function(win){
-                    capGridPanel.getSelectionModel().clearSelections();
-                }
-            }
-        });
-    },
-
-    /**
-     * Method: showCapabilitiesGrid
-     * Shows the window with a capabilities grid.
-     */
-    showCapabilitiesGrid: function() {
-        if(!this.capGrid) {
-            this.initCapGrid();
-        }
-        this.capGrid.show();
     },
 
     /** private: method[createMapOverlay]
