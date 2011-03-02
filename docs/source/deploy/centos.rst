@@ -23,8 +23,11 @@ The stack used is:
 
 Download GeoNode Release Archive
 --------------------------------
+Release archives of GeoNode are produced from the GeoNode sources using::
 
-You can get the latest release from http://dev.geonode.org/release/ or 
+  $ paver make_release # from the root of a working dir
+
+You can also get the latest release from http://dev.geonode.org/release/ or 
 the `GeoNode project wiki <http://dev.geonode.org/trac/>`_ .  
 You can unpack it like::
 
@@ -56,7 +59,7 @@ Install Dependencies
 
 2. Install Java Runtime
 
-     You will also need a Java Runtime Environment (JRE).  We recommend following
+     You will need a Java Runtime Environment (JRE).  We recommend following
      the `Oracle installation instructions
      <http://www.oracle.com/technetwork/java/javase/install-linux-self-extracting-142296.html>`_
      While other JRE versions will work, Oracle's is recommended for performance
@@ -65,7 +68,7 @@ Install Dependencies
 
 3. Install Dependencies with yum::
 
-    $ su -c 'yum install python26 tomcat5 httpd python-virtualenv python26-mod_wsgi postgresql84 postgresql84-server gcc postgresql84-python postgresql84-libs postgresql84-devel python26-devel geos'
+    $ su -c 'yum install python26 python26-devel tomcat5 httpd python-virtualenv python26-mod_wsgi postgresql84 postgresql84-server gcc postgresql84-python postgresql84-libs postgresql84-devel python26-devel geos'
 
 
 Tomcat Servlet Container Configuration
@@ -95,11 +98,26 @@ Deploying GeoNetwork
 
      $ mv GeoNode-1.0.1/geonetwork.war /var/lib/tomcat5/webapps/ 
 
-2. Tomcat will automatically extract the archive and start up the GeoNetwork
-   service.  However, the administrative account will be using the default
-   password.  You should navigate to `the GeoNetwork web interface
-   <http://localhost:8080/geonetwork/>` and change the password for this
-   account, taking note of the new password for later use.
+2. The GeoNetwork administrative account will be using the default password.  You
+   should navigate to `the GeoNetwork web interface
+   <http://localhost:8080/geonetwork/>` and change the password for this account,
+   taking note of the new password for later use. (Log in with the username
+   ``admin`` and password ``admin``, then use the "Administration" link in the
+   top navigation menu to change the password.)
+
+3. (optional but recommended) GeoNetwork's default configuration includes
+   several "sample" metadata records.  These can be listed by pressing the
+   'search' button on the GeoNetwork homepage, without entering any search
+   terms.  You can use the search results list to delete these metadata records
+   so that they do not show up in GeoNode search results.
+
+.. note::
+
+    The GeoNetwork configuration, including metadata documents and password
+    configuration, is stored inside of [tomcat]/webapps/geonetwork/ .  This
+    directory can be copied between machines to quickly reproduce a
+    configuration with a given administrative password across multiple
+    machines.
 
 Deploying GeoServer
 -------------------
@@ -121,7 +139,8 @@ Deploying GeoServer
        <param-value>http://localhost/</param-value>
      </context-param>
 
-3. Change GEOSERVER_DATA_DIR in the file 
+3. Move the GeoServer "data directory" outside of the servlet container to
+   avoid having it overwritten on later upgrades. Edit the file
    :file`/var/lib/tomcat5/webapps/geoserver-geonode-dev/WEB-INF/web.xml`
    by uncommenting the block below and setting the param-value to 
    /opt/geoserver_data::
@@ -275,6 +294,10 @@ Installing the GeoNode Django Application
         _logger.addHandler(logging.StreamHandler(sys.stderr))
         _logger.setLevel(logging.DEBUG)
 
+.. note::
+
+     The local_settings.py approach is a Django idiom to help customizing websites, it works because
+     the last line of ``src/GeoNodePy/geonode/settings.py`` imports it if it exists.
 
 Installing mod_wsgi
 -------------------
@@ -312,31 +335,44 @@ Installing mod_wsgi
 Prepare the Django database
 ---------------------------
 
-1. Initdb and create geonode user and database. 
-   Use the password specified in the local_settings.py file created
-   in an earlier step::
+1. Initialize postgres and set it to start on boot 
 
     $ service postgresql initdb
     $ service postgresql start
     $ chkconfig postgresql on 
+
+2. Create geonode database and geonode user account (you will be prompted for a password)::
+
     $ su - postgres
-    $ createuser geonode
-    $ createdb -O geonode geonode
+    $ createdb geonode && createuser -s -P geonode 
+    $ exit
+
+3.  Edit the ``pg_hba.conf`` file to use password based authentication, change
+         `ident, sameuser` to `md5`::
+
+     $ vim /var/lib/pgsql/data/pg_hba.conf
+
+     # "local" is for Unix domain socket connections only
+     local   all         all                               md5
+
+     Then restart postgres in order to pick up the changes::
+
+     $ service postgresql restart
 
 
-2. Activate the GeoNode virtualenv if it is not already active::
+4. Activate the GeoNode virtualenv if it is not already active::
 
      $ cd /var/www/geonode/wsgi/geonode
      $ source bin/activate
 
-3. Use the `django-admin` tool to initialize the database::
+5. Use the `django-admin` tool to initialize the database::
 
      $ django-admin.py syncdb --settings=geonode.settings
 
    This command should request a user name and password from you; these will be
    used for an admin account on the GeoNode site.
 
-4. Use `django-admin` again to synchronize GeoServer, GeoNode, and GeoNetwork::
+6. Use `django-admin` again to synchronize GeoServer, GeoNode, and GeoNetwork::
     
      $ django-admin.py updatelayers --settings=geonode.settings
 
@@ -350,4 +386,9 @@ Prepare the Django database
    simply re-running the updatelayers script after configuring the layers in
    GeoServer.
 
-5. You should now be able to see the GeoNode site at http://localhost/
+7. You should now be able to see the GeoNode site at http://localhost/
+
+.. note::
+    
+    If you have problems uploading files, please enable the verbose logging
+    http://docs.geonode.org/1.0/logging.html
