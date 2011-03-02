@@ -33,7 +33,7 @@ TIME_ZONE = 'America/Chicago'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
     ('en', _('English')),
@@ -246,6 +246,16 @@ INSTALLED_APPS = (
     'geonode.maps',
     'geonode.proxy',
 )
+
+def get_user_url(u):
+    from django.contrib.sites.models import Site
+    s = Site.objects.get_current()
+    return "http://" + s.domain + "/profiles/" + u.username
+
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': get_user_url
+}
 
 AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = False
