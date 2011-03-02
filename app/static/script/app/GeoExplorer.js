@@ -155,9 +155,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     zoomSelectorText: 'UT:Zoom level',
     zoomSliderTipText: "UT: Zoom Level",
     zoomToLayerExtentText: "UT:Zoom to Layer Extent",
-    zoomVisibleButtonText: "UT:Zoom to Visible Extent",
 
     constructor: function(config) {
+
+        config.tools = [{
+            ptype: "gxp_zoomtoextent",
+            actionTarget: {target: "paneltbar", index: 8}
+        }];
+
         this.popupCache = {};
         this.propDlgCache = {};
         this.stylesDlgCache = {};
@@ -786,6 +791,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.toolbar = new Ext.Toolbar({
             disabled: true,
+            id: 'paneltbar',
             items: this.createTools()
         });
 
@@ -1593,27 +1599,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             navPreviousAction,
             navNextAction,
-            new Ext.Button({
-		    	tooltip: this.zoomVisibleButtonText,
-                iconCls: "icon-zoom-visible",
-                handler: function() {
-                    var extent, layer;
-                    for(var i=0, len=this.map.layers.length; i<len; ++i) {
-                        layer = this.mapPanel.map.layers[i];
-                        if(layer.getVisibility()) {
-                            if(extent) {
-                                extent.extend(layer.maxExtent);
-                            } else {
-                                extent = layer.maxExtent.clone();
-                            }
-                        }
-                    }
-                    if(extent) {
-                        this.mapPanel.map.zoomToExtent(extent);
-                    }
-                },
-                scope: this
-            }),
             enable3DButton
         ];
         this.on("saved", function() {
