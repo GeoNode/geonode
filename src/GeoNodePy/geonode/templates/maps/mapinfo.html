@@ -26,10 +26,21 @@ Ext.onReady(function() {
     app = new GeoExplorer.Viewer(config);
 {% if can_change_permissions %}
     new GeoNode.PermissionsEditor({
+        levels: {
+            'admin': 'map_admin',
+            'readwrite': 'map_readwrite',
+            'readonly': 'map_readonly',
+            '_none': '_none'
+        },
         renderTo: "permissions_form",
-        submitTo: "{% url geonode.maps.views.ajax_map_permissions map.id %}",
         userLookup: "{% url geonode.views.ajax_lookup %}",
-        permissions: {{ permissions_json }}
+        permissions: {{ permissions_json }},
+        listeners: {
+            updated: function(perms) {
+                var submitTo = "{% url geonode.maps.views.ajax_map_permissions map.id %}";
+                Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
+            }
+        }
     });
 {% endif %}
 {% endautoescape %}
