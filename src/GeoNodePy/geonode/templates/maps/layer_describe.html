@@ -41,15 +41,19 @@
 	Ext.get('id_layer-poc').on('change', function() {
         if (this.getValue()===""){
 		    Ext.get("poc_form").show();
+		    Ext.get("poc_form").setStyle('display', 'block');
 		}else{
 			Ext.get("poc_form").hide();
+		    Ext.get("poc_form").setStyle('display','none');
 		}
 	});
 	Ext.get('id_layer-metadata_author').on('change', function() {
         if (this.getValue()===""){
 		    Ext.get("metadata_form").show();
+		    Ext.get("metadata_form").setStyle('display','block');
 		}else{
 			Ext.get("metadata_form").hide();
+		    Ext.get("metadata_form").setStyle('display','none');
 		}
 	});
 {% endautoescape %} 
