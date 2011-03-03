@@ -88,6 +88,12 @@
                 renderTo: "permissions_form",
                 userLookup: "{% url geonode.views.ajax_lookup %}",
                 permissions: {{ permissions_json }},
+                levels: {
+                    'admin': 'layer_admin',
+                    'readwrite': 'layer_readwrite',
+                    'readonly': 'layer_readonly',
+                    '_none': '_none'
+                },
                 listeners: {
                     updated: function(perms) {
                         var submitTo = "{% url geonode.maps.views.ajax_layer_permissions layer.typename %}";
