@@ -517,6 +517,7 @@ def install_sphinx_conditionally(options):
 
 
 @task
+@needs('package_client')
 @cmdopts([
     ('bind=', 'b', 'IP address to bind to. Default is localhost.')
 ])
