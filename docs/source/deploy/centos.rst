@@ -67,7 +67,7 @@ Install Dependencies
 
      You will need a Java Runtime Environment (JRE).  We recommend following
      the `Oracle installation instructions
-     <http://www.oracle.com/technetwork/java/javase/downloads/index.html>
+     <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_
      While other JRE versions will work, Oracle's is recommended for performance
      reasons.  
 
