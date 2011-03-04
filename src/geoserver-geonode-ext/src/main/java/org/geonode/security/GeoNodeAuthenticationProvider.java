@@ -6,15 +6,13 @@ package org.geonode.security;
 
 import java.io.IOException;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.AuthenticationServiceException;
-import org.acegisecurity.providers.AuthenticationProvider;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.AuthenticationServiceException;
+import org.springframework.security.providers.AuthenticationProvider;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.util.Assert;
-import org.geotools.util.logging.Logging;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 /**
  * An {@link AuthenticationProvider} provider passing the username/password to GeoNode for
  * authentication
@@ -26,14 +24,12 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
 
     private GeonodeSecurityClient client;
 
-    static final Logger LOGGER = Logging.getLogger(GeoNodeAuthenticationProvider.class);
-
     public GeoNodeAuthenticationProvider(GeonodeSecurityClient client) {
         this.client = client;
     }
 
     /**
-     * @see org.acegisecurity.providers.AuthenticationProvider#authenticate(org.acegisecurity.Authentication)
+     * @see org.springframework.security.providers.AuthenticationProvider#authenticate(org.acegisecurity.Authentication)
      */
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
@@ -42,7 +38,7 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
         UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
         String username = token.getName();
         String password = (String) token.getCredentials();
-        LOGGER.info("GeoNodeAuthenticationProvider, username:" + username);
+
         try {
             return client.authenticateUserPwd(username, password);
         } catch (IOException e) {
@@ -51,7 +47,7 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     * @see org.acegisecurity.providers.AuthenticationProvider#supports(java.lang.Class)
+     * @see org.springframework.security.providers.AuthenticationProvider#supports(java.lang.Class)
      */
     public boolean supports(Class authentication) {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));

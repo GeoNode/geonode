@@ -1421,7 +1421,13 @@ def _handle_layer_upload(request, layer=None):
                 logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
                 return None, [_("This resource may only be replaced with raster data.")]
         
-        create_store = cat.create_featurestore
+        if settings.POSTGIS_DATASTORE:
+            logger.debug('Upload to PostGIS')
+            create_store = cat.create_pg_feature
+        else:
+            create_store = cat.create_featurestore
+
+
         dbf_file = request.FILES.get('dbf_file')
         shx_file = request.FILES.get('shx_file')
         prj_file = request.FILES.get('prj_file')
@@ -1464,7 +1470,11 @@ def _handle_layer_upload(request, layer=None):
 
     try:
         logger.debug("Starting upload of [%s] to GeoServer...", name)
-        create_store(name, cfg, overwrite=overwrite)
+        if settings.POSTGIS_DATASTORE:
+            logger.debug("create_store([%s], [%s], cfg, overwrite=overwrite)", settings.POSTGIS_DATASTORE, name)
+            create_store(settings.POSTGIS_DATASTORE, name, cfg, overwrite=overwrite)
+        else:
+            create_store(name, cfg, overwrite=overwrite)
         logger.debug("Finished upload of [%s] to GeoServer...", name)
     except geoserver.catalog.UploadError, e:
         logger.warn("Upload failed with error: %s", str(e))
@@ -1485,8 +1495,10 @@ def _handle_layer_upload(request, layer=None):
         csw_record = None
         layer = None
         try:
-            gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
-
+            if settings.POSTGIS_DATASTORE:
+                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=settings.POSTGIS_DATASTORE))
+            else:
+                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
             if gs_resource.latlon_bbox is None:
                 cascading_delete(cat, gs_resource)
                 logger.warn("GeoServer failed to detect the projection for layer [%s]. Cancelling import", name)

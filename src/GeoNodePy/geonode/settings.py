@@ -300,7 +300,7 @@ CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_AUTH_URL = ''
 
-
+POSTGIS_DATASTORE='wmpostgis'
 
 
 try:

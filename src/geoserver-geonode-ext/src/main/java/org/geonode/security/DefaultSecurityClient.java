@@ -15,12 +15,12 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.GrantedAuthorityImpl;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
 import org.apache.commons.codec.binary.Base64;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.platform.GeoServerExtensions;
@@ -65,8 +65,6 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     public Authentication authenticateCookie(final String cookieValue)
             throws AuthenticationException, IOException {
 
-        LOGGER.fine("authenticateCOOKIE called");
-
         final String headerName = "Cookie";
         final String headerValue = GeoNodeCookieProcessingFilter.GEONODE_COOKIE_NAME + "="
                 + cookieValue;
@@ -85,7 +83,6 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
      */
     public Authentication authenticateUserPwd(String username, String password)
             throws AuthenticationException, IOException {
-        LOGGER.fine("authenticateUSERPWD called");
         final String headerName = "Authorization";
         final String headerValue = "Basic "
                 + new String(Base64.encodeBase64((username + ":" + password).getBytes()));
@@ -97,7 +94,6 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
      * @see org.geonode.security.GeonodeSecurityClient#authenticateAnonymous()
      */
     public Authentication authenticateAnonymous() throws AuthenticationException, IOException {
-        LOGGER.fine("authenticateANONYMOUS called");
         return authenticate(null, (String[]) null);
     }
 
@@ -106,10 +102,13 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
 
         final String url = baseUrl + "data/acls";
 
-        LOGGER.fine("Authenticating with " + Arrays.toString(requestHeaders) + " at " + url);
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.finest("Authenticating with " + Arrays.toString(requestHeaders));
+        }
         final String responseBodyAsString = client.sendGET(url, requestHeaders);
-        LOGGER.fine("Auth response: " + responseBodyAsString);
-
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.finest("Auth response: " + responseBodyAsString);
+        }
 
         JSONObject json = (JSONObject) JSONSerializer.toJSON(responseBodyAsString);
         Authentication authentication = toAuthentication(credentials, json);
@@ -119,9 +118,6 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     @SuppressWarnings("unchecked")
     private Authentication toAuthentication(Object credentials, JSONObject json) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-
-        //LOGGER.fine("toAutnetication JSON = " + json);
-
         if (json.containsKey("ro")) {
             JSONArray roLayers = json.getJSONArray("ro");
             authorities.add(new LayersGrantedAuthority(roLayers, LayerMode.READ_ONLY));

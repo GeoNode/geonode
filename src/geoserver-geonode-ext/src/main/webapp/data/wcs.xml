@@ -32,6 +32,4 @@ This is a description of your Web Coverage Server.
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gmlPrefixing>false</gmlPrefixing>
-  <maxInputMemory>0</maxInputMemory>
-  <maxOutputMemory>0</maxOutputMemory>
 </wcs>

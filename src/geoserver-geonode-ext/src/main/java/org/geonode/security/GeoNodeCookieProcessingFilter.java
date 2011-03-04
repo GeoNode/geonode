@@ -17,14 +17,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.context.SecurityContext;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
 import org.geotools.util.logging.Logging;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 /**
  * A processing filter that will inspect the cookies and look for the GeoNode single sign on one. If
  * that is found, GeoNode will be interrogated to gather the user privileges.
@@ -68,14 +67,10 @@ public class GeoNodeCookieProcessingFilter implements Filter {
 
         final HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        if (httpRequest == null)
-        	LOGGER.log(Level.WARNING, "HttpRequest is NULL");
-        
         final SecurityContext securityContext = SecurityContextHolder.getContext();
         final Authentication existingAuth = securityContext.getAuthentication();
 
         final String gnCookie = getGeoNodeCookieValue(httpRequest);
-        LOGGER.info("Cookie:" + gnCookie);
 
         // if we still need to authenticate and we find the cookie, consult GeoNode for
         // an authentication
@@ -84,7 +79,6 @@ public class GeoNodeCookieProcessingFilter implements Filter {
                 || (existingAuth instanceof AnonymousAuthenticationToken)) {
             authenticationRequired = true;
         } else if (existingAuth instanceof GeoNodeSessionAuthToken) {
-            LOGGER.info("existingAuth instance of GeoNodeSessionAuthToken");
             Object credentials = existingAuth.getCredentials();
             boolean stillValid = gnCookie != null && gnCookie.equals(credentials);
             existingAuth.setAuthenticated(stillValid);
@@ -94,7 +88,6 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         }
 
         if (authenticationRequired && gnCookie != null) {
-            LOGGER.info("Cookie isn't null so try to authenticate");
             try {
                 final Authentication authResult;
                 authResult = client.authenticateCookie(gnCookie);
@@ -118,15 +111,11 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
                 if (GEONODE_COOKIE_NAME.equals(c.getName())) {
-                	LOGGER.info("COOKIE FOUND!");
                     return c.getValue();
                 }
             }
-        } else 
-        {
-        	LOGGER.log(Level.WARNING, "No cookies!!!!!");
         }
-        LOGGER.log(Level.WARNING, "GeoNode Cookie not found");
+
         return null;
     }
 

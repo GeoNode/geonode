@@ -50,8 +50,8 @@
 </style>
 
 
-<div id="tab">
-  <h2> {% trans "Details for" %} {{ layer.title|default:layer.typename }} </h2>
+<div id="tab" style="padding:20px">
+  <h2 style="font-size:2em;;margin-bottom:0.75em">  {% trans "Details for" %} {{ layer.title|default:layer.typename }} </h2>
   <form action="/data/{{layer.typename}}?describe" method="POST" id="worldmap_describe_form">
 	  {% csrf_token %}
       <ul class="form" id="worldmap_describe_form_ul">
