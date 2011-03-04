@@ -11,6 +11,10 @@ distribution.
     with the process described in this document, please don't hesitate to let
     the GeoNode team know so we can keep it up to date.
 
+.. note::
+    
+    Disabling SELinux http://www.centos.org/docs/5/html/5.2/Deployment_Guide/sec-sel-enable-disable.html
+
 The stack used is:
 
 * *Servlet Container*: Apache Tomcat
@@ -63,7 +67,7 @@ Install Dependencies
 
      You will need a Java Runtime Environment (JRE).  We recommend following
      the `Oracle installation instructions
-     <http://www.oracle.com/technetwork/java/javase/install-linux-self-extracting-142296.html>`_
+     <http://www.oracle.com/technetwork/java/javase/downloads/index.html>
      While other JRE versions will work, Oracle's is recommended for performance
      reasons.  
 
@@ -169,7 +173,6 @@ Deploying GeoServer
 4. GeoServer requires a particular directory structure in data directories, so 
    also copy the template datadir from the tomcat webapps directory::
    
-     $ mkdir -p /opt/geoserver_data
      $ cp -rp /var/lib/tomcat5/webapps/geoserver-geonode-dev/data/* /opt/geoserver_data/.
      $ chown tomcat. /opt/geoserver_data/ -R
 
@@ -201,8 +204,6 @@ its configuration are necessary.
 
 2. Create a new configuration file in :file:`/etc/httpd/conf.d/geonode.conf` ::
 
-     DocumentRoot "/opt/geonode/apache"
-
      DocumentRoot "/var/www/geonode/htdocs"
 
      <Directory "/var/www/geonode/htdocs">
@@ -229,7 +230,11 @@ its configuration are necessary.
 
      $ service httpd start
 
-4. You should now be able to browse the http server and verify that the proxied tomcat
+4. Set the web server to start on boot::
+
+     $ chkconfig tomcat5 on 
+
+5. You should now be able to browse the http server and verify that the proxied tomcat
    services are working properly::
 
      http://localhost/geonetwork/
@@ -265,7 +270,7 @@ Installing the GeoNode Django Application
      SERVE_MEDIA=False
 
      SITENAME = "GeoNode"
-     SITEURL = "http://localhost/
+     SITEURL = "http://localhost/"
 
      DATABASE_ENGINE = 'postgresql_psycopg2'
      DATABASE_NAME = 'geonode'
@@ -368,13 +373,11 @@ Prepare the Django database
 
      $ vim /var/lib/pgsql/data/pg_hba.conf
 
-     # "local" is for Unix domain socket connections only
-     local   all         all                               md5
+     host   all         all                               md5
 
      Then restart postgres in order to pick up the changes::
 
      $ service postgresql restart
-
 
 4. Activate the GeoNode virtualenv if it is not already active::
 
