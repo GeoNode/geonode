@@ -1014,7 +1014,6 @@ def _handle_layer_upload(request, layer=None):
                 # If GeoServer couldn't figure out the projection, we initially 
                 # assume its 4326
                 logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
-                #gs_resource.latlon_bbox = gs_resource.native_bbox
                 gs_resource.projection = "EPSG:4326"
                 cat.save(gs_resource)
                 # If it is still invalid, stop and alert the user
