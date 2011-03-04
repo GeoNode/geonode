@@ -1009,7 +1009,7 @@ def _handle_layer_upload(request, layer=None):
         layer = None
         try:
             gs_store = cat.get_store(name=name)
-            gs_resource = cat.get_resource(name=name, store=store)
+            gs_resource = cat.get_resource(name = name, store = store)
 
             if gs_resource.latlon_bbox is None:
                 # If GeoServer couldn't figure out the projection, we initially 
@@ -1018,17 +1018,17 @@ def _handle_layer_upload(request, layer=None):
                 gs_resource.projection = "EPSG:4326"
                 cat.save(gs_resource)
                 # If it is still invalid, stop and alert the user
-                gs_resource = cat.get_resource(name=name, store=store)
+                gs_resource = cat.get_resource(name = name, store = store)
                 if gs_resource.latlon_bbox is None:
                     cascading_delete(cat, gs_resource)
                     logger.warn("GeoServer failed to detect the projection for layer [%s]. Tried (and failed) 4326 Cancelling import", name)
                     errors.append(_("GeoNode could not detect the projection for %(layer)s.  Import is cancelled.") % { 'layer': name })
-                    valid_bbox=False
+                    valid_bbox = False
                 else:
-                    valid_bbox=True
+                    valid_bbox = True
             else:
-                valid_bbox=True
-            if(valid_bbox): 
+                valid_bbox = True
+            if valid_bbox:
                 typename = gs_resource.store.workspace.name + ':' + gs_resource.name
                 logger.info("Got GeoServer info for %s, creating Django record", typename)
 
