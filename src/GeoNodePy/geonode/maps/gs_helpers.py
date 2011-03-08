@@ -118,6 +118,7 @@ def cascading_delete(cat, resource):
     styles = lyr.styles + [lyr.default_style]
     cat.delete(lyr)
     for s in styles:
-        cat.delete(s, purge=True)
+        if s is not None:
+            cat.delete(s, purge=True)
     cat.delete(resource)
     cat.delete(store)

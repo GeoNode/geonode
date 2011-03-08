@@ -1008,25 +1008,26 @@ def _handle_layer_upload(request, layer=None):
         csw_record = None
         layer = None
         try:
-            gs_resource = cat.get_resource(name = name, store = cat.get_store(name=name))
+            gs_resource = cat.get_resource(name = name, store = cat.get_store(name = name))
 
             if gs_resource.latlon_bbox is None:
                 # If GeoServer couldn't figure out the projection, we initially 
                 # assume its 4326
                 logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
-                gs_resource.projection = "EPSG:4326"
-                cat.save(gs_resource)
-                # If it is still invalid, stop and alert the user
-                gs_resource = cat.get_resource(name = name, store = cat.get_store(name=name))
-                if gs_resource.latlon_bbox is None:
+                minx, maxx, miny, maxy = [float(a) for a in gs_resource.native_bbox[:4]]
+                if -180 < minx < 180 and -180 < maxx < 180 and -90 < miny < 90 and -90 < maxy < 90:
+                    gs_resource.projection = "EPSG:4326"
+                    gs_resource.latlon_bbox = gs_resource.native_bbox[:4] + (None, )
+                    cat.save(gs_resource)
+                    valid_bbox = True
+                else:
                     cascading_delete(cat, gs_resource)
                     logger.warn("GeoServer failed to detect the projection for layer [%s]. Tried (and failed) 4326 Cancelling import", name)
                     errors.append(_("GeoNode could not detect the projection for %(layer)s.  Import is cancelled.") % { 'layer': name })
                     valid_bbox = False
-                else:
-                    valid_bbox = True
             else:
                 valid_bbox = True
+
             if valid_bbox:
                 typename = gs_resource.store.workspace.name + ':' + gs_resource.name
                 logger.info("Got GeoServer info for %s, creating Django record", typename)
