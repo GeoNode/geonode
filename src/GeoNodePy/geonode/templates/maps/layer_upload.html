@@ -165,7 +165,58 @@ Ext.onReady(function(){
             disable_shapefile_inputs();
         }
     };
-  
+
+    var check_extension = function(type) {
+        invalid = false;
+        switch(type)
+        {
+            case 'dbf':
+                filename = dbf_file.getValue();
+                if (filename.search(/\.dbf$/i) == -1) {
+                    invalid = true;
+                    error_message = "Invalid DBF File";
+                    dbf_file.reset();
+                }
+                break;
+            case 'prj':
+                filename = prj_file.getValue();
+                if (filename.search(/\.prj$/i) == -1) {
+                    invalid = true;
+                    error_message = "Invalid PRJ File";
+                    prj_file.reset();
+                }
+                break;
+            case 'shx':
+                filename = shx_file.getValue();
+                if (filename.search(/\.shx$/i) == -1) {
+                    invalid = true;
+                    error_message = "Invalid SHX File";
+                    shx_file.reset();
+                }
+                break;
+        }
+        if(invalid) {
+            Ext.Msg.show({
+                title: gettext("Error"),
+                msg: error_message,
+                minWidth: 200,
+                modal: true,
+                icon: Ext.Msg.ERROR,
+                buttons: Ext.Msg.OK
+            });
+        }
+    };
+
+    dbf_file.addListener('fileselected', function(cmp, value) {
+            check_extension('dbf');
+    });
+    prj_file.addListener('fileselected', function(cmp, value) {
+            check_extension('prj');
+    });
+    shx_file.addListener('fileselected', function(cmp, value) {
+            check_extension('shx');
+    });
+
     base_file.addListener('fileselected', function(cmp, value) {
         check_shapefile();
 
