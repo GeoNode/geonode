@@ -305,3 +305,14 @@ Prepare the Django database
    GeoServer.
 
 6. You should now be able to see the GeoNode site at http://localhost/
+
+
+Miscellaneous Configuration
+---------------------------
+
+In order to generate the sitemap properly, the sites domain name must be set  
+within the sites framework. This requires that an admin user login to the  
+admin interface and navigate to the sites module and change example.com to the
+actual domain name (and port if applicable). The admin interface can be accessed
+at http://<host>:<port>/admin/sites/site/
+
