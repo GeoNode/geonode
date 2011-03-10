@@ -101,10 +101,10 @@ Ext.onReady(function(){
 
     var prj_file = new Ext.ux.form.FileUploadField({
         id: 'prj_file',
-        emptyText: gettext('Select a .prj data file (optional)'),
+        emptyText: gettext('Select a .prj data file'),
         fieldLabel: gettext('PRJ'),
         name: 'prj_file',
-        allowBlank: true,
+        allowBlank: false,
         listeners: listeners
     });
 
@@ -247,7 +247,9 @@ Ext.onReady(function(){
 </ul>
 <p>
 {% blocktrans %}
-Note: If you are uploading a shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
+    Note: A zipped shapefile must contain at least four files with the following extensions:<br/> <span style="font-weight:bold">SHP, DBF, SHX, PRJ</span>.
+    <br/><br/>
+    If you are uploading an unzipped shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
 {% endblocktrans %}
 </p>
 </div>
