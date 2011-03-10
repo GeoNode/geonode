@@ -139,7 +139,7 @@
                     method: 'POST',
                     params : Ext.Ajax.serializeForm(Ext.get("worldmap_describe_form")),
                     success: function(response, options) {
-
+                                Ext.MessageBox.hide();
                                 var uPanel = Ext.getCmp("worldmap_update_panel");
                                 uPanel.load({url:'/data/upload'});
                                 //var uWindow = Ext.getCmp("ge_searchWindow");
@@ -150,7 +150,7 @@
                                 var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name'}]);
                                 var thisLayerRec = new LayerRec({title: '{{ layer.title }}', name: '{{ layer.typename }}'});
                                 geoEx.reloadWorldMapSource([thisLayerRec]);
-                                Ext.MessageBox.hide();
+
                             
                     },
                     failure: function(response, options)

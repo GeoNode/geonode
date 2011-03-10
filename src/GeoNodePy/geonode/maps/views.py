@@ -1,3 +1,4 @@
+from zipfile import ZipFile
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot
 from geonode.maps.gs_helpers import fixup_style, cascading_delete
@@ -1379,6 +1380,8 @@ def _handle_layer_upload(request, layer=None):
     layer_name = request.POST.get('layer_name');
     base_file = request.FILES.get('base_file');
 
+    encoding = request.POST.get('charset')
+
     logger.info("Uploaded layer: [%s], base filename: [%s]", layer_name, base_file)
 
     if not base_file:
@@ -1408,6 +1411,54 @@ def _handle_layer_upload(request, layer=None):
     if not name:
         logger.error("Unexpected error: Layer name passed validation but is falsy: %s", name)
         return None, [_("Unable to determine layer name.")]
+
+    # zipped shapefile upload
+    elif base_file.name.lower().endswith('.zip'):
+        logger.info("Upload [%s] appears to be a Shapefile", base_file)
+        # check that we are uploading the same resource
+        # type as the existing resource.
+        if layer is not None:
+            logger.info("Checking whether layer being replaced is a raster layer")
+            info = cat.get_resource(name, store=cat.get_store(name))
+            if info.resource_type != FeatureType.resource_type:
+                logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
+                return None, [_("This resource may only be replaced with raster data.")]
+
+        if settings.POSTGIS_DATASTORE:
+            logger.debug('Upload to PostGIS')
+            create_store = cat.create_pg_feature
+        else:
+            create_store = cat.create_featurestore
+
+        zip = ZipFile(request.FILES.get('base_file'))
+        zipFiles = zip.namelist()
+
+        for file in zipFiles:
+            if file.endswith(".dbf"):
+                dbf_file = file
+            elif file.endswith(".shp"):
+                shp_file = file
+            elif file.endswith(".shx"):
+                shx_file = file
+            elif file.endswith(".prj"):
+                prj_file = file
+
+        if not shp_file:
+            logger.info("User tried to upload [%s] without a .shp file", base_file)
+            errors.append(_("You must include a .shp file when uploading a zipped shapefile."))
+        if not dbf_file:
+            logger.info("User tried to upload [%s] without a .dbf file", base_file)
+            errors.append(_("You must include a .dbf file when uploading a zipped shapefile."))
+        if not shx_file:
+            logger.info("User tried to upload [%s] without a .shx file", base_file)
+            errors.append(_("You must include a .shx file when uploading a zipped shapefile."))
+        if not prj_file:
+            logger.info("User tried to upload [%s] without a .prj file", base_file)
+            errors.append(_("You must include a .prj file when uploading a zipped shapefile."))
+            
+        if errors:
+            return None, errors
+        cfg = request.FILES.get('base_file')
 
     # shapefile upload
     elif base_file.name.lower().endswith('.shp'):
@@ -1470,11 +1521,11 @@ def _handle_layer_upload(request, layer=None):
 
     try:
         logger.debug("Starting upload of [%s] to GeoServer...", name)
-        if settings.POSTGIS_DATASTORE:
+        if create_store == cat.create_pg_feature:
             logger.debug("create_store([%s], [%s], cfg, overwrite=overwrite)", settings.POSTGIS_DATASTORE, name)
-            create_store(settings.POSTGIS_DATASTORE, name, cfg, overwrite=overwrite)
+            create_store(settings.POSTGIS_DATASTORE, name, cfg, overwrite=overwrite, charset=encoding)
         else:
-            create_store(name, cfg, overwrite=overwrite)
+            create_store(name, cfg, overwrite=overwrite, charset=encoding)
         logger.debug("Finished upload of [%s] to GeoServer...", name)
     except geoserver.catalog.UploadError, e:
         logger.warn("Upload failed with error: %s", str(e))
@@ -1495,9 +1546,11 @@ def _handle_layer_upload(request, layer=None):
         csw_record = None
         layer = None
         try:
-            if settings.POSTGIS_DATASTORE:
+            if create_store == cat.create_pg_feature:
+                logger.debug("Search [%s] for [%s]", settings.POSTGIS_DATASTORE, name)
                 gs_resource = cat.get_resource(name=name, store=cat.get_store(name=settings.POSTGIS_DATASTORE))
             else:
+                logger.debug("Search for [%s]", name)
                 gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
             if gs_resource.latlon_bbox is None:
                 cascading_delete(cat, gs_resource)
@@ -1508,7 +1561,7 @@ def _handle_layer_upload(request, layer=None):
                 logger.info("Got GeoServer info for %s, creating Django record", typename)
 
                 # if we created a new store, create a new layer
-                layer = Layer.objects.create(name=gs_resource.name, 
+                layer = Layer.objects.create(name=gs_resource.name,
                                              store=gs_resource.store.name,
                                              storeType=gs_resource.store.resource_type,
                                              typename=typename,
@@ -1537,22 +1590,23 @@ def _handle_layer_upload(request, layer=None):
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
                 logger.warning("no explicit link from the resource to [%s], bah", name)
-                gs_layer = cat.get_layer(gs_resource.name) 
+                gs_layer = cat.get_layer(gs_resource.name)
                 store = gs_resource.store
                 try:
                     cat.delete(gs_layer)
                 except:
                     pass
 
-                try: 
+                try:
                     cat.delete(gs_resource)
                 except:
                     pass
 
-                try: 
-                    cat.delete(store)
-                except:
-                    pass
+                if not settings.POSTGIS_DATASTORE:
+                    try:
+                        cat.delete(store)
+                    except:
+                        pass
             if csw_record is not None:
                 logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
                 try:

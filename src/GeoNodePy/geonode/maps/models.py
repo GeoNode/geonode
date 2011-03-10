@@ -956,7 +956,14 @@ class Layer(models.Model, PermissionLevelMixin):
         elif self.storeType == "coverageStore":
             featureUrl = "%srest/workspaces/%s/coveragestores/%s/coverages/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store, self.name)
             storeUrl = "%srest/workspaces/%s/coveragestores/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store)
-        urls = (layerURL,featureUrl,storeUrl)
+
+
+
+
+        if (self.store != settings.POSTGIS_DATASTORE):
+            urls = (layerURL,featureUrl,storeUrl)
+        else:
+            urls = (layerURL,featureUrl)
 
         # GEOSERVER_CREDENTIALS
         HTTP = httplib2.Http()
@@ -965,7 +972,8 @@ class Layer(models.Model, PermissionLevelMixin):
         for u in urls:
             output = HTTP.request(u,"DELETE")
             if output[0]["status"][0] == '4':
-                raise RuntimeError("Unable to remove from Geoserver: %s" % output[1])
+                logger.warn("Unable to remove from Geoserver: %s" % output[1])
+
 
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog

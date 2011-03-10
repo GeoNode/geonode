@@ -108,6 +108,16 @@ Ext.onReady(function(){
         listeners: listeners
     });
 
+    var encoding = new Ext.form.TextField({
+        id: 'charset',
+        name: ' charset',
+        fieldLabel: gettext('Encoding'),
+        value: 'UTF-8',
+        width: '50',
+        allowBlank: true,
+        listeners: listeners
+    });
+
     var fp = new Ext.FormPanel({
         renderTo: 'upload_form',
         fileUpload: true,
@@ -121,7 +131,7 @@ Ext.onReady(function(){
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_name, map_id, base_file, dbf_file, shx_file, prj_file, {
+        items: [layer_name, map_id, base_file, dbf_file, shx_file, prj_file, encoding, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"
@@ -176,12 +186,29 @@ Ext.onReady(function(){
         prj_file.el.parent('.x-form-item').show();
     };
 
+    var disable_encoding_input = function() {
+        encoding.disable();
+        encoding.el.parent('.x-form-item').hide();
+    };
+
+    var enable_encoding_input = function() {
+        encoding.enable();
+        encoding.el.parent('.x-form-item').show();
+    };
+
     var check_shapefile = function() {
         var main_filename = base_file.getValue();
         if (main_filename.search(/\.shp$/i) != -1) {
             enable_shapefile_inputs();
+            enable_encoding_input();
+        }
+        else if (main_filename.search(/\.zip$/i) != -1)
+        {
+            enable_encoding_input();
+            disable_shapefile_inputs();
         }
         else {
+            disable_encoding_input();
             disable_shapefile_inputs();
         }
     };
@@ -198,6 +225,7 @@ Ext.onReady(function(){
         }
     });
     disable_shapefile_inputs();
+    disable_encoding_input();
 });
 {% endautoescape %}
 </script>

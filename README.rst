@@ -86,10 +86,16 @@ The following steps should prepare a Python virtual environment for you::
   source bin/activate
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
-  
+
+
+Copy these war files to the webapps directory of your Java container
+(Tomcat/Jetty) and deploy them:
+    webapps/geoserver-geonode-dev.war
+    webapps/geonetwork.war
+
 
 Start the server:
-  paver host 
+  paver host
 
 
 Once fully started, you should see a message indicating the address of your WorldMap::
@@ -152,11 +158,11 @@ following needs to be done before running ``paver host``:
 
 * Edit src/GeoNodePy/geonode/settings.py and change the line::
 
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
+    GEOSERVER_BASE_URL="http://localhost:8080/geoserver-geonode-dev/"
 
   to use the IP address you have written down above::
 
-    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver/"
+    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver-geonode-dev/"
 
 * To start the web server, run::
 
@@ -178,30 +184,15 @@ GeoServer used for http://geonode.capra.opengeo.org/ is::
 
     http://geonode.capra.opengeo.org/geoserver/
 
-The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
-in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
-instance at that port with the following commands::
-   
-    cd src/geonode-geoserver-ext/
-    sh startup.sh
-
-.. note:: 
-    Normally, ``mvn jetty:run-war`` would be sufficient.  However, we use the
-    shell script to add some extra parameters to the JVM command-line used to
-    run Jetty in order to workaround a JVM bug that affects GeoNetwork.
+The default value is ``http://localhost:8080/geoserver-geonode-dev/``.
 
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
   
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
+    GEOSERVER_BASE_URL="http://localhost:8080/geoserver-geonode-dev/"
 
 to indicate the GeoServer URL that you want to use. 
 
-To run the Django app when Jetty is started independently, use::
-
-    paster serve --reload shared/dev-paste.ini
-
-in the base of your working directory.
 
 Alternative GeoServer Data Directories
 ......................................
@@ -256,6 +247,12 @@ This needs email to be configured and your website's domain name properly set in
 the Sites application (the default is example.com)::
 
     http://localhost:8000/admin/sites/site/1
+
+
+POSTGIS_DATASTORE
+.................
+To import uploaded shapefiles to PostGIS, manually create a PostGIS datastore in GeoServer
+and assign its name to the 'POSTGIS_DATASTORE' value in settings.py
 
 
 

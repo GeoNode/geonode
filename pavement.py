@@ -65,7 +65,7 @@ bundle = path('shared/geonode.pybundle')
 dl_cache = "--download-cache=./build"
 dlname = 'geonode.bundle'
 gs_data = "gs-data"
-geoserver_target = path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war')
+geoserver_target = path('src/externals/geoserver-geonode-dev.war')
 geonetwork_target = path('webapps/geonetwork.war')
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
 geonode_client_target_war = path('webapps/geonode-client.war')
@@ -175,9 +175,32 @@ def setup_gs_data(options):
 @task
 @needs(['setup_gs_data'])
 def setup_geoserver(options):
-    """Prepare a testing instance of GeoServer."""
-    with pushd('src/geoserver-geonode-ext'):
-        sh("mvn clean install")
+    """Prepare a testing instance of GeoServer.
+    Skip this for now; code currently requires custom patched version of GeoNode 2.1"""
+
+#    with pushd('src/geoserver-geonode-ext'):
+#        sh("mvn clean install")
+#    src_dir = path("./src/externals")
+#    war_zip_file = "geoserver-geonode-dev.war"
+#
+#    webapps = path("./webapps")
+#    if not webapps.exists():
+#        webapps.mkdir()
+#
+#    src_url = src_dir / war_zip_file
+#    dst_url = webapps / war_zip_file
+#    dst_war = webapps / "geoserver-geonode-dev.war"
+#    deployed_url = webapps / "geoserver-geonode-dev"
+#
+#
+#    if getattr(options, 'clean', False):
+#        deployed_url.rmtree()
+#    grab(src_url, dst_url)
+#    if not dst_war.exists():
+#        zip_extractall(zipfile.ZipFile(dst_url), webapps)
+#    if not deployed_url.exists():
+#        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
+
 
 @task
 def setup_geonetwork(options):
@@ -553,18 +576,18 @@ def host(options):
     djangolog = open("django.log", "w")
     if hasattr(options.host, 'client_src'):
         os.environ["READYGXP_FILES_ROOT"] = os.path.abspath(options.host.client_src)
-    with pushd("src/geoserver-geonode-ext"):
-        os.environ["MAVEN_OPTS"] = " ".join([
-            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
-            "-Djetty.host=" + options.host.bind,
-            "-Xmx512M",
-            "-XX:MaxPermSize=128m"
-        ])
-        mvn = subprocess.Popen(
-            ["mvn", "jetty:run"],
-            stdout=jettylog,
-            stderr=jettylog
-        )
+#    with pushd("src/geoserver-geonode-ext"):
+#        os.environ["MAVEN_OPTS"] = " ".join([
+#            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
+#            "-Djetty.host=" + options.host.bind,
+#            "-Xmx512M",
+#            "-XX:MaxPermSize=128m"
+#        ])
+#        mvn = subprocess.Popen(
+#            ["mvn", "jetty:run"],
+#            stdout=jettylog,
+#            stderr=jettylog
+#        )
     django = subprocess.Popen([
             "paster", 
             "serve",
@@ -595,10 +618,10 @@ def host(options):
     while not django_is_up():
         time.sleep(2)
 
-    info("Logging servlet output to jetty.log and django output to django.log...")
-    info("Jetty is starting up, please wait...")
-    while not jetty_is_up():
-        time.sleep(2)
+#    info("Logging servlet output to jetty.log and django output to django.log...")
+#    info("Jetty is starting up, please wait...")
+#    while not jetty_is_up():
+#        time.sleep(2)
 
     try:
         sh("django-admin.py updatelayers --settings=geonode.settings")
@@ -614,13 +637,13 @@ def host(options):
             django.terminate()
         except: 
             pass
-        try:
-            mvn.terminate()
-        except: 
-            pass
+#        try:
+#            mvn.terminate()
+#        except:
+#            pass
 
         django.wait()
-        mvn.wait()
+#        mvn.wait()
         sys.exit()
 
 
