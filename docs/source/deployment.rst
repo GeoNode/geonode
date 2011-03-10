@@ -204,3 +204,8 @@ Some other things that require tweaking:
   admin interface and navigate to the sites module and change example.com to the
   actual domain name (and port if applicable). The admin interface can be accessed
   at http://<host>:<port>/admin/sites/site/
+
+* It is possible to 'inform' google of changes to your sitemap. This is accomplished
+  using the ping_google management command. More information can be found here
+  http://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
+  It is recommended to put this call into a cron (scheduled) job to update google periodically.
