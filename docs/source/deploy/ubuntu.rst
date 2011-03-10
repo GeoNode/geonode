@@ -387,3 +387,10 @@ Install GeoNode Django Site
     prompted for an admin username and account)::
 
       # /var/www/geonode/wsgi/geonode/bin/django-admin.py syncdb --settings=geonode.settings
+
+13. In order to generate the sitemap properly, the sites domain name must be set 
+    within the sites framework. This requires that an admin user login to the 
+    admin interface and navigate to the sites module and change example.com to the
+    actual domain name (and port if applicable). The admin interface can be accessed
+    at http://<host>:<port>/admin/sites/site/
+

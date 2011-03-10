@@ -38,7 +38,7 @@
            <gmd:onlineResource>
                 <gmd:CI_OnlineResource>
                     <gmd:linkage>
-                        <gmd:URL>{{ layer.poc.get_absolute_url }}</gmd:URL>
+                        <gmd:URL>{{ SITEURL }}{{ layer.poc.get_absolute_url }}</gmd:URL>
                     </gmd:linkage>
                     <gmd:protocol>
                         <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WWW:LINK-1.0-http--link</gco:CharacterString>
@@ -262,7 +262,7 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>{{layer.get_absolute_url}}</gmd:URL>
+                   <gmd:URL>{{ SITEURL }}{{layer.get_absolute_url}}</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
