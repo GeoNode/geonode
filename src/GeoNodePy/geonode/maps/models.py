@@ -984,7 +984,8 @@ class Layer(models.Model, PermissionLevelMixin):
             Layer.objects.gs_catalog.save(self._resource_cache)
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
-            self.publishing.attribution_link = self.poc.user.get_absolute_url()
+            profile = Contact.objects.get(user=self.poc.user)
+            self.publishing.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
             Layer.objects.gs_catalog.save(self.publishing)
 
     def  _populate_from_gs(self):
