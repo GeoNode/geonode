@@ -65,7 +65,7 @@ bundle = path('shared/geonode.pybundle')
 dl_cache = "--download-cache=./build"
 dlname = 'geonode.bundle'
 gs_data = "gs-data"
-geoserver_target = path('src/externals/geoserver-geonode-dev.war')
+geoserver_target = path('webapps/geoserver-geonode-dev.war')
 geonetwork_target = path('webapps/geonetwork.war')
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
 geonode_client_target_war = path('webapps/geonode-client.war')
@@ -178,28 +178,27 @@ def setup_geoserver(options):
     """Prepare a testing instance of GeoServer.
     Skip this for now; code currently requires custom patched version of GeoNode 2.1"""
 
-#    with pushd('src/geoserver-geonode-ext'):
-#        sh("mvn clean install")
-#    src_dir = path("./src/externals")
-#    war_zip_file = "geoserver-geonode-dev.war"
-#
-#    webapps = path("./webapps")
-#    if not webapps.exists():
-#        webapps.mkdir()
-#
-#    src_url = src_dir / war_zip_file
-#    dst_url = webapps / war_zip_file
-#    dst_war = webapps / "geoserver-geonode-dev.war"
-#    deployed_url = webapps / "geoserver-geonode-dev"
-#
-#
-#    if getattr(options, 'clean', False):
-#        deployed_url.rmtree()
-#    grab(src_url, dst_url)
-#    if not dst_war.exists():
-#        zip_extractall(zipfile.ZipFile(dst_url), webapps)
-#    if not deployed_url.exists():
-#        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
+    war_zip_file = options.config.parser.get('geoserver', 'geoserver_war')
+    src_url = str(options.config.parser.get('geoserver', 'geoserver_war_url') +  war_zip_file)
+    info("geonetwork url: %s" %src_url)
+    # where to download the war files. If changed change also
+    # src/geoserver-geonode-ext/jetty.xml accordingly
+
+    webapps = path("./webapps")
+    if not webapps.exists():
+        webapps.mkdir()
+
+    dst_url = webapps / war_zip_file
+    dst_war = webapps / "geoserver-geonode-dev.war"
+    deployed_url = webapps / "geoserver-geonode-dev"
+
+
+    if getattr(options, 'clean', False):
+        deployed_url.rmtree()
+    grab(src_url, dst_url)
+
+
+
 
 
 @task

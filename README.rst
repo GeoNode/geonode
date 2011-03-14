@@ -53,6 +53,8 @@ software installed and in your PATH:
 
   - If not, download from http://maven.apache.org/download.html
 
+* Apache Tomcat 6.x or Jetty
+
 Additionally, WorldMap uses a number of native-code libraries in Python.  You
 can install these libraries manually, or allow the WorldMap setup script to
 compile them for you.   In the latter case, you will need to install a C
