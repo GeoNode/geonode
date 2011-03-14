@@ -576,18 +576,18 @@ def host(options):
     djangolog = open("django.log", "w")
     if hasattr(options.host, 'client_src'):
         os.environ["READYGXP_FILES_ROOT"] = os.path.abspath(options.host.client_src)
-#    with pushd("src/geoserver-geonode-ext"):
-#        os.environ["MAVEN_OPTS"] = " ".join([
-#            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
-#            "-Djetty.host=" + options.host.bind,
-#            "-Xmx512M",
-#            "-XX:MaxPermSize=128m"
-#        ])
-#        mvn = subprocess.Popen(
-#            ["mvn", "jetty:run"],
-#            stdout=jettylog,
-#            stderr=jettylog
-#        )
+    with pushd("src/geoserver-geonode-ext"):
+        os.environ["MAVEN_OPTS"] = " ".join([
+            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
+            "-Djetty.host=" + options.host.bind,
+            "-Xmx512M",
+            "-XX:MaxPermSize=128m"
+        ])
+        mvn = subprocess.Popen(
+            ["mvn", "jetty:run"],
+            stdout=jettylog,
+            stderr=jettylog
+        )
     django = subprocess.Popen([
             "paster", 
             "serve",
@@ -618,10 +618,10 @@ def host(options):
     while not django_is_up():
         time.sleep(2)
 
-#    info("Logging servlet output to jetty.log and django output to django.log...")
-#    info("Jetty is starting up, please wait...")
-#    while not jetty_is_up():
-#        time.sleep(2)
+    info("Logging servlet output to jetty.log and django output to django.log...")
+    info("Jetty is starting up, please wait...")
+    while not jetty_is_up():
+        time.sleep(2)
 
     try:
         sh("django-admin.py updatelayers --settings=geonode.settings")
@@ -637,13 +637,13 @@ def host(options):
             django.terminate()
         except: 
             pass
-#        try:
-#            mvn.terminate()
-#        except:
-#            pass
+        try:
+            mvn.terminate()
+        except:
+            pass
 
         django.wait()
-#        mvn.wait()
+        mvn.wait()
         sys.exit()
 
 
