@@ -32,7 +32,6 @@
 </div>
 <script type="text/javascript">
 Ext.onReady(function() {
-    alert("{{ STATIC_URL }} | {{ CUSTOM_GROUP_NAME }}");
     var mapsAndLayers = [];
     {% for lyr in profile.user.layer_set.all %}
     mapsAndLayers.push(["lyr.{{ lyr.pk|escapejs }}", "{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.last_modified|escapejs }}"]);
