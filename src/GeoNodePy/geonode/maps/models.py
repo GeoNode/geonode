@@ -26,6 +26,8 @@ import logging
 from geonode.maps.encode import num_encode
 
 logger = logging.getLogger("geonode.maps.models")
+from gs_helpers import cascading_delete
+
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
@@ -712,7 +714,7 @@ class Layer(models.Model, PermissionLevelMixin):
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication')
 
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
-    abstract = models.TextField(_('abstract'))
+    abstract = models.TextField(_('abstract'), blank=True)
     purpose = models.TextField(_('purpose'), null=True, blank=True)
     maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
 
@@ -924,6 +926,7 @@ class Layer(models.Model, PermissionLevelMixin):
                     "request": "DescribeFeatureType",
                     "typename": self.typename
                 })
+
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
@@ -965,30 +968,7 @@ class Layer(models.Model, PermissionLevelMixin):
         }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
-        layerURL = "%srest/layers/%s.xml" % (settings.GEOSERVER_BASE_URL,self.name)
-        if self.storeType == "dataStore":
-            featureUrl = "%srest/workspaces/%s/datastores/%s/featuretypes/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store, self.name)
-            storeUrl = "%srest/workspaces/%s/datastores/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store)
-        elif self.storeType == "coverageStore":
-            featureUrl = "%srest/workspaces/%s/coveragestores/%s/coverages/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store, self.name)
-            storeUrl = "%srest/workspaces/%s/coveragestores/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store)
-
-
-
-
-        if (self.store != settings.POSTGIS_DATASTORE):
-            urls = (layerURL,featureUrl,storeUrl)
-        else:
-            urls = (layerURL,featureUrl)
-
-        # GEOSERVER_CREDENTIALS
-        HTTP = httplib2.Http()
-        HTTP.add_credentials(_user,_password)
-
-        for u in urls:
-            output = HTTP.request(u,"DELETE")
-            if output[0]["status"][0] == '4':
-                logger.warn("Unable to remove from Geoserver: %s" % output[1])
+        cascading_delete(Layer.objects.gs_catalog, self.resource)
 
 
     def delete_from_geonetwork(self):

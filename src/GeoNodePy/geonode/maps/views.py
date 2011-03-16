@@ -497,48 +497,63 @@ def view_map_permissions(request, mapid):
     ctx['map'] = map
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
 
-
-def ajax_layer_permissions(request, layername):
-    layer = get_object_or_404(Layer, typename=layername)
-
-    if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
-        return HttpResponse(
-            'You are not allowed to change permissions for this layer',
-            status=401,
-            mimetype='text/plain'
-        )
-
-    if not request.method == 'POST':
-        return HttpResponse(
-            'You must use POST for editing layer permissions',
-            status=405,
-            mimetype='text/plain'
-        )
-    if "customgroup" in request.POST:
-        layer.set_gen_level(CUSTOM_GROUP_USERS, request.POST['customgroup'])
-    elif "authenticated" in request.POST:
-        layer.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
-    elif "anonymous" in request.POST:
-        layer.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
+def set_layer_permissions(layer, perm_spec, use_email = False):
+    if "authenticated" in perm_spec:
+        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+    if "anonymous" in perm_spec:
+        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    if "customgroup" in perm_spec:
+        layer.set_gen_level(CUSTOM_GROUP_USERS, perm_spec['customgroup'])
+    users = [n for (n, p) in perm_spec['users']]
+    logger.debug(str(users))
+    if use_email:
+        logger.debug(layer.owner)
+        layer.get_user_levels().exclude(user__email__in = users + [layer.owner]).delete()
+        logger.debug("Got user levels")
+        for useremail, level in perm_spec['users']:
+            try:
+                user = User.objects.get(email=useremail)
+            except User.DoesNotExist:
+                 logger.debug('Make new user')
+                 user = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layerController', args=(layer.typename,)), layer.owner_id)
+                 logger.debug("made user")
+            layer.set_user_level(user, level)
+            logger.debug("set level")
     else:
-        user_re = re.compile('^user\\.(.*)')
-        for k, level in request.POST.iteritems():
-            match = user_re.match(k)
-            if match:
-                username = match.groups()[0]
-                user = User.objects.get(username=username)
-                if level == '':
-                    layer.set_user_level(user, layer.LEVEL_NONE)
-                else:
-                    layer.set_user_level(user, level)
+        layer.get_user_levels().exclude(user__name__in = users + [layer.owner]).delete()
+        for username, level in perm_spec['users']:
+            user = User.objects.get(username=username)
+            layer.set_user_level(user, level)
+    # Always make sure owner keeps control
+    layer.set_user_level(layer.owner, layer.LEVEL_ADMIN)
 
-    return HttpResponse(
-        "Permissions updated",
-        status=200,
-        mimetype='text/plain'
-    )
+def set_map_permissions(m, perm_spec, use_email = False):
+    if "authenticated" in perm_spec:
+        m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+    if "anonymous" in perm_spec:
+        m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    if "customgroup" in perm_spec:
+        m.set_gen_level(CUSTOM_GROUP_USERS, perm_spec['customgroup'])
+    users = [n for (n, p) in perm_spec['users']]
+    if use_email:
+        m.get_user_levels().exclude(user__email__in = users + [m.owner]).delete()
+        for useremail, level in perm_spec['users']:
+            try:
+                user = User.objects.get(email=useremail)
+            except User.DoesNotExist:
+                user = _create_new_user(useremail, m.title, reverse('geonode.maps.views.view', args=[m.id]), m.owner_id)
+            m.set_user_level(user, level)
+    else:
+        m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
+        for username, level in perm_spec['users']:
+            user = User.objects.get(username=username)
+            m.set_user_level(user, level)
 
 def ajax_layer_permissions_by_email(request, layername):
+    return ajax_layer_permissions(request, layername, True)
+
+def ajax_layer_permissions(request, layername, use_email=False):
+    logger.debug("Get layer")
     layer = get_object_or_404(Layer, typename=layername)
 
     if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
@@ -554,26 +569,11 @@ def ajax_layer_permissions_by_email(request, layername):
             status=405,
             mimetype='text/plain'
         )
-    if "customgroup" in request.POST:
-        layer.set_gen_level(CUSTOM_GROUP_USERS, request.POST['customgroup'])
-    elif "authenticated" in request.POST:
-        layer.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
-    elif "anonymous" in request.POST:
-        layer.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
-    else:
-        user_re = re.compile('^user\\.(.*)')
-        for k, level in request.POST.iteritems():
-            match = user_re.match(k)
-            if match:
-                user_email = match.groups()[0]
-                try:
-                    user = User.objects.get(email=user_email)                    
-                except User.DoesNotExist:
-                    user = _create_new_user(user_email, layer.title, reverse('geonode.maps.views.layerController', args=(layer.typename,)), layer.owner_id)
-                if level == '':
-                    layer.set_user_level(user, layer.LEVEL_NONE)
-                else:
-                    layer.set_user_level(user, level)
+
+    logger.debug('get spec')
+    permission_spec = json.loads(request.raw_post_data)
+    logger.debug('set permissions')
+    set_layer_permissions(layer, permission_spec, use_email)
 
     return HttpResponse(
         "Permissions updated",
@@ -600,48 +600,10 @@ def ajax_map_edit_check_permissions(request, mapid):
             mimetype='text/plain'
         )
 
-def ajax_map_permissions(request, mapid):
-    map = get_object_or_404(Map, pk=mapid)
-
-    if not request.user.has_perm("maps.change_map_permissions", obj=map):
-        return HttpResponse(
-            'You are not allowed to change permissions for this map',
-            status=401,
-            mimetype='text/plain'
-        )
-
-    if not request.method == 'POST':
-        return HttpResponse(
-            'You must use POST for editing map permissions',
-            status=405,
-            mimetype='text/plain'
-        )
-
-    if "customgroup" in request.POST:
-        map.set_gen_level(CUSTOM_GROUP_USERS, request.POST['customgroup'])
-    elif "authenticated" in request.POST:
-        map.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
-    elif "anonymous" in request.POST:
-        map.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
-    else:
-        user_re = re.compile('^user\\.(.*)')
-        for k, level in request.POST.iteritems():
-            match = user_re.match(k)
-            if match:
-                username = match.groups()[0]
-                user = User.objects.get(username=username)
-                if level == '':
-                    map.set_user_level(user, map.LEVEL_NONE)
-                else:
-                    map.set_user_level(user, level)
-
-    return HttpResponse(
-        "Permissions updated",
-        status=200,
-        mimetype='text/plain'
-    )
-
 def ajax_map_permissions_by_email(request, mapid):
+    return ajax_map_permissions(request, mapid, True)
+
+def ajax_map_permissions(request, mapid, use_email=False):
     map = get_object_or_404(Map, pk=mapid)
 
     if not request.user.has_perm("maps.change_map_permissions", obj=map):
@@ -658,27 +620,27 @@ def ajax_map_permissions_by_email(request, mapid):
             mimetype='text/plain'
         )
 
-    if "customgroup" in request.POST:
-        map.set_gen_level(CUSTOM_GROUP_USERS, request.POST['customgroup'])
-    elif "authenticated" in request.POST:
-        map.set_gen_level(AUTHENTICATED_USERS, request.POST['authenticated'])
-    elif "anonymous" in request.POST:
-        map.set_gen_level(ANONYMOUS_USERS, request.POST['anonymous'])
-    else:
-        user_re = re.compile('^user\\.(.*)')
-        for k, level in request.POST.iteritems():
-            match = user_re.match(k)
-            if match:
-                user_email = match.groups()[0]
-                try:
-                    user = User.objects.get(email=user_email)
-                                     
-                except User.DoesNotExist:
-                    user = _create_new_user(user_email, map.title, reverse('geonode.maps.views.view', args=[map.id]), map.owner_id)
-                if level == '':
-                    map.set_user_level(user, map.LEVEL_NONE)
-                else:
-                    map.set_user_level(user, level)
+    spec = json.loads(request.raw_post_data)
+    set_map_permissions(map, spec, use_email)
+
+    # _perms = {
+    #     Layer.LEVEL_READ: Map.LEVEL_READ,
+    #     Layer.LEVEL_WRITE: Map.LEVEL_WRITE,
+    #     Layer.LEVEL_ADMIN: Map.LEVEL_ADMIN,
+    # }
+
+    # def perms(x):
+    #     return _perms.get(x, Map.LEVEL_NONE)
+
+    # if "anonymous" in spec:
+    #     map.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
+    # if "authenticated" in spec:
+    #     map.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
+    # users = [n for (n, p) in spec["users"]]
+    # map.get_user_levels().exclude(user__username__in = users + [map.owner]).delete()
+    # for username, level in spec['users']:
+    #     user = User.objects.get(username = username)
+    #     map.set_user_level(user, perms(level))
 
     return HttpResponse(
         "Permissions updated",
@@ -689,7 +651,7 @@ def ajax_map_permissions_by_email(request, mapid):
 
 
 def _create_new_user(user_email, map_layer_title, map_layer_url, map_layer_owner_id):
-    
+    logger.debug("Making user")
     random_password = User.objects.make_random_password()
     user_name = re.sub(r'\W', r'', user_email.split('@')[0])
     user_length = len(user_name)
@@ -697,25 +659,30 @@ def _create_new_user(user_email, map_layer_title, map_layer_url, map_layer_owner
         user_name = user_name[0:29]
     while len(User.objects.filter(username=user_name)) > 0:
         user_name = user_name[0:user_length-4] + User.objects.make_random_password(length=4, allowed_chars='0123456789')
-    
-    new_user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, send_email=False)
 
+    logger.debug("username will be [%s]", user_name)
+    new_user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, send_email=False)
+    logger.debug("new user created, now creating profile")
     if new_user:
         new_profile = Contact(user=new_user, name=new_user.username, email=new_user.email)
         new_profile.save()
-
-        _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id, random_password)
-    
+        logger.debug('profile created')
+        try:
+            _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id, random_password)
+        except:
+            logger.debug("An error ocurred when sending the mail")
     return new_user
 
 
+
+
 def _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id,  password):
-      
+
     current_site = Site.objects.get_current()
     user = User.objects.get(email = user_email)
     profile = RegistrationProfile.objects.get(user=user)
     owner = User.objects.get(id=map_layer_owner_id)
-    
+
     subject = render_to_string('registration/new_user_email_subject.txt',
                        { 'site': current_site,
                          'owner' : (owner.get_profile().name if owner.get_profile().name else owner.email),
@@ -728,7 +695,7 @@ def _send_permissions_email(user_email, map_layer_title, map_layer_url, map_laye
                          'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
                          'owner': (owner.get_profile().name if owner.get_profile().name else owner.email),
                          'title': map_layer_title,
-                         'url' : map_layer_url,                     
+                         'url' : map_layer_url,
                          'site': current_site,
                          'username': user.username,
                          'password' : password })
@@ -816,7 +783,7 @@ def map_share(request,mapid):
     return render_to_response("maps/mapinfopanel.html", RequestContext(request, {
         "map": map,
         'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
-        'customGroup': settings.CUSTOM_GROUP_NAME
+        'customGroup': settings.CUSTOM_GROUP_NAME,
     }))
 
 @csrf_exempt
@@ -1049,6 +1016,7 @@ def _describe_layer(request, layer):
                         la.searchable = form["searchable"]
                         la.save()
             
+        if request.method == "POST" and layer_form.is_valid():
                 new_poc = layer_form.cleaned_data['poc']
                 new_author = layer_form.cleaned_data['metadata_author']
                 new_category = layer_form.cleaned_data['topic_category']
@@ -1095,9 +1063,6 @@ def _describe_layer(request, layer):
                 else:
                     logger.debug("No map value found")
                     return HttpResponseRedirect("/data/" + layer.typename)
-
-
-
 
         if poc.user is None:
             poc_form = ContactForm(instance=poc, prefix="poc")
@@ -1258,7 +1223,7 @@ def upload_layer(request):
                 mapid = request.GET['map']
                 map = get_object_or_404(Map,pk=mapid)
                 return render_to_response('maps/layer_upload.html',
-                                  RequestContext(request, {'map':map}))
+                                  RequestContext(request, {'map':map, 'customGroup': settings.CUSTOM_GROUP_NAME}))
             else: #this is a tabbed panel request if no map id provided
                 return render_to_response('maps/layer_upload_tab.html',
                                   RequestContext(request))
@@ -1370,29 +1335,35 @@ def _updateLayer(request, layer):
     return render_to_response('json_html.html',
                               RequestContext(request, {'json': result}))
 
+
+_suffix = re.compile(r"\.[^.]*$", re.IGNORECASE)
+_xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
+
 @transaction.commit_manually
 def _handle_layer_upload(request, layer=None):
     """
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
     """
+
     logger.debug("ENTER handle_layer_upload")
     layer_name = request.POST.get('layer_name');
     base_file = request.FILES.get('base_file');
-
     encoding = request.POST.get('charset')
-
     logger.info("Uploaded layer: [%s], base filename: [%s]", layer_name, base_file)
+    base_file = request.FILES.get('base_file');
+    logger.info("Uploaded layer; base filename: [%s]", base_file)
 
     if not base_file:
         logger.warn("Failed upload: no basefile provided")
         return None, [_("You must specify a layer data file to upload.")]
+
+    layer_name = _suffix.sub("", base_file.name)
     
     if layer is None:
         overwrite = False
         # XXX Give feedback instead of just replacing name
-        xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
-        name = xml_unsafe.sub("_", layer_name)
+        name = _xml_unsafe.sub("_", layer_name)
         proposed_name = name
         count = 1
         while Layer.objects.filter(name=proposed_name).count() > 0:
@@ -1546,6 +1517,7 @@ def _handle_layer_upload(request, layer=None):
         csw_record = None
         layer = None
         try:
+
             if create_store == cat.create_pg_feature:
                 logger.debug("Search [%s] for [%s]", settings.POSTGIS_DATASTORE, name)
                 gs_resource = cat.get_resource(name=name, store=cat.get_store(name=settings.POSTGIS_DATASTORE))
@@ -1553,10 +1525,24 @@ def _handle_layer_upload(request, layer=None):
                 logger.debug("Search for [%s]", name)
                 gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
             if gs_resource.latlon_bbox is None:
-                cascading_delete(cat, gs_resource)
-                logger.warn("GeoServer failed to detect the projection for layer [%s]. Cancelling import", name)
-                errors.append(_("GeoNode could not detect the projection for %(layer)s.  Import is cancelled.") % { 'layer': name })
+                # If GeoServer couldn't figure out the projection, we initially 
+                # assume its 4326
+                logger.warn("GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326", name)
+                minx, maxx, miny, maxy = [float(a) for a in gs_resource.native_bbox[:4]]
+                if -180 < minx < 180 and -180 < maxx < 180 and -90 < miny < 90 and -90 < maxy < 90:
+                    gs_resource.projection = "EPSG:4326"
+                    gs_resource.latlon_bbox = gs_resource.native_bbox[:4] + (None, )
+                    cat.save(gs_resource)
+                    valid_bbox = True
+                else:
+                    cascading_delete(cat, gs_resource)
+                    logger.warn("GeoServer failed to detect the projection for layer [%s]. Tried (and failed) 4326 Cancelling import", name)
+                    errors.append(_("GeoNode could not detect the projection for %(layer)s.  Import is cancelled.") % { 'layer': name })
+                    valid_bbox = False
             else:
+                valid_bbox = True
+
+            if valid_bbox:
                 typename = gs_resource.store.workspace.name + ':' + gs_resource.name
                 logger.info("Got GeoServer info for %s, creating Django record", typename)
 
@@ -1566,7 +1552,8 @@ def _handle_layer_upload(request, layer=None):
                                              storeType=gs_resource.store.resource_type,
                                              typename=typename,
                                              workspace=gs_resource.store.workspace.name,
-                                             title=gs_resource.title,
+                                             title = request.POST.get('layer_title') or gs_resource.title or gs_resource.name,
+                                             abstract = request.POST.get('abstract') or "",
                                              uuid=str(uuid.uuid4()),
                                              owner=request.user
                                            )
@@ -1580,10 +1567,15 @@ def _handle_layer_upload(request, layer=None):
                 layer.metadata_author = author_contact
                 logger.debug("committing DB changes for %s", typename)
                 layer.save()
-                logger.debug("Setting default permissions for %s", typename)
-                layer.set_default_permissions()
+                logger.debug("Setting permissions for %s [%s]", typename, request.POST.get("permissions"))
+                try:
+                    perm_spec = json.loads(request.POST["permissions"])
+                    set_layer_permissions(layer, perm_spec, True)
+                except:
+                    logger.debug("ERROR ocurred, setting default permissions")
+                    layer.set_default_permissions()
                 logger.debug("Generating separate style for %s", typename)
-                fixup_style(cat, gs_resource)
+                fixup_style(cat, gs_resource, request.FILES.get('sld_file'))
         except Exception, e:
             logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
             transaction.rollback()
@@ -1655,7 +1647,7 @@ def _view_perms_context(obj, level_names):
 
     return ctx
 
-def _perms_info_json(obj, level_names):
+def _perms_info(obj, level_names):
     info = obj.get_all_level_info()
     # these are always specified even if none
     info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
@@ -1666,9 +1658,9 @@ def _perms_info_json(obj, level_names):
     if hasattr(obj, 'owner') and obj.owner: 
         info['owner'] = obj.owner.username
         info['owner_email'] = obj.owner.email
-    return json.dumps(info)
+    return info
 
-def _perms_info_email_json(obj, level_names):
+def _perms_info_email(obj, level_names):
     info = obj.get_all_level_info_by_email()
     # these are always specified even if none
     info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
@@ -1676,11 +1668,34 @@ def _perms_info_email_json(obj, level_names):
     info[CUSTOM_GROUP_USERS] = info.get(CUSTOM_GROUP_USERS, obj.LEVEL_NONE)
     info['users'] = sorted(info['users'].items())
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
-    if hasattr(obj, 'owner') and obj.owner: 
+    if hasattr(obj, 'owner') and obj.owner is not None:
         info['owner'] = obj.owner.username
         info['owner_email'] = obj.owner.email
-    logger.debug(str(info))
-    return json.dumps(info)
+    return info
+       
+
+def _perms_info_json(obj, level_names):
+    return json.dumps(_perms_info(obj, level_names))
+
+def _perms_info_email_json(obj, level_names):
+    return json.dumps(_perms_info_email(obj, level_names))
+
+def _fix_map_perms_for_editor(info):
+    perms = {
+        Map.LEVEL_READ: Layer.LEVEL_READ,
+        Map.LEVEL_WRITE: Layer.LEVEL_WRITE,
+        Map.LEVEL_ADMIN: Layer.LEVEL_ADMIN,
+    }
+
+    def fix(x): return perms.get(x, "_none")
+
+    info[ANONYMOUS_USERS] = fix(info[ANONYMOUS_USERS])
+    info[AUTHENTICATED_USERS] = fix(info[AUTHENTICATED_USERS])
+    info[CUSTOM_GROUP_USERS] = fix(info[CUSTOM_GROUP_USERS])
+    info['users'] = [(u, fix(level)) for u, level in info['users']]
+
+    return info
+
 
 INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 def _handle_perms_edit(request, obj):
@@ -2342,7 +2357,7 @@ def maps_search_page(request):
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))
-    
+
 @csrf_exempt
 def ajax_url_lookup(request):
     if request.method != 'POST':
@@ -2375,28 +2390,7 @@ def ajax_url_lookup(request):
                             mimetype='text/plain'
     )
 
-def updatelayers(request):
-    try:
-        Layer.objects.slurp()
-    except:
-        return HttpResponse(content=str(_), mimetype='text/plain')
-    return HttpResponse('Layers successfully slurped', mimetype='text/plain')
 
-def cleardeadlayers(request):
-        try:
-            pre_delete.disconnect(delete_layer, sender=Layer)
-            cat = Layer.objects.gs_catalog
-            storenames = [s.name for s in cat.get_stores()]
-            layernames = [l.name for l in cat.get_resources()]
-            for l in Layer.objects.all():
-                if l.store not in storenames or l.name not in layernames:
-                    l.delete()
-                    print l
-        except:
-            return HttpResponse( "Couldn't connect to GeoServer; is it running? Make sure the GEOSERVER_BASE_URL setting is set correctly.", mimetype="text/plain")
-        finally:
-            pre_delete.connect(delete_layer, sender=Layer)
-            return HttpResponse("Done clearing dead layers", mimetype='text/plain')
 
 def upload_progress(request):
     """
@@ -2412,4 +2406,141 @@ def upload_progress(request):
     else:
         logger.error("Received progress report request without X-Progress-ID header. request.META: %s" % request.META)
         return HttpResponseBadRequest('Server Error: You must provide X-Progress-ID header or query param.')
+
+def batch_permissions_by_email(request):
+    return batch_permissions(request, True)
+
+def batch_permissions(request, use_email=False):
+    if not request.user.is_authenticated:
+        return HttpResponse("You must log in to change permissions", status=401) 
+
+    if request.method != "POST":
+        return HttpResponse("Permissions API requires POST requests", status=405)
+
+    spec = json.loads(request.raw_post_data)
+    
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        for lyr in lyrs:
+            if not request.user.has_perm("maps.change_layer_permissions", obj=lyr):
+                return HttpResponse("User not authorized to change layer permissions", status=403)
+
+    if "maps" in spec:
+        maps = Map.objects.filter(pk__in = spec['maps'])
+        for map in maps:
+            if not request.user.has_perm("maps.change_map_permissions", obj=map):
+                return HttpResponse("User not authorized to change map permissions", status=403)
+
+    anon_level = spec['permissions'].get("anonymous")
+    auth_level = spec['permissions'].get("authenticated")
+    custom_level = spec['permissions'].get("customgroup")
+
+    logger.debug("anon_level:[%s]; auth_level:[%s]; custom_level:[%s]", anon_level, auth_level, custom_level)
+
+    users = spec['permissions'].get('users', [])
+    user_names = [x for (x, y) in users]
+
+
+
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        valid_perms = ['layer_readwrite', 'layer_readonly']
+        if anon_level not in valid_perms:
+            anon_level = "_none"
+        if auth_level not in valid_perms:
+            auth_level = "_none"
+        if custom_level not in valid_perms:
+            custom_level = "_none"
+
+        logger.debug("anon:[%s],auth:[%s],custom:[%s]", anon_level, auth_level, custom_level)
+        for lyr in lyrs:
+            logger.info("Layer [%s]", lyr)
+            if use_email:
+                lyr.get_user_levels().exclude(user__email__in = user_names + [lyr.owner.email]).delete()
+            else:
+                lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
+
+            lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
+            lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
+            lyr.set_gen_level(CUSTOM_GROUP_USERS, custom_level)
+            for user, user_level in users:
+                logger.info("User [%s]", user)
+                if use_email:
+                    try:
+                        userObject = User.objects.get(email=user)
+                    except User.DoesNotExist:
+                        userObject = _create_new_user(user, lyr.title, reverse('geonode.maps.views.layerController', args=(lyr.typename,)), lyr.owner_id)
+                    if user_level not in valid_perms:
+                        user_level = "_none"
+                    lyr.set_user_level(userObject, user_level)
+                else:
+                    if user_level not in valid_perms:
+                        user_level = "_none"
+                    lyr.set_user_level(user, user_level)
+
+    if "maps" in spec:
+        maps = Map.objects.filter(pk__in = spec['maps'])
+        valid_perms = ['layer_readwrite', 'layer_readonly']
+        if anon_level not in valid_perms:
+            anon_level = "_none"
+        if auth_level not in valid_perms:
+            auth_level = "_none"
+        if custom_level not in valid_perms:
+            custom_level = "_none"
+        anon_level = anon_level.replace("layer", "map")
+        auth_level = auth_level.replace("layer", "map")
+        custom_level = custom_level.replace("layer", "map")
+
+        for m in maps:
+            if use_email:
+                m.get_user_levels().exclude(user__email__in = user_names + [m.owner.email]).delete()
+            else:
+                m.get_user_levels().exclude(user__username__in = user_names + [m.owner.username]).delete()
+            m.set_gen_level(ANONYMOUS_USERS, anon_level)
+            m.set_gen_level(AUTHENTICATED_USERS, auth_level)
+            m.set_gen_level(CUSTOM_GROUP_USERS, custom_level)
+            for user, user_level in spec['permissions'].get("users", []):
+                user_level = user_level.replace("layer", "map")
+                if use_email:
+                    try:
+                        userObject = User.objects.get(email=user)
+                    except User.DoesNotExist:
+                        userObject = _create_new_user(user, m.title, reverse('geonode.maps.views.view', args=[m.id]), m.owner_id)
+                    m.set_user_level(userObject, valid_perms.get(user_level, "_none"))
+                else:
+                    m.set_user_level(user, valid_perms.get(user_level, "_none"))
+
+    return HttpResponse("Not implemented yet")
+
+def batch_delete(request):
+    if not request.user.is_authenticated:
+        return HttpResponse("You must log in to delete layers", status=401) 
+
+    if request.method != "POST":
+        return HttpResponse("Delete API requires POST requests", status=405)
+
+    spec = json.loads(request.raw_post_data)
+
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        for lyr in lyrs:
+            if not request.user.has_perm("maps.delete_layer", obj=lyr):
+                return HttpResponse("User not authorized to delete layer", status=403)
+
+    if "maps" in spec:
+        maps = Map.objects.filter(pk__in = spec['maps'])
+        for map in maps:
+            if not request.user.has_perm("maps.delete_map", obj=map):
+                return HttpResponse("User not authorized to delete map", status=403)
+
+    if "layers" in spec:
+        Layer.objects.filter(pk__in = spec["layers"]).delete()
+
+    if "maps" in spec:
+        Map.objects.filter(pk__in = spec["maps"]).delete()
+
+    nlayers = len(spec.get('layers', []))
+    nmaps = len(spec.get('maps', []))
+
+    return HttpResponse("Deleted %d layers and %d maps" % (nlayers, nmaps))
 

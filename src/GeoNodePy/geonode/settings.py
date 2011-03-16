@@ -115,6 +115,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "geonode.maps.context_processors.resource_urls",
+    "geonode.context_processors.custom_group_name",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -261,6 +262,16 @@ INSTALLED_APPS = (
     'geonode.profileforms',
 )
 
+def get_user_url(u):
+    from django.contrib.sites.models import Site
+    s = Site.objects.get_current()
+    return "http://" + s.domain + "/profiles/" + u.username
+
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': get_user_url
+}
+
 AUTH_PROFILE_MODULE = 'maps.Contact'
 
 REGISTRATION_OPEN = True
@@ -279,16 +290,7 @@ GEONODE_CLIENT_LOCATION = "/media/static/"
 #Google Analytics
 #Make this code an empty string if you DONT intend to use it;
 # if you do use it replace UA-XXXXXXXX-1 with your own ID
-GOOGLE_ANALYTICS_CODE = "<script type='text/javascript'>\n\
-        var _gaq = _gaq || [];\n\
-        _gaq.push(['_setAccount', 'UA-XXXXXXXX-1']);\n\
-        _gaq.push(['_trackPageview']);\n\
-        (function() {\n\
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;\n\
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n\
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);\n\
-        })();\n\
-    </script>"
+GOOGLE_ANALYTICS_CODE = ""
 
 #Set name of additional permissions group (besides anonymous and authenticated)
 CUSTOM_GROUP_NAME = 'Organization Users'
@@ -300,7 +302,7 @@ CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 CUSTOM_AUTH_URL = ''
 
 #Name of a PostGIS datastore in GeoServer, if any
-POSTGIS_DATASTORE=''
+POSTGIS_DATASTORE='wmpostgis'
 
 
 try:

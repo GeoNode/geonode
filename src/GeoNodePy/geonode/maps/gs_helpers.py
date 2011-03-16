@@ -86,7 +86,7 @@ _style_templates = dict(
 def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
-def fixup_style(cat, resource):
+def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
     logger.info("Found %d layers associated with [%s]", resource)
@@ -95,7 +95,10 @@ def fixup_style(cat, resource):
             logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             fg, bg, mark = _style_contexts.next()
-            sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
+            if style is None:
+                sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
+            else: 
+                sld = style.read()
             logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
@@ -106,6 +109,10 @@ def fixup_style(cat, resource):
 def cascading_delete(cat, resource):
     lyr = cat.get_layer(resource.name)
     store = resource.store
+    styles = lyr.styles + [lyr.default_style]
     cat.delete(lyr)
+    for s in styles:
+        if s is not None:
+            cat.delete(s, purge=True)
     cat.delete(resource)
     cat.delete(store)

@@ -135,16 +135,24 @@ For JavaScript Developers
 Minified Scripts
 ................
 
-JavaScript Developers can switch to using unminified scripts and CSS styles by
-setting the MINIFIED_RESOURCES entry in :file:`src/geonode/settings.py` to
-``False``.  If you are developing JavaScript and testing against minified builds,
-make sure to use::
+JavaScript Developers can switch to using unminified scripts and CSS:
 
-   $ paver concat_js 
-   $ paver capra_js
+1. Get and run geonode-client:
 
+<<<<<<< HEAD
 to update the built script directories for the base WorldMap site and the CAPRA
 extensions, respectively.
+=======
+    $ git clone git://github.com/GeoNode/geonode-client.git geonode-client
+    $ cd geonode-client
+    $ ant init debug
+
+2. Set the GEONODE_CLIENT_LOCATION entry in :file:`src/geonode/settings.py` to
+   ``http://localhost:8080/`` and run paver as described above.
+
+Note that this requires ant (http://ant.apache.org/) in addition to the above
+build requirements.
+>>>>>>> c17b4f376bad7381aa32dfcb5fa3e13b8533d3a5
 
 VirtualBox Setup
 ................
@@ -158,13 +166,16 @@ following needs to be done before running ``paver host``:
 * On the host, do ifconfig and write down the IP address of the vboxnet0
   adapter.
 
-* Edit src/GeoNodePy/geonode/settings.py and change the line::
+* Edit :file:`src/GeoNodePy/geonode/settings.py` and change the line::
 
     GEOSERVER_BASE_URL="http://localhost:8080/geoserver-geonode-dev/"
 
   to use the IP address you have written down above::
 
     GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver-geonode-dev/"
+
+* Make sure to change other http://localhost urls in
+  :file:`src/GeoNodePy/geonode/settings.py` accordingly as well
 
 * To start the web server, run::
 

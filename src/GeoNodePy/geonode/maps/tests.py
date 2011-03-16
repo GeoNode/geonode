@@ -145,6 +145,19 @@ community."
             response = c.get('/data/search/detail', {'uuid':layer.uuid})
             self.failUnlessEqual(response.status_code, 200)
 
+    def test_search_template(self):
+        from django.template import Context
+        from django.template.loader import get_template
+
+        layer = Layer.objects.all()[0]
+        tpl = get_template("maps/csw/transaction_insert.xml")
+        ctx = Context({
+            'layer': layer,
+        })
+        md_doc = tpl.render(ctx)
+        self.assert_("None" not in md_doc, "None in " + md_doc)
+
+
     def test_describe_data(self):
         '''/data/base:CA?describe -> Test accessing the description of a layer '''
 
