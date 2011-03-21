@@ -672,7 +672,7 @@ class LayerManager(models.Manager):
 class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
     title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
-
+    #description = models.TextField(_('Category Description'), blank=True, null=True)
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
     The date/time the object was created.
@@ -917,6 +917,9 @@ class Layer(models.Model, PermissionLevelMixin):
         csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
         return csw.records.get(self.uuid)
 
+
+
+
     @property
     def attribute_names(self):
         logger.debug("Enter attribute_names")
@@ -932,6 +935,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
                 response, body = http.request(dft_url)
+                logger.debug(body)
                 doc = XML(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
                 atts = {}

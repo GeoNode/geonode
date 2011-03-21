@@ -498,12 +498,16 @@ def view_map_permissions(request, mapid):
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
 
 def set_layer_permissions(layer, perm_spec, use_email = False):
+    logger.debug("PERM SPEC: [%s]", perm_spec)
     if "authenticated" in perm_spec:
         layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+        logger.debug('Set authenticate permission to [%s]', perm_spec['authenticated'])
     if "anonymous" in perm_spec:
         layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+        logger.debug('Set anonymous permission to [%s]', perm_spec['anonymous'])
     if "customgroup" in perm_spec:
         layer.set_gen_level(CUSTOM_GROUP_USERS, perm_spec['customgroup'])
+        logger.debug('Set customgroup permission to [%s]', perm_spec['customgroup'])
     users = [n for (n, p) in perm_spec['users']]
     logger.debug(str(users))
     if use_email:
@@ -1233,7 +1237,19 @@ def upload_layer(request):
             layer, errors = _handle_layer_upload(request)
             logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
             logger.debug("Save all attrbute names as searchable by defaul texcept geometry")
+
+
+        except:
+            logger.exception("_handle_layer_upload failed!")
+            errors = [GENERIC_UPLOAD_ERROR]
+        
+        result = {}
+        if len(errors) > 0:
+            result['success'] = False
+            result['errors'] = errors
+        else:
             try:
+
                 #Add new layer attributes if they dont already exist
                 if layer.attribute_names is not None:
                     logger.debug("Attributes are not None")
@@ -1247,15 +1263,14 @@ def upload_layer(request):
 
             except:
                     logger.debug("Attributes could not be saved")
-        except:
-            logger.exception("_handle_layer_upload failed!")
-            errors = [GENERIC_UPLOAD_ERROR]
-        
-        result = {}
-        if len(errors) > 0:
-            result['success'] = False
-            result['errors'] = errors
-        else:
+            logger.debug("Setting permissions for [%s] [%s]", layer, request.POST.get("permissions"))
+
+            perm_spec = json.loads(request.POST["permissions"])
+            set_layer_permissions(layer, perm_spec, True)
+            logger.debug("Set permissions for [%s] [%s]", layer, perm_spec)
+
+
+
             result['success'] = True
             result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + '?describe'
             if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
@@ -1278,9 +1293,7 @@ def _updateLayer(request, layer):
                 _("You are not permitted to modify this layer")})), status=401)
     
     if request.method == 'GET':
-        cat = Layer.objects.gs_catalog
-        info = cat.get_resource(layer.name)
-        is_featuretype = info.resource_type == FeatureType.resource_type
+        is_featuretype = layer.storeType == "dataStore"
         
         return render_to_response('maps/layer_replace.html',
                                   RequestContext(request, {'layer': layer,
@@ -1290,7 +1303,19 @@ def _updateLayer(request, layer):
     elif request.method == 'POST':
         try:
             layer, errors = _handle_layer_upload(request, layer=layer)
+        except:
+            errors = [GENERIC_UPLOAD_ERROR]
+
+        result = {}
+        if len(errors) > 0:
+            result['success'] = False
+            result['errors'] = errors
+        else:
+
+            original_perm = _perms_info_email(layer, LAYER_LEV_NAMES)
             try:
+
+                layer.set_default_permissions()
                 #Delete layer attributes if they no longer exist in an updated layer
                 for la in LayerAttribute.objects.filter(layer=layer):
                     lafound = False
@@ -1315,19 +1340,12 @@ def _updateLayer(request, layer):
                 else:
                     logger.debug("No attributes found")
 
-
             except Exception, ex:
                     logger.debug("Attributes could not be saved:[%s]", str(ex))
 
 
-        except:
-            errors = [GENERIC_UPLOAD_ERROR]
+            set_layer_permissions(layer, original_perm, True)
 
-        result = {}
-        if len(errors) > 0:
-            result['success'] = False
-            result['errors'] = errors
-        else:
             result['success'] = True
             result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
 
@@ -1359,7 +1377,9 @@ def _handle_layer_upload(request, layer=None):
         return None, [_("You must specify a layer data file to upload.")]
 
     layer_name = _suffix.sub("", base_file.name)
-    
+
+    logger.debug("LAYER NAME: [%s]", layer_name)
+
     if layer is None:
         overwrite = False
         # XXX Give feedback instead of just replacing name
@@ -1385,15 +1405,14 @@ def _handle_layer_upload(request, layer=None):
 
     # zipped shapefile upload
     elif base_file.name.lower().endswith('.zip'):
-        logger.info("Upload [%s] appears to be a Shapefile", base_file)
+        logger.info("Upload [%s] appears to be a Zipped Shapefile", base_file)
         # check that we are uploading the same resource
         # type as the existing resource.
         if layer is not None:
-            logger.info("Checking whether layer being replaced is a raster layer")
-            info = cat.get_resource(name, store=cat.get_store(name))
-            if info.resource_type != FeatureType.resource_type:
+            if layer.storeType == 'coverageStore':
                 logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
                 return None, [_("This resource may only be replaced with raster data.")]
+
 
         if settings.POSTGIS_DATASTORE:
             logger.debug('Upload to PostGIS')
@@ -1437,9 +1456,7 @@ def _handle_layer_upload(request, layer=None):
         # check that we are uploading the same resource 
         # type as the existing resource.
         if layer is not None:
-            logger.info("Checking whether layer being replaced is a raster layer")
-            info = cat.get_resource(name, store=cat.get_store(name))
-            if info.resource_type != FeatureType.resource_type:
+            if layer.storeType == 'coverageStore':
                 logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
                 return None, [_("This resource may only be replaced with raster data.")]
         
@@ -1481,10 +1498,9 @@ def _handle_layer_upload(request, layer=None):
         logger.info("Upload [%s] appears not to be a Shapefile", base_file)
         if layer is not None:
             logger.info("Checking whether replacement data for [%s] is raster", name)
-            info = cat.get_resource(name, store=cat.get_store(name))
-            if info.resource_type != Coverage.resource_type:
-                logger.warn("User tried to replace vector layer [%s] with raster data", name)
-                return [_("This resource may only be replaced with shapefile data.")]
+            if layer.storeType == 'dataStore':
+                logger.warn("User tried to replace raster layer [%s] with vector data", name)
+                return [_("This resource may only be replaced with a GeoTIFF file.")]
 
         # ... we attempt to let geoserver figure it out, guessing it is coverage 
         create_store = cat.create_coveragestore
@@ -1567,14 +1583,8 @@ def _handle_layer_upload(request, layer=None):
                 layer.metadata_author = author_contact
                 logger.debug("committing DB changes for %s", typename)
                 layer.save()
-                logger.debug("Setting permissions for %s [%s]", typename, request.POST.get("permissions"))
-                try:
-                    perm_spec = json.loads(request.POST["permissions"])
-                    set_layer_permissions(layer, perm_spec, True)
-                except:
-                    logger.debug("ERROR ocurred, setting default permissions")
-                    layer.set_default_permissions()
                 logger.debug("Generating separate style for %s", typename)
+                layer.set_default_permissions()
                 fixup_style(cat, gs_resource, request.FILES.get('sld_file'))
         except Exception, e:
             logger.exception("Import to Django and GeoNetwork failed: %s", str(e))

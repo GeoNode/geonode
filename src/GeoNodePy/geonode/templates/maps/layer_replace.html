@@ -38,18 +38,19 @@ updated data must be the same format as the data already in place, e.g.
 Ext.onReady(function(){
 {% autoescape off %}
   var form_target = "{% url geonode.maps.views.layerController layer.typename %}?update";
+  var layer_title = "{{ layer.title|escapejs }}";
   var layer_name = "{{ layer.name|escapejs }}";
-  
+
   var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
 
-  var layer_name = new Ext.form.TextField({
-    id: 'layer_name',
-    name: 'layer_name',
-    emptyText: layer_name,
-    fieldLabel: gettext('Name'),
-    allowBlank: true,
-    disabled: true,
-  });
+    var layer_title = new Ext.form.TextField({
+      id: 'layer_title',
+      emptyText: layer_title,
+      fieldLabel: gettext('Title'),
+      name: 'layer_title',
+      allowBlank: true,
+      disabled: true
+    });
 
   var form_fields = [];
 
@@ -60,15 +61,22 @@ Ext.onReady(function(){
       }
   };
 
-  if (is_featuretype) {
+
+    var layer_name = new Ext.form.Hidden({
+        name: "layer_name",
+        value: layer_name
+    });
+
     var base_file = new Ext.ux.form.FileUploadField({
         id: 'base_file',
-        emptyText: gettext('Select a .shp file'),
-        fieldLabel: gettext('SHP'),
+        emptyText: gettext('Select a layer data file'),
+        fieldLabel: gettext('File'),
         name: 'base_file',
         allowBlank: false,
         listeners: listeners
     });
+
+
 
     var dbf_file = new Ext.ux.form.FileUploadField({
         id: 'dbf_file',
@@ -90,26 +98,26 @@ Ext.onReady(function(){
 
     var prj_file = new Ext.ux.form.FileUploadField({
         id: 'prj_file',
-        emptyText: gettext('Select a .prj data file (optional)'),
+        emptyText: gettext('Select a .prj data file'),
         fieldLabel: gettext('PRJ'),
         name: 'prj_file',
-        allowBlank: true,
-        listeners: listeners
-
-    });
-    form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file];
-  }
-  else {
-    var base_file = new Ext.ux.form.FileUploadField({
-        id: 'base_file',
-        emptyText: gettext('Select a layer data file'),
-        fieldLabel: gettext('File'),
-        name: 'base_file',
         allowBlank: false,
         listeners: listeners
     });
-    form_fields = [layer_name, base_file];
-  }
+
+    var encoding = new Ext.form.TextField({
+        id: 'charset',
+        name: ' charset',
+        fieldLabel: gettext('Encoding'),
+        value: 'UTF-8',
+        width: '50',
+        allowBlank: true,
+        listeners: listeners
+    });
+
+
+    form_fields = [layer_title, layer_name, base_file, dbf_file, shx_file, prj_file, encoding];
+
 
   var fp = new Ext.FormPanel({
     renderTo: 'upload_form',
@@ -157,7 +165,48 @@ Ext.onReady(function(){
           }
       }]
     });
-  });
+
+
+    var disable_shapefile_inputs = function() {
+        dbf_file.disable();
+        dbf_file.hide();
+        shx_file.disable();
+        shx_file.hide();
+        prj_file.disable();
+        prj_file.hide();
+        encoding.disable();
+        encoding.hide();
+    };
+
+    var enable_shapefile_inputs = function() {
+        dbf_file.enable();
+        dbf_file.show();
+
+        shx_file.show();
+        prj_file.show();
+
+        encoding.enable();
+        encoding.show();
+    };
+
+
+    var check_shapefile = function() {
+        var main_filename = base_file.getValue();
+        if ((/\.shp$/i).test(base_file.getValue())) {
+            enable_shapefile_inputs();
+        }
+        else {
+            disable_shapefile_inputs();
+        }
+    };
+
+    base_file.addListener('fileselected', function(cmp, value) {
+        check_shapefile();
+    });
+    disable_shapefile_inputs(); 
+
+
+
 
 var mapCrumb = "";
 if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
@@ -167,7 +216,7 @@ if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
 
 		var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} </a><span>&nbsp;/&nbsp;Update</span>");
 		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
-
+});
 {% endautoescape %}
 </script>
 </div>
@@ -195,6 +244,7 @@ if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
 <ul>
   {% if is_featuretype %}
   <li>Shapefile</li>
+  <li>Zipped Shapefile</li>
   {% else %}
   <li>GeoTIFF</li>
   {% endif %}
