@@ -56,12 +56,10 @@
 <div class="twocol">
 
 
-{%  if layer_form.non_field_errors %}<ul class="errorlist">{{ layer_form.non_field_errors.as_ul }}</ul>{%  endif %}
-{%  if category_form.non_field_errors %}<ul class="errorlist">{{ category_form.non_field_errors.as_ul }}</ul>{%  endif %}
-    {%  if category_form.errors %}<ul class="errorlist">{{ category_form.errors.as_ul }}</ul>{%  endif %}
-
-
   <h2> {% trans "Editing details for " %} {{ layer.title|default:layer.typename }} </h2>
+
+  <p style="font-weight:bold">{%  trans "Fields marked with an asterisk(*) are required." %}</p>
+
   <form action="/data/{{layer.typename}}?describe" method="POST">
 	  {% csrf_token %}
       <ul class="form">
@@ -69,7 +67,8 @@
 
 
       <fieldset id="category_form">
-	  <legend>Category</legend>
+	  <legend>* {%  trans "Category"  %}</legend>
+      {%  if category_form.errors %}<li>{{ category_form.errors.as_ul }}</li>{%  endif %}
       <li>
 
         {% autoescape off %}

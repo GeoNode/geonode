@@ -296,13 +296,13 @@ GOOGLE_ANALYTICS_CODE = ""
 CUSTOM_GROUP_NAME = 'Organization Users'
 
 #If you want to redirect members of your organization to a separate authentication system when registering, change the following settings
-USE_CUSTOM_ORG_AUTHORIZATION = True
+USE_CUSTOM_ORG_AUTHORIZATION = False
 CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_AUTH_URL = ''
 
 #Name of a PostGIS datastore in GeoServer, if any
-POSTGIS_DATASTORE='wmpostgis'
+POSTGIS_DATASTORE=''
 
 
 try:

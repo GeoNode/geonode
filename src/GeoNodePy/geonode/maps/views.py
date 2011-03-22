@@ -102,7 +102,7 @@ class LayerCategoryChoiceField(forms.ModelChoiceField):
         
 
 class LayerCategoryForm(forms.Form):
-    category_choice_field = LayerCategoryChoiceField(required=False, label = 'Category', empty_label=None,
+    category_choice_field = LayerCategoryChoiceField(required=False, label = '*' + _('Category'), empty_label=None,
                                queryset = LayerCategory.objects.extra(order_by = ['title']))
 
     
@@ -112,8 +112,8 @@ class LayerCategoryForm(forms.Form):
 
 
         if not ccf_data:
-            msg = u"Category is required."
-            self._errors["Layer Category"] = self.error_class([msg])
+            msg = u"This field is required."
+            self._errors = self.error_class([msg])
 
 
 
@@ -147,24 +147,29 @@ class LayerForm(forms.ModelForm):
 
     map_id = forms.CharField(widget=forms.HiddenInput(), initial='', required=False)
 
-    date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
+    date = forms.DateTimeField(label='*' + _('Date'), widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"date"}
     date.widget.widgets[1].attrs = {"class":"time"}
-    
-    temporal_extent_start = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
-    temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
 
-    poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
-                                 label = "Point Of Contact", required=False,
+    geographic_bounding_box = forms.CharField(label = '*' + _('Geographic Bounding Box'), widget=forms.Textarea)
+
+    temporal_extent_start = forms.DateField(required=False,label= _('Temporal Extent Start Date'), widget=forms.DateInput(attrs={"class":"date"}))
+    temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
+    title = forms.CharField(label = '*' + _('Title'), max_length=255)
+    abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea)
+
+
+    poc = forms.ModelChoiceField(empty_label = _("Person outside GeoNode (fill form)"),
+                                 label = "*" + _("Point Of Contact"), required=False,
                                  queryset = Contact.objects.exclude(user=None))
 
-    metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
-                                             label = "Metadata Author", required=False,
+    metadata_author = forms.ModelChoiceField(empty_label = _("Person outside GeoNode (fill form)"),
+                                             label = _("Metadata Author"), required=False,
                                              queryset = Contact.objects.exclude(user=None))
 
     class Meta:
         model = Layer
-        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'topic_category' ) #, 'topic_category'
+        exclude = ('owner', 'contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'topic_category' ) #, 'topic_category'
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -793,7 +798,7 @@ def mapdetail(request,mapid):
         'map': map,
         'layers': layers,
         'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
-        'customGroup': settings.CUSTOM_GROUP_NAME,
+        'customGroup': settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
         'urlsuffix':get_suffix_if_custom(map)
     }))
 
@@ -812,7 +817,7 @@ def map_share(request,mapid):
     return render_to_response("maps/mapinfopanel.html", RequestContext(request, {
         "map": map,
         'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
-        'customGroup': settings.CUSTOM_GROUP_NAME,
+        'customGroup': settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
     }))
 
 @csrf_exempt
@@ -1116,7 +1121,7 @@ def _describe_layer(request, layer):
             author_form.hidden=True
 
         #Deal with a form submission via ajax
-        if request.method == 'POST' and not layer_form.is_valid() and request.is_ajax():
+        if request.method == 'POST' and (not layer_form.is_valid() or not category_form.is_valid()) and request.is_ajax():
                 data = render_to_response("maps/layer_describe_tab.html", RequestContext(request, {
                 "layer": layer,
                 "layer_form": layer_form,
@@ -1241,7 +1246,7 @@ def layerController(request, layername):
             "metadata": metadata,
             "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
             "permissions_json": _perms_info_email_json(layer, LAYER_LEV_NAMES),
-            "customGroup": settings.CUSTOM_GROUP_NAME,
+            "customGroup": settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
             "lastmap" : request.session.get("lastmap"),
             "lastmapTitle" : request.session.get("lastmapTitle") 
@@ -1263,7 +1268,7 @@ def upload_layer(request):
                 mapid = request.GET['map']
                 map = get_object_or_404(Map,pk=mapid)
                 return render_to_response('maps/layer_upload.html',
-                                  RequestContext(request, {'map':map, 'customGroup': settings.CUSTOM_GROUP_NAME}))
+                                  RequestContext(request, {'map':map, 'customGroup': settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else ''}))
             else: #this is a tabbed panel request if no map id provided
                 return render_to_response('maps/layer_upload_tab.html',
                                   RequestContext(request))
