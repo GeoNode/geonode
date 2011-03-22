@@ -1024,13 +1024,10 @@ def _describe_layer(request, layer):
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
         layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm)
 
-    
-
 
         if request.method == "GET":
             layer_form = LayerForm(instance=layer, prefix="layer")
             category_form = LayerCategoryForm(prefix="category_choice_field", initial=topic_category.id if topic_category else None)
-
 
             #layer_form.fields["topic_category"].initial = topic_category
             if "map" in request.GET:
