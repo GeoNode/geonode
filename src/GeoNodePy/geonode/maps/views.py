@@ -1273,21 +1273,24 @@ def upload_layer(request):
                 return render_to_response('maps/layer_upload_tab.html',
                                   RequestContext(request))
     elif request.method == 'POST':
+        detail_error = ''
         try:
             logger.debug("Begin upload attempt")
-            layer, errors = _handle_layer_upload(request)
-            logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
+            layer, errors, detail_error = _handle_layer_upload(request)
+            logger.debug("_handle_layer_upload returned. layer and errors are [%s]: [%s] ([%s])", (layer, errors, detail_error))
             logger.debug("Save all attrbute names as searchable by defaul texcept geometry")
 
 
-        except:
+        except Exception, ex:
             logger.exception("_handle_layer_upload failed!")
             errors = [GENERIC_UPLOAD_ERROR]
+            detail_error = str(ex)
         
         result = {}
         if len(errors) > 0:
             result['success'] = False
             result['errors'] = errors
+            result['detail'] = detail_error
         else:
             try:
 
@@ -1550,17 +1553,21 @@ def _handle_layer_upload(request, layer=None):
         create_store = cat.create_coveragestore
         cfg = base_file
 
+    detail_error = ''
     try:
         logger.debug("Starting upload of [%s] to GeoServer...", name)
         if create_store == cat.create_pg_feature:
             logger.debug("create_store([%s], [%s], cfg, overwrite=overwrite)", settings.POSTGIS_DATASTORE, name)
             create_store(settings.POSTGIS_DATASTORE, name, cfg, overwrite=overwrite, charset=encoding)
-        else:
+        elif create_store == cat.create_featurestore:
             create_store(name, cfg, overwrite=overwrite, charset=encoding)
+        else:
+            create_store(name, cfg, overwrite=overwrite)
         logger.debug("Finished upload of [%s] to GeoServer...", name)
     except geoserver.catalog.UploadError, e:
         logger.warn("Upload failed with error: %s", str(e))
         errors.append(_("An error occurred while loading the data."))
+        detail_error = str(e)
         tmp = cat.get_store(name)
         if tmp:
             logger.info("Deleting store after failed import of [%s] into GeoServer", name)
@@ -1632,6 +1639,7 @@ def _handle_layer_upload(request, layer=None):
                 fixup_style(cat, gs_resource, request.FILES.get('sld_file'))
         except Exception, e:
             logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
+            detail_error = str(e)
             transaction.rollback()
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
@@ -1667,7 +1675,7 @@ def _handle_layer_upload(request, layer=None):
         else:
             transaction.commit()
 
-    return layer, errors
+    return layer, errors, detail_error
 
 
 
