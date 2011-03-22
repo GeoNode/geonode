@@ -56,8 +56,26 @@
 	  {% csrf_token %}
       <ul class="form" id="worldmap_describe_form_ul">
 	      {{ layer_form.as_ul }}
-      </ul>
-      <ul class="form">
+
+      <fieldset id="category_form">
+	  <legend>Category</legend>
+      <li>
+
+        {% autoescape off %}
+        {% for choice in category_form.category_choice_field.field.choices %}
+        <div>
+            <input type="radio" name="category_choice_field" value="{{choice.0}}"
+            {% ifequal category_form.initial choice.0 %}
+                checked="checked"
+            {% endifequal %}/>
+            <label for="" style="display:inline">{{choice.1}}</label>
+        </div>
+        {% endfor %}
+      {% endautoescape %}
+
+      </li>
+      </fieldset>
+
           <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Attributes</legend>
 	        {{ attribute_form.management_form }}

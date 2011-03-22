@@ -672,7 +672,7 @@ class LayerManager(models.Manager):
 class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
     title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
-    #description = models.TextField(_('Category Description'), blank=True, null=True)
+    description = models.TextField(_('Category Description'), blank=True, null=True)
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
     The date/time the object was created.
@@ -916,6 +916,7 @@ class Layer(models.Model, PermissionLevelMixin):
         csw = get_csw()
         csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
         return csw.records.get(self.uuid)
+
 
 
 
@@ -1177,7 +1178,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
 
 class LayerAttribute(models.Model):
-    layer = models.ForeignKey(Layer, blank=False, null=False, unique=False)
+    layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
     attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
     attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
