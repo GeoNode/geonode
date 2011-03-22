@@ -1,6 +1,5 @@
 {% load i18n %}
 
-
 <style type="text/css" >
     #tab {
         padding:20px;
@@ -10,52 +9,19 @@
     padding: 10px 0 0;
     }
 
-    div#tab form ul.form {
-    list-style-type: none;
-    }
+    h3{font-size:1.5em;line-height:1;margin-bottom:1em;margin-top:1em}p{margin-bottom:0.5em}strong{font-weight:bold}caption{background:#ffc}
+    th{font: bold 11px tahoma,arial,helvetica,sans-serif;}
 
-    div#tab form ul.form li {
-    margin-bottom: 1.5em;
-    clear: both;
-    }
-
-    div#tab form ul.form li label {
-    display: block;
-    font-weight: bold;
-    text-transform: capitalize;
-    }
-
-    div#tab form ul.form li input {
-    }
-
-    div#tab form ul.form ul.errorlist {
-    list-style-type: none;
-    margin: 0;
-    margin-top: 2px;
-    float: right;
-    }
-
-    div#tab form ul.form fieldset {
-    border: 1px solid #333;
-    padding: 10px;
-    margin-bottom: 10px
-    }
-
-    div#tab form ul.form fieldset legend{
-    font-weight: bold;
-    padding: 0 4px;
-    }
-
-    h2{font-size:2em;margin-bottom:0.75em}
 </style>
 
 
 <div id="tab" style="padding:20px">
-  <h2 style="font-size:2em;;margin-bottom:0.75em">  {% trans "Details for" %} {{ layer.title|default:layer.typename }} </h2>
+  <h3 style="font-size:2em;;margin-bottom:0.75em">  {% trans "Details for" %} {{ layer.title|default:layer.typename }} </h3>
   <form action="/data/{{layer.typename}}?describe" method="POST" id="worldmap_describe_form">
 	  {% csrf_token %}
       <ul class="form" id="worldmap_describe_form_ul">
 	      {{ layer_form.as_ul }}
+
 
       <fieldset id="category_form">
 	  <legend>Category</legend>
@@ -63,7 +29,7 @@
 
         {% autoescape off %}
         {% for choice in category_form.category_choice_field.field.choices %}
-        <div>
+        <div style="width:49%;float:left;padding-bottom:10px;padding-right:2px;">
             <input type="radio" name="category_choice_field" value="{{choice.0}}"
             {% ifequal category_form.initial choice.0 %}
                 checked="checked"

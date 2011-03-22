@@ -74,7 +74,7 @@
 
         {% autoescape off %}
         {% for choice in category_form.category_choice_field.field.choices %}
-        <div>
+        <div style="width:50%;float:left;padding-bottom:5px;">
             <input type="radio" name="category_choice_field" value="{{choice.0}}"
             {% ifequal category_form.initial choice.0 %}
                 checked="checked"

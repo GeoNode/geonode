@@ -97,7 +97,7 @@ class ContactForm(forms.ModelForm):
 
 class LayerCategoryChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-            return '<a href="#" onclick=\'javascript:Ext.Msg.alert("' + escape(obj.title) + '","' + escape(obj.description) + '");return false;\'>' + obj.title + '</a>'
+            return '<a href="#" onclick=\'javascript:Ext.Msg.show({title:"' + escape(obj.title) + '",msg:"' + escape(obj.description) + '",buttons: Ext.Msg.OK, minWidth: 300});return false;\'>' + obj.title + '</a>'
 
         
 
