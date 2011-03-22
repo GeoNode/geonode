@@ -147,18 +147,20 @@
 },
     {
         "fields": {
-            "title": "Farming",
+            "title": "Farming & Agriculture",
             "name": "farming",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description": "Rearing of animals or cultivation of plants. For example, resources describing irrigation, aquaculture, herding, and pests and diseases affecting crops and livestock."
         },
         "model": "maps.layercategory",
         "pk": 1
     },
     {
         "fields": {
-            "title": "Biota",
+            "title": "Ecology & Biota",
             "name": "biota",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Naturally occurring flora and fauna. For example, resources describing wildlife, biological sciences, ecology, wilderness, sea life, wetlands, and habitats."
         },
         "model": "maps.layercategory",
         "pk": 2
@@ -167,15 +169,17 @@
         "fields": {
             "title": "Boundaries",
             "name": "boundaries",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Legal land descriptions"
         },
         "model": "maps.layercategory",
         "pk": 3
     },
     {
         "fields": {
-            "title": "Climatology/Meterorology/Atmosphere",
+            "title": "Climate & Weather",
             "name": "climatologyMeteorologyAtmosphere",
+            "description": "Atmospheric processes and phenomena. For example, resources describing cloud cover, weather, atmospheric conditions, climate change, and precipitation.",
             "created_dttm": "2011-01-01"
         },
         "model": "maps.layercategory",
@@ -183,9 +187,10 @@
     },
     {
         "fields": {
-            "title": "Economy",
+            "title": "Economic Activities & Employment",
             "name": "economy",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Economic activities or employment. For example, resources describing labor, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, and exploration and exploitation of resources such as minerals, oil, and gas."
         },
         "model": "maps.layercategory",
         "pk": 5
@@ -194,61 +199,69 @@
         "fields": {
             "title": "Elevation",
             "name": "elevation",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description": "Height above or below sea level. For example, resources describing altitude, bathymetry, digital elevation models, slope, and products derived from this information."
         },
         "model": "maps.layercategory",
         "pk": 6
     },
     {
         "fields": {
-            "title": "Health",
+            "title": "Health & Human Ecology",
             "name": "health",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Health services, human ecology, and safety. For example, resources describing human disease and illness, factors affecting health, hygiene, mental and physical health, substance abuse, and health services."
         },
         "model": "maps.layercategory",
         "pk": 7
     },
     {
         "fields": {
-            "title": "Environment",
+            "title": "Environmental Resources, Conservation",
             "name": "environment",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Environmental resources, protection, and conservation. For example, resources describing pollution, waste storage and treatment, environmental impact assessment, environmental risk, and nature reserves."
+
         },
         "model": "maps.layercategory",
         "pk": 8
     },
     {
         "fields": {
-            "title": "Geoscientific Information",
+            "title": "Earth Sciences",
             "name": "geoscientificInformation",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Earth sciences. For example, resources describing geophysical features and processes, minerals, the composition, structure and origin of the earth’s rocks, earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, and erosion."
         },
         "model": "maps.layercategory",
         "pk": 9
     },
     {
         "fields": {
-            "title": "Imagery/Base Maps/Earth Cover",
+            "title": "Imagery & Base Maps",
             "name": "imageryBaseMapsEarthCover",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Base maps. For example, resources describing land cover, topographic maps, and classified and unclassified images."
         },
         "model": "maps.layercategory",
         "pk": 10
     },
     {
         "fields": {
-            "title": "Inland Waters",
+            "title": "Rivers, Streams, Lakes",
             "name": "inlandWaters",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Inland water features, drainage systems, and their characteristics. For example, resources describing rivers and glaciers, salt lakes, water use plans, dams, currents, floods, water quality, and hydrographic charts."
         },
         "model": "maps.layercategory",
         "pk": 11
     },
     {
         "fields": {
-            "title": "Location",
+            "title": "Place Locations",
             "name": "location",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "positional information and services. For example, resources describing addresses, geodetic networks, postal zones and services, control points, and place names."
         },
         "model": "maps.layercategory",
         "pk": 12
@@ -257,34 +270,38 @@
         "fields": {
             "title": "Oceans",
             "name": "oceans",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Features and characteristics of salt water bodies excluding inland waters. For example, resources describing tides, tidal waves, coastal information, and reefs."
         },
         "model": "maps.layercategory",
         "pk":13
     },
     {
         "fields": {
-            "title": "Planning/Cadastre",
+            "title": "Planning and Cadastral Data",
             "name": "planningCadastre",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Land use. For example, resources describing zoning maps, cadastral surveys, and land ownership."
         },
         "model": "maps.layercategory",
         "pk": 14
     },
     {
         "fields": {
-            "title": "Society",
+            "title": "Society & Demographics",
             "name": "society",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Characteristics of societies and cultures. For example, resources describing natural settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, crime and justice, recreational areas and activities, social impact assessments, and census information"
         },
         "model": "maps.layercategory",
         "pk": 15
     },
     {
         "fields": {
-            "title": "Structure",
+            "title": "Structures",
             "name": "structure",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Man-made construction. For example, resources describing buildings, museums, churches, factories, housing, monuments, and towers."
         },
         "model": "maps.layercategory",
         "pk": 16
@@ -293,25 +310,28 @@
         "fields": {
             "title": "Transportation",
             "name": "transportation",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Means and aids for conveying people and goods. For example, resources describing roads, airports and airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, and railways."
         },
         "model": "maps.layercategory",
         "pk": 17
     },
     {
         "fields": {
-            "title": "Utilities/Communication",
+            "title": "Utilities & Infrastructure",
             "name": "utilitiesCommunication",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : " Energy, water and waste systems, and communications infrastructure and services. For example, resources describing hydroelectricity, geothermal, solar, and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, and communication networks."
         },
         "model": "maps.layercategory",
         "pk": 18
     },
     {
         "fields": {
-            "title": "Intelligence/Military",
+            "title": "Military Bases & Activities",
             "name": "intelligenceMilitary",
-            "created_dttm": "2011-01-01"
+            "created_dttm": "2011-01-01",
+            "description" : "Military bases, structures, and activities. For example, resources describing barracks, training grounds, military transportation, and information collection."
         },
         "model": "maps.layercategory",
         "pk": 19

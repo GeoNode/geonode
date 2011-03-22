@@ -21,6 +21,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
+from django.utils.html import escape as escape
 import json
 import math
 import httplib2 
@@ -93,9 +94,33 @@ class ContactForm(forms.ModelForm):
         model = Contact
         exclude = ('user','is_org_member',)
 
-class LayerCategoryForm(forms.ModelForm):
-    class Meta:
-        model = LayerCategory        
+
+class LayerCategoryChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+            return '<a href="#" onclick=\'javascript:Ext.Msg.alert("' + escape(obj.title) + '","' + escape(obj.description) + '");return false;\'>' + obj.title + '</a>'
+
+        
+
+class LayerCategoryForm(forms.Form):
+    category_choice_field = LayerCategoryChoiceField(required=False, label = 'Category', empty_label=None,
+                               queryset = LayerCategory.objects.extra(order_by = ['title']))
+
+    
+    def clean(self):
+        cleaned_data = self.data
+        ccf_data = cleaned_data.get("category_choice_field")
+
+
+        if not ccf_data:
+            msg = u"Category is required."
+            self._errors["Layer Category"] = self.error_class([msg])
+
+
+
+
+        # Always return the full collection of cleaned data.
+        return cleaned_data
+
 
 
 class LayerAttributeForm(forms.ModelForm):
@@ -122,10 +147,10 @@ class LayerForm(forms.ModelForm):
 
     map_id = forms.CharField(widget=forms.HiddenInput(), initial='', required=False)
 
-
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"date"}
     date.widget.widgets[1].attrs = {"class":"time"}
+    
     temporal_extent_start = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
     temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
 
@@ -139,7 +164,7 @@ class LayerForm(forms.ModelForm):
 
     class Meta:
         model = Layer
-        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename') #, 'topic_category'
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'topic_category' ) #, 'topic_category'
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -993,17 +1018,24 @@ def _describe_layer(request, layer):
                     _("You are not permitted to modify this layer's metadata")})), status=401)
         
         poc = layer.poc
-        topic_category = layer.topic_category_id
+        topic_category = layer.topic_category
         metadata_author = layer.metadata_author
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
         layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm)
 
     
-        
+        logger.debug("CATEGORY:[%s]", topic_category.id)
+
         if request.method == "GET":
             layer_form = LayerForm(instance=layer, prefix="layer")
-            layer_form.fields["topic_category"].initial = topic_category
+            category_form = LayerCategoryForm(prefix="category_choice_field", initial=topic_category.id)
+
+
+
+            logger.debug("INITITAL:[%s]", category_form.initial)
+
+            #layer_form.fields["topic_category"].initial = topic_category
             if "map" in request.GET:
                 layer_form.fields["map_id"].initial = request.GET["map"]
             attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set")
@@ -1011,19 +1043,26 @@ def _describe_layer(request, layer):
 
         if request.method == "POST":
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+            category_form = LayerCategoryForm(request.POST, prefix="category_choice_field")
             attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set")
-            if layer_form.is_valid():
+
+            if layer_form.is_valid() and category_form.is_valid():
+
+                new_category = LayerCategory.objects.get(id=category_form.cleaned_data['category_choice_field'])
+
+            
                 if attribute_form.is_valid():
                     for form in attribute_form.cleaned_data:
                         la = LayerAttribute.objects.get(id=int(form['id'].id))
                         la.attribute_label = form["attribute_label"]
                         la.searchable = form["searchable"]
                         la.save()
-            
-        if request.method == "POST" and layer_form.is_valid():
+
+
                 new_poc = layer_form.cleaned_data['poc']
                 new_author = layer_form.cleaned_data['metadata_author']
-                new_category = layer_form.cleaned_data['topic_category']
+
+                logger.debug("NEW category: [%s]", new_category)
                 mapid = layer_form.cleaned_data['map_id']
                 logger.debug("map id is [%s]", mapid)
 
@@ -1090,6 +1129,7 @@ def _describe_layer(request, layer):
                 "poc_form": poc_form,
                 "author_form": author_form,
                 "attribute_form": attribute_form,
+                "category_form" : category_form,
                 "lastmap" : request.session.get("lastmap"),
                 "lastmapTitle" : request.session.get("lastmapTitle")
                 }))
@@ -1103,6 +1143,7 @@ def _describe_layer(request, layer):
             "poc_form": poc_form,
             "author_form": author_form,
             "attribute_form": attribute_form,
+            "category_form" : category_form,
             "lastmap" : request.session.get("lastmap"),
             "lastmapTitle" : request.session.get("lastmapTitle")
         }))
@@ -1114,6 +1155,7 @@ def _describe_layer(request, layer):
             "poc_form": poc_form,
             "author_form": author_form,
             "attribute_form": attribute_form,
+            "category_form" : category_form,
             "lastmap" : request.session.get("lastmap"),
             "lastmapTitle" : request.session.get("lastmapTitle")
         }))

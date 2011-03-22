@@ -167,7 +167,7 @@
 {% if layer.display_type %}<p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>{% endif %}
 {% if layer.keywords %}<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>{% endif %}
 {% if layer.edition %}<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>{% endif %}
-{% if layer.topic_category %}<p> <strong>{% trans "Topic Category" %}:</strong> {{ layer.topic_category }}</p>{% endif %}
+{% if layer.topic_category %}<p> <strong>{% trans "Category" %}:</strong> {{ layer.topic_category.title }}</p>{% endif %}
 
 {% if layer.constraints_use or layer.constraints_other %}
 <p> <strong>{% trans "Citation" %}:</strong> 
@@ -202,9 +202,11 @@
 </p>
 {% endif %}
 
-{% if layer.attribute_names %}
-<p> <strong>{% trans "Attributes" %}:</strong> 
-    {{ layer.attribute_names|join:", " }}
+{% if layer.attribute_set %}
+<p> <strong>{% trans "Attributes" %}:</strong>
+    {%  for attribute in layer.attribute_set.all %}
+    {{ attribute.attribute_label }},
+    {% endfor %}
 </p>
 {% endif %}
 
