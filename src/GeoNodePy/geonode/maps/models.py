@@ -935,15 +935,24 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
+                netloc = urlparse(dft_url).netloc
+                http.authorizations.append(
+                    httplib2.BasicAuthentication(
+                    (_user, _password),
+                    netloc,
+                    dft_url,
+                    {},
+                    None,
+                    None,
+                    http
+                    ))
                 response, body = http.request(dft_url)
-                logger.debug(body)
                 doc = XML(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
                 atts = {}
                 for n in doc.findall(path):
                     atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:
-                logger.debug("Exception occurred, returned attribute set will be empty: [%s]", str(e))
                 atts = {}
             logger.debug("Exiting attribute_names with feature atts [%s]", str(atts))
             return atts
@@ -957,6 +966,17 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
+                netloc = urlparse(dft_url).netloc
+                http.authorizations.append(
+                    httplib2.BasicAuthentication(
+                    (_user, _password),
+                    netloc,
+                    dft_url,
+                    {},
+                    None,
+                    None,
+                    http
+                    ))
                 response, body = http.request(dc_url)
                 doc = XML(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
@@ -1182,7 +1202,8 @@ class LayerAttribute(models.Model):
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
     attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
     attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
-    searchable = models.BooleanField(default=False)
+    searchable = models.BooleanField(_('Searchable?'), default=False)
+    display_order = models.IntegerField(_('Display Order'), default=1)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """

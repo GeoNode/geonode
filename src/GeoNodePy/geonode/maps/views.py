@@ -129,7 +129,9 @@ class LayerAttributeForm(forms.ModelForm):
         instance = getattr(self, 'instance', None)
         if instance and instance.attribute_type != 'xsd:string':
             self.fields['searchable'].widget.attrs['disabled'] = True
-        self.fields['attribute'].widget.attrs['readonly'] = True    
+        self.fields['attribute'].widget.attrs['readonly'] = True
+        self.fields['display_order'].widget.attrs['size'] = 3
+        self.fields['display_order'].widget.attrs['size'] = 3
 
 
     class Meta:
@@ -554,7 +556,7 @@ def set_layer_permissions(layer, perm_spec, use_email = False):
             layer.set_user_level(user, level)
             logger.debug("set level")
     else:
-        layer.get_user_levels().exclude(user__name__in = users + [layer.owner]).delete()
+        layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
         for username, level in perm_spec['users']:
             user = User.objects.get(username=username)
             layer.set_user_level(user, level)
@@ -1037,13 +1039,13 @@ def _describe_layer(request, layer):
             #layer_form.fields["topic_category"].initial = topic_category
             if "map" in request.GET:
                 layer_form.fields["map_id"].initial = request.GET["map"]
-            attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set")
+            attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
 
 
         if request.method == "POST":
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
             category_form = LayerCategoryForm(request.POST, prefix="category_choice_field")
-            attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set")
+            attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
 
             if layer_form.is_valid() and category_form.is_valid():
 
@@ -1055,6 +1057,7 @@ def _describe_layer(request, layer):
                         la = LayerAttribute.objects.get(id=int(form['id'].id))
                         la.attribute_label = form["attribute_label"]
                         la.searchable = form["searchable"]
+                        la.display_order = form["display_order"]
                         la.save()
 
 
@@ -1230,8 +1233,8 @@ def layerController(request, layername):
         return _changeLayerDefaultStyle(request,layer)
     else: 
         if not request.user.has_perm('maps.view_layer', obj=layer):
-            return HttpResponse(loader.render_to_string('401.html', 
-                RequestContext(request, {'error_message': 
+            return HttpResponse(loader.render_to_string('401.html',
+                RequestContext(request, {'error_message':
                     _("You are not permitted to view this layer")})), status=401)
         
         metadata = layer.metadata_csw()
@@ -1249,7 +1252,7 @@ def layerController(request, layername):
             "customGroup": settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
             "lastmap" : request.session.get("lastmap"),
-            "lastmapTitle" : request.session.get("lastmapTitle") 
+            "lastmapTitle" : request.session.get("lastmapTitle")
         }))
 
 
@@ -1297,23 +1300,21 @@ def upload_layer(request):
                 #Add new layer attributes if they dont already exist
                 if layer.attribute_names is not None:
                     logger.debug("Attributes are not None")
+                    iter = 1
+                    mark_searchable = True
                     for field, ftype in layer.attribute_names.iteritems():
                         if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
                             logger.debug("Field is [%s]", field)
-                            la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, attribute_type=ftype, searchable=(ftype == "xsd:string"))
+                            la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
                             la.save()
+                            if la.searchable:
+                                mark_searchable = False
+                            iter+=1
                 else:
                     logger.debug("No attributes found")
 
             except:
                     logger.debug("Attributes could not be saved")
-            logger.debug("Setting permissions for [%s] [%s]", layer, request.POST.get("permissions"))
-
-            perm_spec = json.loads(request.POST["permissions"])
-            set_layer_permissions(layer, perm_spec, True)
-            logger.debug("Set permissions for [%s] [%s]", layer, perm_spec)
-
-
 
             result['success'] = True
             result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + '?describe'
@@ -1356,7 +1357,7 @@ def _updateLayer(request, layer):
             result['errors'] = errors
         else:
 
-            original_perm = _perms_info_email(layer, LAYER_LEV_NAMES)
+
             try:
 
                 layer.set_default_permissions()
@@ -1374,21 +1375,23 @@ def _updateLayer(request, layer):
                 #Add new layer attributes if they dont already exist
                 if layer.attribute_names is not None:
                     logger.debug("Attributes are not None")
+                    iter = 1
+                    mark_searchable = True
                     for field, ftype in layer.attribute_names.iteritems():
                         if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
                             logger.debug("Field is [%s]", field)
                             las = LayerAttribute.objects.filter(layer=layer, attribute=field)
                             if len(las) == 0:
-                                la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field, attribute_type=ftype, searchable=(ftype == "xsd:string"))
+                                la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
                                 la.save()
+                                if la.searchable:
+                                    mark_searchable = False
+                                iter+=1
                 else:
                     logger.debug("No attributes found")
 
             except Exception, ex:
                     logger.debug("Attributes could not be saved:[%s]", str(ex))
-
-
-            set_layer_permissions(layer, original_perm, True)
 
             result['success'] = True
             result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
@@ -1629,16 +1632,22 @@ def _handle_layer_upload(request, layer=None):
                                                        defaults={"name": request.user.username })
                 author_contact, __ = Contact.objects.get_or_create(user=request.user,
                                                        defaults={"name": request.user.username })
-                logger.info("poc and author set to %s", poc_contact)
+                logger.info("poc and author set to [%s]", poc_contact)
                 layer.poc = poc_contact
                 layer.metadata_author = author_contact
-                logger.debug("committing DB changes for %s", typename)
+                logger.debug("committing DB changes for [%s]", typename)
                 layer.save()
-                logger.debug("Generating separate style for %s", typename)
-                layer.set_default_permissions()
+                logger.debug("Setting permissions for [%s] [%s]", typename, request.POST.get("permissions"))
+                try:
+                    perm_spec = json.loads(request.POST["permissions"])
+                    set_layer_permissions(layer, perm_spec, True)
+                except Exception, ex:
+                    logger.debug("EXCEPTION SETTING PERMISSIONS: [%s]", str(ex))
+                    layer.set_default_permissions()
+                logger.debug("Generating separate style for [%s]", typename)
                 fixup_style(cat, gs_resource, request.FILES.get('sld_file'))
         except Exception, e:
-            logger.exception("Import to Django and GeoNetwork failed: %s", str(e))
+            logger.exception("Import to Django and GeoNetwork failed: [%s]", str(e))
             detail_error = str(e)
             transaction.rollback()
             # Something went wrong, let's try and back out any changes
@@ -1825,12 +1834,14 @@ def layer_acls(request):
     if 'HTTP_AUTHORIZATION' in request.META:
         try:
             username, password = _get_basic_auth_info(request)
+            logger.debug("Try authenticating user [%s]", username)
             acl_user = authenticate(username=username, password=password)
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and 
                 username == settings.GEOSERVER_CREDENTIALS[0] and
                 password == settings.GEOSERVER_CREDENTIALS[1]):
+                #logger.debug("GS ADMIN LOGGING IN!")
                 # great, tell geoserver it's an admin.
                 result = {
                    'rw': [],
@@ -1842,7 +1853,8 @@ def layer_acls(request):
                 jsonResult = json.dumps(result)
                 #logger.debug("Returning geoserver admin acls")
                 return HttpResponse(jsonResult, mimetype="application/json")
-        except:
+        except Exception, ex:
+            logger.debug(str(ex))
             pass
         
         if acl_user is None: 
@@ -1850,7 +1862,7 @@ def layer_acls(request):
                                 status=401,
                                 mimetype="text/plain")
 
-    logger.debug("Done with authorization check, creating json response")        
+    logger.debug("Done with authorization check, creating json response")
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():
@@ -2391,7 +2403,7 @@ def searchFieldsJSON(request):
             if geoLayer.storeType == 'dataStore':
                 #searchable_fields = geoLayer.searchable_fields
                 #logger.debug('There are [%s] attributes', geoLayer.layerattribute_set.length)
-                for la in geoLayer.attribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$'):
+                for la in geoLayer.attribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$').order_by('display_order'):
                     searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
                     if la.searchable:
                         scount+=1            

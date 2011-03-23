@@ -21,7 +21,7 @@
         	if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
         		{
         			mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
-        		}        	
+        		}
 
             var titleTemplate = new Ext.Template(mapCrumb + "<span>{{ layer.title|default:layer.typename }}</span>");
 		    Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
@@ -30,12 +30,12 @@
                 proxy: "/proxy/?url=",
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
 
-                /* The URL to a REST map configuration service.  This service 
-                 * provides listing and, with an authenticated user, saving of 
+                /* The URL to a REST map configuration service.  This service
+                 * provides listing and, with an authenticated user, saving of
                  * maps on the server for sharing and editing.
                  */
                 rest: "/maps/",
-                
+
                 portalConfig: {
                     renderTo: "preview_map",
                     height: 350
@@ -82,7 +82,7 @@
                     params: {"defaultStyle" : elem.value}
                 });
             });
-            
+
             Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
                 showStyle(Ext.get(elem).prev("input").getAttribute("value"));
             });
@@ -170,7 +170,7 @@
 {% if layer.topic_category %}<p> <strong>{% trans "Category" %}:</strong> {{ layer.topic_category.title }}</p>{% endif %}
 
 {% if layer.constraints_use or layer.constraints_other %}
-<p> <strong>{% trans "Citation" %}:</strong> 
+<p> <strong>{% trans "Citation" %}:</strong>
     {{ layer.constraints_use}} {{ layer.contraints_other}}
 </p>
 {% endif %}
@@ -202,6 +202,7 @@
 </p>
 {% endif %}
 
+
 {% if layer.attribute_set %}
 <p> <strong>{% trans "Attributes" %}:</strong>
     {%  for attribute in layer.attribute_set.all %}
@@ -211,13 +212,13 @@
 {% endif %}
 
 {% if layer.supplemental_information %}
-<p> <strong>{% trans "Supplemental Information" %}:</strong> 
+<p> <strong>{% trans "Supplemental Information" %}:</strong>
     {{ layer.supplemental_information }}
 </p>
 {% endif %}
 
 {% if layer.data_quality_statement %}
-<p> <strong>{% trans "Data Quality Statement" %}:</strong> 
+<p> <strong>{% trans "Data Quality Statement" %}:</strong>
     {{ layer.data_quality_statement }}
 </p>
 {% endif %}
@@ -246,7 +247,7 @@
     <h3>{% trans "Maps Which Use This Layer" %} </h3>
     {% if layer.maps %}
         <ul>
-            {% for map in layer.maps %} 
+            {% for map in layer.maps %}
             <li> <a href="{{map.get_absolute_url}}">{{map.title}}</a> </li>
             {% endfor %}
         </ul>
@@ -262,7 +263,7 @@
         <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/>
         <span class="style-title"> {{ layer.default_style.name|title }} </span>
         <a href="{{ layer.default_style.body_href }}">SLD</a><br/>
-    {% for style in layer.styles %} 
+    {% for style in layer.styles %}
         <input type="radio" name="style" value="{{style.name}}"/>
         <span class="style-title"> {{ style.name|title }} </span>
         <a href="{{ style.body_href }}">SLD</a><br/>
@@ -274,7 +275,7 @@
         <option value="{{layer.publishing.default_style.name}}" selected="selected">
           {{layer.publishing.default_style.name|title}}
         </option>
-    {% for style in layer.styles %} 
+    {% for style in layer.styles %}
         <option value="{{style.name}}"> {{ style.name|title }} </option>
     {% endfor %}
     </select><br/>
