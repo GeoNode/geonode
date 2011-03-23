@@ -94,6 +94,11 @@ def fixup_style(cat, resource, style):
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
+            if (cat.get_style(name)):
+                iter = 1
+                while cat.get_style(name):
+                    name = name + '_c' + str(iter)
+                    iter+=1
             fg, bg, mark = _style_contexts.next()
             if style is None:
                 sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
