@@ -156,6 +156,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             outputConfig: {id: "treecontent"},
             outputTarget: "layertree"
         }, {
+            ptype: "gxp_zoomtolayerextent",
+            actionTarget: "treecontent.contextMenu"
+        }, {
             ptype: "gxp_addlayers",
             actionTarget: [{target: "treetbar", index: 0}]
         }, {
