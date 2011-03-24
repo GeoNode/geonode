@@ -123,8 +123,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     printWindowTitleText: "UT:Print Preview",
     propertiesText: "UT:Properties",
     publishActionText: 'UT:Publish Map',
-    removeLayerActionText: "UT:Remove Layer",
-    removeLayerActionTipText: "UT:Remove Layer",
     saveFailMessage: "UT: Sorry, your map could not be saved.",
     saveFailTitle: "UT: Error While Saving",
     saveMapText: "UT: Save Map",
@@ -156,6 +154,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }, {
             ptype: "gxp_addlayers",
             actionTarget: {target: "treetbar", index: 0}
+        }, {
+            ptype: "gxp_removelayer",
+            actionTarget: {target: "treetbar", index: 1}
         }];
 
         this.popupCache = {};
@@ -476,21 +477,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             return getRecordFromNode(node);
         };
         
-        var removeLayerAction = new Ext.Action({
-            text: this.removeLayerActionText,
-            iconCls: "icon-removelayers",
-            disabled: true,
-            tooltip: this.removeLayerActionTipText,
-            handler: function() {
-                var record = getSelectedLayerRecord();
-                if(record) {
-                    this.mapPanel.layers.remove(record);
-                    removeLayerAction.disable();
-                }
-            },
-            scope: this
-        });
-
         var treeRoot = new Ext.tree.TreeNode({
             text: "Layers",
             expanded: true,
@@ -656,11 +642,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 var count = this.mapPanel.layers.queryBy(function(r) {
                     return !(r.getLayer() instanceof OpenLayers.Layer.Vector);
                 }).getCount();
-                if(count > 1) {
-                    removeLayerAction.enable();
-                } else {
-                    removeLayerAction.disable();
-                }
                 var record = getRecordFromNode(node);
                 if (record.get("properties")) {
                     showPropertiesAction.enable();                    
@@ -668,7 +649,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     showPropertiesAction.disable();
                 }
             } else {
-                removeLayerAction.disable();
                 showPropertiesAction.disable();
             }
         };
@@ -721,7 +701,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         },
                         scope: this
                     },
-                    removeLayerAction,
                     showPropertiesAction,
                     showStylesAction
                 ]
@@ -735,7 +714,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             items: [layerTree],
             tbar: {
                 id: 'treetbar', items: [
-                    Ext.apply(new Ext.Button(removeLayerAction), {text: ""}),
                     Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
                     Ext.apply(new Ext.Button(showStylesAction), {text: ""})
                 ]
@@ -823,7 +801,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
                 "show": function() {
                     // TODO disable tree top toolbar (AddLayers etc.)
-                    removeLayerAction.disable();
                     layerTree.getSelectionModel().un(
                         "beforeselect", updateLayerActions, this);
                 },
