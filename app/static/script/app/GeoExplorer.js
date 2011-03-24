@@ -152,11 +152,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ptype: "gxp_zoomtoextent",
             actionTarget: {target: "paneltbar", index: 8}
         }, {
+            ptype: "gxp_layertree",
+            outputConfig: {id: "treecontent"},
+            outputTarget: "layertree"
+        }, {
             ptype: "gxp_addlayers",
-            actionTarget: {target: "treetbar", index: 0}
+            actionTarget: [{target: "treetbar", index: 0}]
         }, {
             ptype: "gxp_removelayer",
-            actionTarget: {target: "treetbar", index: 1}
+            actionTarget: [
+                {target: "treetbar", index: 1},
+                "treecontent.contextMenu"
+            ]
         }];
 
         this.popupCache = {};
@@ -708,10 +715,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         
         var layersContainer = new Ext.Panel({
+            id: "layertree",
             autoScroll: true,
             border: false,
             title: this.layersContainerText,
-            items: [layerTree],
             tbar: {
                 id: 'treetbar', items: [
                     Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
