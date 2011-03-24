@@ -1614,6 +1614,8 @@ def _handle_layer_upload(request, layer=None):
 
             if valid_bbox:
                 typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+                csw_record = str(uuid.uuid4())
+                logger.debug("CSW: [%s]", csw_record)
                 logger.info("Got GeoServer info for %s, creating Django record", typename)
 
                 # if we created a new store, create a new layer
@@ -1624,7 +1626,7 @@ def _handle_layer_upload(request, layer=None):
                                              workspace=gs_resource.store.workspace.name,
                                              title = request.POST.get('layer_title') or gs_resource.title or gs_resource.name,
                                              abstract = request.POST.get('abstract') or "",
-                                             uuid=str(uuid.uuid4()),
+                                             uuid=csw_record,
                                              owner=request.user
                                            )
                 # A user without a profile might be uploading this
@@ -1649,6 +1651,8 @@ def _handle_layer_upload(request, layer=None):
         except Exception, e:
             logger.exception("Import to Django and GeoNetwork failed: [%s]", str(e))
             detail_error = str(e)
+
+
             transaction.rollback()
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
@@ -1656,13 +1660,17 @@ def _handle_layer_upload(request, layer=None):
                 gs_layer = cat.get_layer(gs_resource.name)
                 store = gs_resource.store
                 try:
+                    logger.warning('delete gs_layer')
                     cat.delete(gs_layer)
                 except:
+                    logger.warning('delete gs_layer FAIL')
                     pass
 
                 try:
+                    logger.warning('delete gs_resource')
                     cat.delete(gs_resource)
                 except:
+                    logger.warning('delete gs_resource FAIL')
                     pass
 
                 if not settings.POSTGIS_DATASTORE:
@@ -1673,8 +1681,10 @@ def _handle_layer_upload(request, layer=None):
             if csw_record is not None:
                 logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
                 try:
-                    gn.delete(csw_record)
-                except:
+                    gn = Layer.objects.gn_catalog
+                    gn.delete_layer(csw_record)
+                except Exception, ex:
+                    logger.warning('delete csw FAIL: [%s]', str(ex))
                     pass
             # set layer to None, but we'll rely on db transactions instead
             # of a manual delete to keep it out of the db
@@ -1684,7 +1694,7 @@ def _handle_layer_upload(request, layer=None):
         else:
             transaction.commit()
 
-    return layer, errors, detail_error
+    return layer, errors, escape(detail_error)
 
 
 
@@ -1834,7 +1844,6 @@ def layer_acls(request):
     if 'HTTP_AUTHORIZATION' in request.META:
         try:
             username, password = _get_basic_auth_info(request)
-            logger.debug("Try authenticating user [%s]", username)
             acl_user = authenticate(username=username, password=password)
 
             # Nope, is it the special geoserver user?
