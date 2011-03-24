@@ -160,6 +160,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             actionTarget: "treecontent.contextMenu"
         }, {
             ptype: "gxp_addlayers",
+            //TODO use GeoExplorer.CapabilitiesRowExpander
             actionTarget: [{target: "treetbar", index: 0}]
         }, {
             ptype: "gxp_removelayer",
@@ -471,102 +472,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
         });
 
-        var getRecordFromNode = function(node) {
-            if(node && node.layer) {
-                var layer = node.layer;
-                var store = node.layerStore;
-                record = store.getAt(store.findBy(function(r) {
-                    return r.getLayer() === layer;
-                }));
-            }
-            return record;
-        };
-
-        var getSelectedLayerRecord = function() {
-            var node = layerTree.getSelectionModel().getSelectedNode();
-            return getRecordFromNode(node);
-        };
-        
-        var treeRoot = new Ext.tree.TreeNode({
-            text: "Layers",
-            expanded: true,
-            isTarget: false,
-            allowDrop: false
-        });
-        treeRoot.appendChild(new GeoExt.tree.LayerContainer({
-            text: this.layerContainerText,
-            iconCls: "gx-folder",
-            expanded: true,
-            loader: new GeoExt.tree.LayerLoader({
-                store: this.mapPanel.layers,
-                filter: function(record) {
-                    return !record.get("group") &&
-                        record.getLayer().displayInLayerSwitcher == true;
-                },
-                createNode: function(attr) {
-                    var layer = attr.layer;
-                    var store = attr.layerStore;
-                    if (layer && store) {
-                        var record = store.getAt(store.findBy(function(r) {
-                            return r.getLayer() === layer;
-                        }));
-                        if (record && !record.get("queryable")) {
-                            attr.iconCls = "gx-tree-rasterlayer-icon";
-                        }
-                    }
-                    return GeoExt.tree.LayerLoader.prototype.createNode.apply(this, [attr]);
-                }
-            }),
-            singleClickExpand: true,
-            allowDrag: false,
-            listeners: {
-                append: function(tree, node) {
-                    node.expand();
-                }
-            }
-        }));
-        
-        treeRoot.appendChild(new GeoExt.tree.LayerContainer({
-            text: this.backgroundContainerText,
-            iconCls: "gx-folder",
-            expanded: true,
-            group: "background",
-            loader: new GeoExt.tree.LayerLoader({
-                baseAttrs: {checkedGroup: "background"},
-                store: this.mapPanel.layers,
-                filter: function(record) {
-                    return record.get("group") === "background" &&
-                        record.getLayer().displayInLayerSwitcher == true;
-                },
-                createNode: function(attr) {
-                    var layer = attr.layer;
-                    var store = attr.layerStore;
-                    if (layer && store) {
-                        var record = store.getAt(store.findBy(function(r) {
-                            return r.getLayer() === layer;
-                        }));
-                        if (record) {
-                            if (!record.get("queryable")) {
-                                attr.iconCls = "gx-tree-rasterlayer-icon";
-                            }
-                            if (record.get("fixed")) {
-                                attr.allowDrag = false;
-                            }
-                        }
-                    }
-                    return GeoExt.tree.LayerLoader.prototype.createNode.apply(this, arguments);
-                }
-            }),
-            singleClickExpand: true,
-            allowDrag: false,
-            listeners: {
-                append: function(tree, node) {
-                    node.expand();
-                }
-            }
-        }));
-        
         createPropertiesDialog = function() {
+            //TODO remove custom styles dialog
             var node = layerTree.getSelectionModel().getSelectedNode();
             if (node && node.layer) {
                 var layer = node.layer;
@@ -646,12 +553,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope: this
         });
 
+        var getRecordFromNode = function(node) {
+            if(node && node.layer) {
+                var layer = node.layer;
+                var store = node.layerStore;
+                record = store.getAt(store.findBy(function(r) {
+                    return r.getLayer() === layer;
+                }));
+            }
+            return record;
+        };
+
         var updateLayerActions = function(sel, node) {
             if(node && node.layer) {
-                // allow removal if more than one non-vector layer
-                var count = this.mapPanel.layers.queryBy(function(r) {
-                    return !(r.getLayer() instanceof OpenLayers.Layer.Vector);
-                }).getCount();
                 var record = getRecordFromNode(node);
                 if (record.get("properties")) {
                     showPropertiesAction.enable();                    
@@ -663,60 +577,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         };
 
-        var layerTree = new Ext.tree.TreePanel({
-            root: treeRoot,
-            rootVisible: false,
-            border: false,
-            enableDD: true,
-            selModel: new Ext.tree.DefaultSelectionModel({
-                listeners: {
-                    beforeselect: updateLayerActions,
-                    scope: this
-                }
-            }),
-            listeners: {
-                contextmenu: function(node, e) {
-                    if(node && node.layer) {
-                        node.select();
-                        var c = node.getOwnerTree().contextMenu;
-                        c.contextNode = node;
-                        c.showAt(e.getXY());
-                    }
-                },
-                beforemovenode: function(tree, node, oldParent, newParent, index) {
-                    // change the group when moving to a new container
-                    if(oldParent !== newParent) {
-                        var store = newParent.loader.store;
-                        var index = store.findBy(function(r) {
-                            return r.getLayer() === node.layer;
-                        });
-                        var record = store.getAt(index);
-                        record.set("group", newParent.attributes.group);
-                    }
-                },                
-                scope: this
-            },
-            contextMenu: new Ext.menu.Menu({
-                items: [
-                    {
-                        text: this.zoomToLayerExtentText,
-                        iconCls: "icon-zoom-to",
-                        handler: function() {
-                            var node = layerTree.getSelectionModel().getSelectedNode();
-                            if(node && node.layer) {
-                                var map = this.mapPanel.map;
-                                var extent = node.layer.restrictedExtent || map.maxExtent;
-                                map.zoomToExtent(extent, true);
-                            }
-                        },
-                        scope: this
-                    },
-                    showPropertiesAction,
-                    showStylesAction
-                ]
-            })
-        });
-        
         var layersContainer = new Ext.Panel({
             id: "layertree",
             autoScroll: true,
@@ -741,6 +601,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             defaults: {cls: 'legend-item'}
         });
 
+        var layerTree;
         this.on("ready", function(){
             var startSourceId = null;
             for (var id in this.layerSources) {
@@ -766,6 +627,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     addLayers.showCapabilitiesGrid();
                 }
             }
+
+            // add custom tree contextmenu items
+            layerTree = Ext.getCmp("treecontent");
+            layerTree.contextMenu.add([
+                showPropertiesAction,
+                showStylesAction
+            ]); 
+            layerTree.getSelectionModel().on({
+                "selectionchange": updateLayerActions
+            });
         }, this);
 
         var layersTabPanel = new Ext.TabPanel({
@@ -811,14 +682,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
                 "show": function() {
                     // TODO disable tree top toolbar (AddLayers etc.)
-                    layerTree.getSelectionModel().un(
-                        "beforeselect", updateLayerActions, this);
+                    // TODO disable tree selection
                 },
                 "hide": function() {
                     // TODO enable tree top toolbar (AddLayers etc.)
+                    // TODO enable tree selection
                     updateLayerActions();
-                    layerTree.getSelectionModel().on(
-                        "beforeselect", updateLayerActions, this);
                 }
             }
         });
@@ -876,6 +745,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *      only item.
      */
     createStylesPanel: function(options) {
+        //TODO use gxp component
         var layer = options.layerRecord.getLayer();
 
         var stylesPanel, stylesDialog;
