@@ -73,16 +73,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     popupCache: null,
     
-    /** private: property[propDlgCache]
-     *  ``Object``
-     */
-    propDlgCache: null,
-    
-    /** private: property[stylesDlgCache]
-     *  ``Object``
-     */
-    stylesDlgCache: null,
-    
     /** private: property[busyMask]
      *  ``Ext.LoadMask``
      */
@@ -101,10 +91,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     heightLabel: 'UT: Height',
     largeSizeLabel: 'UT:Large',
     layerContainerText: "UT:Map Layers",
-    layerPropertiesText: 'UT: Layer Properties',
-    layerPropertiesTipText: 'UT: Change layer format and style',
-    layerStylesText: 'UT:Edit Styles',
-    layerStylesTipText: 'UT:Edit layer styles',
     layerSelectionLabel: "UT:View available data from:",
     layersContainerText: "UT:Data",
     layersPanelText: "UT:Layers",
@@ -161,18 +147,23 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }, {
             ptype: "gxp_addlayers",
             //TODO use GeoExplorer.CapabilitiesRowExpander
-            actionTarget: [{target: "treetbar", index: 0}]
+            actionTarget: "treetbar"
         }, {
             ptype: "gxp_removelayer",
-            actionTarget: [
-                {target: "treetbar", index: 1},
-                "treecontent.contextMenu"
-            ]
+            actionTarget: ["treetbar", "treecontent.contextMenu"]
+        }, {
+            ptype: "gxp_layerproperties",
+            layerPanelConfig: {
+                "gxp_wmslayerpanel": {rasterStyling: true}
+            },
+            actionTarget: ["treetbar", "treecontent.contextMenu"]
+        }, {
+            ptype: "gxp_styler",
+            rasterStyling: true,
+            actionTarget: ["treetbar", "treecontent.contextMenu"]
         }];
 
         this.popupCache = {};
-        this.propDlgCache = {};
-        this.stylesDlgCache = {};
         // add any custom application events
         this.addEvents(
             /**
@@ -202,6 +193,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 // use django's /geoserver endpoint when talking to the local
                 // GeoServer's RESTconfig API
                 var url = options.url.replace(this.urlPortRegEx, "$1/");
+                if (url.indexOf(this.localGeoServerBaseUrl) == 0) {
+                    // replace local GeoServer url with /geoserver/
+                    options.url = url.replace(
+                        new RegExp("^" + this.localGeoServerBaseUrl),
+                        "/geoserver/"
+                    );
+                    return;
+                }
                 var localUrl = this.localGeoServerBaseUrl.replace(
                     this.urlPortRegEx, "$1/");
                 if(url.indexOf(localUrl + "rest/") === 0) {
@@ -223,7 +222,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             "requestexception": function(conn, response, options) {
                 if(options.failure) {
                     // exceptions are handled elsewhere
-               } else {
+                } else {
                     this.busyMask && this.busyMask.hide();
                     var url = options.url;
                     if (response.status == 401 && url.indexOf("http" != 0) &&
@@ -301,20 +300,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         win.show();
                         var form = win.items.get(0);
                         form.items.get(0).focus(false, 100);
-                    } else {
+                    } else if (response.status != 405 && url != "/geoserver/rest/styles") {
+                        // 405 from /rest/styles is ok because we use it to
+                        // test whether we're authenticated or not
                         this.displayXHRTrouble(response);
                     }
                 }
             },
             scope: this
         });
-        
-        // global beforeunload handler
-        window.onbeforeunload = (function() {
-            if (this.fireEvent("beforeunload") === false) {
-                return "If you leave this page, unsaved changes will be lost.";
-            }
-        }).bind(this);
         
         // register the color manager with every color field
         Ext.util.Observable.observeClass(gxp.form.ColorField);
@@ -325,6 +319,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         });
 
+        // global beforeunload handler
+        window.onbeforeunload = (function() {
+            if (this.fireEvent("beforeunload") === false) {
+                return "If you leave this page, unsaved changes will be lost.";
+            }
+        }).bind(this);
+        
         // limit combo boxes to the window they belong to - fixes issues with
         // list shadow covering list items
         Ext.form.ComboBox.prototype.getListParent = function() {
@@ -335,26 +336,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // without using syncShadow on the window
         Ext.Window.prototype.shadow = false;
         
-        // set SLD defaults for symbolizer
-        OpenLayers.Renderer.defaultSymbolizer = {
-            fillColor: "#808080",
-            fillOpacity: 1,
-            strokeColor: "#000000",
-            strokeOpacity: 1,
-            strokeWidth: 1,
-            strokeDashstyle: "solid",
-            pointRadius: 3,
-            graphicName: "square",
-            fontColor: "#000000",
-            fontSize: 10,
-            haloColor: "#FFFFFF",
-            haloOpacity: 1,
-            haloRadius: 1
-        };
-        
-        // set maxGetUrlLength to avoid non-compliant GET urls for WMS GetMap
-        OpenLayers.Tile.Image.prototype.maxGetUrlLength = 2048;
-
         if (!config.map) {
             config.map = {};
         }
@@ -466,91 +447,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 "add": function() {this.modified |= 1;},
                 "remove": function(store, rec) {
                     this.modified |= 1;
-                    delete this.stylesDlgCache[rec.getLayer().id];
                 },
                 scope: this
             });
-        });
-
-        createPropertiesDialog = function() {
-            //TODO remove custom styles dialog
-            var node = layerTree.getSelectionModel().getSelectedNode();
-            if (node && node.layer) {
-                var layer = node.layer;
-                var store = node.layerStore;
-                var record = store.getAt(store.findBy(function(record){
-                    return record.getLayer() === layer;
-                }));
-                var backupParams = Ext.apply({}, record.getLayer().params);
-                var prop = this.propDlgCache[layer.id];
-                if (!prop) {
-                    prop = this.propDlgCache[layer.id] = new Ext.Window({
-                        title: "Properties: " + record.getLayer().name,
-                        width: 280,
-                        autoHeight: true,
-                        closeAction: "hide",
-                        items: [{
-                            xtype: "gxp_wmslayerpanel",
-                            autoHeight: true,
-                            layerRecord: record,
-                            defaults: {
-                                autoHeight: true,
-                                hideMode: "offsets"
-                            },
-                            listeners: {
-                                "change": function() {this.modified |= 1;},
-                                scope: this
-                            }
-                        }]
-                    });
-                    // disable the "About" tab's fields to indicate that they
-                    // are read-only
-                    //TODO WMSLayerPanel should be easier to configure for this
-                    prop.items.get(0).items.get(0).cascade(function(i) {
-                        i instanceof Ext.form.Field && i.setDisabled(true);
-                    });
-                    var stylesPanel = this.createStylesPanel({
-                        layerRecord: record
-                    });
-                    stylesPanel.items.get(0).on({
-                        "styleselected": function() {this.modified |= 1;},
-                        "modified": function() {this.modified |= 2;},
-                        scope: this
-                    });
-                    stylesPanel.setTitle("Styles");
-                    // add styles tab
-                    prop.items.get(0).add(stylesPanel)
-                }
-                prop.show();
-            }
-        };
-
-        var showPropertiesAction = new Ext.Action({
-            text: this.layerPropertiesText,
-            iconCls: "icon-layerproperties",
-            disabled: true,
-            tooltip: this.layerPropertiesTipText,
-            handler: createPropertiesDialog.createSequence(function() {
-                var node = layerTree.getSelectionModel().getSelectedNode();
-                this.propDlgCache[node.layer.id].items.get(0).setActiveTab(1);
-            }, this),
-            scope: this,
-            listeners: {
-                "enable": function() {showStylesAction.enable()},
-                "disable": function() {showStylesAction.disable()}
-            }
-        });
-        
-        var showStylesAction = new Ext.Action({
-            text: this.layerStylesText,
-            iconCls: "icon-layerstyles",
-            disabled: true,
-            tooltip: this.layerStylesTipText,
-            handler: createPropertiesDialog.createSequence(function() {
-                var node = layerTree.getSelectionModel().getSelectedNode();
-                this.propDlgCache[node.layer.id].items.get(0).setActiveTab(2);
-            }, this),
-            scope: this
         });
 
         var getRecordFromNode = function(node) {
@@ -564,29 +463,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             return record;
         };
 
-        var updateLayerActions = function(sel, node) {
-            if(node && node.layer) {
-                var record = getRecordFromNode(node);
-                if (record.get("properties")) {
-                    showPropertiesAction.enable();                    
-                } else {
-                    showPropertiesAction.disable();
-                }
-            } else {
-                showPropertiesAction.disable();
-            }
-        };
-
         var layersContainer = new Ext.Panel({
             id: "layertree",
             autoScroll: true,
             border: false,
             title: this.layersContainerText,
             tbar: {
-                id: 'treetbar', items: [
-                    Ext.apply(new Ext.Button(showPropertiesAction), {text: ""}),
-                    Ext.apply(new Ext.Button(showStylesAction), {text: ""})
-                ]
+                id: 'treetbar'
             }
         });
 
@@ -606,12 +489,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             var startSourceId = null;
             for (var id in this.layerSources) {
                 source = this.layerSources[id];
-                    if (source.store && source instanceof gxp.plugins.WMSSource &&
-                        source.url.replace(this.urlPortRegEx, "$1/").indexOf(
-                        this.localGeoServerBaseUrl.replace(
-                            this.urlPortRegEx, "$1/")) === 0) {
-                        startSourceId = id;
-                    }
+                if (source.store && source instanceof gxp.plugins.WMSSource &&
+                                source.url.indexOf("/geoserver/wms" === 0)) {
+                    startSourceId = id;
+                }
             }
             // find the add layers plugin
             var addLayers = null;
@@ -630,13 +511,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
             // add custom tree contextmenu items
             layerTree = Ext.getCmp("treecontent");
-            layerTree.contextMenu.add([
-                showPropertiesAction,
-                showStylesAction
-            ]); 
-            layerTree.getSelectionModel().on({
-                "selectionchange": updateLayerActions
-            });
         }, this);
 
         var layersTabPanel = new Ext.TabPanel({
@@ -687,7 +561,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 "hide": function() {
                     // TODO enable tree top toolbar (AddLayers etc.)
                     // TODO enable tree selection
-                    updateLayerActions();
                 }
             }
         });
@@ -736,141 +609,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         GeoExplorer.superclass.initPortal.apply(this, arguments);
     },
     
-    /** api: method[createStylesPanel]
-     *  :param options: ``Object`` Options for the :class:`gxp.WMSStylesDialog`.
-     *      Supported options are ``layerRecord``, ``styleName``, ``editable``
-     *      and ``listeners`` (except "ready", "modified" and "styleselected"
-     *      listeners)
-     *  :return: ``Ext.Panel`` A panel with a :class:`gxp.WMSStylesDialog` as
-     *      only item.
-     */
-    createStylesPanel: function(options) {
-        //TODO use gxp component
-        var layer = options.layerRecord.getLayer();
-
-        var stylesPanel, stylesDialog;
-        var createStylesDialog = function() {
-            if (stylesPanel) {
-                stylesDialog.destroy();
-                stylesPanel.getFooterToolbar().items.each(function(i) {
-                    i.disable();
-                });
-            }
-            var modified = false;
-            stylesDialog = this.stylesDlgCache[layer.id] =
-                                            new gxp.WMSStylesDialog(Ext.apply({
-                style: "padding: 10px 10px 0 10px;",
-                editable: layer.url.replace(
-                    this.urlPortRegEx, "$1/").indexOf(
-                    this.localGeoServerBaseUrl.replace(
-                    this.urlPortRegEx, "$1/")) === 0,
-                plugins: [{
-                    ptype: "gxp_geoserverstylewriter",
-                    baseUrl: layerUrl.split(
-                        "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
-                }, {
-                    ptype: "gxp_wmsrasterstylesdialog"
-                }],
-                autoScroll: true,
-                listeners: Ext.apply(options.listeners || {}, {
-                    "ready": function() {
-                        // we don't want the Cancel and Save buttons
-                        // if we cannot edit styles
-                        stylesDialog.editable === false &&
-                            stylesPanel.getFooterToolbar().hide();
-                    },
-                    "modified": function(cmp, name) {
-                        // enable the cancel and save button
-                        stylesPanel.buttons[0].enable();
-                        stylesPanel.buttons[1].enable();
-                        // instant style preview
-                        layer.mergeNewParams({
-                            "STYLES": name,
-                            "SLD_BODY": cmp.createSLD({userStyles: [name]})
-                        });
-                        modified = true;
-                    },
-                    "styleselected": function(cmp, name) {
-                        // enable the cancel button
-                        stylesPanel.buttons[0].enable();
-                        layer.mergeNewParams({
-                            "STYLES": name,
-                            "SLD_BODY": modified ?
-                                cmp.createSLD({userStyles: [name]}) : null
-                        });
-                    },
-                    "saved": function() {
-                        this.busyMask.hide();
-                        this.modified ^= this.modified & 2;
-                        var rec = stylesDialog.selectedStyle;
-                        var styleName = rec.get("userStyle").isDefault ?
-                            "" : rec.get("name");
-                        if (options.applySelectedStyle === true ||
-                                    styleName === initialStyle ||
-                                    rec.get("name") === initialStyle) {
-                            layer.mergeNewParams({
-                                "STYLES": styleName,
-                                "SLD_BODY": null,
-                                "_dc": Math.random()
-                            });
-                        }
-                        stylesPanel.ownerCt instanceof Ext.Window ?
-                            stylesPanel.ownerCt.close() : 
-                            createStylesDialog();
-                    },
-                    scope: this
-                })
-            }, options));
-            if (stylesPanel) {
-                stylesPanel.add(stylesDialog);
-                stylesPanel.doLayout();
-            }
-        }.bind(this);
-        
-        var layerUrl = layer.url;
-        
-        // remember the layer's current style
-        var initialStyle = layer.params.STYLES;
-
-        createStylesDialog();
-        stylesPanel = new Ext.Panel({
-            autoHeight: true,
-            border: false,
-            items: stylesDialog,
-            buttons: [{
-                text: "Cancel",
-                disabled: true,
-                handler: function() {
-                    layer.mergeNewParams({
-                        "STYLES": initialStyle,
-                        "SLD_BODY": null
-                    });
-                    stylesPanel.ownerCt instanceof Ext.Window ?
-                        stylesPanel.ownerCt.close() :
-                        createStylesDialog();
-                },
-                scope: this
-            }, {
-                text: "Save",
-                disabled: true,
-                handler: function() {
-                    this.busyMask = new Ext.LoadMask(stylesPanel.el,
-                        {msg: "Applying style changes..."});
-                    this.busyMask.show();
-                    stylesDialog.saveStyles();
-                },
-                scope: this
-            }],
-            listeners: {
-                "added": function(cmp, ownerCt) {
-                    ownerCt instanceof Ext.Window &&
-                        cmp.buttons[0].enable();
-                }
-            }
-        });
-        return stylesPanel;
-    },
-
     /** private: method[createMapOverlay]
      * Builds the :class:`Ext.Panel` containing components to be overlaid on the
      * map, setting up the special configuration for its layout and 
@@ -1224,11 +962,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *  any configuration before applyConfig is called.
      */
     save: function(as){
-        // save unsaved styles first
-        for (var id in this.stylesDlgCache) {
-            this.stylesDlgCache[id].saveStyles();
-        }
-        
         var config = this.getState();
         
         if (!this.mapID || as) {
