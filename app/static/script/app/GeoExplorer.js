@@ -310,7 +310,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope: this
         });
         
-        // register the color manager with every color field
+        // register the color manager with every color field, for Styler
         Ext.util.Observable.observeClass(gxp.form.ColorField);
         gxp.form.ColorField.on({
             render: function(field) {
@@ -452,18 +452,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
         });
 
-        var getRecordFromNode = function(node) {
-            if(node && node.layer) {
-                var layer = node.layer;
-                var store = node.layerStore;
-                record = store.getAt(store.findBy(function(r) {
-                    return r.getLayer() === layer;
-                }));
-            }
-            return record;
-        };
-
-        var layersContainer = new Ext.Panel({
+       var layersContainer = new Ext.Panel({
             id: "layertree",
             autoScroll: true,
             border: false,
