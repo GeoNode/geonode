@@ -590,7 +590,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     items: [
                         this.mapPanelContainer,
                         westPanel
-                    ]
+                    ],
+                    ref: "../../main"
                 }
             }
         ];
@@ -720,7 +721,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             autoWidth: true,
                             limitScales: true,
                             map: {
-                                theme: null,
                                 controls: [
                                     new OpenLayers.Control.Navigation({
                                         zoomWheelEnabled: false,
