@@ -1415,6 +1415,63 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         
         
+        // create a get feature info control
+        var info = {controls: []};
+        var infoButton = new Ext.Button({
+		tooltip: this.infoButtonText,
+            iconCls: "icon-getfeatureinfo",
+            toggleGroup: toolGroup,
+            enableToggle: true,
+            allowDepress: false,
+            toggleHandler: function(button, pressed) {
+                for (var i = 0, len = info.controls.length; i < len; i++){
+                    if(pressed) {
+                        info.controls[i].activate();
+                    } else {
+                        info.controls[i].deactivate();
+                    }
+                }
+            }
+        });
+
+        var updateInfo = function() {
+            var queryableLayers = this.mapPanel.layers.queryBy(function(x){
+                return x.get("queryable");
+            });
+
+            var map = this.mapPanel.map;
+            var control;
+            for (var i = 0, len = info.controls.length; i < len; i++){
+                control = info.controls[i];
+                control.deactivate();  // TODO: remove when http://trac.openlayers.org/ticket/2130 is closed
+                control.destroy();
+            }
+
+            info.controls = [];
+            queryableLayers.each(function(x){
+                var control = new OpenLayers.Control.WMSGetFeatureInfo({
+                    url: x.getLayer().url,
+                    queryVisible: true,
+                    layers: [x.getLayer()],
+                    eventListeners: {
+                        getfeatureinfo: function(evt) {
+                            this.displayPopup(evt, x.get("title") || x.get("name"));
+                        },
+                        scope: this
+                    }
+                });
+                map.addControl(control);
+                info.controls.push(control);
+                if(infoButton.pressed) {
+                    control.activate();
+                }
+            }, this);
+        };
+
+        this.mapPanel.layers.on("update", updateInfo, this);
+        this.mapPanel.layers.on("add", updateInfo, this);
+        this.mapPanel.layers.on("remove", updateInfo, this);
+
         // create split button for measure controls
         var activeIndex = 0;
         var measureSplit = new Ext.SplitButton({
