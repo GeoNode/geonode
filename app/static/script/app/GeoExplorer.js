@@ -127,42 +127,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     zoomToLayerExtentText: "UT:Zoom to Layer Extent",
 
     constructor: function(config) {
-
-        config.tools = [{
-            ptype: "gxp_zoom",
-            actionTarget: {target: "paneltbar", index: 4}
-        }, {
-            ptype: "gxp_navigationhistory",
-            actionTarget: {target: "paneltbar", index: 6}
-        }, {
-            ptype: "gxp_zoomtoextent",
-            actionTarget: {target: "paneltbar", index: 8}
-        }, {
-            ptype: "gxp_layertree",
-            outputConfig: {id: "treecontent"},
-            outputTarget: "layertree"
-        }, {
-            ptype: "gxp_zoomtolayerextent",
-            actionTarget: "treecontent.contextMenu"
-        }, {
-            ptype: "gxp_addlayers",
-            //TODO use GeoExplorer.CapabilitiesRowExpander
-            actionTarget: "treetbar"
-        }, {
-            ptype: "gxp_removelayer",
-            actionTarget: ["treetbar", "treecontent.contextMenu"]
-        }, {
-            ptype: "gxp_layerproperties",
-            layerPanelConfig: {
-                "gxp_wmslayerpanel": {rasterStyling: true}
-            },
-            actionTarget: ["treetbar", "treecontent.contextMenu"]
-        }, {
-            ptype: "gxp_styler",
-            rasterStyling: true,
-            actionTarget: ["treetbar", "treecontent.contextMenu"]
-        }];
-
         this.popupCache = {};
         // add any custom application events
         this.addEvents(
@@ -376,6 +340,44 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         });
+    },
+    
+    loadConfig: function(config) {
+        config.tools = (config.tools || []).concat({
+            ptype: "gxp_zoom",
+            actionTarget: {target: "paneltbar", index: 4}
+        }, {
+            ptype: "gxp_navigationhistory",
+            actionTarget: {target: "paneltbar", index: 6}
+        }, {
+            ptype: "gxp_zoomtoextent",
+            actionTarget: {target: "paneltbar", index: 8}
+        }, {
+            ptype: "gxp_layertree",
+            outputConfig: {id: "treecontent"},
+            outputTarget: "layertree"
+        }, {
+            ptype: "gxp_zoomtolayerextent",
+            actionTarget: "treecontent.contextMenu"
+        }, {
+            ptype: "gxp_addlayers",
+            //TODO use GeoExplorer.CapabilitiesRowExpander
+            actionTarget: "treetbar"
+        }, {
+            ptype: "gxp_removelayer",
+            actionTarget: ["treetbar", "treecontent.contextMenu"]
+        }, {
+            ptype: "gxp_layerproperties",
+            layerPanelConfig: {
+                "gxp_wmslayerpanel": {rasterStyling: true}
+            },
+            actionTarget: ["treetbar", "treecontent.contextMenu"]
+        }, {
+            ptype: "gxp_styler",
+            rasterStyling: true,
+            actionTarget: ["treetbar", "treecontent.contextMenu"]
+        });
+        GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
     
     initMapPanel: function() {
