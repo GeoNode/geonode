@@ -193,21 +193,23 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 // use django's /geoserver endpoint when talking to the local
                 // GeoServer's RESTconfig API
                 var url = options.url.replace(this.urlPortRegEx, "$1/");
-                if (url.indexOf(this.localGeoServerBaseUrl) == 0) {
-                    // replace local GeoServer url with /geoserver/
-                    options.url = url.replace(
-                        new RegExp("^" + this.localGeoServerBaseUrl),
-                        "/geoserver/"
-                    );
-                    return;
+                if (this.localGeoServerBaseUrl) {
+                    if (url.indexOf(this.localGeoServerBaseUrl) == 0) {
+                        // replace local GeoServer url with /geoserver/
+                        options.url = url.replace(
+                            new RegExp("^" + this.localGeoServerBaseUrl),
+                            "/geoserver/"
+                        );
+                        return;
+                    }
+                    var localUrl = this.localGeoServerBaseUrl.replace(
+                        this.urlPortRegEx, "$1/");
+                    if(url.indexOf(localUrl + "rest/") === 0) {
+                        options.url = url.replace(new RegExp("^" +
+                            localUrl), "/geoserver/");
+                        return;
+                    };
                 }
-                var localUrl = this.localGeoServerBaseUrl.replace(
-                    this.urlPortRegEx, "$1/");
-                if(url.indexOf(localUrl + "rest/") === 0) {
-                    options.url = url.replace(new RegExp("^" +
-                        localUrl), "/geoserver/");
-                    return;
-                };
                 // use the proxy for all non-local requests
                 if(this.proxy && options.url.indexOf(this.proxy) !== 0 &&
                         options.url.indexOf(window.location.protocol) === 0) {
