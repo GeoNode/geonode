@@ -97,17 +97,17 @@ def picasa(request):
     return HttpResponse(feed_response, mimetype="text/xml")
 
 def hglpoints (request):
-    url = "http://dixon.hul.harvard.edu:8080/HGL/HGLGeoRSS?UserQuery="
-    #url = "http://pynchon.hul.harvard.edu:8080/HGL/HGLGeoRSS?UserQuery="
-    bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
+    #url = "http://dixon.hul.harvard.edu:8080/HGL/HGLGeoRSS?UserQuery="
+    url = "http://pynchon.hul.harvard.edu:8080/HGL/HGLGeoRSS?GeometryType=envelope"
+#    bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
     query = request.GET['Q'] if request.method == 'GET' else request.POST['Q']
-    coords = bbox.split(",")
-    coords[0] = -180 if float(coords[0]) <= -180 else coords[0]
-    coords[2] = 180 if float(coords[2])  >= 180 else coords[2]
-    coords[1] = coords[1] if float(coords[1]) > -90 else -90
-    coords[3] = coords[3] if float(coords[3])  < 90 else 90
-    newbbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
-    url = url + query + "&bbox=" + newbbox
+#    coords = bbox.split(",")
+#    coords[0] = -180 if float(coords[0]) <= -180 else coords[0]
+#    coords[2] = 180 if float(coords[2])  >= 180 else coords[2]
+#    coords[1] = coords[1] if float(coords[1]) > -90 else -90
+#    coords[3] = coords[3] if float(coords[3])  < 90 else 90
+#    newbbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
+    url = url + "&UserQuery=" + query # + "&BBSearchOption=" + newbbox
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
 
