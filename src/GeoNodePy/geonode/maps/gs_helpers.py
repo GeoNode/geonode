@@ -112,20 +112,24 @@ def fixup_style(cat, resource, style):
             logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
-    logger.info('DELETE [%s]', resource.name)
-    lyr = cat.get_layer(resource.name)
-    store = resource.store
-    styles = lyr.styles + [lyr.default_style]
     try:
-        cat.delete(lyr)
+        logger.info('DELETE [%s]', resource.name)
+        lyr = cat.get_layer(resource.name)
+
+        styles = lyr.styles + [lyr.default_style]
+        try:
+            cat.delete(lyr)
+        except:
+            logger.info('Error deleting layer')
+        for s in styles:
+            if s is not None:
+                try:
+                    cat.delete(s, purge=True)
+                except:
+                    logger.info('Error deleting style')
     except:
-        logger.info('Error deleting layer')
-    for s in styles:
-        if s is not None:
-            try:
-                cat.delete(s, purge=True)
-            except:
-                logger.info('Error deleting style')
+        logger.info('Error deleting layer & styles - not found?')
+    store = resource.store
     try:
         cat.delete(resource)
     except:
