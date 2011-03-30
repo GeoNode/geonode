@@ -135,6 +135,6 @@ def cascading_delete(cat, resource):
     except:
         logger.info("Error deleting resource")
     try:
-        cat.delete(store)
+            cat.delete(store)
     except Exception, ex:
         logger.info("Error deleting store, [%s]", str(ex))
