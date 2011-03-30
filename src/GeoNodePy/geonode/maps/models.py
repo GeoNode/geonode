@@ -1000,6 +1000,7 @@ class Layer(models.Model, PermissionLevelMixin):
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
         gn.delete_layer(self)
+        gn.logout()
 
     def save_to_geonetwork(self):
         gn = Layer.objects.gn_catalog
@@ -1009,6 +1010,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.metadata_links = [("text/xml", "TC211", md_link)]
         else:
             gn.update_layer(self)
+        gn.logout()
 
     @property
     def resource(self):
@@ -1119,6 +1121,7 @@ class Layer(models.Model, PermissionLevelMixin):
             logger.debug("about to save")
             Layer.objects.gs_catalog.save(self._resource_cache)
             logger.debug("saved?")
+            gn.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
             self.publishing.attribution_link = self.poc.user.get_absolute_url()
@@ -1143,12 +1146,18 @@ class Layer(models.Model, PermissionLevelMixin):
             self.title = self.name
 
     def _populate_from_gn(self):
-        meta = self.metadata_csw()
+        #Swallow exception (and don't cancel layer upload) if
+        # geonetwork wigs out, as it tends to do from time to time
+        try:
+            meta = self.metadata_csw()
         if meta is None:
             return
         self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
         self.distribution_url = meta.distribution.online[0].url
         self.distribution_description = meta.distribution.online[0].description
+        except:
+            return
+
 
     def keyword_list(self):
         return self.keywords.split(" ")

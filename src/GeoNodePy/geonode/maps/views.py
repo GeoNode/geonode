@@ -1683,6 +1683,7 @@ def _handle_layer_upload(request, layer=None):
                 try:
                     gn = Layer.objects.gn_catalog
                     gn.delete_layer(csw_record)
+                    gn.logout()
                 except Exception, ex:
                     logger.warning('delete csw FAIL: [%s]', str(ex))
                     pass
