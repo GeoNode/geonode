@@ -127,14 +127,14 @@ def cascading_delete(cat, resource):
                     cat.delete(s, purge=True)
                 except:
                     logger.info('Error deleting style')
+        store = resource.store
+        try:
+            cat.delete(resource)
+        except:
+            logger.info("Error deleting resource")
+        try:
+            cat.delete(store)
+        except Exception, ex:
+            logger.info("Error deleting store, [%s]", str(ex))
     except:
         logger.info('Error deleting layer & styles - not found?')
-    store = resource.store
-    try:
-        cat.delete(resource)
-    except:
-        logger.info("Error deleting resource")
-    try:
-            cat.delete(store)
-    except Exception, ex:
-        logger.info("Error deleting store, [%s]", str(ex))
