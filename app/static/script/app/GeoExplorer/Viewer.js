@@ -19,6 +19,12 @@ Ext.namespace("GeoExplorer");
 GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
 
     loadConfig: function(config) {
+        config.tools = (config.tools || []).concat({
+            ptype: "gxp_styler",
+            id: "styler",
+            rasterStyling: true,
+            actionTarget: undefined
+        });
         // load the super's super, because we don't want the default tools from
         // GeoExplorer
         GeoExplorer.superclass.loadConfig.apply(this, arguments);

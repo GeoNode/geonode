@@ -361,8 +361,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             actionTarget: "treecontent.contextMenu"
         }, {
             ptype: "gxp_addlayers",
-            //TODO use GeoExplorer.CapabilitiesRowExpander
-            actionTarget: "treetbar"
+            actionTarget: "treetbar",
+            createExpander: function() {
+                return new GeoExplorer.CapabilitiesRowExpander({
+                    ows: this.localGeoServerBaseUrl + "ows"
+                });
+            }
         }, {
             ptype: "gxp_removelayer",
             actionTarget: ["treetbar", "treecontent.contextMenu"]
@@ -371,7 +375,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             layerPanelConfig: {
                 "gxp_wmslayerpanel": {rasterStyling: true}
             },
-            actionTarget: ["treetbar", "treecontent.contextMenu"]
+            actionTarget: ["treetbar", "treecontent.contextMenu"],
         }, {
             ptype: "gxp_styler",
             rasterStyling: true,
@@ -541,6 +545,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
         }, this);
         
+        var showContextMenu;
         this.googleEarthPanel = new gxp.GoogleEarthPanel({
             mapPanel: this.mapPanel,
             listeners: {
@@ -548,13 +553,25 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     return record.get("group") !== "background";
                 },
                 "show": function() {
-                    // TODO disable tree top toolbar (AddLayers etc.)
-                    // TODO disable tree selection
+                    // disable layers toolbar, selection and context menu
+                    layerTree.contextMenu.on("beforeshow", OpenLayers.Function.False);
+                    this.on(
+                        "beforelayerselectionchange", OpenLayers.Function.False
+                    );
+                    Ext.getCmp("treetbar").disable();
                 },
                 "hide": function() {
-                    // TODO enable tree top toolbar (AddLayers etc.)
-                    // TODO enable tree selection
-                }
+                    var layerTree = Ext.getCmp("treecontent");
+                    if (layerTree) {
+                        // enable layers toolbar, selection and context menu
+                        layerTree.contextMenu.un("beforeshow", OpenLayers.Function.False);
+                        this.un(
+                            "beforelayerselectionchange", OpenLayers.Function.False
+                        );
+                        Ext.getCmp("treetbar").enable();
+                    }
+                },
+                scope: this
             }
         });
         
