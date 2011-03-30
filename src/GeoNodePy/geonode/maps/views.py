@@ -1652,6 +1652,16 @@ def _handle_layer_upload(request, layer=None):
             logger.exception("Import to Django and GeoNetwork failed: [%s]", str(e))
             detail_error = str(e)
 
+            if csw_record is not None and layer is not None:
+                logger.warning("Deleting dangling GeoNetwork record for [%s] with csw [%s]", name, csw_record)
+                try:
+                    gn = Layer.objects.gn_catalog
+                    gn.delete_layer(layer)
+                    gn.logout()
+                except Exception, ex:
+                    logger.warning('delete csw FAIL: [%s]', str(ex))
+                    pass
+            
 
             transaction.rollback()
             # Something went wrong, let's try and back out any changes
@@ -1678,15 +1688,7 @@ def _handle_layer_upload(request, layer=None):
                         cat.delete(store)
                     except:
                         pass
-            if csw_record is not None:
-                logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
-                try:
-                    gn = Layer.objects.gn_catalog
-                    gn.delete_layer(csw_record)
-                    gn.logout()
-                except Exception, ex:
-                    logger.warning('delete csw FAIL: [%s]', str(ex))
-                    pass
+
             # set layer to None, but we'll rely on db transactions instead
             # of a manual delete to keep it out of the db
             layer = None
