@@ -511,7 +511,7 @@ def get_csw():
 
 _viewer_projection_lookup = {
     "EPSG:900913": {
-        "maxResolution": 156543.0339,
+        "maxResolution": 156543.03390625,
         "units": "m",
         "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
     },
@@ -1216,6 +1216,10 @@ class Map(models.Model, PermissionLevelMixin):
                 'zoom': self.zoom
             }
         }
+        '''
+        Mark the last added layer as selected - important for data page
+        '''
+        config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
