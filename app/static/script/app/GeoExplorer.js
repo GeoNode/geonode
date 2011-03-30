@@ -361,8 +361,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             actionTarget: "treecontent.contextMenu"
         }, {
             ptype: "gxp_addlayers",
-            //TODO use GeoExplorer.CapabilitiesRowExpander
-            actionTarget: "treetbar"
+            actionTarget: "treetbar",
+            createExpander: function() {
+                return new GeoExplorer.CapabilitiesRowExpander({
+                    ows: this.localGeoServerBaseUrl + "ows"
+                });
+            }
         }, {
             ptype: "gxp_removelayer",
             actionTarget: ["treetbar", "treecontent.contextMenu"]
@@ -371,7 +375,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             layerPanelConfig: {
                 "gxp_wmslayerpanel": {rasterStyling: true}
             },
-            actionTarget: ["treetbar", "treecontent.contextMenu"]
+            actionTarget: ["treetbar", "treecontent.contextMenu"],
         }, {
             ptype: "gxp_styler",
             rasterStyling: true,
