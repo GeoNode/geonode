@@ -12,8 +12,10 @@ distribution.
     the GeoNode team know so we can keep it up to date.
 
 .. note::
+
+    SELinux is known to cause issues with the Apache proxy configuration used by GeoNode. Altering its configuration is beyond the scope of this document.
     
-    Disabling SELinux http://www.centos.org/docs/5/html/5.2/Deployment_Guide/sec-sel-enable-disable.html
+    Instructions for disabling SELinux http://www.centos.org/docs/5/html/5.2/Deployment_Guide/sec-sel-enable-disable.html
 
 The stack used is:
 
@@ -49,27 +51,29 @@ Install Dependencies
 
 1. Add Additional Repositories
 
-     The Python interpreter in the CentOS repositories does not support GeoNode;
-     instead use the python26 package from the `EPEL
-     <http://fedoraproject.org/wiki/EPEL>`_ project.  Follow the instructions from
-     the wiki to activate the EPEL repository::
+   .. note::
 
-     $ # The command below is an example, please adjust based on your exact version of CentOS
-     $ su -c 'rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm'
+    The commands below are examples, please adjust based on your exact version of CentOS
 
-     Enable the `ELGIS testing repository
-     <http://wiki.osgeo.org/wiki/Enterprise_Linux_GIS>`_::
+   The Python interpreter in the CentOS repositories does not support GeoNode;
+   instead use the python26 package from the `EPEL
+   <http://fedoraproject.org/wiki/EPEL>`_ project.  Follow the instructions from
+   the wiki to activate the EPEL repository::
+     
+   $ su -c 'rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm'
 
-     $ # The command below is an example, please adjust based on your exact version of CentOS
-     $ su -c 'rpm -Uvh http://elgis.argeo.org/repos/5/elgis-release-5-5_0.noarch.rpm'
+   Enable the `ELGIS testing repository
+   <http://wiki.osgeo.org/wiki/Enterprise_Linux_GIS>`_::
+
+   $ su -c 'rpm -Uvh http://elgis.argeo.org/repos/5/elgis-release-5-5_0.noarch.rpm'
 
 2. Install Java Runtime
 
-     You will need a Java Runtime Environment (JRE).  We recommend following
-     the `Oracle installation instructions
-     <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_
-     While other JRE versions will work, Oracle's is recommended for performance
-     reasons.  
+   You will need a Java Runtime Environment (JRE).  We recommend following
+   the `Oracle installation instructions
+   <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_
+   While other JRE versions will work, Oracle's is recommended for performance
+   reasons.  
 
 3. Install Dependencies with yum::
 
@@ -86,14 +90,15 @@ Tomcat Servlet container was already installed with yum in previous step
 
     JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
   
-    .. note::
+   .. note::
  
-      The Java options used are as follows: 
-      * ``-Xmx1024m`` tells Java to use 1GB of RAM instead of the default value
-      * ``-XX:MaxPermSize=256M`` increase the amount of space used for
-        "permgen", needed to run geonetwork/geoserver.
-      * ``-XX:CompileCommand=...`` is a workaround for a JVM bug that affects
-        GeoNetwork; see http://trac.osgeo.org/geonetwork/ticket/301
+     The Java options used are as follows: 
+     
+     * ``-Xmx1024m`` tells Java to use 1GB of RAM instead of the default value
+
+     * ``-XX:MaxPermSize=256M`` increase the amount of space used for "permgen", needed to run geonetwork/geoserver.
+
+     * ``-XX:CompileCommand=...`` is a workaround for a JVM bug that affect GeoNetwork; see http://trac.osgeo.org/geonetwork/ticket/301
 
 2. Set tomcat to start on boot:: 
    
@@ -113,8 +118,8 @@ Deploying GeoNetwork
      $ mv GeoNode-1.0.1/geonetwork.war /var/lib/tomcat5/webapps/ 
 
 2. The GeoNetwork administrative account will be using the default password.  You
-   should navigate to `the GeoNetwork web interface
-   <http://localhost:8080/geonetwork/>` and change the password for this account,
+   should navigate to the `GeoNetwork web interface
+   <http://localhost:8080/geonetwork/>`_ and change the password for this account,
    taking note of the new password for later use. (Log in with the username
    ``admin`` and password ``admin``, then use the "Administration" link in the
    top navigation menu to change the password.)
@@ -128,7 +133,7 @@ Deploying GeoNetwork
 .. note::
 
     The GeoNetwork configuration, including metadata documents and password
-    configuration, is stored inside of [tomcat]/webapps/geonetwork/ .  This
+    configuration, is stored inside of ``[tomcat]/webapps/geonetwork/`` .  This
     directory can be copied between machines to quickly reproduce a
     configuration with a given administrative password across multiple
     machines.
@@ -161,9 +166,9 @@ Deploying GeoServer
 
 3. Move the GeoServer "data directory" outside of the servlet container to
    avoid having it overwritten on later upgrades. Edit the file
-   :file`/var/lib/tomcat5/webapps/geoserver-geonode-dev/WEB-INF/web.xml`
+   :file:`/var/lib/tomcat5/webapps/geoserver-geonode-dev/WEB-INF/web.xml`
    by uncommenting the block below and setting the param-value to 
-   /opt/geoserver_data::
+   ``/opt/geoserver_data``::
 
      <context-param>
         <param-name>GEOSERVER_DATA_DIR</param-name>
@@ -375,7 +380,7 @@ Prepare the Django database
 
      host   all         all                               md5
 
-     Then restart postgres in order to pick up the changes::
+   Then restart postgres in order to pick up the changes::
 
      $ service postgresql restart
 
