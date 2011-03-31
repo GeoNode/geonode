@@ -129,7 +129,8 @@ public class GeoJSONParserTest extends TestCase {
     }
 
     public void testParseNamedCrsUnknownAuthority() throws Exception {
-        // GeoJSON CRS's can't live as standalone objects, they're identified as the "crs" property
+        // GeoJSON CRS's can't live as standalone objects, they're identified as
+        // the "crs" property
         // of a container object
         String jsonStr = "{\"type\":\"Point\", \"coordinates\": [100.0, 0.0],"
                 + "\"crs\":{\"type\": \"name\",\"properties\": {\"name\": \"urn:ogc:def:crs:OGC:1.3:CRS84\"}}}";
@@ -142,7 +143,8 @@ public class GeoJSONParserTest extends TestCase {
     }
 
     public void testParseNamedCrs() throws Exception {
-        // GeoJSON CRS's can't live as standalone objects, they're identified as the "crs" property
+        // GeoJSON CRS's can't live as standalone objects, they're identified as
+        // the "crs" property
         // of a container object
         String jsonStr = "{\"type\":\"Point\", \"coordinates\": [100.0, 0.0],"
                 + "\"crs\":{\"type\": \"name\",\"properties\": {\"name\": \"EPSG:4326\"}}}";
@@ -158,7 +160,8 @@ public class GeoJSONParserTest extends TestCase {
     }
 
     public void testParseLinkedCrsIsUnsupported() throws Exception {
-        // GeoJSON CRS's can't live as standalone objects, they're identified as the "crs" property
+        // GeoJSON CRS's can't live as standalone objects, they're identified as
+        // the "crs" property
         // of a container object.
         // Linked CRSs are not supported:
         String jsonStr = "{\"type\":\"Point\", \"coordinates\": [100.0, 0.0],"
@@ -172,9 +175,11 @@ public class GeoJSONParserTest extends TestCase {
         }
     }
 
-    // Note: GeoJSONParser does not presently convert arbitrary JSON objects to Java objects
+    // Note: GeoJSONParser does not presently convert arbitrary JSON objects to
+    // Java objects
     // Thus the 'properties' attribute is simply carried over as JSON.
-    // TODO: Generalize feature conversion to allow for more sophisticated object conversion.
+    // TODO: Generalize feature conversion to allow for more sophisticated
+    // object conversion.
     public void testFeature() throws JSONException {
         GeometryFactory gf = new GeometryFactory();
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -198,10 +203,10 @@ public class GeoJSONParserTest extends TestCase {
 
         SimpleFeature newFeature = (SimpleFeature) GeoJSONParser.parse(jsonStr);
 
-        assertTrue(((Geometry) newFeature.getAttribute(0)).equals((Geometry) origFeature
-                .getAttribute(0)));
-        assertTrue(newFeature.getAttribute(1).toString()
-                .equals(origFeature.getAttribute(1).toString()));
+        assertTrue(((Geometry) newFeature.getAttribute("geometry")).equals((Geometry) origFeature
+                .getAttribute("geometry")));
+        assertTrue(newFeature.getAttribute("properties").toString()
+                .equals(origFeature.getAttribute("properties").toString()));
         assertTrue(newFeature.getID().equals(origFeature.getID()));
     }
 
