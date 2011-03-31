@@ -511,7 +511,7 @@ def get_csw():
 
 _viewer_projection_lookup = {
     "EPSG:900913": {
-        "maxResolution": 156543.0339,
+        "maxResolution": 156543.03390625,
         "units": "m",
         "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
     },
@@ -1181,7 +1181,7 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-        configs.append({"ptype":"gx_wmssource", "url": settings.GEOSERVER_BASE_URL + "wms"})
+        configs.append({"ptype":"gxp_wmscsource", "url": "/geoserver/wms"})
 
         i = 0
         for source in uniqify(configs):
@@ -1199,7 +1199,6 @@ class Map(models.Model, PermissionLevelMixin):
             src_cfg = l.source_config();
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
-            if src_cfg.get("ptype", "gx_wmssource") == "gx_wmssource": cfg["buffer"] = 0
             return cfg
 
         config = {
@@ -1208,7 +1207,7 @@ class Map(models.Model, PermissionLevelMixin):
                 'title':    self.title,
                 'abstract': self.abstract
             },
-            'defaultSourceType': "gx_wmssource",
+            'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
                 'layers': [layer_config(l) for l in layers],
@@ -1217,6 +1216,10 @@ class Map(models.Model, PermissionLevelMixin):
                 'zoom': self.zoom
             }
         }
+        '''
+        Mark the last added layer as selected - important for data page
+        '''
+        config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
@@ -1438,7 +1441,7 @@ class MapLayer(models.Model):
         try:
             cfg = simplejson.loads(self.source_params)
         except:
-            cfg = dict(ptype = "gx_wmssource")
+            cfg = dict(ptype = "gxp_wmscsource")
 
         if self.ows_url: cfg["url"] = self.ows_url
 
