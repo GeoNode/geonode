@@ -1,4 +1,5 @@
 from itertools import cycle, izip
+from django.conf import settings
 import logging
 import re
 
@@ -112,29 +113,31 @@ def fixup_style(cat, resource, style):
             logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
-    try:
-        logger.info('DELETE [%s]', resource.name)
+    #Maybe it's already been deleted from geoserver?
+    if resource:
         lyr = cat.get_layer(resource.name)
 
         styles = lyr.styles + [lyr.default_style]
         try:
             cat.delete(lyr)
         except:
-            logger.info('Error deleting layer')
+            logger.error('Error deleting layer')
         for s in styles:
             if s is not None:
                 try:
                     cat.delete(s, purge=True)
                 except:
-                    logger.info('Error deleting style')
+                    logger.error('Error deleting style')
         store = resource.store
         try:
             cat.delete(resource)
         except:
-            logger.info("Error deleting resource")
+            logger.error("Error deleting resource")
         try:
-            cat.delete(store)
+            logger.debug('STORE NAME:' + store.name)
+            if store.name != settings.POSTGIS_DATASTORE:
+                cat.delete(store)
         except Exception, ex:
-            logger.info("Error deleting store, [%s]", str(ex))
-    except:
-        logger.info('Error deleting layer & styles - not found?')
+            logger.error("Error deleting store, [%s]", str(ex))
+    else:
+        logger.error('Error deleting layer & styles - not found in geoserver')

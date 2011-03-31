@@ -1,9 +1,10 @@
+from xml.etree.ElementTree import XML
 from zipfile import ZipFile
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot
 from geonode.maps.gs_helpers import fixup_style, cascading_delete
 from geonode.maps.encode import num_encode, num_decode
-
+import random
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -1412,6 +1413,17 @@ def _handle_layer_upload(request, layer=None):
     """
 
     logger.debug("ENTER handle_layer_upload")
+
+    #Check SLD file before anything else, since most people can't seem to upload valid XML
+    sldFile = request.FILES.get('sld_file')
+    if sldFile:
+        try:
+            sld = sldFile.read()
+            sld_xml= XML(sld)
+        except Exception, ex:
+            return None, [_('Your SLD file contains invalid XML')], escape(str(ex))
+        sldFile.seek(0)
+
     layer_name = request.POST.get('layer_name');
     base_file = request.FILES.get('base_file');
     encoding = request.POST.get('charset')
@@ -1421,7 +1433,7 @@ def _handle_layer_upload(request, layer=None):
 
     if not base_file:
         logger.warn("Failed upload: no basefile provided")
-        return None, [_("You must specify a layer data file to upload.")]
+        return None, [_("You must specify a layer data file to upload.")],  _('No additional info')
 
     layer_name = _suffix.sub("", base_file.name)
 
@@ -1448,7 +1460,7 @@ def _handle_layer_upload(request, layer=None):
     
     if not name:
         logger.error("Unexpected error: Layer name passed validation but is falsy: %s", name)
-        return None, [_("Unable to determine layer name.")]
+        return None, [_("Unable to determine layer name.")],  _('No additional info')
 
     # zipped shapefile upload
     elif base_file.name.lower().endswith('.zip'):
@@ -1458,7 +1470,7 @@ def _handle_layer_upload(request, layer=None):
         if layer is not None:
             if layer.storeType == 'coverageStore':
                 logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
-                return None, [_("This resource may only be replaced with raster data.")]
+                return None, [_("This resource may only be replaced with raster data.")], _('No additional info')
 
 
         if settings.POSTGIS_DATASTORE:
@@ -1550,7 +1562,7 @@ def _handle_layer_upload(request, layer=None):
             logger.info("Checking whether replacement data for [%s] is raster", name)
             if layer.storeType == 'dataStore':
                 logger.warn("User tried to replace raster layer [%s] with vector data", name)
-                return [_("This resource may only be replaced with a GeoTIFF file.")]
+                return [_("This resource may only be replaced with a GeoTIFF file.")], _('No additional info')
 
         # ... we attempt to let geoserver figure it out, guessing it is coverage 
         create_store = cat.create_coveragestore
@@ -1577,7 +1589,19 @@ def _handle_layer_upload(request, layer=None):
             cat.delete(tmp)
             logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
     except geoserver.catalog.ConflictingDataError:
-        errors.append(_("There is already a layer with the given name."))
+        try:
+            name = name + User.objects.make_random_password()
+            logger.debug("Starting upload of [%s] to GeoServer...", name)
+            if create_store == cat.create_pg_feature:
+                logger.debug("create_store([%s], [%s], cfg, overwrite=overwrite)", settings.POSTGIS_DATASTORE, name)
+                create_store(settings.POSTGIS_DATASTORE, name, cfg, overwrite=overwrite, charset=encoding)
+            elif create_store == cat.create_featurestore:
+                create_store(name, cfg, overwrite=overwrite, charset=encoding)
+            else:
+                create_store(name, cfg, overwrite=overwrite)
+            logger.debug("Finished upload of [%s] to GeoServer...", name)
+        except geoserver.catalog.ConflictingDataError:
+            errors.append(_("There is already a layer with the given name."))
 
 
     # if we successfully created the store in geoserver...
