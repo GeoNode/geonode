@@ -52,9 +52,8 @@ public class LayersGrantedAuthority implements GrantedAuthority {
         return null;
     }
 
-    @Override
     public int compareTo(Object o) {
-        if (! (o instanceof LayersGrantedAuthority)) {
+        if (!(o instanceof LayersGrantedAuthority)) {
             return 0;
         }
 
@@ -70,10 +69,12 @@ public class LayersGrantedAuthority implements GrantedAuthority {
         } else {
             for (int i = 0; i < this.layerNames.size(); i++) {
                 int comparison = this.layerNames.get(i).compareTo(that.layerNames.get(i));
-                if (comparison != 0) return comparison;
+                if (comparison != 0)
+                    return comparison;
             }
         }
 
         return 0;
     }
+
 }
