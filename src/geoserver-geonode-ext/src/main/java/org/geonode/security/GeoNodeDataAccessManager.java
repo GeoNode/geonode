@@ -4,13 +4,14 @@
  */
 package org.geonode.security;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
+import org.springframework.security.Authentication;
+import org.springframework.security.GrantedAuthority;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
+import org.geoserver.security.CatalogMode;
 import org.geoserver.security.DataAccessManager;
 
 /**
@@ -26,7 +27,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     boolean authenticationEnabled = true;
 
     /**
-     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
+     * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
      *      org.geoserver.catalog.WorkspaceInfo, org.geoserver.security.AccessMode)
      */
     public boolean canAccess(Authentication user, WorkspaceInfo workspace, AccessMode mode) {
@@ -35,7 +36,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     }
 
     /**
-     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
+     * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
      *      org.geoserver.catalog.LayerInfo, org.geoserver.security.AccessMode)
      */
     public boolean canAccess(Authentication user, LayerInfo layer, AccessMode mode) {
@@ -43,7 +44,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     }
 
     /**
-     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
+     * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
      *      org.geoserver.catalog.ResourceInfo, org.geoserver.security.AccessMode)
      */
     public boolean canAccess(Authentication user, ResourceInfo resource, AccessMode mode) {

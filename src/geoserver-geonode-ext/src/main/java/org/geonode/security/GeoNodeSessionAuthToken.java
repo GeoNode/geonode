@@ -1,7 +1,7 @@
 package org.geonode.security;
 
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.providers.AbstractAuthenticationToken;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.providers.AbstractAuthenticationToken;
 
 public class GeoNodeSessionAuthToken extends AbstractAuthenticationToken {
 
@@ -24,14 +24,14 @@ public class GeoNodeSessionAuthToken extends AbstractAuthenticationToken {
 
     /**
      * 
-     * @see org.acegisecurity.Authentication#getCredentials()
+     * @see org.springframework.security.Authentication#getCredentials()
      */
     public Object getCredentials() {
         return credentials;
     }
 
     /**
-     * @see org.acegisecurity.Authentication#getPrincipal()
+     * @see org.springframework.security.Authentication#getPrincipal()
      */
     public Object getPrincipal() {
         return principal;
