@@ -44,7 +44,7 @@ community."
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
         def is_wms_layer(x):
-            return cfg['sources'][x['source']]['ptype'] == 'gx_wmssource'
+            return cfg['sources'][x['source']]['ptype'] == 'gx_wmscsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
         self.assertEquals(layernames, ['base:CA',])
 
@@ -61,14 +61,14 @@ community."
         # by andreas in issue 566. -dwins
         viewer_config = """
         {
-          "defaultSourceType": "gx_wmssource",
+          "defaultSourceType": "gxp_wmscsource",
           "about": {
               "title": "Title",
               "abstract": "Abstract"
           },
           "sources": {
             "capra": {
-              "url":"http://localhost:8001/geoserver/wms"
+              "url":"/geoserver/wms"
             }
           },
           "map": {

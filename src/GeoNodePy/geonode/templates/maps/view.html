@@ -21,7 +21,6 @@
 <script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/PrintPreview/resources/css/printpreview.css" />
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
-
 {{ block.super }}
 
 <script type="text/javascript">
@@ -29,7 +28,6 @@ var app;
 Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
-        useBackgroundCapabilities: false,     
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service 
@@ -65,13 +63,6 @@ Ext.onReady(function() {
 
 
     }, this);
-
-
-
-
-
-
-
 {% endautoescape %}
 });
 </script>
