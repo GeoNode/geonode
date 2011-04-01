@@ -1,10 +1,10 @@
 from xml.etree.ElementTree import XML
 from zipfile import ZipFile
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
-from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot
+from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, CHARSETS
 from geonode.maps.gs_helpers import fixup_style, cascading_delete
 from geonode.maps.encode import num_encode, num_decode
-import random
+
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -1272,10 +1272,10 @@ def upload_layer(request):
                 mapid = request.GET['map']
                 map = get_object_or_404(Map,pk=mapid)
                 return render_to_response('maps/layer_upload.html',
-                                  RequestContext(request, {'map':map, 'customGroup': settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else ''}))
+                                  RequestContext(request, {'map':map, 'charsets': CHARSETS, 'customGroup': settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else ''}))
             else: #this is a tabbed panel request if no map id provided
                 return render_to_response('maps/layer_upload_tab.html',
-                                  RequestContext(request))
+                                  RequestContext(request, {'charsets': CHARSETS}))
     elif request.method == 'POST':
         detail_error = ''
         try:
@@ -1414,7 +1414,7 @@ def _handle_layer_upload(request, layer=None):
 
     logger.debug("ENTER handle_layer_upload")
 
-    #Check SLD file before anything else, since most people can't seem to upload valid XML
+    #Check SLD file before anything else, since most people upload invalid ones
     sldFile = request.FILES.get('sld_file')
     if sldFile:
         try:
@@ -1422,13 +1422,12 @@ def _handle_layer_upload(request, layer=None):
             sld_xml= XML(sld)
         except Exception, ex:
             return None, [_('Your SLD file contains invalid XML')], escape(str(ex))
-        sldFile.seek(0)
 
-    layer_name = request.POST.get('layer_name');
-    base_file = request.FILES.get('base_file');
+    layer_name = request.POST.get('layer_name')
+    base_file = request.FILES.get('base_file')
     encoding = request.POST.get('charset')
     logger.info("Uploaded layer: [%s], base filename: [%s]", layer_name, base_file)
-    base_file = request.FILES.get('base_file');
+    base_file = request.FILES.get('base_file')
     logger.info("Uploaded layer; base filename: [%s]", base_file)
 
     if not base_file:
@@ -1590,7 +1589,6 @@ def _handle_layer_upload(request, layer=None):
             logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
     except geoserver.catalog.ConflictingDataError:
         try:
-            name = name + User.objects.make_random_password()
             logger.debug("Starting upload of [%s] to GeoServer...", name)
             if create_store == cat.create_pg_feature:
                 logger.debug("create_store([%s], [%s], cfg, overwrite=overwrite)", settings.POSTGIS_DATASTORE, name)
@@ -1600,8 +1598,7 @@ def _handle_layer_upload(request, layer=None):
             else:
                 create_store(name, cfg, overwrite=overwrite)
             logger.debug("Finished upload of [%s] to GeoServer...", name)
-        except geoserver.catalog.ConflictingDataError:
-            errors.append(_("There is already a layer with the given name."))
+        except geoserver.catalog.ConflictingDataError:        errors.append(_("There is already a layer with the given name."))
 
 
     # if we successfully created the store in geoserver...

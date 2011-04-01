@@ -34,6 +34,12 @@ Ext.onReady(function() {
 Ext.onReady(function(){
     Ext.QuickTips.init();
 
+
+var encodings = [
+        ['WTF', 'None/Unknown'],
+        ['WTF2', 'SJSJSJ']
+];
+
     var form_target = "{% url geonode.maps.views.upload_layer %}";
     var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
     var layer_title = new Ext.form.TextField({
@@ -105,13 +111,19 @@ Ext.onReady(function(){
         listeners: listeners
     });
 
-    var encoding = new Ext.form.TextField({
+
+    var encoding = new Ext.form.ComboBox({
         id: 'charset',
         name: ' charset',
         fieldLabel: gettext('Encoding'),
-        value: 'UTF-8',
-        width: '50',
-        allowBlank: true,
+        hiddenName: 'charset',
+        displayField:'description',
+        store : new Ext.data.SimpleStore({
+            fields: ['charset', 'description'],
+            data: {{ charsets }}
+        }),
+        mode: 'local',
+        triggerAction: 'all',
         listeners: listeners
     });
 

@@ -19,6 +19,7 @@
 </p>
 
 <div id="upload_form"></div>
+
 </div>
 
 <div style="position:relative;float:left;padding-left:20px;">
@@ -107,15 +108,22 @@
     });
 
 
-    var encoding = new Ext.form.TextField({
+    var encoding = new Ext.form.ComboBox({
         id: 'charset',
         name: ' charset',
         fieldLabel: gettext('Encoding'),
-        value: 'UTF-8',
-        width: '50',
-        allowBlank: true,
+        hiddenName: 'charset',
+        displayField:'description',
+        valueField: 'charset',
+        store : new Ext.data.SimpleStore({
+            fields: ['charset', 'description'],
+            data: {{ charsets }}
+        }),
+        mode: 'local',
+        triggerAction: 'all',
         listeners: listeners
     });
+    
 
     var sld_file = new Ext.ux.form.FileUploadField({
         id: 'sld_file',
