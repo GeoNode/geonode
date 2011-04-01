@@ -65,7 +65,7 @@ bundle = path('shared/geonode.pybundle')
 dl_cache = "--download-cache=./build"
 dlname = 'geonode.bundle'
 gs_data = "gs-data"
-geoserver_target = path('webapps/geoserver-geonode-dev.war')
+geoserver_target = path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war')
 geonetwork_target = path('webapps/geonetwork.war')
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
 geonode_client_target_war = path('webapps/geonode-client.war')
@@ -175,31 +175,9 @@ def setup_gs_data(options):
 @task
 @needs(['setup_gs_data'])
 def setup_geoserver(options):
-    """Prepare a testing instance of GeoServer.
-    Skip this for now; code currently requires custom patched version of GeoNode 2.1"""
-
-    war_zip_file = options.config.parser.get('geoserver', 'geoserver_war')
-    src_url = str(options.config.parser.get('geoserver', 'geoserver_war_url') +  war_zip_file)
-    info("geonetwork url: %s" %src_url)
-    # where to download the war files. If changed change also
-    # src/geoserver-geonode-ext/jetty.xml accordingly
-
-    webapps = path("./webapps")
-    if not webapps.exists():
-        webapps.mkdir()
-
-    dst_url = webapps / war_zip_file
-    dst_war = webapps / "geoserver-geonode-dev.war"
-    deployed_url = webapps / "geoserver-geonode-dev"
-
-
-    if getattr(options, 'clean', False):
-        deployed_url.rmtree()
-    grab(src_url, dst_url)
-
-
-
-
+    """Prepare a testing instance of GeoServer."""
+    with pushd('src/geoserver-geonode-ext'):
+        sh("mvn clean install")
 
 @task
 def setup_geonetwork(options):
@@ -236,8 +214,6 @@ def setup_geonetwork(options):
     dst_url = webapps / "intermap.war"
 
     grab(src_url, dst_url)
-
-
 
 @task
 def setup_geonetwork_new(options):
