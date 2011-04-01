@@ -13,7 +13,7 @@ import org.springframework.security.GrantedAuthority;
 
 /**
  * An authority marking the user credentials read/only and read/write access to layers
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class LayersGrantedAuthority implements GrantedAuthority {
@@ -44,7 +44,7 @@ public class LayersGrantedAuthority implements GrantedAuthority {
 
     /**
      * This is not a role, so we return {@code null}, by API spec.
-     * 
+     *
      * @return {@code null}
      * @see org.springframework.security.GrantedAuthority#getAuthority()
      */
@@ -52,9 +52,8 @@ public class LayersGrantedAuthority implements GrantedAuthority {
         return null;
     }
 
-    @Override
     public int compareTo(Object o) {
-        if (! (o instanceof LayersGrantedAuthority)) {
+        if (!(o instanceof LayersGrantedAuthority)) {
             return 0;
         }
 
@@ -70,10 +69,12 @@ public class LayersGrantedAuthority implements GrantedAuthority {
         } else {
             for (int i = 0; i < this.layerNames.size(); i++) {
                 int comparison = this.layerNames.get(i).compareTo(that.layerNames.get(i));
-                if (comparison != 0) return comparison;
+                if (comparison != 0)
+                    return comparison;
             }
         }
 
         return 0;
     }
+
 }

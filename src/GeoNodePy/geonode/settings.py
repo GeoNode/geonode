@@ -178,6 +178,9 @@ MAP_BASELAYERSOURCES = {
     "any": {
         "ptype":"gx_olsource"
     },
+    "capra": {
+        "url":"/geoserver/wms"
+    },
     "google":{
         "ptype":"gx_googlesource",
         "apiKey": GOOGLE_API_KEY

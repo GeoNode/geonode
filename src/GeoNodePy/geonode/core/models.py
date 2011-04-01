@@ -230,8 +230,6 @@ class PermissionLevelMixin(object):
 
         return levels
 
-
-
     def get_all_level_info_by_email(self):
         """
         returns a mapping indicating the permission levels
@@ -279,4 +277,6 @@ def autologin(sender, **kwargs):
     # This login function does not need password.
     login(request, user)
 
+
 user_activated.connect(autologin)
+

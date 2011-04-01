@@ -27,6 +27,11 @@
 		    Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 
             var config = {
+                tools: [{
+                    ptype: "gxp_wmsgetfeatureinfo",
+                    actionTarget: "main.tbar",
+                    outputConfig: {width: 400, height: 200, panIn: false}
+                }],
                 proxy: "/proxy/?url=",
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
 
@@ -67,7 +72,7 @@
             config = Ext.apply(config, {{ viewer|safe }});
 
             app = new GeoExplorer.Viewer(config);
-
+            
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
                 app.selectedLayer.getLayer().mergeNewParams({
                     "STYLES": elem.value,
@@ -111,7 +116,6 @@
         });
 
         function showStyle(styleName) {
-
             if (!styleName) {
                 Ext.ComponentMgr.all.on("add", function(index, object) {
                     if (object instanceof gxp.WMSStylesDialog) {

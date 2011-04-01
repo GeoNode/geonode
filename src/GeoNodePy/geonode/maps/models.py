@@ -1453,6 +1453,10 @@ class Map(models.Model, PermissionLevelMixin):
                 'zoom': self.zoom
             },
         }
+        '''
+        Mark the last added layer as selected - important for data page
+        '''
+        config["map"]["layers"][len(layers)-1]["selected"] = True
 
         
         if self.group_params:
