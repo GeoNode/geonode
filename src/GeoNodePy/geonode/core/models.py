@@ -265,18 +265,18 @@ class PermissionLevelMixin(object):
 
 # Logic to login a user automatically when it has successfully
 # activated an account:
-from registration.signals import user_activated
-from django.contrib.auth import login
-
-def autologin(sender, **kwargs):
-    user = kwargs['user']
-    request = kwargs['request']
-    # Manually setting the default user backed to avoid the
-    # 'User' object has no attribute 'backend' error
-    user.backend = 'django.contrib.auth.backends.ModelBackend'
-    # This login function does not need password.
-    login(request, user)
-
-
-user_activated.connect(autologin)
+#from registration.signals import user_activated
+#from django.contrib.auth import login
+#
+#def autologin(sender, **kwargs):
+#    user = kwargs['user']
+#    request = kwargs['request']
+#    # Manually setting the default user backed to avoid the
+#    # 'User' object has no attribute 'backend' error
+#    user.backend = 'django.contrib.auth.backends.ModelBackend'
+#    # This login function does not need password.
+#    login(request, user)
+#
+#
+#user_activated.connect(autologin)
 

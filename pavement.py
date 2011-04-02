@@ -336,7 +336,7 @@ def package_client(options):
         os.remove(dst_zip)
 
 @task
-#needs('package_dir', 'setup_geoserver')
+@needs('package_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
 
