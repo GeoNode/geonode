@@ -178,6 +178,9 @@ def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn clean install")
+    copy('src/externals/geoserver-restconfig-2-1.jar', 'src/geoserver-geonode-ext/target/geoserver-geonode-dev/WEB-INF/lib/')
+    geoserver_target.remove()
+    
 
 @task
 def setup_geonetwork(options):
@@ -333,9 +336,16 @@ def package_client(options):
         os.remove(dst_zip)
 
 @task
-@needs('package_dir', 'setup_geoserver')
+#needs('package_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
+
+    zip = zipfile.ZipFile(geoserver_target, "a")
+    zip.printdir()
+    zip.write('src/externals/geoserver-restconfig-2-1.jar', 'WEB-INF/lib/geoserver-restconfig.jar')
+    zip.printdir()
+    zip.close()
+
     geoserver_target.copy(options.deploy.out_dir)
 
 
@@ -650,6 +660,9 @@ def platform_options(options):
 
 # include patched versions of zipfile code
 # to extract zipfile dirs in python 2.6.1 and below...
+
+
+
 
 def zip_extractall(zf, path=None, members=None, pwd=None):
     if sys.version_info >= (2, 6, 2):
