@@ -25,8 +25,9 @@ from django.utils.translation import ugettext as _
 from django.utils.html import escape as escape
 import json
 import math
-import httplib2 
-from owslib.csw import CswRecord, namespaces
+import httplib2
+from geonode.maps.owslib_csw import CswRecord
+from owslib.csw import namespaces
 from owslib.util import nspath
 import re
 from urllib import urlencode
@@ -1949,8 +1950,8 @@ def _split_query(query):
 
 
 
-DEFAULT_SEARCH_BATCH_SIZE = 10
-MAX_SEARCH_BATCH_SIZE = 25
+DEFAULT_SEARCH_BATCH_SIZE = 100
+MAX_SEARCH_BATCH_SIZE = 250
 @csrf_exempt
 def metadata_search(request):
     """
@@ -2019,6 +2020,10 @@ def metadata_search(request):
     except: 
         limit = DEFAULT_SEARCH_BATCH_SIZE
 
+
+    sortby = params.get('sort','')
+    sortorder= params.get('dir','')
+
     advanced = {}
     bbox = params.get('bbox', None)
     if bbox:
@@ -2030,7 +2035,7 @@ def metadata_search(request):
             # ignore...
             pass
 
-    result = _metadata_search(query, start, limit, **advanced)
+    result = _metadata_search(query, start, limit, sortby, sortorder, **advanced)
 
     # XXX slowdown here to dig out result permissions
     for doc in result['rows']: 
@@ -2050,13 +2055,16 @@ def metadata_search(request):
     result['success'] = True
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
-def _metadata_search(query, start, limit, **kw):
+def _metadata_search(query, start, limit, sortby, sortorder, **kw):
     
     csw = get_csw()
 
     keywords = _split_query(query)
     
-    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
+    if sortby:
+        sortby = 'dc:' + sortby
+    
+    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), sortby=sortby, sortorder=sortorder)
     
     
     # build results 

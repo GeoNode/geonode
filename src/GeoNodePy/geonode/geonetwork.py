@@ -2,7 +2,8 @@ import urllib, urllib2, cookielib
 from datetime import date
 from django.template import Context
 from django.template.loader import get_template
-from owslib.csw import CatalogueServiceWeb, namespaces
+from geonode.maps.owslib_csw import CatalogueServiceWeb
+from owslib.csw import namespaces
 from owslib.util import nspath
 from xml.dom import minidom
 from xml.etree.ElementTree import XML

@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
-from owslib.csw import CatalogueServiceWeb
+from geonode.maps.owslib_csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
@@ -1064,7 +1064,10 @@ class Layer(models.Model, PermissionLevelMixin):
         return self.resource.metadata_links
 
     def _set_metadata_links(self, md_links):
-        self.resource.metadata_links = md_links
+        try:
+            self.resource.metadata_links = md_links
+        except Exception, ex:
+            logger.error(str(ex))
 
     metadata_links = property(_get_metadata_links, _set_metadata_links)
 
@@ -1601,23 +1604,12 @@ class MapLayerManager(models.Manager):
         """
         layer_cfg = dict(layer)
         for k in ["format", "name", "opacity", "styles", "transparent",
-                  "fixed", "group", "visibility", "source"]:
+                  "fixed", "group", "visibility", "title", "source"]:
             if k in layer_cfg: del layer_cfg[k]
 
         source_cfg = dict(source)
         for k in ["url", "projection"]:
             if k in source_cfg: del source_cfg[k]
-
-
-        logger.debug("LAYER MANAGER: layer format:[%s], name:[%s], fixed:[%s], group:[%s], ows_url:[%s], layer_params:[%s], source_params:[%s]",
-                      layer.get("format", None),
-                      layer.get("name", None),
-                      layer.get("fixed", False),
-                      layer.get('group', None),
-                      source.get("url", None),
-                      str(layer_cfg),
-                      str(source_cfg)
-                      )
 
         return self.model(
             map = map,
@@ -1756,7 +1748,6 @@ class MapLayer(models.Model):
         configuration suitable for loading this layer.
         """
         try:
-            logger.debug("SOURCE PARAMS for [%s] is [%s]", self.name, self.source_params)
             cfg = simplejson.loads(self.source_params)
         except:
             cfg = dict(ptype = "gxp_wmscsource")
