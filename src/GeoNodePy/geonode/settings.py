@@ -81,7 +81,7 @@ MEDIA_URL = "/site_media/media/"
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, "site_media", "static")
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "media", "static")
 
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
@@ -171,8 +171,6 @@ DEFAULT_MAP_CENTER = (0,0)
 # 0 = entire world;
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 2
-
-logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'w')
 
 MAP_BASELAYERSOURCES = {
     "any": {
@@ -275,13 +273,9 @@ ABSOLUTE_URL_OVERRIDES = {
 }
 
 AUTH_PROFILE_MODULE = 'maps.Contact'
-
 REGISTRATION_OPEN = True
-ACCOUNT_ACTIVATION_DAYS = 7
-GEONODE_CLIENT_LOCATION = "http://localhost:8000"
 
-
-SERVE_MEDIA = True
+SERVE_MEDIA = DEBUG;
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/media/static/"

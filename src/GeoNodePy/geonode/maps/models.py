@@ -48,7 +48,7 @@ ROLE_VALUES = [
 ]
 
 COUNTRIES = (
-    ('AFG', _('Afghanistan')), 
+    ('AFG', _('Afghanistan')),
     ('ALA', _('Aland Islands')),
     ('ALB', _('Albania')),
     ('DZA', _('Algeria')),
@@ -497,7 +497,7 @@ more complex) advanced view. You can even use the XML editor to \
 create custom structures, but they have to be validated by the \
 system, so know what you do :-)'
 )
-    
+
 DEFAULT_CONTENT=_(
 '<h3>The Harvard WorldMap Project</h3>\
 <p>WorldMap is an open source web mapping system that is currently\
@@ -543,10 +543,10 @@ WorldMap data layers to be inserted into existing data\
 infrastructures.&nbsp;<br>\
 <br>\
 All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use\
-and improve upon.</p>'                   
+and improve upon.</p>'
 )
 
-    
+
 
 class Contact(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
@@ -591,6 +591,8 @@ class Contact(models.Model):
     def __unicode__(self):
         return u"%s (%s)" % (self.name if self.name else self.user.username, self.organization)
 
+    def username(self):
+        return u"%s" % (self.name if self.name else self.user.username)
 
 def get_csw():
     csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
@@ -619,7 +621,7 @@ _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
 class LayerManager(models.Manager):
-    
+
     def __init__(self):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
@@ -640,8 +642,8 @@ class LayerManager(models.Manager):
         superusers = User.objects.filter(is_superuser=True).order_by('id')
         if superusers.count() == 0:
             raise RuntimeError('GeoNode needs at least one admin/superuser set')
-        
-        contact, created = Contact.objects.get_or_create(user=superusers[0], 
+
+        contact, created = Contact.objects.get_or_create(user=superusers[0],
                                                 defaults={"name": "Geonode Admin"})
         return contact
 
@@ -684,10 +686,10 @@ class LayerManager(models.Manager):
                         layer.date_type = Layer.VALID_DATE_TYPES[0]
 
                 layer.save()
-		if created: 
+		if created:
                     layer.set_default_permissions()
 
-                                   
+
                 #Create layer attributes if they don't already exist
                 try:
                     if layer.attribute_names is not None:
@@ -698,10 +700,10 @@ class LayerManager(models.Manager):
                                     logger.debug("Created [%s] attribute for [%s]", field, layer)
                 except Exception, e:
                     logger.debug("Could not create attributes for [%s] : [%s]", layer, str(e))
-                    
-                
 
-                    
+
+
+
             finally:
                 pass
         # Doing a logout since we know we don't need this object anymore.
@@ -780,6 +782,24 @@ class Layer(models.Model, PermissionLevelMixin):
     distribution_url = models.TextField(_('distribution URL'), blank=True, null=True)
     distribution_description = models.TextField(_('distribution description'), blank=True, null=True)
 
+#    # WMS GetCapabilities properties
+#    srs = models.CharField(_('SRS'), blank=True, null=True, default="EPSG:4326")
+#    opaque = models.BooleanField(_('opaque'), blank=True, null=True)
+#    noSubsets = models.BooleanField(_('noSubsets'), blank=True, null=True)
+#    cascaded = models.IntegerField(_('cascaded'), blank=True, null=True)
+#    fixedWidth = models.IntegerField(_('fixedWidth'), blank=True, null=True)
+#    fixedHeight = models.IntegerField(_('fixedHeight'), blank=True, null=True)
+#    minScale = models.FloatField(_('minScale'), blank=True, null=True)
+#    maxScale = models.FloatField(_('maxScale'), blank=True, null=True)
+#    prefix = models.CharField(_('prefix'), blank=True, null=True)
+#    formats = models.TextField(_('formats'), blank=True, null=True)
+#    styles = models.TextField(_('styles'), blank=True, null=True)
+#    dimensions = models.TextField(_('styles'), blank=True, null=True)
+#    bbox  = models.TextField(_('bbox'), blank=True, null=True)
+#    llbbox = models.TextField(_('llbbox'), blank=True, null=True)
+#    attribution = models.TextField(_('attribution'), blank=True, null=True)
+#    authorityURLs = models.TextField(_('authorityURLs'), blank=True, null=True)
+#    metadataURLs = models.TextField(_('metadataURLs'), blank=True, null=True)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
@@ -798,7 +818,7 @@ class Layer(models.Model, PermissionLevelMixin):
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
- 
+
         bbox = self.resource.latlon_bbox
 
         dx = float(bbox[1]) - float(bbox[0])
@@ -814,7 +834,7 @@ class Layer(models.Model, PermissionLevelMixin):
         srs = 'EPSG:4326' # bbox[4] might be None
         bbox_string = ",".join([bbox[0], bbox[2], bbox[1], bbox[3]])
 
-        links = []        
+        links = []
 
         if self.resource.resource_type == "featureType":
             def wfs_link(mime):
@@ -868,7 +888,7 @@ class Layer(models.Model, PermissionLevelMixin):
             except Exception, e:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
-                pass 
+                pass
 
         def wms_link(mime):
             return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
@@ -919,12 +939,12 @@ class Layer(models.Model, PermissionLevelMixin):
             http.add_credentials(_user, _password)
             http.authorizations.append(
                 httplib2.BasicAuthentication(
-                    (_user, _password), 
+                    (_user, _password),
                     netloc,
                     wms_url,
                     {},
                     None,
-                    None, 
+                    None,
                     http
                 )
             )
@@ -1063,7 +1083,7 @@ class Layer(models.Model, PermissionLevelMixin):
         self.publishing.styles = styles
 
     styles = property(_get_styles, _set_styles)
-    
+
     @property
     def service_type(self):
         if self.storeType == 'coverageStore':
@@ -1193,7 +1213,7 @@ class Layer(models.Model, PermissionLevelMixin):
     class Meta:
         # custom permissions,
         # change and delete are standard in django
-        permissions = (('view_layer', 'Can view'), 
+        permissions = (('view_layer', 'Can view'),
                        ('change_layer_permissions', "Can change permissions"), )
 
     # Permission Level Constants
@@ -1201,10 +1221,10 @@ class Layer(models.Model, PermissionLevelMixin):
     LEVEL_READ  = 'layer_readonly'
     LEVEL_WRITE = 'layer_readwrite'
     LEVEL_ADMIN = 'layer_admin'
-                 
+
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ) 
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
         self.set_gen_level(CUSTOM_GROUP_USERS, self.LEVEL_READ)
 
         # remove specific user permissions
@@ -1300,33 +1320,33 @@ class Map(models.Model, PermissionLevelMixin):
     urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True, null=True)
     """
     Alphanumeric alternative to referencing maps by id, appended to end of URL instead of id, ie http://domain/maps/someview
-    """    
-    
+    """
+
     officialurl = models.CharField(_('Official Harvard Site URL'), max_length=255, blank=True, null=True)
     """
-    Full URL for official/sponsored map view, ie http://domain/someview 
+    Full URL for official/sponsored map view, ie http://domain/someview
     """
-    
+
     content = models.TextField(_('Site Content'), blank=True, null=True, default=DEFAULT_CONTENT)
     """
-    HTML content to be displayed in modal window on 1st visit 
-    """    
-    
+    HTML content to be displayed in modal window on 1st visit
+    """
+
     use_custom_template = models.BooleanField(_('Use a custom template'),default=False)
     """
     Whether to show default banner/styles or custom ones.
-    """     
-    
+    """
+
     keywords = models.CharField(_('Keywords (for Picasa and YouTube overlays)'), blank=True, null=True, max_length=255)
     """
     Keywords (for Picasa and YouTube overlays)
-    """     
-    
+    """
+
     group_params = models.TextField(_('Layer Category Parameters'), blank=True, null=True)
     """
     Layer categories (names, expanded)
-    """    
-    
+    """
+
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
@@ -1349,18 +1369,18 @@ class Map(models.Model, PermissionLevelMixin):
         return [snapshot for snapshot in snapshots]
 
     @property
-    def local_layers(self): 
+    def local_layers(self):
         return True
 
     def json(self, layer_filter):
         map_layers = MapLayer.objects.filter(map=self.id)
-        layers = [] 
+        layers = []
         for map_layer in map_layers:
-            if map_layer.local():   
+            if map_layer.local():
                 layer =  Layer.objects.get(typename=map_layer.name)
                 layers.append(layer)
-            else: 
-                pass 
+            else:
+                pass
 
         if layer_filter:
             layers = filter(layer_filter, layers)
@@ -1403,7 +1423,7 @@ class Map(models.Model, PermissionLevelMixin):
         def uniqify(seq):
             """
             get a list of unique items from the input sequence.
-            
+
             This relies only on equality tests, so you can use it on most
             things.  If you have a sequence of hashables, list(set(seq)) is
             better.
@@ -1414,12 +1434,12 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-        configs.append({"ptype":"gxp_wmscsource", "url": "/geoserver/wms"})
+        configs.append({"ptype":"gxp_wmscsource", "url": settings.GEOSERVER_BASE_URL + "wms"})
 
         i = 0
         for source in uniqify(configs):
             while str(i) in sources: i = i + 1
-            sources[str(i)] = source 
+            sources[str(i)] = source
             server_lookup[simplejson.dumps(source)] = str(i)
 
         def source_lookup(source):
@@ -1429,7 +1449,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         def layer_config(l):
             cfg = l.layer_config()
-            src_cfg = l.source_config()            
+            src_cfg = l.source_config()
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
             return cfg
@@ -1453,12 +1473,8 @@ class Map(models.Model, PermissionLevelMixin):
                 'zoom': self.zoom
             },
         }
-        '''
-        Mark the last added layer as selected - important for data page
-        '''
-        config["map"]["layers"][len(layers)-1]["selected"] = True
 
-        
+
         if self.group_params:
             config["treeconfig"] = simplejson.loads(self.group_params)
 
@@ -1474,8 +1490,8 @@ class Map(models.Model, PermissionLevelMixin):
     def update_from_viewer(self, conf):
         """
         Update this Map's details by parsing a JSON object as produced by
-        a GXP Viewer.  
-        
+        a GXP Viewer.
+
         This method automatically persists to the database!
         """
         if isinstance(conf, basestring):
@@ -1496,12 +1512,12 @@ class Map(models.Model, PermissionLevelMixin):
         self.featured = conf['about'].get('featured', False)
 
         self.group_params = simplejson.dumps(conf["treeconfig"])
-        
+
         def source_for(layer):
             return conf["sources"][layer["source"]]
 
         layers = [l for l in conf["map"]["layers"]]
-        
+
         for layer in self.layer_set.all():
             layer.delete()
 
@@ -1514,11 +1530,11 @@ class Map(models.Model, PermissionLevelMixin):
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
-        
+
     class Meta:
-        # custom permissions, 
+        # custom permissions,
         # change and delete are standard in django
-        permissions = (('view_map', 'Can view'), 
+        permissions = (('view_map', 'Can view'),
                        ('change_map_permissions', "Can change permissions"), )
 
     # Permission Level Constants
@@ -1526,12 +1542,12 @@ class Map(models.Model, PermissionLevelMixin):
     LEVEL_READ  = 'map_readonly'
     LEVEL_WRITE = 'map_readwrite'
     LEVEL_ADMIN = 'map_admin'
-    
+
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
         self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
         self.set_gen_level(CUSTOM_GROUP_USERS, self.LEVEL_READ)
-        
+
         # remove specific user permissions
         current_perms =  self.get_all_level_info()
         for username in current_perms['users'].keys():
@@ -1540,7 +1556,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         # assign owner admin privs
         if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)    
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
 
 class MapSnapshot(models.Model):
@@ -1585,12 +1601,23 @@ class MapLayerManager(models.Manager):
         """
         layer_cfg = dict(layer)
         for k in ["format", "name", "opacity", "styles", "transparent",
-                  "fixed", "group", "visibility", "title", "source"]:
+                  "fixed", "group", "visibility", "source"]:
             if k in layer_cfg: del layer_cfg[k]
 
         source_cfg = dict(source)
         for k in ["url", "projection"]:
             if k in source_cfg: del source_cfg[k]
+
+
+        logger.debug("LAYER MANAGER: layer format:[%s], name:[%s], fixed:[%s], group:[%s], ows_url:[%s], layer_params:[%s], source_params:[%s]",
+                      layer.get("format", None),
+                      layer.get("name", None),
+                      layer.get("fixed", False),
+                      layer.get('group', None),
+                      source.get("url", None),
+                      str(layer_cfg),
+                      str(source_cfg)
+                      )
 
         return self.model(
             map = map,
@@ -1710,9 +1737,9 @@ class MapLayer(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     """
     The last time the object was modified.
-    """    
+    """
 
-    def local(self): 
+    def local(self):
         """
         Tests whether this layer is served by the GeoServer instance that is
         paired with the GeoNode site.  Currently this is based on heuristics,
@@ -1720,9 +1747,9 @@ class MapLayer(models.Model):
         """
         if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
             return Layer.objects.filter(typename=self.name).count() != 0
-        else: 
+        else:
             return False
- 
+
     def source_config(self):
         """
         Generate a dict that can be serialized to a GXP layer source
@@ -1734,7 +1761,7 @@ class MapLayer(models.Model):
         except:
             cfg = dict(ptype = "gxp_wmscsource")
 
-        if self.ows_url: 
+        if self.ows_url:
             cfg["url"] = self.ows_url
         return cfg
 
@@ -1750,7 +1777,7 @@ class MapLayer(models.Model):
         """
         try:
             cfg = simplejson.loads(self.layer_params)
-        except: 
+        except:
             cfg = dict()
 
         if self.format: cfg['format'] = self.format
@@ -1767,11 +1794,11 @@ class MapLayer(models.Model):
 
 
     @property
-    def local_link(self): 
+    def local_link(self):
         if self.local():
             layer = Layer.objects.get(typename=self.name)
             link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),layer.title)
-        else: 
+        else:
             link = "<span>%s</span> " % self.name
         return link
 
@@ -1833,7 +1860,7 @@ class ContactRole(models.Model):
     class Meta:
         unique_together = (("contact", "layer", "role"),)
 
-def delete_layer(instance, sender, **kwargs): 
+def delete_layer(instance, sender, **kwargs):
     """
     Removes the layer from GeoServer and GeoNetwork
     """
@@ -1852,11 +1879,16 @@ def post_save_layer(instance, sender, **kwargs):
     instance.save_to_geonetwork()
 
     if kwargs['created']:
+        logger.debug("populate from geonetwork")
         try:
             instance._populate_from_gn()
             instance.save(force_update=True)
         except:
             logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
+            instance.delete_from_geonetwork()
+            logger.warning("Deleted geonetwork record for [%s]", instance.name)
+            raise
+        logger.debug("save instance")
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
