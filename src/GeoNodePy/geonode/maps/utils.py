@@ -17,6 +17,7 @@ import os
 import traceback
 import inspect
 import string
+import urllib2
 
 logger = logging.getLogger("geonode.maps.utils")
 
@@ -32,7 +33,7 @@ def layer_type(filename):
     base_name, extension = os.path.splitext(filename)
     if extension.lower() in ['.shp',]:
         return FeatureType.resource_type
-    elif extension.lower() in ['.tif', '.tiff', '.geotiff', '.geotif']:
+    elif extension.lower() in ['.asc', '.tif', '.tiff', '.geotiff', '.geotif']:
         return Coverage.resource_type
     else:
         msg = ('Saving of extension [%s] is not implemented' % extension)
@@ -59,7 +60,7 @@ def get_files(filename):
 
     if extension in ['.asc', '.txt']:
         # Convert to Geotiff and update the files dictionary
-        upload_filename = basename + '.tif'
+        upload_filename = base_name + '.tif'
         cmd = ('gdal_translate -ot Float64 -of GTiff '
                '-co "PROFILE=GEOTIFF" %s %s' % (filename,
                                                 upload_filename))
@@ -94,7 +95,7 @@ def get_valid_name(layer_name):
 
     return proposed_name
 
-def get_valid_layer_name(layer=None):
+def get_valid_layer_name(layer=None, overwrite=False):
     """Checks if the layer is a string and fetches it from the database
     """
     if layer is None:
@@ -102,19 +103,20 @@ def get_valid_layer_name(layer=None):
         raise GeoNodeException(msg)
     if isinstance(layer, Layer):
         # If it is a layer object, we return the name
-        return layer.name
+        if overwrite:
+            return layer.name
     elif isinstance(layer, basestring):
         # If it is a string ...
         try:
             #  we check if it is in the database
             thelayer = Layer.objects.get(name=layer)
-            name = thelayer.name
         except Layer.DoesNotExist:
-            # if it is not in the database, we generate a brand new name
-            name = get_valid_name(layer)
-        # in both cases we want to return the name
-        return name
+            pass
+        else:
+            if overwrite:
+                return theLayer.name
 
+    return get_valid_name(layer)
 
 def cleanup(name, uuid):
    """Deletes GeoServer and GeoNetwork records for a given name.
@@ -181,11 +183,11 @@ def save(layer, base_file, user, overwrite = True):
 
     # Step 1. Figure out a name for the new layer, the one passed might not be valid or being used.
     logger.info('>>> Step 1. Figure out a name for %s' % layer)
-    name = get_valid_layer_name(layer)
+    name = get_valid_layer_name(layer, overwrite)
 
     # Step 2. Check that it is uploading to the same resource type as the existing resource
     logger.info('>>> Step 2. Make sure we are not trying to overwrite a existing resource named [%s] with the wrong type' % name)
-    the_layer_type =  layer_type(base_file)
+    the_layer_type = layer_type(base_file)
 
     # Get a short handle to the gsconfig geoserver catalog
     cat = Layer.objects.gs_catalog
@@ -303,10 +305,10 @@ def save(layer, base_file, user, overwrite = True):
         try:
             style = cat.create_style(name, sld)
         except geoserver.catalog.ConflictingDataError, e:
-            msg = 'Geoserver reported a conflict while uploading %s: "%s"' % (name, str(e))
+            msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (name, str(e))
+            style = cat.get_style(name)
             logger.warn(msg)
             e.args = (msg,)
-            raise
 
         #FIXME: Should we use the fully qualified typename?
         publishing = cat.get_layer(name)
@@ -333,7 +335,7 @@ def save(layer, base_file, user, overwrite = True):
     # FIXME: Do this inside the layer object
     typename = gs_resource.store.workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
-    saved_layer = Layer.objects.create(name=gs_resource.name,
+    saved_layer,__ = Layer.objects.get_or_create(name=gs_resource.name, defaults=dict(
                                  store=gs_resource.store.name,
                                  storeType=gs_resource.store.resource_type,
                                  typename=typename,
@@ -343,6 +345,7 @@ def save(layer, base_file, user, overwrite = True):
                                  keywords=gs_resource.keywords,
                                  abstract=gs_resource.abstract or '',
                                  owner=user,
+                                 )
     )
 
     # Step 9. Create the points of contact records for the layer
@@ -443,7 +446,7 @@ def check_geonode_is_up():
         raise GeoNodeException(msg)
 
 
-def simple_save(filename, user=None, title=None, overwrite=True):
+def upload(filename, user=None, title=None, overwrite=True):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -469,6 +472,88 @@ def simple_save(filename, user=None, title=None, overwrite=True):
 
     new_layer = save(layer, filename, theuser, overwrite)
     return new_layer
+
+
+def get_web_page(url, username=None, password=None):
+    """Get url page possible with username and password
+    """
+
+    if username is not None:
+
+        # Create password manager
+        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        passman.add_password(None, url, username, password)
+
+        # create the handler
+        authhandler = urllib2.HTTPBasicAuthHandler(passman)
+        opener = urllib2.build_opener(authhandler)
+        urllib2.install_opener(opener)
+
+    try:
+        pagehandle = urllib2.urlopen(url)
+    except urllib2.URLError, e:
+        msg = 'Could not open URL "%s": %s' % (url, e)
+        raise urllib2.URLError(msg)
+    else:
+        page = pagehandle.readlines()
+
+    return page
+
+def batch_upload(datadir, user=None, overwrite=True):
+    """Upload a directory of spatial data files to GeoNode and verifies each layer is in GeoServer.
+
+       Supported extensions are: .shp, .tif, .asc and .zip (of a shapfile).
+       It catches GeoNodeExceptions and gives a report per file
+       >>> batch_upload('/tmp/mydata')
+           [{'file': 'data1.tiff', 'name': 'geonode:data1' }, {'file': 'data2.shp', 'errors': 'Shapefile requires .prj file'}]
+    """
+    check_geonode_is_up()  
+    for subdir in os.listdir(datadir):
+        subdir = os.path.join(datadir, subdir)
+
+        if os.path.isdir(subdir):
+
+            for filename in os.listdir(subdir):
+
+                basename, extension = os.path.splitext(filename)
+
+                if extension in ['.asc', '.tif', '.shp', '.zip']:
+                    try:
+                        layer = upload('%s/%s' % (subdir, filename), 
+                                            user=user,
+                                            title=basename,
+                                            overwrite=overwrite
+                                           )
+
+                    except GeoNodeException, e:
+                        msg = '[%s] could not be uploaded. Error was: %s' % (filename, str(e))
+                        logger.exception(msg)
+                        yield {'file': 'filename', 'errors': msg}
+
+                    msg = ('The name of the upload file is %s' % layer.name)
+                    
+                    # Verify the layer was saved:
+                    saved_layer = Layer.objects.get(name=layer.name)
+
+                    # Check the layer is in the geonode server by accessing it's url
+                    #FIXME: Implement this...
+
+                    # Check the layer is in the geoserver by accessing it's url
+                    found = False
+                    gs_username, gs_password = settings.GEOSERVER_CREDENTIALS
+                    page = get_web_page(os.path.join(settings.GEOSERVER_BASE_URL, 'rest/layers'),
+                                                     username=gs_username,
+                                                     password=gs_password)
+                    for line in page:
+                        if line.find('rest/layers/%s.html' % layer.name) > 0:
+                            found = True
+                    if found:
+                        yield {'file': os.path.join(subdir, filename), 'name': layer.name}
+                    if not found:
+                        msg = ('Upload could not be verified, the layer %s is not '
+                               'in geoserver %s, but GeoNode did not raise any errors, '
+                               'this should never happen.' % (layer.name, settings.GEOSERVER_BASE_URL))
+                        raise GeoNodeException(msg)
 
 def run(cmd,
         stdout=None,
