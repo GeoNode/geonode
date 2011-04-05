@@ -46,31 +46,34 @@ def _project_center(llcenter):
     center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
     return center.x, center.y
 
-_DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
+def default_map():
 
-_default_map = Map(
-    title=DEFAULT_TITLE, 
-    abstract=DEFAULT_ABSTRACT,
-    projection="EPSG:900913",
-    center_x=_DEFAULT_MAP_CENTER[0],
-    center_y=_DEFAULT_MAP_CENTER[1],
-    zoom=settings.DEFAULT_MAP_ZOOM
-)
+    def _baselayer(lyr, order):
+        return MapLayer.objects.from_viewer_config(
+            map = _default_map,
+            layer = lyr,
+            source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
+            ordering = order
+        )
 
-def _baselayer(lyr, order):
-    return MapLayer.objects.from_viewer_config(
-        map = _default_map,
-        layer = lyr,
-        source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
-        ordering = order
+    _DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
+
+    _default_map = Map(
+        title=DEFAULT_TITLE, 
+        abstract=DEFAULT_ABSTRACT,
+        projection="EPSG:900913",
+        center_x=_DEFAULT_MAP_CENTER[0],
+        center_y=_DEFAULT_MAP_CENTER[1],
+        zoom=settings.DEFAULT_MAP_ZOOM
     )
+    DEFAULT_BASELAYERS = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
 
-DEFAULT_BASELAYERS = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASELAYERS)
 
-DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASELAYERS)
+    del _default_map
+    del _baselayer
+    return DEFAULT_MAP_CONFIG
 
-del _default_map
-del _baselayer
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
@@ -269,7 +272,7 @@ def newmap(request):
             config = map.viewer_json(*(DEFAULT_BASELAYERS + layers))
             config['fromLayer'] = True
         else:
-            config = DEFAULT_MAP_CONFIG
+            config = default_map()
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config), 
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
@@ -642,7 +645,7 @@ def view(request, mapid):
 
 def embed(request, mapid=None):
     if mapid is None:
-        config = DEFAULT_MAP_CONFIG
+        config = default_map()
     else:
         map = Map.objects.get(pk=mapid)
         if not request.user.has_perm('maps.view_map', obj=map):
