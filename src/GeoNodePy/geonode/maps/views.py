@@ -1662,12 +1662,8 @@ def _handle_layer_upload(request, layer=None):
                 logger.debug("committing DB changes for [%s]", typename)
                 layer.save()
                 logger.debug("Setting permissions for [%s] [%s]", typename, request.POST.get("permissions"))
-                try:
-                    perm_spec = json.loads(request.POST["permissions"])
-                    set_layer_permissions(layer, perm_spec, True)
-                except Exception, ex:
-                    logger.debug("EXCEPTION SETTING PERMISSIONS: [%s]", str(ex))
-                    layer.set_default_permissions()
+                perm_spec = json.loads(request.POST["permissions"])
+                set_layer_permissions(layer, perm_spec, True)
                 logger.debug("Generating separate style for [%s]", typename)
                 fixup_style(cat, gs_resource, request.FILES.get('sld_file'))
         except Exception, e:
@@ -1683,7 +1679,7 @@ def _handle_layer_upload(request, layer=None):
                 except Exception, ex:
                     logger.warning('delete csw FAIL: [%s]', str(ex))
                     pass
-            
+
 
             transaction.rollback()
             # Something went wrong, let's try and back out any changes

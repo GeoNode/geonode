@@ -27,6 +27,8 @@ def proxy(request):
     if url.fragment != "":
         locator += '#' + url.fragment
 
+
+    logger.debug("%s: %s : %s : %s", url.hostname, url.port, locator, settings.SESSION_COOKIE_NAME)
     headers = {}
     if settings.SESSION_COOKIE_NAME in request.COOKIES:
         headers["Cookie"] = request.META["HTTP_COOKIE"]

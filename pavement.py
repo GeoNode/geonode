@@ -176,10 +176,11 @@ def setup_gs_data(options):
 @needs(['setup_gs_data'])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
+    geoserver_target.remove()
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn clean install")
     copy('src/externals/geoserver-restconfig-2-1.jar', 'src/geoserver-geonode-ext/target/geoserver-geonode-dev/WEB-INF/lib/')
-    geoserver_target.remove()
+
     
 
 @task
@@ -251,7 +252,7 @@ def setup_geonetwork_new(options):
 @task
 @needs([
     'setup_geoserver',
-    'setup_geonetwork',
+    'setup_geonetwork_new',
     'setup_geonode_client'
 ])
 def setup_webapps(options):
@@ -350,7 +351,7 @@ def package_geoserver(options):
 
 
 @task
-@needs('package_dir', 'setup_geonetwork')
+@needs('package_dir', 'setup_geonetwork_new')
 def package_geonetwork(options):
     """Package GeoNetwork WAR file for deployment."""
     geonetwork_target.copy(options.deploy.out_dir)
