@@ -266,6 +266,40 @@ POSTGIS_DATASTORE
 .................
 To import uploaded shapefiles to PostGIS, manually create a PostGIS datastore in GeoServer
 and assign its name to the 'POSTGIS_DATASTORE' value in settings.py
+Then assign the appropriate connection values to the other POSTGIS_ settings (necessary for deleting
+PostGIS tables when layers in WorldMap are deleted).
+
+
+TILE CACHING
+.............
+Create or edit the 'gwc-gs.xml' file under the gwc directory within your GeoServer data directory:
+<GeoServerGWCConfig>
+   <directWMSIntegrationEnabled>true</directWMSIntegrationEnabled>
+   <WMSCEnabled>true</WMSCEnabled>
+   <WMTSEnabled>true</WMTSEnabled>
+   <TMSEnabled>true</TMSEnabled>
+   <cacheLayersByDefault>true</cacheLayersByDefault>
+   <cacheNonDefaultStyles>true</cacheNonDefaultStyles>
+   <metaTilingX>4</metaTilingX>
+   <metaTilingY>4</metaTilingY>
+   <defaultCachingGridSetIds>
+     <string>EPSG:900913</string>
+   </defaultCachingGridSetIds>
+   <defaultCoverageCacheFormats>
+     <string>image/jpeg</string>
+   </defaultCoverageCacheFormats>
+   <defaultVectorCacheFormats>
+     <string>image/png</string>
+   </defaultVectorCacheFormats>
+   <defaultOtherCacheFormats>
+     <string>image/png</string>
+   </defaultOtherCacheFormats>
+</GeoServerGWCConfig>
+
+
+Also, if using Tomcat, add the following line to your catalaina.sh file:
+    CATALINA_OPTS="-DGWC_METASTORE_JDBC_URL=jdbc:h2:file:/<path to meta_jdbc_h2>"
+    where "meta_jdbc_h2" should be a directory under the gwc directory mentioned above.
 
 
 

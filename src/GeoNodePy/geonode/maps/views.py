@@ -1430,10 +1430,11 @@ def _handle_layer_upload(request, layer=None):
     logger.info("Uploaded layer: [%s], base filename: [%s]", layer_name, base_file)
     base_file = request.FILES.get('base_file')
     logger.info("Uploaded layer; base filename: [%s]", base_file)
-
+    detail_error = _('No additional info')
+    
     if not base_file:
         logger.warn("Failed upload: no basefile provided")
-        return None, [_("You must specify a layer data file to upload.")],  _('No additional info')
+        return None, [_("You must specify a layer data file to upload.")], detail_error
 
     layer_name = _suffix.sub("", base_file.name)
 
@@ -1456,12 +1457,12 @@ def _handle_layer_upload(request, layer=None):
         logger.info("Using name as requested")
 
     errors = []
-    detail_error = _('No additional info')
+
     cat = Layer.objects.gs_catalog
     
     if not name:
         logger.error("Unexpected error: Layer name passed validation but is falsy: %s", name)
-        return None, [_("Unable to determine layer name.")],  _('No additional info')
+        return None, [_("Unable to determine layer name.")], detail_error
 
     # zipped shapefile upload
     elif base_file.name.lower().endswith('.zip'):
@@ -1510,7 +1511,7 @@ def _handle_layer_upload(request, layer=None):
             errors.append(_("You must include a .prj file when uploading a zipped shapefile."))
             
         if errors:
-            return None, errors, _('No additional info')
+            return None, errors, detail_error
         cfg = request.FILES.get('base_file')
 
     # shapefile upload
@@ -1521,7 +1522,7 @@ def _handle_layer_upload(request, layer=None):
         if layer is not None:
             if layer.storeType == 'coverageStore':
                 logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
-                return None, [_("This resource may only be replaced with raster data.")]
+                return None, [_("This resource may only be replaced with raster data.")], detail_error
         
         if settings.POSTGIS_DATASTORE:
             logger.debug('Upload to PostGIS')
@@ -1546,7 +1547,7 @@ def _handle_layer_upload(request, layer=None):
             errors.append(_("You must specify a .prj file when uploading a shapefile."))
 
         if errors:
-            return None, errors, detail_error
+            return None, errors, escape(detail_error)
         
         # ... bundle the files together and send them along
         cfg = {
