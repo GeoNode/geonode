@@ -82,6 +82,17 @@ Deploying GeoNetwork
 
      # sudo cp geonetwork.war /var/lib/tomcat6/webapps/ 
 
+2. *Modify* GeoNetworks default session configuration to have a shorter timeout
+   period. GeoNetwork has a 3 hour session timeout period as the default and
+   this is known to cause stability problems in a deployed GeoNode installation.
+   To solve this, the timeout period needs to be shortened to 5 minutes.
+   This requires that you modify the ``WEB-INF/web.xml`` file in the 
+   unpacked GeoNetwork webapp::
+
+          <session-config>
+            <session-timeout>5</session-timeout>
+          </session-config>
+
 .. note:: 
 
      The GeoNetwork username and password defaults to admin/admin and
