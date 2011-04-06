@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.test.client import Client
 from geonode.maps.models import Map, Layer
-from geonode.maps.views import DEFAULT_MAP_CONFIG
 from mock import Mock
 
 import json, os
