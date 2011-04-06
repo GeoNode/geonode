@@ -171,7 +171,8 @@ def save(layer, base_file, user, overwrite = True):
 
        If specified, the layer given is overwritten, otherwise a new layer is created.
     """
-    logger.info('Uploaded layer: [%s], base filename: [%s]' % (layer, base_file))
+    logger.info('\n' + '-'*100 + '\n')
+    logger.info('Uploading layer: [%s], base filename: [%s]' % (layer, base_file))
     stacktrace = None
 
     # Step 0. Verify the file exists
@@ -446,7 +447,7 @@ def check_geonode_is_up():
         raise GeoNodeException(msg)
 
 
-def upload(filename, user=None, title=None, overwrite=True):
+def file_upload(filename, user=None, title=None, overwrite=True):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -471,35 +472,11 @@ def upload(filename, user=None, title=None, overwrite=True):
         layer = name
 
     new_layer = save(layer, filename, theuser, overwrite)
+
     return new_layer
 
 
-def get_web_page(url, username=None, password=None):
-    """Get url page possible with username and password
-    """
-
-    if username is not None:
-
-        # Create password manager
-        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        passman.add_password(None, url, username, password)
-
-        # create the handler
-        authhandler = urllib2.HTTPBasicAuthHandler(passman)
-        opener = urllib2.build_opener(authhandler)
-        urllib2.install_opener(opener)
-
-    try:
-        pagehandle = urllib2.urlopen(url)
-    except urllib2.URLError, e:
-        msg = 'Could not open URL "%s": %s' % (url, e)
-        raise urllib2.URLError(msg)
-    else:
-        page = pagehandle.readlines()
-
-    return page
-
-def batch_upload(datadir, user=None, overwrite=True):
+def upload(incoming, user=None, overwrite=True):
     """Upload a directory of spatial data files to GeoNode and verifies each layer is in GeoServer.
 
        Supported extensions are: .shp, .tif, .asc and .zip (of a shapfile).
@@ -508,52 +485,39 @@ def batch_upload(datadir, user=None, overwrite=True):
            [{'file': 'data1.tiff', 'name': 'geonode:data1' }, {'file': 'data2.shp', 'errors': 'Shapefile requires .prj file'}]
     """
     check_geonode_is_up()  
-    for subdir in os.listdir(datadir):
-        subdir = os.path.join(datadir, subdir)
 
-        if os.path.isdir(subdir):
+    if os.path.isfile(incoming):
+        layer = file_upload(incoming, user=user, overwrite=overwrite)
+        yield {'file': incoming, 'name': layer.name}
 
-            for filename in os.listdir(subdir):
+    if not os.path.isdir(incoming):
+        msg = ('Please pass a filename or a directory name as the "incoming" '
+               'parameter, instead of %s: %s' % (incoming, type(incoming)))
+        logger.exception(msg)
+        raise GeoNodeException(msg)
 
-                basename, extension = os.path.splitext(filename)
+    datadir = incoming
 
-                if extension in ['.asc', '.tif', '.shp', '.zip']:
-                    try:
-                        layer = upload('%s/%s' % (subdir, filename), 
-                                            user=user,
-                                            title=basename,
-                                            overwrite=overwrite
-                                           )
+    for root, dirs, files in os.walk(datadir):
+        for short_filename in files:
+            basename, extension = os.path.splitext(short_filename)
+            filename = os.path.join(root, short_filename)
+            if extension in ['.asc', '.tif', '.shp', '.zip']:
+                try:
+                    layer = file_upload(filename, 
+                                        user=user,
+                                        title=basename,
+                                        overwrite=overwrite
+                                       )
 
-                    except GeoNodeException, e:
-                        msg = '[%s] could not be uploaded. Error was: %s' % (filename, str(e))
-                        logger.exception(msg)
-                        yield {'file': 'filename', 'errors': msg}
+                except GeoNodeException, e:
+                    msg = '[%s] could not be uploaded. Error was: %s' % (filename, str(e))
+                    logger.exception(msg)
+                    yield {'file': 'filename', 'errors': msg}
+                else:
+                    yield {'file': filename, 'name': layer.name}
 
-                    msg = ('The name of the upload file is %s' % layer.name)
-                    
-                    # Verify the layer was saved:
-                    saved_layer = Layer.objects.get(name=layer.name)
 
-                    # Check the layer is in the geonode server by accessing it's url
-                    #FIXME: Implement this...
-
-                    # Check the layer is in the geoserver by accessing it's url
-                    found = False
-                    gs_username, gs_password = settings.GEOSERVER_CREDENTIALS
-                    page = get_web_page(os.path.join(settings.GEOSERVER_BASE_URL, 'rest/layers'),
-                                                     username=gs_username,
-                                                     password=gs_password)
-                    for line in page:
-                        if line.find('rest/layers/%s.html' % layer.name) > 0:
-                            found = True
-                    if found:
-                        yield {'file': os.path.join(subdir, filename), 'name': layer.name}
-                    if not found:
-                        msg = ('Upload could not be verified, the layer %s is not '
-                               'in geoserver %s, but GeoNode did not raise any errors, '
-                               'this should never happen.' % (layer.name, settings.GEOSERVER_BASE_URL))
-                        raise GeoNodeException(msg)
 
 def run(cmd,
         stdout=None,

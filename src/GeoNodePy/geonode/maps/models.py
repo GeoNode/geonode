@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import os
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
@@ -12,6 +13,7 @@ from django.utils.html import escape
 import httplib2
 import simplejson
 import urllib
+import urllib2
 from urlparse import urlparse
 import uuid
 from datetime import datetime
@@ -23,9 +25,13 @@ from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 from gs_helpers import cascading_delete
 
+
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+
+
+
 
 ROLE_VALUES = [
     'datasetProvider',
