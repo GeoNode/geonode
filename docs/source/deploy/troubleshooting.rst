@@ -12,4 +12,5 @@ If you are experiencing
 Delete these two files
 
  /var/lib/tomcat6/webapps/geonetwork/WEB-INF/db/data/DefaultDatabase.lock
+
  /var/lib/tomcat6/webapps/geonetwork/WEB-INF/lucene/nonspatial/write.lock
