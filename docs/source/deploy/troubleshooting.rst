@@ -12,8 +12,10 @@ If you are experiencing
  Apr 6, 2011 12:06:46 AM java.util.prefs.FileSystemPreferences syncWorld
 
 
-Delete these two files
+Try changing the permissions of this file
 
  /var/lib/tomcat6/webapps/geonetwork/WEB-INF/db/data/DefaultDatabase.lock
 
- /var/lib/tomcat6/webapps/geonetwork/WEB-INF/lucene/nonspatial/write.lock
+Something like:
+ chmod 777 DefaultDatabase.lock
+
