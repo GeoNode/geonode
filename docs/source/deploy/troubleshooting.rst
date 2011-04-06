@@ -17,5 +17,6 @@ Try changing the permissions of this file
  /var/lib/tomcat6/webapps/geonetwork/WEB-INF/db/data/DefaultDatabase.lock
 
 Something like:
+
  chmod 777 DefaultDatabase.lock
 
