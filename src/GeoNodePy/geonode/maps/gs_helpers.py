@@ -2,6 +2,7 @@ from itertools import cycle, izip
 from django.conf import settings
 import logging
 import re
+import psycopg2
 
 logger = logging.getLogger("geonode.maps.gs_helpers")
 
@@ -129,6 +130,7 @@ def cascading_delete(cat, resource):
                 except:
                     logger.error('Error deleting style')
         store = resource.store
+        resource_name = resource.name
         try:
             cat.delete(resource)
         except:
@@ -137,7 +139,18 @@ def cascading_delete(cat, resource):
             logger.debug('STORE NAME:' + store.name)
             if store.name != settings.POSTGIS_DATASTORE:
                 cat.delete(store)
+            else:
+                delete_from_postgis(resource_name)
         except Exception, ex:
             logger.error("Error deleting store, [%s]", str(ex))
     else:
         logger.error('Error deleting layer & styles - not found in geoserver')
+
+
+def delete_from_postgis(resource_name):
+    conn=psycopg2.connect("dbname='" + settings.POSTGIS_NAME + "' user='" + settings.POSTGIS_USER + "'  password='" + settings.POSTGIS_PASSWORD + "' port=" + settings.POSTGIS_PORT + " host='" + settings.POSTGIS_HOST + "'")
+    cur = conn.cursor()
+    cur.execute("""select DropGeometryTable('""" + resource_name  + """')""")
+    conn.commit()
+    
+

@@ -83,7 +83,7 @@ Tomcat Servlet container was already installed with yum in previous step
 
 1. Add additional java options to the Tomcat startup settings 
    Edit the file :file:`/etc/sysconfig/tomcat5` and add the following.::
-
+	CATALINA_OPTS="-DGWC_METASTORE_JDBC_URL=jdbc:h2:file:/<path to meta_jdbc_h2>"
     JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
   
     .. note::
@@ -411,3 +411,4 @@ Prepare the Django database
     
     If you have problems uploading files, please enable the verbose logging
     http://docs.geonode.org/1.0/logging.html
+

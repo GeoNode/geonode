@@ -281,8 +281,6 @@ SERVE_MEDIA = DEBUG;
 GEONODE_CLIENT_LOCATION = "/media/static/"
 
 
-
-
 #Google Analytics
 #Make this code an empty string if you DONT intend to use it;
 # if you do use it replace UA-XXXXXXXX-1 with your own ID
@@ -300,6 +298,12 @@ CUSTOM_AUTH_URL = ''
 #Name of a PostGIS datastore in GeoServer, if any
 POSTGIS_DATASTORE=''
 
+#PostGIS connection info, necessary for deleting tables when layers with PostGIS data stores are removed
+POSTGIS_NAME = ''
+POSTGIS_USER = ''
+POSTGIS_PASSWORD = ''
+POSTGIS_HOST = ''
+POSTGIS_PORT = ''
 
 try:
     from local_settings import *

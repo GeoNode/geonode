@@ -161,7 +161,7 @@ class LayerForm(forms.ModelForm):
     temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
     title = forms.CharField(label = '*' + _('Title'), max_length=255)
     abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea)
-
+    keywords = forms.CharField(label = '*' + _('Keywords (separate with spaces)'), widget=forms.Textarea)
 
     poc = forms.ModelChoiceField(empty_label = _("Person outside GeoNode (fill form)"),
                                  label = "*" + _("Point Of Contact"), required=False,
@@ -1456,6 +1456,7 @@ def _handle_layer_upload(request, layer=None):
         logger.info("Using name as requested")
 
     errors = []
+    detail_error = _('No additional info')
     cat = Layer.objects.gs_catalog
     
     if not name:
@@ -1470,7 +1471,7 @@ def _handle_layer_upload(request, layer=None):
         if layer is not None:
             if layer.storeType == 'coverageStore':
                 logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
-                return None, [_("This resource may only be replaced with raster data.")], _('No additional info')
+                return None, [_("This resource may only be replaced with raster data.")], detail_error
 
 
         if settings.POSTGIS_DATASTORE:
@@ -1509,7 +1510,7 @@ def _handle_layer_upload(request, layer=None):
             errors.append(_("You must include a .prj file when uploading a zipped shapefile."))
             
         if errors:
-            return None, errors
+            return None, errors, _('No additional info')
         cfg = request.FILES.get('base_file')
 
     # shapefile upload
@@ -1542,9 +1543,10 @@ def _handle_layer_upload(request, layer=None):
 
         if not prj_file:
             logger.info("User tried to upload [%s] without a .prj file", base_file)
+            errors.append(_("You must specify a .prj file when uploading a shapefile."))
 
         if errors:
-            return None, errors
+            return None, errors, detail_error
         
         # ... bundle the files together and send them along
         cfg = {
@@ -1568,7 +1570,7 @@ def _handle_layer_upload(request, layer=None):
         create_store = cat.create_coveragestore
         cfg = base_file
 
-    detail_error = ''
+
     try:
         logger.debug("Starting upload of [%s] to GeoServer...", name)
         if create_store == cat.create_pg_feature:
@@ -1599,7 +1601,8 @@ def _handle_layer_upload(request, layer=None):
             else:
                 create_store(name, cfg, overwrite=overwrite)
             logger.debug("Finished upload of [%s] to GeoServer...", name)
-        except geoserver.catalog.ConflictingDataError:        errors.append(_("There is already a layer with the given name."))
+        except geoserver.catalog.ConflictingDataError:
+            errors.append(_("There is already a layer with the given name."))
 
 
     # if we successfully created the store in geoserver...
