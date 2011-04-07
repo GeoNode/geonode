@@ -214,45 +214,13 @@ def setup_geonetwork(options):
     info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
     path("gn_schema").copytree(schema_url)
 
-    src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
-    dst_url = webapps / "intermap.war"
 
-    grab(src_url, dst_url)
 
-@task
-def setup_geonetwork_new(options):
-    """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
-    war_zip_file = options.config.parser.get('geonetwork_new', 'geonetwork_new_zip')
-    src_url = str(options.config.parser.get('geonetwork_new', 'geonetwork_new_war_url') +  war_zip_file + '/download')
-    info("geonetwork url: %s" %src_url)
-    # where to download the war files. If changed change also
-    # src/geoserver-geonode-ext/jetty.xml accordingly
-
-    webapps = path("./webapps")
-    if not webapps.exists():
-        webapps.mkdir()
-
-    dst_url = webapps / war_zip_file
-    deployed_url = webapps / "geonetwork"
-    schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
-
-    if getattr(options, 'clean', False):
-        deployed_url.rmtree()
-
-    if not dst_url.exists():
-        grab(src_url, dst_url)
-    if not deployed_url.exists():
-        zip_extractall(zipfile.ZipFile(dst_url), deployed_url)
-
-    # Update the ISO 19139 profile to the latest version
-    path(schema_url).rmtree()
-    info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
-    path("gn_schema").copytree(schema_url)
 
 @task
 @needs([
     'setup_geoserver',
-    'setup_geonetwork_new',
+    'setup_geonetwork',
     'setup_geonode_client'
 ])
 def setup_webapps(options):
@@ -351,7 +319,7 @@ def package_geoserver(options):
 
 
 @task
-@needs('package_dir', 'setup_geonetwork_new')
+@needs('package_dir', 'setup_geonetwork')
 def package_geonetwork(options):
     """Package GeoNetwork WAR file for deployment."""
     geonetwork_target.copy(options.deploy.out_dir)
