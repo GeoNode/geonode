@@ -181,13 +181,11 @@ def setup_geoserver(options):
         sh("mvn clean install")
     copy('src/externals/geoserver-restconfig-2-1.jar', 'src/geoserver-geonode-ext/target/geoserver-geonode-dev/WEB-INF/lib/')
 
-    
-
 @task
 def setup_geonetwork(options):
     """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
     war_zip_file = options.config.parser.get('geonetwork', 'geonetwork_zip')
-    src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file)
+    src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file + '/download')
     info("geonetwork url: %s" %src_url)
     # where to download the war files. If changed change also
     # src/geoserver-geonode-ext/jetty.xml accordingly
@@ -197,25 +195,21 @@ def setup_geonetwork(options):
         webapps.mkdir()
 
     dst_url = webapps / war_zip_file
-    dst_war = webapps / "geonetwork.war"
     deployed_url = webapps / "geonetwork"
     schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
-    grab(src_url, dst_url)
-    if not dst_war.exists():
-        zip_extractall(zipfile.ZipFile(dst_url), webapps)
+
+    if not dst_url.exists():
+        grab(src_url, dst_url)
     if not deployed_url.exists():
-        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
+        zip_extractall(zipfile.ZipFile(dst_url), deployed_url)
 
     # Update the ISO 19139 profile to the latest version
     path(schema_url).rmtree()
     info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
     path("gn_schema").copytree(schema_url)
-
-
-
 
 @task
 @needs([
@@ -629,9 +623,6 @@ def platform_options(options):
 
 # include patched versions of zipfile code
 # to extract zipfile dirs in python 2.6.1 and below...
-
-
-
 
 def zip_extractall(zf, path=None, members=None, pwd=None):
     if sys.version_info >= (2, 6, 2):
