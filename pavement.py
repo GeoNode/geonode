@@ -176,52 +176,16 @@ def setup_gs_data(options):
 @needs(['setup_gs_data'])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
+    geoserver_target.remove()
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn clean install")
+    copy('src/externals/geoserver-restconfig-2-1.jar', 'src/geoserver-geonode-ext/target/geoserver-geonode-dev/WEB-INF/lib/')
 
 @task
 def setup_geonetwork(options):
     """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
     war_zip_file = options.config.parser.get('geonetwork', 'geonetwork_zip')
-    src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file)
-    info("geonetwork url: %s" %src_url)
-    # where to download the war files. If changed change also
-    # src/geoserver-geonode-ext/jetty.xml accordingly
-
-    webapps = path("./webapps")
-    if not webapps.exists():
-        webapps.mkdir()
-
-    dst_url = webapps / war_zip_file
-    dst_war = webapps / "geonetwork.war"
-    deployed_url = webapps / "geonetwork"
-    schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
-
-    if getattr(options, 'clean', False):
-        deployed_url.rmtree()
-    grab(src_url, dst_url)
-    if not dst_war.exists():
-        zip_extractall(zipfile.ZipFile(dst_url), webapps)
-    if not deployed_url.exists():
-        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
-
-    # Update the ISO 19139 profile to the latest version
-    path(schema_url).rmtree()
-    info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
-    path("gn_schema").copytree(schema_url)
-
-    src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
-    dst_url = webapps / "intermap.war"
-
-    grab(src_url, dst_url)
-
-
-
-@task
-def setup_geonetwork_new(options):
-    """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
-    war_zip_file = options.config.parser.get('geonetwork_new', 'geonetwork_new_zip')
-    src_url = str(options.config.parser.get('geonetwork_new', 'geonetwork_new_war_url') +  war_zip_file + '/download')
+    src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file + '/download')
     info("geonetwork url: %s" %src_url)
     # where to download the war files. If changed change also
     # src/geoserver-geonode-ext/jetty.xml accordingly
@@ -274,13 +238,17 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    deployed_url = path("./src/GeoNodePy/geonode/media/static")
-    if not deployed_url.exists():
-        deployed_url.mkdir()
+    static = path("./src/GeoNodePy/geonode/media/static")
+    if not static.exists():
+        static.mkdir()
 
-    dst_zip = deployed_url / "geonode-client.zip"
+    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
+    dst_zip = static / "geonode-client.zip"
+
     copy("src/externals/geonode-client.zip", dst_zip)
-    zip_extractall(zipfile.ZipFile(dst_zip), deployed_url)
+
+    zip_extractall(zipfile.ZipFile(dst_zip), static)
+    dst_zip.remove()
 
 @task
 def sync_django_db(options):
@@ -334,6 +302,13 @@ def package_client(options):
 @needs('package_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
+
+    zip = zipfile.ZipFile(geoserver_target, "a")
+    zip.printdir()
+    zip.write('src/externals/geoserver-restconfig-2-1.jar', 'WEB-INF/lib/geoserver-restconfig.jar')
+    zip.printdir()
+    zip.close()
+
     geoserver_target.copy(options.deploy.out_dir)
 
 
@@ -544,15 +519,13 @@ def install_sphinx_conditionally(options):
 
 
 @task
+@needs('package_client')
 @cmdopts([
-    ('bind=', 'b', 'IP address to bind to. Default is localhost.'),
-    ('client_src=', 's', 'geonode-client project directory, e.g. ../geonode-client/. If provided, unminified javascript resources will be used.')
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
 ])
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
-    if hasattr(options.host, 'client_src'):
-        os.environ["READYGXP_FILES_ROOT"] = os.path.abspath(options.host.client_src)
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
@@ -616,7 +589,7 @@ def host(options):
             pass
         try:
             mvn.terminate()
-        except: 
+        except:
             pass
 
         django.wait()

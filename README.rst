@@ -53,6 +53,8 @@ software installed and in your PATH:
 
   - If not, download from http://maven.apache.org/download.html
 
+* Apache Tomcat 6.x or Jetty
+
 Additionally, WorldMap uses a number of native-code libraries in Python.  You
 can install these libraries manually, or allow the WorldMap setup script to
 compile them for you.   In the latter case, you will need to install a C
@@ -86,10 +88,16 @@ The following steps should prepare a Python virtual environment for you::
   source bin/activate
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
-  
+
+
+Copy these war files to the webapps directory of your Java container
+(Tomcat/Jetty) and deploy them:
+    webapps/geoserver-geonode-dev.war
+    webapps/geonetwork.war
+
 
 Start the server:
-  paver host 
+  paver host
 
 
 Once fully started, you should see a message indicating the address of your WorldMap::
@@ -127,16 +135,24 @@ For JavaScript Developers
 Minified Scripts
 ................
 
-JavaScript Developers can switch to using unminified scripts and CSS styles by
-setting the MINIFIED_RESOURCES entry in :file:`src/geonode/settings.py` to
-``False``.  If you are developing JavaScript and testing against minified builds,
-make sure to use::
+JavaScript Developers can switch to using unminified scripts and CSS:
 
-   $ paver concat_js 
-   $ paver capra_js
+1. Get and run geonode-client:
 
+<<<<<<< HEAD
 to update the built script directories for the base WorldMap site and the CAPRA
 extensions, respectively.
+=======
+    $ git clone git://github.com/GeoNode/geonode-client.git geonode-client
+    $ cd geonode-client
+    $ ant init debug
+
+2. Set the GEONODE_CLIENT_LOCATION entry in :file:`src/geonode/settings.py` to
+   ``http://localhost:8080/`` and run paver as described above.
+
+Note that this requires ant (http://ant.apache.org/) in addition to the above
+build requirements.
+>>>>>>> c17b4f376bad7381aa32dfcb5fa3e13b8533d3a5
 
 VirtualBox Setup
 ................
@@ -150,13 +166,16 @@ following needs to be done before running ``paver host``:
 * On the host, do ifconfig and write down the IP address of the vboxnet0
   adapter.
 
-* Edit src/GeoNodePy/geonode/settings.py and change the line::
+* Edit :file:`src/GeoNodePy/geonode/settings.py` and change the line::
 
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
+    GEOSERVER_BASE_URL="http://localhost:8080/geoserver-geonode-dev/"
 
   to use the IP address you have written down above::
 
-    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver/"
+    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver-geonode-dev/"
+
+* Make sure to change other http://localhost urls in
+  :file:`src/GeoNodePy/geonode/settings.py` accordingly as well
 
 * To start the web server, run::
 
@@ -178,30 +197,15 @@ GeoServer used for http://geonode.capra.opengeo.org/ is::
 
     http://geonode.capra.opengeo.org/geoserver/
 
-The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
-in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
-instance at that port with the following commands::
-   
-    cd src/geonode-geoserver-ext/
-    sh startup.sh
-
-.. note:: 
-    Normally, ``mvn jetty:run-war`` would be sufficient.  However, we use the
-    shell script to add some extra parameters to the JVM command-line used to
-    run Jetty in order to workaround a JVM bug that affects GeoNetwork.
+The default value is ``http://localhost:8080/geoserver-geonode-dev/``.
 
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
   
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
+    GEOSERVER_BASE_URL="http://localhost:8080/geoserver-geonode-dev/"
 
 to indicate the GeoServer URL that you want to use. 
 
-To run the Django app when Jetty is started independently, use::
-
-    paster serve --reload shared/dev-paste.ini
-
-in the base of your working directory.
 
 Alternative GeoServer Data Directories
 ......................................
@@ -256,6 +260,46 @@ This needs email to be configured and your website's domain name properly set in
 the Sites application (the default is example.com)::
 
     http://localhost:8000/admin/sites/site/1
+
+
+POSTGIS_DATASTORE
+.................
+To import uploaded shapefiles to PostGIS, manually create a PostGIS datastore in GeoServer
+and assign its name to the 'POSTGIS_DATASTORE' value in settings.py
+Then assign the appropriate connection values to the other POSTGIS_ settings (necessary for deleting
+PostGIS tables when layers in WorldMap are deleted).
+
+
+TILE CACHING
+.............
+Create or edit the 'gwc-gs.xml' file under the gwc directory within your GeoServer data directory:
+<GeoServerGWCConfig>
+   <directWMSIntegrationEnabled>true</directWMSIntegrationEnabled>
+   <WMSCEnabled>true</WMSCEnabled>
+   <WMTSEnabled>true</WMTSEnabled>
+   <TMSEnabled>true</TMSEnabled>
+   <cacheLayersByDefault>true</cacheLayersByDefault>
+   <cacheNonDefaultStyles>true</cacheNonDefaultStyles>
+   <metaTilingX>4</metaTilingX>
+   <metaTilingY>4</metaTilingY>
+   <defaultCachingGridSetIds>
+     <string>EPSG:900913</string>
+   </defaultCachingGridSetIds>
+   <defaultCoverageCacheFormats>
+     <string>image/jpeg</string>
+   </defaultCoverageCacheFormats>
+   <defaultVectorCacheFormats>
+     <string>image/png</string>
+   </defaultVectorCacheFormats>
+   <defaultOtherCacheFormats>
+     <string>image/png</string>
+   </defaultOtherCacheFormats>
+</GeoServerGWCConfig>
+
+
+Also, if using Tomcat, add the following line to your catalaina.sh file:
+    CATALINA_OPTS="-DGWC_METASTORE_JDBC_URL=jdbc:h2:file:/<path to meta_jdbc_h2>"
+    where "meta_jdbc_h2" should be a directory under the gwc directory mentioned above.
 
 
 

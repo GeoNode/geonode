@@ -1,6 +1,8 @@
 from itertools import cycle, izip
+from django.conf import settings
 import logging
 import re
+import psycopg2
 
 logger = logging.getLogger("geonode.maps.gs_helpers")
 
@@ -86,7 +88,7 @@ _style_templates = dict(
 def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
-def fixup_style(cat, resource):
+def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
     logger.info("Found %d layers associated with [%s]", resource)
@@ -94,8 +96,16 @@ def fixup_style(cat, resource):
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
+            if (cat.get_style(name)):
+                iter = 1
+                while cat.get_style(name):
+                    name = name + '_c' + str(iter)
+                    iter+=1
             fg, bg, mark = _style_contexts.next()
-            sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
+            if style is None:
+                sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
+            else: 
+                sld = style.read()
             logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
@@ -104,8 +114,43 @@ def fixup_style(cat, resource):
             logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
-    lyr = cat.get_layer(resource.name)
-    store = resource.store
-    cat.delete(lyr)
-    cat.delete(resource)
-    cat.delete(store)
+    #Maybe it's already been deleted from geoserver?
+    if resource:
+        lyr = cat.get_layer(resource.name)
+
+        styles = lyr.styles + [lyr.default_style]
+        try:
+            cat.delete(lyr)
+        except:
+            logger.error('Error deleting layer')
+        for s in styles:
+            if s is not None:
+                try:
+                    cat.delete(s, purge=True)
+                except:
+                    logger.error('Error deleting style')
+        store = resource.store
+        resource_name = resource.name
+        try:
+            cat.delete(resource)
+        except:
+            logger.error("Error deleting resource")
+        try:
+            logger.debug('STORE NAME:' + store.name)
+            if store.name != settings.POSTGIS_DATASTORE:
+                cat.delete(store)
+            else:
+                delete_from_postgis(resource_name)
+        except Exception, ex:
+            logger.error("Error deleting store, [%s]", str(ex))
+    else:
+        logger.error('Error deleting layer & styles - not found in geoserver')
+
+
+def delete_from_postgis(resource_name):
+    conn=psycopg2.connect("dbname='" + settings.POSTGIS_NAME + "' user='" + settings.POSTGIS_USER + "'  password='" + settings.POSTGIS_PASSWORD + "' port=" + settings.POSTGIS_PORT + " host='" + settings.POSTGIS_HOST + "'")
+    cur = conn.cursor()
+    cur.execute("""select DropGeometryTable('""" + resource_name  + """')""")
+    conn.commit()
+    
+

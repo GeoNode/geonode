@@ -17,6 +17,13 @@ def static(request, page):
         "site" : settings.SITEURL
     }))
 
+def developer(request):
+    return render_to_response("developer.html", RequestContext(request, {
+        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
+        "GEONETWORK_BASE_URL": settings.GEONETWORK_BASE_URL,
+        "site": settings.SITEURL
+    }))
+
 def lang(request): 
     return render_to_response('lang.js', mimetype="text/javascript")
 
@@ -73,6 +80,28 @@ def ajax_lookup(request):
     users = User.objects.filter(username__startswith=request.POST['query'])
     json_dict = {
         'users': [({'username': u.username}) for u in users],
+        'count': users.count(),
+    }
+    return HttpResponse(
+        content=json.dumps(json_dict),
+        mimetype='text/plain'
+    )
+
+def ajax_lookup_email(request):
+    if request.method != 'POST':
+        return HttpResponse(
+            content='ajax user lookup requires HTTP POST',
+            status=405,
+            mimetype='text/plain'
+        )
+    elif 'query' not in request.POST:
+        return HttpResponse(
+            content='use a field named "query" to specify a prefix to filter usernames',
+            mimetype='text/plain'
+        )
+    users = User.objects.filter(email__startswith=request.POST['query'])
+    json_dict = {
+        'users': [({'email': u.email}) for u in users],
         'count': users.count(),
     }
     return HttpResponse(

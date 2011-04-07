@@ -5,6 +5,9 @@ from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+import logging
+
+logger = logging.getLogger("geonode.core.models")
 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
@@ -95,7 +98,7 @@ class GenericObjectRoleMapping(models.Model):
     class Meta:
         unique_together = (('subject', 'object_ct', 'object_id', 'role'), )
 
-def PermissionLevelError(Exception):
+class PermissionLevelError(Exception):
     pass
 
 class PermissionLevelMixin(object):
@@ -136,7 +139,7 @@ class PermissionLevelMixin(object):
         set the user's permission level to the level specified. if 
         level is LEVEL_NONE, any existing level assignment is removed.
         """
-        
+
         my_ct = ContentType.objects.get_for_model(self)
         if level == self.LEVEL_NONE:
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()
@@ -172,17 +175,27 @@ class PermissionLevelMixin(object):
         """
         
         my_ct = ContentType.objects.get_for_model(self)
+        logger.debug("LEVEL: [%s]:[%s]:[%s]", gen_role, level)
         if level == self.LEVEL_NONE:
             GenericObjectRoleMapping.objects.filter(subject=gen_role, object_id=self.id, object_ct=my_ct).delete()
         else:
             try:
                 role = ObjectRole.objects.get(codename=level, content_type=my_ct)
-            except ObjectRole.NotFound: 
+            except ObjectRole.DoesNotExist:
                 raise PermissionLevelError("Invalid Permission Level (%s)" % level)
             # remove any existing mapping              
             GenericObjectRoleMapping.objects.filter(subject=gen_role, object_id=self.id, object_ct=my_ct).delete()
             # grant new level
             GenericObjectRoleMapping.objects.create(subject=gen_role, object=self, role=role)
+            logger.debug("Supposedly the role was created: [%s]:[%s]:[%s]", self, gen_role, level)
+
+    def get_user_levels(self):
+        ct = ContentType.objects.get_for_model(self)
+        return UserObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
+
+    def get_generic_levels(self):
+        ct = ContentType.objects.get_for_model(self)
+        return GenericObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
 
     def get_all_level_info(self):
         """
@@ -216,7 +229,7 @@ class PermissionLevelMixin(object):
         levels['users'] = user_levels
 
         return levels
-    
+
     def get_all_level_info_by_email(self):
         """
         returns a mapping indicating the permission levels

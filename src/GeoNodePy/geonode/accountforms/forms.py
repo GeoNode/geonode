@@ -38,6 +38,7 @@ class UserRegistrationForm(RegistrationFormUniqueEmail):
         password=self.cleaned_data['password1'],
         email=self.cleaned_data['email'])
         new_profile = Contact(user=new_user)
+        new_profile.email = new_user.email
         if (settings.USE_CUSTOM_ORG_AUTHORIZATION):
             new_profile.is_org_member=self.cleaned_data['is_org_member']
         new_profile.save()

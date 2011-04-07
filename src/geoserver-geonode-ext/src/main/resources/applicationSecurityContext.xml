@@ -28,7 +28,7 @@
     (page 17 of the PDF version)
   -->
   <bean id="geonodeFilterChainProxy"
-    class="org.acegisecurity.util.FilterChainProxy">
+    class="org.springframework.security.util.FilterChainProxy">
     <property name="filterInvocationDefinitionSource">
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
@@ -60,15 +60,15 @@
     <constructor-arg index="0" ref="geonodeSecurityClient"/>
   </bean>
   
-  <bean id="gnRestFilterInvocationInterceptor" class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
+  <bean id="gnRestFilterInvocationInterceptor" class="org.springframework.security.intercept.web.FilterSecurityInterceptor">
     <property name="authenticationManager" ref="gnAuthenticationManager" />
     <property name="accessDecisionManager">
-      <bean class="org.acegisecurity.vote.AffirmativeBased">
+      <bean class="org.springframework.security.vote.AffirmativeBased">
         <property name="allowIfAllAbstainDecisions" value="false" />
         <property name="decisionVoters">
           <list>
-            <bean class="org.acegisecurity.vote.RoleVoter" />
-            <bean class="org.acegisecurity.vote.AuthenticatedVoter" />
+            <bean class="org.springframework.security.vote.RoleVoter" />
+            <bean class="org.springframework.security.vote.AuthenticatedVoter" />
           </list>
         </property>
       </bean>
@@ -99,12 +99,12 @@
     levels are not enough
   -->
   <bean id="geonodeOwsExceptionTranslationFilter"
-    class="org.acegisecurity.ui.ExceptionTranslationFilter">
+    class="org.springframework.security.ui.ExceptionTranslationFilter">
     <property name="authenticationEntryPoint">
       <ref bean="basicProcessingFilterEntryPoint" />
     </property>
     <property name="accessDeniedHandler">
-      <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
+      <bean class="org.springframework.security.ui.AccessDeniedHandlerImpl">
         <property name="errorPage" value="/accessDenied.jsp" />
       </bean>
     </property>
@@ -114,7 +114,7 @@
     Handles the basic authentication headers.
   -->
   <bean id="gnBasicProcessingFilter"
-    class="org.acegisecurity.ui.basicauth.BasicProcessingFilter">
+    class="org.springframework.security.ui.basicauth.BasicProcessingFilter">
     <property name="authenticationManager">
       <ref local="gnAuthenticationManager" />
     </property>
@@ -128,12 +128,12 @@
     a number of child providers
   -->
   <bean id="gnAuthenticationManager"
-    class="org.acegisecurity.providers.ProviderManager">
+    class="org.springframework.security.providers.ProviderManager">
     <property name="providers">
       <list>
         <ref local="geonodeAuthenticationProvider" />
         <bean
-          class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
+          class="org.springframework.security.providers.anonymous.AnonymousAuthenticationProvider">
           <property name="key" value="geoserver" />
         </bean>
       </list>

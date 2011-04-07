@@ -23,8 +23,7 @@ ADMINS = (
 #DEFAULT_FROM_EMAIL = 'your_email@gmail.com'
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_HOST = 'smtp.gmail.com'
-#EMAIL_HOST_USER = 'your_email@gmail.com'
-#EMAIL_HOST_PASSWORD = 'password'
+#EMAIL_HOST_USER = 'your_email@gmail.com'#EMAIL_HOST_PASSWORD = 'password'
 #EMAIL_PORT = 587
 #EMAIL_USE_TLS = True
 
@@ -82,7 +81,7 @@ MEDIA_URL = "/site_media/media/"
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, "site_media", "static")
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "media", "static")
 
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
@@ -173,11 +172,12 @@ DEFAULT_MAP_CENTER = (0,0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 2
 
-logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'w')
-
 MAP_BASELAYERSOURCES = {
     "any": {
         "ptype":"gx_olsource"
+    },
+    "capra": {
+        "url":"/geoserver/wms"
     },
     "google":{
         "ptype":"gx_googlesource",
@@ -262,46 +262,48 @@ INSTALLED_APPS = (
     'geonode.profileforms',
 )
 
+def get_user_url(u):
+    from django.contrib.sites.models import Site
+    s = Site.objects.get_current()
+    return "http://" + s.domain + "/profiles/" + u.username
+
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': get_user_url
+}
+
 AUTH_PROFILE_MODULE = 'maps.Contact'
-
 REGISTRATION_OPEN = True
-ACCOUNT_ACTIVATION_DAYS = 7
-GEONODE_CLIENT_LOCATION = "http://localhost:8000"
-
-
-SERVE_MEDIA = True
+ACCOUNT_ACTIVATION_DAYS = 30
+SERVE_MEDIA = DEBUG;
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/media/static/"
 
 
-
-
 #Google Analytics
 #Make this code an empty string if you DONT intend to use it;
 # if you do use it replace UA-XXXXXXXX-1 with your own ID
-GOOGLE_ANALYTICS_CODE = "<script type='text/javascript'>\n\
-        var _gaq = _gaq || [];\n\
-        _gaq.push(['_setAccount', 'UA-XXXXXXXX-1']);\n\
-        _gaq.push(['_trackPageview']);\n\
-        (function() {\n\
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;\n\
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n\
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);\n\
-        })();\n\
-    </script>"
+GOOGLE_ANALYTICS_CODE = ""
 
 #Set name of additional permissions group (besides anonymous and authenticated)
 CUSTOM_GROUP_NAME = 'Organization Users'
 
 #If you want to redirect members of your organization to a separate authentication system when registering, change the following settings
-USE_CUSTOM_ORG_AUTHORIZATION = True
+USE_CUSTOM_ORG_AUTHORIZATION = False
 CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_AUTH_URL = ''
 
+#Name of a PostGIS datastore in GeoServer, if any
+POSTGIS_DATASTORE=''
 
-
+#PostGIS connection info, necessary for deleting tables when layers with PostGIS data stores are removed
+POSTGIS_NAME = ''
+POSTGIS_USER = ''
+POSTGIS_PASSWORD = ''
+POSTGIS_HOST = ''
+POSTGIS_PORT = ''
 
 try:
     from local_settings import *

@@ -1,33 +1,41 @@
 
 {% load i18n %}
 
-<div style="padding:20px;">
+<style>h3{font-size:1.5em;line-height:1;margin-bottom:1em;margin-top:1em}p{margin-bottom:0.5em}strong{font-weight:bold}caption{background:#ffc}</style>
+
+<div id="tabContainer" style="padding:20px;">
 
 <div style="position:relative;float:left;width:500px;">
 <h3>{%trans "Instructions"  %}</h3>
 
 <p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
 
-
 <p>
 {% blocktrans %}
-Note: If you are uploading a shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
+    Note: A zipped shapefile must contain at least four files with the following extensions:<br/> <span style="font-weight:bold">SHP, DBF, SHX, PRJ</span>.
+    <br/><br/>
+    If you are uploading an unzipped shapefile, first select the .SHP file.  You will be prompted to locate the remaining component files.
 {% endblocktrans %}
 </p>
-<br/><br/>
+
+<div id="upload_form"></div>
+
 </div>
 
-<div style="position:relative;float:left;padding-left:10px;">
+<div style="position:relative;float:left;padding-left:20px;">
     <h3>{% trans "Supported Formats"  %}</h3>
 
     <ul>
       <li>Shapefile</li>
+      <li>Zipped Shapefile</li>
       <li>GeoTIFF</li>
     </ul>
-    </div>
 
-<div id="upload_form" style="clear:both;">
-  </div>
+
+<h3>{%trans "Permissions"  %}</h3>
+ <div id="permissions_form"></div>
+
+</div>
 
 </div>
 
@@ -40,18 +48,11 @@ Note: If you are uploading a shapefile, first select the .SHP file.  You will be
 
     var form_target = "{% url geonode.maps.views.upload_layer %}";
     var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
-    var layer_name = new Ext.form.TextField({
-      id: 'layer_name',
-      fieldLabel: gettext('Name'),
-      name: 'layer_name',
-      emptyText: gettext('Unique name for layer.  Defaults to file name.'),
-      validator: function(name) {
-          if (name.search(xml_unsafe) != -1) {
-              return gettext("The layer name must consist only of letters, numbers, and underscores.");
-          } else {
-              return true;
-          }
-      },
+
+    var layer_title = new Ext.form.TextField({
+      id: 'layer_title',
+      fieldLabel: gettext('Title'),
+      name: 'layer_title',
       allowBlank: false
     });
 
@@ -59,7 +60,7 @@ Note: If you are uploading a shapefile, first select the .SHP file.  You will be
     	id: 'mapid',
     	value:  'tab'
     });
-    
+
 
 
     var listeners = {
@@ -70,10 +71,10 @@ Note: If you are uploading a shapefile, first select the .SHP file.  You will be
     };
 
 
-    var base_file = new Ext.ux.form.FileUploadField({
+     var base_file = new Ext.ux.form.FileUploadField({
         id: 'base_file',
         emptyText: gettext('Select a layer data file'),
-        fieldLabel: gettext('File'),
+        fieldLabel: gettext('Data'),
         name: 'base_file',
         allowBlank: false,
         listeners: listeners
@@ -99,11 +100,51 @@ Note: If you are uploading a shapefile, first select the .SHP file.  You will be
 
     var prj_file = new Ext.ux.form.FileUploadField({
         id: 'prj_file',
-        emptyText: gettext('Select a .prj data file (optional)'),
+        emptyText: gettext('Select a .prj data file'),
         fieldLabel: gettext('PRJ'),
         name: 'prj_file',
+        allowBlank: false,
+        listeners: listeners
+    });
+
+
+    var encoding = new Ext.form.ComboBox({
+        id: 'charset_cb',
+        name: ' charset_cb',
+        fieldLabel: gettext('Encoding'),
+        hiddenName: 'charset',
+        displayField:'description',
+        valueField: 'charset',
+        store : new Ext.data.SimpleStore({
+            fields: ['charset', 'description'],
+            data: {{ charsets }}
+        }),
+        mode: 'local',
+        value: '',
+        width:300,
+        triggerAction: 'all',
+        listeners: listeners
+    });
+    
+
+    var sld_file = new Ext.ux.form.FileUploadField({
+        id: 'sld_file',
+        emptyText: gettext('Select a .sld style file (optional)'),
+        fieldLabel: gettext('SLD'),
+        name: 'sld_file',
         allowBlank: true,
         listeners: listeners
+    });
+
+    var abstractField = new Ext.form.TextArea({
+        id: 'abstract',
+        fieldLabel: gettext('Abstract'),
+        name: 'abstract',
+        allowBlank: false
+    });
+
+    var permissionsField = new Ext.form.Hidden({
+        name: "permissions"
     });
 
     var fp = new Ext.FormPanel({
@@ -121,7 +162,7 @@ Note: If you are uploading a shapefile, first select the .SHP file.  You will be
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_name, map_id, base_file, dbf_file, shx_file, prj_file, {
+        items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, abstractField, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"
@@ -144,6 +185,11 @@ Note: If you are uploading a shapefile, first select the .SHP file.  You will be
                             }
                             error_message += '</ul>'
 
+                            if (o.result.detail.length > 0)
+                            {
+                                error_message += '<li><a style="font-size:small;padding-top:10px;" href="#" onclick="javascript:Ext.Msg.alert(\'Error Details\', \'' + o.result.detail + '\');return false;">Details</a></li>';
+                            }
+
                             Ext.Msg.show({
                                 title: gettext("Error"),
                                 msg: error_message,
@@ -164,44 +210,71 @@ Note: If you are uploading a shapefile, first select the .SHP file.  You will be
 
     var disable_shapefile_inputs = function() {
         dbf_file.disable();
-        dbf_file.el.parent('.x-form-item').hide();
+        dbf_file.hide();
         shx_file.disable();
-        shx_file.el.parent('.x-form-item').hide();
+        shx_file.hide();
         prj_file.disable();
-        prj_file.el.parent('.x-form-item').hide();
+        prj_file.hide();
     };
 
     var enable_shapefile_inputs = function() {
         dbf_file.enable();
-        dbf_file.el.parent('.x-form-item').show();
+        dbf_file.show();
         shx_file.enable();
-        shx_file.el.parent('.x-form-item').show();
+        shx_file.show();
         prj_file.enable();
-        prj_file.el.parent('.x-form-item').show();
+        prj_file.show();
+    };
+
+    var disable_encoding_input = function() {
+        encoding.disable();
+        encoding.hide();
+    };
+
+    var enable_encoding_input = function() {
+        encoding.enable();
+        encoding.show();
     };
 
     var check_shapefile = function() {
         var main_filename = base_file.getValue();
-        if (main_filename.search(/\.shp$/i) != -1) {
+        if ((/\.shp$/i).test(base_file.getValue())) {
             enable_shapefile_inputs();
+            enable_encoding_input();
+        }
+        else if (main_filename.search(/\.zip$/i) != -1)
+        {
+            enable_encoding_input();
+            disable_shapefile_inputs();
         }
         else {
+            disable_encoding_input();
             disable_shapefile_inputs();
         }
     };
 
     base_file.addListener('fileselected', function(cmp, value) {
         check_shapefile();
-
-        var main_filename = value.split(/[/\\]/).pop();
-        var extension_index = main_filename.search(/\.\w+$/i);
-        if (extension_index != -1 && layer_name.getValue() == "") {
-            var cleaned = main_filename.substring(0, extension_index);
-            cleaned = cleaned.replace(xml_unsafe, "_");
-            layer_name.setValue(cleaned);
-        }
     });
     disable_shapefile_inputs();
+    disable_encoding_input();
+
+    var permissionsEditor = new GeoNode.WorldMapPermissionsEditor({
+        renderTo: "permissions_form",
+        userLookup: "{% url geonode.views.ajax_lookup_email %}",
+        customGroup: "{{ CUSTOM_GROUP_NAME }}",
+        listeners: {
+            updated: function(pe) {
+                permissionsField.setValue(Ext.util.JSON.encode(pe.writePermissions()));
+            }
+        },
+        permissions: {
+            anonymous: 'layer_readonly',
+            authenticated: 'layer_readonly',
+            users:[]
+        }
+    });
+    permissionsEditor.fireEvent("updated", permissionsEditor);
 
 
 {% endautoescape %}

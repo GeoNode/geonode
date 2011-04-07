@@ -1,6 +1,5 @@
 {% load i18n %}
 
-
 <style type="text/css" >
     #tab {
         padding:20px;
@@ -10,61 +9,51 @@
     padding: 10px 0 0;
     }
 
-    div#tab form ul.form {
-    list-style-type: none;
-    }
+    p{line-height:2em;}
+    h3{font-size:1.5em;line-height:1;margin-bottom:1em;margin-top:1em}p{margin-bottom:0.5em}strong{font-weight:bold}caption{background:#ffc}
+    th{font: bold 11px tahoma,arial,helvetica,sans-serif;}
 
-    div#tab form ul.form li {
-    margin-bottom: 1.5em;
-    clear: both;
-    }
-
-    div#tab form ul.form li label {
-    display: block;
-    font-weight: bold;
-    text-transform: capitalize;
-    }
-
-    div#tab form ul.form li input {
-    }
-
-    div#tab form ul.form ul.errorlist {
-    list-style-type: none;
-    margin: 0;
-    margin-top: 2px;
-    float: right;
-    }
-
-    div#tab form ul.form fieldset {
-    border: 1px solid #333;
-    padding: 10px;
-    margin-bottom: 10px
-    }
-
-    div#tab form ul.form fieldset legend{
-    font-weight: bold;
-    padding: 0 4px;
-    }
-
-    h2{font-size:2em;margin-bottom:0.75em}
 </style>
 
 
-<div id="tab">
-  <h2> {% trans "Details for" %} {{ layer.title|default:layer.typename }} </h2>
+<div id="tab" style="padding:20px">
+<h3> {% trans "Editing details for " %} {{ layer.title|default:layer.typename }} </h3>
+  <p style="font-weight:bold">{%  trans "Fields marked with an asterisk(*) are required." %}</p>
+
   <form action="/data/{{layer.typename}}?describe" method="POST" id="worldmap_describe_form">
 	  {% csrf_token %}
       <ul class="form" id="worldmap_describe_form_ul">
+
 	      {{ layer_form.as_ul }}
-      </ul>
-      <ul class="form">
+
+
+
+      <fieldset id="category_form">
+	  <legend>* {%  trans "Category"  %}</legend>
+      {%  if category_form.errors %}<li>{{ category_form.errors.as_ul }}</li>{%  endif %}
+      <li>
+        {% autoescape off %}
+        {% for choice in category_form.category_choice_field.field.choices %}
+        <div style="width:49%;float:left;padding-bottom:10px;padding-right:2px;">
+            <input type="radio" name="category_choice_field" value="{{choice.0}}"
+            {% ifequal category_form.initial choice.0 %}
+                checked="checked"
+            {% endifequal %}/>
+            <label for="" style="display:inline">{{choice.1}}</label>
+        </div>
+        {% endfor %}
+      {% endautoescape %}
+
+      </li>
+      </fieldset>
+
           <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Attributes</legend>
 	        {{ attribute_form.management_form }}
-	        <table><tr><th>Attribute</th><th>Display Title<th>Searchable</th>
+	        <table cellpadding="5" cellspacing="5" width="100%"><tr><th>Attribute</th><th>Display Title</th><th>Display Order</th><th>Searchable?</th>
 	        {% for form in attribute_form.forms %}
 	        	{% if form.attribute %}
-	        	<tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.searchable}}</td></tr>
+	        	<tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.display_order}}</td><td> {{form.searchable}}</td></tr>
 	        	{% endif %}
 	        {% endfor %}
 	        </table>
@@ -139,7 +128,7 @@
                     method: 'POST',
                     params : Ext.Ajax.serializeForm(Ext.get("worldmap_describe_form")),
                     success: function(response, options) {
-
+                                Ext.MessageBox.hide();
                                 var uPanel = Ext.getCmp("worldmap_update_panel");
                                 uPanel.load({url:'/data/upload'});
                                 //var uWindow = Ext.getCmp("ge_searchWindow");
@@ -150,7 +139,7 @@
                                 var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name'}]);
                                 var thisLayerRec = new LayerRec({title: '{{ layer.title }}', name: '{{ layer.typename }}'});
                                 geoEx.reloadWorldMapSource([thisLayerRec]);
-                                Ext.MessageBox.hide();
+
                             
                     },
                     failure: function(response, options)

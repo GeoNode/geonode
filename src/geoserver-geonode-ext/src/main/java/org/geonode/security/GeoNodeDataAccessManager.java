@@ -4,17 +4,15 @@
  */
 package org.geonode.security;
 
-import java.util.logging.Logger;
-
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
+import org.springframework.security.Authentication;
+import org.springframework.security.GrantedAuthority;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
+import org.geoserver.security.CatalogMode;
 import org.geoserver.security.DataAccessManager;
-import org.geotools.util.logging.Logging;
 
 /**
  * An access manager that uses the special authentication tokens setup by the
@@ -24,14 +22,12 @@ import org.geotools.util.logging.Logging;
  */
 public class GeoNodeDataAccessManager implements DataAccessManager {
 
-    static final Logger LOGGER = Logging.getLogger(GeoNodeDataAccessManager.class);
-	
     public static final String ADMIN_ROLE = "ROLE_ADMINISTRATOR";
 
     boolean authenticationEnabled = true;
 
     /**
-     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
+     * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
      *      org.geoserver.catalog.WorkspaceInfo, org.geoserver.security.AccessMode)
      */
     public boolean canAccess(Authentication user, WorkspaceInfo workspace, AccessMode mode) {
@@ -40,7 +36,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     }
 
     /**
-     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
+     * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
      *      org.geoserver.catalog.LayerInfo, org.geoserver.security.AccessMode)
      */
     public boolean canAccess(Authentication user, LayerInfo layer, AccessMode mode) {
@@ -48,7 +44,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     }
 
     /**
-     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
+     * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
      *      org.geoserver.catalog.ResourceInfo, org.geoserver.security.AccessMode)
      */
     public boolean canAccess(Authentication user, ResourceInfo resource, AccessMode mode) {
@@ -57,34 +53,23 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
         }
 
         if (user != null && user.getAuthorities() != null) {
-        	LOGGER.fine("user != null && user.getAuthorities() != null");
             for (GrantedAuthority ga : user.getAuthorities()) {
                 if (ga instanceof LayersGrantedAuthority) {
-                	LOGGER.fine("ga instanceof LayersGrantedAuthority");
                     LayersGrantedAuthority lga = ((LayersGrantedAuthority) ga);
                     // see if the layer is contained in the granted authority list with
                     // sufficient privileges
                     if (mode == AccessMode.READ
                             || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayerMode.READ_WRITE)) {
-                        LOGGER.fine("AccessMode is READ or WRITE");
-                    	if (lga.getLayerNames().contains(resource.getPrefixedName())) {
-                    		LOGGER.fine("Has access to " + resource.getPrefixedName());
+                        if (lga.getLayerNames().contains(resource.getPrefixedName())) {
                             return true;
                         }
-                    	LOGGER.fine("No accesss to " + resource.getPrefixedName());
                     }
-                    LOGGER.fine("No read/write access to  " + resource.getPrefixedName());
                 } else if (ADMIN_ROLE.equals(ga.getAuthority())) {
-                	LOGGER.fine("Authorized as almighty ADMIN");
                     // admin is all powerful
                     return true;
                 }
-                LOGGER.fine("Not instance of LasyerGrantedAuthority, not Admin");
             }
-        } else {
-        	LOGGER.fine("user is null or user authorities is null");
         }
-        LOGGER.fine("SOL on authorities");
         // if we got here sorry, no luck
         return false;
     }

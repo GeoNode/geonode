@@ -9,16 +9,16 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
-<script type="text/javascript">
-    google.load("earth", "1");
-</script>
+
 
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
-<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/fileuploadfield/fileuploadfield.css"/>
+<style type="text/css">
+    #templates { display: none; }
+</style>
+
 <script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/PrintPreview/resources/css/printpreview.css" />
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
-
 {{ block.super }}
 
 <script type="text/javascript">
@@ -26,7 +26,6 @@ var app;
 Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
-        useBackgroundCapabilities: false,     
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service 
@@ -62,13 +61,6 @@ Ext.onReady(function() {
 
 
     }, this);
-
-
-
-
-
-
-
 {% endautoescape %}
 });
 </script>
