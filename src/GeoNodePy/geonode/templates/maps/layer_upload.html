@@ -35,11 +35,6 @@ Ext.onReady(function(){
     Ext.QuickTips.init();
 
 
-var encodings = [
-        ['WTF', 'None/Unknown'],
-        ['WTF2', 'SJSJSJ']
-];
-
     var form_target = "{% url geonode.maps.views.upload_layer %}";
     var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
     var layer_title = new Ext.form.TextField({
@@ -118,6 +113,7 @@ var encodings = [
         fieldLabel: gettext('Encoding'),
         hiddenName: 'charset',
         displayField:'description',
+        valueField: 'charset',
         store : new Ext.data.SimpleStore({
             fields: ['charset', 'description'],
             data: {{ charsets }}
@@ -215,8 +211,9 @@ var encodings = [
     var enable_shapefile_inputs = function() {
         dbf_file.enable();
         dbf_file.show();
-
+        shx_file.enable();
         shx_file.show();
+        prj_file.enable();
         prj_file.show();
     };
 
@@ -267,7 +264,7 @@ var encodings = [
             anonymous: 'layer_readonly',
             authenticated: 'layer_readonly',
             users:[]
-        },
+        }
     });
     permissionsEditor.fireEvent("updated", permissionsEditor);
 

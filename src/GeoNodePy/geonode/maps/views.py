@@ -1586,11 +1586,21 @@ def _handle_layer_upload(request, layer=None):
         logger.warn("Upload failed with error: %s", str(e))
         errors.append(_("An error occurred while loading the data."))
         detail_error = str(e)
-        tmp = cat.get_store(name)
-        if tmp:
-            logger.info("Deleting store after failed import of [%s] into GeoServer", name)
-            cat.delete(tmp)
-            logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
+        if create_store != cat.create_pg_feature:
+            try:
+                tmp = cat.get_store(name)
+                if tmp:
+                    logger.info("Deleting store after failed import of [%s] into GeoServer", name)
+                    cat.delete(tmp)
+                    logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
+            except: logger.info("Store [%s] not found for deletion", name)
+        else:
+            try:
+                logger.info("Deleting PostGIS table after failed import of [%s] into GeoServer", name)
+                delete_from_postgis(name)
+                logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
+            except:
+                logger.info("PostGIS table [%s] not found for deletion", name)
     except geoserver.catalog.ConflictingDataError:
         try:
             logger.debug("Starting upload of [%s] to GeoServer...", name)

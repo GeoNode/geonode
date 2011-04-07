@@ -109,8 +109,8 @@
 
 
     var encoding = new Ext.form.ComboBox({
-        id: 'charset',
-        name: ' charset',
+        id: 'charset_cb',
+        name: ' charset_cb',
         fieldLabel: gettext('Encoding'),
         hiddenName: 'charset',
         displayField:'description',
@@ -120,6 +120,8 @@
             data: {{ charsets }}
         }),
         mode: 'local',
+        value: '',
+        width:300,
         triggerAction: 'all',
         listeners: listeners
     });
