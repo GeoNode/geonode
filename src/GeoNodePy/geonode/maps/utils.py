@@ -484,7 +484,7 @@ def upload(incoming, user=None, overwrite=True):
        >>> batch_upload('/tmp/mydata')
            [{'file': 'data1.tiff', 'name': 'geonode:data1' }, {'file': 'data2.shp', 'errors': 'Shapefile requires .prj file'}]
     """
-    check_geonode_is_up()  
+    check_geonode_is_up()
 
     if os.path.isfile(incoming):
         layer = file_upload(incoming, user=user, overwrite=overwrite)
@@ -504,7 +504,7 @@ def upload(incoming, user=None, overwrite=True):
             filename = os.path.join(root, short_filename)
             if extension in ['.asc', '.tif', '.shp', '.zip']:
                 try:
-                    layer = file_upload(filename, 
+                    layer = file_upload(filename,
                                         user=user,
                                         title=basename,
                                         overwrite=overwrite
@@ -512,8 +512,8 @@ def upload(incoming, user=None, overwrite=True):
 
                 except GeoNodeException, e:
                     msg = '[%s] could not be uploaded. Error was: %s' % (filename, str(e))
-                    logger.exception(msg)
-                    yield {'file': 'filename', 'errors': msg}
+                    logger.info(msg)
+                    yield {'file': filename, 'errors': msg}
                 else:
                     yield {'file': filename, 'name': layer.name}
 
