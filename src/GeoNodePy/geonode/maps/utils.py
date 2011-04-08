@@ -244,14 +244,18 @@ def save(layer, base_file, user, overwrite = True):
     # Get the helper files if they exist
     files = get_files(base_file)
 
+    data = files
+
     #FIXME: DONT DO THIS
     #-------------------
     if 'shp' not in files:
         main_file = files['base']
-        files = main_file
+        data = main_file
     # ------------------
+
+
     try:
-        create_store(name, files, overwrite=overwrite)
+        create_store(name, data, overwrite=overwrite)
     except geoserver.catalog.UploadError, e:
         msg = 'Could not save the layer %s, there was an upload error: %s' % (name, str(e))
         logger.warn(msg)
@@ -283,7 +287,7 @@ def save(layer, base_file, user, overwrite = True):
         logger.warn(msg)
         raise GeoNodeException(msg)
 
-    # Step 6. Make sure our data always has a valid projection 
+    # Step 6. Make sure our data always has a valid projection
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 6. Making sure [%s] has a valid projection' % name)
     if gs_resource.latlon_bbox is None:
@@ -304,13 +308,14 @@ def save(layer, base_file, user, overwrite = True):
         f.close()
 
         try:
-            style = cat.create_style(name, sld)
+            cat.create_style(name, sld)
         except geoserver.catalog.ConflictingDataError, e:
             msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (name, str(e))
             style = cat.get_style(name)
             logger.warn(msg)
             e.args = (msg,)
 
+        style = cat.get_style(name)
         #FIXME: Should we use the fully qualified typename?
         publishing = cat.get_layer(name)
         publishing.default_style = style
