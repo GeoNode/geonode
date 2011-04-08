@@ -1701,6 +1701,7 @@ def _handle_layer_upload(request, layer=None):
                 logger.warning("no explicit link from the resource to [%s], bah", name)
                 gs_layer = cat.get_layer(gs_resource.name)
                 store = gs_resource.store
+                storename = gs_resource.name
                 try:
                     logger.warning('delete gs_layer')
                     cat.delete(gs_layer)
@@ -1717,10 +1718,18 @@ def _handle_layer_upload(request, layer=None):
 
                 if not settings.POSTGIS_DATASTORE:
                     try:
+                        logger.warning('delete shapefile store')
                         cat.delete(store)
                     except:
                         pass
-
+                        logger.warning('delete shapefile store FAIL')
+                else:
+                    try:
+                        logger.warning('delete PostGIS table')
+                        cat.delete(storename)
+                        logger.warning('delete PostGIS table FAIL')
+                    except:
+                        pass
             # set layer to None, but we'll rely on db transactions instead
             # of a manual delete to keep it out of the db
             layer = None
