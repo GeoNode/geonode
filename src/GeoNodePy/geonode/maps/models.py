@@ -778,6 +778,19 @@ class Layer(models.Model, PermissionLevelMixin):
 
         return links
 
+    def verify(self):
+        """Makes sure the state of the layer is consistent in GeoServer and GeoNetwork.
+        """
+        # Check the layer is in the wms get capabilities record
+        # FIXME: Implement caching of capabilities record site wide
+        # Check the layer is in GeoServer's REST API
+        # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
+        # Visit get_absolute_url and make sure it does not give a 404
+
+        #FIXME: Add more checks, for example making sure the title, keywords and description
+        # are the same in every database.
+        raise NotImplementedError()
+
     def maps(self):
         """Return a list of all the maps that use this layer"""
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL

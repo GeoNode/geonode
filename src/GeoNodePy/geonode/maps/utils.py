@@ -58,9 +58,10 @@ def get_files(filename):
                              % (ext, required_extensions))
                 raise GeoNodeException(msg)
 
-    if extension in ['.asc', '.txt']:
+    if extension in ['.asc']:
         # Convert to Geotiff and update the files dictionary
         upload_filename = base_name + '.tif'
+        #FIXME: Do not use gdal_translate, use the gdal python API.
         cmd = ('gdal_translate -ot Float64 -of GTiff '
                '-co "PROFILE=GEOTIFF" %s %s' % (filename,
                                                 upload_filename))
@@ -96,27 +97,24 @@ def get_valid_name(layer_name):
     return proposed_name
 
 def get_valid_layer_name(layer=None, overwrite=False):
-    """Checks if the layer is a string and fetches it from the database
+    """Checks if the layer is a string and fetches it from the database.
     """
-    if layer is None:
+
+    # The first thing we do is get the layer name string
+    if isinstance(layer, Layer):
+        layer_name = layer.name
+    elif isinstance(layer, basestring):
+        layer_name = layer
+    else:
         msg = ('You must pass either a filename or a GeoNode layer object')
         raise GeoNodeException(msg)
-    if isinstance(layer, Layer):
-        # If it is a layer object, we return the name
-        if overwrite:
-            return layer.name
-    elif isinstance(layer, basestring):
-        # If it is a string ...
-        try:
-            #  we check if it is in the database
-            thelayer = Layer.objects.get(name=layer)
-        except Layer.DoesNotExist:
-            pass
-        else:
-            if overwrite:
-                return theLayer.name
 
-    return get_valid_name(layer)
+    if overwrite:
+        #FIXME: What happens if there is a store in GeoServer with that name
+        # that is not registered in GeoNode?
+        return layer_name
+    else:
+        return get_valid_name(layer_name)
 
 def cleanup(name, uuid):
    """Deletes GeoServer and GeoNetwork records for a given name.
@@ -253,7 +251,6 @@ def save(layer, base_file, user, overwrite = True):
         data = main_file
     # ------------------
 
-
     try:
         create_store(name, data, overwrite=overwrite)
     except geoserver.catalog.UploadError, e:
@@ -262,12 +259,12 @@ def save(layer, base_file, user, overwrite = True):
 	e.args = (msg,)
         raise
     except geoserver.catalog.ConflictingDataError, e:
-         # A datastore of this name already exists
+        # A datastore of this name already exists
         msg = ('GeoServer reported a conflict creating a store with name %s: "%s".'
                'This should never happen because a brand new name should have been generated. '
                'But since it happened, try renaming the file or deleting the store in GeoServer.'  % (name, str(e)))
         logger.warn(msg)
-	e.args = (msg,)
+        e.args = (msg,)
         raise
     else:
         logger.debug("Finished upload of [%s] to GeoServer without errors.", name)
@@ -389,8 +386,9 @@ def save(layer, base_file, user, overwrite = True):
     try:
         #FIXME: Implement a verify method that makes sure it was saved in both GeoNetwork and GeoServer
         saved_layer.verify()
-    except AttributeError, e:
-        logger.exception('>>> FIXME: Please, if you can write python: implement verify method in geonode.maps.models.Layer')
+    except NotImplementedError, e:
+        logger.exception('>>> FIXME: Please, if you can write python code, implement "verify()"'
+                         'method in geonode.maps.models.Layer')
     except GeoNodeException, e:
         msg = ('The layer [%s] was not correctly saved to GeoNetwork/GeoServer. Error is: %s' % (layer, str(e)))
         logger.exception(msg)
@@ -464,10 +462,11 @@ def file_upload(filename, user=None, title=None, overwrite=True):
 
     # Set a default title that looks nice ...
     if title is None:
+        basename, extension = os.path.splitext(os.path.basename(filename))
         title = basename.title().replace('_', ' ')
 
     # ... and use a url friendly version of that title for the name
-    name = slugify(title)
+    name = slugify(title).replace('-','_')
 
     # Note that this will replace any existing layer that has the same name
     # with the data that is being passed.
