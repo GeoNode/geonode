@@ -1672,7 +1672,6 @@ def _handle_layer_upload(request, layer=None):
                 layer.metadata_author = author_contact
                 logger.debug("committing DB changes for [%s]", typename)
                 layer.save()
-                raise Exception("fake")
                 logger.debug("Setting permissions for [%s] [%s]", typename, request.POST.get("permissions"))
                 perm_spec = json.loads(request.POST["permissions"])
                 set_layer_permissions(layer, perm_spec, True)
