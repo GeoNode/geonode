@@ -93,7 +93,7 @@ def fixup_style(cat, resource, style):
     layers = cat.get_layers(resource=resource)
     logger.info("Found %d layers associated with [%s]", resource)
     for lyr in layers:
-        if lyr.default_style.name in _style_templates:
+        if lyr.default_style and lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if (cat.get_style(name)):
@@ -122,13 +122,13 @@ def cascading_delete(cat, resource):
         try:
             cat.delete(lyr)
         except:
-            logger.error('Error deleting layer')
+            logger.error('Error deleting layer [%s]', resource.name)
         for s in styles:
             if s is not None:
                 try:
                     cat.delete(s, purge=True)
                 except:
-                    logger.error('Error deleting style')
+                    logger.error('Error deleting style for %s', resource.name)
         store = resource.store
         resource_name = resource.name
         try:
@@ -148,9 +148,18 @@ def cascading_delete(cat, resource):
 
 
 def delete_from_postgis(resource_name):
-    conn=psycopg2.connect("dbname='" + settings.POSTGIS_NAME + "' user='" + settings.POSTGIS_USER + "'  password='" + settings.POSTGIS_PASSWORD + "' port=" + settings.POSTGIS_PORT + " host='" + settings.POSTGIS_HOST + "'")
-    cur = conn.cursor()
-    cur.execute("""select DropGeometryTable('""" + resource_name  + """')""")
-    conn.commit()
+    try:
+        conn=psycopg2.connect("dbname='" + settings.POSTGIS_NAME + "' user='" + settings.POSTGIS_USER + "'  password='" + settings.POSTGIS_PASSWORD + "' port=" + settings.POSTGIS_PORT + " host='" + settings.POSTGIS_HOST + "'")
+        try:
+            cur = conn.cursor()
+            cur.execute("""select DropGeometryTable('""" + resource_name  + """')""")
+            conn.commit()
+        except:
+            conn.close()
+            raise
+        conn.close()
+    except:
+        conn.close()
+        raise
     
 

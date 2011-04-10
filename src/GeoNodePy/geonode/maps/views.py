@@ -2,7 +2,7 @@ from xml.etree.ElementTree import XML
 from zipfile import ZipFile
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, CHARSETS
-from geonode.maps.gs_helpers import fixup_style, cascading_delete
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
 from geonode.maps.encode import num_encode, num_decode
 
 from geonode import geonetwork
@@ -1289,7 +1289,7 @@ def upload_layer(request):
         except Exception, ex:
             logger.exception("_handle_layer_upload failed!")
             errors = [GENERIC_UPLOAD_ERROR]
-            detail_error = str(ex)
+            detail_error = escape(str(ex))
         
         result = {}
         if len(errors) > 0:
@@ -1412,26 +1412,26 @@ def _handle_layer_upload(request, layer=None):
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
     """
+    detail_error = _('No additional info')
+    errors = []
+    cat = Layer.objects.gs_catalog
 
-    logger.debug("ENTER handle_layer_upload")
 
     #Check SLD file before anything else, since most people upload invalid ones
     sldFile = request.FILES.get('sld_file')
     if sldFile:
         try:
             sld = sldFile.read()
-            sld_xml= XML(sld)
+            XML(sld)
         except Exception, ex:
             return None, [_('Your SLD file contains invalid XML')], escape(str(ex))
 
     layer_name = request.POST.get('layer_name')
     base_file = request.FILES.get('base_file')
     encoding = request.POST.get('charset')
-    logger.info("Uploaded layer: [%s], base filename: [%s]", layer_name, base_file)
     base_file = request.FILES.get('base_file')
     logger.info("Uploaded layer; base filename: [%s]", base_file)
-    detail_error = _('No additional info')
-    
+
     if not base_file:
         logger.warn("Failed upload: no basefile provided")
         return None, [_("You must specify a layer data file to upload.")], detail_error
@@ -1456,10 +1456,6 @@ def _handle_layer_upload(request, layer=None):
         name = layer.name
         logger.info("Using name as requested")
 
-    errors = []
-
-    cat = Layer.objects.gs_catalog
-    
     if not name:
         logger.error("Unexpected error: Layer name passed validation but is falsy: %s", name)
         return None, [_("Unable to determine layer name.")], detail_error
@@ -1483,7 +1479,6 @@ def _handle_layer_upload(request, layer=None):
 
         zip = ZipFile(request.FILES.get('base_file'))
         zipFiles = zip.namelist()
-
 
         shp_file = dbf_file = shx_file = prj_file = None
 
@@ -1582,39 +1577,42 @@ def _handle_layer_upload(request, layer=None):
         else:
             create_store(name, cfg, overwrite=overwrite)
         logger.debug("Finished upload of [%s] to GeoServer...", name)
-    except geoserver.catalog.UploadError, e:
+        #raise geoserver.catalog.UploadError
+        #raise geoserver.catalog.ConflictingDataError
+        #raise Exception
+    except geoserver.catalog.ConflictingDataError:
+            errors.append(_("There is already a layer with the given name."))
+    except Exception, e:
         logger.warn("Upload failed with error: %s", str(e))
         errors.append(_("An error occurred while loading the data."))
         detail_error = str(e)
-        if create_store != cat.create_pg_feature:
-            try:
-                tmp = cat.get_store(name)
-                if tmp:
-                    logger.info("Deleting store after failed import of [%s] into GeoServer", name)
-                    cat.delete(tmp)
-                    logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
-            except: logger.info("Store [%s] not found for deletion", name)
-        else:
-            try:
-                logger.info("Deleting PostGIS table after failed import of [%s] into GeoServer", name)
-                delete_from_postgis(name)
-                logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
-            except:
-                logger.info("PostGIS table [%s] not found for deletion", name)
-    except geoserver.catalog.ConflictingDataError:
-        try:
-            logger.debug("Starting upload of [%s] to GeoServer...", name)
-            if create_store == cat.create_pg_feature:
-                logger.debug("create_store([%s], [%s], cfg, overwrite=overwrite)", settings.POSTGIS_DATASTORE, name)
-                create_store(settings.POSTGIS_DATASTORE, name, cfg, overwrite=overwrite, charset=encoding)
-            elif create_store == cat.create_featurestore:
-                create_store(name, cfg, overwrite=overwrite, charset=encoding)
-            else:
-                create_store(name, cfg, overwrite=overwrite)
-            logger.debug("Finished upload of [%s] to GeoServer...", name)
-        except geoserver.catalog.ConflictingDataError:
-            errors.append(_("There is already a layer with the given name."))
 
+        try:
+            if create_store == cat.create_pg_feature:
+                logger.debug("Search [%s] for [%s]", settings.POSTGIS_DATASTORE, name)
+                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=settings.POSTGIS_DATASTORE))
+            else:
+                logger.debug("Search for [%s]", name)
+                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
+
+                cascading_delete(cat, gs_resource)
+        except:
+            logger.debug("resource not found for deletion, try to delete the store only");
+            if create_store != cat.create_pg_feature:
+                try:
+                    tmp = cat.get_store(name)
+                    if tmp:
+                        logger.info("Deleting store after failed import of [%s] into GeoServer", name)
+                        cat.delete(tmp)
+                        logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
+                except: logger.info("Store [%s] not found for deletion", name)
+            else:
+                try:
+                    logger.info("Deleting PostGIS table after failed import of [%s] into GeoServer", name)
+                    delete_from_postgis(name)
+                    logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
+                except Exception, e:
+                    logger.info("PostGIS table [%s] not found for deletion: [%s]", name, str(e))
 
     # if we successfully created the store in geoserver...
     if len(errors) == 0 and layer is None:
@@ -1623,7 +1621,6 @@ def _handle_layer_upload(request, layer=None):
         csw_record = None
         layer = None
         try:
-
             if create_store == cat.create_pg_feature:
                 logger.debug("Search [%s] for [%s]", settings.POSTGIS_DATASTORE, name)
                 gs_resource = cat.get_resource(name=name, store=cat.get_store(name=settings.POSTGIS_DATASTORE))
@@ -1675,6 +1672,7 @@ def _handle_layer_upload(request, layer=None):
                 layer.metadata_author = author_contact
                 logger.debug("committing DB changes for [%s]", typename)
                 layer.save()
+                raise Exception("fake")
                 logger.debug("Setting permissions for [%s] [%s]", typename, request.POST.get("permissions"))
                 perm_spec = json.loads(request.POST["permissions"])
                 set_layer_permissions(layer, perm_spec, True)
@@ -1698,28 +1696,7 @@ def _handle_layer_upload(request, layer=None):
             transaction.rollback()
             # Something went wrong, let's try and back out any changes
             if gs_resource is not None:
-                logger.warning("no explicit link from the resource to [%s], bah", name)
-                gs_layer = cat.get_layer(gs_resource.name)
-                store = gs_resource.store
-                try:
-                    logger.warning('delete gs_layer')
-                    cat.delete(gs_layer)
-                except:
-                    logger.warning('delete gs_layer FAIL')
-                    pass
-
-                try:
-                    logger.warning('delete gs_resource')
-                    cat.delete(gs_resource)
-                except:
-                    logger.warning('delete gs_resource FAIL')
-                    pass
-
-                if not settings.POSTGIS_DATASTORE:
-                    try:
-                        cat.delete(store)
-                    except:
-                        pass
+                cascading_delete(cat, gs_resource)
 
             # set layer to None, but we'll rely on db transactions instead
             # of a manual delete to keep it out of the db
