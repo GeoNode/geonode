@@ -36,6 +36,162 @@ community."
 
     default_title = "GeoNode Default Map"
 
+    # maps/models.py tests
+
+    # maps.models.Layer
+
+    def test_layer_download_links(self):
+        pass
+
+    def test_layer_verify(self):
+        pass
+
+    def test_layer_maps(self):
+        pass
+
+    def test_layer_metadata(self):
+        pass
+    
+    def test_layer_metadata_csw(self):
+        pass
+
+    def test_layer_attribute_names(self):
+        pass
+
+    def test_layer_display_type(self):
+        pass
+
+    def test_layer_delete_from_geoserver(self):
+        pass
+
+    def test_layer_delete_from_geonetwork(self):
+        pass
+
+    def test_layer_save_to_geonetwork(self):
+        pass
+
+    def test_layer_resource(self):
+        pass
+
+    def test_layer_get_metadata_links(self):
+        pass
+
+    def test_layer_set_metadata_links(self):
+        pass
+
+    def test_layer_get_default_style(self):
+        pass
+    
+    def test_layer_set_default_style(self):
+        pass
+
+    def test_layer_get_styles(self):
+        pass
+
+    def test_layer_set_styles(self):
+        pass
+
+    def test_layer_service_type(self):
+        pass
+
+    def test_layer_publishing(self):
+        pass
+
+    def test_layer_poc_role(self):
+        pass
+
+    def test_layer_metadata_author_role(self):
+        pass
+
+    def test_layer_set_poc(self):
+        pass
+
+    def test_layer_get_poc(self):
+        pass
+
+    def test_layer_set_metadata_author(self):
+        pass
+
+    def test_layer_get_metadata_author(self):
+        pass
+
+    def test_layer_save_to_geoserver(self):
+        pass
+
+    def test_layer_populate_from_gs(self):
+        pass
+
+    def test_layer_autopopulate(self):
+        pass
+
+    def test_layer_populate_from_gn(self):
+        pass
+
+    def test_layer_keyword_list(self):
+        pass
+
+    def test_layer_set_bbox(self):
+        pass
+
+    def test_layer_get_absolute_url(self):
+        pass
+
+    def test_layer_set_default_permissions(self):
+        pass
+
+    # maps.models.Map
+
+    def test_map_center(self):
+        pass
+
+    def test_map_layers(self):
+        pass
+
+    def test_map_local_layers(self):
+        pass
+
+    def test_map_json(self):
+        pass
+
+    def test_map_viewer_json(self):
+        pass
+
+    def test_map_update_from_viewer(self):
+        pass
+
+    def test_map_get_absolute_url(self):
+        pass
+
+    def test_map_set_default_permissions(self):
+        pass
+
+    # maps.models.MapLayerManager
+
+    def test_mlm_from_viewer_config(self):
+        pass
+    
+    # maps.models.MapLayer
+
+    def test_map_layer_from_viewer_config(self):
+        pass
+
+    def test_map_layer_source_config(self):
+        pass
+
+    def test_map_layer_layer_config(self):
+        pass
+
+    def test_map_layer_local_link(self):
+        pass
+
+    # maps.models Util Methods
+
+    def test_delete_layer(self):
+        pass
+
+    def test_post_save_layer(self):
+        pass 
+
     # maps/views.py tests
 
     def test_project_center(self):
