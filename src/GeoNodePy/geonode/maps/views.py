@@ -1,3 +1,4 @@
+from random import choice
 from xml.etree.ElementTree import XML
 from zipfile import ZipFile
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
@@ -543,9 +544,7 @@ def set_layer_permissions(layer, perm_spec, use_email = False):
         layer.set_gen_level(CUSTOM_GROUP_USERS, perm_spec['customgroup'])
         logger.debug('Set customgroup permission to [%s]', perm_spec['customgroup'])
     users = [n for (n, p) in perm_spec['users']]
-    logger.debug(str(users))
     if use_email:
-        logger.debug(layer.owner)
         layer.get_user_levels().exclude(user__email__in = users + [layer.owner]).delete()
         logger.debug("Got user levels")
         for useremail, level in perm_spec['users']:
@@ -1068,7 +1067,7 @@ def _describe_layer(request, layer):
 
                 logger.debug("NEW category: [%s]", new_category)
                 mapid = layer_form.cleaned_data['map_id']
-                logger.debug("map id is [%s]", mapid)
+                logger.debug("map id is [%s]", str(mapid))
 
 
                 if new_poc is None:
@@ -1095,7 +1094,7 @@ def _describe_layer(request, layer):
                 if request.is_ajax():
                     return HttpResponse('success', status=200)
                 elif mapid != '':
-                    logger.debug("adding layer to map [%s]", mapid)
+                    logger.debug("adding layer to map [%s]", str(mapid))
                     maplayer = MapLayer.objects.create(map=Map.objects.get(id=mapid),
                         name = layer.typename,
                         group = layer.topic_category.title if layer.topic_category else 'General',
@@ -1282,8 +1281,8 @@ def upload_layer(request):
         try:
             logger.debug("Begin upload attempt")
             layer, errors, detail_error = _handle_layer_upload(request)
-            logger.debug("_handle_layer_upload returned. layer and errors are [%s]: [%s] ([%s])", (layer, errors, detail_error))
-            logger.debug("Save all attrbute names as searchable by defaul texcept geometry")
+            logger.debug("_handle_layer_upload returned. layer and errors are [%s]:[%s]:[%s]", layer,  errors, detail_error)
+            logger.debug("Save all attrbute names as searchable by default except geometry")
 
 
         except Exception, ex:
@@ -1422,9 +1421,11 @@ def _handle_layer_upload(request, layer=None):
     if sldFile:
         try:
             sld = sldFile.read()
+            sldFile.seek(0)
             XML(sld)
         except Exception, ex:
             return None, [_('Your SLD file contains invalid XML')], escape(str(ex))
+
 
     layer_name = request.POST.get('layer_name')
     base_file = request.FILES.get('base_file')
@@ -1444,10 +1445,10 @@ def _handle_layer_upload(request, layer=None):
         overwrite = False
         # XXX Give feedback instead of just replacing name
         name = _xml_unsafe.sub("_", layer_name)
-        proposed_name = name
+        proposed_name = name + "_"  + "".join([choice('QqWwEeRrTtYyUuOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMn') for i in range(3)])
         count = 1
         while Layer.objects.filter(name=proposed_name).count() > 0:
-            proposed_name = "%s_%d" % (name, count)
+            proposed_name = "%s_%d" % (proposed_name, count)
             count = count + 1
         name = proposed_name
         logger.info("Requested name already used; adjusting name [%s] => [%s]", layer_name, name)
@@ -1457,17 +1458,17 @@ def _handle_layer_upload(request, layer=None):
         logger.info("Using name as requested")
 
     if not name:
-        logger.error("Unexpected error: Layer name passed validation but is falsy: %s", name)
+        logger.error("Unexpected error: Layer name passed validation but is falsy: %s", layer_name)
         return None, [_("Unable to determine layer name.")], detail_error
 
     # zipped shapefile upload
     elif base_file.name.lower().endswith('.zip'):
-        logger.info("Upload [%s] appears to be a Zipped Shapefile", base_file)
+        logger.info("Upload [%s] appears to be a Zipped Shapefile", base_file.name)
         # check that we are uploading the same resource
         # type as the existing resource.
         if layer is not None:
             if layer.storeType == 'coverageStore':
-                logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
+                logger.info("User tried to replace raster layer [%s] with Shapefile  data", name)
                 return None, [_("This resource may only be replaced with raster data.")], detail_error
 
 
@@ -1511,12 +1512,12 @@ def _handle_layer_upload(request, layer=None):
 
     # shapefile upload
     elif base_file.name.lower().endswith('.shp'):
-        logger.info("Upload [%s] appears to be a Shapefile", base_file)
+        logger.info("Upload [%s] appears to be a Shapefile", base_file.name)
         # check that we are uploading the same resource 
         # type as the existing resource.
         if layer is not None:
             if layer.storeType == 'coverageStore':
-                logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
+                logger.info("User tried to replace raster layer [%s] with Shapefile data", name)
                 return None, [_("This resource may only be replaced with raster data.")], detail_error
         
         if settings.POSTGIS_DATASTORE:
@@ -1555,7 +1556,7 @@ def _handle_layer_upload(request, layer=None):
 
     # any other type of upload
     else:
-        logger.info("Upload [%s] appears not to be a Shapefile", base_file)
+        logger.info("Upload [%s] appears not to be a Shapefile", base_file.name)
         if layer is not None:
             logger.info("Checking whether replacement data for [%s] is raster", name)
             if layer.storeType == 'dataStore':
@@ -1577,12 +1578,12 @@ def _handle_layer_upload(request, layer=None):
         else:
             create_store(name, cfg, overwrite=overwrite)
         logger.debug("Finished upload of [%s] to GeoServer...", name)
-        #raise geoserver.catalog.UploadError
+        #raise geoserver.catalog.UploadError('fake')
         #raise geoserver.catalog.ConflictingDataError
         #raise Exception
     except geoserver.catalog.ConflictingDataError:
             errors.append(_("There is already a layer with the given name."))
-    except Exception, e:
+    except (geoserver.catalog.UploadError, Exception), e:
         logger.warn("Upload failed with error: %s", str(e))
         errors.append(_("An error occurred while loading the data."))
         detail_error = str(e)
@@ -1594,10 +1595,10 @@ def _handle_layer_upload(request, layer=None):
             else:
                 logger.debug("Search for [%s]", name)
                 gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
-
-                cascading_delete(cat, gs_resource)
+            logger.warn('Cascade delete failed upload')
+            cascading_delete(cat, gs_resource)
         except:
-            logger.debug("resource not found for deletion, try to delete the store only");
+            logger.debug("resource not found for deletion, try to delete the store only")
             if create_store != cat.create_pg_feature:
                 try:
                     tmp = cat.get_store(name)
@@ -1672,6 +1673,7 @@ def _handle_layer_upload(request, layer=None):
                 layer.metadata_author = author_contact
                 logger.debug("committing DB changes for [%s]", typename)
                 layer.save()
+                #raise Exception('fake');
                 logger.debug("Setting permissions for [%s] [%s]", typename, request.POST.get("permissions"))
                 perm_spec = json.loads(request.POST["permissions"])
                 set_layer_permissions(layer, perm_spec, True)

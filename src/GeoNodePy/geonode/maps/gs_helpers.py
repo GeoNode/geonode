@@ -89,12 +89,12 @@ def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
 def fixup_style(cat, resource, style):
-    logger.debug("Creating styles for layers associated with [%s]", resource)
+    logger.debug("Creating styles for layers associated with [%s]", resource.name)
     layers = cat.get_layers(resource=resource)
-    logger.info("Found %d layers associated with [%s]", resource)
+    logger.info("Found layers associated with [%s]", resource.name)
     for lyr in layers:
         if lyr.default_style and lyr.default_style.name in _style_templates:
-            logger.info("%s uses a default style, generating a new one", lyr)
+            logger.info("%s uses a default style, generating a new one", lyr.name)
             name = _style_name(resource)
             if (cat.get_style(name)):
                 iter = 1
@@ -109,36 +109,41 @@ def fixup_style(cat, resource, style):
             logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
-            logger.info("Saving changes to %s", lyr)
+            logger.info("Saving changes to %s", lyr.name)
             cat.save(lyr)
-            logger.info("Successfully updated %s", lyr)
+            logger.info("Successfully updated %s", lyr.name)
 
 def cascading_delete(cat, resource):
     #Maybe it's already been deleted from geoserver?
+    logger.debug("CASCADE DELETE %s", resource.name if resource else 'NULL')
     if resource:
         lyr = cat.get_layer(resource.name)
 
         styles = lyr.styles + [lyr.default_style]
         try:
             cat.delete(lyr)
+            logger.debug('Deleted layer')
         except:
             logger.error('Error deleting layer [%s]', resource.name)
         for s in styles:
             if s is not None:
                 try:
                     cat.delete(s, purge=True)
+                    logger.debug('Deleted style')
                 except:
                     logger.error('Error deleting style for %s', resource.name)
         store = resource.store
         resource_name = resource.name
         try:
             cat.delete(resource)
+            logger.debug('Deleted store')
         except:
             logger.error("Error deleting resource")
         try:
-            logger.debug('STORE NAME:' + store.name)
+            logger.debug('STORE NAME: %s', store.name)
             if store.name != settings.POSTGIS_DATASTORE:
                 cat.delete(store)
+                logger.debug('Deleted PostGIS table')
             else:
                 delete_from_postgis(resource_name)
         except Exception, ex:
@@ -154,11 +159,13 @@ def delete_from_postgis(resource_name):
             cur = conn.cursor()
             cur.execute("""select DropGeometryTable('""" + resource_name  + """')""")
             conn.commit()
-        except:
+        except Exception, e:
+            logger.error("Error deleting PostGIS table %s", resource_name)
             conn.close()
             raise
         conn.close()
     except:
+        logger.error("Error deleting PostGIS table %s", resource_name)
         conn.close()
         raise
     
