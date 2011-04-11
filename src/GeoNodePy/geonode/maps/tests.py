@@ -36,25 +36,31 @@ community."
 
     default_title = "GeoNode Default Map"
 
-    def test_map2json(self):
-        ''' Make some assertions about the data structure produced for serialization
-            to a JSON map configuration '''
-        map = Map.objects.get(id=1)
-        cfg = map.viewer_json()
-        self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
-        self.assertEquals(cfg['about']['title'], MapTest.default_title)
-        def is_wms_layer(x):
-            return cfg['sources'][x['source']]['ptype'] == 'gx_wmssource'
-        layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
-        self.assertEquals(layernames, ['base:CA',])
+    # maps/views.py tests
 
-    def test_mapdetails(self): 
-        '''/maps/1 -> Test accessing the detail view of a map'''
-        map = Map.objects.get(id="1") 
-        c = Client() 
-        response = c.get("/maps/%s" % map.id)
-        self.assertEquals(response.status_code,200) 
-        
+    def test_project_center(self):
+        pass
+
+    def test_baselayer(self):
+        pass
+
+    def test_bbox_to_wkt(self):
+        pass
+
+    def test_view_js(self):
+        pass
+
+    def test_view(self):
+        pass
+
+    # Maps Tests
+
+    def test_map_controller(self):
+        pass
+
+    def test_new_map(self):
+        pass
+
     def test_map_save(self):
         """POST /maps -> Test saving a new map"""
         # This is a valid map viewer config, based on the sample data provided
@@ -109,25 +115,183 @@ community."
         self.assertEquals(cfg["about"]["title"], self.default_title) 
         self.assertEquals(len(cfg["map"]["layers"]), 5) 
 
+    def test_map_to_json(self):
+        ''' Make some assertions about the data structure produced for serialization
+            to a JSON map configuration '''
+        map = Map.objects.get(id=1)
+        cfg = map.viewer_json()
+        self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
+        self.assertEquals(cfg['about']['title'], MapTest.default_title)
+        def is_wms_layer(x):
+            return cfg['sources'][x['source']]['ptype'] == 'gx_wmssource'
+        layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
+        self.assertEquals(layernames, ['base:CA',])
+
+    def test_map_details(self): 
+        '''/maps/1 -> Test accessing the detail view of a map'''
+        map = Map.objects.get(id="1") 
+        c = Client() 
+        response = c.get("/maps/%s" % map.id)
+        self.assertEquals(response.status_code,200) 
+
+    def test_delete_map(self):
+        pass
+
+    def test_map_detail(self):
+        pass
+
+    def test_describe_map(self):
+        pass
+
+    def test_embed_map(self):
+        pass
+
+    # Batch Tests    
+    
+    def test_map_download(self):
+        pass
+
+    def test_check_download(self):
+        pass
+
+    def test_batch_layer_download(self):
+        pass
+
+    def test_batch_delete(self):
+        pass
+
+    # Permissions Tests
+
+    def test_view_layer_permissions(self):
+        pass
+
+    def test_view_perms_context(self):
+        pass
+
+    def test_perms_info(self):
+        pass
+
+    def test_perms_info_json(self):
+        pass
+
+    def test_fix_map_perms_for_editor(self):
+        pass
+
+    def test_handle_perms_edit(self):
+        pass
+
+    def test_get_basic_auth_info(self):
+        pass
+
+    def test_layer_acls(self):
+        pass
+
+    def test_view_map_permissions(self):
+        pass
+
+    def test_set_map_permissions(self):
+        pass
+
+    def test_set_layer_permissions(self):
+        pass
+
+    def test_ajax_layer_permissions(self):
+        pass
+
+    def test_ajax_map_permissions(self):
+        pass
+
+    def test_batch_permissions(self):
+        pass
+
+    # Data Tests
+
     def test_data(self):
         '''/data/ -> Test accessing the data page'''
         c = Client()
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
 
+    def test_browse_data(self):
+        pass
+
+    def test_describe_data(self):
+        '''/data/base:CA?describe -> Test accessing the description of a layer '''
+
+        from django.contrib.auth.models import User
+        self.assertEqual(2, User.objects.all().count())
+        c = Client()
+        response = c.get('/data/base:CA?describe')
+        # Since we are not authenticated, we should not be able to access it
+        self.failUnlessEqual(response.status_code, 302)
+        # but if we log in ...
+        c.login(username='bobby', password='bob')
+        # ... all should be good
+        if self.GEOSERVER:
+            response = c.get('/data/base:CA?describe')
+            self.failUnlessEqual(response.status_code, 200)
+        else:
+            # If Geoserver is not running, this should give a runtime error
+            try:
+                c.get('/data/base:CA?describe')
+            except RuntimeError:
+                pass
+    
+    # Layer Tests
+
+    def test_upload_layer(self):
+        pass
+
+    def test_handle_layer_upload(self):
+        pass
+
+    def test_update_layer(self):
+        pass
+
+    def test_describe_layer(self):
+        pass
+
+    def test_remove_layer(self):
+        pass
+
+    def test_change_layer_default_style(self):
+        pass
+
+    def test_layer_controller(self):
+        pass
+
+    def test_extract_links(self):
+        pass
+
+    # Search Tests
+    
     def test_search(self):
         '''/data/search/ -> Test accessing the data search page'''
         c = Client()
         response = c.get('/data/search/')
         self.failUnlessEqual(response.status_code, 200)
 
+    def test_search_page(self):
+        pass
+
+    def test_build_search_result(self):
+        pass
+
+    def test_metadata_search(self):
+        pass
+
+    def test_search_result_detail(self):
+        pass
+
+    def test_split_query(self):
+        pass
+    
     def test_search_api(self):
         '''/data/search/api -> Test accessing the data search api JSON'''
         if self.GEOSERVER:
             c = Client()
             response = c.get('/data/search/api')
             self.failUnlessEqual(response.status_code, 200)
-
 
     def test_search_detail(self):
         '''
@@ -157,25 +321,19 @@ community."
         md_doc = tpl.render(ctx)
         self.assert_("None" not in md_doc, "None in " + md_doc)
 
+    def test_maps_search(self):
+        pass
 
-    def test_describe_data(self):
-        '''/data/base:CA?describe -> Test accessing the description of a layer '''
+    def test_maps_search_page(self):
+        pass
 
-        from django.contrib.auth.models import User
-        self.assertEqual(2, User.objects.all().count())
-        c = Client()
-        response = c.get('/data/base:CA?describe')
-        # Since we are not authenticated, we should not be able to access it
-        self.failUnlessEqual(response.status_code, 302)
-        # but if we log in ...
-        c.login(username='bobby', password='bob')
-        # ... all should be good
-        if self.GEOSERVER:
-            response = c.get('/data/base:CA?describe')
-            self.failUnlessEqual(response.status_code, 200)
-        else:
-            # If Geoserver is not running, this should give a runtime error
-            try:
-                c.get('/data/base:CA?describe')
-            except RuntimeError:
-                pass
+    def test_change_poc(self):
+        pass
+
+    # gs_helpers tests
+
+    def test_fixup_style(self):
+        pass
+
+    def test_cascading_delete(self):
+        pass 
