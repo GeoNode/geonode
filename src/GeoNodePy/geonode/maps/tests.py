@@ -1,24 +1,76 @@
+from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
+
+import geonode.maps.models
 from geonode.maps.models import Map, Layer
 from geonode.maps.views import DEFAULT_MAP_CONFIG
+from geonode.maps.utils import upload, file_upload, GeoNodeException
+
 from mock import Mock
 
-import json, os
-import geonode.maps.models
+import unittest
+import os
+import urllib2
 
-_gs_resource = Mock()
-_gs_resource.native_bbox = [1, 2, 3, 4]
-Layer.objects.geonetwork = Mock()
-Layer.objects.gs_catalog = Mock()
-Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
+#_gs_resource = Mock()
+#_gs_resource.native_bbox = [1, 2, 3, 4]
+#Layer.objects.geonetwork = Mock()
+#Layer.objects.gs_catalog = Mock()
+#Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
-geonode.maps.models.get_csw = Mock()
-geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
+#geonode.maps.models.get_csw = Mock()
+#geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
+#geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
+#geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
+
+TEST_DATA = os.path.join(os.environ['GEONODE_HOME'],
+                       'geonode_test_data')
+
+def check_layer(uploaded):
+    """Verify if an object is a valid Layer.
+    """
+    msg = ('Was expecting layer object, got %s' % (type(uploaded)))
+    assert type(uploaded) is Layer, msg
+    msg = ('The layer does not have a valid name: %s' % uploaded.name)
+    assert len(uploaded.name) > 0, msg
+
+
+def get_web_page(url, username=None, password=None):
+    """Get url page possible with username and password.
+    """
+
+    if username is not None:
+
+        # Create password manager
+        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        passman.add_password(None, url, username, password)
+
+        # create the handler
+        authhandler = urllib2.HTTPBasicAuthHandler(passman)
+        opener = urllib2.build_opener(authhandler)
+        urllib2.install_opener(opener)
+
+    try:
+        pagehandle = urllib2.urlopen(url)
+    except HTTPError, e:
+        msg = ('The server couldn\'t fulfill the request. '
+                'Error code: ' % e.code)
+        e.args = (msg,)
+        raise
+    except urllib2.URLError, e:
+        msg = 'Could not open URL "%s": %s' % (url, e)
+        e.args = (msg,)
+        raise
+    else:
+        page = pagehandle.readlines()
+
+    return page
+
 
 class MapTest(TestCase):
+    """Tests geonode.maps app/module
+    """
 
     fixtures = ['test_data.json', 'map_data.json']
     GEOSERVER = False
@@ -211,6 +263,37 @@ community."
 
     # Maps Tests
 
+    # This is a valid map viewer config, based on the sample data provided
+    # by andreas in issue 566. -dwins
+    viewer_config = """
+    {
+      "defaultSourceType": "gx_wmssource",
+      "about": {
+          "title": "Title",
+      "abstract": "Abstract"
+      },
+      "sources": {
+        "capra": {
+          "url":"http://localhost:8001/geoserver/wms"
+        }
+      },
+      "map": {
+        "projection":"EPSG:900913",
+        "units":"m",
+        "maxResolution":156543.0339,
+        "maxExtent":[-20037508.34,-20037508.34,20037508.34,20037508.34],
+        "center":[-9428760.8688778,1436891.8972581],
+        "layers":[{
+          "source":"capra",
+          "buffer":0,
+          "wms":"capra",
+          "name":"base:nic_admin"
+        }],
+        "zoom":7
+      }
+    }
+    """
+
     def test_map_controller(self):
         pass
 
@@ -219,36 +302,6 @@ community."
 
     def test_map_save(self):
         """POST /maps -> Test saving a new map"""
-        # This is a valid map viewer config, based on the sample data provided
-        # by andreas in issue 566. -dwins
-        viewer_config = """
-        {
-          "defaultSourceType": "gx_wmssource",
-          "about": {
-              "title": "Title",
-              "abstract": "Abstract"
-          },
-          "sources": {
-            "capra": {
-              "url":"http://localhost:8001/geoserver/wms"
-            }
-          },
-          "map": {
-            "projection":"EPSG:900913",
-            "units":"m",
-            "maxResolution":156543.0339,
-            "maxExtent":[-20037508.34,-20037508.34,20037508.34,20037508.34],
-            "center":[-9428760.8688778,1436891.8972581],
-            "layers":[{
-              "source":"capra",
-              "buffer":0,
-              "wms":"capra",
-              "name":"base:nic_admin"
-            }],
-            "zoom":7
-          }
-        }
-        """
 
         # since django's test client doesn't support providing a JSON request
         # body, just test the model directly. 
@@ -272,8 +325,8 @@ community."
         self.assertEquals(len(cfg["map"]["layers"]), 5) 
 
     def test_map_to_json(self):
-        ''' Make some assertions about the data structure produced for serialization
-            to a JSON map configuration '''
+        """ Make some assertions about the data structure produced for serialization
+            to a JSON map configuration """
         map = Map.objects.get(id=1)
         cfg = map.viewer_json()
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
@@ -284,7 +337,7 @@ community."
         self.assertEquals(layernames, ['base:CA',])
 
     def test_map_details(self): 
-        '''/maps/1 -> Test accessing the detail view of a map'''
+        """/maps/1 -> Test accessing the detail view of a map"""
         map = Map.objects.get(id="1") 
         c = Client() 
         response = c.get("/maps/%s" % map.id)
@@ -395,7 +448,11 @@ community."
     
     # Layer Tests
 
+    # Much of this will be replaced by tests of maps/utils.py (see below)
+
     def test_upload_layer(self):
+        """Test uploading a layer to a running GeoNode/GeoServer/GeoNetwork
+        """
         pass
 
     def test_handle_layer_upload(self):
@@ -485,6 +542,155 @@ community."
 
     def test_change_poc(self):
         pass
+
+    # maps/utils.py tests
+
+    def test_layer_upload(self):
+        """Test that layers can be uploaded to running GeoNode/GeoServer
+        """
+        layers = {}
+        expected_layers = []
+        not_expected_layers = []
+        datadir = TEST_DATA
+        BAD_LAYERS = [
+            'lembang_schools_percentage_loss.shp',
+        ]
+
+        for filename in os.listdir(datadir):
+            basename, extension = os.path.splitext(filename)
+            if extension.lower() in ['.asc', '.tif', '.shp', '.zip']:
+                if filename not in BAD_LAYERS:
+                    expected_layers.append(os.path.join(datadir, filename))
+                else:
+                    not_expected_layers.append(
+                                    os.path.join(datadir, filename)
+                                             )
+        uploaded = upload(datadir)
+
+        for item in uploaded:
+            errors = 'errors' in item
+            if errors:
+                # should this file have been uploaded?
+                if item['file'] in not_expected_layers:
+                    continue
+                msg = 'Could not upload %s. ' % item['file']
+                assert errors is False, msg + 'Error was: %s' % item['errors']
+                msg = ('Upload should have returned either "name" or '
+                  '"errors" for file %s.' % item['file'])
+            else:
+                assert 'name' in item, msg
+                layers[item['file']] = item['name']
+
+        msg = ('There were %s compatible layers in the directory,'
+               ' but only %s were sucessfully uploaded' %
+               (len(expected_layers), len(layers)))
+        assert len(layers) == len(expected_layers), msg
+
+        uploaded_layers = [layer for layer in layers.items()]
+
+        for layer in expected_layers:
+            msg = ('The following file should have been uploaded'
+                   'but was not: %s. ' % layer)
+            assert layer in layers, msg
+
+            layer_name = layers[layer]
+
+            # Check the layer is in the Django database
+            Layer.objects.get(name=layer_name)
+
+            # Check that layer is in geoserver
+            found = False
+            gs_username, gs_password = settings.GEOSERVER_CREDENTIALS
+            page = get_web_page(os.path.join(settings.GEOSERVER_BASE_URL,
+                                             'rest/layers'),
+                                             username=gs_username,
+                                             password=gs_password)
+            for line in page:
+                if line.find('rest/layers/%s.html' % layer_name) > 0:
+                    found = True
+            if not found:
+                msg = ('Upload could not be verified, the layer %s is not '
+                   'in geoserver %s, but GeoNode did not raise any errors, '
+                   'this should never happen.' %
+                   (layer_name, settings.GEOSERVER_BASE_URL))
+                raise GeoNodeException(msg)
+
+        server_url = settings.GEOSERVER_BASE_URL + 'ows?'
+        # Verify that the GeoServer GetCapabilities record is accesible:
+        metadata = get_layers_metadata(server_url, '1.0.0')
+        msg = ('The metadata list should not be empty in server %s'
+                % server_url)
+        assert len(metadata) > 0, msg
+        # Check the keywords are recognized too
+
+    def test_extension_not_implemented(self):
+        """Verify a GeoNodeException is returned for not compatible extensions
+        """
+        sampletxt = os.path.join(TEST_DATA, 'lembang_schools_percentage_loss.dbf')
+        try:
+            file_upload(sampletxt)
+        except GeoNodeException, e:
+            pass
+        except Exception, e:
+            msg = ('Was expecting a %s, got %s instead.' %
+                   (GeoNodeException, type(e)))
+            assert e is GeoNodeException, msg
+
+
+    def test_shapefile(self):
+        """Test Uploading a good shapefile
+        """
+        thefile = os.path.join(TEST_DATA, 'lembang_schools.shp')
+        uploaded = file_upload(thefile)
+        check_layer(uploaded)
+
+
+    def test_bad_shapefile(self):
+        """Verifying GeoNode complains about a shapefile without .prj
+        """
+
+        thefile = os.path.join(TEST_DATA, 'lembang_schools_percentage_loss.shp')
+        try:
+            uploaded = file_upload(thefile)
+        except GeoNodeException, e:
+            pass
+        except Exception, e:
+            msg = ('Was expecting a %s, got %s instead.' %
+                   (GeoNodeException, type(e)))
+            assert e is GeoNodeException, msg
+
+
+    def test_tiff(self):
+        """Uploading a good .tiff
+        """
+        thefile = os.path.join(TEST_DATA, 'lembang_mmi_hazmap.tif')
+        uploaded = file_upload(thefile)
+        check_layer(uploaded)
+
+
+    def test_asc(self):
+        """Uploading a good .asc
+        """
+        thefile = os.path.join(TEST_DATA, 'test_grid.asc')
+        uploaded = file_upload(thefile)
+        check_layer(uploaded)
+
+
+    def test_repeated_upload(self):
+        """Upload the same file more than once
+        """
+        thefile = os.path.join(TEST_DATA, 'test_grid.asc')
+        uploaded1 = file_upload(thefile)
+        check_layer(uploaded1)
+        uploaded2 = file_upload(thefile, overwrite=True)
+        check_layer(uploaded2)
+        uploaded3 = file_upload(thefile, overwrite=False)
+        check_layer(uploaded3)
+        msg = ('Expected %s but got %s' % (uploaded1.name, uploaded2.name))
+        assert uploaded1.name == uploaded2.name, msg
+        msg = ('Expected a different name when uploading %s using '
+               'overwrite=False but got %s' % (thefile, uploaded3.name))
+        assert uploaded1.name != uploaded3.name, msg
 
     # gs_helpers tests
 
