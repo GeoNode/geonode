@@ -89,12 +89,12 @@ def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
 def fixup_style(cat, resource, style):
-    logger.debug("Creating styles for layers associated with [%s]", resource.name)
+    logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
-    logger.info("Found layers associated with [%s]", resource.name)
+    logger.info("Found %d layers associated with [%s]", resource)
     for lyr in layers:
         if lyr.default_style and lyr.default_style.name in _style_templates:
-            logger.info("%s uses a default style, generating a new one", lyr.name)
+            logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if (cat.get_style(name)):
                 iter = 1
@@ -109,9 +109,9 @@ def fixup_style(cat, resource, style):
             logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
-            logger.info("Saving changes to %s", lyr.name)
+            logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
-            logger.info("Successfully updated %s", lyr.name)
+            logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
     #Maybe it's already been deleted from geoserver?
@@ -140,16 +140,17 @@ def cascading_delete(cat, resource):
         except:
             logger.error("Error deleting resource")
         try:
-            logger.debug('STORE NAME: %s', store.name)
+            logger.debug('STORE NAME:' + store.name)
             if store.name != settings.POSTGIS_DATASTORE:
                 cat.delete(store)
-                logger.debug('Deleted PostGIS table')
             else:
                 delete_from_postgis(resource_name)
         except Exception, ex:
             logger.error("Error deleting store, [%s]", str(ex))
+        return True
     else:
         logger.error('Error deleting layer & styles - not found in geoserver')
+        return False
 
 
 def delete_from_postgis(resource_name):
