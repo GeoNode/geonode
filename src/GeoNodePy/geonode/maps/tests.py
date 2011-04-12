@@ -3,12 +3,18 @@ from django.test import TestCase
 from django.test.client import Client
 
 import geonode.maps.models
+
 from geonode.maps.models import Map, Layer
 from geonode.maps.views import DEFAULT_MAP_CONFIG
 from geonode.maps.utils import upload, file_upload, GeoNodeException
 
+from geoserver.catalog import FailedRequestError
+
+from gs_helpers import cascading_delete
+
 from mock import Mock
 
+import json
 import unittest
 import os
 import urllib2
@@ -24,7 +30,7 @@ import urllib2
 #geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
 #geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
 
-TEST_DATA = os.path.join(os.environ['GEONODE_HOME'],
+TEST_DATA = os.path.join(settings.GEONODE_HOME,
                        'geonode_test_data')
 
 def check_layer(uploaded):
@@ -92,10 +98,19 @@ community."
 
     # maps.models.Layer
 
-    def test_layer_download_links(self):
+    def test_layer_save_to_geoserver(self):
         pass
 
+    def test_layer_save_to_geonetwork(self):
+        pass
+
+    def test_post_save_layer(self):
+        pass 
+
     def test_layer_verify(self):
+        pass
+
+    def test_layer_download_links(self):
         pass
 
     def test_layer_maps(self):
@@ -114,13 +129,83 @@ community."
         pass
 
     def test_layer_delete_from_geoserver(self):
-        pass
+        """Verify that layer is correctly deleted from GeoServer
+        """
+
+        # Layer.delete_from_geoserver() uses cascading_delete()
+        # Should we explicitly test that the styles and store are
+        # deleted as well as the resource itself?
+        # There is already an explicit test for cascading delete
+        
+        gs_cat = Layer.objects.gs_catalog
+    
+        # Test Uploading then Deleting a Shapefile from GeoServer
+        shp_file = os.path.join(TEST_DATA, 'lembang_schools.shp')
+        shp_layer = file_upload(shp_file)
+        shp_store = gs_cat.get_store(shp_layer.name)
+        shp_layer.delete_from_geoserver()
+        self.assertRaises(FailedRequestError, lambda: gs_cat.get_resource(shp_layer.name, store=shp_store))
+        
+        # Test Uploading then Deleting a TIFF file from GeoServer
+        tif_file = os.path.join(TEST_DATA, 'lembang_mmi_hazmap.tif')
+        tif_layer = file_upload(tif_file)
+        tif_store = gs_cat.get_store(tif_layer.name)
+        tif_layer.delete_from_geoserver()
+        self.assertRaises(FailedRequestError, lambda: gs_cat.get_resource(shp_layer.name, store=tif_store))
+
+        # Clean up and completely delete the Layers from GeoNode and GeoNetwork?
 
     def test_layer_delete_from_geonetwork(self):
-        pass
+        """Verify that layer is correctly deleted from GeoNetwork
+        """
 
-    def test_layer_save_to_geonetwork(self):
-        pass
+        gn_cat = Layer.objects.gn_catalog
+         
+        # Test Uploading then Deleting a Shapefile from GeoNetwork
+        shp_file = os.path.join(TEST_DATA, 'lembang_schools.shp')
+        shp_layer = file_upload(shp_file)
+        shp_layer.delete_from_geonetwork()
+        shp_layer_info = gn_cat.get_by_uuid(shp_layer.uuid)
+        assert shp_layer_info == None
+
+        # Test Uploading then Deleting a TIFF file from GeoNetwork
+        tif_file = os.path.join(TEST_DATA, 'lembang_mmi_hazmap.tif')
+        tif_layer = file_upload(tif_file)
+        tif_layer.delete_from_geonetwork()
+        tif_layer_info = gn_cat.get_by_uuid(tif_layer.uuid)
+        assert tif_layer_info == None
+
+        # Clean up and completely delete the Layers from GeoNode and GeoServer?
+
+    def test_delete_layer(self):
+        """Verify that the 'delete_layer' pre_delete hook is functioning
+        """
+        gs_cat = Layer.objects.gs_catalog
+        gn_cat = Layer.objects.gn_catalog
+        
+        # Upload a Shapefile Layer
+        shp_file = os.path.join(TEST_DATA, 'lembang_schools.shp')
+        shp_layer = file_upload(shp_file)
+        shp_store = gs_cat.get_store(shp_layer.name)
+        shp_store_name = shp_store.name
+
+        id = shp_layer.pk
+        name = shp_layer.name
+        uuid = shp_layer.uuid
+
+        # Delete it with the Layer.delete() method
+        shp_layer.delete()
+        
+        # Verify that it no longer exists in GeoServer
+        self.assertRaises(FailedRequestError, lambda: gs_cat.get_resource(name, store=shp_store))
+       
+        # Should we also verify that the store was deleted
+        
+        # Verify that it no longer exists in GeoNetwork
+        shp_layer_gn_info = gn_cat.get_by_uuid(uuid)
+        assert shp_layer_gn_info == None
+
+        # Should we also check that it was deleted from GeoNodes DB?
 
     def test_layer_resource(self):
         pass
@@ -165,9 +250,6 @@ community."
         pass
 
     def test_layer_get_metadata_author(self):
-        pass
-
-    def test_layer_save_to_geoserver(self):
         pass
 
     def test_layer_populate_from_gs(self):
@@ -236,14 +318,6 @@ community."
     def test_map_layer_local_link(self):
         pass
 
-    # maps.models Util Methods
-
-    def test_delete_layer(self):
-        pass
-
-    def test_post_save_layer(self):
-        pass 
-
     # maps/views.py tests
 
     def test_project_center(self):
@@ -308,7 +382,7 @@ community."
         # the view's hooked up right, I promise.
         map = Map(zoom=7, center_x=0, center_y=0)
         map.save() # can't attach layers to a map whose pk isn't set yet
-        map.update_from_viewer(json.loads(viewer_config))
+        map.update_from_viewer(json.loads(self.viewer_config))
         self.assertEquals(map.title, "Title")
         self.assertEquals(map.abstract, "Abstract")
         self.assertEquals(map.layer_set.all().count(), 1)
@@ -691,11 +765,41 @@ community."
         msg = ('Expected a different name when uploading %s using '
                'overwrite=False but got %s' % (thefile, uploaded3.name))
         assert uploaded1.name != uploaded3.name, msg
-
+    
     # gs_helpers tests
 
     def test_fixup_style(self):
         pass
 
     def test_cascading_delete(self):
-        pass 
+        """Verify that the gs_helpers.cascading_delete() method is working properly
+        """
+
+        gs_cat = Layer.objects.gs_catalog
+
+        # Upload a Shapefile
+        shp_file = os.path.join(TEST_DATA, 'lembang_schools.shp')
+        shp_layer = file_upload(shp_file)
+       
+        # Save the names of the Resource/Store/Styles 
+        resource_name = shp_layer.resource.name
+        store = shp_layer.resource.store
+        store_name = store.name
+        layer = gs_cat.get_layer(resource_name)
+        styles = layer.styles + [layer.default_style]
+        
+        # Delete the Layer using cascading_delete()
+        cascading_delete(gs_cat, shp_layer.resource)
+        
+        # Verify that the styles were deleted
+        for style in styles:
+            s = gs_cat.get_style(style)
+            assert s == None
+        
+        # Verify that the resource was deleted
+        self.assertRaises(FailedRequestError, lambda: gs_cat.get_resource(resource_name, store=store))
+
+        # Verify that the store was deleted 
+        self.assertRaises(FailedRequestError, lambda: gs_cat.get_store(store_name))
+
+        # Clean up by deleting the layer from GeoNode's DB and GeoNetwork?
