@@ -99,7 +99,6 @@ def get_valid_name(layer_name):
 def get_valid_layer_name(layer=None, overwrite=False):
     """Checks if the layer is a string and fetches it from the database.
     """
-
     # The first thing we do is get the layer name string
     if isinstance(layer, Layer):
         layer_name = layer.name
@@ -118,8 +117,19 @@ def get_valid_layer_name(layer=None, overwrite=False):
 
 def cleanup(name, uuid):
    """Deletes GeoServer and GeoNetwork records for a given name.
+
       Useful to clean the mess when something goes terribly wrong.
+      It also verifies if the Django record existed, in which case
+      it performs no action.
    """
+   try:
+       Layer.objects.get(name=name)
+   except Layer.DoesNotExist, e:
+       pass
+   else:
+       msg = ('Not doing any cleanup because the layer %s exists in the Django db.' % name)
+       raise GeoNodeException(msg)
+
    cat = Layer.objects.gs_catalog
    #FIXME: Could this lead to someone deleting for example a postgis db with the same name of the uploaded file?.
    try:
@@ -129,8 +139,8 @@ def cleanup(name, uuid):
        gs_store = None
    try:
        gs_layer = cat.get_layer(name)
-       gs_resource = layer.resource
-   except FailedRequestError, e:
+       gs_resource = gs_layer.resource
+   except geoserver.catalog.FailedRequestError, e:
        logger.warn('There is no layer named [%s] in GeoServer, no need to delete it: %s' % str(e))
 
    if gs_layer is not None:
@@ -150,10 +160,10 @@ def cleanup(name, uuid):
            pass
 
    gn = Layer.objects.geonetwork
-   csw_records = gn.get_by_uuid(uuid)
-   for csw_record in csw_records:
-       if csw_record is None:
-           continue
+   csw_record = gn.get_by_uuid(uuid)
+   if csw_record is None:
+       pass
+   else:
        logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
        try:
            gn.delete(csw_record)
@@ -392,10 +402,9 @@ def save(layer, base_file, user, overwrite = True):
     except GeoNodeException, e:
         msg = ('The layer [%s] was not correctly saved to GeoNetwork/GeoServer. Error is: %s' % (layer, str(e)))
         logger.exception(msg)
-        logger.debug('Attempting to clean up after failed save for layer [%s]' % name)
-        # Since the layer creation was not successful, we need to clean up
-        cleanup(name, layer_uuid)
         e.args = (msg,)
+        # Deleting the layer
+        saved_layer.delete()
         raise
 
     # Return the created layer object
