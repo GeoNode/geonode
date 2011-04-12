@@ -1571,8 +1571,19 @@ def _handle_layer_upload(request, layer=None):
     try:
         logger.debug("Starting upload of [%s] to GeoServer...", name)
         if create_store == cat.create_pg_feature:
-            logger.debug("create_store([%s], [%s], cfg, overwrite=overwrite)", settings.POSTGIS_DATASTORE, name)
-            create_store(settings.POSTGIS_DATASTORE, name, cfg, overwrite=overwrite, charset=encoding)
+            logger.debug("create_store([%s], cfg, overwrite=overwrite)",  name)
+            storeXML = '<dataStore>' \
+                    '<name>' + name  + '</name>' \
+                    '<connectionParameters>' \
+                        '<host>' + settings.POSTGIS_HOST + '</host>' \
+                        '<port>' + settings.POSTGIS_PORT + '</port>'  \
+                        '<database>' + settings.POSTGIS_NAME + '</database>' \
+                        '<user>' +settings.POSTGIS_USER + '</user>' \
+                        '<password>' + settings.POSTGIS_PASSWORD + '</password>' \
+                        '<dbtype>postgis</dbtype>' \
+                    '</connectionParameters>' \
+            '</dataStore>'
+            create_store(storeXML, name, cfg, overwrite=overwrite, charset=encoding)
         elif create_store == cat.create_featurestore:
             create_store(name, cfg, overwrite=overwrite, charset=encoding)
         else:
@@ -1589,12 +1600,7 @@ def _handle_layer_upload(request, layer=None):
         detail_error = str(e)
 
         try:
-            if create_store == cat.create_pg_feature:
-                logger.debug("Search [%s] for [%s]", settings.POSTGIS_DATASTORE, name)
-                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=settings.POSTGIS_DATASTORE))
-            else:
-                logger.debug("Search for [%s]", name)
-                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
+            gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
             logger.warn('Cascade delete failed upload')
             cascading_delete(cat, gs_resource)
         except:
@@ -1622,12 +1628,7 @@ def _handle_layer_upload(request, layer=None):
         csw_record = None
         layer = None
         try:
-            if create_store == cat.create_pg_feature:
-                logger.debug("Search [%s] for [%s]", settings.POSTGIS_DATASTORE, name)
-                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=settings.POSTGIS_DATASTORE))
-            else:
-                logger.debug("Search for [%s]", name)
-                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
+            gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
             if gs_resource.latlon_bbox is None:
                 # If GeoServer couldn't figure out the projection, we initially 
                 # assume its 4326

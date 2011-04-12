@@ -782,24 +782,6 @@ class Layer(models.Model, PermissionLevelMixin):
     distribution_url = models.TextField(_('distribution URL'), blank=True, null=True)
     distribution_description = models.TextField(_('distribution description'), blank=True, null=True)
 
-#    # WMS GetCapabilities properties
-#    srs = models.CharField(_('SRS'), blank=True, null=True, default="EPSG:4326")
-#    opaque = models.BooleanField(_('opaque'), blank=True, null=True)
-#    noSubsets = models.BooleanField(_('noSubsets'), blank=True, null=True)
-#    cascaded = models.IntegerField(_('cascaded'), blank=True, null=True)
-#    fixedWidth = models.IntegerField(_('fixedWidth'), blank=True, null=True)
-#    fixedHeight = models.IntegerField(_('fixedHeight'), blank=True, null=True)
-#    minScale = models.FloatField(_('minScale'), blank=True, null=True)
-#    maxScale = models.FloatField(_('maxScale'), blank=True, null=True)
-#    prefix = models.CharField(_('prefix'), blank=True, null=True)
-#    formats = models.TextField(_('formats'), blank=True, null=True)
-#    styles = models.TextField(_('styles'), blank=True, null=True)
-#    dimensions = models.TextField(_('styles'), blank=True, null=True)
-#    bbox  = models.TextField(_('bbox'), blank=True, null=True)
-#    llbbox = models.TextField(_('llbbox'), blank=True, null=True)
-#    attribution = models.TextField(_('attribution'), blank=True, null=True)
-#    authorityURLs = models.TextField(_('authorityURLs'), blank=True, null=True)
-#    metadataURLs = models.TextField(_('metadataURLs'), blank=True, null=True)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """

@@ -295,8 +295,8 @@ CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_AUTH_URL = ''
 
-#Name of a PostGIS datastore in GeoServer, if any
-POSTGIS_DATASTORE=''
+#Import uploaded shapefiles into PostGIS?
+POSTGIS_DATASTORE=False
 
 #PostGIS connection info, necessary for deleting tables when layers with PostGIS data stores are removed
 POSTGIS_NAME = ''

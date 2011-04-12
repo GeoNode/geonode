@@ -136,15 +136,16 @@ def cascading_delete(cat, resource):
         resource_name = resource.name
         try:
             cat.delete(resource)
-            logger.debug('Deleted store')
+            logger.debug('Deleted resource')
         except:
             logger.error("Error deleting resource")
         try:
             logger.debug('STORE NAME:' + store.name)
-            if store.name != settings.POSTGIS_DATASTORE:
+            ##TODO: get rid of this conditional statement
+            if store.name != 'wmdata':
                 cat.delete(store)
-            else:
-                delete_from_postgis(resource_name)
+
+            delete_from_postgis(resource_name)
         except Exception, ex:
             logger.error("Error deleting store, [%s]", str(ex))
         return True
