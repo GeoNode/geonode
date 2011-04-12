@@ -1580,6 +1580,7 @@ def _handle_layer_upload(request, layer=None):
                         '<database>' + settings.POSTGIS_NAME + '</database>' \
                         '<user>' +settings.POSTGIS_USER + '</user>' \
                         '<password>' + settings.POSTGIS_PASSWORD + '</password>' \
+                        '<passwd>' + settings.POSTGIS_PASSWORD + '</passwd>' \
                         '<dbtype>postgis</dbtype>' \
                     '</connectionParameters>' \
             '</dataStore>'
