@@ -33,6 +33,8 @@ import urllib2
 TEST_DATA = os.path.join(settings.GEONODE_HOME,
                        'geonode_test_data')
 
+# patience
+
 def check_layer(uploaded):
     """Verify if an object is a valid Layer.
     """
