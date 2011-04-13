@@ -468,17 +468,17 @@ def set_map_permissions(m, perm_spec):
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
 
-    if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
-        return HttpResponse(
-            'You are not allowed to change permissions for this layer',
-            status=401,
-            mimetype='text/plain'
-        )
-
     if not request.method == 'POST':
         return HttpResponse(
             'You must use POST for editing layer permissions',
             status=405,
+            mimetype='text/plain'
+        )
+
+    if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
+        return HttpResponse(
+            'You are not allowed to change permissions for this layer',
+            status=401,
             mimetype='text/plain'
         )
 
