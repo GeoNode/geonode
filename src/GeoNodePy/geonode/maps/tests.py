@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
+from django.core.exceptions import ObjectDoesNotExist
 
 import geonode.maps.models
 
@@ -18,22 +19,23 @@ import json
 import unittest
 import os
 import urllib2
+import base64
 
-#_gs_resource = Mock()
-#_gs_resource.native_bbox = [1, 2, 3, 4]
-#Layer.objects.geonetwork = Mock()
-#Layer.objects.gs_catalog = Mock()
-#Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
+_gs_resource = Mock()
+_gs_resource.native_bbox = [1, 2, 3, 4]
 
-#geonode.maps.models.get_csw = Mock()
-#geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
-#geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
-#geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
+Layer.objects.geonetwork = Mock()
+Layer.objects.gs_catalog = Mock()
+
+Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
+
+geonode.maps.models.get_csw = Mock()
+geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
 
 TEST_DATA = os.path.join(settings.GEONODE_HOME,
                        'geonode_test_data')
-
-# patience
 
 def check_layer(uploaded):
     """Verify if an object is a valid Layer.
@@ -107,7 +109,7 @@ community."
         pass
 
     def test_post_save_layer(self):
-        pass 
+        pass
 
     def test_layer_verify(self):
         pass
@@ -133,11 +135,14 @@ community."
     def test_layer_delete_from_geoserver(self):
         """Verify that layer is correctly deleted from GeoServer
         """
-
         # Layer.delete_from_geoserver() uses cascading_delete()
         # Should we explicitly test that the styles and store are
         # deleted as well as the resource itself?
         # There is already an explicit test for cascading delete
+
+        # This should be using a Mocked version of gs_catalog rather than
+        # hitting GeoServer directly. Actual tests against GeoServer should
+        # be moved to the integration test suite
         
         gs_cat = Layer.objects.gs_catalog
     
@@ -160,7 +165,11 @@ community."
     def test_layer_delete_from_geonetwork(self):
         """Verify that layer is correctly deleted from GeoNetwork
         """
-
+        
+        # This should be using a Mocked version of gn_catalog rather than
+        # hitting GeoNetwork directly. Actual tests against GeoNetwork should
+        # be moved to the integration test suite
+        
         gn_cat = Layer.objects.gn_catalog
          
         # Test Uploading then Deleting a Shapefile from GeoNetwork
@@ -188,6 +197,7 @@ community."
         # Upload a Shapefile Layer
         shp_file = os.path.join(TEST_DATA, 'lembang_schools.shp')
         shp_layer = file_upload(shp_file)
+        shp_layer_id = shp_layer.pk
         shp_store = gs_cat.get_store(shp_layer.name)
         shp_store_name = shp_store.name
 
@@ -200,14 +210,14 @@ community."
         
         # Verify that it no longer exists in GeoServer
         self.assertRaises(FailedRequestError, lambda: gs_cat.get_resource(name, store=shp_store))
-       
-        # Should we also verify that the store was deleted
-        
+        self.assertRaises(FailedRequestError, lambda: gs_cat.get_store(shp_store_name))
+ 
         # Verify that it no longer exists in GeoNetwork
         shp_layer_gn_info = gn_cat.get_by_uuid(uuid)
         assert shp_layer_gn_info == None
 
-        # Should we also check that it was deleted from GeoNodes DB?
+        # Check that it was also deleted from GeoNodes DB
+        self.assertRaises(ObjectDoesNotExist, lambda: Layer.objects.get(pk=shp_layer_id))
 
     def test_layer_resource(self):
         pass
@@ -273,7 +283,32 @@ community."
         pass
 
     def test_layer_set_default_permissions(self):
-        pass
+        """Verify that Layer.set_default_permissions is behaving as expected
+        """
+        
+        # Get a Layer object to work with 
+        layer = Layer.objects.all()[0]
+
+        # Should we set some 'current' permissions to do further testing?
+        
+        # Save the layers Current Permissions
+        current_perms = layer.get_all_level_info()
+
+        # Set the default permissions
+        layer.set_default_permissions()
+
+        # Test that LEVEL_READ is set for ANONYMOUS_USERS and AUTHENTICATED_USERS
+        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_READ)
+        self.assertEqual(layer.get_gen_level(geonode.core.models.AUTHENTICATED_USERS), layer.LEVEL_READ)
+
+        # Test that the previous Permissions were set to LEVEL_NONE
+        for username in current_perms['users'].keys():
+            user = User.objects.get(username=username)
+            self.assertEqual(layer.get_user_level(user, layer.LEVEL_NONE))
+
+        # Test that the owner was assigned LEVEL_ADMIN
+        if layer.owner:
+            self.assertEqual(layer.owner, layer.LEVEL_ADMIN)
 
     # maps.models.Map
 
@@ -382,6 +417,7 @@ community."
         # since django's test client doesn't support providing a JSON request
         # body, just test the model directly. 
         # the view's hooked up right, I promise.
+
         map = Map(zoom=7, center_x=0, center_y=0)
         map.save() # can't attach layers to a map whose pk isn't set yet
         map.update_from_viewer(json.loads(self.viewer_config))
@@ -402,7 +438,7 @@ community."
 
     def test_map_to_json(self):
         """ Make some assertions about the data structure produced for serialization
-            to a JSON map configuration """
+            to a JSON map configuration"""
         map = Map.objects.get(id=1)
         cfg = map.viewer_json()
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
@@ -414,7 +450,7 @@ community."
 
     def test_map_details(self): 
         """/maps/1 -> Test accessing the detail view of a map"""
-        map = Map.objects.get(id="1") 
+        map = Map.objects.get(id=1) 
         c = Client() 
         response = c.get("/maps/%s" % map.id)
         self.assertEquals(response.status_code,200) 
@@ -447,40 +483,183 @@ community."
 
     # Permissions Tests
 
+    # FIXME: Add a comprehensive set of permissions specifications that allow us 
+    # to test as many conditions as is possible/necessary
+
+    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
+
+    def test_set_layer_permissions(self):
+        """Verify that the set_layer_permissions view is behaving as expected
+        """
+        
+        # Get a layer to work with
+        layer = Layer.objects.all()[0]
+
+        # Save the Layers current permissions
+        current_perms = layer.get_all_level_info() 
+       
+        # FIXME Test a comprehensive set of permisssions specifications 
+
+        # Set the Permissions
+        geonode.maps.views.set_layer_permissions(layer, self.perm_spec)
+
+        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
+        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
+        self.assertEqual(layer.get_gen_level(geonode.core.models.AUTHENTICATED_USERS), layer.LEVEL_NONE)
+
+        # Test that previous permissions for users other than ones specified in
+        # the perm_spec (and the layers owner) were removed
+        users = [n for (n, p) in self.perm_spec['users']]
+        levels = layer.get_user_levels().exclude(user__username__in = users + [layer.owner])
+        self.assertEqual(len(levels), 0)
+       
+        # Test that the User permissions specified in the perm_spec were applied properly
+        for username, level in self.perm_spec['users']:
+            user = geonode.maps.models.User.objects.get(username=username)
+            self.assertEqual(layer.get_user_level(user), level)
+
     def test_view_layer_permissions(self):
-        pass
+        """Verify that the view_layer_permissions view is behaving as expected
+        """
+
+        # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
+
+        pass        
+
+    def test_ajax_layer_permissions(self):
+        """Verify that the ajax_layer_permissions view is behaving as expected
+        """
+        
+        # Setup some layer names to work with 
+        valid_layer_typename = Layer.objects.all()[0].typename
+        invalid_layer_typename = "n0ch@nc3"
+
+        c = Client()
+
+        # Test that an invalid layer.typename is handled for properly
+        response = c.post("/data/%s/ajax-permissions" % invalid_layer_typename, 
+                            data=self.perm_spec,
+                            content_type="text/json")
+        self.assertEquals(response.status_code, 404) 
+
+        # Test that POST is required
+        response = c.get("/data/%s/ajax-permissions" % valid_layer_typename)
+        self.assertEquals(response.status_code, 405)
+        
+        # Test that a user is required to have maps.change_layer_permissions
+
+        # First test un-authenticated
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
+                            data=self.perm_spec,
+                            content_type="text/json")
+        self.assertEquals(response.status_code, 401) 
+
+        # Next Test with a user that does NOT have the proper perms
+        logged_in = c.login(username='bobby', password='bob')
+        self.assertEquals(logged_in, True) 
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
+                            data=self.perm_spec,
+                            content_type="text/json")
+        self.assertEquals(response.status_code, 401) 
+
+        # Login as a user with the proper permission and test the endpoint
+        logged_in = c.login(username='admin', password='admin')
+        self.assertEquals(logged_in, True)
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
+                            data=json.dumps(self.perm_spec),
+                            content_type="application/json")
+
+        # Test that the method returns 200         
+        self.assertEquals(response.status_code, 200) 
+
+        # Test that the permissions specification is applied
+
+        # Should we do this here, or assume the tests in 
+        # test_set_layer_permissions will handle for that?
+
+    def test_layer_acls(self):
+        """ Verify that the layer_acls view is behaving as expected
+        """
+
+        # Test that HTTP_AUTHORIZATION in request.META is working properly
+        valid_uname_pw = "%s:%s" % (settings.GEOSERVER_CREDENTIALS[0],settings.GEOSERVER_CREDENTIALS[1])
+        invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
+
+        valid_auth_headers = {
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
+        }
+        
+        invalid_auth_headers = {
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
+        }
+       
+        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json 
+        expected_result = {'rw': [],'ro': [],'name': settings.GEOSERVER_CREDENTIALS[0],'is_superuser':  True,'is_anonymous': False}
+        c = Client()
+        response = c.get('/data/acls', **valid_auth_headers)
+        response_json = json.loads(response.content)
+        self.assertEquals(expected_result, response_json) 
+
+        # Test that requesting when supplying invalid credentials returns the appropriate erorr code
+        response = c.get('/data/acls', **invalid_auth_headers)
+        self.assertEquals(response.status_code, 401)  
+       
+        # Test logging in using Djangos normal auth system 
+        logged_in = c.login(username='admin', password='admin')
+       
+        # Basic check that the returned content is at least valid json
+        response = c.get("/data/acls")
+        response_json = json.loads(response.content)
+
+        # TODO Lots more to do here once jj0hns0n understands the ACL system better
 
     def test_view_perms_context(self):
+        # It seems that since view_layer_permissions and view_map_permissions
+        # are no longer used, that this view is also no longer used since those
+        # are the only 2 places it is ever called (jj0hns0n 2011-04-13)
+ 
         pass
 
     def test_perms_info(self):
-        pass
+        """ Verify that the perms_info view is behaving as expected
+        """
+        
+        # Test with a Layer object
+        layer = Layer.objects.all()[0]
+        layer_info = layer.get_all_level_info()
+        info = geonode.maps.views._perms_info(layer, geonode.maps.views.LAYER_LEV_NAMES)
+        
+        # Test that ANONYMOUS_USERS and AUTHENTICATED_USERS are set properly
+        self.assertEqual(info[geonode.maps.models.ANONYMOUS_USERS], layer.LEVEL_NONE)
+        self.assertEqual(info[geonode.maps.models.AUTHENTICATED_USERS], layer.LEVEL_NONE)
+        
+        self.assertEqual(info['users'], sorted(layer_info['users'].items()))
+
+        # TODO Much more to do here once jj0hns0n understands the ACL system better
+ 
+        # Test with a Map object
+        # TODO
 
     def test_perms_info_json(self):
+        # Should only need to verify that valid json is returned?
         pass
 
     def test_fix_map_perms_for_editor(self):
+        # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
         pass
 
     def test_handle_perms_edit(self):
+        # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
         pass
 
     def test_get_basic_auth_info(self):
-        pass
-
-    def test_layer_acls(self):
+        # How do we test this? Perhaps as a part of test_layer_acls
         pass
 
     def test_view_map_permissions(self):
         pass
 
     def test_set_map_permissions(self):
-        pass
-
-    def test_set_layer_permissions(self):
-        pass
-
-    def test_ajax_layer_permissions(self):
         pass
 
     def test_ajax_map_permissions(self):
@@ -502,7 +681,6 @@ community."
 
     def test_describe_data(self):
         '''/data/base:CA?describe -> Test accessing the description of a layer '''
-
         from django.contrib.auth.models import User
         self.assertEqual(2, User.objects.all().count())
         c = Client()
@@ -620,6 +798,10 @@ community."
         pass
 
     # maps/utils.py tests
+
+    # These tests should be using mocked objects or moved to the 
+    # integration test suite to be tested against actual running
+    # GeoServer and GeoNetwork instances
 
     def test_layer_upload(self):
         """Test that layers can be uploaded to running GeoNode/GeoServer
@@ -776,6 +958,10 @@ community."
     def test_cascading_delete(self):
         """Verify that the gs_helpers.cascading_delete() method is working properly
         """
+
+        # This should be using a Mocked gs_cat object rather than hitting
+        # GeoServer directly. Actual tests against GeoServer should be moved
+        # to the integration test suite
 
         gs_cat = Layer.objects.gs_catalog
 
