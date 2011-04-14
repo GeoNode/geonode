@@ -483,11 +483,32 @@ community."
 
     # Permissions Tests
 
+    # Users
+    # - admin (pk=2)
+    # - bobby (pk=1)
+
+    # Inherited
+    # - LEVEL_NONE = _none
+
+    # Layer
+    # - LEVEL_READ = layer_read
+    # - LEVEL_WRITE = layer_readwrite
+    # - LEVEL_ADMIN = layer_admin
+
+    # Map 
+    # - LEVEL_READ = map_read
+    # - LEVEL_WRITE = map_readwrite
+    # - LEVEL_ADMIN = map_admin
+    
+
     # FIXME: Add a comprehensive set of permissions specifications that allow us 
     # to test as many conditions as is possible/necessary
-
+    
+    # If anonymous and/or authenticated are not specified, 
+    # should set_layer_permissions remove any existing perms granted??
+    
     perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
-
+    
     def test_set_layer_permissions(self):
         """Verify that the set_layer_permissions view is behaving as expected
         """
@@ -538,8 +559,8 @@ community."
 
         # Test that an invalid layer.typename is handled for properly
         response = c.post("/data/%s/ajax-permissions" % invalid_layer_typename, 
-                            data=self.perm_spec,
-                            content_type="text/json")
+                            data=json.dumps(self.perm_spec),
+                            content_type="application/json")
         self.assertEquals(response.status_code, 404) 
 
         # Test that POST is required
@@ -550,16 +571,16 @@ community."
 
         # First test un-authenticated
         response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
-                            data=self.perm_spec,
-                            content_type="text/json")
+                            data=json.dumps(self.perm_spec),
+                            content_type="application/json")
         self.assertEquals(response.status_code, 401) 
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True) 
         response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
-                            data=self.perm_spec,
-                            content_type="text/json")
+                            data=json.dumps(self.perm_spec),
+                            content_type="application/json")
         self.assertEquals(response.status_code, 401) 
 
         # Login as a user with the proper permission and test the endpoint
@@ -600,7 +621,7 @@ community."
         response_json = json.loads(response.content)
         self.assertEquals(expected_result, response_json) 
 
-        # Test that requesting when supplying invalid credentials returns the appropriate erorr code
+        # Test that requesting when supplying invalid credentials returns the appropriate error code
         response = c.get('/data/acls', **invalid_auth_headers)
         self.assertEquals(response.status_code, 401)  
        
