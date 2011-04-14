@@ -1,6 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete
+from geonode.maps.utils import GeoNodeException, save
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -32,6 +33,8 @@ from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
+from tempfile import mkdtemp
+import os
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -176,6 +179,7 @@ def mapJSON(request, mapid):
         map = get_object_or_404(Map, pk=mapid)
         try:
             map.update_from_viewer(request.raw_post_data)
+
             return HttpResponse(
                 "Map successfully updated.", 
                 mimetype="text/plain",
@@ -835,13 +839,14 @@ def upload_layer(request):
                                   RequestContext(request, {}))
     elif request.method == 'POST':
         try:
-            layer, errors = _handle_layer_upload(request)
+            layer, errors = _new_handle_layer_upload(request)
             logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
         except:
             logger.exception("_handle_layer_upload failed!")
             errors = [GENERIC_UPLOAD_ERROR]
         
         result = {}
+        logger.debug(errors)
         if len(errors) > 0:
             result['success'] = False
             result['errors'] = errors
@@ -849,6 +854,7 @@ def upload_layer(request):
             result['success'] = True
             result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
 
+        logger.debug(result)
         result = json.dumps(result)
         logger.debug("layer upload - okay Django, you handle the rest.")
         return render_to_response('json_html.html',
@@ -873,7 +879,7 @@ def _updateLayer(request, layer):
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
         try:
-            layer, errors = _handle_layer_upload(request, layer=layer)
+            layer, errors = _new_handle_layer_upload(request, layer=layer)
         except:
             errors = [GENERIC_UPLOAD_ERROR]
 
@@ -893,13 +899,47 @@ def _updateLayer(request, layer):
 _suffix = re.compile(r"\.[^.]*$", re.IGNORECASE)
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
 
+def _new_handle_layer_upload(request, layer=None):
+    """
+    handle upload of layer data. if specified, the layer given is 
+    overwritten, otherwise a new layer is created.
+    """
+    
+    uploaded_files = {}   
+
+    try: 
+        # Write files to disk in a temp dir 
+        tmp_dir = mkdtemp()
+        for file in request.FILES:
+            tmp_file_name = '%s/%s' % (tmp_dir, str(request.FILES[file]))
+            tmp_file = open(tmp_file_name,'w')
+            for chunk in request.FILES[file].chunks():
+                tmp_file.write(chunk)
+            tmp_file.close()
+            uploaded_files[file] = tmp_file_name
+
+        # Derive a layer_name from the name of the base_file
+        layer_name = _suffix.sub("", str(request.FILES['base_file']))
+   
+        # Do the save to GeoServer/GeoNetwork/DB 
+        new_layer = save(layer_name, uploaded_files['base_file'], request.user)
+
+        # Delete the temp files
+        for file in uploaded_files:
+            os.remove(uploaded_files[file])
+        os.rmdir(tmp_dir)
+
+        return new_layer, [] 
+    except GeoNodeException as e:
+        return None, [str(e)]
+
 @transaction.commit_manually
 def _handle_layer_upload(request, layer=None):
     """
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
     """
-    base_file = request.FILES.get('base_file');
+    base_file = request.FILES.get('base_file')
 
     logger.info("Uploaded layer; base filename: [%s]", base_file)
 
