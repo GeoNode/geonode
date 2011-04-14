@@ -812,12 +812,12 @@ class Layer(models.Model, PermissionLevelMixin):
             raise GeoNodeException(msg)
         
         # Check the layer is in GeoServer's REST API
-        api_url = "%sdata/search/api/" % settings.SITEURL
+        # It would be nice if we could ask for the definition of a layer by name
+        # rather than searching for it
+        api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
         response, body = http.request(api_url)
         api_json = simplejson.loads(body)
         api_layer = None
-        # This could be problematic if there were many layers.
-        # Is there a better way?
         for row in api_json['rows']:
             if(row['name'] == self.typename):
                 api_layer = row
