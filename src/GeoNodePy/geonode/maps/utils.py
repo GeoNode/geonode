@@ -58,16 +58,6 @@ def get_files(filename):
                              % (ext, required_extensions))
                 raise GeoNodeException(msg)
 
-    if extension in ['.asc']:
-        # Convert to Geotiff and update the files dictionary
-        upload_filename = base_name + '.tif'
-        #FIXME: Do not use gdal_translate, use the gdal python API.
-        cmd = ('gdal_translate -ot Float64 -of GTiff '
-               '-co "PROFILE=GEOTIFF" %s %s' % (filename,
-                                                upload_filename))
-        run(cmd, stdout='/tmp/%s.out', stderr='/tmp/%s.err')
-        files['base'] = upload_filename
-
     # Always upload stylefile if it exist
     style_file = filename.replace(extension, '.sld')
     if os.path.exists(style_file):
@@ -516,36 +506,3 @@ def upload(incoming, user=None, overwrite=True):
                     yield {'file': filename, 'errors': msg}
                 else:
                     yield {'file': filename, 'name': layer.name}
-
-
-
-def run(cmd,
-        stdout=None,
-        stderr=None,
-        verbose=False):
-    """Run command with or without echoing
-
-    Possibly redirect stdout and stderr to log files.
-    Raises exception if command fails.
-    """
-
-    if verbose:
-        print cmd
-
-    # Build command with redirection if requested
-    s = cmd
-    if stdout:
-        s += ' > %s' % stdout
-
-    if stderr:
-        s += ' 2> %s' % stderr
-
-    # Execute
-    err = os.system(s)
-
-    # Error handling
-    if err != 0:
-        msg = 'Command "%s" failed with errorcode %i. ' % (cmd, err)
-        if stdout and stderr:
-            msg += 'See logfiles %s and %s for details' % (stdout, stderr)
-        raise Exception(msg)
