@@ -7,6 +7,99 @@ from owslib.util import nspath
 from xml.dom import minidom
 from xml.etree.ElementTree import XML
 
+
+##############################################################
+## FIXME: Monkey patch to get OWSLib's CSW client cookie-aware
+##############################################################
+
+import StringIO
+from owslib.etree import etree
+from owslib import util
+import urlparse
+
+_cookie_handler = urllib2.HTTPCookieProcessor()
+_redirect_handler = urllib2.HTTPRedirectHandler()
+_opener = urllib2.build_opener(_redirect_handler, _cookie_handler)
+
+def _http_post(url=None, request=None, lang='en-US', timeout=10):
+    """
+
+    Invoke an HTTP POST request 
+
+    Parameters
+    ----------
+
+    - url: the URL of the server
+    - request: the request message
+    - lang: the language
+    - timeout: timeout in seconds
+
+    """
+
+    if url is not None:
+        u = urlparse.urlsplit(url)
+        r = urllib2.Request(url, request)
+        r.add_header('User-Agent', 'OWSLib (http://trac.gispython.org/lab/wiki/OwsLib)')
+        r.add_header('Content-type', 'text/xml')
+        r.add_header('Content-length', '%d' % len(request))
+        r.add_header('Accept', 'text/xml')
+        r.add_header('Accept-Language', lang)
+        r.add_header('Accept-Encoding', 'gzip,deflate')
+        r.add_header('Host', u.netloc)
+
+        try:
+            up = _opener.open(r,timeout=timeout);
+        except TypeError:
+            import socket
+            socket.setdefaulttimeout(timeout)
+            up = _opener.open(r)
+
+        ui = up.info()  # headers
+        response = up.read()
+        up.close()
+
+        # check if response is gzip compressed
+        if ui.has_key('Content-Encoding'):
+            if ui['Content-Encoding'] == 'gzip':  # uncompress response
+                import gzip
+                cds = StringIO(response)
+                gz = gzip.GzipFile(fileobj=cds)
+                response = gz.read()
+
+        return response
+
+def _invoke(self):
+    # do HTTP request
+    self.response = _http_post(self.url, self.request, self.lang, self.timeout)
+
+    # parse result see if it's XML
+    self._exml = etree.parse(StringIO.StringIO(self.response))
+
+    # it's XML.  Attempt to decipher whether the XML response is CSW-ish """
+    valid_xpaths = [
+        util.nspath('ExceptionReport', namespaces['ows']),
+        util.nspath('Capabilities', namespaces['csw']),
+        util.nspath('DescribeRecordResponse', namespaces['csw']),
+        util.nspath('GetDomainResponse', namespaces['csw']),
+        util.nspath('GetRecordsResponse', namespaces['csw']),
+        util.nspath('GetRecordByIdResponse', namespaces['csw']),
+        util.nspath('HarvestResponse', namespaces['csw']),
+        util.nspath('TransactionResponse', namespaces['csw'])
+    ]
+
+    if self._exml.getroot().tag not in valid_xpaths:
+        raise RuntimeError, 'Document is XML, but not CSW-ish'
+
+    # check if it's an OGC Exception
+    val = self._exml.find(util.nspath('Exception', namespaces['ows']))
+    if val is not None:
+        self.exceptionreport = ExceptionReport(self._exml, self.owscommon.namespace)
+    else:
+        self.exceptionreport = None
+
+CatalogueServiceWeb._invoke = _invoke
+
+
 class Catalog(object):
 
     def __init__(self, base, user, password):
@@ -29,22 +122,16 @@ class Catalog(object):
             "password": self.password
         })
         request = urllib2.Request(url, post, headers)
-        response = urllib2.urlopen(request)
+        response = _opener.open(request)
         body = response.read()
         dom = minidom.parseString(body)
         assert dom.childNodes[0].nodeName == 'ok', "GeoNetwork login failed!"
-
-        self.cookies = cookielib.CookieJar()
-        self.cookies.extract_cookies(response, request)
-        cookie_handler = urllib2.HTTPCookieProcessor(self.cookies)
-        redirect_handler = urllib2.HTTPRedirectHandler()
-        self.opener = urllib2.build_opener(redirect_handler, cookie_handler)
         self.connected = True
 
     def logout(self):
         url = "%ssrv/en/xml.user.logout" % self.base
         request = urllib2.Request(url)
-        response = self.opener.open(request)
+        response = _opener.open(request)
         self.connected = False
 
     def get_by_uuid(self, uuid):
@@ -190,7 +277,7 @@ class Catalog(object):
         return ops
 
     def urlopen(self, request):
-        if self.opener is None:
-            return urllib2.urlopen(request)
+        if _opener is None:
+            raise Exception("No URL opener defined in geonetwork module!!")
         else:
-            return self.opener.open(request)
+            return _opener.open(request)
