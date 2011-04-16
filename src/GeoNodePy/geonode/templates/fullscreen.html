@@ -45,7 +45,7 @@
           <div id="welcomediv">Welcome <span style="font-weight:bold">{{user.username}}</span></div>
           <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">My Profile</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
           {% else %}
-          <!-- this should be updated to a url var --><a href="/accounts/login">Sign in</a>
+          <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">Sign in</a>
           for extra features
           {% endif %}
         </div>
