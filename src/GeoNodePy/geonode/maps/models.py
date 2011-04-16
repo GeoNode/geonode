@@ -287,6 +287,26 @@ COUNTRIES = (
     ('ZWE', _('Zimbabwe')),
 )
 
+
+KEYWORD_REGIONS= (
+    ('GLO', _('Global')),
+    ('NAM', _('North America')),
+    ('CAM',_('Central America')),
+    ('SAM',_('South America')),
+    ('EUR',_('Europe')),
+    ('ASI',_('Asia')),
+    ('SEA',_('Southeast Asia')),
+    ('CTA',_('Central Asia')),
+    ('SAS',_('South Asia')),
+    ('AFR',_('Africa')),
+    ('NAF',_('North Africa')),
+    ('EAF',_('East Africa')),
+    ('WAF',_('West Africa')),
+    ('SAF',_('South Africa')),
+    ('MES',_('Middle East')),
+    ('ANT',_('Antarctica')),
+)
+
 # Taken from http://www.w3.org/WAI/ER/IG/ert/iso639.htm
 ALL_LANGUAGES = (
     ('abk', 'Abkhazian'),
@@ -465,7 +485,9 @@ CONSTRAINT_OPTIONS = [
     'patent',
     'patentPending',
     'restricted',
-    'trademark'
+    'trademark',
+    'public',
+    'no restrictions',
 ]
 
 SPATIAL_REPRESENTATION_TYPES = [
@@ -763,7 +785,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # section 3
     keywords = models.TextField(_('keywords'), blank=False, null=True)
-    keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
+    keywords_region = models.CharField(_('keywords region'), max_length=3, choices=KEYWORD_REGIONS + COUNTRIES, default = 'GLO')
     constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
     spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=[(x,x) for x in SPATIAL_REPRESENTATION_TYPES], blank=True, null=True)
@@ -776,7 +798,7 @@ class Layer(models.Model, PermissionLevelMixin):
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True)
     temporal_extent_end = models.DateField(_('temporal extent end'), blank=True, null=True)
     geographic_bounding_box = models.TextField(_('geographic bounding box'))
-    supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION)
+    supplemental_information = models.TextField(_('supplemental information'), blank=True, null=True)
 
     # Section 6
     distribution_url = models.TextField(_('distribution URL'), blank=True, null=True)
