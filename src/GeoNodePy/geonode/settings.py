@@ -185,7 +185,16 @@ MAP_BASELAYERSOURCES = {
     }
 }
 
-MAP_BASELAYERS = [{
+MAP_BASELAYERS = [
+{
+    "source":"any",
+    "type":"OpenLayers.Layer",
+    "args":["No background"],
+    "visibility": True,
+    "fixed": False,
+    "group":"background"
+  },
+ {
     "source":"google",
     "group":"background",
     "name":"SATELLITE",
@@ -197,7 +206,7 @@ MAP_BASELAYERS = [{
     "name":"TERRAIN",
     "visibility": True,
     "fixed": True,
-},{
+},            {
     "source":"google",
     "group":"background",
     "name":"ROADMAP",
