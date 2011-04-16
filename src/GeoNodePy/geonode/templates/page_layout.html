@@ -42,10 +42,9 @@
       <div id="login-area">
         {% if user.is_authenticated %}
           <div id="welcomediv">Welcome <span style="font-weight:bold">{{user.username}}</span></div>
-          <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">My Profile</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Sign out" %}</a>)
+          <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">My Profile</a> | <a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Sign out" %}</a>
         {% else %}
           <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">Sign in</a>
-          for extra features
       {% endif %}
       </div>
     </div><!-- /.wrap -->
@@ -84,8 +83,8 @@
       {% block footer %}
       <div class="onecol">
         Powered by <a href="/">{% trans "WorldMap" %}</a>
-        | <strong>{% trans "Need Help?" %}</strong>
-        <a href="{% url geonode.views.static "help" %}">{% trans "Help" %}</a>
+        | <a href="{% url geonode.views.static "help" %}">{% trans "Need Help?" %}</a>
+        | <a href="mailto:contact@help.cga.harvard.edu">{%  trans "Contact Us" %}</a>
       </div>
       {% endblock %}
     </div><!-- /.wrap -->
