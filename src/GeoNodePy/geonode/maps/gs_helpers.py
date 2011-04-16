@@ -157,20 +157,12 @@ def cascading_delete(cat, resource):
 def delete_from_postgis(resource_name):
     try:
         conn=psycopg2.connect("dbname='" + settings.POSTGIS_NAME + "' user='" + settings.POSTGIS_USER + "'  password='" + settings.POSTGIS_PASSWORD + "' port=" + settings.POSTGIS_PORT + " host='" + settings.POSTGIS_HOST + "'")
-        logger.debug('Got connection')
-        try:
-            logger.debug('Get cursor')
-            cur = conn.cursor()
-            cur.execute("""select DropGeometryTable('""" + resource_name  + """')""")
-            conn.commit()
-        except Exception, e:
-            logger.error("Error deleting PostGIS table %s: %s", resource_name, str(e))
-            raise e
+        cur = conn.cursor()
+        cur.execute("""select DropGeometryTable('""" + resource_name  + """')""")
+        conn.commit()
     except Exception, e:
         logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))
-        raise e
     finally:
         if conn:
-            logger.debug('Closing connection')
             conn.close()
-            logger.debug('Closed connection')
+

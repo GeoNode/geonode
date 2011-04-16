@@ -1349,8 +1349,6 @@ def _updateLayer(request, layer):
     elif request.method == 'POST':
         try:
             layer, errors, detail = _handle_layer_upload(request, layer=layer)
-            logger.debug('Made it')
-            logger.debug('Errors? %s', str(errors))
         except Exception, e:
             logger.debug(str(e))
             errors = [GENERIC_UPLOAD_ERROR]
