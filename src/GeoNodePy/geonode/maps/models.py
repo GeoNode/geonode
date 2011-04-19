@@ -22,6 +22,9 @@ from string import lower
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 from gs_helpers import cascading_delete
+import logging
+
+logger = logging.getLogger("geonode.maps.models")
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
@@ -814,16 +817,16 @@ class Layer(models.Model, PermissionLevelMixin):
         # Check the layer is in GeoServer's REST API
         # It would be nice if we could ask for the definition of a layer by name
         # rather than searching for it
-        api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
-        response, body = http.request(api_url)
-        api_json = simplejson.loads(body)
-        api_layer = None
-        for row in api_json['rows']:
-            if(row['name'] == self.typename):
-                api_layer = row
-        if(api_layer == None):
-            msg = "API Record missing for layer [%s]" % self.typename
-            raise GeoNodeException(msg)
+        #api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
+        #response, body = http.request(api_url)
+        #api_json = simplejson.loads(body)
+        #api_layer = None
+        #for row in api_json['rows']:
+        #    if(row['name'] == self.typename):
+        #        api_layer = row
+        #if(api_layer == None):
+        #    msg = "API Record missing for layer [%s]" % self.typename
+        #    raise GeoNodeException(msg)
  
         # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
         if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
@@ -839,10 +842,11 @@ class Layer(models.Model, PermissionLevelMixin):
             msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
             
         # Visit get_absolute_url and make sure it does not give a 404
-        response, body = http.request(self.get_absolute_url())
-        if(int(response['status']) != 200):
-            msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
-            raise GeoNodeException(msg)
+        #logger.info(self.get_absolute_url())
+        #response, body = http.request(self.get_absolute_url())
+        #if(int(response['status']) != 200):
+        #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
+        #    raise GeoNodeException(msg)
 
         #FIXME: Add more checks, for example making sure the title, keywords and description
         # are the same in every database.
