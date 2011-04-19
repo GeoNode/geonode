@@ -63,11 +63,6 @@ def get_files(filename):
     if os.path.exists(style_file):
         files['sld'] = style_file
 
-    # Always upload keywords  if it exist
-    style_file = filename.replace(extension, '.keywords')
-    if os.path.exists(style_file):
-        files['keywords'] = style_file
-
     return files
 
 def get_valid_name(layer_name):
@@ -195,7 +190,8 @@ def save(layer, base_file, user, overwrite = True):
             # What should we do about that empty store?
             if overwrite:
                 # We can just delete it and recreate it later.
-                store.delete()
+                #store.delete()
+                pass
             else:
                 msg = ('The layer exists and the overwrite parameter is %s' % overwrite)
                 raise GeoNodeException(msg)
@@ -263,8 +259,8 @@ def save(layer, base_file, user, overwrite = True):
     # Step 5. Create the resource in GeoServer
     logger.info('>>> Step 5. Generating the metadata for [%s] after successful import to GeoSever' % name)
     store = cat.get_store(name)
-    gs_resource = cat.get_resource(name=name, store=store)
-
+    gs_resource = cat.get_resource(name = name, store = cat.get_store(name = name))
+    
     # Verify the resource was created
     if gs_resource is not None:
         assert gs_resource.name == name
@@ -286,9 +282,30 @@ def save(layer, base_file, user, overwrite = True):
         gs_resource.projection = "EPSG:4326"
         cat.save(gs_resource)
 
-    # Step 7. Create the style and assign it to the created resource
+    # Step 7. Create the Django record for the layer
+    logger.info('>>> Step 7. Creating Django record for [%s]' %  name)
+    # FIXME: Do this inside the layer object
+    typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+    layer_uuid = str(uuid.uuid1())
+    saved_layer,__ = Layer.objects.get_or_create(name=gs_resource.name, defaults=dict(
+                                 store=gs_resource.store.name,
+                                 storeType=gs_resource.store.resource_type,
+                                 typename=typename,
+                                 workspace=gs_resource.store.workspace.name,
+                                 title=gs_resource.title,
+                                 uuid=layer_uuid,
+                                 keywords=gs_resource.keywords,
+                                 abstract=gs_resource.abstract or '',
+                                 owner=user,
+                                 )
+    )
+
+    # Step 8. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
-    logger.info('>>> Step 7. Creating style for [%s]' % name)
+    logger.info('>>> Step 8. Creating style for [%s]' % name)
+
+    logger.info('default style is %s' % cat.get_layer(name).default_style)
+
     if 'sld' in files:
         f = open(files['sld'], 'r')
         sld = f.read()
@@ -307,43 +324,13 @@ def save(layer, base_file, user, overwrite = True):
         publishing = cat.get_layer(name)
         publishing.default_style = style
         cat.save(publishing)
+    else:
+        #FIXME !!
+       fixup_style(cat, gs_resource, None) 
 
-    # Step 8. Assign the keywords to the resource
-    logger.info('>>> Step 8. Assigning the keywords to [%s]' % name)
-    if 'keywords' in files:
-        f = open(files['keywords'], 'r')
-        keywords = [x.strip() for x in f.readlines()]
-        f.close()
-        keywords_string = " ".join(keywords)
-
-        gs_resource.keywords = keywords_string
-        # FIXME: Add support in the geoserver rest endpoint to set the keywords
-        #        in the meantime we will use the description/abstract field as a secondary source.
-        gs_resource.abstract = keywords_string
-        gs_resource.description = keywords_string
-        cat.save(gs_resource)
-
-    # Step 9. Create the Django record for the layer
-    logger.info('>>> Step 9. Creating Django record for [%s]' %  name)
-    # FIXME: Do this inside the layer object
-    typename = gs_resource.store.workspace.name + ':' + gs_resource.name
-    layer_uuid = str(uuid.uuid1())
-    saved_layer,__ = Layer.objects.get_or_create(name=gs_resource.name, defaults=dict(
-                                 store=gs_resource.store.name,
-                                 storeType=gs_resource.store.resource_type,
-                                 typename=typename,
-                                 workspace=gs_resource.store.workspace.name,
-                                 title=gs_resource.title,
-                                 uuid=layer_uuid,
-                                 keywords=gs_resource.keywords,
-                                 abstract=gs_resource.abstract or '',
-                                 owner=user,
-                                 )
-    )
-
-    # Step 10. Create the points of contact records for the layer
+    # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this
-    logger.info('>>> Step 10. Creating points of contact records for [%s]' % name)
+    logger.info('>>> Step 9. Creating points of contact records for [%s]' % name)
     poc_contact, __ = Contact.objects.get_or_create(user=user,
                                            defaults={"name": user.username })
     author_contact, __ = Contact.objects.get_or_create(user=user,
@@ -353,13 +340,14 @@ def save(layer, base_file, user, overwrite = True):
 
     saved_layer.poc = poc_contact
     saved_layer.metadata_author = author_contact
-    # Step 11. Set default permissions on the newly created layer
+
+    # Step 10. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
-    logger.info('>>> Step 11. Setting default permissions for [%s]' % name)
+    logger.info('>>> Step 10. Setting default permissions for [%s]' % name)
     saved_layer.set_default_permissions()
 
-    # Step 12. Verify the layer was saved correctly and clean up if needed
-    logger.info('>>> Step 12. Verifying the layer [%s] was created correctly' % name)
+    # Step 11. Verify the layer was saved correctly and clean up if needed
+    logger.info('>>> Step 11. Verifying the layer [%s] was created correctly' % name)
 
     # Verify the object was saved to the Django database
     try:
