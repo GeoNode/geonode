@@ -149,7 +149,7 @@ def cleanup(name, uuid):
 
 
 
-def save(layer, base_file, user, overwrite = True):
+def save(layer, base_file, user, title=None, overwrite = True):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer is created.
@@ -292,7 +292,7 @@ def save(layer, base_file, user, overwrite = True):
                                  storeType=gs_resource.store.resource_type,
                                  typename=typename,
                                  workspace=gs_resource.store.workspace.name,
-                                 title=gs_resource.title,
+                                 title=title or gs_resource.title or gs_resource.name,
                                  uuid=layer_uuid,
                                  keywords=gs_resource.keywords,
                                  abstract=gs_resource.abstract or '',
@@ -449,7 +449,7 @@ def file_upload(filename, user=None, title=None, overwrite=True):
     except Layer.DoesNotExist, e:
         layer = name
 
-    new_layer = save(layer, filename, theuser, overwrite)
+    new_layer = save(layer, filename, theuser, title, overwrite)
 
     return new_layer
 
