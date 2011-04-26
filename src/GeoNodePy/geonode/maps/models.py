@@ -511,13 +511,7 @@ CONTACT_FIELDS = [
 ]
 
 DEFAULT_SUPPLEMENTAL_INFORMATION=_(
-'You can customize the template to suit your \
-needs. You can add and remove fields and fill out default \
-information (e.g. contact details). Fields you can not change in \
-the default view may be accessible in the more comprehensive (and \
-more complex) advanced view. You can even use the XML editor to \
-create custom structures, but they have to be validated by the \
-system, so know what you do :-)'
+''
 )
 
 DEFAULT_CONTENT=_(
@@ -1428,6 +1422,8 @@ class Map(models.Model, PermissionLevelMixin):
         should use ``.layer_set.create()``.
         """
         layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
+        sejumps = self.jump_set.all()
+        logger.debug("sejumps: %s", sejumps)
         server_lookup = {}
         sources = dict()
 
@@ -1483,6 +1479,7 @@ class Map(models.Model, PermissionLevelMixin):
                 'projection': self.projection,
                 'zoom': self.zoom
             },
+            'social_explorer': [se.json() for se in sejumps]
         }
 
 
@@ -1495,6 +1492,8 @@ class Map(models.Model, PermissionLevelMixin):
         config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
+
+        logger.debug("CONFIG: %s", config)
 
         return config
 
@@ -1597,6 +1596,18 @@ class MapSnapshot(models.Model):
                 "created": self.created_dttm.isoformat(),
                 "user": self.user.username if self.user else None,
                 "url": num_encode(self.id)
+        }
+
+class SocialExplorerLocation(models.Model):
+    map = models.ForeignKey(Map, related_name="jump_set")
+    url = models.URLField(_("Jump URL"), blank=False, null=False, default='http://www.socialexplorer.com/pub/maps/map3.aspx?g=0&mapi=SE0012&themei=B23A1CEE3D8D405BA2B079DDF5DE9402')
+    title = models.TextField(_("Jump Site"), blank=False, null=False)
+
+    def json(self):
+        logger.debug("JSON url: %s", self.url)
+        return {
+            "url": self.url,
+            "title" :  self.title
         }
 
 class MapLayerManager(models.Manager):
