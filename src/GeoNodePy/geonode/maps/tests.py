@@ -1,24 +1,15 @@
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
-from django.core.exceptions import ObjectDoesNotExist
 
 import geonode.maps.models
 
 from geonode.maps.models import Map, Layer
-from geonode.maps.views import DEFAULT_MAP_CONFIG
-from geonode.maps.utils import upload, file_upload, GeoNodeException
-
-from geoserver.catalog import FailedRequestError
-
-from gs_helpers import cascading_delete
 
 from mock import Mock
 
 import json
-import unittest
 import os
-import urllib2
 import base64
 
 _gs_resource = Mock()
