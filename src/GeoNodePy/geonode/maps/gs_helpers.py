@@ -95,7 +95,7 @@ def _style_name(resource):
 def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
-    #logger.info("Found %d layers associated with [%s]", resource)
+    logger.info("Found %d layers associated with [%s]", len(layers), resource)
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
