@@ -918,13 +918,18 @@ def _new_handle_layer_upload(request, layer=None):
             tmp_file.close()
             uploaded_files[file] = tmp_file_name
 
+        # Setup the title
+        title = None 
+        if "layer_title" in request.POST:
+            title = request.POST.get('layer_title')
+    
         # Do the save to GeoServer/GeoNetwork/DB 
         if(layer is None):
             # Derive a layer_name from the name of the base_file
             layer_name = _suffix.sub("", str(request.FILES['base_file']))
-            new_layer = save(layer_name, uploaded_files['base_file'], request.user, overwrite=False)
+            new_layer = save(layer_name, uploaded_files['base_file'], request.user, title=title, overwrite=False)
         else:
-            new_layer = save(layer.name, uploaded_files['base_file'], request.user, overwrite=True)
+            new_layer = save(layer.name, uploaded_files['base_file'], request.user, title=title, overwrite=True)
         
         # Set the Layers Permissions from the specified permissions specification
         logger.debug("Setting permissions for %s [%s]", new_layer.typename, request.POST.get("permissions"))
