@@ -51,6 +51,10 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
             return true;
         }
 
+        if(user == null){
+            return true;
+        }
+        
         if (user != null && user.getAuthorities() != null) {
             for (GrantedAuthority ga : user.getAuthorities()) {
                 if (ga instanceof LayersGrantedAuthority) {
