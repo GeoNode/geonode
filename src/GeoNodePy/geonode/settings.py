@@ -51,7 +51,7 @@ NOSE_ARGS = [
       '--cover-erase',
       '--nocapture',
       '--with-coverage',
-      '--cover-package=geonode,geoserver,owslib',
+      '--cover-package=geonode',
       '--cover-inclusive',
       '--cover-tests',
       '--detailed-errors',
