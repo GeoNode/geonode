@@ -17,13 +17,12 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-_DATABASE_NAME = os.path.join(PROJECT_ROOT,"..","..","..","development.db")
-DATABASES = {'default': {
-                         'ENGINE': 'django.db.backends.sqlite3',
-                         'NAME': _DATABASE_NAME,
-                         'TEST_NAME': _DATABASE_NAME,
-                        }
-            }
+DATABASE_ENGINE = 'sqlite3'
+DATABASE_NAME = os.path.join(PROJECT_ROOT,"..","..","..","development.db")
+DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
+DATABASE_HOST = ''             # Not used with sqlite3.
+DATABASE_PORT = ''             # Not used with sqlite3.
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
