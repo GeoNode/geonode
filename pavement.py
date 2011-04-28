@@ -213,8 +213,6 @@ def setup_geonetwork(options):
 
 @task
 @needs([
-    #'setup_geoserver',
-    #'setup_geonetwork',
     'setup_geonode_client'
 ])
 def setup_webapps(options):
