@@ -44,7 +44,7 @@ LANGUAGES = (
 SITE_ID = 1
 
 # Setting a custom test runner to avoid running the tests for some problematic 3rd party apps
-TEST_RUNNER='geonode.tests.runner.GeoNodeTestRunner'
+TEST_RUNNER='django_nose.NoseTestSuiteRunner'
 
 NOSE_ARGS = [
       '--verbosity=2',
