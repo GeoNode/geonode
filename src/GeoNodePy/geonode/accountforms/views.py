@@ -50,17 +50,13 @@ def registercompleteOrganizationUser(request, template_name='registration/regist
         user = User.objects.get(username=username)
         userProfile = user.get_profile()
         if user:
-            logger.debug("org username is [%s]", username)
-            logger.debug("page referrer is [%s]", request.META['HTTP_REFERER'])
-            #Referer of worldmap.harvard.edu/.../registercomplete is a hack until domain name is transferred to AWS
-            if 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'] == settings.CUSTOM_AUTH_URL or request.META['HTTP_REFERER'] == "http://worldmap.harvard.edu/accounts/registercomplete/":
-                userProfile.is_org_member = True
-                userProfile.member_expiration_dt = datetime.today() + timedelta(days=365)
-                userProfile.save()
-                del request.session["group_username"]
-            else:
-                userProfile.is_org_member = False
-                userProfile.save()
+            userProfile.is_org_member = True
+            userProfile.member_expiration_dt = datetime.today() + timedelta(days=365)
+            userProfile.save()
+            del request.session["group_username"]
+            #else:
+            #    userProfile.is_org_member = False
+            #    userProfile.save()
     else:
         logger.debug("harvard username is not found")
     return render_to_response(template_name, RequestContext(request))
