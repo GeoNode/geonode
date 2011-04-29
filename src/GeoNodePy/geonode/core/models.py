@@ -173,9 +173,7 @@ class PermissionLevelMixin(object):
         users specified.  if level is LEVEL_NONE, any existing assignment is 
         removed.
         """
-        
         my_ct = ContentType.objects.get_for_model(self)
-        logger.debug("LEVEL: [%s]:[%s]", gen_role, level)
         if level == self.LEVEL_NONE:
             GenericObjectRoleMapping.objects.filter(subject=gen_role, object_id=self.id, object_ct=my_ct).delete()
         else:
@@ -187,7 +185,6 @@ class PermissionLevelMixin(object):
             GenericObjectRoleMapping.objects.filter(subject=gen_role, object_id=self.id, object_ct=my_ct).delete()
             # grant new level
             GenericObjectRoleMapping.objects.create(subject=gen_role, object=self, role=role)
-            logger.debug("Supposedly the role was created: [%s]:[%s]", self, gen_role, level)
 
     def get_user_levels(self):
         ct = ContentType.objects.get_for_model(self)

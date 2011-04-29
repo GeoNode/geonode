@@ -533,29 +533,21 @@ def view_map_permissions(request, mapid):
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
 
 def set_layer_permissions(layer, perm_spec, use_email = False):
-    logger.debug("PERM SPEC: [%s]", perm_spec)
     if "authenticated" in perm_spec:
         layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-        logger.debug('Set authenticate permission to [%s]', perm_spec['authenticated'])
     if "anonymous" in perm_spec:
         layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-        logger.debug('Set anonymous permission to [%s]', perm_spec['anonymous'])
     if "customgroup" in perm_spec:
         layer.set_gen_level(CUSTOM_GROUP_USERS, perm_spec['customgroup'])
-        logger.debug('Set customgroup permission to [%s]', perm_spec['customgroup'])
     users = [n for (n, p) in perm_spec['users']]
     if use_email:
         layer.get_user_levels().exclude(user__email__in = users + [layer.owner]).delete()
-        logger.debug("Got user levels")
         for useremail, level in perm_spec['users']:
             try:
                 user = User.objects.get(email=useremail)
             except User.DoesNotExist:
-                 logger.debug('Make new user')
                  user = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layerController', args=(layer.typename,)), layer.owner_id)
-                 logger.debug("made user")
             layer.set_user_level(user, level)
-            logger.debug("set level")
     else:
         layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
         for username, level in perm_spec['users']:
@@ -1403,7 +1395,7 @@ def _updateLayer(request, layer):
                               RequestContext(request, {'json': result}))
 
 
-_suffix = re.compile(r"\.[^.]*$", re.IGNORECASE)
+_suffix = re.compile(r"\..*$", re.IGNORECASE) #Accept zipped uploads with more than one extension, ie foo.zip.zip
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
 
 @transaction.commit_manually
@@ -1427,11 +1419,9 @@ def _handle_layer_upload(request, layer=None):
         except Exception, ex:
             return None, [_('Your SLD file contains invalid XML')], escape(str(ex))
 
-
-    layer_name = request.POST.get('layer_name')
     base_file = request.FILES.get('base_file')
     encoding = request.POST.get('charset')
-    base_file = request.FILES.get('base_file')
+
     logger.info("Uploaded layer; base filename: [%s]", base_file)
 
     if not base_file:

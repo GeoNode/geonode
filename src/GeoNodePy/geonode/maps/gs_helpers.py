@@ -89,12 +89,9 @@ def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
 def fixup_style(cat, resource, style):
-    logger.debug("Creating styles for layers associated with [%s]", resource)
     lyr = cat.get_layer(name=resource.name)
-    logger.info("Found %d layers associated with [%s]", resource)
     if lyr:
         if lyr.default_style and lyr.default_style.name in _style_templates:
-            logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if (cat.get_style(name)):
                 iter = 1
@@ -106,12 +103,9 @@ def fixup_style(cat, resource, style):
                 sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
             else: 
                 sld = style.read()
-            logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
-            logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
-            logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
     #Maybe it's already been deleted from geoserver?
