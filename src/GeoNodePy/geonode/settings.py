@@ -10,7 +10,8 @@ _ = lambda x: x
 DEBUG = True
 SITENAME = "WorldMap"
 SITEURL = "http://localhost:8000/"
-TEMPLATE_DEBUG = DEBUG
+#TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = True
 DEFAULT_FROM_EMAIL="me@me.com"
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -308,7 +309,7 @@ CUSTOM_AUTH_URL = ''
 #Import uploaded shapefiles into PostGIS?
 POSTGIS_DATASTORE=False
 
-#PostGIS connection info, necessary for deleting tables when layers with PostGIS data stores are removed
+#PostGIS datastore connection settings
 POSTGIS_NAME = ''
 POSTGIS_USER = ''
 POSTGIS_PASSWORD = ''
@@ -319,4 +320,3 @@ try:
     from local_settings import *
 except ImportError:
     pass
-

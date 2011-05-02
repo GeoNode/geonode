@@ -1,14 +1,11 @@
 from random import choice
 from xml.etree.ElementTree import XML
-from zipfile import ZipFile
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, CHARSETS
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis, prepare_zipfile
 from geonode.maps.encode import num_encode, num_decode
-
-from geonode import geonetwork
-import geoserver
-from geoserver.resource import FeatureType, Coverage
+import geoserver.catalog
+import geoserver.resource
 import base64
 from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
@@ -40,14 +37,12 @@ from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
 import simplejson
-import datetime
-from django.utils.encoding import iri_to_uri
-from django.db.models.signals import pre_delete
-from geonode.maps.models import delete_layer
 from registration.models import RegistrationProfile
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
+from zipfile import ZipFile
+
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -1469,8 +1464,8 @@ def _handle_layer_upload(request, layer=None):
         else:
             create_store = cat.create_featurestore
 
-        zip = ZipFile(request.FILES.get('base_file'))
-        zipFiles = zip.namelist()
+        zip = prepare_zipfile(name, request.FILES.get('base_file'))
+        zipFiles = ZipFile(zip).namelist()
 
         shp_file = dbf_file = shx_file = prj_file = None
 
@@ -1499,7 +1494,7 @@ def _handle_layer_upload(request, layer=None):
             
         if errors:
             return None, errors, detail_error
-        cfg = request.FILES.get('base_file')
+        cfg = zip
 
     # shapefile upload
     elif base_file.name.lower().endswith('.shp'):
@@ -1540,10 +1535,9 @@ def _handle_layer_upload(request, layer=None):
         cfg = {
             'shp': base_file,
             'dbf': dbf_file,
-            'shx': shx_file
+            'shx': shx_file,
+            'prj': prj_file
         }
-        if prj_file:
-            cfg['prj'] = prj_file
 
     # any other type of upload
     else:
@@ -1575,22 +1569,6 @@ def _handle_layer_upload(request, layer=None):
                     '</connectionParameters>' \
             '</dataStore>'
 
-#            if layer is not None:
-#                logger.debug('Deleting old store and resource')
-#                gs_resource = cat.get_resource(name=name, store=cat.get_store(name=name))
-#                lyr = cat.get_layer(gs_resource.name)
-#
-#                styles = lyr.styles + [lyr.default_style]
-#
-#                cat.delete(lyr)
-#                store = gs_resource.store
-#                logger.debug('Deleting resource %s', gs_resource)
-#                cat.delete(gs_resource)
-#                logger.debug('Deleting store %s', store)
-#                cat.delete(store)
-#
-#                create_store(storeXML, name, cfg, overwrite=overwrite, charset=encoding)
-#            else:
             create_store(storeXML, name, cfg, overwrite=overwrite, charset=encoding)
 
 
