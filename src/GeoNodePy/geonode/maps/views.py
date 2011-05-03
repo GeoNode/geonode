@@ -1,7 +1,6 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete
-from geonode.maps.utils import GeoNodeException, save
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -33,8 +32,6 @@ from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
-from tempfile import mkdtemp
-import os
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -839,7 +836,7 @@ def upload_layer(request):
                                   RequestContext(request, {}))
     elif request.method == 'POST':
         try:
-            layer, errors = _new_handle_layer_upload(request)
+            layer, errors = _handle_layer_upload(request)
             logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
         except:
             logger.exception("_handle_layer_upload failed!")
@@ -878,7 +875,7 @@ def _updateLayer(request, layer):
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
         try:
-            layer, errors = _new_handle_layer_upload(request, layer=layer)
+            layer, errors = _handle_layer_upload(request, layer=layer)
         except:
             errors = [GENERIC_UPLOAD_ERROR]
 
@@ -897,63 +894,6 @@ def _updateLayer(request, layer):
 
 _suffix = re.compile(r"\.[^.]*$", re.IGNORECASE)
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
-
-def _new_handle_layer_upload(request, layer=None):
-    """
-    handle upload of layer data. if specified, the layer given is 
-    overwritten, otherwise a new layer is created.
-    """
-    
-    uploaded_files = {}   
-
-    try: 
-        # Write files to disk in a temp dir 
-        tmp_dir = mkdtemp()
-        logger.debug("Writing %s to %s" % (str(request.FILES), tmp_dir))
-        for file in request.FILES:
-            tmp_file_name = '%s/%s' % (tmp_dir, str(request.FILES[file]))
-            tmp_file = open(tmp_file_name,'w')
-            for chunk in request.FILES[file].chunks():
-                tmp_file.write(chunk)
-            tmp_file.close()
-            uploaded_files[file] = tmp_file_name
-
-        # Setup the title
-        title = None 
-        if "layer_title" in request.POST:
-            title = request.POST.get('layer_title')
-    
-        # Do the save to GeoServer/GeoNetwork/DB 
-        if(layer is None):
-            # Derive a layer_name from the name of the base_file
-            layer_name = _suffix.sub("", str(request.FILES['base_file']))
-            new_layer = save(layer_name, uploaded_files['base_file'], request.user, title=title, overwrite=False)
-        else:
-            new_layer = save(layer.name, uploaded_files['base_file'], request.user, title=title, overwrite=True)
-        
-        # Set the Layers Permissions from the specified permissions specification
-        logger.debug("Setting permissions for %s [%s]", new_layer.typename, request.POST.get("permissions"))
-        try:
-            perm_spec = json.loads(request.POST["permissions"])
-            set_layer_permissions(new_layer, perm_spec)
-        except:
-            # Why would the perm_spec ever be invalid and throw an error?
-            layer.set_default_permissions()
-
-        # Remove the temp files
-        delete_tmp_upload_files(tmp_dir, uploaded_files)
-
-        return new_layer, [] 
-    except GeoNodeException as e:
-        delete_tmp_upload_files(tmp_dir, uploaded_files)
-        logger.exception("_new_upload_layer failed with %s" % str(e)) 
-        return None, [str(e)]
-
-def delete_tmp_upload_files(tmp_dir, uploaded_files):
-    logger.debug("Deleting %s from %s" % (str(uploaded_files), tmp_dir))
-    for file in uploaded_files:
-        os.remove(uploaded_files[file])
-    os.rmdir(tmp_dir)
 
 @transaction.commit_manually
 def _handle_layer_upload(request, layer=None):
