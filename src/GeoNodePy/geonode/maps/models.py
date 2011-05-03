@@ -554,7 +554,7 @@ def get_wms():
 def get_csw():
     global _csw
     csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    _csw = CatalogueServiceWeb(csw_url);
+    _csw = CatalogueServiceWeb(csw_url)
     return _csw
 
 class LayerManager(models.Manager):
@@ -884,7 +884,7 @@ class Layer(models.Model, PermissionLevelMixin):
     def metadata_csw(self):
         global _csw
         if(_csw is None):
-            get_csw()
+            _csw = get_csw()
         _csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
         return _csw.records.get(self.uuid)
 
