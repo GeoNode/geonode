@@ -177,7 +177,7 @@ community."
         # Test that the previous Permissions were set to LEVEL_NONE
         for username in current_perms['users'].keys():
             user = User.objects.get(username=username)
-            self.assertEqual(layer.get_user_level(user, layer.LEVEL_NONE))
+            self.assertEqual(layer.get_user_level(user), layer.LEVEL_NONE)
 
         # Test that the owner was assigned LEVEL_ADMIN
         if layer.owner:
