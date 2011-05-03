@@ -195,7 +195,7 @@ def delete_from_postgis(resource_name):
     try:
         conn=psycopg2.connect("dbname='" + settings.POSTGIS_NAME + "' user='" + settings.POSTGIS_USER + "'  password='" + settings.POSTGIS_PASSWORD + "' port=" + settings.POSTGIS_PORT + " host='" + settings.POSTGIS_HOST + "'")
         cur = conn.cursor()
-        cur.execute("""select DropGeometryTable('""" + resource_name  + """')""")
+        cur.execute("SELECT DropGeometryTable (%s)", resource_name)
         conn.commit()
     except Exception, e:
         logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))
