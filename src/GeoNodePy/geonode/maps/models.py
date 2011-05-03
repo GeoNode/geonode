@@ -966,6 +966,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.abstract = self.abstract
             self.resource.name= self.name
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
+            self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
