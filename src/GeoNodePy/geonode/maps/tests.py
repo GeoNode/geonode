@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
+from django.contrib.auth.models import User
 
 import geonode.maps.models
 
@@ -397,8 +398,8 @@ community."
         geonode.maps.views.set_layer_permissions(layer, self.perm_spec)
 
         # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
-        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
-        self.assertEqual(layer.get_gen_level(geonode.core.models.AUTHENTICATED_USERS), layer.LEVEL_NONE)
+        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_READ) 
+        self.assertEqual(layer.get_gen_level(geonode.core.models.AUTHENTICATED_USERS), layer.LEVEL_READ)
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
