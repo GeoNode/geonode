@@ -262,11 +262,11 @@ the Sites application (the default is example.com)::
     http://localhost:8000/admin/sites/site/1
 
 
-POSTGIS_DATASTORE
+DB_DATASTORE
 .................
 To import uploaded shapefiles to PostGIS, manually create a PostGIS datastore in GeoServer
-and assign its name to the 'POSTGIS_DATASTORE' value in settings.py
-Then assign the appropriate connection values to the other POSTGIS_ settings (necessary for deleting
+and assign its name to the 'DB_DATASTORE' value in settings.py
+Then assign the appropriate connection values to the other DB_DATASTORE_ settings (necessary for deleting
 PostGIS tables when layers in WorldMap are deleted).
 
 

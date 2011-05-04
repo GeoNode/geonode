@@ -306,15 +306,16 @@ CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_AUTH_URL = ''
 
-#Import uploaded shapefiles into PostGIS?
-POSTGIS_DATASTORE=False
+#Import uploaded shapefiles into a database such as PostGIS?
+DB_DATASTORE=False
 
-#PostGIS datastore connection settings
-POSTGIS_NAME = ''
-POSTGIS_USER = ''
-POSTGIS_PASSWORD = ''
-POSTGIS_HOST = ''
-POSTGIS_PORT = ''
+#Database datastore connection settings
+DB_DATASTORE_NAME = ''
+DB_DATASTORE_USER = ''
+DB_DATASTORE_PASSWORD = ''
+DB_DATASTORE_HOST = ''
+DB_DATASTORE_PORT = ''
+DB_DATASTORE_TYPE=''
 
 try:
     from local_settings import *

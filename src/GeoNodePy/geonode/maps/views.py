@@ -1393,6 +1393,18 @@ def _updateLayer(request, layer):
 _suffix = re.compile(r"\..*$", re.IGNORECASE) #Accept zipped uploads with more than one extension, ie foo.zip.zip
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
 
+
+def _create_db_featurestore(name, data, overwrite = False, charset = None):
+    cat = Layer.objects.gs_catalog
+    ds = cat.create_datastore(name)
+    ds.connection_parameters.update(
+            host=settings.DB_DATASTORE_HOST, port=settings.DB_DATASTORE_PORT, database=settings.DB_DATASTORE_NAME, user=settings.DB_DATASTORE_USER,
+            passwd=settings.DB_DATASTORE_PASSWORD, dbtype=settings.DB_DATASTORE_TYPE)
+    cat.save(ds)
+    ds = cat.get_store(name)
+    cat.add_data_to_store(ds,name, data, overwrite, charset)
+
+
 @transaction.commit_manually
 def _handle_layer_upload(request, layer=None):
     """
@@ -1458,9 +1470,8 @@ def _handle_layer_upload(request, layer=None):
                 return None, [_("This resource may only be replaced with raster data.")], detail_error
 
 
-        if settings.POSTGIS_DATASTORE:
-            logger.debug('Upload to PostGIS')
-            create_store = cat.create_pg_feature
+        if settings.DB_DATASTORE:
+            create_store = _create_db_featurestore
         else:
             create_store = cat.create_featurestore
 
@@ -1506,9 +1517,9 @@ def _handle_layer_upload(request, layer=None):
                 logger.info("User tried to replace raster layer [%s] with Shapefile data", name)
                 return None, [_("This resource may only be replaced with raster data.")], detail_error
         
-        if settings.POSTGIS_DATASTORE:
+        if settings.DB_DATASTORE:
             logger.debug('Upload to PostGIS')
-            create_store = cat.create_pg_feature
+            create_store = _create_db_featurestore
         else:
             create_store = cat.create_featurestore
 
@@ -1555,27 +1566,10 @@ def _handle_layer_upload(request, layer=None):
 
     try:
         logger.debug("Starting upload of [%s] to GeoServer...", name)
-        if  create_store == cat.create_pg_feature:
-            storeXML = '<dataStore>' \
-                    '<name>' + name  + '</name>' \
-                    '<connectionParameters>' \
-                        '<host>' + settings.POSTGIS_HOST + '</host>' \
-                        '<port>' + settings.POSTGIS_PORT + '</port>'  \
-                        '<database>' + settings.POSTGIS_NAME + '</database>' \
-                        '<user>' +settings.POSTGIS_USER + '</user>' \
-                        '<password>' + settings.POSTGIS_PASSWORD + '</password>' \
-                        '<passwd>' + settings.POSTGIS_PASSWORD + '</passwd>' \
-                        '<dbtype>postgis</dbtype>' \
-                    '</connectionParameters>' \
-            '</dataStore>'
-
-            create_store(storeXML, name, cfg, overwrite=overwrite, charset=encoding)
-
-
-        elif create_store == cat.create_featurestore:
-            create_store(name, cfg, overwrite=overwrite, charset=encoding)
-        else:
+        if  create_store == cat.create_coveragestore:
             create_store(name, cfg, overwrite=overwrite)
+        else:
+            create_store(name, cfg, overwrite=overwrite, charset=encoding)
         logger.debug("Finished upload of [%s] to GeoServer...", name)
         #raise geoserver.catalog.UploadError('fake')
         #raise geoserver.catalog.ConflictingDataError
@@ -1594,7 +1588,7 @@ def _handle_layer_upload(request, layer=None):
                 cascading_delete(cat, gs_resource)
             except:
                 logger.debug("resource not found for deletion, try to delete the store only")
-                if create_store != cat.create_pg_feature:
+                if create_store != _create_db_featurestore:
                     try:
                         tmp = cat.get_store(name)
                         if tmp:

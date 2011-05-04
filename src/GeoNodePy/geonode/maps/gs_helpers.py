@@ -140,8 +140,8 @@ def cascading_delete(cat, resource):
             ##TODO: get rid of this conditional statement
             if store.name != 'wmdata':
                 cat.delete(store)
-
-            delete_from_postgis(resource_name)
+            if settings.DB_DATASTORE:
+                delete_from_postgis(resource_name)
         except Exception, ex:
             logger.error("Error deleting store, [%s]", str(ex))
         return True
@@ -193,9 +193,9 @@ def prepare_zipfile(name, data):
 
 def delete_from_postgis(resource_name):
     try:
-        conn=psycopg2.connect("dbname='" + settings.POSTGIS_NAME + "' user='" + settings.POSTGIS_USER + "'  password='" + settings.POSTGIS_PASSWORD + "' port=" + settings.POSTGIS_PORT + " host='" + settings.POSTGIS_HOST + "'")
+        conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_NAME + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
         cur = conn.cursor()
-        cur.execute("SELECT DropGeometryTable (%s)", resource_name)
+        cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
         conn.commit()
     except Exception, e:
         logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))
