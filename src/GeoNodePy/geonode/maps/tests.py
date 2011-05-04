@@ -675,15 +675,33 @@ community."
         md_doc = tpl.render(ctx)
         self.assert_("None" not in md_doc, "None in " + md_doc)
 
-    def test_maps_search(self):
-        pass
 
-    def test_maps_search_page(self):
-        pass
+    def test_describe_data(self):
+        '''/data/base:CA?describe -> Test accessing the description of a layer '''
 
-    def test_change_poc(self):
-        pass
+        from django.contrib.auth.models import User
+        self.assertEqual(2, User.objects.all().count())
+        c = Client()
+        response = c.get('/data/base:CA?describe')
+        # Since we are not authenticated, we should not be able to access it
+        self.failUnlessEqual(response.status_code, 302)
+        # but if we log in ...
+        c.login(username='bobby', password='bob')
+        # ... all should be good
+        if self.GEOSERVER:
+            response = c.get('/data/base:CA?describe')
+            self.failUnlessEqual(response.status_code, 200)
+        else:
+            # If Geoserver is not running, this should give a runtime error
+            try:
+                c.get('/data/base:CA?describe')
+            except RuntimeError:
+                pass
 
-    # maps/utils.py tests
-
-    # Moved to Integration Tests repo
+    def test_layer_save(self):
+        lyr = Layer.objects.get(pk=1)
+        lyr.keywords = "saving keywords"
+        lyr.save()
+        self.assertEqual(lyr.keyword_list(), ["saving", "keywords"])
+        self.assertEqual(lyr.resource.keywords, ["saving", "keywords"])
+        self.assertEqual(_gs_resource.keywords, ["saving", "keywords"])
