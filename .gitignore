@@ -36,3 +36,7 @@ pip-log.txt
 
 #Temporary files
 *~
+
+#Testing output
+.coverage
+nosetests.xml
