@@ -26,9 +26,6 @@ geonode.maps.models.get_csw.return_value.records.get.return_value.identification
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
 
-TEST_DATA = os.path.join(settings.GEONODE_HOME,
-                       'geonode_test_data')
-
 class MapTest(TestCase):
     """Tests geonode.maps app/module
     """
@@ -398,8 +395,8 @@ community."
         geonode.maps.views.set_layer_permissions(layer, self.perm_spec)
 
         # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
-        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_READ) 
-        self.assertEqual(layer.get_gen_level(geonode.core.models.AUTHENTICATED_USERS), layer.LEVEL_READ)
+        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
+        self.assertEqual(layer.get_gen_level(geonode.core.models.AUTHENTICATED_USERS), layer.LEVEL_NONE)
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
@@ -524,8 +521,8 @@ community."
         info = geonode.maps.views._perms_info(layer, geonode.maps.views.LAYER_LEV_NAMES)
         
         # Test that ANONYMOUS_USERS and AUTHENTICATED_USERS are set properly
-        self.assertEqual(info[geonode.maps.models.ANONYMOUS_USERS], layer.LEVEL_NONE)
-        self.assertEqual(info[geonode.maps.models.AUTHENTICATED_USERS], layer.LEVEL_NONE)
+        self.assertEqual(info[geonode.maps.models.ANONYMOUS_USERS], layer.LEVEL_READ)
+        self.assertEqual(info[geonode.maps.models.AUTHENTICATED_USERS], layer.LEVEL_READ)
         
         self.assertEqual(info['users'], sorted(layer_info['users'].items()))
 
