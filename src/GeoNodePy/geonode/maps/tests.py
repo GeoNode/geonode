@@ -179,3 +179,11 @@ community."
                 c.get('/data/base:CA?describe')
             except RuntimeError:
                 pass
+
+    def test_layer_save(self):
+        lyr = Layer.objects.get(pk=1)
+        lyr.keywords = "saving keywords"
+        lyr.save()
+        self.assertEqual(lyr.keyword_list(), ["saving", "keywords"])
+        self.assertEqual(lyr.resource.keywords, ["saving", "keywords"])
+        self.assertEqual(_gs_resource.keywords, ["saving", "keywords"])
