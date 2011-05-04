@@ -95,7 +95,7 @@ def _style_name(resource):
 def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
-    logger.info("Found %d layers associated with [%s]", resource)
+    logger.info("Found %d layers associated with [%s]", len(layers), resource)
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
@@ -114,11 +114,12 @@ def fixup_style(cat, resource, style):
 
 def cascading_delete(cat, resource):
     lyr = cat.get_layer(resource.name)
-    store = resource.store
-    styles = lyr.styles + [lyr.default_style]
-    cat.delete(lyr)
-    for s in styles:
-        if s is not None:
-            cat.delete(s, purge=True)
-    cat.delete(resource)
-    cat.delete(store)
+    if(lyr is not None): #Already deleted
+        store = resource.store
+        styles = lyr.styles + [lyr.default_style]
+        cat.delete(lyr)
+        for s in styles:
+            if s is not None:
+                cat.delete(s, purge=True)
+        cat.delete(resource)
+        cat.delete(store)

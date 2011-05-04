@@ -176,6 +176,7 @@ def mapJSON(request, mapid):
         map = get_object_or_404(Map, pk=mapid)
         try:
             map.update_from_viewer(request.raw_post_data)
+
             return HttpResponse(
                 "Map successfully updated.", 
                 mimetype="text/plain",
@@ -468,17 +469,17 @@ def set_map_permissions(m, perm_spec):
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
 
-    if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
-        return HttpResponse(
-            'You are not allowed to change permissions for this layer',
-            status=401,
-            mimetype='text/plain'
-        )
-
     if not request.method == 'POST':
         return HttpResponse(
             'You must use POST for editing layer permissions',
             status=405,
+            mimetype='text/plain'
+        )
+
+    if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
+        return HttpResponse(
+            'You are not allowed to change permissions for this layer',
+            status=401,
             mimetype='text/plain'
         )
 
@@ -849,6 +850,7 @@ def upload_layer(request):
             result['success'] = True
             result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
 
+        logger.debug(result)
         result = json.dumps(result)
         logger.debug("layer upload - okay Django, you handle the rest.")
         return render_to_response('json_html.html',
@@ -899,7 +901,7 @@ def _handle_layer_upload(request, layer=None):
     handle upload of layer data. if specified, the layer given is 
     overwritten, otherwise a new layer is created.
     """
-    base_file = request.FILES.get('base_file');
+    base_file = request.FILES.get('base_file')
 
     logger.info("Uploaded layer; base filename: [%s]", base_file)
 
