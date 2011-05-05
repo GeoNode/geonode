@@ -1,0 +1,4 @@
+.coverage
+.noseids
+geonode_test_data/
+nosetests.xml
