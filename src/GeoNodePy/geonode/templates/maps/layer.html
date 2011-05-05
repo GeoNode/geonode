@@ -72,7 +72,7 @@
             config = Ext.apply(config, {{ viewer|safe }});
 
             app = new GeoExplorer.Viewer(config);
-            
+
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
                 app.selectedLayer.getLayer().mergeNewParams({
                     "STYLES": elem.value,

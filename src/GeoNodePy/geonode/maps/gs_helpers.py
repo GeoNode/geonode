@@ -1,4 +1,5 @@
 from itertools import cycle, izip
+<<<<<<< HEAD
 from django.conf import settings
 from tempfile import mkstemp
 from zipfile import ZipFile
@@ -94,6 +95,7 @@ def fixup_style(cat, resource, style):
     lyr = cat.get_layer(name=resource.name)
     if lyr:
         if lyr.default_style and lyr.default_style.name in _style_templates:
+            logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if (cat.get_style(name)):
                 iter = 1
@@ -114,40 +116,27 @@ def cascading_delete(cat, resource):
     logger.debug("CASCADE DELETE %s", resource.name if resource else 'NULL')
     if resource:
         lyr = cat.get_layer(resource.name)
-
-        styles = lyr.styles + [lyr.default_style]
-        try:
+        if(lyr is not None): #Already deleted
+            store = resource.store
+            styles = lyr.styles + [lyr.default_style]
             cat.delete(lyr)
-            logger.debug('Deleted layer')
-        except:
-            logger.error('Error deleting layer [%s]', resource.name)
-        for s in styles:
-            if s is not None:
-                try:
+            for s in styles:
+                if s is not None:
                     cat.delete(s, purge=True)
-                    logger.debug('Deleted style')
-                except:
-                    logger.error('Error deleting style for %s', resource.name)
-        store = resource.store
-        resource_name = resource.name
-        try:
-            cat.delete(resource)
-            logger.debug('Deleted resource')
-        except:
-            logger.error("Error deleting resource")
-        try:
-            logger.debug('STORE NAME:' + store.name)
-            ##TODO: get rid of this conditional statement
-            if store.name != 'wmdata':
-                cat.delete(store)
 
-            delete_from_postgis(resource_name)
-        except Exception, ex:
-            logger.error("Error deleting store, [%s]", str(ex))
-        return True
-    else:
-        logger.error('Error deleting layer & styles - not found in geoserver')
-        return False
+        resource_name = resource.name
+        cat.delete(resource)
+
+
+        logger.debug('STORE NAME:' + store.name)
+        ##TODO: get rid of this conditional statement
+        if store.name != 'wmdata':
+            cat.delete(store)
+        if settings.DB_DATASTORE:
+            try:
+                delete_from_postgis(resource_name)
+            except Exception, ex:
+                logger.error("Could not delete db table for layer: %s", str(ex))
 
 def prepare_zipfile(name, data):
     """GeoServer's REST API uses ZIP archives as containers for file formats such
@@ -193,9 +182,9 @@ def prepare_zipfile(name, data):
 
 def delete_from_postgis(resource_name):
     try:
-        conn=psycopg2.connect("dbname='" + settings.POSTGIS_NAME + "' user='" + settings.POSTGIS_USER + "'  password='" + settings.POSTGIS_PASSWORD + "' port=" + settings.POSTGIS_PORT + " host='" + settings.POSTGIS_HOST + "'")
+        conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_NAME + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
         cur = conn.cursor()
-        cur.execute("SELECT DropGeometryTable (%s)", resource_name)
+        cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
         conn.commit()
     except Exception, e:
         logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))

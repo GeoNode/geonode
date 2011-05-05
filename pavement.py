@@ -230,7 +230,7 @@ def setup_webapps(options):
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""") 
+    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""")
 
 
 @task

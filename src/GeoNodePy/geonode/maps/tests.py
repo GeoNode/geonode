@@ -15,8 +15,8 @@ Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
 geonode.maps.models.get_csw = Mock()
 geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online[0].url = "http://example.com/"
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online[0].description= "bogus data"
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
 
 class MapTest(TestCase):
 
@@ -44,7 +44,7 @@ community."
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
         def is_wms_layer(x):
-            return cfg['sources'][x['source']]['ptype'] == 'gx_wmscsource'
+            return cfg['sources'][x['source']]['ptype'] == 'gx_wmssource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
         self.assertEquals(layernames, ['base:CA',])
 
@@ -61,14 +61,14 @@ community."
         # by andreas in issue 566. -dwins
         viewer_config = """
         {
-          "defaultSourceType": "gxp_wmscsource",
+          "defaultSourceType": "gx_wmssource",
           "about": {
               "title": "Title",
               "abstract": "Abstract"
           },
           "sources": {
             "capra": {
-              "url":"/geoserver/wms"
+              "url":"http://localhost:8001/geoserver/wms"
             }
           },
           "map": {

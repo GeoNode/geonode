@@ -2,7 +2,7 @@ PIL
 http://www.reportlab.com/ftp/reportlab-2.3.tar.gz#egg=reportlab
 -e  svn+http://svn.gispython.org/svn/gispy/OWSLib/trunk/#egg=OWSLib
 -r py-base-libs.txt
--e git+git://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
+-e git+git://github.com/cga-harvard/gsconfig.py.git@develop#egg=gsconfig.py
 django-registration
 #https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
 django-profiles

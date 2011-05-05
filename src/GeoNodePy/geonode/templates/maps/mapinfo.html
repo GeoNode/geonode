@@ -94,19 +94,19 @@ Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
   <ul>
     {% has_obj_perm user map "maps.change_map" as can_change %}
     {% has_obj_perm user map "maps.delete_map" as can_delete %}
-    
-    
+
+
 	{% if map.officialurl %}
     	<li><a href="{% url geonode.maps.views.official_site map.officialurl %}">
 	{% else %}
 		{% if map.url %}
 			<li><a href="{% url geonode.maps.views.view map.url %}">
 		{% else %}
-			<li><a href="{% url geonode.maps.views.view map.id %}">		
+			<li><a href="{% url geonode.maps.views.view map.id %}">
 		{% endif %}
 	{% endif %}
 	{% trans "Return to map" %}</a></li>
-	
+
     {% if can_change %}
     <li><a href="{% url geonode.maps.views.map_controller map.id %}/describe/">{% trans "Edit map information" %}</a></li>
     {% endif %}

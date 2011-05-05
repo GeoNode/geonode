@@ -3,13 +3,13 @@
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 {% block indexclass %} class="here" {% endblock %}
 
-{% block head %} 
+{% block head %}
 {% include "geonode/ext_header.html" %}
 {{ block.super }}
 
 {% endblock %}
 
-{% block main %} 
+{% block main %}
 <div class="twocol">
 <!-- TODO: i18n on the text here -->
   <div class="block">
@@ -64,13 +64,13 @@ General Public License (GPL)</span></a><span style='font-family:Arial'>.<o:p></o
 {% endblocktrans %}
   </div>
 
-  
+
     <div class="block">
     <h2> {% trans "Source Code" %} </h2>
     <p>
-    {% blocktrans %} 
-	All the code for WorldMap is open source and freely available at <a href="https://github.com/cga-harvard/cga-worldmap">github</a>. 
-    {% endblocktrans %} 
+    {% blocktrans %}
+	All the code for WorldMap is open source and freely available at <a href="https://github.com/cga-harvard/cga-worldmap">github</a>.
+    {% endblocktrans %}
   </p>
   </div>
 

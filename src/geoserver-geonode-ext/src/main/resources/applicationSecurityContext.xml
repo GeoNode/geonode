@@ -28,7 +28,11 @@
     (page 17 of the PDF version)
   -->
   <bean id="geonodeFilterChainProxy"
+<<<<<<< HEAD
     class="org.springframework.security.util.FilterChainProxy">
+=======
+    class="org.acegisecurity.util.FilterChainProxy">
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     <property name="filterInvocationDefinitionSource">
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
@@ -60,6 +64,7 @@
     <constructor-arg index="0" ref="geonodeSecurityClient"/>
   </bean>
   
+<<<<<<< HEAD
   <bean id="gnRestFilterInvocationInterceptor" class="org.springframework.security.intercept.web.FilterSecurityInterceptor">
     <property name="authenticationManager" ref="gnAuthenticationManager" />
     <property name="accessDecisionManager">
@@ -69,6 +74,17 @@
           <list>
             <bean class="org.springframework.security.vote.RoleVoter" />
             <bean class="org.springframework.security.vote.AuthenticatedVoter" />
+=======
+  <bean id="gnRestFilterInvocationInterceptor" class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
+    <property name="authenticationManager" ref="gnAuthenticationManager" />
+    <property name="accessDecisionManager">
+      <bean class="org.acegisecurity.vote.AffirmativeBased">
+        <property name="allowIfAllAbstainDecisions" value="false" />
+        <property name="decisionVoters">
+          <list>
+            <bean class="org.acegisecurity.vote.RoleVoter" />
+            <bean class="org.acegisecurity.vote.AuthenticatedVoter" />
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
           </list>
         </property>
       </bean>
@@ -99,12 +115,20 @@
     levels are not enough
   -->
   <bean id="geonodeOwsExceptionTranslationFilter"
+<<<<<<< HEAD
     class="org.springframework.security.ui.ExceptionTranslationFilter">
+=======
+    class="org.acegisecurity.ui.ExceptionTranslationFilter">
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     <property name="authenticationEntryPoint">
       <ref bean="basicProcessingFilterEntryPoint" />
     </property>
     <property name="accessDeniedHandler">
+<<<<<<< HEAD
       <bean class="org.springframework.security.ui.AccessDeniedHandlerImpl">
+=======
+      <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
         <property name="errorPage" value="/accessDenied.jsp" />
       </bean>
     </property>
@@ -114,7 +138,11 @@
     Handles the basic authentication headers.
   -->
   <bean id="gnBasicProcessingFilter"
+<<<<<<< HEAD
     class="org.springframework.security.ui.basicauth.BasicProcessingFilter">
+=======
+    class="org.acegisecurity.ui.basicauth.BasicProcessingFilter">
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     <property name="authenticationManager">
       <ref local="gnAuthenticationManager" />
     </property>
@@ -128,12 +156,20 @@
     a number of child providers
   -->
   <bean id="gnAuthenticationManager"
+<<<<<<< HEAD
     class="org.springframework.security.providers.ProviderManager">
+=======
+    class="org.acegisecurity.providers.ProviderManager">
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     <property name="providers">
       <list>
         <ref local="geonodeAuthenticationProvider" />
         <bean
+<<<<<<< HEAD
           class="org.springframework.security.providers.anonymous.AnonymousAuthenticationProvider">
+=======
+          class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
           <property name="key" value="geoserver" />
         </bean>
       </list>
@@ -144,6 +180,7 @@
     <description>httpclient used by geonodeSecurityClient to request authentication to GeoNode</description>
     <constructor-arg index="0">
       <description>Max connections per host</description>
+<<<<<<< HEAD
       <value>30</value>
     </constructor-arg>
     <constructor-arg index="1">
@@ -153,6 +190,17 @@
     <constructor-arg index="2">
       <description>Read time out in milliseconds</description>
       <value>30000</value>
+=======
+      <value>10</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <description>Connection time out in milliseconds</description>
+      <value>1000</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <description>Read time out in milliseconds</description>
+      <value>1000</value>
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     </constructor-arg>
   </bean>
   

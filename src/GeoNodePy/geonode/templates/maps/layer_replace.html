@@ -132,7 +132,7 @@ Ext.onReady(function(){
         anchor: '95%',
         msgTarget: 'side'
     },
-    items: form_fields, 
+    items: form_fields,
     buttons: [{
         text: gettext('Upload'),
         handler: function(){
@@ -149,7 +149,7 @@ Ext.onReady(function(){
                           error_message += '<li>' + o.result.errors[i] + '</li>'
                       }
                       error_message += '</ul>'
-                      
+
                       Ext.Msg.show({
                           title: gettext("Error"),
                           msg: error_message,
@@ -159,7 +159,7 @@ Ext.onReady(function(){
                           buttons: Ext.Msg.OK
                       });
                   }
-                  
+
               });
             }
           }
@@ -203,7 +203,7 @@ Ext.onReady(function(){
     base_file.addListener('fileselected', function(cmp, value) {
         check_shapefile();
     });
-    disable_shapefile_inputs(); 
+    disable_shapefile_inputs();
 
 
 
@@ -212,7 +212,7 @@ var mapCrumb = "";
 if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
 	{
 		mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
-	}        	
+	}
 
 		var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} </a><span>&nbsp;/&nbsp;Update</span>");
 		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());

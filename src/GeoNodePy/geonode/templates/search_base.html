@@ -41,10 +41,10 @@ Ext.onReady(function(){
       stop_download_url: '{{site}}geoserver/rest/process/batchDownload/kill/',
       download_url: '{{site}}geoserver/rest/process/batchDownload/download/'
     });
-    
-    
 
-    
+
+
+
     {% endautoescape %}
 });
 </script>
@@ -53,14 +53,14 @@ Ext.onReady(function(){
   {% block breadcrumb %}
       					<a id="logo" href="{% url geonode.views.index %}"><img src="{{STATIC_URL}}theme/img/WorldMap-Logo_26px.png" border="0"></a>
   						<div id="page-breadcrumb"><span>Data Search</span></div>
-  {% endblock %}  
+  {% endblock %}
 
 {% block main %}
 <div class="twocol">
   <div class="block">
     <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
-    <div id="search_results"></div>  
+    <div id="search_results"></div>
     <p class="explain">{%trans "Click the <b>+</b> on any row to show layer metadata or download in PDF, KML, GeoTIFF, or SHP." %}
     {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
     </p>
@@ -90,10 +90,10 @@ Ext.onReady(function(){
       <ul>
         <li><a href="#" class="create-map">{% trans "Create a new map" %}</a></li>
         <li><span class="export">{% trans "Export selected" %}:</span>
-            <a href="#mixed" class="batch-download">Zip</a> 
+            <a href="#mixed" class="batch-download">Zip</a>
         </li>
     <!--    <li><span class="export">{% trans "Export selected" %}:</span>
-            <a href="#shp" class="batch-download">Shapefile</a>, 
+            <a href="#shp" class="batch-download">Shapefile</a>,
             <a href="#geotiff" class="batch-download">GeoTiff</a>
         </li> -->
       </ul>

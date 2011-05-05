@@ -103,7 +103,7 @@ GeoNode.
   * ``webapps/`` contains GeoNetwork and Intermap for use during development
 
   * ``gs-data/`` contains a GeoServer data directory for use during development
- 
+
 
 #####
 Required packages on ubuntu: (besides proj, geos, gdal)
@@ -167,6 +167,7 @@ svn checkout http://s3fs.googlecode.com/svn/trunk/ s3fs
 	./configure --prfix=/usr
 	make
 	sudo make install
+
 
 
 

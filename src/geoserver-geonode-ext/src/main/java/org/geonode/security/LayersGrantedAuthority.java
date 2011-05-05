@@ -5,6 +5,7 @@
 package org.geonode.security;
 
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +15,16 @@ import org.springframework.security.GrantedAuthority;
 /**
  * An authority marking the user credentials read/only and read/write access to layers
  *
+=======
+import java.util.Collections;
+import java.util.List;
+
+import org.acegisecurity.GrantedAuthority;
+
+/**
+ * An authority marking the user credentials read/only and read/write access to layers
+ * 
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
  * @author Andrea Aime - OpenGeo
  */
 public class LayersGrantedAuthority implements GrantedAuthority {
@@ -44,14 +55,21 @@ public class LayersGrantedAuthority implements GrantedAuthority {
 
     /**
      * This is not a role, so we return {@code null}, by API spec.
+<<<<<<< HEAD
      *
      * @return {@code null}
      * @see org.springframework.security.GrantedAuthority#getAuthority()
+=======
+     * 
+     * @return {@code null}
+     * @see org.acegisecurity.GrantedAuthority#getAuthority()
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
      */
     public String getAuthority() {
         return null;
     }
 
+<<<<<<< HEAD
     public int compareTo(Object o) {
         if (!(o instanceof LayersGrantedAuthority)) {
             return 0;
@@ -77,4 +95,6 @@ public class LayersGrantedAuthority implements GrantedAuthority {
         return 0;
     }
 
+=======
+>>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
 }

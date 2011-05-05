@@ -26,11 +26,6 @@ class GranularBackend(ModelBackend):
     def get_all_permissions(self, user_obj, obj=None):
         """
         """
-#        if not user_obj.is_anonymous:
-#            profile = user_obj.get_profile()
-#            if profile.is_org_member and profile.member_expiration_dt < datetime.today().date():
-#                profile.is_org_member = False
-#                profile.save()
 
         if obj is None:
             return ModelBackend.get_all_permissions(self, user_obj)
