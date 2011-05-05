@@ -37,11 +37,7 @@
       <version>${geoserver.version}</version>
     </dependency>
     <dependency>
-<<<<<<< HEAD
       <groupId>org.geoserver</groupId>
-=======
-      <groupId>org.geoserver.extension</groupId>
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
       <artifactId>restconfig</artifactId>
       <version>${geoserver.version}</version>
     </dependency>
@@ -157,13 +153,8 @@
     </dependency>
   </dependencies>
   <properties>
-<<<<<<< HEAD
     <geotools.version>2.7-SNAPSHOT</geotools.version>
     <geoserver.version>2.1-GWC</geoserver.version>
-=======
-    <geotools.version>2.6-SNAPSHOT</geotools.version>
-    <geoserver.version>2.0.3-SNAPSHOT</geoserver.version>
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     <jetty.version>6.1.8</jetty.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>

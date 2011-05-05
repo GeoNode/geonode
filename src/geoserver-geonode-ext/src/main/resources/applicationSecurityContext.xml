@@ -11,28 +11,24 @@
   <!-- login page, but get redirected to the origally requested page once login is succefull     -->
   <!-- ========================================================================================= -->
 
-  <!-- 
+  <!--
     This filter delegates a different chain of sub-filters for administration
     console pages and OWS services. Basically, we set up a chain involving basic/anonymous
-    authentication for OWS services, and a form based authentication for  the web console, 
+    authentication for OWS services, and a form based authentication for  the web console,
     so that accessing the console by means of simple calls is still easy.
-    
+
     An attempt at form+basic has been done, that would have eased writing code accessing
     directly the console, but it does not play well with logout: once the browser learns
     about basic auth credentials it'll keep on using them, the only way to make it stop
     is to declare a different user in the location bar, such as in: http://user@host:port/...
-    
+
     For filters introduction, their meanining, the
     different setup between form and basic authentication accesses,
     and importance of the order please see the Acegi reference guide, chapter 3.2,
     (page 17 of the PDF version)
   -->
   <bean id="geonodeFilterChainProxy"
-<<<<<<< HEAD
     class="org.springframework.security.util.FilterChainProxy">
-=======
-    class="org.acegisecurity.util.FilterChainProxy">
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     <property name="filterInvocationDefinitionSource">
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
@@ -42,20 +38,20 @@
         /wfsv/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
         /wms/**= httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
         /wcs/**= httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-        
+
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
         #/rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter
         /rest/process/batchdownload=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter
-        
+
         /gwc/rest/web/**=gnAnonymousProcessingFilter,filterInvocationInterceptor
-        
+
         /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,gnBasicProcessingFilter,gnAnonymousProcessingFilter,gnRestFilterInvocationInterceptor
         /**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,gnAnonymousProcessingFilter,filterInvocationInterceptor
       </value>
     </property>
   </bean>
 
-  <!-- 
+  <!--
     Puts default authentication informations in the security context, making sure
     we always get an anonymous user and anonymous role if all other authentication
     attempts failed
@@ -63,8 +59,7 @@
   <bean id="gnAnonymousProcessingFilter" class="org.geonode.security.GeoNodeAnonymousProcessingFilter">
     <constructor-arg index="0" ref="geonodeSecurityClient"/>
   </bean>
-  
-<<<<<<< HEAD
+
   <bean id="gnRestFilterInvocationInterceptor" class="org.springframework.security.intercept.web.FilterSecurityInterceptor">
     <property name="authenticationManager" ref="gnAuthenticationManager" />
     <property name="accessDecisionManager">
@@ -74,17 +69,6 @@
           <list>
             <bean class="org.springframework.security.vote.RoleVoter" />
             <bean class="org.springframework.security.vote.AuthenticatedVoter" />
-=======
-  <bean id="gnRestFilterInvocationInterceptor" class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
-    <property name="authenticationManager" ref="gnAuthenticationManager" />
-    <property name="accessDecisionManager">
-      <bean class="org.acegisecurity.vote.AffirmativeBased">
-        <property name="allowIfAllAbstainDecisions" value="false" />
-        <property name="decisionVoters">
-          <list>
-            <bean class="org.acegisecurity.vote.RoleVoter" />
-            <bean class="org.acegisecurity.vote.AuthenticatedVoter" />
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
           </list>
         </property>
       </bean>
@@ -92,10 +76,10 @@
     <property name="objectDefinitionSource" ref="restFilterDefinitionMap" />
   </bean>
 
-  <!-- 
+  <!--
     This filter does the actual main authentication workflow and handles form based authentication too.
     It asks the authentication manager whether access is granted to the resource the user is trying to access,
-    redirects to a failure page if it fails, and to another filter if the authentication informations are 
+    redirects to a failure page if it fails, and to another filter if the authentication informations are
     just being provided. This is useful only for form based authentication, the OWS services do use another
     authentication processing filter.
   -->
@@ -108,41 +92,29 @@
     <property name="filterProcessesUrl" value="/j_acegi_security_check" />
   </bean>
 
-  <!-- 
+  <!--
       During the request execution security exceptions may be thrown, either during the
     authentication or authorization phase. This filter redirects authentication failures
     to the login form, whilst returns the user to an access denied page if the authorization
     levels are not enough
   -->
   <bean id="geonodeOwsExceptionTranslationFilter"
-<<<<<<< HEAD
     class="org.springframework.security.ui.ExceptionTranslationFilter">
-=======
-    class="org.acegisecurity.ui.ExceptionTranslationFilter">
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     <property name="authenticationEntryPoint">
       <ref bean="basicProcessingFilterEntryPoint" />
     </property>
     <property name="accessDeniedHandler">
-<<<<<<< HEAD
       <bean class="org.springframework.security.ui.AccessDeniedHandlerImpl">
-=======
-      <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
         <property name="errorPage" value="/accessDenied.jsp" />
       </bean>
     </property>
   </bean>
 
-  <!-- 
+  <!--
     Handles the basic authentication headers.
   -->
   <bean id="gnBasicProcessingFilter"
-<<<<<<< HEAD
     class="org.springframework.security.ui.basicauth.BasicProcessingFilter">
-=======
-    class="org.acegisecurity.ui.basicauth.BasicProcessingFilter">
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     <property name="authenticationManager">
       <ref local="gnAuthenticationManager" />
     </property>
@@ -151,36 +123,27 @@
     </property>
   </bean>
 
-  <!-- 
+  <!--
     The bean managing authentication, basically forwards authentication requests against
     a number of child providers
   -->
   <bean id="gnAuthenticationManager"
-<<<<<<< HEAD
     class="org.springframework.security.providers.ProviderManager">
-=======
-    class="org.acegisecurity.providers.ProviderManager">
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     <property name="providers">
       <list>
         <ref local="geonodeAuthenticationProvider" />
         <bean
-<<<<<<< HEAD
           class="org.springframework.security.providers.anonymous.AnonymousAuthenticationProvider">
-=======
-          class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
           <property name="key" value="geoserver" />
         </bean>
       </list>
     </property>
   </bean>
- 
+
   <bean id="geonodeHttpClient" class="org.geonode.security.HTTPClient">
     <description>httpclient used by geonodeSecurityClient to request authentication to GeoNode</description>
     <constructor-arg index="0">
       <description>Max connections per host</description>
-<<<<<<< HEAD
       <value>30</value>
     </constructor-arg>
     <constructor-arg index="1">
@@ -190,26 +153,15 @@
     <constructor-arg index="2">
       <description>Read time out in milliseconds</description>
       <value>30000</value>
-=======
-      <value>10</value>
-    </constructor-arg>
-    <constructor-arg index="1">
-      <description>Connection time out in milliseconds</description>
-      <value>1000</value>
-    </constructor-arg>
-    <constructor-arg index="2">
-      <description>Read time out in milliseconds</description>
-      <value>1000</value>
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
     </constructor-arg>
   </bean>
-  
+
   <!-- The client talking to GeoNode to get authentications from cookies and username/password -->
   <bean id="geonodeSecurityClient" class="org.geonode.security.DefaultSecurityClient">
     <!-- We probably need to add a reference to the data directory here -->
     <constructor-arg ref="geonodeHttpClient"/>
   </bean>
-  
+
   <!-- The GeoNode username/password manager -->
   <bean id="geonodeAuthenticationProvider" class="org.geonode.security.GeoNodeAuthenticationProvider">
     <constructor-arg index="0" ref="geonodeSecurityClient"/>
@@ -219,8 +171,8 @@
   <bean id="genodeCookieFilter" class="org.geonode.security.GeoNodeCookieProcessingFilter">
     <constructor-arg index="0" ref="geonodeSecurityClient"/>
   </bean>
-  
+
   <!-- The custom data access manager using the GeoNode granted authorities -->
   <bean id="geonodeAccessManager" class="org.geonode.security.GeoNodeDataAccessManager"/>
-  
+
 </beans>

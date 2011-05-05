@@ -4,28 +4,20 @@
  */
 package org.geonode.security;
 
-<<<<<<< HEAD
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
-=======
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
-<<<<<<< HEAD
 import org.geoserver.security.CatalogMode;
-=======
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
 import org.geoserver.security.DataAccessManager;
 
 /**
  * An access manager that uses the special authentication tokens setup by the
  * {@link GeonodeSecurityClient} to check if a layer can be accessed, or not
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class GeoNodeDataAccessManager implements DataAccessManager {
@@ -35,11 +27,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     boolean authenticationEnabled = true;
 
     /**
-<<<<<<< HEAD
      * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
-=======
-     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
      *      org.geoserver.catalog.WorkspaceInfo, org.geoserver.security.AccessMode)
      */
     public boolean canAccess(Authentication user, WorkspaceInfo workspace, AccessMode mode) {
@@ -48,11 +36,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     }
 
     /**
-<<<<<<< HEAD
      * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
-=======
-     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
      *      org.geoserver.catalog.LayerInfo, org.geoserver.security.AccessMode)
      */
     public boolean canAccess(Authentication user, LayerInfo layer, AccessMode mode) {
@@ -60,11 +44,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     }
 
     /**
-<<<<<<< HEAD
      * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
-=======
-     * @see org.geoserver.security.DataAccessManager#canAccess(org.acegisecurity.Authentication,
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
      *      org.geoserver.catalog.ResourceInfo, org.geoserver.security.AccessMode)
      */
     public boolean canAccess(Authentication user, ResourceInfo resource, AccessMode mode) {
@@ -104,7 +84,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
 
     /**
      * Used for testing purposes only
-     * 
+     *
      * @param authenticationEnabled
      */
     public void setAuthenticationEnabled(boolean authenticationEnabled) {

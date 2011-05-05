@@ -15,17 +15,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-<<<<<<< HEAD
+
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.context.SecurityContext;
 import org.springframework.security.context.SecurityContextHolder;
-=======
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
 import org.geotools.util.logging.Logging;
 
 /**

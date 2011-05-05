@@ -17,19 +17,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-<<<<<<< HEAD
+
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.context.SecurityContext;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
-=======
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
 import org.geotools.util.logging.Logging;
 
 /**

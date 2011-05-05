@@ -6,21 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< HEAD
+
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
-=======
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 
 /**

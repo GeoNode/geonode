@@ -612,6 +612,10 @@ class Contact(models.Model):
     def username(self):
         return u"%s" % (self.name if self.name else self.user.username)
 
+def get_csw():
+    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+    csw = CatalogueServiceWeb(csw_url);
+    return csw
 
 _viewer_projection_lookup = {
     "EPSG:900913": {
@@ -1265,8 +1269,11 @@ class Layer(models.Model, PermissionLevelMixin):
         if meta is None:
             return
         self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
-        self.distribution_url = meta.distribution.onlineresource.url
-        self.distribution_description = meta.distribution.onlineresource.description
+        onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+        if len(onlineresources) == 1:
+                res = onlineresources[0]
+                self.distribution_url = res.url
+                self.distribution_description = res.description
 
 
     def keyword_list(self):

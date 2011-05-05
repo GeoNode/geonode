@@ -1,5 +1,4 @@
 from itertools import cycle, izip
-<<<<<<< HEAD
 from django.conf import settings
 from tempfile import mkstemp
 from zipfile import ZipFile
@@ -95,7 +94,6 @@ def fixup_style(cat, resource, style):
     lyr = cat.get_layer(name=resource.name)
     if lyr:
         if lyr.default_style and lyr.default_style.name in _style_templates:
-            logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if (cat.get_style(name)):
                 iter = 1
@@ -105,7 +103,7 @@ def fixup_style(cat, resource, style):
             fg, bg, mark = _style_contexts.next()
             if style is None:
                 sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
-            else: 
+            else:
                 sld = style.read()
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
@@ -116,27 +114,40 @@ def cascading_delete(cat, resource):
     logger.debug("CASCADE DELETE %s", resource.name if resource else 'NULL')
     if resource:
         lyr = cat.get_layer(resource.name)
-        if(lyr is not None): #Already deleted
-            store = resource.store
-            styles = lyr.styles + [lyr.default_style]
+
+        styles = lyr.styles + [lyr.default_style]
+        try:
             cat.delete(lyr)
-            for s in styles:
-                if s is not None:
+            logger.debug('Deleted layer')
+        except:
+            logger.error('Error deleting layer [%s]', resource.name)
+        for s in styles:
+            if s is not None:
+                try:
                     cat.delete(s, purge=True)
-
+                    logger.debug('Deleted style')
+                except:
+                    logger.error('Error deleting style for %s', resource.name)
+        store = resource.store
         resource_name = resource.name
-        cat.delete(resource)
-
-
-        logger.debug('STORE NAME:' + store.name)
-        ##TODO: get rid of this conditional statement
-        if store.name != 'wmdata':
-            cat.delete(store)
-        if settings.DB_DATASTORE:
-            try:
+        try:
+            cat.delete(resource)
+            logger.debug('Deleted resource')
+        except:
+            logger.error("Error deleting resource")
+        try:
+            logger.debug('STORE NAME:' + store.name)
+            ##TODO: get rid of this conditional statement
+            if store.name != 'wmdata':
+                cat.delete(store)
+            if settings.DB_DATASTORE:
                 delete_from_postgis(resource_name)
-            except Exception, ex:
-                logger.error("Could not delete db table for layer: %s", str(ex))
+        except Exception, ex:
+            logger.error("Error deleting store, [%s]", str(ex))
+        return True
+    else:
+        logger.error('Error deleting layer & styles - not found in geoserver')
+        return False
 
 def prepare_zipfile(name, data):
     """GeoServer's REST API uses ZIP archives as containers for file formats such

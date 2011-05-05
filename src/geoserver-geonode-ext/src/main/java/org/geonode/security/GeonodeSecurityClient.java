@@ -6,15 +6,9 @@ package org.geonode.security;
 
 import java.io.IOException;
 
-<<<<<<< HEAD
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
-=======
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
->>>>>>> 62e10950604c85ea2fec4f0bb54c420c0ea66ed4
 
 /**
  * A client that talks to GeoNode to authenticate the users based on cookies contents or

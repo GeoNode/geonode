@@ -1211,7 +1211,7 @@ def _changeLayerDefaultStyle(request,layer):
 @csrf_exempt
 def layerController(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
-    if (request.META['QUERY_STRING'] == "describe"):
+    if ( "describe" in request.META['QUERY_STRING'] ):
         return _describe_layer(request,layer)
     if (request.META['QUERY_STRING'] == "remove"):
         return _removeLayer(request,layer)
