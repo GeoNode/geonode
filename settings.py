@@ -41,7 +41,7 @@ LANGUAGES = (
 
 SITE_ID = 1
 
-TEST_RUNNER = 'geonode-integration.tests.runner.GeoNodeTestRunner'
+TEST_RUNNER = 'tests.runner.GeoNodeTestRunner'
 
 NOSE_ARGS = [
 #      '--failed',

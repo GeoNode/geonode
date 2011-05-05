@@ -1,7 +1,7 @@
 #!/bin/bash
 
-GEONODE_URL="http://localhost:8000/"
-GEOSERVER_URL="http://localhost:8001/geoserver/"
+GEONODE_URL="http://localhost/"
+GEOSERVER_URL="http://localhost:8001/geoserver-geonode-dev/"
 
 if [ ! -d "./geonode_test_data" ]; then
     echo ">>>> Downloading Test Data"
@@ -14,7 +14,7 @@ fi
 # How can we test if its already activated?
 # Assumes that geonode and geonode_tests are next to each other
 echo ">>>> Activating VirtualEnv"
-source ../geonode/bin/activate
+source $GEONODE_HOME/bin/activate
 
 # Make sure GeoNode and GeoServer are running
 
