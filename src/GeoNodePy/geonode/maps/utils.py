@@ -179,14 +179,14 @@ def cleanup(name, uuid):
    logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
 
 
+_separator = '\n' + ('-' * 100) + '\n'
 def save(layer, base_file, user, overwrite = True):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer is created.
     """
-    logger.info('\n' + '-'*100 + '\n')
-    logger.info('Uploading layer: [%s], base filename: [%s]' % (layer, base_file))
-    stacktrace = None
+    logger.info(_separator)
+    logger.info('Uploading layer: [%s], base filename: [%s]', layer, base_file)
 
     # Step 0. Verify the file exists
     logger.info('>>> Step 0. Verify if the file %s exists so we can create the layer [%s]' % (base_file, layer))
@@ -196,11 +196,11 @@ def save(layer, base_file, user, overwrite = True):
         raise GeoNodeException(msg)
 
     # Step 1. Figure out a name for the new layer, the one passed might not be valid or being used.
-    logger.info('>>> Step 1. Figure out a name for %s' % layer)
+    logger.info('>>> Step 1. Figure out a name for %s', layer)
     name = get_valid_layer_name(layer, overwrite)
 
     # Step 2. Check that it is uploading to the same resource type as the existing resource
-    logger.info('>>> Step 2. Make sure we are not trying to overwrite a existing resource named [%s] with the wrong type' % name)
+    logger.info('>>> Step 2. Make sure we are not trying to overwrite a existing resource named [%s] with the wrong type', name)
     the_layer_type = layer_type(base_file)
 
     # Get a short handle to the gsconfig geoserver catalog
@@ -287,7 +287,7 @@ def save(layer, base_file, user, overwrite = True):
 
 
     # Step 5. Create the resource in GeoServer
-    logger.info('>>> Step 5. Generating the metadata for [%s] after successful import to GeoSever' % name)
+    logger.info('>>> Step 5. Generating the metadata for [%s] after successful import to GeoSever', name)
     store = cat.get_store(name)
     gs_resource = cat.get_resource(name=name, store=store)
 
@@ -347,7 +347,7 @@ def save(layer, base_file, user, overwrite = True):
         cat.save(publishing)
 
     # Step 8. Assign the keywords to the resource
-    logger.info('>>> Step 8. Assigning the keywords to [%s]' % name)
+    logger.info('>>> Step 8. Assigning the keywords to [%s]', name)
     if 'keywords' in files:
         f = open(files['keywords'], 'r')
         keywords = [x.strip() for x in f.readlines()]
@@ -362,7 +362,7 @@ def save(layer, base_file, user, overwrite = True):
         cat.save(gs_resource)
 
     # Step 10. Create the Django record for the layer
-    logger.info('>>> Step 10. Creating Django record for [%s]' %  name)
+    logger.info('>>> Step 10. Creating Django record for [%s]', name)
     # FIXME: Do this inside the layer object
     typename = gs_resource.store.workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
@@ -381,7 +381,7 @@ def save(layer, base_file, user, overwrite = True):
 
     # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this
-    logger.info('>>> Step 9. Creating points of contact records for [%s]' % name)
+    logger.info('>>> Step 9. Creating points of contact records for [%s]', name)
     poc_contact, __ = Contact.objects.get_or_create(user=user,
                                            defaults={"name": user.username })
     author_contact, __ = Contact.objects.get_or_create(user=user,
@@ -396,7 +396,7 @@ def save(layer, base_file, user, overwrite = True):
 
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
-    logger.info('>>> Step 11. Setting default permissions for [%s]' % name)
+    logger.info('>>> Step 11. Setting default permissions for [%s]', name)
     saved_layer.set_default_permissions()
 
     # Step 12. Verify the layer was saved correctly and clean up if needed
@@ -408,7 +408,7 @@ def save(layer, base_file, user, overwrite = True):
     except Layer.DoesNotExist, e:
         msg = ('There was a problem saving the layer %s to GeoNetwork/Django. Error is: %s' % (layer, str(e)))
         logger.exception(msg)
-        logger.debug('Attempting to clean up after failed save for layer [%s]' % name)
+        logger.debug('Attempting to clean up after failed save for layer [%s]', name)
         # Since the layer creation was not successful, we need to clean up
         cleanup(name, layer_uuid)
         raise GeoNodeException(msg)
