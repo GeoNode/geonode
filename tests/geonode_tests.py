@@ -110,7 +110,7 @@ class GeoNodeMapTest(TestCase):
         test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL,"", 0, 10)
 
         results = json.loads(get_web_page(test_url))
-        self.assertEquals(int(results["total"]), len(Layer.objects.all())+5)
+        
         for layer in results["rows"]:
             if layer["_local"] == False:
                 # Ignore non-local layers
@@ -122,14 +122,8 @@ class GeoNodeMapTest(TestCase):
                 self.assertEquals(layer["_permissions"]["change_permissions"], False)
 
         # - Test with Authenticated User
-        perm_spec = {"anonymous":"layer_readonly","authenticated":"layer_readwrite","users":[["admin","layer_readwrite"]]}
-        for layer in Layer.objects.all():
-            set_layer_permissions(layer, perm_spec)
-
-        test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL,"", 0, 10)
-
         results = json.loads(get_web_page(test_url, username="admin", password="@dm1n", login_url=LOGIN_URL))
-        self.assertEquals(int(results["total"]), len(Layer.objects.all())+5)
+        
         for layer in results["rows"]:
             if layer["_local"] == False:
                 # Ignore non-local layers
