@@ -529,7 +529,7 @@ def upload(incoming, user=None, overwrite=True):
 
     if os.path.isfile(incoming):
         layer = file_upload(incoming, user=user, overwrite=overwrite)
-        yield {'file': incoming, 'name': layer.name}
+        return [{'file': incoming, 'name': layer.name}]
     elif not os.path.isdir(incoming):
         msg = ('Please pass a filename or a directory name as the "incoming" '
                'parameter, instead of %s: %s' % (incoming, type(incoming)))
@@ -537,6 +537,7 @@ def upload(incoming, user=None, overwrite=True):
         raise GeoNodeException(msg)
     else:
         datadir = incoming
+        results = []
 
         for root, dirs, files in os.walk(datadir):
             for short_filename in files:
@@ -553,9 +554,10 @@ def upload(incoming, user=None, overwrite=True):
                     except GeoNodeException, e:
                         msg = '[%s] could not be uploaded. Error was: %s' % (filename, str(e))
                         logger.info(msg)
-                        yield {'file': filename, 'errors': msg}
+                        results.append({'file': filename, 'errors': msg})
                     else:
-                        yield {'file': filename, 'name': layer.name}
+                        results.append({'file': filename, 'name': layer.name})
+        return results
 
 
 def run(cmd,
