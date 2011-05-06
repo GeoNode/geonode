@@ -267,7 +267,7 @@ def save(layer, base_file, user, overwrite = True):
     except geoserver.catalog.UploadError, e:
         msg = 'Could not save the layer %s, there was an upload error: %s' % (name, str(e))
         logger.warn(msg)
-	e.args = (msg,)
+        e.args = (msg,)
         raise
     except geoserver.catalog.ConflictingDataError, e:
         # A datastore of this name already exists
