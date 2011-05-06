@@ -5,7 +5,7 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style
+from geonode.maps.gs_helpers import fixup_style, cascading_delete
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import uuid
@@ -299,13 +299,22 @@ def save(layer, base_file, user, overwrite = True):
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 6. Making sure [%s] has a valid projection' % name)
     if gs_resource.latlon_bbox is None:
-        logger.warn('GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326', name)
-        # If GeoServer couldn't figure out the projection, we just
-        # assume it's lat/lon to avoid a bad GeoServer configuration
+        box = gs_resource.native_bbox[:4]
+        minx, maxx, miny, maxy = [float(a) for a in box]
+        if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
+           -90  <= miny <= 90  and -90  <= maxy <= 90:
+            logger.warn('GeoServer failed to detect the projection for layer [%s]. Guessing EPSG:4326', name)
+            # If GeoServer couldn't figure out the projection, we just
+            # assume it's lat/lon to avoid a bad GeoServer configuration
 
-        gs_resource.latlon_bbox = gs_resource.native_bbox
-        gs_resource.projection = "EPSG:4326"
-        cat.save(gs_resource)
+            gs_resource.latlon_bbox = gs_resource.native_bbox
+            gs_resource.projection = "EPSG:4326"
+            cat.save(gs_resource)
+        else:
+            msg = "GeoServer failed to detect the projection for layer [%s]. It doesn't look like EPSG:4326, so backing out the layer."
+            logger.warn(msg, name)
+            cascading_delete(cat, gs_resource)
+            raise GeoNodeException(msg % name)
 
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
