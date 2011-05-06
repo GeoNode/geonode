@@ -5,6 +5,14 @@ import geonode
 
 _ = lambda x: x
 
+# Import Settings from geonode project, anything specified below
+# will be overwritten
+try:
+    from geonode.settings import *
+except ImportError:
+    pass
+
+
 DEBUG = True
 SITENAME = "GeoNode"
 SITEURL = "http://localhost:8000/"
@@ -18,11 +26,6 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-
-DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3',
-                            'SUPPORTS_TRANSACTIONS': True,
-                            'NAME': os.path.join(GEONODE_ROOT,"..","..","..","development.db"), 
-                            'TEST_NAME': os.path.join(GEONODE_ROOT,"..","..","..","development.db")}}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -50,7 +53,7 @@ NOSE_ARGS = [
       '--with-doctest',
       '--nocapture',
       '--detailed-errors',
-      '--with-xunit',
+#      '--with-xunit',
       ]
 
 
