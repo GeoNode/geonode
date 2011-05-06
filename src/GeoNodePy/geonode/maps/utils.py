@@ -355,7 +355,7 @@ def save(layer, base_file, user, overwrite = True):
                                  workspace=gs_resource.store.workspace.name,
                                  title=gs_resource.title,
                                  uuid=layer_uuid,
-                                 keywords=gs_resource.keywords,
+                                 keywords=' '.join(gs_resource.keywords),
                                  abstract=gs_resource.abstract or '',
                                  owner=user,
                                  )
