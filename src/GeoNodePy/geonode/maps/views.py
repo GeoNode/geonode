@@ -46,31 +46,32 @@ def _project_center(llcenter):
     center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
     return center.x, center.y
 
-_DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
+def default_map_config():
 
-_default_map = Map(
-    title=DEFAULT_TITLE, 
-    abstract=DEFAULT_ABSTRACT,
-    projection="EPSG:900913",
-    center_x=_DEFAULT_MAP_CENTER[0],
-    center_y=_DEFAULT_MAP_CENTER[1],
-    zoom=settings.DEFAULT_MAP_ZOOM
-)
+    _DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
 
-def _baselayer(lyr, order):
-    return MapLayer.objects.from_viewer_config(
-        map = _default_map,
-        layer = lyr,
-        source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
-        ordering = order
+    _default_map = Map(
+        title=DEFAULT_TITLE, 
+        abstract=DEFAULT_ABSTRACT,
+        projection="EPSG:900913",
+        center_x=_DEFAULT_MAP_CENTER[0],
+        center_y=_DEFAULT_MAP_CENTER[1],
+        zoom=settings.DEFAULT_MAP_ZOOM
     )
+    def _baselayer(lyr, order):
+        return MapLayer.objects.from_viewer_config(
+            map = _default_map,
+            layer = lyr,
+            source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
+            ordering = order
+        )
 
-DEFAULT_BASELAYERS = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
+    DEFAULT_BASE_LAYERS = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASE_LAYERS)
 
-DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASELAYERS)
+    return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
-del _default_map
-del _baselayer
+
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
@@ -199,6 +200,8 @@ def newmap(request):
     default map configuration is used.  If copy is specified
     and the map specified does not exist a 404 is returned.
     '''
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map = get_object_or_404(Map,pk=mapid)
@@ -267,7 +270,8 @@ def newmap(request):
                 map.center_y = center.y
                 map.zoom = math.ceil(min(width_zoom, height_zoom))
 
-            config = map.viewer_json(*(DEFAULT_BASELAYERS + layers))
+            
+            config = map.viewer_json(*(DEFAULT_BASE_LAYERS + layers))
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
@@ -643,6 +647,7 @@ def view(request, mapid):
 
 def embed(request, mapid=None):
     if mapid is None:
+        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
         config = DEFAULT_MAP_CONFIG
     else:
         map = Map.objects.get(pk=mapid)
@@ -794,6 +799,7 @@ def _changeLayerDefaultStyle(request,layer):
 
 @csrf_exempt
 def layerController(request, layername):
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
     layer = get_object_or_404(Layer, typename=layername)
     if (request.META['QUERY_STRING'] == "describe"):
         return _describe_layer(request,layer)
@@ -819,7 +825,7 @@ def layerController(request, layername):
         return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
             "metadata": metadata,
-            "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
+            "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
             "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
@@ -1574,6 +1580,7 @@ def browse_data(request):
 
 @csrf_exempt    
 def search_page(request):
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
     # for non-ajax requests, render a generic search page
 
     if request.method == 'GET':
@@ -1587,7 +1594,7 @@ def search_page(request):
 
     return render_to_response('search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASELAYERS)),
+        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         "site" : settings.SITEURL
     }))
