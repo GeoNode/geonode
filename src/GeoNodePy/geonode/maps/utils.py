@@ -74,11 +74,6 @@ def get_files(filename):
     if os.path.exists(style_file):
         files['sld'] = style_file
 
-    # Always upload keywords  if it exist
-    style_file = filename.replace(extension, '.keywords')
-    if os.path.exists(style_file):
-        files['keywords'] = style_file
-
     return files
 
 def get_valid_name(layer_name):
@@ -180,7 +175,7 @@ def cleanup(name, uuid):
 
 
 _separator = '\n' + ('-' * 100) + '\n'
-def save(layer, base_file, user, overwrite = True):
+def save(layer, base_file, user, overwrite = True, keywords = []):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer is created.
@@ -346,21 +341,6 @@ def save(layer, base_file, user, overwrite = True):
         publishing.default_style = cat.get_style(name)
         cat.save(publishing)
 
-    # Step 8. Assign the keywords to the resource
-    logger.info('>>> Step 8. Assigning the keywords to [%s]', name)
-    if 'keywords' in files:
-        f = open(files['keywords'], 'r')
-        keywords = [x.strip() for x in f.readlines()]
-        f.close()
-        keywords_string = " ".join(keywords)
-
-        gs_resource.keywords = keywords_string
-        # FIXME: Add support in the geoserver rest endpoint to set the keywords
-        #        in the meantime we will use the description/abstract field as a secondary source.
-        gs_resource.abstract = keywords_string
-        gs_resource.description = keywords_string
-        cat.save(gs_resource)
-
     # Step 10. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
     # FIXME: Do this inside the layer object
@@ -373,7 +353,7 @@ def save(layer, base_file, user, overwrite = True):
                                  workspace=gs_resource.store.workspace.name,
                                  title=gs_resource.title,
                                  uuid=layer_uuid,
-                                 keywords=' '.join(gs_resource.keywords),
+                                 keywords=' '.join(keywords),
                                  abstract=gs_resource.abstract or '',
                                  owner=user,
                                  )
@@ -487,7 +467,7 @@ def check_geonode_is_up():
                 "Please make sure you have started GeoNetwork." % settings.GEONETWORK_BASE_URL)
         raise GeoNodeException(msg)
 
-def file_upload(filename, user=None, title=None, overwrite=True):
+def file_upload(filename, user=None, title=None, overwrite=True, keywords = []):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -512,12 +492,12 @@ def file_upload(filename, user=None, title=None, overwrite=True):
     except Layer.DoesNotExist, e:
         layer = name
 
-    new_layer = save(layer, filename, theuser, overwrite)
+    new_layer = save(layer, filename, theuser, overwrite, keywords)
 
     return new_layer
 
 
-def upload(incoming, user=None, overwrite=True):
+def upload(incoming, user=None, overwrite=True, keywords = []):
     """Upload a directory of spatial data files to GeoNode and verifies each layer is in GeoServer.
 
        Supported extensions are: .shp, .tif, .asc and .zip (of a shapfile).
@@ -528,7 +508,7 @@ def upload(incoming, user=None, overwrite=True):
     check_geonode_is_up()
 
     if os.path.isfile(incoming):
-        layer = file_upload(incoming, user=user, overwrite=overwrite)
+        layer = file_upload(incoming, user=user, overwrite=overwrite, keywords = keywords)
         return [{'file': incoming, 'name': layer.name}]
     elif not os.path.isdir(incoming):
         msg = ('Please pass a filename or a directory name as the "incoming" '
@@ -548,7 +528,8 @@ def upload(incoming, user=None, overwrite=True):
                         layer = file_upload(filename,
                                             user=user,
                                             title=basename,
-                                            overwrite=overwrite
+                                            overwrite=overwrite,
+                                            keywords=keywords
                                            )
 
                     except GeoNodeException, e:
