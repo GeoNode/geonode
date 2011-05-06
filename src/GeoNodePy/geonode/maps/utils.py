@@ -223,6 +223,7 @@ def save(layer, base_file, user, overwrite = True):
             # If our resource is already configured in the store it needs to have the right resource type
             for resource in resources:
                 if resource.name == name:
+                    assert overwrite, "Name already in use and overwrite is False"
                     existing_type = resource.resource_type
                     if existing_type != the_layer_type:
                         msg =  ('Type of uploaded file %s (%s) does not match type '
