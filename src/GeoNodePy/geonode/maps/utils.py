@@ -505,34 +505,32 @@ def upload(incoming, user=None, overwrite=True):
     if os.path.isfile(incoming):
         layer = file_upload(incoming, user=user, overwrite=overwrite)
         yield {'file': incoming, 'name': layer.name}
-
-    if not os.path.isdir(incoming):
+    elif not os.path.isdir(incoming):
         msg = ('Please pass a filename or a directory name as the "incoming" '
                'parameter, instead of %s: %s' % (incoming, type(incoming)))
         logger.exception(msg)
         raise GeoNodeException(msg)
+    else:
+        datadir = incoming
 
-    datadir = incoming
+        for root, dirs, files in os.walk(datadir):
+            for short_filename in files:
+                basename, extension = os.path.splitext(short_filename)
+                filename = os.path.join(root, short_filename)
+                if extension in ['.asc', '.tif', '.shp', '.zip']:
+                    try:
+                        layer = file_upload(filename,
+                                            user=user,
+                                            title=basename,
+                                            overwrite=overwrite
+                                           )
 
-    for root, dirs, files in os.walk(datadir):
-        for short_filename in files:
-            basename, extension = os.path.splitext(short_filename)
-            filename = os.path.join(root, short_filename)
-            if extension in ['.asc', '.tif', '.shp', '.zip']:
-                try:
-                    layer = file_upload(filename,
-                                        user=user,
-                                        title=basename,
-                                        overwrite=overwrite
-                                       )
-
-                except GeoNodeException, e:
-                    msg = '[%s] could not be uploaded. Error was: %s' % (filename, str(e))
-                    logger.info(msg)
-                    yield {'file': filename, 'errors': msg}
-                else:
-                    yield {'file': filename, 'name': layer.name}
-
+                    except GeoNodeException, e:
+                        msg = '[%s] could not be uploaded. Error was: %s' % (filename, str(e))
+                        logger.info(msg)
+                        yield {'file': filename, 'errors': msg}
+                    else:
+                        yield {'file': filename, 'name': layer.name}
 
 
 def run(cmd,
