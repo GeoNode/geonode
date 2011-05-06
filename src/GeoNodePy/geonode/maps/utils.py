@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
 import geoserver
+from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 import uuid
 from django.template.defaultfilters import slugify
@@ -137,14 +138,14 @@ def cleanup(name, uuid):
    #FIXME: Could this lead to someone deleting for example a postgis db with the same name of the uploaded file?.
    try:
        gs_store = cat.get_store(name)
+       if gs_store is not None:
+           gs_layer = cat.get_layer(name)
+           gs_resource = gs_layer.resource
+       else:
+           gs_layer = None
+           gs_resource = None
    except FailedRequestError, e:
-       logger.warn('There is no store named [%s] in GeoServer, no need to delete it: %s' % str(e))
-       gs_store = None
-   try:
-       gs_layer = cat.get_layer(name)
-       gs_resource = gs_layer.resource
-   except geoserver.catalog.FailedRequestError, e:
-       logger.warn('There is no layer named [%s] in GeoServer, no need to delete it: %s' % str(e))
+       logger.error("Couldn't connect to GeoServer while cleaning up layer [%s] !!", str(e))
 
    if gs_layer is not None:
        try:
@@ -169,7 +170,9 @@ def cleanup(name, uuid):
    else:
        logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
        try:
-           gn.delete(csw_record)
+           # this is a bit hacky, delete_layer expects an instance of the layer
+           # model but it just passes it to a Django template so a dict works too.
+           gn.delete_layer({ "uuid": uuid }) 
        except:
            logger.exception("Couldn't delete GeoNetwork record during cleanup()")
 
@@ -463,7 +466,7 @@ def get_valid_user(user=None):
 
 
 def check_geonode_is_up():
-    """Verifies both geoserver and the django server are running,
+    """Verifies all of geonetwork, geoserver and the django server are running,
        this is needed to be able to upload.
     """
     try:
@@ -476,6 +479,13 @@ def check_geonode_is_up():
                'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
         raise GeoNodeException(msg)
 
+    try:
+        Layer.objects.gn_catalog.login()
+    except:
+        from django.conf import settings
+        msg = ("Cannot connect to the GeoNetwork at %s\n"
+                "Please make sure you have started GeoNetwork." % settings.GEONETWORK_BASE_URL)
+        raise GeoNodeException(msg)
 
 def file_upload(filename, user=None, title=None, overwrite=True):
     """Saves a layer in GeoNode asking as little information as possible.
