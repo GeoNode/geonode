@@ -34,7 +34,7 @@ def layer_type(filename):
     base_name, extension = os.path.splitext(filename)
     if extension.lower() in ['.shp',]:
         return FeatureType.resource_type
-    elif extension.lower() in ['.asc', '.tif', '.tiff', '.geotiff', '.geotif']:
+    elif extension.lower() in ['.tif', '.tiff', '.geotiff', '.geotif']:
         return Coverage.resource_type
     else:
         msg = ('Saving of extension [%s] is not implemented' % extension)
@@ -48,9 +48,9 @@ def get_files(filename):
     base_name, extension = os.path.splitext(filename)
 
     if extension == '.shp':
-        required_extensions=  ['.shp', '.dbf', '.shx', '.prj']
+        required_extensions =  ['.shp', '.dbf', '.shx']
         for ext in required_extensions:
-            other_file = filename.replace(extension, ext)
+            other_file = base_name + ext
             if os.path.exists(other_file):
                 files[ext[1:]] = other_file
             else:
@@ -59,20 +59,15 @@ def get_files(filename):
                              % (ext, required_extensions))
                 raise GeoNodeException(msg)
 
-    if extension in ['.asc']:
-        # Convert to Geotiff and update the files dictionary
-        upload_filename = base_name + '.tif'
-        #FIXME: Do not use gdal_translate, use the gdal python API.
-        cmd = ('gdal_translate -ot Float64 -of GTiff '
-               '-co "PROFILE=GEOTIFF" %s %s' % (filename,
-                                                upload_filename))
-        run(cmd, stdout='/tmp/%s.out', stderr='/tmp/%s.err')
-        files['base'] = upload_filename
+        prj_file = base_name + ".prj"
+        if os.path.exists(prj_file):
+            files["prj"] = prj_file
 
     # Always upload stylefile if it exist
-    style_file = filename.replace(extension, '.sld')
+    style_file = base_name + ".sld"
     if os.path.exists(style_file):
         files['sld'] = style_file
+
 
     return files
 
@@ -500,7 +495,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords = []):
 def upload(incoming, user=None, overwrite=True, keywords = []):
     """Upload a directory of spatial data files to GeoNode and verifies each layer is in GeoServer.
 
-       Supported extensions are: .shp, .tif, .asc and .zip (of a shapfile).
+       Supported extensions are: .shp, .tif, and .zip (of a shapfile).
        It catches GeoNodeExceptions and gives a report per file
        >>> batch_upload('/tmp/mydata')
            [{'file': 'data1.tiff', 'name': 'geonode:data1' }, {'file': 'data2.shp', 'errors': 'Shapefile requires .prj file'}]
@@ -523,7 +518,7 @@ def upload(incoming, user=None, overwrite=True, keywords = []):
             for short_filename in files:
                 basename, extension = os.path.splitext(short_filename)
                 filename = os.path.join(root, short_filename)
-                if extension in ['.asc', '.tif', '.shp', '.zip']:
+                if extension in ['.tif', '.shp', '.zip']:
                     try:
                         layer = file_upload(filename,
                                             user=user,
