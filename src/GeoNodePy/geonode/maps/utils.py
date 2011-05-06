@@ -148,19 +148,19 @@ def cleanup(name, uuid):
 
    if gs_layer is not None:
        try:
-            cat.delete(gs_layer)
+           cat.delete(gs_layer)
        except:
-           pass
+           logger.exception("Couldn't delete GeoServer layer during cleanup()")
    if gs_resource is not None:
        try:
            cat.delete(gs_resource)
        except:
-           pass
+           logger.exception("Couldn't delete GeoServer resource during cleanup()")
    if gs_store is not None:
        try:
            cat.delete(gs_store)
        except:
-           pass
+           logger.exception("Couldn't delete GeoServer store during cleanup()")
 
    gn = Layer.objects.geonetwork
    csw_record = gn.get_by_uuid(uuid)
@@ -171,10 +171,9 @@ def cleanup(name, uuid):
        try:
            gn.delete(csw_record)
        except:
-           pass
+           logger.exception("Couldn't delete GeoNetwork record during cleanup()")
 
    logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
-
 
 
 def save(layer, base_file, user, overwrite = True):
