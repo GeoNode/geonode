@@ -131,6 +131,9 @@ def cleanup(name, uuid):
        raise GeoNodeException(msg)
 
    cat = Layer.objects.gs_catalog
+   gs_store = None
+   gs_layer = None
+   gs_resource = None
    #FIXME: Could this lead to someone deleting for example a postgis db with the same name of the uploaded file?.
    try:
        gs_store = cat.get_store(name)
