@@ -103,7 +103,7 @@ class GeoNodeMapTest(TestCase):
         # TODO Write a method to accept a perm_spec and query params and test that query results are returned respecting the perm_spec
 
         # - Test with Anonymous User
-        perm_spec = {"anonymous":"layer_readonly","authenticated":"layer_readwrite","users":[["admin","layer_readwrite"]]}
+        perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
         for layer in Layer.objects.all():
             set_layer_permissions(layer, perm_spec)
 
@@ -116,7 +116,7 @@ class GeoNodeMapTest(TestCase):
                 # Ignore non-local layers
                 pass
             else:
-                self.assertEquals(layer["_permissions"]["view"], True)
+                self.assertEquals(layer["_permissions"]["view"], False)
                 self.assertEquals(layer["_permissions"]["change"], False)
                 self.assertEquals(layer["_permissions"]["delete"], False)
                 self.assertEquals(layer["_permissions"]["change_permissions"], False)
