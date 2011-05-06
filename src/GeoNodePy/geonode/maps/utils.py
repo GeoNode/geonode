@@ -5,7 +5,7 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import uuid
@@ -319,11 +319,16 @@ def save(layer, base_file, user, overwrite = True):
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 7. Creating style for [%s]' % name)
+    publishing = cat.get_layer(name)
+
     if 'sld' in files:
         f = open(files['sld'], 'r')
         sld = f.read()
         f.close()
+    else:
+        sld = get_sld_for(publishing)
 
+    if sld is not None:
         try:
             cat.create_style(name, sld)
         except geoserver.catalog.ConflictingDataError, e:
@@ -332,10 +337,8 @@ def save(layer, base_file, user, overwrite = True):
             logger.warn(msg)
             e.args = (msg,)
 
-        style = cat.get_style(name)
         #FIXME: Should we use the fully qualified typename?
-        publishing = cat.get_layer(name)
-        publishing.default_style = style
+        publishing.default_style = cat.get_style(name)
         cat.save(publishing)
 
     # Step 8. Assign the keywords to the resource

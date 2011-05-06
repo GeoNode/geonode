@@ -92,6 +92,13 @@ _style_templates = dict(
 def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
+def get_sld_for(layer):
+    if layer.default_style.name in _style_templates:
+        fg, bg, mark = _style_contexts.next()
+        return _style_templates[layer.default_style.name] % dict(name=layer.name, fg=fg, bg=bg, mark=mark)
+    else:
+        return None
+
 def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
@@ -100,9 +107,8 @@ def fixup_style(cat, resource, style):
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
-            fg, bg, mark = _style_contexts.next()
             if style is None:
-                sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
+                sld = get_sld_for(lyr)
             else: 
                 sld = style.read()
             logger.info("Creating style [%s]", name)
