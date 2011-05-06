@@ -59,13 +59,12 @@ class GeoNodeMapTest(TestCase):
     # Search Tests
     
     def test_metadata_search(self):
-        print Layer.objects.all()
         
         # Test Empty Search [returns all results, should match len(Layer.objects.all())+5]
         # +5 is for the 5 'default' records in GeoNetwork
         test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL, "", 0, 10)
         results = json.loads(get_web_page(test_url))
-        self.assertEquals(int(results["total"]), len(Layer.objects.all()))
+        self.assertEquals(int(results["total"]), len(Layer.objects.all())+5)
         
         # Test n0ch@nc3 Search (returns no results)
         test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL, "n0ch@nc3", 0, 10)
@@ -86,7 +85,7 @@ class GeoNodeMapTest(TestCase):
         # - Test with an empty query string and Global BBOX and validate that total is correct
         test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % (settings.SITEURL, "", 0, 10, "-180,-90,180,90")
         results = json.loads(get_web_page(test_url))
-        self.assertEquals(int(results["total"]), len(Layer.objects.all()))
+        self.assertEquals(int(results["total"]), len(Layer.objects.all())+5)
 
         # - Test with a specific query string and a bbox that is disjoint from its results
         test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % (settings.SITEURL, "NIC", 0, 10, "0,-90,180,90")
@@ -111,7 +110,7 @@ class GeoNodeMapTest(TestCase):
         test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL,"", 0, 10)
 
         results = json.loads(get_web_page(test_url))
-        self.assertEquals(int(results["total"]), len(Layer.objects.all()))
+        self.assertEquals(int(results["total"]), len(Layer.objects.all())+5)
         for layer in results["rows"]:
             if layer["_local"] == False:
                 # Ignore non-local layers
@@ -130,7 +129,7 @@ class GeoNodeMapTest(TestCase):
         test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL,"", 0, 10)
 
         results = json.loads(get_web_page(test_url, username="admin", password="@dm1n", login_url=LOGIN_URL))
-        self.assertEquals(int(results["total"]), len(Layer.objects.all()))
+        self.assertEquals(int(results["total"]), len(Layer.objects.all())+5)
         for layer in results["rows"]:
             if layer["_local"] == False:
                 # Ignore non-local layers
