@@ -841,27 +841,33 @@ def upload_layer(request):
         return render_to_response('maps/layer_upload.html',
                                   RequestContext(request, {}))
     elif request.method == 'POST':
-        try:
-            layer, errors = _handle_layer_upload(request)
-            logger.debug("_handle_layer_upload returned. layer and errors are %s", (layer, errors))
-        except:
-            logger.exception("_handle_layer_upload failed!")
-            errors = [GENERIC_UPLOAD_ERROR]
-        
-        result = {}
-        if len(errors) > 0:
-            result['success'] = False
-            result['errors'] = errors
+        from geonode.maps.forms import LayerUploadForm
+        from geonode.maps.utils import save
+        from django.template import escape
+        import os, shutil
+        form = LayerUploadForm(request.POST, request.FILES)
+        tempdir = None
+        if form.is_valid():
+            try:
+                tempdir, base_file = form.write_files()
+                name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+                # TODO: Permissions, abstract, title
+                saved_layer = save(name, base_file, request.user, overwrite = False)
+                return HttpResponse(json.dumps({
+                    "success": True,
+                    "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
+            except Exception, e:
+                logger.exception("Unexpected error during upload.")
+                return HttpResponse(json.dumps({
+                    "success": False,
+                    "errors": ["Unexpected error during upload: " + escape(str(e))]}))
+            finally:
+                if tempdir is not None:
+                    shutil.rmtree(tempdir)
         else:
-            result['success'] = True
-            result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
-
-        logger.debug(result)
-        result = json.dumps(result)
-        logger.debug("layer upload - okay Django, you handle the rest.")
-        return render_to_response('json_html.html',
-                                  RequestContext(request, {'json': result}))
-
+            return HttpResponse(json.dumps({
+                "success": False,
+                "errors": [escape(v) for v in form.errors.values()]}))
 
 @login_required
 @csrf_exempt
