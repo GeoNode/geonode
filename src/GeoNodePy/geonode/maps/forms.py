@@ -15,11 +15,8 @@ class LayerUploadForm(forms.Form):
     dbf_file = forms.FileField(required=False)
     shx_file = forms.FileField(required=False)
     prj_file = forms.FileField(required=False)
-    sld_file = forms.FileField(required=False)
 
-    abstract = forms.CharField(required=False)
-    layer_title = forms.CharField(required=False)
-    permissions = JSONField()
+    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file")
 
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
@@ -33,7 +30,7 @@ class LayerUploadForm(forms.Form):
 
     def write_files(self):
         tempdir = tempfile.mkdtemp()
-        for field in ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file"):
+        for field in self.spatial_files:
             f = self.cleaned_data[field]
             if f is not None:
                 path = os.path.join(tempdir, f.name)
@@ -42,3 +39,12 @@ class LayerUploadForm(forms.Form):
                         writable.write(c)
         absolute_base_file = os.path.join(tempdir, self.cleaned_data["base_file"].name)
         return tempdir,  absolute_base_file
+
+class NewLayerUploadForm(LayerUploadForm):
+    sld_file = forms.FileField(required=False)
+
+    abstract = forms.CharField(required=False)
+    layer_title = forms.CharField(required=False)
+    permissions = JSONField()
+
+    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file")
