@@ -841,17 +841,16 @@ def upload_layer(request):
         return render_to_response('maps/layer_upload.html',
                                   RequestContext(request, {}))
     elif request.method == 'POST':
-        from geonode.maps.forms import LayerUploadForm
+        from geonode.maps.forms import NewLayerUploadForm
         from geonode.maps.utils import save
         from django.template import escape
         import os, shutil
-        form = LayerUploadForm(request.POST, request.FILES)
+        form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
                 name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
-                # TODO: Permissions, abstract, title
                 saved_layer = save(name, base_file, request.user, 
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
@@ -891,23 +890,35 @@ def _updateLayer(request, layer):
                                   RequestContext(request, {'layer': layer,
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
-        try:
-            layer, errors = _handle_layer_upload(request, layer=layer)
-        except:
-            errors = [GENERIC_UPLOAD_ERROR]
+        from geonode.maps.forms import LayerUploadForm
+        from geonode.maps.utils import save
+        from django.template import escape
+        import os, shutil
 
-        result = {}
-        if len(errors) > 0:
-            result['success'] = False
-            result['errors'] = errors
+        form = LayerUploadForm(request.POST, request.FILES)
+        tempdir = None
+
+        if form.is_valid():
+            try:
+                tempdir, base_file = form.write_files()
+                name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+                saved_layer = save(layer, base_file, request.user, overwrite=True)
+                return HttpResponse(json.dumps({
+                    "success": True,
+                    "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
+            except Exception, e:
+                logger.exception("Unexpected error during upload.")
+                return HttpResponse(json.dumps({
+                    "success": False,
+                    "errors": ["Unexpected error during upload: " + escape(str(e))]}))
+            finally:
+                if tempdir is not None:
+                    shutil.rmtree(tempdir)
+
         else:
-            result['success'] = True
-            result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
-
-    result = json.dumps(result)
-    return render_to_response('json_html.html',
-                              RequestContext(request, {'json': result}))
-
+            return HttpResponse(json.dumps({
+                "success": False,
+                "errors": [escape(v) for v in form.errors.values]}))
 
 _suffix = re.compile(r"\.[^.]*$", re.IGNORECASE)
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
