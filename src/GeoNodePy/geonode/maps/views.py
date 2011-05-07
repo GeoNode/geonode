@@ -852,7 +852,12 @@ def upload_layer(request):
                 tempdir, base_file = form.write_files()
                 name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
                 # TODO: Permissions, abstract, title
-                saved_layer = save(name, base_file, request.user, overwrite = False)
+                saved_layer = save(name, base_file, request.user, 
+                        overwrite = False,
+                        abstract = form.cleaned_data["abstract"],
+                        title = form.cleaned_data["layer_title"],
+                        permissions = form.cleaned_data["permissions"]
+                        )
                 return HttpResponse(json.dumps({
                     "success": True,
                     "redirect_to": saved_layer.get_absolute_url() + "?describe"}))

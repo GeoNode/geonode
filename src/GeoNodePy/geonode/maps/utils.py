@@ -170,7 +170,7 @@ def cleanup(name, uuid):
 
 
 _separator = '\n' + ('-' * 100) + '\n'
-def save(layer, base_file, user, overwrite = True, keywords = []):
+def save(layer, base_file, user, overwrite = True, title=None, abstract=None, permissions=None, keywords = []):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer is created.
@@ -346,10 +346,10 @@ def save(layer, base_file, user, overwrite = True, keywords = []):
                                  storeType=gs_resource.store.resource_type,
                                  typename=typename,
                                  workspace=gs_resource.store.workspace.name,
-                                 title=gs_resource.title,
+                                 title=title or gs_resource.title,
                                  uuid=layer_uuid,
                                  keywords=' '.join(keywords),
-                                 abstract=gs_resource.abstract or '',
+                                 abstract=abstract or gs_resource.abstract or '',
                                  owner=user,
                                  )
     )
@@ -372,7 +372,11 @@ def save(layer, base_file, user, overwrite = True, keywords = []):
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
     logger.info('>>> Step 11. Setting default permissions for [%s]', name)
-    saved_layer.set_default_permissions()
+    if permissions is None:
+        saved_layer.set_default_permissions()
+    else:
+        from geonode.maps.views import set_layer_permissions
+        set_layer_permissions(saved_layer, permissions)
 
     # Step 12. Verify the layer was saved correctly and clean up if needed
     logger.info('>>> Step 12. Verifying the layer [%s] was created correctly' % name)
