@@ -869,9 +869,10 @@ def upload_layer(request):
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
-            return HttpResponse(json.dumps({
-                "success": False,
-                "errors": [escape(v) for v in form.errors.values()]}))
+            errors = []
+            for e in form.errors.values():
+                errors.extend([escape(v) for v in e])
+            return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
 @login_required
 @csrf_exempt
@@ -916,9 +917,10 @@ def _updateLayer(request, layer):
                     shutil.rmtree(tempdir)
 
         else:
-            return HttpResponse(json.dumps({
-                "success": False,
-                "errors": [escape(v) for v in form.errors.values]}))
+            errors = []
+            for e in form.errors.values():
+                errors.extend([escape(v) for v in e])
+            return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
 _suffix = re.compile(r"\.[^.]*$", re.IGNORECASE)
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
