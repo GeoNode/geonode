@@ -532,35 +532,3 @@ def upload(incoming, user=None, overwrite=True, keywords = []):
                     else:
                         results.append({'file': filename, 'name': layer.name})
         return results
-
-
-def run(cmd,
-        stdout=None,
-        stderr=None,
-        verbose=False):
-    """Run command with or without echoing
-
-    Possibly redirect stdout and stderr to log files.
-    Raises exception if command fails.
-    """
-
-    if verbose:
-        print cmd
-
-    # Build command with redirection if requested
-    s = cmd
-    if stdout:
-        s += ' > %s' % stdout
-
-    if stderr:
-        s += ' 2> %s' % stderr
-
-    # Execute
-    err = os.system(s)
-
-    # Error handling
-    if err != 0:
-        msg = 'Command "%s" failed with errorcode %i. ' % (cmd, err)
-        if stdout and stderr:
-            msg += 'See logfiles %s and %s for details' % (stdout, stderr)
-        raise Exception(msg)
