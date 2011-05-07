@@ -15,6 +15,7 @@ class LayerUploadForm(forms.Form):
     dbf_file = forms.FileField(required=False)
     shx_file = forms.FileField(required=False)
     prj_file = forms.FileField(required=False)
+    sld_file = forms.FileField(required=False)
 
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
@@ -32,7 +33,7 @@ class LayerUploadForm(forms.Form):
 
     def write_files(self):
         tempdir = tempfile.mkdtemp()
-        for field in ("base_file", "dbf_file", "shx_file", "prj_file"):
+        for field in ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file"):
             f = self.cleaned_data[field]
             if f is not None:
                 path = os.path.join(tempdir, f.name)
