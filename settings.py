@@ -5,6 +5,9 @@ import geonode
 
 from geonode.settings import *
 
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+GEONODE_ROOT = os.path.dirname(geonode.__file__)
+
 TEST_RUNNER = 'tests.runner.GeoNodeTestRunner'
 
 NOSE_ARGS = [
