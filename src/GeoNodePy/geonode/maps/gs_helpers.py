@@ -125,12 +125,13 @@ def cascading_delete(cat, resource):
             if s is not None:
                 cat.delete(s, purge=True)
         cat.delete(resource)
-        cat.delete(store)
-        if settings.DB_DATASTORE:
-            try:
-                delete_from_postgis(resource_name)
-            except:
-                logger.error("Could not delete PostGIS table for store %s", resource_name)
+        store_params = store.connection_parameters
+        logger.debug("DBTYPE: %s", store_params['dbtype'])
+        if store_params['dbtype'] and store_params['dbtype'] == 'postgis':
+            cat.delete(store)
+            delete_from_postgis(resource_name)
+        else:
+            cat.delete(store)
 
 def delete_from_postgis(resource_name):
     """
