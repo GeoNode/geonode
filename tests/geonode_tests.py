@@ -1,6 +1,6 @@
 import os
 from django.conf import settings
-from django.test import TestCase
+from unittest import TestCase
 
 TEST_DATA = os.path.join(settings.PROJECT_ROOT, 'geonode_test_data')
 
