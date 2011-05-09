@@ -1015,8 +1015,11 @@ def _handle_layer_upload(request, layer=None):
         errors.append(_("An error occurred while loading the data."))
         tmp = cat.get_store(name)
         if tmp:
+            tmp_name = tmp.name
             logger.info("Deleting store after failed import of [%s] into GeoServer", name)
-            cat.delete(tmp)
+            cat.delete(tmp_name)
+            if settings.DB_DATASTORE:
+                delete_from_postgis(name)
             logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
     except geoserver.catalog.ConflictingDataError:
         errors.append(_("There is already a layer with the given name."))
