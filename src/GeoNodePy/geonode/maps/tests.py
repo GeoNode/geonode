@@ -15,8 +15,8 @@ Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
 geonode.maps.models.get_csw = Mock()
 geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online[0].url = "http://example.com/"
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online[0].description= "bogus data"
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
 
 class MapTest(TestCase):
 
@@ -32,7 +32,7 @@ class MapTest(TestCase):
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
 use the Save Map button above to contribute your map to the GeoNode \
-community." 
+community."
 
     default_title = "GeoNode Default Map"
 
@@ -44,31 +44,31 @@ community."
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
         def is_wms_layer(x):
-            return cfg['sources'][x['source']]['ptype'] == 'gx_wmscsource'
+            return cfg['sources'][x['source']]['ptype'] == 'gx_wmssource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
         self.assertEquals(layernames, ['base:CA',])
 
-    def test_mapdetails(self): 
+    def test_mapdetails(self):
         '''/maps/1 -> Test accessing the detail view of a map'''
-        map = Map.objects.get(id="1") 
-        c = Client() 
+        map = Map.objects.get(id="1")
+        c = Client()
         response = c.get("/maps/%s" % map.id)
-        self.assertEquals(response.status_code,200) 
-        
+        self.assertEquals(response.status_code,200)
+
     def test_map_save(self):
         """POST /maps -> Test saving a new map"""
         # This is a valid map viewer config, based on the sample data provided
         # by andreas in issue 566. -dwins
         viewer_config = """
         {
-          "defaultSourceType": "gxp_wmscsource",
+          "defaultSourceType": "gx_wmssource",
           "about": {
               "title": "Title",
               "abstract": "Abstract"
           },
           "sources": {
             "capra": {
-              "url":"/geoserver/wms"
+              "url":"http://localhost:8001/geoserver/wms"
             }
           },
           "map": {
@@ -89,7 +89,7 @@ community."
         """
 
         # since django's test client doesn't support providing a JSON request
-        # body, just test the model directly. 
+        # body, just test the model directly.
         # the view's hooked up right, I promise.
         map = Map(zoom=7, center_x=0, center_y=0)
         map.save() # can't attach layers to a map whose pk isn't set yet
@@ -105,9 +105,9 @@ community."
         response = c.get("/maps/%s/data" % map.id)
         self.assertEquals(response.status_code, 200)
         cfg = json.loads(response.content)
-        self.assertEquals(cfg["about"]["abstract"], self.default_abstract) 
-        self.assertEquals(cfg["about"]["title"], self.default_title) 
-        self.assertEquals(len(cfg["map"]["layers"]), 5) 
+        self.assertEquals(cfg["about"]["abstract"], self.default_abstract)
+        self.assertEquals(cfg["about"]["title"], self.default_title)
+        self.assertEquals(len(cfg["map"]["layers"]), 5)
 
     def test_data(self):
         '''/data/ -> Test accessing the data page'''

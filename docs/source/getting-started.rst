@@ -7,7 +7,7 @@ Getting Started with GeoNode Development
     public server, see :doc:`/deployment`.
 
 The GeoNode project provides some tools for you to use in quickly and
-conveniently setting up your own GeoNode.  These are provided in the form of 
+conveniently setting up your own GeoNode.  These are provided in the form of
 
 * A set of reusable applications for the Django web framework
 * A customized build of the GeoServer geographic data server with plugins to
@@ -42,15 +42,15 @@ All other dependencies will be fetched automatically as part of the build
 process.  So, here are the steps to follow:
 
 #. Fetch the latest version of the GeoNode sources by using the SVN command::
-   
-     $ git clone git://github.com/GeoNode/geonode.git 
+
+     $ git clone git://github.com/GeoNode/geonode.git
 
 #. Change directories into the GeoNode source directory and update the git
    submodules used to reference GeoNode's JavaScript dependencies.
    Additionally, use the ``bootstrap.py`` script to set up a virtualenv sandbox
    and install the GeoNode Python dependencies into it::
 
-     $ cd geonode 
+     $ cd geonode
      $ git submodule update --init
      $ python bootstrap.py
 
@@ -64,7 +64,7 @@ process.  So, here are the steps to follow:
    development mode. (See :doc:`/deployment` for information about deployment.)
    To run GeoNode in development mode you will need to run two separate servers
    for the Java and Python web services.  For the Java services::
-    
+
      $ cd src/geoserver-geonode-dev/
      $ sh startup.sh
 
@@ -94,7 +94,7 @@ GeoNode.
      * ``src/geoserver-geonode-ext/`` contains some GeoServer extensions to
        assist with interaction between GeoServer and Django
      * ``src/GeoNodePy/`` contains the Django apps that support GeoNode sites.
-  
+
   * ``shared/`` contains some configurations for the build process (Python
     library dependencies, download paths, etc) and also contains some built
     artifacts.  Consult the source of ``pavement.py`` for some information
@@ -103,7 +103,7 @@ GeoNode.
   * ``webapps/`` contains GeoNetwork and Intermap for use during development
 
   * ``gs-data/`` contains a GeoServer data directory for use during development
- 
+
 
 #####
 Required packages on ubuntu: (besides proj, geos, gdal)
@@ -160,13 +160,14 @@ sudo /etc/init.d/dovecat start
 
 
 FUSE+s3fs
-sudo apt-get install autoconf libcurl4-openssl-dev libfuse-dev libselinux1-dev libsepol1-dev libxml2-dev sshfs 
+sudo apt-get install autoconf libcurl4-openssl-dev libfuse-dev libselinux1-dev libsepol1-dev libxml2-dev sshfs
 svn checkout http://s3fs.googlecode.com/svn/trunk/ s3fs
 	cd /s3fs
 	./autogen.sh
 	./configure --prfix=/usr
 	make
 	sudo make install
+
 
 
 

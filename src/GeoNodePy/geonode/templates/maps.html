@@ -17,14 +17,14 @@ Ext.onReady(function(){
   var searchButton = new Ext.Button({renderTo: 'submit_search', text: '{% trans "Search" %}',
                                      handler: submitForm});
   var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
-  
+
   var titleTemplate = new Ext.Template("<span>Search For Maps</span>");
 	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
-  
+
   {% endautoescape %}
 
 });
-</script> 
+</script>
 {% endblock %}
 
 
@@ -52,7 +52,7 @@ Ext.onReady(function(){
       </p>
     </form>
   </div>
-  
+
   <div id="create" class="block">
     <h2>{% trans "Create Maps" %}</h2>
     <p>{% trans "Use WorldMap to create your own maps.  Add layers from WorldMap or remote services, and style them." %}

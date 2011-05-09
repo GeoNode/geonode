@@ -563,6 +563,8 @@ and improve upon.</p>'
 )
 
 
+class GeoNodeException(Exception):
+    pass
 
 class Contact(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
@@ -636,6 +638,32 @@ _wms = None
 _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
+def get_wms():
+    global _wms
+    wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
+    netloc = urlparse(wms_url).netloc
+    http = httplib2.Http()
+    http.add_credentials(_user, _password)
+    http.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user, _password),
+                netloc,
+                wms_url,
+                {},
+                None,
+                None,
+                http
+            )
+        )
+    response, body = http.request(wms_url)
+    _wms = WebMapService(wms_url, xml=body)
+
+def get_csw():
+    global _csw
+    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+    _csw = CatalogueServiceWeb(csw_url)
+    return _csw
+
 class LayerManager(models.Manager):
 
     def __init__(self):
@@ -704,8 +732,6 @@ class LayerManager(models.Manager):
                 layer.save()
 		if created:
                     layer.set_default_permissions()
-
-
                 #Create layer attributes if they don't already exist
                 try:
                     if layer.attribute_names is not None:
@@ -923,6 +949,58 @@ class Layer(models.Model, PermissionLevelMixin):
 
         return links
 
+    def verify(self):
+        """Makes sure the state of the layer is consistent in GeoServer and GeoNetwork.
+        """
+        http = httplib2.Http() # Do we need to add authentication?
+
+        # Check the layer is in the wms get capabilities record
+        # FIXME: Implement caching of capabilities record site wide
+        if (_wms is None) or (self.typename not in _wms.contents):
+            get_wms()
+        try:
+            wms_layer = _wms[self.typename]
+        except:
+            msg = "WMS Record missing for layer [%s]" % self.typename
+            raise GeoNodeException(msg)
+
+        # Check the layer is in GeoServer's REST API
+        # It would be nice if we could ask for the definition of a layer by name
+        # rather than searching for it
+        #api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
+        #response, body = http.request(api_url)
+        #api_json = simplejson.loads(body)
+        #api_layer = None
+        #for row in api_json['rows']:
+        #    if(row['name'] == self.typename):
+        #        api_layer = row
+        #if(api_layer == None):
+        #    msg = "API Record missing for layer [%s]" % self.typename
+        #    raise GeoNodeException(msg)
+
+        # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
+        if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
+            get_csw()
+        try:
+            _csw.getrecordbyid([self.uuid])
+            csw_layer = _csw.records.get(self.uuid)
+        except:
+            msg = "CSW Record Missing for layer [%s]" % self.typename
+            raise GeoNodeException(msg)
+
+        if(csw_layer.uri != self.get_absolute_url()):
+            msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
+
+        # Visit get_absolute_url and make sure it does not give a 404
+        #logger.info(self.get_absolute_url())
+        #response, body = http.request(self.get_absolute_url())
+        #if(int(response['status']) != 200):
+        #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
+        #    raise GeoNodeException(msg)
+
+        #FIXME: Add more checks, for example making sure the title, keywords and description
+        # are the same in every database.
+
     def maps(self):
         """Return a list of all the maps that use this layer"""
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
@@ -931,6 +1009,8 @@ class Layer(models.Model, PermissionLevelMixin):
     def metadata(self):
         global _wms
         if (_wms is None) or (self.typename not in _wms.contents):
+            get_wms()
+            """
             wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
             netloc = urlparse(wms_url).netloc
             http = httplib2.Http()
@@ -948,12 +1028,15 @@ class Layer(models.Model, PermissionLevelMixin):
             )
             response, body = http.request(wms_url)
             _wms = WebMapService(wms_url, xml=body)
+            """
         return _wms[self.typename]
 
     def metadata_csw(self):
-        csw = get_csw()
-        csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
-        return csw.records.get(self.uuid)
+        global _csw
+        if(_csw is None):
+            _csw = get_csw()
+        _csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
+        return _csw.records.get(self.uuid)
 
     @property
     def attribute_names(self):
@@ -1182,18 +1265,15 @@ class Layer(models.Model, PermissionLevelMixin):
     def _populate_from_gn(self):
         #Swallow exception (and don't cancel layer upload) if
         # geonetwork wigs out, as it tends to do from time to time
-        try:
-            meta = self.metadata_csw()
-            if meta is None:
-                return
-            self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
-            onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
-            if len(onlineresources) == 1:
+        meta = self.metadata_csw()
+        if meta is None:
+            return
+        self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
+        onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+        if len(onlineresources) == 1:
                 res = onlineresources[0]
                 self.distribution_url = res.url
                 self.distribution_description = res.description
-        except:
-            return
 
 
     def keyword_list(self):
@@ -1456,9 +1536,10 @@ class Map(models.Model, PermissionLevelMixin):
 
         def layer_config(l):
             cfg = l.layer_config()
-            src_cfg = l.source_config()
+            src_cfg = l.source_config();
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
+            if src_cfg.get("ptype", "gxp_wmscsource") == "gxp_wmscsource": cfg["buffer"] = 0
             return cfg
 
         config = {

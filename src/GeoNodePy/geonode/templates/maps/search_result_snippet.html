@@ -9,7 +9,7 @@
 <em>{% trans "No category is provided for this layer." %}</em>
 {% endif %}
 </p>
- 
+
 <p><b>{% trans "Abstract:" %}</b>
 {% if rec.identification.abstract %}
   {{rec.identification.abstract}}
@@ -61,7 +61,7 @@
   </a></p>
   {% endif %}
 
-{% else %} 
+{% else %}
   {% has_obj_perm user layer "maps.edit_layer" as can_edit %}
   {% if can_edit %}
     <p><b>{% trans "Download:" %}</b>

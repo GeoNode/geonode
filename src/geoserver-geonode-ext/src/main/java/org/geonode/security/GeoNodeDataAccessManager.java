@@ -17,7 +17,7 @@ import org.geoserver.security.DataAccessManager;
 /**
  * An access manager that uses the special authentication tokens setup by the
  * {@link GeonodeSecurityClient} to check if a layer can be accessed, or not
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class GeoNodeDataAccessManager implements DataAccessManager {
@@ -84,7 +84,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
 
     /**
      * Used for testing purposes only
-     * 
+     *
      * @param authenticationEnabled
      */
     public void setAuthenticationEnabled(boolean authenticationEnabled) {

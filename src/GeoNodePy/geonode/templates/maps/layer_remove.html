@@ -15,7 +15,7 @@ var mapCrumb = "";
 if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
 	{
 		mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
-	}        	
+	}
 
 		var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}}</a><span>&nbsp;/&nbsp;Remove</span>");
 		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
@@ -32,7 +32,7 @@ if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
 
 <form action="/data/{{layer.typename}}?remove" method="POST">
 	{% csrf_token %}
-	<input type="hidden" value="{{layer.typename}}" /> 
+	<input type="hidden" value="{{layer.typename}}" />
 	<input type="submit" value="{% trans "Yes I am sure"  %}" />
 </form>
 <form action="/data/{{layer.typename}}" method="GET">

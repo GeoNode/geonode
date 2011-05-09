@@ -107,7 +107,7 @@ Once fully started, you should see a message indicating the address of your Worl
   Press CTRL-C to shut down
 
 
-.. note:: 
+.. note::
 
   When running ``python bootstrap.py`` the ``--no-site-packages`` option is
   not required.  If enabled, the bootstrap script will sandbox your virtual
@@ -139,10 +139,6 @@ JavaScript Developers can switch to using unminified scripts and CSS:
 
 1. Get and run geonode-client:
 
-<<<<<<< HEAD
-to update the built script directories for the base WorldMap site and the CAPRA
-extensions, respectively.
-=======
     $ git clone git://github.com/GeoNode/geonode-client.git geonode-client
     $ cd geonode-client
     $ ant init debug
@@ -152,7 +148,10 @@ extensions, respectively.
 
 Note that this requires ant (http://ant.apache.org/) in addition to the above
 build requirements.
+<<<<<<< HEAD
 >>>>>>> c17b4f376bad7381aa32dfcb5fa3e13b8533d3a5
+=======
+>>>>>>> develop
 
 VirtualBox Setup
 ................
@@ -197,7 +196,23 @@ GeoServer used for http://geonode.capra.opengeo.org/ is::
 
     http://geonode.capra.opengeo.org/geoserver/
 
+<<<<<<< HEAD
 The default value is ``http://localhost:8080/geoserver-geonode-dev/``.
+=======
+
+The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
+in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
+instance at that port with the following commands::
+   
+    cd src/geonode-geoserver-ext/
+    sh startup.sh
+
+.. note:: 
+    Normally, ``mvn jetty:run-war`` would be sufficient.  However, we use the
+    shell script to add some extra parameters to the JVM command-line used to
+    run Jetty in order to workaround a JVM bug that affects GeoNetwork.
+
+>>>>>>> develop
 
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
@@ -206,6 +221,16 @@ change the line::
 
 to indicate the GeoServer URL that you want to use. 
 
+<<<<<<< HEAD
+=======
+
+To run the Django app when Jetty is started independently, use::
+
+    paster serve --reload shared/dev-paste.ini
+
+in the base of your working directory.
+
+>>>>>>> develop
 
 Alternative GeoServer Data Directories
 ......................................
@@ -261,12 +286,16 @@ the Sites application (the default is example.com)::
 
     http://localhost:8000/admin/sites/site/1
 
+<<<<<<< HEAD
 
 POSTGIS_DATASTORE
+=======
+DB_DATASTORE
+>>>>>>> develop
 .................
 To import uploaded shapefiles to PostGIS, manually create a PostGIS datastore in GeoServer
-and assign its name to the 'POSTGIS_DATASTORE' value in settings.py
-Then assign the appropriate connection values to the other POSTGIS_ settings (necessary for deleting
+and assign its name to the 'DB_DATASTORE' value in settings.py
+Then assign the appropriate connection values to the other DB_DATASTORE_ settings (necessary for deleting
 PostGIS tables when layers in WorldMap are deleted).
 
 

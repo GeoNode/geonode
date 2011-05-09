@@ -7,17 +7,17 @@
 {% include "geonode/ext_header.html" %}
 
 
-  
+
 {{block.super}}
 <script type="text/javascript">
     Ext.onReady(function() {
-{% autoescape off %} 
+{% autoescape off %}
         // get #poc_form and #metadata_form, and add a `onchange` handler
         // that shows the form if the blank option is selected.
     	/*if (Ext.get('id_layer-topic_category').getValue()!="") {
     		Ext.get("id_layer-topic_category_new").up("li").hide();
     	}*/
-        
+
         Ext.get('id_layer-poc').on('change', function() {
 	        if (this.getValue()===""){
 			    Ext.get("poc_form").show();
@@ -38,12 +38,12 @@
 			}else{
 				Ext.get("id_layer-topic_category_new").up("li").hide();
 			}
-		});	*/	
+		});	*/
     	var mapCrumb = "";
     	if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
     		{
     			mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
-    		}        	
+    		}
 
         var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}}</a><span>&nbsp;/&nbsp;Edit</span>");
 		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
@@ -96,7 +96,7 @@
 	        	{% endif %}
 	        {% endfor %}
 	        </table>
-          </fieldset>	                
+          </fieldset>
           <fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Point of Contact</legend>
             {{ poc_form.as_ul }}
@@ -139,6 +139,6 @@
             Ext.get("metadata_form").setStyle('display','none');
         }
     });
-{% endautoescape %} 
+{% endautoescape %}
 </script>
 {% endblock %}

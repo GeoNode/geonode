@@ -11,6 +11,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.TestCase;
 
+
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;

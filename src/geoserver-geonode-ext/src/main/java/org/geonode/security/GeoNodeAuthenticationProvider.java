@@ -16,9 +16,9 @@ import org.springframework.util.Assert;
 /**
  * An {@link AuthenticationProvider} provider passing the username/password to GeoNode for
  * authentication
- * 
+ *
  * @author Andrea Aime - OpenGeo
- * 
+ *
  */
 public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
 
@@ -54,7 +54,7 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     * 
+     *
      * @param client
      */
     public void setClient(GeonodeSecurityClient client) {
