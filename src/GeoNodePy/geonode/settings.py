@@ -287,6 +287,17 @@ SERVE_MEDIA = DEBUG;
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/media/static/"
 
+#Import uploaded shapefiles into a database such as PostGIS?
+DB_DATASTORE=False
+
+#Database datastore connection settings
+DB_DATASTORE_NAME = ''
+DB_DATASTORE_USER = ''
+DB_DATASTORE_PASSWORD = ''
+DB_DATASTORE_HOST = ''
+DB_DATASTORE_PORT = ''
+DB_DATASTORE_TYPE=''
+
 try:
     from local_settings import *
 except ImportError:
