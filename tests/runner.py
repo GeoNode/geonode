@@ -2,6 +2,7 @@ from django_nose import NoseTestSuiteRunner
 from django.test.simple import reorder_suite, build_suite
 from django.test.simple import build_test as please_build_test
 from django.db.models import get_app, get_apps
+from geonode.maps.utils import check_geonode_is_up
 
 
 class GeoNodeTestRunner(NoseTestSuiteRunner):
@@ -28,6 +29,10 @@ class GeoNodeTestRunner(NoseTestSuiteRunner):
                      'django_nose',
     ]
 
+    def __init__(self, *args, **kwargs):
+        check_geonode_is_up()
+        super(GeoNodeTestRunner, self).__init__(*args, **kwargs)
+
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         suite = unittest.TestSuite()
 
@@ -49,7 +54,6 @@ class GeoNodeTestRunner(NoseTestSuiteRunner):
                 suite.addTest(test)
 
         return reorder_suite(suite, (TestCase,))
-
 
     # Override this method so we *dont* create a test database (use the normal one)
     def setup_databases(self, **kwargs):

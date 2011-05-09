@@ -16,21 +16,6 @@ fi
 echo ">>>> Activating VirtualEnv"
 source $GEONODE_HOME/bin/activate
 
-# Make sure GeoNode and GeoServer are running
-
-gn=$(curl --write-out %{http_code} --silent --output /dev/null ${GEONODE_URL})
-
-if [ $gn != "200" ]; then
-    echo ">>> GeoNode is not Running. Please Start it"
-    exit 1
-fi
-
-gs=$(curl --write-out %{http_code} --silent --output /dev/null ${GEOSERVER_URL})
-if [ $gs != "200" ]; then
-    echo ">>> GeoServer is not Running"
-    exit 1
-fi
-
 # Run the tests
 echo ">>>> Running GeoNode Integration Tests" 
 python manage.py test
