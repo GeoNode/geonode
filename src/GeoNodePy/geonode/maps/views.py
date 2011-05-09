@@ -1,6 +1,6 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -895,6 +895,21 @@ def _updateLayer(request, layer):
 _suffix = re.compile(r"\.[^.]*$", re.IGNORECASE)
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
 
+
+def _create_db_featurestore(name, data, overwrite = False, charset = None):
+    """
+    Create a database-datastore (ie PostGIS) and import uploaded shapefile into it.
+    """
+    cat = Layer.objects.gs_catalog
+    ds = cat.create_datastore(name)
+    ds.connection_parameters.update(
+            host=settings.DB_DATASTORE_HOST, port=settings.DB_DATASTORE_PORT, database=settings.DB_DATASTORE_NAME, user=settings.DB_DATASTORE_USER,
+            passwd=settings.DB_DATASTORE_PASSWORD, dbtype=settings.DB_DATASTORE_TYPE)
+    cat.save(ds)
+    ds = cat.get_store(name)
+    cat.add_data_to_store(ds,name, data, overwrite, charset)
+
+
 @transaction.commit_manually
 def _handle_layer_upload(request, layer=None):
     """
@@ -946,7 +961,11 @@ def _handle_layer_upload(request, layer=None):
                 logger.info("User tried to replace raster layer [%s] with Shapefile (vector) data", name)
                 return None, [_("This resource may only be replaced with raster data.")]
         
-        create_store = cat.create_featurestore
+        if settings.DB_DATASTORE:
+            logger.debug('Upload to PostGIS or other database')
+            create_store = _create_db_featurestore
+        else:
+            create_store = cat.create_featurestore
         dbf_file = request.FILES.get('dbf_file')
         shx_file = request.FILES.get('shx_file')
         prj_file = request.FILES.get('prj_file')
