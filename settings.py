@@ -14,7 +14,10 @@ NOSE_ARGS = [
         "--verbosity=2",
         "--with-doctest",
         "--nocapture",
-        "--detailed-errors"
+        "--detailed-errors",
+        "--with-coverage",
+        "--cover-package=geonode",
+        "--with-xunit",
         ]
 
 try:
