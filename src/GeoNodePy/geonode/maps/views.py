@@ -1017,9 +1017,9 @@ def _handle_layer_upload(request, layer=None):
         if tmp:
             tmp_name = tmp.name
             logger.info("Deleting store after failed import of [%s] into GeoServer", name)
-            cat.delete(tmp_name)
+            cat.delete(tmp)
             if settings.DB_DATASTORE:
-                delete_from_postgis(name)
+                delete_from_postgis(tmp_name)
             logger.info("Successful deletion after failed import of [%s] into GeoServer", name)
     except geoserver.catalog.ConflictingDataError:
         errors.append(_("There is already a layer with the given name."))
