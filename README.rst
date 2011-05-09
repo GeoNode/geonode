@@ -148,10 +148,7 @@ JavaScript Developers can switch to using unminified scripts and CSS:
 
 Note that this requires ant (http://ant.apache.org/) in addition to the above
 build requirements.
-<<<<<<< HEAD
->>>>>>> c17b4f376bad7381aa32dfcb5fa3e13b8533d3a5
-=======
->>>>>>> develop
+
 
 VirtualBox Setup
 ................
@@ -196,9 +193,7 @@ GeoServer used for http://geonode.capra.opengeo.org/ is::
 
     http://geonode.capra.opengeo.org/geoserver/
 
-<<<<<<< HEAD
-The default value is ``http://localhost:8080/geoserver-geonode-dev/``.
-=======
+
 
 The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
 in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
@@ -212,17 +207,15 @@ instance at that port with the following commands::
     shell script to add some extra parameters to the JVM command-line used to
     run Jetty in order to workaround a JVM bug that affects GeoNetwork.
 
->>>>>>> develop
 
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
   
-    GEOSERVER_BASE_URL="http://localhost:8080/geoserver-geonode-dev/"
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver-geonode-dev/"
 
 to indicate the GeoServer URL that you want to use. 
 
-<<<<<<< HEAD
-=======
+
 
 To run the Django app when Jetty is started independently, use::
 
@@ -230,7 +223,7 @@ To run the Django app when Jetty is started independently, use::
 
 in the base of your working directory.
 
->>>>>>> develop
+
 
 Alternative GeoServer Data Directories
 ......................................
@@ -286,12 +279,8 @@ the Sites application (the default is example.com)::
 
     http://localhost:8000/admin/sites/site/1
 
-<<<<<<< HEAD
 
-POSTGIS_DATASTORE
-=======
 DB_DATASTORE
->>>>>>> develop
 .................
 To import uploaded shapefiles to PostGIS, manually create a PostGIS datastore in GeoServer
 and assign its name to the 'DB_DATASTORE' value in settings.py

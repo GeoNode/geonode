@@ -413,9 +413,6 @@ Prepare the Django database
     If you have problems uploading files, please enable the verbose logging
     http://docs.geonode.org/1.0/logging.html
 
-<<<<<<< HEAD
-=======
-=======
 Deploying on CentOS 5
 =====================
 

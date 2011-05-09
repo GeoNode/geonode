@@ -38,6 +38,19 @@ public abstract class GeoNodeTestSupport extends GeoServerTestSupport {
         }
     }
 
+    /**
+     * Returns the spring context locations to be used in order to build the GeoServer Spring
+     * context. Subclasses might want to provide extra locations in order to test extension points.
+     * @return
+     */
+    @Override
+    protected String[] getSpringContextLocations() {
+        return new String[] {
+                "classpath*:/applicationContext.xml",
+                "classpath*:/geonodeApplicationSecurityContext.xml"
+            };
+    }
+
     protected boolean isAuthorizationEnabled() {
         return false;
     }
