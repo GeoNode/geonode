@@ -1,4 +1,5 @@
 from itertools import cycle, izip
+from django.conf import settings
 import logging
 import re
 import psycopg2
@@ -114,7 +115,8 @@ def fixup_style(cat, resource, style):
             logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
-    lyr = cat.get_layer(resource.name)
+    resource_name = resource.name
+    lyr = cat.get_layer(resource_name)
     if(lyr is not None): #Already deleted
         store = resource.store
         styles = lyr.styles + [lyr.default_style]
@@ -124,6 +126,11 @@ def cascading_delete(cat, resource):
                 cat.delete(s, purge=True)
         cat.delete(resource)
         cat.delete(store)
+        if settings.DB_DATASTORE:
+            try:
+                delete_from_postgis(resource_name)
+            except:
+                logger.error("Could not delete PostGIS table for store %s", resource_name)
 
 def delete_from_postgis(resource_name):
     """
