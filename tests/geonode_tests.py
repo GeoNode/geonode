@@ -39,9 +39,6 @@ class GeoNodeCoreTest(TestCase):
     def tearDown(self):
         pass
 
-    def test_something(self):
-        assert(True)
-    
 class GeoNodeProxyTest(TestCase):
     """Tests geonode.proxy app/module
     """
@@ -51,9 +48,6 @@ class GeoNodeProxyTest(TestCase):
 
     def tearDown(self):
         pass
-
-    def test_something(self):
-        assert(True)
 
 class GeoNodeMapTest(TestCase):
     """Tests geonode.maps app/module
