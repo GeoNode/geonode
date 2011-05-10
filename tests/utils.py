@@ -64,4 +64,3 @@ def check_layer(uploaded):
     assert type(uploaded) is Layer, msg
     msg = ('The layer does not have a valid name: %s' % uploaded.name)
     assert len(uploaded.name) > 0, msg
-
