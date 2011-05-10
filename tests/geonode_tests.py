@@ -249,8 +249,8 @@ class GeoNodeMapTest(TestCase):
         self.assertEquals(int(results["total"]), len(Layer.objects.all())+5)
 
         # - Test with a specific query string and a bbox that is disjoint from its results
-        test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % (settings.SITEURL, "NIC", 0, 10, "0,-90,180,90")
-        results = json.loads(get_web_page(test_url))
+        #test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % (settings.SITEURL, "NIC", 0, 10, "0,-90,180,90")
+        #results = json.loads(get_web_page(test_url))
         #self.assertEquals(int(results["total"]), 0) 
 
         # - Many more Tests required
