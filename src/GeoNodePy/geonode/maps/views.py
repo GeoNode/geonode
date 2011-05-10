@@ -2,7 +2,7 @@ from random import choice
 from xml.etree.ElementTree import XML
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, CHARSETS
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis, prepare_zipfile
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
 from geonode.maps.encode import num_encode, num_decode
 import geoserver.catalog
 import geoserver.resource
@@ -58,32 +58,33 @@ def _project_center(llcenter):
     center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
     return center.x, center.y
 
-_DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
 
-_default_map = Map(
-    title=DEFAULT_TITLE,
-    abstract=DEFAULT_ABSTRACT,
-    urlsuffix=DEFAULT_URL,
-    projection="EPSG:900913",
-    center_x=_DEFAULT_MAP_CENTER[0],
-    center_y=_DEFAULT_MAP_CENTER[1],
-    zoom=settings.DEFAULT_MAP_ZOOM
-)
+def default_map_config():
 
-def _baselayer(lyr, order):
-    return MapLayer.objects.from_viewer_config(
-        map = _default_map,
-        layer = lyr,
-        source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
-        ordering = order
+    _DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
+
+    _default_map = Map(
+        title=DEFAULT_TITLE, 
+        abstract=DEFAULT_ABSTRACT,
+        projection="EPSG:900913",
+        center_x=_DEFAULT_MAP_CENTER[0],
+        center_y=_DEFAULT_MAP_CENTER[1],
+        zoom=settings.DEFAULT_MAP_ZOOM
     )
+    def _baselayer(lyr, order):
+        return MapLayer.objects.from_viewer_config(
+            map = _default_map,
+            layer = lyr,
+            source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
+            ordering = order
+        )
 
-DEFAULT_BASELAYERS = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
+    DEFAULT_BASE_LAYERS = [_baselayer(lyr, ord) for ord, lyr in enumerate(settings.MAP_BASELAYERS)]
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASE_LAYERS)
 
-DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASELAYERS)
+    return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
-del _default_map
-del _baselayer
+
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
@@ -278,6 +279,8 @@ def newmap(request):
     default map configuration is used.  If copy is specified
     and the map specified does not exist a 404 is returned.
     '''
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map = get_object_or_404(Map,pk=mapid)
@@ -347,7 +350,8 @@ def newmap(request):
                 map.center_y = center.y
                 map.zoom = math.ceil(min(width_zoom, height_zoom))
 
-            config = map.viewer_json(*(DEFAULT_BASELAYERS + layers))
+            
+            config = map.viewer_json(*(DEFAULT_BASE_LAYERS + layers))
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
@@ -947,6 +951,7 @@ def view(request, mapid, snapshot=None):
     }))
 
 
+
 def official_site(request, site):
     """
     The view that returns the map composer opened to
@@ -957,6 +962,7 @@ def official_site(request, site):
 
 def embed(request, mapid=None, snapshot=None):
     if mapid is None and permalink is None:
+        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
         config = DEFAULT_MAP_CONFIG
     else:
 
@@ -1210,6 +1216,7 @@ def _changeLayerDefaultStyle(request,layer):
 
 @csrf_exempt
 def layerController(request, layername):
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
     layer = get_object_or_404(Layer, typename=layername)
     if ( "describe" in request.META['QUERY_STRING'] ):
         return _describe_layer(request,layer)
@@ -1264,36 +1271,33 @@ def upload_layer(request):
                 return render_to_response('maps/layer_upload_tab.html',
                                   RequestContext(request, {'charsets': CHARSETS}))
     elif request.method == 'POST':
-        detail_error = ''
-        try:
-            logger.debug("Begin upload attempt")
-            layer, errors, detail_error = _handle_layer_upload(request)
-            logger.debug("_handle_layer_upload returned. layer and errors are [%s]:[%s]:[%s]", layer,  errors, detail_error)
-            logger.debug("Save all attrbute names as searchable by default except geometry")
-
-
-        except Exception, ex:
-            logger.exception("_handle_layer_upload failed!")
-            errors = [GENERIC_UPLOAD_ERROR]
-            detail_error = escape(str(ex))
-
-        result = {}
-        if len(errors) > 0:
-            result['success'] = False
-            result['errors'] = errors
-            result['detail'] = detail_error
-        else:
+        from geonode.maps.forms import NewLayerUploadForm
+        from geonode.maps.utils import save
+        from django.template import escape
+        import os, shutil
+        form = NewLayerUploadForm(request.POST, request.FILES)
+        tempdir = None
+        if form.is_valid():
             try:
+                tempdir, base_file = form.write_files()
+                name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+                saved_layer = save(name, base_file, request.user, 
+                        overwrite = False,
+                        abstract = form.cleaned_data["abstract"],
+                        title = form.cleaned_data["layer_title"],
+                        permissions = form.cleaned_data["permissions"],
+                        charset = request.POST.get('encoding')
+                        )
 
                 #Add new layer attributes if they dont already exist
-                if layer.attribute_names is not None:
+                if saved_layer.attribute_names is not None:
                     logger.debug("Attributes are not None")
                     iter = 1
                     mark_searchable = True
                     for field, ftype in layer.attribute_names.iteritems():
                         if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
                             logger.debug("Field is [%s]", field)
-                            la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
+                            la = LayerAttribute.objects.create(layer=saved_layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
                             la.save()
                             if la.searchable:
                                 mark_searchable = False
@@ -1301,21 +1305,22 @@ def upload_layer(request):
                 else:
                     logger.debug("No attributes found")
 
-            except:
-                    logger.debug("Attributes could not be saved")
-
-            result['success'] = True
-            result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + '?describe'
-            if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
-               result['redirect_to'] += "&tab=true"
-            elif 'mapid' in request.POST and request.POST['mapid'] != '':
-                result['redirect_to'] += "&map=" + request.POST['mapid']
-
-        result = json.dumps(result)
-        logger.debug("layer upload - okay Django, you handle the rest.")
-        return render_to_response('json_html.html',
-                                  RequestContext(request, {'json': result}))
-
+                return HttpResponse(json.dumps({
+                    "success": True,
+                    "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
+            except Exception, e:
+                logger.exception("Unexpected error during upload.")
+                return HttpResponse(json.dumps({
+                    "success": False,
+                    "errors": ["Unexpected error during upload: " + escape(str(e))]}))
+            finally:
+                if tempdir is not None:
+                    shutil.rmtree(tempdir)
+        else:
+            errors = []
+            for e in form.errors.values():
+                errors.extend([escape(v) for v in e])
+            return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
 @login_required
 @csrf_exempt
@@ -1334,75 +1339,75 @@ def _updateLayer(request, layer):
                                                            'lastmap' : request.session.get("lastmap"),
                                                            'lastmapTitle' : request.session.get("lastmapTitle")}))
     elif request.method == 'POST':
-        try:
-            layer, errors, detail = _handle_layer_upload(request, layer=layer)
-        except Exception, e:
-            logger.debug(str(e))
-            errors = [GENERIC_UPLOAD_ERROR]
+        from geonode.maps.forms import LayerUploadForm
+        from geonode.maps.utils import save
+        from django.template import escape
+        import os, shutil
 
-        result = {}
-        if len(errors) > 0:
-            result['success'] = False
-            result['errors'] = errors
-        else:
+        form = LayerUploadForm(request.POST, request.FILES)
+        tempdir = None
 
-
+        if form.is_valid():
             try:
+                tempdir, base_file = form.write_files()
+                name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+                saved_layer = save(layer, base_file, request.user, overwrite=True, charset = request.POST.get('encoding'))
 
-                layer.set_default_permissions()
-                #Delete layer attributes if they no longer exist in an updated layer
-                for la in LayerAttribute.objects.filter(layer=layer):
-                    lafound = False
+                try:
+                    #Delete layer attributes if they no longer exist in an updated layer
+                    for la in LayerAttribute.objects.filter(layer=layer):
+                        lafound = False
+                        if layer.attribute_names is not None:
+                            for field, ftype in layer.attribute_names.iteritems():
+                                if field == la.attribute:
+                                    lafound = True
+                        if not lafound:
+                            logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name)
+                            la.delete()
+
+                    #Add new layer attributes if they dont already exist
                     if layer.attribute_names is not None:
+                        logger.debug("Attributes are not None")
+                        iter = 1
+                        mark_searchable = True
                         for field, ftype in layer.attribute_names.iteritems():
-                            if field == la.attribute:
-                                lafound = True
-                    if not lafound:
-                        logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name)
-                        la.delete()
+                            if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
+                                logger.debug("Field is [%s]", field)
+                                las = LayerAttribute.objects.filter(layer=layer, attribute=field)
+                                if len(las) == 0:
+                                    la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
+                                    la.save()
+                                    if la.searchable:
+                                        mark_searchable = False
+                                    iter+=1
+                    else:
+                        logger.debug("No attributes found")
 
-                #Add new layer attributes if they dont already exist
-                if layer.attribute_names is not None:
-                    logger.debug("Attributes are not None")
-                    iter = 1
-                    mark_searchable = True
-                    for field, ftype in layer.attribute_names.iteritems():
-                        if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
-                            logger.debug("Field is [%s]", field)
-                            las = LayerAttribute.objects.filter(layer=layer, attribute=field)
-                            if len(las) == 0:
-                                la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
-                                la.save()
-                                if la.searchable:
-                                    mark_searchable = False
-                                iter+=1
-                else:
-                    logger.debug("No attributes found")
-
-            except Exception, ex:
+                except Exception, ex:
                     logger.debug("Attributes could not be saved:[%s]", str(ex))
 
-            result['success'] = True
-            result['redirect_to'] = reverse('geonode.maps.views.layerController', args=(layer.typename,)) + "?describe"
+                return HttpResponse(json.dumps({
+                    "success": True,
+                    "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
+            except Exception, e:
+                logger.exception("Unexpected error during upload.")
+                return HttpResponse(json.dumps({
+                    "success": False,
+                    "errors": ["Unexpected error during upload: " + escape(str(e))]}))
+            finally:
+                if tempdir is not None:
+                    shutil.rmtree(tempdir)
 
-    result = json.dumps(result)
-    return render_to_response('json_html.html',
-                              RequestContext(request, {'json': result}))
+        else:
+            errors = []
+            for e in form.errors.values():
+                errors.extend([escape(v) for v in e])
+            return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
 
 _suffix = re.compile(r"\..*$", re.IGNORECASE) #Accept zipped uploads with more than one extension, ie foo.zip.zip
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
 
-
-def _create_db_featurestore(name, data, overwrite = False, charset = None):
-    cat = Layer.objects.gs_catalog
-    ds = cat.create_datastore(name)
-    ds.connection_parameters.update(
-            host=settings.DB_DATASTORE_HOST, port=settings.DB_DATASTORE_PORT, database=settings.DB_DATASTORE_NAME, user=settings.DB_DATASTORE_USER,
-            passwd=settings.DB_DATASTORE_PASSWORD, dbtype=settings.DB_DATASTORE_TYPE)
-    cat.save(ds)
-    ds = cat.get_store(name)
-    cat.add_data_to_store(ds,name, data, overwrite, charset)
 
 
 @transaction.commit_manually
@@ -1692,7 +1697,6 @@ def _handle_layer_upload(request, layer=None):
             transaction.commit()
     logger.debug('%s : %s', str(errors), detail_error)
     return layer, errors, escape(detail_error)
-
 
 
 @login_required
@@ -2204,6 +2208,7 @@ def browse_data(request):
 
 @csrf_exempt
 def search_page(request):
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
     # for non-ajax requests, render a generic search page
 
     if request.method == 'GET':
@@ -2217,7 +2222,7 @@ def search_page(request):
 
     return render_to_response('search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASELAYERS)),
+        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         "site" : settings.SITEURL
     }))

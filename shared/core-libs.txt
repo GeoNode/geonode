@@ -10,7 +10,12 @@ Paste
 PasteDeploy
 PasteScript
 dj.paste
--e git+git://github.com/ericflo/django-avatar.git#egg=avatar
+-e git+https://github.com/ericflo/django-avatar.git#egg=avatar
+django-nose
+nose
+nose-cover3
+coverage
+-e git+https://github.com/cmheisel/nose-xcover.git#egg=nosexcover
 mock
 django-staticfiles
 

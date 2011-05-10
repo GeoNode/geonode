@@ -90,20 +90,30 @@ _style_templates = dict(
 def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
+def get_sld_for(layer):
+    # FIXME: GeoServer sometimes fails to associate a style with the data, so
+    # for now we default to using a point style.(it works for lines and
+    # polygons, hope this doesn't happen for rasters  though)
+    name = layer.default_style.name if layer.default_style is not None else "point"
+
+    # FIXME: When gsconfig.py exposes the default geometry type for vector
+    # layers we should use that rather than guessing based on the autodetected
+    # style.
+
+    if name in _style_templates:
+        fg, bg, mark = _style_contexts.next()
+        return _style_templates[name] % dict(name=layer.name, fg=fg, bg=bg, mark=mark)
+    else:
+        return None
+
 def fixup_style(cat, resource, style):
     lyr = cat.get_layer(name=resource.name)
     if lyr:
         if lyr.default_style and lyr.default_style.name in _style_templates:
             name = _style_name(resource)
-            if (cat.get_style(name)):
-                iter = 1
-                while cat.get_style(name):
-                    name = name + '_c' + str(iter)
-                    iter+=1
-            fg, bg, mark = _style_contexts.next()
             if style is None:
-                sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
-            else:
+                sld = get_sld_for(lyr)
+            else: 
                 sld = style.read()
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
@@ -129,47 +139,6 @@ def cascading_delete(cat, resource):
                 delete_from_postgis(resource_name)
             else:
                 cat.delete(store)
-
-def prepare_zipfile(name, data):
-    """GeoServer's REST API uses ZIP archives as containers for file formats such
-  as Shapefile and WorldImage which include several 'boxcar' files alongside
-  the main data.  In such archives, GeoServer assumes that all of the relevant
-  files will have the same base name and appropriate extensions, and live in
-  the root of the ZIP archive.  This method produces a zip file that matches
-  these expectations, based on a basename, and a dict of extensions to paths or
-  file-like objects. The client code is responsible for deleting the zip
-  archive when it's done."""
-
-    handle, f = mkstemp() # we don't use the file handle directly. should we?
-
-    """This must be a zipped shapefile."""
-
-    """Create ZipFile object from uploaded data """
-    oldhandle, oldf = mkstemp()
-    foo = open(oldf, "wb")
-    for chunk in data.chunks():
-        foo.write(chunk)
-    foo.close()
-    oldzip = ZipFile(oldf)
-
-    """New zip file"""
-    noo = open(f, "wb")
-    for chunk in data.chunks():
-        noo.write(chunk)
-    noo.close()
-    newzip = ZipFile(f, "w")
-
-    """Get the necessary files from the uploaded zip, and add them to the new zip
-    with the desired layer name"""
-    zipFiles = oldzip.namelist()
-    files = ['.shp', '.prj', '.shx', '.dbf']
-    for file in zipFiles:
-        ext = file[-4:].lower()
-        if ext in files:
-            files.remove(ext) #OS X creates hidden subdirectory with garbage files having same extensions; ignore.
-            logger.debug("Write [%s].[%s]", name, ext)
-            newzip.writestr(name + ext, oldzip.read(file))
-    return f
 
 
 def delete_from_postgis(resource_name):

@@ -29,9 +29,13 @@ logger = logging.getLogger("geonode.maps.models")
 from gs_helpers import cascading_delete
 
 
+
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+
+
+
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -656,6 +660,7 @@ def get_wms():
             )
         )
     response, body = http.request(wms_url)
+    logger.debug('GetCapabilities: %s', body)
     _wms = WebMapService(wms_url, xml=body)
 
 def get_csw():
