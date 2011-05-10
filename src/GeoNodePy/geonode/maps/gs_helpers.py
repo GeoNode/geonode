@@ -113,41 +113,22 @@ def cascading_delete(cat, resource):
     #Maybe it's already been deleted from geoserver?
     logger.debug("CASCADE DELETE %s", resource.name if resource else 'NULL')
     if resource:
-        lyr = cat.get_layer(resource.name)
-
-        styles = lyr.styles + [lyr.default_style]
-        try:
-            cat.delete(lyr)
-            logger.debug('Deleted layer')
-        except:
-            logger.error('Error deleting layer [%s]', resource.name)
-        for s in styles:
-            if s is not None:
-                try:
-                    cat.delete(s, purge=True)
-                    logger.debug('Deleted style')
-                except:
-                    logger.error('Error deleting style for %s', resource.name)
-        store = resource.store
         resource_name = resource.name
-        try:
+        lyr = cat.get_layer(resource_name)
+        if(lyr is not None): #Already deleted
+            store = resource.store
+            styles = lyr.styles + [lyr.default_style]
+            cat.delete(lyr)
+            for s in styles:
+                if s is not None:
+                    cat.delete(s, purge=True)
             cat.delete(resource)
-            logger.debug('Deleted resource')
-        except:
-            logger.error("Error deleting resource")
-        try:
-            logger.debug('STORE NAME:' + store.name)
-            ##TODO: get rid of this conditional statement
-            if store.name != 'wmdata':
+            store_params = store.connection_parameters
+            if store_params['dbtype'] and store_params['dbtype'] == 'postgis' and store.name != 'wmdata':
                 cat.delete(store)
-            if settings.DB_DATASTORE:
                 delete_from_postgis(resource_name)
-        except Exception, ex:
-            logger.error("Error deleting store, [%s]", str(ex))
-        return True
-    else:
-        logger.error('Error deleting layer & styles - not found in geoserver')
-        return False
+            else:
+                cat.delete(store)
 
 def prepare_zipfile(name, data):
     """GeoServer's REST API uses ZIP archives as containers for file formats such
