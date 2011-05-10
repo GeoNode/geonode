@@ -62,6 +62,8 @@ if (window.GeoExplorer) {
         shareMapText: gettext("Share Map"),
         smallSizeLabel: gettext("Small"),
         sourceLoadFailureMessage: gettext("Error contacting server.\n Please check the url and try again."),
+        addCategoryActionText: gettext('Add New Category'),
+        addCategoryActionTipText: gettext('Add a new layer category'),
         renameCategoryActionText: gettext('Rename Category'),
         renameCategoryActionTipText: gettext('Rename this category'),    
         removeCategoryActionText: gettext('Remove Category'),
