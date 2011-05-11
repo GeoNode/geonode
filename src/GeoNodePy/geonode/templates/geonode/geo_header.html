@@ -1,10 +1,12 @@
-{% load geonode_media %} 
-<link rel="stylesheet" type="text/css" href="{% geonode_media "ol_theme" %}" />
-<script src="{% geonode_media "ol_script" %}"></script>
-<link rel="stylesheet" type="text/css" href="{% geonode_media "gx_themes" %}css/geoext-all-debug.css" />
-<script src="{% geonode_media "gx_script" %}"></script> 
-<link rel="stylesheet" href="{% geonode_media "gxp_theme" %}" />
-<script src="{% geonode_media "gxp_script" %}"></script>
-<link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}geoexplorer.css" />
-<!--[if IE]><link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}ie.css"/><![endif]-->
-<script src="{% geonode_media "geo_script" %}"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/openlayers/theme/default/style.css" />
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/OpenLayers.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/geoext/resources/css/geoext-all-debug.css" />
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/GeoExt.js"></script> 
+<link rel="stylesheet" href="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/all.css" />
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/gxp.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/app/geoexplorer.css" />
+<!--[if IE]><link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/app/ie.css"/><![endif]-->
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/GeoExplorer.js"></script>
+<script type="text/javascript">
+OpenLayers.ImgPath = "{{ GEONODE_CLIENT_LOCATION }}externals/openlayers/img/";
+</script>

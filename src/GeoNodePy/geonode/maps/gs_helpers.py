@@ -92,19 +92,49 @@ _style_templates = dict(
 def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
-def fixup_style(cat, resource):
+def get_sld_for(layer):
+    # FIXME: GeoServer sometimes fails to associate a style with the data, so
+    # for now we default to using a point style.(it works for lines and
+    # polygons, hope this doesn't happen for rasters  though)
+    name = layer.default_style.name if layer.default_style is not None else "point"
+
+    # FIXME: When gsconfig.py exposes the default geometry type for vector
+    # layers we should use that rather than guessing based on the autodetected
+    # style.
+
+    if name in _style_templates:
+        fg, bg, mark = _style_contexts.next()
+        return _style_templates[name] % dict(name=layer.name, fg=fg, bg=bg, mark=mark)
+    else:
+        return None
+
+def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
-    logger.info("Found %d layers associated with [%s]", resource)
+    logger.info("Found %d layers associated with [%s]", len(layers), resource)
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
-            fg, bg, mark = _style_contexts.next()
-            sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
+            if style is None:
+                sld = get_sld_for(lyr)
+            else: 
+                sld = style.read()
             logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
             logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
             logger.info("Successfully updated %s", lyr)
+
+def cascading_delete(cat, resource):
+    lyr = cat.get_layer(resource.name)
+    if(lyr is not None): #Already deleted
+        store = resource.store
+        styles = lyr.styles + [lyr.default_style]
+        cat.delete(lyr)
+        for s in styles:
+            if s is not None:
+                cat.delete(s, purge=True)
+        cat.delete(resource)
+        cat.delete(store)
