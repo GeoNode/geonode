@@ -42,7 +42,7 @@ def layer_type(filename):
         msg = ('Saving of extension [%s] is not implemented' % extension)
         raise GeoNodeException(msg)
 
-def get_files(filename):
+def get_files(filename, sldfile):
     """Converts the data to Shapefiles or Geotiffs and returns
        a dictionary with all the required files
     """
@@ -78,11 +78,12 @@ def get_files(filename):
                              % (base_name + ext, required_extensions))
                 raise GeoNodeException(msg)
 
+        files['zip'] = filename
 
     # Always upload stylefile if it exist
-    style_file = base_name + ".sld"
-    if os.path.exists(style_file):
-        files['sld'] = style_file
+    if os.path.exists(sldfile):
+        files['sld'] = sldfile
+        logger.debug('++++++++++STYLE FILE EXISTS: %s', sldfile)
 
     return files
 
@@ -185,7 +186,7 @@ def cleanup(name, uuid):
 
 
 _separator = '\n' + ('-' * 100) + '\n'
-def save(layer, base_file, user, overwrite = True, title=None, abstract=None, permissions=None, keywords = [], charset='ISO-8891-1'):
+def save(layer, base_file, user, overwrite = True, title=None, abstract=None, permissions=None, keywords = [], charset='ISO-8891-1', sldfile=None):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer is created.
@@ -261,9 +262,10 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     logger.info('>>> Step 4. Starting upload of [%s] to GeoServer...', name)
 
     # Get the helper files if they exist
-    files = get_files(base_file)
+    files = get_files(base_file, sldfile)
 
     data = files
+    logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^BASE FILE:" + data['base'])
 
     #FIXME: DONT DO THIS
     #-------------------
@@ -397,7 +399,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
         saved_layer.set_default_permissions()
     else:
         from geonode.maps.views import set_layer_permissions
-        set_layer_permissions(saved_layer, permissions)
+        set_layer_permissions(saved_layer, permissions, True)
 
     # Step 12. Verify the layer was saved correctly and clean up if needed
     logger.info('>>> Step 12. Verifying the layer [%s] was created correctly' % name)
@@ -565,4 +567,8 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
 
     cat.save(ds)
     ds = cat.get_store(name)
-    cat.add_data_to_store(ds,name, data, overwrite, charset)
+    try:
+        cat.add_data_to_store(ds,name, data, overwrite, charset)
+    except:
+        cat.delete(ds, purge=True)
+        raise

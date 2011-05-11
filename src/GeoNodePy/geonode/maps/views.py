@@ -1242,7 +1242,7 @@ def layerController(request, layername):
         return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
             "metadata": metadata,
-            "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASELAYERS + [maplayer]))),
+            "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
             "permissions_json": _perms_info_email_json(layer, LAYER_LEV_NAMES),
             "customGroup": settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
@@ -1279,14 +1279,15 @@ def upload_layer(request):
         tempdir = None
         if form.is_valid():
             try:
-                tempdir, base_file = form.write_files()
+                tempdir, base_file, sld_file = form.write_files()
                 name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
                 saved_layer = save(name, base_file, request.user, 
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"],
-                        charset = request.POST.get('encoding')
+                        charset = request.POST.get('charset'),
+                        sldfile = sld_file
                         )
 
                 #Add new layer attributes if they dont already exist
@@ -1294,7 +1295,7 @@ def upload_layer(request):
                     logger.debug("Attributes are not None")
                     iter = 1
                     mark_searchable = True
-                    for field, ftype in layer.attribute_names.iteritems():
+                    for field, ftype in saved_layer.attribute_names.iteritems():
                         if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
                             logger.debug("Field is [%s]", field)
                             la = LayerAttribute.objects.create(layer=saved_layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
@@ -1305,9 +1306,14 @@ def upload_layer(request):
                 else:
                     logger.debug("No attributes found")
 
+                redirect_to  = reverse('geonode.maps.views.layerController', args=(saved_layer.typename,)) + '?describe'
+                if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
+                    redirect_to+= "&tab=true"
+                elif 'mapid' in request.POST and request.POST['mapid'] != '':
+                    redirect_to += "&map=" + request.POST['mapid']
                 return HttpResponse(json.dumps({
                     "success": True,
-                    "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
+                    "redirect_to": redirect_to}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
@@ -1349,33 +1355,33 @@ def _updateLayer(request, layer):
 
         if form.is_valid():
             try:
-                tempdir, base_file = form.write_files()
+                tempdir, base_file, sld_file = form.write_files()
                 name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
-                saved_layer = save(layer, base_file, request.user, overwrite=True, charset = request.POST.get('encoding'))
+                saved_layer = save(layer, base_file, request.user, overwrite=True, charset = request.POST.get('charset'), sldfile = sld_file)
 
                 try:
                     #Delete layer attributes if they no longer exist in an updated layer
-                    for la in LayerAttribute.objects.filter(layer=layer):
+                    for la in LayerAttribute.objects.filter(layer=saved_layer):
                         lafound = False
                         if layer.attribute_names is not None:
-                            for field, ftype in layer.attribute_names.iteritems():
+                            for field, ftype in saved_layer.attribute_names.iteritems():
                                 if field == la.attribute:
                                     lafound = True
                         if not lafound:
-                            logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name)
+                            logger.debug("Going to delete [%s] for [%s]", la.attribute, saved_layer.name)
                             la.delete()
 
                     #Add new layer attributes if they dont already exist
-                    if layer.attribute_names is not None:
+                    if saved_layer.attribute_names is not None:
                         logger.debug("Attributes are not None")
                         iter = 1
                         mark_searchable = True
-                        for field, ftype in layer.attribute_names.iteritems():
+                        for field, ftype in saved_layer.attribute_names.iteritems():
                             if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
                                 logger.debug("Field is [%s]", field)
-                                las = LayerAttribute.objects.filter(layer=layer, attribute=field)
+                                las = LayerAttribute.objects.filter(layer=saved_layer, attribute=field)
                                 if len(las) == 0:
-                                    la = LayerAttribute.objects.create(layer=layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
+                                    la = LayerAttribute.objects.create(layer=saved_layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
                                     la.save()
                                     if la.searchable:
                                         mark_searchable = False
@@ -1391,6 +1397,8 @@ def _updateLayer(request, layer):
                     "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
+                if saved_layer:
+                    saved_layer.delete()
                 return HttpResponse(json.dumps({
                     "success": False,
                     "errors": ["Unexpected error during upload: " + escape(str(e))]}))
@@ -2243,7 +2251,7 @@ def addlayers(request):
 
     return render_to_response('addlayers.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASELAYERS)),
+        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         "site" : settings.SITEURL
     }))

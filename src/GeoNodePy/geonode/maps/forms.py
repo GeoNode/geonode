@@ -38,7 +38,9 @@ class LayerUploadForm(forms.Form):
                     for c in f.chunks():
                         writable.write(c)
         absolute_base_file = os.path.join(tempdir, self.cleaned_data["base_file"].name)
-        return tempdir,  absolute_base_file
+        if self.cleaned_data["sld_file"]:
+            sld_file = os.path.join(tempdir, self.cleaned_data["sld_file"].name)
+        return tempdir,  absolute_base_file, sld_file
 
 class NewLayerUploadForm(LayerUploadForm):
     sld_file = forms.FileField(required=False)

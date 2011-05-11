@@ -132,13 +132,13 @@ def cascading_delete(cat, resource):
             for s in styles:
                 if s is not None:
                     cat.delete(s, purge=True)
-            cat.delete(resource)
-            store_params = store.connection_parameters
-            if store_params['dbtype'] and store_params['dbtype'] == 'postgis' and store.name != 'wmdata':
-                cat.delete(store)
-                delete_from_postgis(resource_name)
-            else:
-                cat.delete(store)
+        cat.delete(resource)
+        store_params = store.connection_parameters
+        if store_params['dbtype'] and store_params['dbtype'] == 'postgis' and store.name != 'wmdata':
+            cat.delete(store)
+            delete_from_postgis(resource_name)
+        else:
+            cat.delete(store)
 
 
 def delete_from_postgis(resource_name):
