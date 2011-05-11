@@ -537,7 +537,7 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 def get_wms():
     global _wms
-    wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
+    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
     http = httplib2.Http()
     http.add_credentials(_user, _password)
