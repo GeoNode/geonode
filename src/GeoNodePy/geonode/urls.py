@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
-from utils import path_extrapolate
+from staticfiles.urls import staticfiles_urlpatterns
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -14,7 +14,8 @@ urlpatterns = patterns('',
     # Example:
     # (r'^geonode/', include('geonode.foo.urls')),
     (r'^(?:index/?)?$', 'geonode.views.index'),
-    (r'^(?P<page>developer|help)/?$', 'geonode.views.static'),
+    (r'^(?P<page>help)/?$', 'geonode.views.static'),
+    (r'^developer/?$', 'geonode.views.developer'),
     (r'^lang\.js$', 'geonode.views.lang'),
     (r'^maps/', include('geonode.maps.urls')),
     (r'^proxy/', 'geonode.proxy.views.proxy'),
@@ -24,6 +25,8 @@ urlpatterns = patterns('',
     url(r'^data/search/?$', 'geonode.maps.views.search_page', name='search'),
     url(r'^data/search/api/?$', 'geonode.maps.views.metadata_search', name='search_api'),
     url(r'^data/search/detail/?$', 'geonode.maps.views.search_result_detail', name='search_result_detail'),
+    url(r'^data/api/batch_permissions/?$', 'geonode.maps.views.batch_permissions'),
+    url(r'^data/api/batch_delete/?$', 'geonode.maps.views.batch_delete'),
     url(r'^data/upload$', 'geonode.maps.views.upload_layer', name='data_upload'),
     (r'^data/download$', 'geonode.maps.views.batch_layer_download'),
     (r'^data/(?P<layername>[^/]*)$', 'geonode.maps.views.layerController'),
@@ -38,19 +41,8 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
-)
-
-#
-# Extra static file endpoint for development use
-if settings.SERVE_MEDIA:
-    import os
-    def here(*x): 
-        return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
-
-    root = here("..", "..", "geonode-client", "build", "geonode-client") if settings.MINIFIED_RESOURCES else here("..", "..", "geonode-client", "")
-    urlpatterns += patterns('',
-        (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': root}),
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': path_extrapolate('django/contrib/admin/media', 'django')})
     )
 
-
+# Extra static file endpoint for development use
+if settings.SERVE_MEDIA:
+    urlpatterns += staticfiles_urlpatterns()

@@ -1,15 +1,13 @@
 {% load i18n %}
-{% load navbar %}
-{% load geonode_media %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
   <title>{% block title %} {{ SITENAME }} {% endblock %}</title>
-  <link rel="shortcut icon" href="{% geonode_media "app_themes" %}img/favicon.ico"/>
+  <link rel="shortcut icon" href="{{ STATIC_URL }}theme/img/favicon.ico"/>
   {% block head %}
-  <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}boilerplate-min.css" media="screen" />
-  <!--[if lte IE 6]><link rel="stylesheet" href="{% geonode_media "app_themes" %}boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
-  <link rel="stylesheet" type="text/css" href="{% geonode_media "app_themes" %}site.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/boilerplate-min.css" media="screen" />
+  <!--[if lte IE 6]><link rel="stylesheet" href="{{ STATIC_URL }}theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css" media="screen" />
   <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
   <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
   {% endblock %}
@@ -32,7 +30,18 @@
   <div id="crossbar">
     <div class="wrap selfclear">             
       {% block nav %}
-        {% navbar master %}
+    <ul id="sitenav" class="selfclear">
+        <li class="home"><a href="{% url geonode.views.index %}">Home</a></li> 
+        <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">Data</a></li>
+        <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">Maps</a></li>
+    {% if user.is_authenticated %}
+        <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">Profile</a></li>
+    {% if user.is_staff %}
+        <li class=""><a class="" id="adminLink" href="/admin/">Admin</a></li>
+    {% endif %}
+
+    {% endif %}
+    </ul>
       {% endblock %}
     </div><!-- /.wrap -->
   </div><!-- /#crossbar -->
@@ -50,7 +59,7 @@
         Powered by <a href="http://geonode.org">{% trans "GeoNode" %}</a>
         | <strong>{% trans "Need Help?" %}</strong>
         <a href="{% url geonode.views.static "help" %}">{% trans "Help" %}</a> 
-        | <a href="{% url geonode.views.static "developer" %}">{% trans "For Developers" %}</a>
+        | <a href="{% url geonode.views.developer %}">{% trans "For Developers" %}</a>
       </div>
       {% endblock %}
     </div><!-- /.wrap -->

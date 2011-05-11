@@ -12,6 +12,19 @@ please consider writing or updating a guide.
 
    /deploy/centos
    /deploy/ubuntu
+   /deploy/production
+
+
+Recommended Minimum System Requirements
+=======================================
+
+For deployment of GeoNode on a single server, the following are the bare minimum system requirements:
+
+* 2GB of RAM
+* 2.2GHz processor.  (Additional processing power may be required for multiple concurrent styling renderings)
+* 1 GB software disk usage.
+* Additional disk space for any data hosted with GeoNode and tiles cached with GeoWebCache.
+* 64-bit hardware recommended.
 
 Java Web Applications (WARs)
 ============================
@@ -146,12 +159,41 @@ Steps:
    deployment documentation
    <http://docs.djangoproject.com/en/1.2/howto/deployment/>`_ for details.
 
+
+Configuring User Registration
+-----------------------------
+
+You can optionally configure GeoNode to allow new users to register through the web.  New registrants will be sent an email inviting them to activate their account.
+
+To allow new user registration:
+
+1. Set up the email backend for Django (see `Django documentation <http://docs.djangoproject.com/en/dev/topics/email/#e-mail-backends>`_) and add the appropriate settings to ``./src/GeoNodePy/geonode/settings.py``.  For example::
+
+       EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+       EMAIL_HOST = 'smtp.gmail.com'
+       EMAIL_HOST_USER = 'foo@gmail.com'
+       EMAIL_HOST_PASSWORD = 'bar'
+       EMAIL_PORT = 587
+       EMAIL_USE_TLS = True
+
+2. One week activation window::
+
+	   ACCOUNT_ACTIVATION_DAYS = 7 
+	   
+3. In the same settings file set::
+
+       REGISTRATION_OPEN=True	   
+
+4. With the Django application running, set the domain name of the service properly through the admin interface.  (This domain name is used in the account activation emails.)::
+
+       http://localhost:8000/admin/sites/site/1
+
+To register as a new user, click the ''Register'' link in the GeoNode index header.
+
 Additional Configuration
 ------------------------
 
 Some other things that require tweaking:
-
-* SMTP configuration for user registration confirmation mails
 
 * Web-accessible uploads directory for user profile photos
 

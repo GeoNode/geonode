@@ -21,10 +21,18 @@ from django.core.exceptions import ValidationError
 from string import lower
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
+from gs_helpers import cascading_delete
+import logging
+
+logger = logging.getLogger("geonode.maps.models")
+
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+
+
+
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -473,6 +481,9 @@ create custom structures, but they have to be validated by the \
 system, so know what you do :-)'
 )
 
+class GeoNodeException(Exception):
+    pass
+
 
 class Contact(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
@@ -503,11 +514,6 @@ class Contact(models.Model):
         return u"%s (%s)" % (self.name, self.organization)
 
 
-def get_csw():
-    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    csw = CatalogueServiceWeb(csw_url);
-    return csw
-
 _viewer_projection_lookup = {
     "EPSG:900913": {
         "maxResolution": 156543.0339,
@@ -528,6 +534,32 @@ def _get_viewer_projection_info(srid):
 _wms = None
 _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
+
+def get_wms():
+    global _wms
+    wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
+    netloc = urlparse(wms_url).netloc
+    http = httplib2.Http()
+    http.add_credentials(_user, _password)
+    http.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user, _password), 
+                netloc,
+                wms_url,
+                {},
+                None,
+                None, 
+                http
+            )
+        )
+    response, body = http.request(wms_url)
+    _wms = WebMapService(wms_url, xml=body)
+
+def get_csw():
+    global _csw
+    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+    _csw = CatalogueServiceWeb(csw_url)
+    return _csw
 
 class LayerManager(models.Manager):
     
@@ -580,6 +612,20 @@ class LayerManager(models.Manager):
                     "uuid": str(uuid.uuid4())
                 })
 
+                ## Due to a bug in GeoNode versions prior to 1.0RC2, the data
+                ## in the database may not have a valid date_type set.  The
+                ## invalid values are expected to differ from the acceptable
+                ## values only by case, so try to convert, then fallback to a
+                ## default.
+                ##
+                ## We should probably drop this adjustment in 1.1. --David Winslow
+                if layer.date_type not in Layer.VALID_DATE_TYPES:
+                    candidate = lower(layer.date_type)
+                    if candidate in Layer.VALID_DATE_TYPES:
+                        layer.date_type = candidate
+                    else:
+                        layer.date_type = Layer.VALID_DATE_TYPES[0]
+
                 layer.save()
                 if created: 
                     layer.set_default_permissions()
@@ -592,6 +638,9 @@ class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
     """
+
+    VALID_DATE_TYPES = [(lower(x), _(x)) for x in ['Creation', 'Publication', 'Revision']]
+
     # internal fields
     objects = LayerManager()
     workspace = models.CharField(max_length=128)
@@ -608,10 +657,10 @@ class Layer(models.Model, PermissionLevelMixin):
     title = models.CharField(_('title'), max_length=255)
     date = models.DateTimeField(_('date'), default = datetime.now) # passing the method itself, not the result
     
-    date_type = models.CharField(_('date type'), max_length=255,choices=[(lower(x), _(x)) for x in ['Creation', 'Publication', 'Revision']], default='Publication')
+    date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication')
 
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
-    abstract = models.TextField(_('abstract'))
+    abstract = models.TextField(_('abstract'), blank=True)
     purpose = models.TextField(_('purpose'), null=True, blank=True)
     maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
 
@@ -754,6 +803,58 @@ class Layer(models.Model, PermissionLevelMixin):
 
         return links
 
+    def verify(self):
+        """Makes sure the state of the layer is consistent in GeoServer and GeoNetwork.
+        """
+        http = httplib2.Http() # Do we need to add authentication?
+        
+        # Check the layer is in the wms get capabilities record
+        # FIXME: Implement caching of capabilities record site wide
+        if (_wms is None) or (self.typename not in _wms.contents):
+            get_wms()
+        try:
+            wms_layer = _wms[self.typename]
+        except:
+            msg = "WMS Record missing for layer [%s]" % self.typename 
+            raise GeoNodeException(msg)
+        
+        # Check the layer is in GeoServer's REST API
+        # It would be nice if we could ask for the definition of a layer by name
+        # rather than searching for it
+        #api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
+        #response, body = http.request(api_url)
+        #api_json = simplejson.loads(body)
+        #api_layer = None
+        #for row in api_json['rows']:
+        #    if(row['name'] == self.typename):
+        #        api_layer = row
+        #if(api_layer == None):
+        #    msg = "API Record missing for layer [%s]" % self.typename
+        #    raise GeoNodeException(msg)
+ 
+        # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
+        if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
+            get_csw()
+        try:
+            _csw.getrecordbyid([self.uuid])
+            csw_layer = _csw.records.get(self.uuid)
+        except:
+            msg = "CSW Record Missing for layer [%s]" % self.typename
+            raise GeoNodeException(msg)
+
+        if(csw_layer.uri != self.get_absolute_url()):
+            msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
+            
+        # Visit get_absolute_url and make sure it does not give a 404
+        #logger.info(self.get_absolute_url())
+        #response, body = http.request(self.get_absolute_url())
+        #if(int(response['status']) != 200):
+        #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
+        #    raise GeoNodeException(msg)
+
+        #FIXME: Add more checks, for example making sure the title, keywords and description
+        # are the same in every database.
+
     def maps(self):
         """Return a list of all the maps that use this layer"""
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
@@ -762,6 +863,8 @@ class Layer(models.Model, PermissionLevelMixin):
     def metadata(self):
         global _wms
         if (_wms is None) or (self.typename not in _wms.contents):
+            get_wms()
+            """
             wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
             netloc = urlparse(wms_url).netloc
             http = httplib2.Http()
@@ -779,12 +882,15 @@ class Layer(models.Model, PermissionLevelMixin):
             )
             response, body = http.request(wms_url)
             _wms = WebMapService(wms_url, xml=body)
+            """
         return _wms[self.typename]
 
     def metadata_csw(self):
-        csw = get_csw()
-        csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
-        return csw.records.get(self.uuid)
+        global _csw
+        if(_csw is None):
+            _csw = get_csw()
+        _csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
+        return _csw.records.get(self.uuid)
 
     @property
     def attribute_names(self):
@@ -831,23 +937,7 @@ class Layer(models.Model, PermissionLevelMixin):
         }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
-        layerURL = "%srest/layers/%s.xml" % (settings.GEOSERVER_BASE_URL,self.name)
-        if self.storeType == "dataStore":
-            featureUrl = "%srest/workspaces/%s/datastores/%s/featuretypes/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store, self.name)
-            storeUrl = "%srest/workspaces/%s/datastores/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store)
-        elif self.storeType == "coverageStore":
-            featureUrl = "%srest/workspaces/%s/coveragestores/%s/coverages/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store, self.name)
-            storeUrl = "%srest/workspaces/%s/coveragestores/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store)
-        urls = (layerURL,featureUrl,storeUrl)
-
-        # GEOSERVER_CREDENTIALS
-        HTTP = httplib2.Http()
-        HTTP.add_credentials(_user,_password)
-
-        for u in urls:
-            output = HTTP.request(u,"DELETE")
-            if output[0]["status"][0] == '4':
-                raise RuntimeError("Unable to remove from Geoserver: %s" % output[1])
+        cascading_delete(Layer.objects.gs_catalog, self.resource)
 
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
@@ -964,6 +1054,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.abstract = self.abstract
             self.resource.name= self.name
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
+            self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
@@ -997,7 +1088,10 @@ class Layer(models.Model, PermissionLevelMixin):
         self.distribution_description = meta.distribution.onlineresource.description
 
     def keyword_list(self):
-        return self.keywords.split(" ")
+        if self.keywords is None:
+            return []
+        else:
+            return self.keywords.split(" ")
 
     def set_bbox(self, box, srs=None):
         """
