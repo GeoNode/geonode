@@ -13,6 +13,7 @@ target
 
 # supporting stuff pulled in by paver script
 /src/GeoNodePy/geonode/media/static/
+/src/GeoNodePy/.idea/
 /geoserver_token
 /development.db
 /django.log
@@ -36,7 +37,7 @@ pip-log.txt
 
 #Temporary files
 *~
-
+src/GeoNodePy/.idea/
 #Testing output
 .coverage
 nosetests.xml
