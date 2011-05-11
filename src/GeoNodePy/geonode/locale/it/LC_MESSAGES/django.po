@@ -20,46 +20,46 @@ msgstr ""
 
 #: settings.py:38
 msgid "English"
-msgstr "Ingles"
+msgstr "Italiano"
 
 #: settings.py:39
 msgid "Spanish"
-msgstr "Español"
+msgstr "Spagnolo"
 
 #: core/models.py:24 maps/models.py:625
 msgid "title"
-msgstr "titulo "
+msgstr "titolo"
 
 #: core/models.py:25 maps/models.py:1506
 msgid "permissions"
-msgstr "permisos"
+msgstr "permessi"
 
 #: core/models.py:26
 msgid "codename"
-msgstr "código"
+msgstr "codename"
 
 #: core/models.py:28
 msgid "Determines the order that roles are presented in the user interface."
-msgstr "Determina el orden en que los roles están presentados en la interfaz de usuario."
+msgstr "Determina l'ordine con qui i ruoli vengono visualizzati nell'interfaccia utente"
 
 #: core/models.py:67 maps/views.py:1119
 #: templates/maps/layer_permissions.html:18
 msgid "Anonymous Users"
-msgstr "Usuario anónimo "
+msgstr "Utente anonimo"
 
 #: core/models.py:68 maps/views.py:1123
 #: templates/maps/layer_permissions.html:19
 msgid "Registered Users"
-msgstr "Usuarios registrados"
+msgstr "Utente registrato"
 
 #: core/templatetags/navbar.py:33
 #, python-format
 msgid "%r tag requires a single argument (what page should be selected in the nav?)"
-msgstr "tag %r requiere un único argumento (qué página debe ser seleccionado en la navegación?)"
+msgstr "il tag %r necessita di un solo argomento (quale pagina selezionare nella navigazione?)"
 
 #: core/templatetags/navbar.py:97
 msgid "text"
-msgstr "texto"
+msgstr "testo"
 
 #: maps/models.py:44
 msgid "Afghanistan"
@@ -1914,7 +1914,7 @@ msgid "Styles"
 msgstr "Estilos"
 
 #: templates/maps/layer.html:219
-msgid "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style."
+msgid "The following styles are associated with this data set.Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style."
 msgstr "Los siguientes estilos están asociados con este set de datos. Escoge un estilo para verlo en la vista preliminar a la izquierda.  Da click a un nombre de estilo, para visualizar o editar el estilo."
 
 #: templates/maps/layer.html:232
