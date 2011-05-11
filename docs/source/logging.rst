@@ -41,7 +41,14 @@ instead::
     import logging
     for _module in ["geonode.maps.views", "geonode.maps.gs_helpers"]:
         _logger = logging.getLogger(_module)
-        _logger.addHandler(logging.FileHandler("/path/to/logs/geonode-django.log"))
+
+        # stream handler logs to standard error stream,
+        # or apache error log when running under mod_wsgi
+        _logger.addHandler(logging.StreamHandler()) 
+
+        # alternatively, you can log to specific file like so:
+        # _logger.addHandler(logging.FileHandler("/path/to/logs/geonode-django.log"))
+
         # available levels: DEBUG, INFO, WARNING, ERROR, CRITICAL.
         # The earlier a level appears in this list, the more output it will produce in the log file.
         _logger.setLevel(logging.WARNING)

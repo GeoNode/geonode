@@ -1,0 +1,749 @@
+/*-----------------------
+Utility Classes
+-----------------------*/
+.selfclear:after {
+content: " ";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+
+.selfclear {
+display: inline-block; /* IE 7 */
+}
+
+.selfclear {
+display: block;
+}
+
+* html .selfclear {
+zoom: 1; /* IE < 7 */
+}
+
+.nodisplay { 
+display: none;
+}
+
+/*-----------------------
+General Styles
+-----------------------*/
+html {
+font-size: 100%;
+}
+
+body {
+margin: 0;
+color: #111;
+line-height:1.5;
+background:#fff;
+border-bottom: 1px solid #d5d5d5;
+font-size: 75%;
+font-family:Helvetica,Arial,sans-serif;
+}
+
+a {
+color: #003C4C;
+text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+color: #003C4C;
+}
+
+.help,
+.secondary {
+color: #d8d8d8;
+}
+
+/*-----------------------
+Boilerplate overrides
+-----------------------*/
+table.x-btn td,
+.x-panel td,
+.x-toolbar-ct td {
+border-bottom: 0 none transparent;
+line-height: 1em;
+}
+
+table.x-btn td.x-btn-bc,
+table.x-btn td.x-btn-tc {
+height: 1px;
+}
+
+table.x-btn td.x-btn-tl,
+table.x-btn td.x-btn-tr {
+height: 2px;
+}
+
+table.x-btn td.x-btn-tr i, 
+table.x-btn td.x-btn-tl i {
+height:2px;
+}
+
+form table,
+.x-panel table, 
+.x-toolbar-ct table {
+margin-bottom: 0;
+}
+
+form th,
+form td {
+padding:0;
+border-bottom: 0 none transparent;
+}
+
+.x-toolbar-ct th,
+.x-toolbar-ct td,
+.x-grid3 th,
+.x-grid3 td {
+padding: 0;
+}
+
+form td {
+vertical-align: middle;
+}
+
+.x-date-menu em {
+font-style: normal;
+}
+.x-date-menu ul,
+.x-date-menu ol,
+.x-date-menu table {
+margin: 0;
+}
+.x-date-menu th,
+.x-date-menu td {
+padding: 0;
+vertical-align: middle;
+}
+td.x-date-bottom,
+td.x-date-middle {
+padding: 4px;
+}
+
+ul.x-tab-strip {
+margin: 0;
+list-style-type: inherit;
+}
+
+label {
+font-weight: inherit;
+}
+
+/*-----------------------
+Layout
+-----------------------*/
+.wrap {
+width: 980px;
+margin: 0 auto;
+}
+
+.x-viewport .wrap {
+width: auto; /*fullscreen Ext pages */
+margin: 0 auto;
+}
+
+#header {
+background: #00a6d3 url(img/header-bg.png) repeat-x;
+border-top: 1px solid #7a7a7a;
+border-bottom: 2px solid #008cb3;
+font-size: 1.2em;
+}
+
+#header .wrap {
+min-height: 1em;
+position: relative;
+}
+
+.x-viewport #header .wrap {
+padding: 2px 10px 2px 2px;
+}
+
+#logo {
+float: left;
+width: 158px;
+height: 50px;
+background: url(img/logo-bg.png) no-repeat;
+overflow: hidden;
+text-indent: -9999em;
+}
+
+#login-area {
+position: absolute;
+top: 50%;
+right: 0;
+margin-top: -0.5em;
+text-align: right;
+}
+
+.x-viewport #login-area {
+right: 10px;
+}
+
+#login-area a {
+color: #fff;
+font-weight: bold;
+text-decoration: none;
+}
+
+#login-area a:hover,
+#login-area a:active {
+text-decoration: underline;
+}
+
+#crossbar {
+background: #003c4c;
+border-bottom: 2px solid #008cb3;
+color: #fff;
+}
+
+/* needs to match crossbar, but also have self-clearing float behavior */
+#topPanel {
+background: #003c4c;
+border-bottom: 2px solid #008cb3;
+color: #fff;
+padding: 8px 10px;
+}
+
+#topPanel :after {
+content: " ";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+
+#topPanel {
+display: inline-block; /* IE 7 */
+}
+
+#topPanel {
+display: block;
+}
+
+* html #topPanel {
+zoom: 1; /* IE < 7 */
+}
+
+#topPanel * {
+color: #fff;
+}
+
+#topPanel #map-title-header a.maplist {
+float: left;
+margin: 0 0.5em 0 0;
+}
+
+#topPanel #map-title-header strong {
+font-size: 1.35em;
+line-height: 1em;
+}
+
+#sitenav {
+margin: 0;
+padding: 0;
+list-style-type: none;
+line-height: 1;
+}
+
+#sitenav li {
+float: left;
+margin: 0;
+padding: 0;
+}
+
+#sitenav li a {
+float: left;
+margin: 0;
+padding: 8px 10px;
+color: #fff;
+font-weight: bold;
+text-decoration: none;
+}
+
+#sitenav li a.current {
+background: #d8d8d8;
+color: #003c4c;
+padding-top: 4px;
+border-top: 1px solid #2b5b68;
+margin-top: 2px;
+margin-bottom: -2px;
+border-bottom: 2px solid #d8d8d8;
+}
+
+#main {
+background: #fff url(img/main-bg.png) repeat-x;
+border-bottom: 1px solid #d5d5d5;
+}
+
+#main .wrap {
+padding: 10px 0 0;
+}
+
+/*-----------------------
+Columns
+-----------------------*/
+.onecol {
+width: 920px;
+margin: 0 10px;
+padding: 10px 20px;
+background: url(img/1col-bg.png) no-repeat;
+}
+
+.twocol {
+width: 600px;
+margin: 0 10px;
+padding: 10px 20px;
+background: url(img/2col-bg.png) no-repeat;
+float: left;
+}
+
+.threecol {
+width: 260px;
+margin: 0 10px;
+padding: 10px 20px;
+background: url(img/3col-bg.png) no-repeat;
+float: left;
+}
+
+#footer {
+background: #f1f6f7;
+border-top: 3px solid #cde2e8;
+border-bottom: 3px solid #cde2e8;
+}
+
+#footer .onecol {
+width: 920px;
+margin: 0 10px;
+padding: 10px 20px;
+background: #f1f6f7;
+}
+
+#footer .twocol {
+width: 600px;
+margin: 0 10px;
+padding: 10px 20px;
+float: left;
+background: #f1f6f7;
+}
+
+#footer .threecol {
+width: 260px;
+margin: 0 10px;
+padding: 10px 20px;
+float: left;
+background: #f1f6f7;
+}
+
+
+/*-----------------------
+CAPRA Styles (Does this belong in a site-specific theme?)
+-----------------------*/
+#ja-topbar{ 
+background: #fff url(img/language-en.png) no-repeat scroll 0 0;
+height:35px;
+margin:0 auto;
+position:relative;
+width:950px;
+}
+
+#ja-topbar.es{ 
+background: #fff url(img/language-es.png) no-repeat scroll 0 0;
+}
+
+
+#ja-search { 
+padding-left:8px;
+}
+
+#ja-search .fullscreen {
+align: right;
+}
+
+
+
+#ja-search form {
+display: inline;
+}
+
+#ja-search .english button { 
+width:74px;
+height: 30px;
+background: #fff url(img/english.jpg) no-repeat scroll 0 0;
+border: none;
+display: block;
+float:left;
+}
+
+#ja-search .spanish button { 
+width:62px;
+height: 30px;
+background: #fff url(img/spanish.jpg) no-repeat scroll 0 0;
+border: none;
+display: block;
+float:left;
+}
+
+div#app-header #ja-search button { 
+float:right;
+}
+
+div#app-header #ja-search .spanish button { 
+width: 16px;
+height: 12px;
+margin: 2px;
+background: url(img/es.gif) no-repeat scroll 0 0;
+}
+
+div#app-header #ja-search .english button { 
+width: 16px;
+height: 12px;
+margin: 2px;
+background: url(img/gb.gif) no-repeat scroll 0 0;
+}
+
+#home{ 
+display: block;
+float:left;
+height: 30px;
+}
+
+.en a#home{ 
+width:65px;
+background: #fff url(img/home.jpg) no-repeat scroll 0 0;
+}
+
+.es a#home{ 
+background: #fff url(img/inicio.png) no-repeat scroll 0 0;
+width: 50px;
+}
+
+
+/*-----------------------
+Application Styles
+-----------------------*/
+#app-div { 
+width:100%;
+height:85%;
+}
+
+.x-btn .icon-create-map { 
+background-image: url(img/silk/map_add.png);
+}
+
+
+.x-btn .icon-open-map { 
+background-image: url(img/silk/map_magnify.png);
+}
+
+.x-btn .icon-delete { 
+    background-image: url(img/silk/delete.png);
+}
+
+.x-btn .icon-security { 
+    background-image: url(img/silk/lock.png);
+}
+
+a.download { 
+background-repeat:no-repeat;
+padding-left: 18px;
+padding-top: 2px;
+padding-bottom:2px;
+background-image: url(img/silk/page_white.png)
+}
+
+a.download.pdf { 
+background-image: url(img/silk/page_white_acrobat.png)
+}
+
+a.download.kml, 
+a.download.kmz { 
+background-image: url(img/geosilk/kml.png)
+}
+
+a.download.geotiff,
+a.download.tiff,
+a.download.png { 
+background-image: url(img/geosilk/page_white_raster.png)
+}
+
+a.download.shp,
+a.download.zip { 
+background-image: url(img/geosilk/page_white_vector.png)
+}
+
+a.permalink { 
+text-decoration: none;  
+background-repeat:no-repeat;
+padding-left: 18px;
+background-image: url(img/silk/link.png);
+}
+
+a.layer-upload-link {
+text-decoration: none;  
+background-repeat:no-repeat;
+padding-left: 18px;
+margin-top: 1em;
+background-image: url(img/silk/add.png);
+display: block;
+}
+
+#data_ops ul li {
+list-style-type: none;
+padding-bottom: 10px;
+}
+
+#data_ops a {
+text-decoration: none;
+}
+
+#data_ops a.create-map {
+background-repeat:no-repeat;
+padding-left: 25px;
+padding-top: 2px;
+padding-bottom:2px;
+background-image: url(img/silk/map_add.png);
+font-weight: bold;
+}
+
+#data_ops span.export {
+background-repeat:no-repeat;
+padding-left: 25px;
+padding-top: 2px;
+padding-bottom:2px;
+background-image: url(img/geosilk/map_save.png);
+font-weight: bold;
+}
+
+.bbox-controls .bbox-enabled {
+font-weight: bold;
+}
+
+.explain {
+font-size: 0.95em;
+color: #888;
+}
+
+.subtitle {
+font-size: 0.6em;
+padding-left: 0.25em;
+color: #888;
+}
+
+
+/*-----------------------
+Index Elements
+-----------------------*/
+
+.content-button { 
+float:left;
+padding-right:1em;
+}
+
+
+/*-----------------------
+Data Page Search Form
+-----------------------*/
+#search_form table {
+border: none;
+}
+
+#search_form #submit_search {
+padding-left: 5px;
+}
+
+span.remote-layer,
+span.unviewable-layer,
+span.info-layer {
+    background-repeat:no-repeat;
+    padding-left: 18px;
+    padding-top: 2px;
+    padding-bottom:2px;
+}
+
+span.remote-layer {   
+    background-image: url(img/silk/world_link.png)
+}
+span.unviewable-layer {
+    background-image: url(img/silk/lock.png)
+}
+/*span.info-layer {
+    background-image: url(img/silk/information.png)
+}*/
+
+
+
+table.permissions {
+    margin-bottom: 25px;
+    width: 400px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+table.permissions th {
+    font-size: 14px;
+    font-weight: normal;
+    padding: 10px 8px;
+    border-bottom: 2px solid black;
+}
+
+table.permissions td {
+    padding: 9px 8px 0px 8px;
+	border-bottom: 1px solid #ccc;
+}
+
+.login-widget{ 
+margin-top: 30px;
+margin-right: 10px;
+float: right;
+color: #fff;
+}
+.login-widget a { 
+	color: #fff;
+	}
+	
+table 
+/* UTILITY CLASSES */
+
+.selfclear:after {
+content: " ";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+
+.selfclear {
+display: inline-block; /* IE 7 */
+}
+
+.selfclear {
+display: block;
+}
+
+.login-widget a { 
+color: #fff;
+}
+
+
+/*!
+* Ext JS Library 3.2.0
+* Copyright(c) 2006-2010 Ext JS, Inc.
+* licensing@extjs.com
+* http://www.extjs.com/license
+*/
+/*-----------------------
+FileUploadField component styles
+-----------------------*/
+.x-form-file-wrap {
+position: relative;
+height: 22px;
+}
+
+.x-form-file-wrap .x-form-file {
+position: absolute;
+right: 0;
+-moz-opacity: 0;
+filter:alpha(opacity: 0);
+opacity: 0;
+z-index: 2;
+height: 22px;
+}
+
+.x-form-file-wrap .x-form-file-btn {
+position: absolute;
+right: 0;
+z-index: 1;
+}
+
+.x-form-file-wrap .x-form-file-text {
+position: absolute;
+left: 0;
+z-index: 3;
+color: #777;
+}
+
+div#main form ul.form {
+list-style-type: none;
+}
+
+div#main form ul.form li {
+margin-bottom: 1.5em;
+clear: both;
+}
+
+div#main form ul.form li label {
+display: block;
+font-weight: bold;
+text-transform: capitalize;
+}
+
+div#main form ul.form li input {
+}
+
+div#main form ul.form ul.errorlist {
+list-style-type: none;
+margin: 0;
+margin-top: 2px;
+float: right;
+}
+
+div#main form ul.form fieldset {
+border: 1px solid #333;
+padding: 10px;
+margin-bottom: 10px
+}
+
+div#main form ul.form fieldset legend{
+font-weight: bold;
+padding: 0 4px;
+}
+
+/* SLD titles on the layer.html template */
+span.style-title {
+cursor: pointer;
+}
+
+.x-grid3-col .data-type, .x-grid3-col .data-delete, .x-grid3-col .data-edit {
+    height: 16px; width: 16px;
+}
+
+.x-grid3-col .data-type.layer {
+    background-image: url(img/silk/page_green.png); 
+}
+
+.x-grid3-col .data-type.map {
+    background-image: url(img/silk/map.png); 
+}
+
+.x-grid3-col .data-edit {
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    background-image: url(img/silk/pencil.png);
+}
+
+.x-grid3-col .data-delete {
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    background-image: url(img/silk/delete.png);
+}
+
+.x-btn .icon-adduser {
+    background-image: url(img/silk/add.png);
+}
+
+.x-btn .icon-removeuser {
+    background-image: url(img/silk/delete.png);
+}
+
+.user_item button {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+}
+
+.x-list-body dl { margin: 0; }
+

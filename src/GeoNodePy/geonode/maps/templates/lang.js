@@ -53,7 +53,9 @@ if (window.GeoExplorer) {
         smallSizeLabel: gettext("Small"),
         sourceLoadFailureMessage: gettext("Error contacting server.\n Please check the url and try again."),
         layerPropertiesText: gettext('Layer Properties'),
-        layerPropertiesTipText: gettext('Change layer format and style'),        
+        layerPropertiesTipText: gettext('Change layer format and style'),
+        layerStylesText: gettext('Edit Styles'),
+        layerStylesTipText: gettext('Edit layer styles'),
         switchTo3DActionText: gettext("Switch to Google Earth 3D Viewer"),
         unknownMapMessage: gettext("The map that you are trying to load does not exist.  Creating a new map instead."),
         unknownMapTitle: gettext("Unknown Map"),
@@ -156,7 +158,7 @@ if (window.GeoNode && GeoNode.MapSearchTable) {
         searchButtonText: gettext('Search'),
         showingText: gettext('Showing'),
         loadingText: gettext('Loading'),
-        permalinkText: gettext('permalink'),
+        permalinkText: gettext('permalink')
     });
 }
 
