@@ -709,7 +709,7 @@ class LayerManager(models.Manager):
             try:
                 store = resource.store
                 workspace = store.workspace
-
+                logger.debug("Import %s", resource.name)
                 layer, created = self.get_or_create(name=resource.name, defaults = {
                     "workspace": workspace.name,
                     "store": store.name,
@@ -1114,8 +1114,8 @@ class Layer(models.Model, PermissionLevelMixin):
     def delete_from_geoserver(self):
         try:
             cascading_delete(Layer.objects.gs_catalog, self.resource)
-        except:
-            logger.warn('Could not delete from geoserver, resource not found')
+        except Exception, ex:
+            logger.warn('Could not delete from geoserver: %s', str(ex))
 
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
@@ -1981,8 +1981,8 @@ def post_save_layer(instance, sender, **kwargs):
             instance.save(force_update=True)
         except:
             logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
-            instance.delete_from_geonetwork()
-            logger.warning("Deleted geonetwork record for [%s]", instance.name)
+#            instance.delete_from_geonetwork()
+#            logger.warning("Deleted geonetwork record for [%s]", instance.name)
             raise
         logger.debug("save instance")
 

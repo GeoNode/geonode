@@ -188,10 +188,6 @@
                             }
                             error_message += '</ul>'
 
-                            if (o.result.detail.length > 0)
-                            {
-                                error_message += '<li><a style="font-size:small;padding-top:10px;" href="#" onclick="javascript:Ext.Msg.alert(\'Error Details\', \'' + o.result.detail + '\');return false;">Details</a></li>';
-                            }
 
                             Ext.Msg.show({
                                 title: gettext("Error"),

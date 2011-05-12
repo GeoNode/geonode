@@ -81,7 +81,7 @@ def get_files(filename, sldfile):
         files['zip'] = filename
 
     # Always upload stylefile if it exist
-    if os.path.exists(sldfile):
+    if sldfile and os.path.exists(sldfile):
         files['sld'] = sldfile
         logger.debug('++++++++++STYLE FILE EXISTS: %s', sldfile)
 
