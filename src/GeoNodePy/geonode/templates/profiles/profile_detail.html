@@ -108,9 +108,7 @@ Ext.onReady(function() {
                 });
                 var edit = doToRecord(function(rec) {
                     var link = rec.get("href");
-                    if (rec.get("type") === "map") {
-                        link += "/view";
-                    } else {
+                    if (rec.get("type") !== "map") {
                         link += "?describe";
                     }
                     window.location = link;
