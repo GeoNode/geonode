@@ -63,11 +63,11 @@ msgstr "testo"
 
 #: maps/models.py:44
 msgid "Afghanistan"
-msgstr "Afganistán"
+msgstr "Afghanistan"
 
 #: maps/models.py:45
 msgid "Aland Islands"
-msgstr "Islas Aland"
+msgstr "Isole Aland"
 
 #: maps/models.py:46
 msgid "Albania"
@@ -75,11 +75,11 @@ msgstr "Albania"
 
 #: maps/models.py:47
 msgid "Algeria"
-msgstr "Argelia"
+msgstr "Algeria"
 
 #: maps/models.py:48
 msgid "American Samoa"
-msgstr "Samoa Americana"
+msgstr "Samoa americane"
 
 #: maps/models.py:49
 msgid "Andorra"
@@ -95,7 +95,7 @@ msgstr "Anguilla"
 
 #: maps/models.py:52
 msgid "Antigua and Barbuda"
-msgstr "Antigua y Barbuda"
+msgstr "Antigua e Barbuda"
 
 #: maps/models.py:53
 msgid "Argentina"
@@ -119,7 +119,7 @@ msgstr "Austria "
 
 #: maps/models.py:58
 msgid "Azerbaijan"
-msgstr "Azerbaiyán "
+msgstr "Azerbaigian "
 
 #: maps/models.py:59
 msgid "Bahamas"
@@ -127,7 +127,7 @@ msgstr "Bahamas "
 
 #: maps/models.py:60
 msgid "Bahrain"
-msgstr "Bahrein "
+msgstr "Bahrain "
 
 #: maps/models.py:61
 msgid "Bangladesh"
@@ -139,15 +139,15 @@ msgstr "Barbados "
 
 #: maps/models.py:63
 msgid "Belarus"
-msgstr "Belarús"
+msgstr "Bielorussa"
 
 #: maps/models.py:64
 msgid "Belgium"
-msgstr "Bélgica "
+msgstr "Belgio "
 
 #: maps/models.py:65
 msgid "Belize"
-msgstr "Belice "
+msgstr "Belize "
 
 #: maps/models.py:66
 msgid "Benin"
@@ -159,7 +159,7 @@ msgstr "Bermuda \t"
 
 #: maps/models.py:68
 msgid "Bhutan"
-msgstr "Bhután \t"
+msgstr "Regno del Buthan \t"
 
 #: maps/models.py:69
 msgid "Bolivia"
@@ -167,19 +167,19 @@ msgstr "Bolivia \t"
 
 #: maps/models.py:70
 msgid "Bosnia and Herzegovina"
-msgstr "Bosnia y Herzegovina"
+msgstr "Bosnia-Erzegovina"
 
 #: maps/models.py:71
 msgid "Botswana"
-msgstr "Botswana "
+msgstr "Repubblica del Botswana "
 
 #: maps/models.py:72
 msgid "Brazil"
-msgstr "Brasil "
+msgstr "Brasile "
 
 #: maps/models.py:73
 msgid "British Virgin Islands"
-msgstr "Islas Vírgenes Británicas"
+msgstr "Isole Vergini britanniche"
 
 #: maps/models.py:74
 msgid "Brunei Darussalam"
@@ -199,27 +199,27 @@ msgstr "Burundi "
 
 #: maps/models.py:78
 msgid "Cambodia"
-msgstr "Camboya "
+msgstr "Cambogia "
 
 #: maps/models.py:79
 msgid "Cameroon"
-msgstr "Camerún "
+msgstr "Camerun "
 
 #: maps/models.py:80
 msgid "Canada"
-msgstr "Canadá "
+msgstr "Canada "
 
 #: maps/models.py:81
 msgid "Cape Verde"
-msgstr "Cabo Verde"
+msgstr "Capo Verde"
 
 #: maps/models.py:82
 msgid "Cayman Islands"
-msgstr "Islas Caimán"
+msgstr "Isole Cayman"
 
 #: maps/models.py:83
 msgid "Central African Republic"
-msgstr "República Centroafricana"
+msgstr "Repubblica Centroafricana"
 
 #: maps/models.py:84
 msgid "Chad"
@@ -227,24 +227,24 @@ msgstr "Chad "
 
 #: maps/models.py:85
 msgid "Channel Islands"
-msgstr "Islas del Canal "
+msgstr "Channel Islands "
 
 #: maps/models.py:86
 msgid "Chile"
-msgstr "Chile"
+msgstr "Cile"
 
 #: maps/models.py:87
 msgid "China"
-msgstr "China"
+msgstr "Cina"
 
 #: maps/models.py:88
 msgid "China - Hong Kong"
-msgstr "China - Hong Kong"
+msgstr "Cina - Hong Kong"
 
 #: maps/models.py:89
 msgid "China - Macao"
-msgstr "China - Macao"
-
+msgstr "Cina - Macao"
+#TODO Luca
 #: maps/models.py:90
 msgid "Colombia"
 msgstr "Colombia"
