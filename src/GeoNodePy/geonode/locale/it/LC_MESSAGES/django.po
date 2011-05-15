@@ -40,7 +40,7 @@ msgstr "codename"
 
 #: core/models.py:28
 msgid "Determines the order that roles are presented in the user interface."
-msgstr "Determina l'ordine con qui i ruoli vengono visualizzati nell'interfaccia utente"
+msgstr "Determina l'ordine con cui i ruoli vengono visualizzati nell'interfaccia utente"
 
 #: core/models.py:67 maps/views.py:1119
 #: templates/maps/layer_permissions.html:18
@@ -1010,16 +1010,23 @@ msgid "Zimbabwe"
 msgstr "Zimbabwe"
 
 #: maps/models.py:467
-msgid "You can customize the template to suit your needs. You can add and remove fields and fill out default information (e.g. contact details). Fields you can not change in the default view may be accessible in the more comprehensive (and more complex) advanced view. You can even use the XML editor to create custom structures, but they have to be validated by the system, so know what you do :-)"
-msgstr "Puedes organizar la plantilla para que se ajuste a tus necesidades. Puedes agregar o remover campos y llenar información por defecto. (Ejem. Detalles de contacto). Campos que no puedes cambiar en la vista por defecto, pueden ser accedidos de una forma mas comprensible (y mas compleja) en la vista avanzada.   Puedes incluso usar editor XML para crear estructuras personalizadas, pero ellas tienen que ser validadas por el sistema."
+msgid "You can customize the template to suit your needs. You can add and \
+remove fields and fill out default information (e.g. contact details). \
+Fields you can not change in the default view may be accessible in the \
+more comprehensive (and more complex) advanced view. You can even use the \
+XML editor to create custom structures, but they have to be validated by \
+the system, so know what you do :-)"
+msgstr "Puoi il template in funzione delle tue esigenze. Puoi aggiungere \
+e rimuovere campi ed impostare informazioni predefinite (ad esempio il \
+recapito). "
 
 #: maps/models.py:479
 msgid "Individual Name"
-msgstr "Nombre individual"
+msgstr "Nome individuo"
 
 #: maps/models.py:480
 msgid "Organization Name"
-msgstr "Nombre de la organización"
+msgstr "Nome dell'organizzazione"
 
 #: maps/models.py:481
 msgid "Position Name"
@@ -1895,11 +1902,11 @@ msgstr "Descargar"
 
 #: templates/maps/layer.html:198
 msgid "Metadata"
-msgstr "Meta datos"
+msgstr "Metadati"
 
 #: templates/maps/layer.html:202
 msgid "No metadata links provided for this data."
-msgstr "No hay links de meta datos para estos datos "
+msgstr "Nessun collegamento a metadati disponibile per questo dato"
 
 #: templates/maps/layer.html:207
 msgid "The following maps use this data set"
