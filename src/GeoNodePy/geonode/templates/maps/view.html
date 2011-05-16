@@ -51,7 +51,7 @@ Ext.onReady(function() {
             }) 
         };
 
-	var moreInfoTemplate = new Ext.Template(Ext.get("more-info-tpl").dom.innerHTML.replace('%7Bpermalink%7D','{permalink}'));
+	var moreInfoTemplate = new Ext.Template(decodeURIComponent(Ext.get("more-info-tpl").dom.innerHTML));
     var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
     Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
 
