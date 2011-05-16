@@ -42,7 +42,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
 from zipfile import ZipFile
-
+from datetime import datetime, timedelta
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -689,10 +689,13 @@ def _create_new_user(user_email, map_layer_title, map_layer_url, map_layer_owner
         user_name = user_name[0:user_length-4] + User.objects.make_random_password(length=4, allowed_chars='0123456789')
 
     logger.debug("username will be [%s]", user_name)
-    new_user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, send_email=False)
+    new_user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, site = settings.SITE_ID, send_email=False)
     logger.debug("new user created, now creating profile")
     if new_user:
         new_profile = Contact(user=new_user, name=new_user.username, email=new_user.email)
+        if settings.USE_CUSTOM_ORG_AUTHORIZATION and new_user.email.endswith(settings.CUSTOM_GROUP_EMAIL_SUFFIX):
+            new_profile.is_org_member = True
+            new_profile.member_expiration_dt = datetime.today() + timedelta(days=365)
         new_profile.save()
         logger.debug('profile created')
         try:

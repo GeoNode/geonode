@@ -582,7 +582,7 @@ class Contact(models.Model):
     area = models.CharField(_('State/Province'), max_length=255, blank=True, null=True)
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True, unique=True)
+    email = models.EmailField(blank=True, null=True, unique=False)
     is_org_member = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
     member_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
 

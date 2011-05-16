@@ -10,6 +10,14 @@ import logging
 
 logger = logging.getLogger("geonode.accountforms.views")
 
+def confirm(request):
+    if request.user and settings.CUSTOM_ORG_AUTH_URL is not None:
+        request.session["group_username"] = request.user.username
+        logger.debug("group username set to [%s]", request.user.username)
+        return HttpResponseRedirect(settings.CUSTOM_ORG_AUTH_URL)
+    else:
+        return HttpResponseRedirect("/")
+
 
 def registerOrganizationUser(request, success_url=None,
              form_class=UserRegistrationForm, profile_callback=None,
@@ -57,6 +65,11 @@ def registercompleteOrganizationUser(request, template_name='registration/regist
             #else:
             #    userProfile.is_org_member = False
             #    userProfile.save()
+            if user.is_active:
+                return HttpResponseRedirect(user.get_profile().get_absolute_url())
     else:
         logger.debug("harvard username is not found")
+        if request.user and  request.user.is_active:
+                return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
+
     return render_to_response(template_name, RequestContext(request))

@@ -47,11 +47,13 @@ urlpatterns = patterns('',
     (r'^accounts/ajax_lookup_email$', 'geonode.views.ajax_lookup_email'),
     (r'^accounts/login', 'django.contrib.auth.views.login'),
     (r'^accounts/logout', 'django.contrib.auth.views.logout'),
+    (r'^affiliation/confirm', 'geonode.accountforms.views.confirm'),
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('geonode.accountforms.urls')),  
     (r'^profiles/', include('geonode.profileforms.urls')),
     (r'^(?P<site>\w+)/$', 'geonode.maps.views.official_site'),
     (r'^(?P<site>\w+)/edit$', 'geonode.maps.views.official_site_controller'),
+    
 )
 
 # Extra static file endpoint for development use

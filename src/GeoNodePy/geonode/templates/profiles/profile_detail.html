@@ -15,7 +15,15 @@
   <h2>{{ profile.name }}</h2>
   <div style="padding-left:20px;">
   <p><strong>{% trans "Name" %}:</strong> {{ profile.username }}</p>
-  <p><strong>{% trans "Email" %}:</strong>  {{ profile.user.email }}</p>
+   {% if user == profile.user %}
+    <p><strong>{% trans "Email" %}:</strong>
+        {%  if profile.email %}
+            {{ profile.email }}
+         {%  else  %}
+            {{  profile.user.email }}
+         {%  endif %}
+     </p>
+  {%  endif %}
   <p><strong>{% trans "Organization" %}:</strong> {{ profile.organization}}</p>
   <p><strong>{% trans "Position" %}:</strong>: {{ profile.position}}</p>
   <p><strong>{% trans "Voice" %}:</strong>  {{ profile.voice}}</p>

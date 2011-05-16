@@ -36,7 +36,8 @@ class UserRegistrationForm(RegistrationFormUniqueEmail):
     def save(self, profile_callback=None):
         new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
         password=self.cleaned_data['password1'],
-        email=self.cleaned_data['email'])
+        email=self.cleaned_data['email'],
+        site = settings.SITE_ID)
         new_profile = Contact(user=new_user)
         new_profile.email = new_user.email
         if (settings.USE_CUSTOM_ORG_AUTHORIZATION):

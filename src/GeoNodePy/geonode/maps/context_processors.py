@@ -10,4 +10,5 @@ def resource_urls(request):
         SITENAME = settings.SITENAME,
         REGISTRATION_OPEN = settings.REGISTRATION_OPEN,
         CUSTOM_GROUP_NAME = settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
+        USE_CUSTOM_ORG_AUTHORIZATION = settings.USE_CUSTOM_ORG_AUTHORIZATION,
     )
