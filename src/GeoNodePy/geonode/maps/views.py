@@ -170,7 +170,7 @@ class LayerForm(forms.ModelForm):
 
     class Meta:
         model = Layer
-        exclude = ('owner', 'contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'topic_category' ) #, 'topic_category'
+        exclude = ('owner', 'contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'topic_category', 'bbox', 'llbbox', 'srs', 'geographic_bounding_box' ) #, 'topic_category'
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -239,7 +239,7 @@ def mapJSON(request, mapid):
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(loader.render_to_string('401.html',
                 RequestContext(request, {})), status=401)
-    	return HttpResponse(json.dumps(map.viewer_json()))
+    	return HttpResponse(json.dumps(map.viewer_json(request.user)))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -294,7 +294,7 @@ def newmap(request):
         map.title = DEFAULT_TITLE
         map.urlsuffix = DEFAULT_URL
         if request.user.is_authenticated(): map.owner = request.user
-        config = map.viewer_json()
+        config = map.viewer_json(request.user)
         del config['id']
     else:
         if request.method == 'GET':
@@ -350,8 +350,7 @@ def newmap(request):
                 map.center_y = center.y
                 map.zoom = math.ceil(min(width_zoom, height_zoom))
 
-            
-            config = map.viewer_json(*(DEFAULT_BASE_LAYERS + layers))
+            config = map.viewer_json(request.user, *(DEFAULT_BASE_LAYERS + layers))
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
@@ -787,7 +786,7 @@ def mapdetail(request,mapid):
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this map.")})), status=401)
 
-    config = map.viewer_json()
+    config = map.viewer_json(request.user)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map.id)
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
@@ -920,7 +919,7 @@ def view(request, mapid, snapshot=None):
                 _("You are not allowed to view this map.")})), status=401)
 
     if snapshot is None:
-        config = map.viewer_json()
+        config = map.viewer_json(request.user)
     else:
             decodedid = num_decode(snapshot)
             snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
@@ -928,7 +927,7 @@ def view(request, mapid, snapshot=None):
             if snapshot.map == map:
                 config = simplejson.loads(snapshot.config)
             else:
-                config = map.viewer_json()
+                config = map.viewer_json(request.user)
 
     first_visit = True
     if request.session.get('visit' + str(map.id), False):
@@ -977,7 +976,7 @@ def embed(request, mapid=None, snapshot=None):
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
         if snapshot is None:
-            config = map.viewer_json()
+            config = map.viewer_json(request.user)
         else:
             decodedid = num_decode(snapshot)
             snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
@@ -985,7 +984,7 @@ def embed(request, mapid=None, snapshot=None):
             if snapshot.map == map:
                 config = simplejson.loads(snapshot.config)
             else:
-                config = map.viewer_json()
+                config = map.viewer_json(request.user)
 
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
@@ -1001,7 +1000,7 @@ def view_js(request, mapid):
     map = Map.objects.get(pk=mapid)
     if not request.user.has_perm('maps.view_map', obj=map):
         return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
-    config = map.viewer_json()
+    config = map.viewer_json(request.user)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def fixdate(str):
@@ -1095,7 +1094,7 @@ def _describe_layer(request, layer):
                         name = layer.typename,
                         group = layer.topic_category.title if layer.topic_category else 'General',
                         layer_params = '{"selected":true, "title": "' + layer.title + '"}',
-                        source_params = '{"ptype": "gx_wmssource"}',
+                        source_params = '{"ptype": "gxp_gnsource"}',
                         ows_url = settings.GEOSERVER_BASE_URL + "wms",
                         visibility = True,
                         stack_order = MapLayer.objects.filter(id=mapid).count()
@@ -1245,7 +1244,7 @@ def layerController(request, layername):
         return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
             "metadata": metadata,
-            "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
+            "viewer": json.dumps(map.viewer_json(request.user, * (DEFAULT_BASE_LAYERS + [maplayer]))),
             "permissions_json": _perms_info_email_json(layer, LAYER_LEV_NAMES),
             "customGroup": settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
@@ -2233,7 +2232,7 @@ def search_page(request):
 
     return render_to_response('search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)),
+        'viewer_config': json.dumps(map.viewer_json(request.user, *DEFAULT_BASE_LAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         "site" : settings.SITEURL
     }))
@@ -2254,7 +2253,7 @@ def addlayers(request):
 
     return render_to_response('addlayers.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)),
+        'viewer_config': json.dumps(map.viewer_json(request.user, *DEFAULT_BASE_LAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         "site" : settings.SITEURL
     }))
@@ -2409,7 +2408,38 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
     return result
 
-@csrf_exempt
+
+def addLayerJSON(request):
+    logger.debug("Enter addLayerJSON")
+    layername = request.POST.get('layername', False)
+    logger.debug("layername is [%s]", layername)
+    searchable_fields = []
+    scount = 0
+    if layername:
+        try:
+            layer = Layer.objects.get(typename=layername)
+            if not request.user.has_perm("maps.view_layer", obj=layer):
+                return HttpResponse(status=401)
+
+            if layer.storeType == 'dataStore':
+                #searchable_fields = geoLayer.searchable_fields
+                #logger.debug('There are [%s] attributes', geoLayer.layerattribute_set.length)
+                for la in layer.attribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$').order_by('display_order'):
+                    searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
+                    if la.searchable:
+                        scount+=1
+            logger.debug("layer attributes retrieved for [%s] : %s : %s", layername, searchable_fields, scount)
+            sfJSON = {'layer': layer.layer_config(request.user), 'searchFields' : searchable_fields, 'scount' : scount}
+            logger.debug('sfJSON is [%s]', str(sfJSON))
+            return HttpResponse(json.dumps(sfJSON))
+        except Exception, e:
+            logger.debug("Could not find matching layer: [%s]", str(e))
+            return HttpResponse(str(e), status=500)
+
+    else:
+        return HttpResponse(status=500)
+        logger.debug("searchFieldsJSON DID NOT WORK")
+
 def searchFieldsJSON(request):
     logger.debug("Enter searchFieldsJSON")
     layername = request.POST.get('layername', False);

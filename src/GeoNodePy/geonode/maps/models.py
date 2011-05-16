@@ -734,6 +734,9 @@ class LayerManager(models.Manager):
                     else:
                         layer.date_type = Layer.VALID_DATE_TYPES[0]
 
+                if layer.bbox is None:
+                    layer._populate_from_gs()
+
                 layer.save()
 		if created:
                     layer.set_default_permissions()
@@ -829,6 +832,10 @@ class Layer(models.Model, PermissionLevelMixin):
     distribution_url = models.TextField(_('distribution URL'), blank=True, null=True)
     distribution_description = models.TextField(_('distribution description'), blank=True, null=True)
 
+    # WMS attributes
+    srs = models.CharField(_('SRS'), max_length=24, blank=True, null=True, default="EPSG:4326")
+    bbox  = models.TextField(_('bbox'), blank=True, null=True)
+    llbbox = models.TextField(_('llbbox'), blank=True, null=True)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
@@ -1253,7 +1260,9 @@ class Layer(models.Model, PermissionLevelMixin):
             gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
         if gs_resource is None:
             return
-        srs = gs_resource.projection
+        self.srs = gs_resource.projection
+        self.bbox = str([ float(gs_resource.native_bbox[0]),float(gs_resource.native_bbox[2]),float(gs_resource.native_bbox[1]),float(gs_resource.native_bbox[3])])
+        self.llbbox = str([ float(gs_resource.latlon_bbox[0]),float(gs_resource.latlon_bbox[2]),float(gs_resource.latlon_bbox[1]),float(gs_resource.latlon_bbox[3])])
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
             self.set_bbox(gs_resource.native_bbox, srs=srs)
 
@@ -1327,6 +1336,37 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
+    def layer_config(self, user):
+        """
+        Generate a dict that can be serialized to a GXP layer configuration
+        suitable for loading this layer.
+
+        The "source" property will be left unset; the layer is not aware of the
+        name assigned to its source plugin.  See
+        :method:`geonode.maps.models.Map.viewer_json` for an example of
+        generating a full map configuration.
+        """
+
+        cfg = dict()
+        cfg['name'] = self.typename
+        cfg['title'] =self.title
+        cfg['transparent'] = True
+        if self.topic_category:
+            cfg['group'] = self.topic_category.title
+        else:
+            cfg['group'] = 'General'
+        cfg['url'] = settings.GEOSERVER_BASE_URL + "wms"
+        cfg['srs'] = self.srs
+        cfg['bbox'] = simplejson.loads(self.bbox)
+        cfg['llbbox'] = simplejson.loads(self.llbbox)
+        logger.debug('WTF')
+        cfg['queryable'] = (self.storeType == 'dataStore'),
+        cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=self)
+        cfg['visibility'] = True
+        cfg['abstract'] = self.abstract
+        cfg['styles'] = ''
+        logger.debug("layer config for [%s] is [%s]", self.name, str(cfg))
+        return cfg
 
 class LayerAttribute(models.Model):
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
@@ -1497,6 +1537,9 @@ class Map(models.Model, PermissionLevelMixin):
         return simplejson.dumps(map)
 
     def viewer_json(self, *added_layers):
+        return viewer_json(self, None, *addedLayers)
+
+    def viewer_json(self, user=None, *added_layers):
         """
         Convert this map to a nested dictionary structure matching the JSON
         configuration for GXP Viewers.
@@ -1526,7 +1569,7 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-        configs.append({"ptype":"gxp_wmscsource", "url": settings.GEOSERVER_BASE_URL + "wms"})
+        configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms"})
 
         i = 0
         for source in uniqify(configs):
@@ -1539,12 +1582,12 @@ class Map(models.Model, PermissionLevelMixin):
                 if v == source: return k
             return None
 
-        def layer_config(l):
-            cfg = l.layer_config()
+        def layer_config(l, user):
+            cfg = l.layer_config(user)
             src_cfg = l.source_config();
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
-            if src_cfg.get("ptype", "gxp_wmscsource") == "gxp_wmscsource": cfg["buffer"] = 0
+            if src_cfg.get("ptype", "gxp_wmscsource") == "gxp_wmscsource"  or src_cfg.get("ptype", "gxp_gnsource") == "gxp_gnsource" : cfg["buffer"] = 0
             return cfg
 
         config = {
@@ -1557,10 +1600,10 @@ class Map(models.Model, PermissionLevelMixin):
                 'keywords' : self.keywords,
                 'officialurl' : self.officialurl
             },
-            'defaultSourceType': "gxp_wmscsource",
+            'defaultSourceType': "gxp_gnsource",
             'sources': sources,
             'map': {
-                'layers': [layer_config(l) for l in layers],
+                'layers': [layer_config(l, user) for l in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
@@ -1861,7 +1904,7 @@ class MapLayer(models.Model):
             cfg["url"] = self.ows_url
         return cfg
 
-    def layer_config(self):
+    def layer_config(self, user):
         """
         Generate a dict that can be serialized to a GXP layer configuration
         suitable for loading this layer.
@@ -1882,10 +1925,38 @@ class MapLayer(models.Model):
         if self.styles: cfg['styles'] = self.styles
         if self.transparent: cfg['transparent'] = True
 
-        cfg["fixed"] = self.fixed
+
+        if self.ows_url:cfg['url'] = self.ows_url
         if self.group: cfg["group"] = self.group
         cfg["visibility"] = self.visibility
 
+        logger.debug("TYPENAME:[%s]", self.name)
+        gnLayer = Layer.objects.filter(typename=self.name)
+        logger.debug("GN Layer Count:[%s]", gnLayer.count())
+        if gnLayer.count() == 1:
+            logger.debug("Get projection info for GeoNode layer")
+            if gnLayer[0].srs: cfg['srs'] = gnLayer[0].srs
+            if gnLayer[0].bbox: cfg['bbox'] = simplejson.loads(gnLayer[0].bbox)
+            if gnLayer[0].llbbox: cfg['llbbox'] = simplejson.loads(gnLayer[0].llbbox)
+            cfg['queryable'] = (gnLayer[0].storeType == 'dataStore'),
+            cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=gnLayer[0])
+            cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
+            cfg['abstract'] = gnLayer[0].abstract
+            cfg['styles'] = self.styles
+#            if gnLayer[0].storeType == 'dataStore':
+#                if self.styles:
+#                    cfg['styles'].push(gnLayer[0].styles)
+#                else:
+#                    cfg['styles'] = gnLayer[0].styles
+#                if gnLayer[0].styles:
+#                    for style in gnLayer[0].styles:
+#                        cfg['styles'].push(style)
+#                logger.debug('STYLES: [%s]', str(cfg['styles']))
+
+        cfg["fixed"] = self.fixed
+
+
+        logger.debug("layer config for [%s] is [%s]", self.name, str(cfg))
         return cfg
 
 
