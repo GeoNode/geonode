@@ -283,7 +283,7 @@ class GeoNodeMapTest(TestCase):
                 self.assertEquals(layer["_permissions"]["change_permissions"], False)
 
         # - Test with Authenticated User
-        results = json.loads(get_web_page(test_url, username="admin", password="@dm1n", login_url=LOGIN_URL))
+        results = json.loads(get_web_page(test_url, username="admin", password="admin", login_url=LOGIN_URL))
         
         for layer in results["rows"]:
             if layer["_local"] == False:
