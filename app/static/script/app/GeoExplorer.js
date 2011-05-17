@@ -203,7 +203,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     var parts = options.url.replace(/&$/, "").split("?");
                     var params = Ext.apply(parts[1] && Ext.urlDecode(
                         parts[1]) || {}, options.params);
-                    var url = Ext.urlAppend(parts[0], Ext.urlEncode(params));
+                    url = Ext.urlAppend(parts[0], Ext.urlEncode(params));
                     delete options.params;
                     options.url = this.proxy + encodeURIComponent(url);
                 }
@@ -255,7 +255,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                         return {
                                             success: response.status == 200,
                                             records: []
-                                        }
+                                        };
                                     }
                                 },
                                 defaults: {
@@ -317,7 +317,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // list shadow covering list items
         Ext.form.ComboBox.prototype.getListParent = function() {
             return this.el.up(".x-window") || document.body;
-        }
+        };
         
         // don't draw window shadows - allows us to use autoHeight: true
         // without using syncShadow on the window
@@ -425,7 +425,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         layer.events.unregister("loadend", this, arguments.callee);
                     },
                     scope: this
-                })
+                });
             } 
         });
     },
@@ -596,6 +596,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             xtype: "gxp_wmslayerpanel",
                             autoHeight: true,
                             layerRecord: record,
+                            styling: false,
                             defaults: {
                                 autoHeight: true,
                                 hideMode: "offsets"
@@ -622,7 +623,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     });
                     stylesPanel.setTitle("Styles");
                     // add styles tab
-                    prop.items.get(0).add(stylesPanel)
+                    prop.items.get(0).add(stylesPanel);
                 }
                 prop.show();
             }
@@ -639,8 +640,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }, this),
             scope: this,
             listeners: {
-                "enable": function() {showStylesAction.enable()},
-                "disable": function() {showStylesAction.disable()}
+                "enable": function() {showStylesAction.enable();},
+                "disable": function() {showStylesAction.disable();}
             }
         });
         
@@ -651,7 +652,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             tooltip: this.layerStylesTipText,
             handler: createPropertiesDialog.createSequence(function() {
                 var node = layerTree.getSelectionModel().getSelectedNode();
-                this.propDlgCache[node.layer.id].items.get(0).setActiveTab(2);
+                var propsPanel = this.propDlgCache[node.layer.id].items.get(0);
+                propsPanel.setActiveTab(propsPanel.items.getCount()-1);
             }, this),
             scope: this
         });
@@ -699,7 +701,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         c.showAt(e.getXY());
                     }
                 },
-                beforemovenode: function(tree, node, oldParent, newParent, index) {
+                beforemovenode: function(tree, node, oldParent, newParent) {
                     // change the group when moving to a new container
                     if(oldParent !== newParent) {
                         var store = newParent.loader.store;
@@ -1046,7 +1048,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 if (record) {
                     if (record.get("group") === "background") {
                         var pos = layerStore.queryBy(function(rec) {
-                            return rec.get("group") === "background"
+                            return rec.get("group") === "background";
                         }).getCount();
                         layerStore.insert(pos, [record]);
                     } else {
@@ -1056,7 +1058,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         };
 
-        var source = this.layerSources[initialSourceId];
+        source = this.layerSources[initialSourceId];
         source.store.filterBy(function(r) {
             return !!source.getProjection(r);
         }, this);
@@ -1360,7 +1362,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                                 params[p] = params[p].join(",");
                                             }
                                         }
-                                    })
+                                    });
                                 },
                                 "print": function() {printWindow.close();},
                                 "printException": function(cmp, response) {
