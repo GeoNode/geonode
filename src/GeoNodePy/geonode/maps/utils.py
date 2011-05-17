@@ -534,6 +534,10 @@ def upload(incoming, user=None, overwrite=True, keywords = []):
         return results
 
 def _create_db_featurestore(name, data, overwrite = False, charset = None):
+    """
+        Create a database store then use it to import a shapefile into the database.
+        If the import fails then delete the store (and delete the PostGIS table for it).
+    """
     cat = Layer.objects.gs_catalog
     ds = cat.create_datastore(name)
     ds.connection_parameters.update(
