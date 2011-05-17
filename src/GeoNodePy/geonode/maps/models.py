@@ -1264,7 +1264,7 @@ class Layer(models.Model, PermissionLevelMixin):
         self.bbox = str([ float(gs_resource.native_bbox[0]),float(gs_resource.native_bbox[2]),float(gs_resource.native_bbox[1]),float(gs_resource.native_bbox[3])])
         self.llbbox = str([ float(gs_resource.latlon_bbox[0]),float(gs_resource.latlon_bbox[2]),float(gs_resource.latlon_bbox[1]),float(gs_resource.latlon_bbox[3])])
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
-            self.set_bbox(gs_resource.native_bbox, srs=srs)
+            self.set_bbox(gs_resource.native_bbox, srs=self.srs)
 
     def _autopopulate(self):
         if self.poc is None:
@@ -1600,7 +1600,7 @@ class Map(models.Model, PermissionLevelMixin):
                 'keywords' : self.keywords,
                 'officialurl' : self.officialurl
             },
-            'defaultSourceType': "gxp_gnsource",
+            'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
                 'layers': [layer_config(l, user) for l in layers],
