@@ -2,10 +2,11 @@ from itertools import cycle, izip
 import logging
 import re
 from django.db import transaction
+from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
 import geoserver
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
@@ -349,12 +350,16 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     if sld is not None:
         try:
             cat.create_style(name, sld)
-        except geoserver.catalog.ConflictingDataError, e:
-            msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (name, str(e))
+        except geoserver.catalog.ConflictingDataError:
+            msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (name)
             style = cat.get_style(name)
             logger.warn(msg)
             e.args = (msg,)
-
+        except Exception, e:
+            msg = 'There was an error creating a style for  %s in GeoServer: %s' %  (name, escape(str(e)))
+            style = cat.get_style(name)
+            logger.warn(msg)
+            e.args = (msg,)
         #FIXME: Should we use the fully qualified typename?
         publishing.default_style = cat.get_style(name)
         cat.save(publishing)
@@ -570,5 +575,8 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     try:
         cat.add_data_to_store(ds,name, data, overwrite, charset)
     except:
+        store_params = ds.connection_parameters
         cat.delete(ds, purge=True)
+        if store_params['dbtype'] and store_params['dbtype'] == 'postgis' and name != 'wmdata':
+            delete_from_postgis(name)
         raise
