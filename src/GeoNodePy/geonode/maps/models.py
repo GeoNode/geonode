@@ -26,9 +26,13 @@ import logging
 
 logger = logging.getLogger("geonode.maps.models")
 
+
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+
+
+
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -533,7 +537,7 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 def get_wms():
     global _wms
-    wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
+    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
     http = httplib2.Http()
     http.add_credentials(_user, _password)
