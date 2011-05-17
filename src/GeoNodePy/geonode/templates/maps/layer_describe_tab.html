@@ -135,7 +135,8 @@
                                 var geoEx = window.app;
                                 var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name', name: 'tiled'}]);
                                 var thisLayerRec = new LayerRec({title: '{{ layer.title }}', name: '{{ layer.typename }}', tiled: false});
-                                geoEx.reloadWorldMapSource([thisLayerRec]);
+                                //geoEx.reloadWorldMapSource([thisLayerRec]);
+                                geoEx.addWorldMapLayers([thisLayerRec]);
                              } catch (Exception) {
                                  Ext.Msg.alert("Layer Error", "An unexpected problem occurred and your layer could not be loaded.")
                              }

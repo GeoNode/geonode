@@ -158,15 +158,15 @@
     <description>httpclient used by geonodeSecurityClient to request authentication to GeoNode</description>
     <constructor-arg index="0">
       <description>Max connections per host</description>
-      <value>10</value>
+      <value>30</value>
     </constructor-arg>
     <constructor-arg index="1">
       <description>Connection time out in milliseconds</description>
-      <value>1000</value>
+      <value>30000</value>
     </constructor-arg>
     <constructor-arg index="2">
       <description>Read time out in milliseconds</description>
-      <value>1000</value>
+      <value>30000</value>
     </constructor-arg>
   </bean>
 

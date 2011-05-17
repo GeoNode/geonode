@@ -152,7 +152,7 @@ class LayerForm(forms.ModelForm):
     date.widget.widgets[0].attrs = {"class":"date"}
     date.widget.widgets[1].attrs = {"class":"time"}
 
-    geographic_bounding_box = forms.CharField(label = '*' + _('Geographic Bounding Box'), widget=forms.Textarea)
+    #geographic_bounding_box = forms.CharField(label = '*' + _('Geographic Bounding Box'), widget=forms.Textarea)
 
     temporal_extent_start = forms.DateField(required=False,label= _('Temporal Extent Start Date'), widget=forms.DateInput(attrs={"class":"date"}))
     temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
