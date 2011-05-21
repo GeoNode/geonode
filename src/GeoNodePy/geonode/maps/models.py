@@ -1106,9 +1106,11 @@ class Layer(models.Model, PermissionLevelMixin):
                 response, body = http.request(dc_url)
                 doc = XML(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
-                atts = [n.text for n in doc.findall(path)]
+                atts = {}
+                for n in doc.findall(path):
+                    atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:
-                atts = []
+                atts = {}
             return atts
 
     @property
@@ -1359,7 +1361,6 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['srs'] = self.srs
         cfg['bbox'] = simplejson.loads(self.bbox)
         cfg['llbbox'] = simplejson.loads(self.llbbox)
-        logger.debug('WTF')
         cfg['queryable'] = (self.storeType == 'dataStore'),
         cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=self)
         cfg['visibility'] = True
@@ -1898,7 +1899,7 @@ class MapLayer(models.Model):
         try:
             cfg = simplejson.loads(self.source_params)
         except:
-            cfg = dict(ptype = "gxp_wmscsource")
+            cfg = dict(ptype = "gxp_gnsource")
 
         if self.ows_url:
             cfg["url"] = self.ows_url

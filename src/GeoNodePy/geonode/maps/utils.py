@@ -276,7 +276,11 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     # ------------------
 
     try:
-        create_store(name, data, overwrite=overwrite, charset=charset)
+        if create_store == cat.create_coveragestore:
+            create_store(name, data, overwrite=overwrite)
+        else:
+            create_store(name, data, overwrite=overwrite, charset=charset)
+
     except geoserver.catalog.UploadError, e:
         msg = 'Could not save the layer %s, there was an upload error: %s' % (name, str(e))
         logger.warn(msg)
