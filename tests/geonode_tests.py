@@ -440,3 +440,19 @@ class GeoNodeMapTest(TestCase):
 
         # Clean up by deleting the layer from GeoNode's DB and GeoNetwork
         shp_layer.delete()
+
+
+    def test_keywords_upload(self):
+        """Check that keywords can be passed to file_upload
+        """
+        thefile = os.path.join(TEST_DATA, 'lembang_schools.shp')
+
+        uploaded = file_upload(thefile, keywords=['foo', 'bar'], overwrite=True)
+
+        keywords = uploaded.keyword_list()
+
+        msg='No keywords found in layer %s' % uploaded.name
+        assert len(keywords)>0, msg
+        assert 'foo' in uploaded.keyword_list(), 'Could not find "foo" in %s' % keywords
+        assert 'bar' in uploaded.keyword_list(), 'Could not find "bar" in %s' % keywords
+
