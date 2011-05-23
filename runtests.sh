@@ -14,8 +14,8 @@ fi
 # How can we test if its already activated?
 # Assumes that geonode and geonode_tests are next to each other
 echo ">>>> Activating VirtualEnv"
-source $RIAB_HOME/riab_env/bin/activate
+source $GEONODE_HOME/riab_env/bin/activate
 
 # Run the tests
 echo ">>>> Running GeoNode Integration Tests" 
-python manage.py test --settings=risiko.settings
+python manage.py test
