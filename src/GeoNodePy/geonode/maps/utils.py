@@ -430,6 +430,8 @@ def get_valid_user(user=None):
         theuser = User.objects.get(username=user)
     elif user.is_anonymous():
         raise GeoNodeException("The user uploading files must not be anonymous")
+    else:
+        theuser = user
 
     #FIXME: Pass a user in the unit tests that is not yet saved ;)
     assert isinstance(theuser, User)
