@@ -1089,8 +1089,6 @@ class Layer(models.Model, PermissionLevelMixin):
             res = onlineresources[0]
             self.distribution_url = res.url
             self.distribution_description = res.description
-        self.distribution_url = meta.distribution.onlineresource.url
-        self.distribution_description = meta.distribution.onlineresource.description
 
     def keyword_list(self):
         if self.keywords is None:
