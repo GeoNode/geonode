@@ -1121,10 +1121,8 @@ class Layer(models.Model, PermissionLevelMixin):
         }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
-        try:
-            cascading_delete(Layer.objects.gs_catalog, self.resource)
-        except Exception, ex:
-            logger.warn('Could not delete from geoserver: %s', str(ex))
+        cascading_delete(Layer.objects.gs_catalog, self.resource)
+
 
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog

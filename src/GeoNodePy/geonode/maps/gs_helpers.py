@@ -6,6 +6,7 @@ import logging
 import re
 import psycopg2
 
+
 logger = logging.getLogger("geonode.maps.gs_helpers")
 
 _punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
@@ -133,12 +134,9 @@ def cascading_delete(cat, resource):
                 if s is not None:
                     cat.delete(s, purge=True)
         cat.delete(resource)
-        store_params = store.connection_parameters
-        if store_params['dbtype'] and store_params['dbtype'] == 'postgis' and store.name != 'wmdata':
-            cat.delete(store)
-            delete_from_postgis(resource_name)
-        else:
-            cat.delete(store)
+        cat.delete(store)
+        if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis' and store.name != 'wmdata':
+                delete_from_postgis(resource_name)
 
 
 def delete_from_postgis(resource_name):
