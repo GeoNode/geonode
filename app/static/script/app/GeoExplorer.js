@@ -1059,6 +1059,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         source = this.layerSources[initialSourceId];
+        if (source.store.getCount() == 0) {
+            // assuming a lazy source
+            source.store.on("load", function() {
+                var index = sources.find("id", initialSourceId);
+                var rec = sources.getAt(index);
+                rec.set("title", source.title);
+                sourceComboBox.onSelect(rec, index);
+            });
+            source.store.load();
+        }
         source.store.filterBy(function(r) {
             return !!source.getProjection(r);
         }, this);
@@ -1092,8 +1102,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             value: initialSourceId,
             listeners: {
                 select: function(combo, record, index) {
-                    var source = this.layerSources[record.get("id")];
+                    var id = record.get("id");
+                    var source = this.layerSources[id];
                     var store = source.store;
+                    if (store.getCount() == 0) {
+                        // assuming a lazy source
+                        source.store.on("load", function() {
+                            var index = sources.find("id", id);
+                            var rec = sources.getAt(index);
+                            rec.set("title", source.title);
+                            sourceComboBox.onSelect(rec, index);
+                        });
+                        store.load();
+                    }
                     store.filterBy(function(r) {
                         return !!source.getProjection(r);
                     }, this);
@@ -1139,7 +1160,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             // add to combo and select
                             var record = new sources.recordType({
                                 id: id,
-                                title: this.layerSources[id].title || "Untitled" // TODO: titles
+                                title: this.layerSources[id].title || id // TODO: titles
                             });
                             sources.insert(0, [record]);
                             sourceComboBox.onSelect(record, 0);
