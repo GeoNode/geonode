@@ -580,7 +580,6 @@ def ajax_layer_permissions_by_email(request, layername):
     return ajax_layer_permissions(request, layername, True)
 
 def ajax_layer_permissions(request, layername, use_email=False):
-    logger.debug("Get layer")
     layer = get_object_or_404(Layer, typename=layername)
 
     if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
@@ -597,9 +596,7 @@ def ajax_layer_permissions(request, layername, use_email=False):
             mimetype='text/plain'
         )
 
-    logger.debug('get spec')
     permission_spec = json.loads(request.raw_post_data)
-    logger.debug('set permissions')
     set_layer_permissions(layer, permission_spec, use_email)
 
     return HttpResponse(
@@ -678,7 +675,6 @@ def ajax_map_permissions(request, mapid, use_email=False):
 
 
 def _create_new_user(user_email, map_layer_title, map_layer_url, map_layer_owner_id):
-    logger.debug("Making user")
     random_password = User.objects.make_random_password()
     user_name = re.sub(r'\W', r'', user_email.split('@')[0])
     user_length = len(user_name)
@@ -687,16 +683,13 @@ def _create_new_user(user_email, map_layer_title, map_layer_url, map_layer_owner
     while len(User.objects.filter(username=user_name)) > 0:
         user_name = user_name[0:user_length-4] + User.objects.make_random_password(length=4, allowed_chars='0123456789')
 
-    logger.debug("username will be [%s]", user_name)
     new_user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, site = settings.SITE_ID, send_email=False)
-    logger.debug("new user created, now creating profile")
     if new_user:
         new_profile = Contact(user=new_user, name=new_user.username, email=new_user.email)
         if settings.USE_CUSTOM_ORG_AUTHORIZATION and new_user.email.endswith(settings.CUSTOM_GROUP_EMAIL_SUFFIX):
             new_profile.is_org_member = True
             new_profile.member_expiration_dt = datetime.today() + timedelta(days=365)
         new_profile.save()
-        logger.debug('profile created')
         try:
             _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id, random_password)
         except:
@@ -921,13 +914,7 @@ def view(request, mapid, snapshot=None):
     if snapshot is None:
         config = map.viewer_json(request.user)
     else:
-            decodedid = num_decode(snapshot)
-            snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
-            logger.debug('CONFIG: [%s]', snapshot.config)
-            if snapshot.map == map:
-                config = simplejson.loads(snapshot.config)
-            else:
-                config = map.viewer_json(request.user)
+        config = snapshot_config(snapshot, map, request.user)
 
     first_visit = True
     if request.session.get('visit' + str(map.id), False):
@@ -2674,4 +2661,42 @@ def batch_delete(request):
     nmaps = len(spec.get('maps', []))
 
     return HttpResponse("Deleted %d layers and %d maps" % (nlayers, nmaps))
+
+def snapshot_config(snapshot, map, user):
+    """
+        Get the snapshot map configuration - look up WMS parameters (bunding box)
+        for local GeoNode layers
+    """
+     #Match up the layer with it's source
+    def snapsource_lookup(source, sources):
+            for k, v in sources.iteritems():
+                if v.get("id") == source.get("id"): return k
+            return None
+
+    #Set up the proper layer configuration
+    def snaplayer_config(layer, sources, user):
+        cfg = layer.layer_config(user)
+        src_cfg = layer.source_config()
+        source = snapsource_lookup(src_cfg, sources)
+        if source: cfg["source"] = source
+        if src_cfg.get("ptype", "gxp_wmscsource") == "gxp_wmscsource"  or src_cfg.get("ptype", "gxp_gnsource") == "gxp_gnsource" : cfg["buffer"] = 0
+        return cfg    
+
+
+    decodedid = num_decode(snapshot)
+    snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
+    if snapshot.map == map:
+        config = simplejson.loads(snapshot.config)
+        layers = [l for l in config["map"]["layers"]]
+        sources = config["sources"]
+        maplayers = []
+        for ordering, layer in enumerate(layers):
+            maplayers.append(
+            map.layer_set.from_viewer_config(
+                map, layer, config["sources"][layer["source"]], ordering))
+        config['map']['layers'] = [snaplayer_config(l,sources,user) for l in maplayers]
+    else:
+        config = map.viewer_json(user)
+    return config
+
 

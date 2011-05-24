@@ -1552,7 +1552,6 @@ class Map(models.Model, PermissionLevelMixin):
         """
         layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
         sejumps = self.jump_set.all()
-        logger.debug("sejumps: %s", sejumps)
         server_lookup = {}
         sources = dict()
 
