@@ -64,7 +64,7 @@ def default_map_config():
     _DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
 
     _default_map = Map(
-        title=DEFAULT_TITLE, 
+        title=DEFAULT_TITLE,
         abstract=DEFAULT_ABSTRACT,
         projection="EPSG:900913",
         center_x=_DEFAULT_MAP_CENTER[0],
@@ -965,13 +965,7 @@ def embed(request, mapid=None, snapshot=None):
         if snapshot is None:
             config = map.viewer_json(request.user)
         else:
-            decodedid = num_decode(snapshot)
-            snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
-            logger.debug('CONFIG: [%s]', snapshot.config)
-            if snapshot.map == map:
-                config = simplejson.loads(snapshot.config)
-            else:
-                config = map.viewer_json(request.user)
+            config = snapshot_config(snapshot, map, request.user)
 
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
@@ -1270,7 +1264,7 @@ def upload_layer(request):
             try:
                 tempdir, base_file, sld_file = form.write_files()
                 name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
-                saved_layer = save(name, base_file, request.user, 
+                saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
@@ -2680,7 +2674,7 @@ def snapshot_config(snapshot, map, user):
         source = snapsource_lookup(src_cfg, sources)
         if source: cfg["source"] = source
         if src_cfg.get("ptype", "gxp_wmscsource") == "gxp_wmscsource"  or src_cfg.get("ptype", "gxp_gnsource") == "gxp_gnsource" : cfg["buffer"] = 0
-        return cfg    
+        return cfg
 
 
     decodedid = num_decode(snapshot)
