@@ -244,7 +244,7 @@ msgstr "Cina - Hong Kong"
 #: maps/models.py:89
 msgid "China - Macao"
 msgstr "Cina - Macao"
-#TODO Luca
+
 #: maps/models.py:90
 msgid "Colombia"
 msgstr "Colombia"
@@ -1017,7 +1017,7 @@ more comprehensive (and more complex) advanced view. You can even use the \
 XML editor to create custom structures, but they have to be validated by \
 the system, so know what you do :-)"
 msgstr "Puoi il template in funzione delle tue esigenze. Puoi aggiungere \
-e rimuovere campi ed impostare informazioni predefinite (ad esempio il \
+e rimuovere campi ed impostare informazioni predefinite (ad esempio informazioni di contatto \
 recapito). "
 
 #: maps/models.py:479
@@ -1030,12 +1030,12 @@ msgstr "Nome dell'organizzazione"
 
 #: maps/models.py:481
 msgid "Position Name"
-msgstr "Nombre de la Posición"
+msgstr "Nome del ruolo"
 
 #: maps/models.py:482 templates/maps/layer.html:167
 #: templates/profiles/profile_detail.html:11
 msgid "Voice"
-msgstr "Voz"
+msgstr "Voce"
 
 #: maps/models.py:483
 msgid "Facsimile"
@@ -1043,19 +1043,19 @@ msgstr "Fax"
 
 #: maps/models.py:484
 msgid "Delivery Point"
-msgstr "Punto de Correspondencia"
+msgstr "Punto di contatto"
 
 #: maps/models.py:485
 msgid "City"
-msgstr "Ciudad"
+msgstr "Città"
 
 #: maps/models.py:486
 msgid "Administrative Area"
-msgstr "Área Administrativa"
+msgstr "Área Amministrativa"
 
 #: maps/models.py:487
 msgid "Postal Code"
-msgstr "Código Postal"
+msgstr "Codice Postale"
 
 #: maps/models.py:626
 msgid "date"
@@ -1063,59 +1063,59 @@ msgstr "Fecha"
 
 #: maps/models.py:628
 msgid "date type"
-msgstr "Tipo de Fecha"
+msgstr "tipo di dato"
 
 #: maps/models.py:630
 msgid "edition"
-msgstr "Edición"
+msgstr "edizione"
 
 #: maps/models.py:631
 msgid "abstract"
-msgstr "Resumen"
+msgstr "abstract"
 
 #: maps/models.py:632
 msgid "purpose"
-msgstr "Propósito"
+msgstr "scopo"
 
 #: maps/models.py:633
 msgid "maintenance frequency"
-msgstr "Frecuencia de Mantenimiento"
+msgstr "frequenza di aggiornamento"
 
 #: maps/models.py:639
 msgid "keywords"
-msgstr "Palabras claves"
+msgstr "parole chiave"
 
 #: maps/models.py:640
 msgid "keywords region"
-msgstr "Región de palabras claves"
+msgstr "parole chiave della regione"
 
 #: maps/models.py:641
 msgid "constraints use"
-msgstr "Limitaciones de Uso"
+msgstr "Limiti di utilizzo"
 
 #: maps/models.py:642
 msgid "constraints other"
-msgstr "Otras limitaciones"
+msgstr "Altre restrizioni"
 
 #: maps/models.py:643
 msgid "spatial representation type"
-msgstr "Tipo de representación espacial"
+msgstr "Tipologia di rappresentazione"
 
 #: maps/models.py:646
 msgid "language"
-msgstr "Idioma"
+msgstr "lingua"
 
 #: maps/models.py:647
 msgid "topic_category"
-msgstr "Tema_Categoría "
+msgstr "Tema_Categoría"
 
 #: maps/models.py:650
 msgid "temporal extent start"
-msgstr "Inicio de medida temporal"
+msgstr "inizio dell'intervallo temporale"
 
 #: maps/models.py:651
 msgid "temporal extent end"
-msgstr "Fin de medida temporal"
+msgstr "fine dell'intervallo temporale"
 
 #: maps/models.py:652
 msgid "geographic bounding box"
