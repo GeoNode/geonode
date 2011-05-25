@@ -58,7 +58,12 @@
                 listeners: {
                     "ready": function() {
                         var map = app.mapPanel.map;
-                        map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
+                        layerExtent = map.layers.slice(-1)[0].maxExtent;
+                        if (layerExtent.left <= map.maxExtent.left || layerExtent.right >= map.maxExtent.right || layerExtent.top >= map.maxExtent.top || layerExtent.bottom <= map.maxExtent.bottom)
+                            {map.zoomTo(1)}
+                        else
+                            {map.zoomToExtent(layerExtent)};
+
                     },
                     "beforeunload": function() {
                         if (modified) {
