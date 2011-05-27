@@ -17,7 +17,8 @@ NOSE_ARGS = [
         "--detailed-errors",
         "--with-coverage",
         "--cover-package=geonode",
-        "--with-xunit",
+        "--with-xunit"
+        # , "tests.geonode_tests:GeoNodeMapTest.test_tiff"
         ]
 
 try:
