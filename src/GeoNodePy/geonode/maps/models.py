@@ -1083,7 +1083,7 @@ class Layer(models.Model, PermissionLevelMixin):
         meta = self.metadata_csw()
         if meta is None:
             return
-        self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
+        self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
         self.distribution_url = meta.distribution.onlineresource.url
         self.distribution_description = meta.distribution.onlineresource.description
 
