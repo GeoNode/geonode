@@ -1284,7 +1284,7 @@ msgstr "Non hai i permessi per visualizzare i privilegi su questa mappa"
 
 #: maps/views.py:534
 msgid "You are not permitted to delete this map."
-msgstr "Non hai i permessi per eliminare questa mappa.
+msgstr "Non hai i permessi per eliminare questa mappa."
 
 #: maps/views.py:556 maps/views.py:620
 msgid "You are not allowed to view this map."
@@ -1373,7 +1373,8 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"Non hai i permessi per effettuare questa operazione.\n"
+"          Non hai i permessi per effettuare questa operazione.  \n"
+"      "
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -1395,7 +1396,7 @@ msgid ""
 msgstr ""
 "\n"
 "La pagina che hai richiesto non esiste. Magari stai usando dei segnalibri vecchi?\n"
-
+"    "
 #: templates/500.html:6
 msgid "Internal Server Error"
 msgstr "Errore interno del server"
@@ -1408,7 +1409,7 @@ msgid ""
 msgstr ""
 "\n"
 "Si è verificato un errore interno. Prova ancora, e se il problema persiste, contatta l'amministratore del sito."
-
+"    "
 #: templates/data_base.html:5
 msgid "Browse Data"
 msgstr "Esplora dati"
@@ -1456,7 +1457,10 @@ msgid ""
 " \n"
 "    If you are interested in information about accessing this information through OGC services, please visit our\n"
 "    "
-msgstr "Se sei interessato ad ottenere informazioni si come accedere a questi dati usando servizi OGC, visita il nostro\n"
+msgstr ""
+" \n"
+"    Se sei interessato ad ottenere informazioni si come accedere a questi dati usando servizi OGC, visita il nostro\n"
+"    "
 
 #: templates/data_base.html:72
 msgid "developer page"
@@ -1773,7 +1777,10 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Qui puoi scaricare tutti i layers di questa mappa che sono gestiti su questo GeoNode. I seguenti layer saranno scaricati:\n"
+"    Qui puoi scaricare tutti i layer di questa mappa che \n"
+"    sono gestiti su questo GeoNode." 
+"    I seguenti layer saranno scaricati:\n"
+"    "
 
 #: templates/maps/download.html:81
 msgid ""
@@ -1783,7 +1790,9 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Inoltre, la mappa contiene questi layer che non possono essere scaricati per vincoli di sicurezza:\n"
+"    Inoltre, la mappa contiene questi layer che non possono essere scaricati\n" 
+"    per vincoli di sicurezza:\n"
+"    "
 
 #: templates/maps/download.html:89
 msgid ""
@@ -1793,7 +1802,9 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Infine, la mappa contiene questi layer che non possono essere scaricati perchè non sono disponibili direttamente da questo GeoNode:\n"
+"    Infine, la mappa contiene questi layer che non possono essere scaricati\n" 
+"    perchè non sono disponibili direttamente da questo GeoNode:\n"
+"    "
 
 #: templates/maps/embed.html:4 templates/maps/view.html:5
 msgid "Map Viewer"
