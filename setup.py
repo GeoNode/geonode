@@ -1,5 +1,5 @@
 import os
-#pippo
+
 try:
     import paver
 except ImportError:
