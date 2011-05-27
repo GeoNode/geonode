@@ -942,6 +942,7 @@ class Layer(models.Model, PermissionLevelMixin):
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
         gn.delete_layer(self)
+        gn.logout()
 
     def save_to_geonetwork(self):
         gn = Layer.objects.gn_catalog
@@ -951,6 +952,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.metadata_links = [("text/xml", "TC211", md_link)]
         else:
             gn.update_layer(self)
+        gn.logout()
 
     @property
     def resource(self):
@@ -1056,6 +1058,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
             self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
+            gn.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
             self.publishing.attribution_link = self.poc.user.get_absolute_url()
