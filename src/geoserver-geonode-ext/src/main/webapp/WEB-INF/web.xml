@@ -57,7 +57,8 @@
     <!-- pick up all spring application contexts -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value>
+        <!-- param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value-->
+        <param-value>classpath*:/applicationContext.xml classpath*:/geonodeApplicationSecurityContext.xml</param-value>
     </context-param>
 
     <!-- Use GeoNode specific filter chain -->
