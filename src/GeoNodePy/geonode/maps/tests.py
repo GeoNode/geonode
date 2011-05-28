@@ -1,11 +1,12 @@
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 
 import geonode.maps.models
 
 from geonode.maps.models import Map, Layer
+from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock
 
@@ -709,3 +710,30 @@ community."
         self.assertEqual(lyr.keyword_list(), ["saving", "keywords"])
         self.assertEqual(lyr.resource.keywords, ["saving", "keywords"])
         self.assertEqual(_gs_resource.keywords, ["saving", "keywords"])
+
+    def test_get_valid_user(self):
+        # Verify it accepts an admin user
+        adminuser = User.objects.get(is_superuser=True)
+        valid_user = get_valid_user(adminuser)
+        msg = ('Passed in a valid admin user "%s" but got "%s" in return'
+                % (adminuser, valid_user))
+        assert valid_user.id == adminuser.id, msg
+
+        # Verify it returns a valid user after receiving None
+        valid_user = get_valid_user(None)
+        msg = ('Expected valid user after passing None, got "%s"' % valid_user)
+        assert isinstance(valid_user, User), msg
+
+        newuser = User.objects.create(username='arieluser')
+        valid_user = get_valid_user(newuser)
+        msg = ('Passed in a valid user "%s" but got "%s" in return'
+                % (newuser, valid_user))
+        assert valid_user.id == newuser.id, msg
+
+        valid_user = get_valid_user('arieluser')
+        msg = ('Passed in a valid user by username "%s" but got'
+               ' "%s" in return' % ('arieluser', valid_user))
+        assert valid_user.username == 'arieluser', msg
+
+        nn = AnonymousUser()
+        self.assertRaises(GeoNodeException, get_valid_user, nn)
