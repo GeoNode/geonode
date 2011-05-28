@@ -703,7 +703,7 @@ class Layer(models.Model, PermissionLevelMixin):
         dx = float(bbox[1]) - float(bbox[0])
         dy = float(bbox[3]) - float(bbox[2])
 
-        dataAspect = dx / dy
+        dataAspect = 1 if dy == 0 else dx / dy
 
         height = 550
         width = int(height * dataAspect)
