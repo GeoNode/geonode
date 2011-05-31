@@ -703,7 +703,7 @@ class Layer(models.Model, PermissionLevelMixin):
         dx = float(bbox[1]) - float(bbox[0])
         dy = float(bbox[3]) - float(bbox[2])
 
-        dataAspect = dx / dy
+        dataAspect = 1 if dy == 0 else dx / dy
 
         height = 550
         width = int(height * dataAspect)
@@ -942,6 +942,7 @@ class Layer(models.Model, PermissionLevelMixin):
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
         gn.delete_layer(self)
+        gn.logout()
 
     def save_to_geonetwork(self):
         gn = Layer.objects.gn_catalog
@@ -951,6 +952,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.metadata_links = [("text/xml", "TC211", md_link)]
         else:
             gn.update_layer(self)
+        gn.logout()
 
     @property
     def resource(self):
@@ -1056,6 +1058,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
             self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
+            gn.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
             self.publishing.attribution_link = self.poc.user.get_absolute_url()
@@ -1083,13 +1086,12 @@ class Layer(models.Model, PermissionLevelMixin):
         meta = self.metadata_csw()
         if meta is None:
             return
-        self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
+        self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
         onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
         if len(onlineresources) == 1:
             res = onlineresources[0]
             self.distribution_url = res.url
             self.distribution_description = res.description
-        # else: TODO
 
     def keyword_list(self):
         if self.keywords is None:
