@@ -113,8 +113,8 @@ def edit_profile(request, form_class=None, success_url=None,
                               { 'form': form,
                                 'profile': profile_obj,
                                 'is_org_user': settings.USE_CUSTOM_ORG_AUTHORIZATION and profile_obj.is_org_member,
-                                'is_org_current': settings.USE_CUSTOM_ORG_AUTHORIZATION and profile_obj.member_expiration_dt > datetime.today().date(),
-                                'org_expiration_dt': profile_obj.member_expiration_dt.strftime("%B %d %Y")
+                                'is_org_current': settings.USE_CUSTOM_ORG_AUTHORIZATION and profile_obj.member_expiration_dt is not None and profile_obj.member_expiration_dt > datetime.today().date(),
+                                'org_expiration_dt': datetime.today().date().strftime("%B %d %Y") if profile_obj.member_expiration_dt is None else profile_obj.member_expiration_dt.strftime("%B %d %Y")
                                 },
                               context_instance=context)
 edit_profile = login_required(edit_profile)

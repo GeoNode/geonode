@@ -187,7 +187,7 @@ def cleanup(name, uuid):
 
 
 _separator = '\n' + ('-' * 100) + '\n'
-def save(layer, base_file, user, overwrite = True, title=None, abstract=None, permissions=None, keywords = [], charset='ISO-8891-1', sldfile=None):
+def save(layer, base_file, user, overwrite = True, title = None, abstract = None, permissions = None, keywords = [], charset = 'ISO-8891-1', sldfile = None):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer is created.
@@ -492,7 +492,7 @@ def check_geonode_is_up():
                 "Please make sure you have started GeoNetwork." % settings.GEONETWORK_BASE_URL)
         raise GeoNodeException(msg)
 
-def file_upload(filename, user=None, title=None, overwrite=True, keywords = [], charset='ISO-8891-1'):
+def file_upload(filename, user=None, title=None, overwrite=True, keywords = [], charset='ISO-8859-1'):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -517,12 +517,12 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords = [], 
     except Layer.DoesNotExist, e:
         layer = name
 
-    new_layer = save(layer, filename, theuser, overwrite, keywords, charset)
+    new_layer = save(layer, filename, theuser, overwrite, title, keywords=keywords, charset=charset)
 
     return new_layer
 
 
-def upload(incoming, user=None, overwrite=True, keywords = [], charset='ISO-8891-1'):
+def upload(incoming, user=None, overwrite=True, keywords = [], charset='ISO-8859-1'):
     """Upload a directory of spatial data files to GeoNode and verifies each layer is in GeoServer.
 
        Supported extensions are: .shp, .tif, and .zip (of a shapfile).

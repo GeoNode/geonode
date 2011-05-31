@@ -29,13 +29,9 @@ logger = logging.getLogger("geonode.maps.models")
 from gs_helpers import cascading_delete
 
 
-
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
-
-
-
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -660,7 +656,6 @@ def get_wms():
             )
         )
     response, body = http.request(wms_url)
-    logger.debug('GetCapabilities: %s', body)
     _wms = WebMapService(wms_url, xml=body)
 
 def get_csw():
@@ -709,7 +704,7 @@ class LayerManager(models.Manager):
             try:
                 store = resource.store
                 workspace = store.workspace
-                logger.debug("Import %s", resource.name)
+
                 layer, created = self.get_or_create(name=resource.name, defaults = {
                     "workspace": workspace.name,
                     "store": store.name,
@@ -1123,7 +1118,6 @@ class Layer(models.Model, PermissionLevelMixin):
     def delete_from_geoserver(self):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
 
-
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
         gn.delete_layer(self)
@@ -1282,7 +1276,7 @@ class Layer(models.Model, PermissionLevelMixin):
         meta = self.metadata_csw()
         if meta is None:
             return
-        self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
+        self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
         onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
         if len(onlineresources) == 1:
                 res = onlineresources[0]

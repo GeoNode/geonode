@@ -125,18 +125,18 @@ def cascading_delete(cat, resource):
     logger.debug("CASCADE DELETE %s", resource.name if resource else 'NULL')
     if resource:
         resource_name = resource.name
+        store = resource.store
         lyr = cat.get_layer(resource_name)
         if(lyr is not None): #Already deleted
-            store = resource.store
             styles = lyr.styles + [lyr.default_style]
             cat.delete(lyr)
             for s in styles:
                 if s is not None:
                     cat.delete(s, purge=True)
         cat.delete(resource)
-        cat.delete(store)
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis' and store.name != 'wmdata':
                 delete_from_postgis(resource_name)
+        cat.delete(store)
 
 
 def delete_from_postgis(resource_name):
