@@ -140,7 +140,6 @@ def cascading_delete(cat, resource):
             if s is not None:
                 cat.delete(s, purge=True)
         cat.delete(resource)
-        store_params = store.connection_parameters
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             cat.delete(store)
             delete_from_postgis(resource_name)

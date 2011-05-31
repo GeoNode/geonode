@@ -428,9 +428,10 @@ def get_valid_user(user=None):
         theuser = get_default_user()
     elif isinstance(user, basestring):
         theuser = User.objects.get(username=user)
-
-    if theuser.is_anonymous():
+    elif user.is_anonymous():
         raise GeoNodeException("The user uploading files must not be anonymous")
+    else:
+        theuser = user
 
     #FIXME: Pass a user in the unit tests that is not yet saved ;)
     assert isinstance(theuser, User)
@@ -485,7 +486,8 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords = []):
     except Layer.DoesNotExist, e:
         layer = name
 
-    new_layer = save(layer, filename, theuser, overwrite, keywords)
+    new_layer = save(layer, filename, theuser, overwrite, keywords=keywords)
+
 
     return new_layer
 
@@ -533,6 +535,7 @@ def upload(incoming, user=None, overwrite=True, keywords = []):
                         results.append({'file': filename, 'name': layer.name})
         return results
 
+
 def _create_db_featurestore(name, data, overwrite = False, charset = None):
     """
         Create a database store then use it to import a shapefile into the database.
@@ -553,4 +556,5 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         if store_params['dbtype'] and store_params['dbtype'] == 'postgis':
             delete_from_postgis(name)
         raise
+
 
