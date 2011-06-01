@@ -705,3 +705,15 @@ community."
         self.assertEqual(lyr.keyword_list(), ["saving", "keywords"])
         self.assertEqual(lyr.resource.keywords, ["saving", "keywords"])
         self.assertEqual(_gs_resource.keywords, ["saving", "keywords"])
+
+    def test_layer_generate_links(self):
+        """Verify generating download/image links for a layer"""
+        lyr = Layer.objects.get(pk=1)
+        orig_bbox = lyr.resource.latlon_bbox
+        lyr.resource.latlon_bbox = ["1", "2", "3", "3"]
+        try:
+            lyr.download_links()
+        except ZeroDivisionError:
+            self.fail("Threw division error while generating download links")
+        finally:
+            lyr.resource.latlon_bbox = orig_bbox
