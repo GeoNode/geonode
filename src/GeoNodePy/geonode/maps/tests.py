@@ -24,8 +24,12 @@ Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
 geonode.maps.models.get_csw = Mock()
 geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
+
+_csw_resource = Mock()
+_csw_resource.protocol = "WWW:LINK-1.0-http--link"
+_csw_resource.url = "http://example.com/"
+_csw_resource.description = "example link"
+geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
 
 class MapTest(TestCase):
     """Tests geonode.maps app/module
@@ -315,7 +319,7 @@ community."
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
         def is_wms_layer(x):
-            return cfg['sources'][x['source']]['ptype'] == 'gx_wmssource'
+            return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
         self.assertEquals(layernames, ['base:CA',])
 

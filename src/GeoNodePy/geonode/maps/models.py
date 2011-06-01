@@ -516,7 +516,7 @@ class Contact(models.Model):
 
 _viewer_projection_lookup = {
     "EPSG:900913": {
-        "maxResolution": 156543.0339,
+        "maxResolution": 156543.03390625,
         "units": "m",
         "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
     },
@@ -537,7 +537,7 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 def get_wms():
     global _wms
-    wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
+    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
     http = httplib2.Http()
     http.add_credentials(_user, _password)
@@ -942,6 +942,7 @@ class Layer(models.Model, PermissionLevelMixin):
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
         gn.delete_layer(self)
+        gn.logout()
 
     def save_to_geonetwork(self):
         gn = Layer.objects.gn_catalog
@@ -951,6 +952,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.metadata_links = [("text/xml", "TC211", md_link)]
         else:
             gn.update_layer(self)
+        gn.logout()
 
     @property
     def resource(self):
@@ -1056,6 +1058,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
             self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
+            gn.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
             self.publishing.attribution_link = self.poc.user.get_absolute_url()
@@ -1084,8 +1087,12 @@ class Layer(models.Model, PermissionLevelMixin):
         if meta is None:
             return
         self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
-        self.distribution_url = meta.distribution.onlineresource.url
-        self.distribution_description = meta.distribution.onlineresource.description
+        if hasattr(meta.distribution, 'online'):
+            onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+            if len(onlineresources) == 1:
+                res = onlineresources[0]
+                self.distribution_url = res.url
+                self.distribution_description = res.description
 
     def keyword_list(self):
         if self.keywords is None:
@@ -1269,7 +1276,7 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-        configs.append({"ptype":"gx_wmssource", "url": settings.GEOSERVER_BASE_URL + "wms"})
+        configs.append({"ptype":"gxp_wmscsource", "url": "/geoserver/wms"})
 
         i = 0
         for source in uniqify(configs):
@@ -1287,7 +1294,6 @@ class Map(models.Model, PermissionLevelMixin):
             src_cfg = l.source_config();
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
-            if src_cfg.get("ptype", "gx_wmssource") == "gx_wmssource": cfg["buffer"] = 0
             return cfg
 
         config = {
@@ -1296,7 +1302,7 @@ class Map(models.Model, PermissionLevelMixin):
                 'title':    self.title,
                 'abstract': self.abstract
             },
-            'defaultSourceType': "gx_wmssource",
+            'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
                 'layers': [layer_config(l) for l in layers],
@@ -1305,6 +1311,10 @@ class Map(models.Model, PermissionLevelMixin):
                 'zoom': self.zoom
             }
         }
+        '''
+        Mark the last added layer as selected - important for data page
+        '''
+        config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
@@ -1526,7 +1536,7 @@ class MapLayer(models.Model):
         try:
             cfg = simplejson.loads(self.source_params)
         except:
-            cfg = dict(ptype = "gx_wmssource")
+            cfg = dict(ptype = "gxp_wmscsource")
 
         if self.ows_url: cfg["url"] = self.ows_url
 

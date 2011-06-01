@@ -27,7 +27,11 @@ var app;
 Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
-        useBackgroundCapabilities: false,
+        tools: [{
+            ptype: "gxp_wmsgetfeatureinfo",
+            actionTarget: "main.tbar",
+            outputConfig: {width: 400, height: 300}
+        }],
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service 

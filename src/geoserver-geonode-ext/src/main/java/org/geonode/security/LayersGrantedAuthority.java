@@ -5,10 +5,11 @@
 package org.geonode.security;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.acegisecurity.GrantedAuthority;
+import org.springframework.security.GrantedAuthority;
 
 /**
  * An authority marking the user credentials read/only and read/write access to layers
@@ -45,10 +46,35 @@ public class LayersGrantedAuthority implements GrantedAuthority {
      * This is not a role, so we return {@code null}, by API spec.
      * 
      * @return {@code null}
-     * @see org.acegisecurity.GrantedAuthority#getAuthority()
+     * @see org.springframework.security.GrantedAuthority#getAuthority()
      */
     public String getAuthority() {
         return null;
+    }
+
+    public int compareTo(Object o) {
+        if (!(o instanceof LayersGrantedAuthority)) {
+            return 0;
+        }
+
+        LayersGrantedAuthority that = (LayersGrantedAuthority) o;
+
+        if (this.accessMode != that.accessMode) {
+            List<LayerMode> modes = Arrays.asList(LayerMode.values());
+            return modes.indexOf(this.accessMode) - modes.indexOf(that.accessMode);
+        }
+
+        if (this.layerNames.size() != that.layerNames.size()) {
+            return this.layerNames.size() - that.layerNames.size();
+        } else {
+            for (int i = 0; i < this.layerNames.size(); i++) {
+                int comparison = this.layerNames.get(i).compareTo(that.layerNames.get(i));
+                if (comparison != 0)
+                    return comparison;
+            }
+        }
+
+        return 0;
     }
 
 }

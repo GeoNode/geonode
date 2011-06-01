@@ -18,6 +18,11 @@
         var styleEditor, modified = false;
         Ext.onReady(function() {
             var config = {
+                tools: [{
+                    ptype: "gxp_wmsgetfeatureinfo",
+                    actionTarget: "main.tbar",
+                    outputConfig: {width: 400, height: 200, panIn: false}
+                }],
                 proxy: "/proxy/?url=",
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
 
@@ -58,9 +63,9 @@
             config = Ext.apply(config, {{ viewer|safe }});
 
             app = new GeoExplorer.Viewer(config);
-
+            
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
-                app.mapPanel.map.layers.slice(-1)[0].mergeNewParams({
+                app.selectedLayer.getLayer().mergeNewParams({
                     "STYLES": elem.value,
                     "_dc": Math.random()
                 });
@@ -100,47 +105,18 @@
         });
 
         function showStyle(styleName) {
-            var map = app.mapPanel.map;
-            var layerRecord = app.mapPanel.layers.getByLayer(
-                map.layers.slice(-1)[0]);
-            var stylesPanel;
-            if (!styleEditor) {
-                stylesPanel = app.createStylesPanel({
-                    layerRecord: layerRecord,
-                    styleName: styleName,
-                    editable: {{ user.is_authenticated|lower }},
-                    listeners: {
-                        "saved": function() {
-                            modified = false;
-                            window.location.reload();
-                        }
-                    }
-                });
-                stylesPanel.items.get(0).on({
-                    "modified": function() {modified = true;}
-                });
-                styleEditor = new Ext.Window({
-                    title: "Styles",
-                    autoHeight: true,
-                    width: 280,
-                    closeAction: "hide",
-                    bodyStyle: "background-color: white;",
-                    items: stylesPanel,
-                    listeners: {
-                        "beforeclose": function() {
-                            styleEditor = null;
-                        }
+            
+            if (!styleName) {
+                Ext.ComponentMgr.all.on("add", function(index, object) {
+                    if (object instanceof gxp.WMSStylesDialog) {
+                        Ext.ComponentMgr.all.un("add", arguments.callee);
+                        object.on("ready", function() {
+                            object.addStyle();
+                        }, this, {single: true});
                     }
                 });
             }
-            var stylesDlg = styleEditor.items.get(0).items.get(0);
-            if (styleName && !stylesPanel) {
-                var store = stylesDlg.stylesStore;
-                var styleRec = store.getAt(store.find("name", styleName));
-                stylesDlg.changeStyle(styleRec, {updateCombo: true});
-            }
-            styleName || stylesDlg.addStyle();
-            styleEditor.show();
+            app.tools["styler"].actions[0].execute();
         }
 {% endautoescape %}
     </script>
@@ -247,12 +223,12 @@
     <p> {% trans "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style." %}
     <br/>
     <span class="styles-list">
-        <input type="radio" name="style" value="{{layer.publishing.default_style.name}}" checked="checked"/>
-        <span class="style-title"> {{ layer.default_style.name|title }} </span>
+        <input type="radio" name="style" id="{{layer.publishing.default_style.name}}" value="{{layer.publishing.default_style.name}}" checked="checked"/>
+        <label for="{{layer.publishing.default_style.name}}" class="style-title"> {{ layer.default_style.name|title }} </label>
         <a href="{{ layer.default_style.body_href }}">SLD</a><br/>
     {% for style in layer.styles %} 
-        <input type="radio" name="style" value="{{style.name}}"/>
-        <span class="style-title"> {{ style.name|title }} </span>
+        <input type="radio" name="style" id="{{style.name}}" value="{{style.name}}"/>
+        <label for="{{style.name}}" class="style-title"> {{ style.name|title }} </label>
         <a href="{{ style.body_href }}">SLD</a><br/>
     {% endfor %}
     </span>

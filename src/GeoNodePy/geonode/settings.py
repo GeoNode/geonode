@@ -175,7 +175,7 @@ MAP_BASELAYERSOURCES = {
         "ptype":"gx_olsource"
     },
     "capra": {
-        "url":"http://localhost:8001/geoserver/wms"
+        "url":"/geoserver/wms"
     },
     "google":{
         "ptype":"gx_googlesource",

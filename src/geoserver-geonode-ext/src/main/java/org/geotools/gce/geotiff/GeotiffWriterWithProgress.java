@@ -48,9 +48,10 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.Hints;
-import org.geotools.gce.geotiff.adapters.CRS2GeoTiffMetadataAdapter;
-import org.geotools.gce.geotiff.adapters.GeoTiffConstants;
-import org.geotools.gce.geotiff.adapters.GeoTiffIIOMetadataEncoder;
+import org.geotools.coverage.grid.io.imageio.geotiff.CRS2GeoTiffMetadataAdapter;
+import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
+import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataEncoder;
+import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffException;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.resources.i18n.Vocabulary;
@@ -215,8 +216,7 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
         if (crs instanceof ProjectedCRS || crs instanceof GeographicCRS) {
 
             // creating geotiff metadata
-            final CRS2GeoTiffMetadataAdapter adapter = (CRS2GeoTiffMetadataAdapter) CRS2GeoTiffMetadataAdapter
-                    .get(crs);
+            final CRS2GeoTiffMetadataAdapter adapter = new CRS2GeoTiffMetadataAdapter(crs);
             final GeoTiffIIOMetadataEncoder metadata = adapter.parseCoordinateReferenceSystem();
             if (!Double.isNaN(inNoData))
                 metadata.setNoData(inNoData);
