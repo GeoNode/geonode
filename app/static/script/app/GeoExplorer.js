@@ -232,7 +232,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                         return {
                                             success: response.status == 200,
                                             records: []
-                                        }
+                                        };
                                     }
                                 },
                                 defaults: {
@@ -296,7 +296,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // list shadow covering list items
         Ext.form.ComboBox.prototype.getListParent = function() {
             return this.el.up(".x-window") || document.body;
-        }
+        };
         
         // don't draw window shadows - allows us to use autoHeight: true
         // without using syncShadow on the window
@@ -375,7 +375,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             layerPanelConfig: {
                 "gxp_wmslayerpanel": {rasterStyling: true, sameOriginStyling: false}
             },
-            actionTarget: ["treetbar", "treecontent.contextMenu"],
+            actionTarget: ["treetbar", "treecontent.contextMenu"]
         }, {
             ptype: "gxp_styler",
             rasterStyling: true,
@@ -429,7 +429,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         layer.events.unregister("loadend", this, arguments.callee);
                     },
                     scope: this
-                })
+                });
             } 
         });
     },
@@ -775,7 +775,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                                 params[p] = params[p].join(",");
                                             }
                                         }
-                                    })
+                                    });
                                 },
                                 "print": function() {printWindow.close();},
                                 "printException": function(cmp, response) {
