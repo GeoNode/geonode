@@ -16,6 +16,7 @@ var mapurl = "{% url geonode.maps.views.view map.id %}";
 	{% endif %}
 {% endif %}
 
+
 Ext.onReady(function() {
 	var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;</span><a  href=\"" + mapurl + "edit/\">Share</a><span>&nbsp;/&nbsp;Delete Map</span>");
 	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
@@ -27,9 +28,10 @@ Ext.onReady(function() {
 
 <form action="/maps/{{map.id}}/edit/?remove" method="POST">
 	{% csrf_token %}
+     <input type="hidden" value="{{next}}" id="next" name="next">
 	<input type="submit" value="{% trans "Yes, I am sure"  %}" />
 </form>
 <form action="/maps/{{map.id}}/edit/" method="GET">
-    <button type="submit">{% trans "No, don't remove it" %}</button>
+    <button type="submit" onclick="javascript: history.go(-1);return false;">{% trans "No, don't remove it" %}</button>
 </form>
 {% endblock %}

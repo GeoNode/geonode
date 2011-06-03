@@ -735,6 +735,8 @@ def deletemap(request, mapid):
             RequestContext(request, {'error_message':
                 _("You are not permitted to delete this map.")})), status=401)
 
+
+
     if request.method == 'GET':
         return render_to_response("maps/map_remove.html", RequestContext(request, {
             'map': map,
@@ -745,8 +747,7 @@ def deletemap(request, mapid):
         for layer in layers:
             layer.delete()
         map.delete()
-
-        return HttpResponseRedirect(reverse("geonode.maps.views.maps"))
+        return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
 
 @login_required
 def deletemapnow(request, mapid):
@@ -767,7 +768,7 @@ def deletemapnow(request, mapid):
         snapshot.delete()
     map.delete()
 
-    return HttpResponseRedirect(reverse("geonode.maps.views.maps"))
+    return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
 
 def mapdetail(request,mapid):
     '''
@@ -1157,7 +1158,7 @@ def _removeLayer(request,layer):
             }))
         if (request.method == 'POST'):
             layer.delete()
-            return HttpResponseRedirect(reverse("data"))
+            return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
         else:
             return HttpResponse("Not allowed",status=403)
     else:
@@ -1203,7 +1204,7 @@ def layerController(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if ( "describe" in request.META['QUERY_STRING'] ):
         return _describe_layer(request,layer)
-    if (request.META['QUERY_STRING'] == "remove"):
+    if ("remove" in request.META['QUERY_STRING']):
         return _removeLayer(request,layer)
     if (request.META['QUERY_STRING'] == "update"):
         return _updateLayer(request,layer)
@@ -1685,6 +1686,7 @@ def metadata_search(request):
     # grab params directly to implement defaults as
     # opposed to panicy django forms behavior.
     query = params.get('q', '')
+    logger.debug("QUERY:%s", query)
     try:
         start = int(params.get('start', '0'))
     except:

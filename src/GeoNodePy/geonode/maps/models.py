@@ -1238,6 +1238,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.abstract = self.abstract
             self.resource.name= self.name
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
+            self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
             logger.debug("saved?")
             gn.logout()
@@ -1285,7 +1286,10 @@ class Layer(models.Model, PermissionLevelMixin):
 
 
     def keyword_list(self):
-        return self.keywords.split(" ")
+        if self.keywords is None:
+            return []
+        else:
+            return self.keywords.split(" ")
 
     def set_bbox(self, box, srs=None):
         """
@@ -1435,7 +1439,7 @@ class Map(models.Model, PermissionLevelMixin):
     The date/time the map was created.
     """
 
-    last_modified = models.DateTimeField(auto_now=True)
+    last_modified = models.DateTimeField(auto_now_add=True)
     """
     The last time the map was modified.
     """

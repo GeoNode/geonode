@@ -116,13 +116,17 @@ Ext.onReady(function() {
                 });
                 var edit = doToRecord(function(rec) {
                     var link = rec.get("href");
-                    if (rec.get("type") !== "map") {
-                        link += "?describe";
+                    if (rec.get("type") == "map") {
+                        link += "/edit/";
                     }
                     window.location = link;
                 });
                 var delete_ = doToRecord(function(rec) {
-                    var link = rec.get("href") + "?remove";
+                    var link = rec.get("href");
+                    if (rec.get("type") == "map") {
+                        link += "/edit/";
+                    }
+                    link += "?remove&next=" + window.location;
                     window.location = link;
                 });
                 grid.getEl().on("click", view, this, { delegate: 'a' });
