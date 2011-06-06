@@ -1,6 +1,6 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
 from geonode import geonetwork
 import geoserver
 from geoserver.resource import FeatureType, Coverage
