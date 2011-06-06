@@ -259,6 +259,20 @@ the Sites application (the default is example.com)::
 
     http://localhost:8000/admin/sites/site/1
 
+
+POSTGIS INTEGRATION
+.................
+To automatically import uploaded shapefiles to a PostGIS database, open the settings.py file and set  'DB_DATASTORE' to 'True'.
+Then assign the appropriate connection values to the other DB_DATASTORE_* settings below it:
+
+DB_DATASTORE_NAME = '<Name of your PostGIS database>'
+DB_DATASTORE_USER = '<Database user name>'
+DB_DATASTORE_PASSWORD = '<Database user password>'
+DB_DATASTORE_HOST = '<Database hostname (typically localhost)'
+DB_DATASTORE_PORT = '<Database port (typically 5432)>'
+DB_DATASTORE_TYPE='postgis'
+
+
 Directory Structure
 ===================
 
