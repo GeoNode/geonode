@@ -53,11 +53,23 @@ Steps
    through GeoNetwork's web interface.  The administrative account username and
    password are both ``admin`` by default.
 
-3. *Remove* the sample metadata records that are included with GeoNetwork by
+3. *Modify* GeoNetworks default session configuration to have a shorter timeout
+   period. GeoNetwork has a 3 hour session timeout period as the default and
+   this is known to cause stability problems in a deployed GeoNode installation.
+   To solve this, the timeout period needs to be shortened to 5 minutes.
+   This requires that you modify the ``WEB-INF/web.xml`` file in the 
+   unpacked GeoNetwork webapp::
+
+          <session-config>
+            <session-timeout>5</session-timeout>
+          </session-config>
+
+4. *Remove* the sample metadata records that are included with GeoNetwork by
    default.  To do so, you can simply perform a search with no terms, then use
    the 'Select all' link on the search results page to select all records in
    the GeoNetwork site.  Finally, use the 'actions on selection' menu to delete
    the records.
+
 
 .. note:: 
 
