@@ -9,7 +9,6 @@ from xml.etree.ElementTree import XML
 
 
 
-
 class Catalog(object):
 
     def __init__(self, base, user, password):

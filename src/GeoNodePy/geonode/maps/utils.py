@@ -5,7 +5,7 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
 import geoserver
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
@@ -230,7 +230,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     logger.info('>>> Step 3. Identifying if [%s] is vector or raster and gathering extra files', name)
     if the_layer_type == FeatureType.resource_type:
         logger.debug('Uploading vector layer: [%s]', base_file)
-        create_store = cat.create_featurestore
+        create_store = _create_db_featurestore if settings.DB_DATASTORE else cat.create_featurestore
 
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
@@ -488,6 +488,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords = []):
 
     new_layer = save(layer, filename, theuser, overwrite, keywords=keywords)
 
+
     return new_layer
 
 
@@ -533,3 +534,27 @@ def upload(incoming, user=None, overwrite=True, keywords = []):
                     else:
                         results.append({'file': filename, 'name': layer.name})
         return results
+
+
+def _create_db_featurestore(name, data, overwrite = False, charset = None):
+    """
+        Create a database store then use it to import a shapefile into the database.
+        If the import fails then delete the store (and delete the PostGIS table for it).
+    """
+    cat = Layer.objects.gs_catalog
+    ds = cat.create_datastore(name)
+    ds.connection_parameters.update(
+            host=settings.DB_DATASTORE_HOST, port=settings.DB_DATASTORE_PORT, database=settings.DB_DATASTORE_NAME, user=settings.DB_DATASTORE_USER,
+            passwd=settings.DB_DATASTORE_PASSWORD, dbtype=settings.DB_DATASTORE_TYPE)
+    cat.save(ds)
+    ds = cat.get_store(name)
+    try:
+        cat.add_data_to_store(ds,name, data, overwrite, charset)
+    except:
+        store_params = ds.connection_parameters
+        cat.delete(ds, purge=True)
+        if store_params['dbtype'] and store_params['dbtype'] == 'postgis':
+            delete_from_postgis(name)
+        raise
+
+

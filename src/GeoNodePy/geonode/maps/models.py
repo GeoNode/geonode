@@ -49,7 +49,7 @@ ROLE_VALUES = [
 ]
 
 COUNTRIES = (
-    ('AFG', _('Afghanistan')), 
+    ('AFG', _('Afghanistan')),
     ('ALA', _('Aland Islands')),
     ('ALB', _('Albania')),
     ('DZA', _('Algeria')),
