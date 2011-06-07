@@ -5,7 +5,7 @@ This page describes how to get more information if something goes wrong in a
 GeoNode site.  There are two main logs for GeoNode deployments:
 
 Servlet Container Logs
-======================
+----------------------
 
 GeoNetwork and GeoServer both use standard servlet container logging. For
 example, if you are using Tomcat in its default configuration, the logs from
@@ -18,7 +18,7 @@ while GeoNetwork and Tomcat log inside the Tomcat installation directory,
 GeoServer keeps logs inside the GeoServer configuration directory.
 
 Django Logging
-==============
+--------------
 
 GeoNode uses the standard Python ``logging`` module to log certain events.  By
 default these log messages are not recorded anywhere, so you must configure a
