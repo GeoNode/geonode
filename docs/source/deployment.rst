@@ -12,6 +12,7 @@ please consider writing or updating a guide.
 
    /deploy/centos
    /deploy/ubuntu
+   /deploy/production
 
 
 Recommended Minimum System Requirements
