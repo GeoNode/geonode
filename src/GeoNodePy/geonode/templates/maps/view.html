@@ -13,6 +13,9 @@
 </script>
 
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
+<style type="text/css">
+    #templates { display: none; }
+</style>
 
 <script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/PrintPreview/resources/css/printpreview.css" />
@@ -48,11 +51,11 @@ Ext.onReady(function() {
             }) 
         };
 
-    var moreInfoTemplate = new Ext.Template("<a class='link' href='{permalink}'> More info</a>");
+    var moreInfoTemplate = new Ext.Template(Ext.get("more-info-tpl").dom.innerHTML);
     var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
     Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
 
-    var titleTemplate = new Ext.Template("<a class=\"maplist\" href=\"/maps/search\">Maps</a> / <strong>{title}</strong>");
+    var titleTemplate = new Ext.Template(Ext.get("title-tpl").dom.innerHTML);
     Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}));
 
     app.on("saved", function(id) {
@@ -75,5 +78,9 @@ Ext.onReady(function() {
     <div id="more-info"></div>
     <span id="map-title-header"></span>
   </div>
+</div>
+<div id="templates">
+  <div id="more-info-tpl"><a class='link' href='{permalink}'>{% trans "View info" %}</a></div>
+  <div id="title-tpl"><a class='maplist' href='/maps/search'>{% trans "Maps" %}</a> / <strong>{title}</strong></div>
 </div>
 {% endblock %}

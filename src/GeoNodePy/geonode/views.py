@@ -17,6 +17,13 @@ def static(request, page):
         "site" : settings.SITEURL
     }))
 
+def developer(request):
+    return render_to_response("developer.html", RequestContext(request, {
+        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
+        "GEONETWORK_BASE_URL": settings.GEONETWORK_BASE_URL,
+        "site": settings.SITEURL
+    }))
+
 def lang(request): 
     return render_to_response('lang.js', mimetype="text/javascript")
 
