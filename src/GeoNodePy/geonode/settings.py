@@ -43,7 +43,29 @@ LANGUAGES = (
 SITE_ID = 1
 
 # Setting a custom test runner to avoid running the tests for some problematic 3rd party apps
-TEST_RUNNER='geonode.testrunner.GeoNodeTestRunner'
+TEST_RUNNER='django_nose.NoseTestSuiteRunner'
+
+NOSE_ARGS = [
+      '--verbosity=2',
+      '--cover-erase',
+      '--nocapture',
+      '--with-coverage',
+      '--cover-package=geonode',
+      '--cover-inclusive',
+      '--cover-tests',
+      '--detailed-errors',
+      '--with-xunit',
+
+# This is very beautiful/usable but requires: pip install rudolf
+#      '--with-color',
+
+# The settings below are useful while debugging test failures or errors
+
+#      '--failed',
+#      '--pdb-failures',
+#      '--stop',
+#      '--pdb',
+      ]
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -248,6 +270,16 @@ INSTALLED_APPS = (
     'geonode.maps',
     'geonode.proxy',
 )
+
+def get_user_url(u):
+    from django.contrib.sites.models import Site
+    s = Site.objects.get_current()
+    return "http://" + s.domain + "/profiles/" + u.username
+
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': get_user_url
+}
 
 AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = False

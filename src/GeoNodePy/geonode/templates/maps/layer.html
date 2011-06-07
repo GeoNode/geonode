@@ -81,9 +81,20 @@
 {% if can_change_permissions %}
             new GeoNode.PermissionsEditor({
                 renderTo: "permissions_form",
-                submitTo: "{% url geonode.maps.views.ajax_layer_permissions layer.typename %}",
                 userLookup: "{% url geonode.views.ajax_lookup %}",
-                permissions: {{ permissions_json }}
+                permissions: {{ permissions_json }},
+                levels: {
+                    'admin': 'layer_admin',
+                    'readwrite': 'layer_readwrite',
+                    'readonly': 'layer_readonly',
+                    '_none': '_none'
+                },
+                listeners: {
+                    updated: function(perms) {
+                        var submitTo = "{% url geonode.maps.views.ajax_layer_permissions layer.typename %}";
+                        Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
+                    }
+                }
             });
 {% endif %}
         });
@@ -142,46 +153,65 @@
 
 <div id="preview_map"></div>
 
-<p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>
-<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>
-<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>
-<p> <strong>{% trans "Topic Category" %}:</strong> {{ layer.topic_category }}</p>
+{% if layer.display_type %}<p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>{% endif %}
+{% if layer.keywords %}<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>{% endif %}
+{% if layer.edition %}<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>{% endif %}
+{% if layer.topic_category %}<p> <strong>{% trans "Topic Category" %}:</strong> {{ layer.topic_category }}</p>{% endif %}
 
+{% if layer.constraints_use or layer.constraints_other %}
 <p> <strong>{% trans "Citation" %}:</strong> 
     {{ layer.constraints_use}} {{ layer.contraints_other}}
 </p>
+{% endif %}
+
+{% if layer.owner %}
 <p> <strong>{% trans "Owner" %}:</strong>
     <a href="{{ layer.owner.get_profile.get_absolute_url }}"> {{ layer.owner.username }} </a>
 </p>
+{% endif %}
+
+{% if layer.poc %}
 <p> <strong>{% trans "Point of Contact" %}:</strong>
   {% if layer.poc.user %}
     <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
   {% else %}
     <ul>
-      <li><strong>{% trans "Name" %}:</strong> {{ layer.poc.name}}</li>
-      <li><strong>{% trans "Email" %}:</strong>  {{ layer.poc.email }}</li>
-      <li><strong>{% trans "Organization" %}:</strong> {{ layer.poc.organization}}</li>
-      <li><strong>{% trans "Position" %}:</strong>: {{ layer.poc.position}}</li>
-      <li><strong>{% trans "Voice" %}:</strong>  {{ layer.poc.voice}}</li>
-      <li><strong>{% trans "Fax" %}:</strong> {{ layer.poc.fax}}</li>
-      <li><strong>{% trans "Delivery" %}:</strong> {{ layer.poc.delivery}}</li>
-      <li><strong>{% trans "Area" %}:</strong> {{ layer.poc.area}}</li>
-      <li><strong>{% trans "Zip Code" %}:</strong> {{ layer.poc.zipcode}}</li>
-      <li><strong>{% trans "Country" %}:</strong> {{ layer.poc.country}}</li>
+        {% if layer.poc.name %}<li><strong>{% trans "Name" %}:</strong> {{ layer.poc.name}}</li>{% endif %}
+        {% if layer.poc.email %}<li><strong>{% trans "Email" %}:</strong>  {{ layer.poc.email }}</li>{% endif %}
+        {% if layer.poc.organization %}<li><strong>{% trans "Organization" %}:</strong> {{ layer.poc.organization}}</li>{% endif %}
+        {% if layer.poc.position %}<li><strong>{% trans "Position" %}:</strong>: {{ layer.poc.position}}</li>{% endif %}
+        {% if layer.poc.voice %}<li><strong>{% trans "Voice" %}:</strong>  {{ layer.poc.voice}}</li>{% endif %}
+        {% if layer.poc.fax %}<li><strong>{% trans "Fax" %}:</strong> {{ layer.poc.fax}}</li>{% endif %}
+        {% if layer.poc.delivery %}<li><strong>{% trans "Delivery" %}:</strong> {{ layer.poc.delivery}}</li>{% endif %}
+        {% if layer.poc.area %}<li><strong>{% trans "Area" %}:</strong> {{ layer.poc.area}}</li>{% endif %}
+        {% if layer.poc.zipcode %}<li><strong>{% trans "Zip Code" %}:</strong> {{ layer.poc.zipcode}}</li>{% endif %}
+        {% if layer.poc.country %}<li><strong>{% trans "Country" %}:</strong> {{ layer.poc.country}}</li>{% endif %}
     </ul>
   {% endif %}
 </p>
+{% endif %}
+
+{% if layer.attribute_names %}
 <p> <strong>{% trans "Attributes" %}:</strong> 
     {{ layer.attribute_names|join:", " }}
 </p>
+{% endif %}
+
+{% if layer.supplemental_information %}
 <p> <strong>{% trans "Supplemental Information" %}:</strong> 
     {{ layer.supplemental_information }}
 </p>
+{% endif %}
+
+{% if layer.data_quality_statement %}
 <p> <strong>{% trans "Data Quality Statement" %}:</strong> 
     {{ layer.data_quality_statement }}
 </p>
-<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>
-<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>
+{% endif %}
+
+{% if layer.geographic_bounding_box %}<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>{% endif %}
+{% if layer.metadata.crsOptions %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>{% endif %}
+
 </div>
 {% endblock %}
 
@@ -246,6 +276,7 @@
     {% if user.is_authenticated %}
     {% has_obj_perm user layer "maps.change_layer" as can_change %}
     {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
+    {% if can_change or can_delete or can_change_permissions %}
 
         <h3> {% trans "Manage" %} </h3>
         <ul>
@@ -257,11 +288,9 @@
         {% if can_change_permissions %}
         <li><a href="{% url edit_layer_permissions layer.typename %}">{% trans "Edit Permissions" %}</a></li>
         {% endif %}
-        {% comment %}
             {% if can_delete %}
 				<li><a href="?remove">{% trans "Remove" %}</a></li>
 			{% endif %}
-        {% endcomment %}
 			{% else %}
 				<li>Please authenticate to update or remove layers</li>
 			{% endif %}
@@ -270,8 +299,8 @@
     {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
     <h3>{% trans "Permissions" %}</h3>
-      <p> {% trans "Select what kind of privileges to allow." %} </p>
-      <div id="permissions_form"</div>
+      <div id="permissions_form"></div>
+    {% endif %}
     {% endif %}
 </div>
 {% endblock %}
