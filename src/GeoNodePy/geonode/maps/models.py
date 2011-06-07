@@ -1148,7 +1148,7 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=200)
+    title = models.CharField(_('Title'),max_length=1000)
     """
     A display name suitable for search results and page headers
     """
