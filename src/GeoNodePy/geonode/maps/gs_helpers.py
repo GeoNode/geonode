@@ -140,8 +140,8 @@ def cascading_delete(cat, resource):
 
 
 def delete_from_postgis(resource_name):
+    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_NAME + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
-        conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_NAME + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
         cur = conn.cursor()
         cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
         conn.commit()

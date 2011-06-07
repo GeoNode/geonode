@@ -355,7 +355,7 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
         try:
             cat.create_style(name, sld)
         except geoserver.catalog.ConflictingDataError:
-            msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (name)
+            msg = 'There was already a style named %s in GeoServer, cannot overwrite:' % (name)
             style = cat.get_style(name)
             logger.warn(msg)
             e.args = (msg,)

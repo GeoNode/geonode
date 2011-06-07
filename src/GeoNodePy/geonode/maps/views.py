@@ -1381,8 +1381,6 @@ def _updateLayer(request, layer):
                     "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
-                if saved_layer:
-                    saved_layer.delete()
                 return HttpResponse(json.dumps({
                     "success": False,
                     "errors": ["Unexpected error during upload: " + escape(str(e))]}))
@@ -2268,7 +2266,7 @@ def batch_permissions(request, use_email=False):
 
     if "layers" in spec:
         lyrs = Layer.objects.filter(pk__in = spec['layers'])
-        valid_perms = ['layer_readwrite', 'layer_readonly']
+        valid_perms = ['layer_readwrite', 'layer_readonly', 'layer_admin']
         if anon_level not in valid_perms:
             anon_level = "_none"
         if auth_level not in valid_perms:
@@ -2304,7 +2302,7 @@ def batch_permissions(request, use_email=False):
 
     if "maps" in spec:
         maps = Map.objects.filter(pk__in = spec['maps'])
-        valid_perms = ['layer_readwrite', 'layer_readonly']
+        valid_perms = ['map_readwrite', 'map_readonly', 'map_admin']
         if anon_level not in valid_perms:
             anon_level = "_none"
         if auth_level not in valid_perms:
@@ -2325,14 +2323,16 @@ def batch_permissions(request, use_email=False):
             m.set_gen_level(CUSTOM_GROUP_USERS, custom_level)
             for user, user_level in spec['permissions'].get("users", []):
                 user_level = user_level.replace("layer", "map")
+                if user_level not in valid_perms:
+                    user_level = "_none"
                 if use_email:
                     try:
                         userObject = User.objects.get(email=user)
                     except User.DoesNotExist:
                         userObject = _create_new_user(user, m.title, reverse('geonode.maps.views.view', args=[m.id]), m.owner_id)
-                    m.set_user_level(userObject, valid_perms.get(user_level, "_none"))
+                    m.set_user_level(userObject, user_level)
                 else:
-                    m.set_user_level(user, valid_perms.get(user_level, "_none"))
+                    m.set_user_level(user, user_level)
 
     return HttpResponse("Not implemented yet")
 

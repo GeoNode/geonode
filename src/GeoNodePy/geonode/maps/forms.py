@@ -15,8 +15,9 @@ class LayerUploadForm(forms.Form):
     dbf_file = forms.FileField(required=False)
     shx_file = forms.FileField(required=False)
     prj_file = forms.FileField(required=False)
+    sld_file = forms.FileField(required=False)
     encoding = forms.ChoiceField(required=False)
-    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file")
+    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file")
 
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
