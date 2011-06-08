@@ -137,9 +137,12 @@ Running Unit Tests
 ..................
 
 Because of the variety of technologies used in GeoNode, there are a number of different test tools involved.
-Frontend developers working on the frontend will commonly just need to run the unit tests for the Django::
+Frontend developers working on the frontend will commonly just need to run the unit tests for the Django web application::
 
    (geonode) $ django-admin.py test geonode --settings=geonode.settings
+   # the argument to 'test' is a Python module or class containing tests, so
+   # you don't need to always run the full suite
+   (geonode) $ django-admin.py test geonode.maps.tests:FormTest --settings=geonode.settings
 
 GeoNode's GeoServer extensions also contain a test suite.
 It can be run by changing directories to the ``geoserver-geonode-ext`` subproject and issuing the following Maven command::
