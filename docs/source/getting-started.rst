@@ -1,6 +1,11 @@
 Getting Started with GeoNode Development
 ========================================
 
+.. toctree::
+   :maxdepth: 1
+
+   developers/integration-testing
+
 .. note::
     This page describes the steps involved in getting GeoNode set up for
     development purposes.  If you are only interested in *running* GeoNode on a
@@ -127,6 +132,39 @@ Resetting the Django application can be accomplished by simply removing the ``de
 Then, this command will reset the GeoServer and GeoNetwork data back to a known-good sample data set::
 
    (geonode) $ paver clean=true setup_webapps
+
+Running Unit Tests
+..................
+
+Because of the variety of technologies used in GeoNode, there are a number of different test tools involved.
+Frontend developers working on the frontend will commonly just need to run the unit tests for the Django web application::
+
+   (geonode) $ django-admin.py test geonode --settings=geonode.settings
+   # the argument to 'test' is a Python module or class containing tests, so
+   # you don't need to always run the full suite
+   (geonode) $ django-admin.py test geonode.maps.tests:FormTest --settings=geonode.settings
+
+GeoNode's GeoServer extensions also contain a test suite.
+It can be run by changing directories to the ``geoserver-geonode-ext`` subproject and issuing the following Maven command::
+
+   $ cd src/geoserver-geonode-ext/
+   $ mvn test
+
+The GeoServer unit tests are also executed during the build and release processes automatically.
+There is also a continuous integration testing server at http://geonode-testing.dev.opengeo.org:8080/ .
+Aside from the unit tests, it also runs GeoNode's integration test suite which is more exhaustive but a bit more complicated to set up.
+If you would like to run the integration tests locally, see :doc:`developers/integration-testing` .
+
+.. note::
+
+    This may not work properly if you have not done a full build.
+    Please follow the above instructions to set up a development environment before running the test suite.
+
+.. seealso::
+
+    The Django web framework provides some official documentation on on unit testing for `Django applications <https://docs.djangoproject.com/en/1.2/topics/testing/>`_.
+    GeoNode also uses the `django-nose <https://github.com/jbalogh/django-nose>`_ extension to collect some extra reporting information on Python unit tests.
+    For the Java unit tests, consult the documentation for the `Maven surefire plugin <http://maven.apache.org/plugins/maven-surefire-plugin/>`_.
 
 Producing Release Archives
 ..........................
