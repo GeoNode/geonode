@@ -659,7 +659,11 @@ community."
         pass
 
     def test_split_query(self):
-        pass
+        query = 'alpha "beta gamma"   delta  '
+        keywords = geonode.maps.views._split_query(query)
+        self.assertEqual(keywords[0], "alpha")
+        self.assertEqual(keywords[1], "beta gamma")
+        self.assertEqual(keywords[2], "delta")
     
     def test_search_api(self):
         '''/data/search/api -> Test accessing the data search api JSON'''
