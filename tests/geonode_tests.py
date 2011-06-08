@@ -49,6 +49,37 @@ class GeoNodeProxyTest(TestCase):
     def tearDown(self):
         pass
 
+class NormalUserTest(TestCase):
+    """
+    Tests GeoNode functionality for non-administrative users
+    """
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_layer_upload(self):
+        """ Try uploading a layer and verify that the user can administrate
+        his own layer despite not being a site administrator.
+        """
+
+        from django.contrib.auth.models import User
+        from geonode.maps.utils import save
+
+        #TODO: Would be nice to ensure the name is available before running the test...
+        norman = User.objects.get(username="norman")
+        save("lembang_schools_by_norman", os.path.join(TEST_DATA, "lembang_schools.shp"), norman,
+                overwrite = False, abstract = "Schools which are in Lembang",
+                title = "Lembang Schools", permissions = {'users': []})
+
+        # No assertion, but this will raise an error if the permissions don't
+        # allow metadata editing
+        get_web_page(settings.SITEURL + "data/geonode:lembang_schools_by_norman?describe",
+                username="norman", password="norman", login_url=LOGIN_URL)
+
+
 class GeoNodeMapTest(TestCase):
     """Tests geonode.maps app/module
     """
