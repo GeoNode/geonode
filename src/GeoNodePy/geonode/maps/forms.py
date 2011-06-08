@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 from django import forms
-import json, os, tempfile
+import json
+import os
+import tempfile
 
 class JSONField(forms.CharField):
     def clean(self, text):
@@ -20,8 +22,8 @@ class LayerUploadForm(forms.Form):
 
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
-        base_ext = cleaned["base_file"].name[-4:].lower()
-        if base_ext not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff"):
+        __, base_ext = os.path.splitext(cleaned["base_file"].name)
+        if base_ext.lower() not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff"):
             raise forms.ValidationError("Only Shapefiles and GeoTiffs are supported. You uploaded a %s file" % base_ext)
         if base_ext == ".shp":
             if cleaned["dbf_file"] is None or cleaned["shx_file"] is None:
