@@ -749,3 +749,101 @@ community."
             self.fail("Threw division error while generating download links")
         finally:
             lyr.resource.latlon_bbox = orig_bbox
+
+from geonode.maps.forms import JSONField, LayerUploadForm, NewLayerUploadForm
+from django.core.files.uploadedfile import SimpleUploadedFile
+
+class FormTest(TestCase):
+
+    ## NOTE: we don't care about file content for many of these tests (the
+    ## forms under test validate based only on file name, and leave actual
+    ## content inspection to GeoServer) but Django's form validation will omit
+    ## any files with empty bodies. 
+    ##
+    ## That is, this leads to mysterious test failures:
+    ##     SimpleUploadedFile('foo', '') 
+    ##
+    ## And this should be used instead to avoid that:
+    ##     SimpleUploadedFile('foo', ' ')
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def testJSONField(self):
+        from django.forms import ValidationError
+
+        field = JSONField()
+        # a valid JSON document should pass
+        field.clean('{ "users": [] }')
+
+        # text which is not JSON should fail
+        self.assertRaises(ValidationError, lambda: field.clean('<users></users>'))
+
+    def testShapefileValidation(self):
+        files = dict(
+            base_file=SimpleUploadedFile('foo.shp', ' '),
+            shx_file=SimpleUploadedFile('foo.shx', ' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', ' '),
+            prj_file=SimpleUploadedFile('foo.prj', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(
+            base_file=SimpleUploadedFile('foo.SHP', ' '),
+            shx_file=SimpleUploadedFile('foo.SHX', ' '),
+            dbf_file=SimpleUploadedFile('foo.DBF', ' '),
+            prj_file=SimpleUploadedFile('foo.PRJ', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(
+            base_file=SimpleUploadedFile('foo.SHP', ' '),
+            shx_file=SimpleUploadedFile('foo.shx', ' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(
+            base_file=SimpleUploadedFile('foo.SHP', ' '),
+            shx_file=SimpleUploadedFile('foo.shx', ' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', ' '),
+            prj_file=SimpleUploadedFile('foo.PRJ', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(
+            base_file=SimpleUploadedFile('foo.shp', ' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', ' '),
+            prj_file=SimpleUploadedFile('foo.PRJ', ' '))
+        self.assertFalse(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(
+            base_file=SimpleUploadedFile('foo.txt', ' '),
+            shx_file=SimpleUploadedFile('foo.shx', ' '),
+            dbf_file=SimpleUploadedFile('foo.sld', ' '),
+            prj_file=SimpleUploadedFile('foo.prj', ' '))
+        self.assertFalse(LayerUploadForm(dict(), files).is_valid())
+
+    def testGeoTiffValidation(self):
+        files = dict(base_file=SimpleUploadedFile('foo.tif', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(base_file=SimpleUploadedFile('foo.TIF', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(base_file=SimpleUploadedFile('foo.tiff', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(base_file=SimpleUploadedFile('foo.TIF', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(base_file=SimpleUploadedFile('foo.geotif', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(base_file=SimpleUploadedFile('foo.geotiff', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
