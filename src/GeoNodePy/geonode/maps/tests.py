@@ -4,8 +4,9 @@ from django.test.client import Client
 from django.contrib.auth.models import User, AnonymousUser
 
 import geonode.maps.models
+import geonode.maps.views
 
-from geonode.maps.models import Map, Layer
+from geonode.maps.models import Map, Layer, User
 from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock
@@ -256,7 +257,7 @@ community."
       "defaultSourceType": "gx_wmssource",
       "about": {
           "title": "Title",
-      "abstract": "Abstract"
+          "abstract": "Abstract"
       },
       "sources": {
         "capra": {
@@ -289,16 +290,31 @@ community."
     def test_map_save(self):
         """POST /maps -> Test saving a new map"""
 
-        # since django's test client doesn't support providing a JSON request
-        # body, just test the model directly. 
-        # the view's hooked up right, I promise.
+        c = Client()
 
-        map = Map(zoom=7, center_x=0, center_y=0)
-        map.save() # can't attach layers to a map whose pk isn't set yet
-        map.update_from_viewer(json.loads(self.viewer_config))
+        # Test that saving a map when not logged in gives 401
+        response = c.post("/maps/",data=MapTest.viewer_config,content_type="text/json")
+        self.assertEqual(response.status_code,401)
+
+        # Test successful new map creation
+        user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
+        log = c.login(username="john", password="johnpassword")
+        response = c.post("/maps/",data=MapTest.viewer_config,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id = int(response['Location'].split('/')[-1])
+        c.logout()
+
+        self.assertEquals(map_id,2)
+        map = Map.objects.get(id=map_id)
         self.assertEquals(map.title, "Title")
         self.assertEquals(map.abstract, "Abstract")
         self.assertEquals(map.layer_set.all().count(), 1)
+
+        # Test an invalid map creation request
+        log = c.login(username="john", password="johnpassword")
+        response = c.post("/maps/",data="not a valid viewer config",content_type="text/json")
+        self.assertEquals(response.status_code,400)
+        c.logout()
 
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
