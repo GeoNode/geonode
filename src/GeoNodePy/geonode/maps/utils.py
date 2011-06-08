@@ -341,7 +341,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     # FIXME: Do this inside the layer object
     typename = gs_resource.store.workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
-    saved_layer,__ = Layer.objects.get_or_create(name=gs_resource.name, defaults=dict(
+    saved_layer, created = Layer.objects.get_or_create(name=gs_resource.name, defaults=dict(
                                  store=gs_resource.store.name,
                                  storeType=gs_resource.store.resource_type,
                                  typename=typename,
@@ -353,6 +353,9 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
                                  owner=user,
                                  )
     )
+
+    if created:
+        saved_layer.set_default_permissions()
 
     # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this
@@ -372,9 +375,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
     logger.info('>>> Step 11. Setting default permissions for [%s]', name)
-    if permissions is None:
-        saved_layer.set_default_permissions()
-    else:
+    if permissions is not None:
         from geonode.maps.views import set_layer_permissions
         set_layer_permissions(saved_layer, permissions)
 
