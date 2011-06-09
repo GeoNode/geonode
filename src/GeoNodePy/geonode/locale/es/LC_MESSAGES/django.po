@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-09 13:22-0500\n"
+"POT-Creation-Date: 2011-06-09 13:37-0500\n"
 "PO-Revision-Date: 2010-12-07 15:33\n"
 "Last-Translator: <>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.5.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: settings.py:39
-msgid "English"
-msgstr "Ingles"
-
-#: settings.py:40
-msgid "Spanish"
-msgstr "Español"
 
 #: core/models.py:24 maps/models.py:657
 msgid "title"
@@ -2338,6 +2330,12 @@ msgstr "Cambie la contraseña an %(site_name)s"
 msgid "You are now registered. Activation email sent."
 msgstr ""
 "Ahora estas registrado. Un correo electrónico de activación fue enviado."
+
+#~ msgid "English"
+#~ msgstr "Ingles"
+
+#~ msgid "Spanish"
+#~ msgstr "Español"
 
 #~ msgid ""
 #~ "%r tag requires a single argument (what page should be selected in the "
