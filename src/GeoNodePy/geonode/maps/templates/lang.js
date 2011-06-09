@@ -225,4 +225,4 @@ if (window.GeoNode && GeoNode.BatchDownloadWidget) {
 }
 
 {% block extra_lang %}
-{% enblock %}
+{% endblock %}
