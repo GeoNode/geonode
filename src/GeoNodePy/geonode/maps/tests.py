@@ -831,6 +831,13 @@ class FormTest(TestCase):
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
+            base_file=SimpleUploadedFile('foo.SHP', ' '),
+            shx_file=SimpleUploadedFile('bar.shx', ' '),
+            dbf_file=SimpleUploadedFile('bar.dbf', ' '),
+            prj_file=SimpleUploadedFile('bar.PRJ', ' '))
+        self.assertFalse(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(
             base_file=SimpleUploadedFile('foo.shp', ' '),
             dbf_file=SimpleUploadedFile('foo.dbf', ' '),
             prj_file=SimpleUploadedFile('foo.PRJ', ' '))
@@ -867,6 +874,19 @@ class FormTest(TestCase):
 
         files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+    def testWriteFiles(self):
+        files = dict(
+            base_file=SimpleUploadedFile('foo.shp', ' '),
+            shx_file=SimpleUploadedFile('foo.shx', ' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', ' '),
+            prj_file=SimpleUploadedFile('foo.prj', ' '))
+        form = LayerUploadForm(dict(), files)
+        self.assertTrue(form.is_valid())
+
+        tempdir, base_file = form.write_files()
+        self.assertEquals(set(os.listdir(tempdir)),
+            set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
 
 
 from geonode.maps.utils import layer_type, get_files, get_valid_name
