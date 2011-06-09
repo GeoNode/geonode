@@ -63,10 +63,10 @@ Ext.onReady(function(){
         emptyText: gettext('Select a .dbf data file'),
         fieldLabel: gettext('DBF'),
         name: 'dbf_file',
-        allowBlank: false,
+        allowBlank: true,
         listeners: listeners,
         validator: function(name) {
-            if (name.search(/\.dbf$/i) == -1) {
+            if ((name.length > 0) && (name.search(/\.dbf$/i) == -1)) {
                 return gettext("Invalid DBF File.");
             } else {
                 return true;
@@ -79,10 +79,10 @@ Ext.onReady(function(){
         emptyText: gettext('Select a .shx data file'),
         fieldLabel: gettext('SHX'),
         name: 'shx_file',
-        allowBlank: false,
+        allowBlank: true,
         listeners: listeners,
         validator: function(name) {
-            if (name.search(/\.shx$/i) == -1) {
+            if ((name.length > 0) && (name.search(/\.shx$/i) == -1)) {
                 return gettext("Invalid SHX File.");
             } else {
                 return true;
@@ -98,7 +98,7 @@ Ext.onReady(function(){
         allowBlank: true,
         listeners: listeners,
         validator: function(name) {
-            if (name.search(/\.prj$/i) == -1) {
+            if ((name.length > 0) && (name.search(/\.prj$/i) == -1)) {
                 return gettext("Invalid PRJ File.");
             } else {
                 return true;
