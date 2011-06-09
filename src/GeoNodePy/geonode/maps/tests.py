@@ -970,6 +970,22 @@ class UtilsTest(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            gotten_files = get_files(os.path.join(d, "foo.SHP"))
+            gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
+            self.assertEquals(gotten_files, dict(base="foo.SHP", shp="foo.SHP", shx="foo.SHX",
+                prj="foo.PRJ", dbf="foo.DBF"))
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
+
     def test_get_valid_name(self):
         self.assertEquals(get_valid_name("blug"), "blug")
         self.assertEquals(get_valid_name("<-->"), "_")
