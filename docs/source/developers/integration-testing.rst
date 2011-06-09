@@ -119,7 +119,7 @@ GeoNetwork, GeoServer, and the Django application should all be reset between ru
 
 After resetting, start Tomcat with::
 
-    $ cd src/geoserver-geonode-dev/
+    $ cd src/geoserver-geonode-ext/
     $ mvn jetty:run
 
 and paster with::
