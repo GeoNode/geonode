@@ -5,7 +5,10 @@ GeoNode's integration testing suite requires a full deployment with live data fo
 This means that running the integration tests requires deploying GeoServer, GeoNetwork and the Django application, although it is possible to run the tests against those servers running in "development" mode.
 To ensure repeatability of the tests, GeoNode should be **fully reset** between runs of the suite.
 
-The integration test suite itself is maintained in a separate source repository from the main GeoNode code; it is available at http://github.com/GeoNode/geonode-integration.git/ .
+The integration test suite itself is maintained in a separate source repository from the main GeoNode code; it is available at http://github.com/GeoNode/geonode-integration.git/ .  The command below assume that you have cloned this repository into your working directory.
+   $ git clone http://github.com/GeoNode/geonode-integration.git/ geonode-integration
+
+
 
 Running against Paster and Tomcat Standalone
 ============================================
