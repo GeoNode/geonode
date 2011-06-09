@@ -1156,7 +1156,7 @@ class Map(models.Model, PermissionLevelMixin):
     A display name suitable for search results and page headers
     """
 
-    abstract = models.CharField(_('Abstract'),max_length=200)
+    abstract = models.TextField(_('Abstract'))
     """
     A longer description of the themes in the map.
     """
