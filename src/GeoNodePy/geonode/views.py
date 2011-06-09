@@ -25,9 +25,6 @@ def developer(request):
         "site": settings.SITEURL
     }))
 
-def lang(request): 
-    return render_to_response('lang.js', mimetype="text/javascript")
-
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
