@@ -15,6 +15,7 @@ import datetime
 from django.conf import settings
 import sys
 import os
+import glob
 import traceback
 import inspect
 import string
@@ -45,29 +46,41 @@ def get_files(filename):
        a dictionary with all the required files
     """
     files = {'base': filename}
+
     base_name, extension = os.path.splitext(filename)
 
-    if extension == '.shp':
-        required_extensions =  ['.shp', '.dbf', '.shx']
-        for ext in required_extensions:
-            other_file = base_name + ext
-            if os.path.exists(other_file):
-                files[ext[1:]] = other_file
-            else:
-                msg = ('Expected file %s does not exist. A shapefile requires helper'
-                       ' files with the following extensions: [%s]'
-                             % (ext, required_extensions))
+    if extension.lower() == '.shp':
+        required_extensions = dict(
+            shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]')
+        for ext, pattern in required_extensions.iteritems():
+            matches = glob.glob(base_name + pattern)
+            if len(matches) == 0:
+                msg = ('Expected helper file %s does not exist; a Shapefile '
+                    'requires helper files with the following extensions: %s') % (
+                    base_name + "." + ext, required_extensions.keys())
                 raise GeoNodeException(msg)
+            elif len(matches) > 1:
+                msg = ('Multiple helper files for %s exist; they need to be '
+                       'distinct by spelling and not just case.') % filename
+                raise GeoNodeException(msg)
+            else:
+                files[ext] = matches[0]
 
-        prj_file = base_name + ".prj"
-        if os.path.exists(prj_file):
-            files["prj"] = prj_file
+        matches = glob.glob(base_name + ".[pP][rR][jJ]")
+        if len(matches) == 1:
+            files['prj'] = matches[0]
+        elif len(matches) > 1:
+            msg = ('Multiple helper files for %s exist; they need to be '
+                   'distinct by spelling and not just case.') % filename
+            raise GeoNodeException(msg)
 
-    # Always upload stylefile if it exist
-    style_file = base_name + ".sld"
-    if os.path.exists(style_file):
-        files['sld'] = style_file
-
+    matches = glob.glob(base_name + ".[sS][lL][dD]")
+    if len(matches) == 1:
+        files['sld'] = matches[0]
+    elif len(matches) > 1:
+        msg = ('Multiple style files for %s exist; they need to be '
+               'distinct by spelling and not just case.') % filename
+        raise GeoNodeException(msg)
 
     return files
 
