@@ -197,8 +197,51 @@ community."
     def test_map_local_layers(self):
         pass
 
+
+    viewer_config_alternative = """
+    {
+      "defaultSourceType": "gx_wmssource",
+      "about": {
+          "title": "Title2",
+          "abstract": "Abstract2"
+      },
+      "sources": {
+        "capra": {
+          "url":"http://localhost:8001/geoserver/wms"
+        }
+      },
+      "map": {
+        "projection":"EPSG:900913",
+        "units":"m",
+        "maxResolution":156543.0339,
+        "maxExtent":[-20037508.34,-20037508.34,20037508.34,20037508.34],
+        "center":[-9428760.8688778,1436891.8972581],
+        "layers":[{
+          "source":"capra",
+          "buffer":0,
+          "wms":"capra",
+          "name":"base:nic_admin"
+        }],
+        "zoom":7
+      }
+    }
+    """
+
     def test_map_json(self):
-        pass
+        c = Client()
+
+        # Test that saving a map when not logged in gives 401
+        response = c.put("/maps/1/data",data=MapTest.viewer_config,content_type="text/json")
+        self.assertEqual(response.status_code,401)
+
+        log = c.login(username="bobby", password="bob")
+        response = c.put("/maps/1/data",data=MapTest.viewer_config_alternative,content_type="text/json")
+        self.assertEqual(response.status_code,204)
+
+        map = Map.objects.get(id=1)
+        self.assertEquals(map.title, "Title2")
+        self.assertEquals(map.abstract, "Abstract2")
+        self.assertEquals(map.layer_set.all().count(), 1)
 
     def test_map_viewer_json(self):
         pass
