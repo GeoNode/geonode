@@ -43,6 +43,22 @@
     {% endif %}
     </ul>
       {% endblock %}
+
+   {% get_current_language as LANGUAGE %}
+    <form class="langbar" id="target" action="/i18n/setlang/" method="post">
+      {% csrf_token %}
+       <div style="display: inline;">
+         <select id="langval" name="language" onchange="javascript:form.submit()">
+           {% for lang in LANGUAGES %}
+            <option value="{{ lang.0 }}"
+                {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                {{ lang.1 }}
+            </option>
+           {% endfor %}
+         </select>
+       </div>
+     </form>
+
     </div><!-- /.wrap -->
   </div><!-- /#crossbar -->
   <div id="main">
