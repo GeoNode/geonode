@@ -106,7 +106,7 @@ GeoNetwork, GeoServer, and the Django application should all be reset between ru
 
 **Reset Django** by issuing the following command::
    
-    (genode) $ django-admin.py flush --settings=geonode.settings --noinput \
+    (geonode) $ django-admin.py flush --settings=geonode.settings --noinput \
         && django-admin.py loaddata admin.fixture.json --settings=geonode.settings
 
 **Reset GeoServer** by deleting the data/ directory and replacing it with a clean copy::
