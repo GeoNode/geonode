@@ -197,8 +197,51 @@ community."
     def test_map_local_layers(self):
         pass
 
+
+    viewer_config_alternative = """
+    {
+      "defaultSourceType": "gx_wmssource",
+      "about": {
+          "title": "Title2",
+          "abstract": "Abstract2"
+      },
+      "sources": {
+        "capra": {
+          "url":"http://localhost:8001/geoserver/wms"
+        }
+      },
+      "map": {
+        "projection":"EPSG:900913",
+        "units":"m",
+        "maxResolution":156543.0339,
+        "maxExtent":[-20037508.34,-20037508.34,20037508.34,20037508.34],
+        "center":[-9428760.8688778,1436891.8972581],
+        "layers":[{
+          "source":"capra",
+          "buffer":0,
+          "wms":"capra",
+          "name":"base:nic_admin"
+        }],
+        "zoom":7
+      }
+    }
+    """
+
     def test_map_json(self):
-        pass
+        c = Client()
+
+        # Test that saving a map when not logged in gives 401
+        response = c.put("/maps/1/data",data=MapTest.viewer_config,content_type="text/json")
+        self.assertEqual(response.status_code,401)
+
+        log = c.login(username="bobby", password="bob")
+        response = c.put("/maps/1/data",data=MapTest.viewer_config_alternative,content_type="text/json")
+        self.assertEqual(response.status_code,204)
+
+        map = Map.objects.get(id=1)
+        self.assertEquals(map.title, "Title2")
+        self.assertEquals(map.abstract, "Abstract2")
+        self.assertEquals(map.layer_set.all().count(), 1)
 
     def test_map_viewer_json(self):
         pass
@@ -297,8 +340,7 @@ community."
         self.assertEqual(response.status_code,401)
 
         # Test successful new map creation
-        user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-        log = c.login(username="john", password="johnpassword")
+        log = c.login(username="bobby", password="bob")
         response = c.post("/maps/",data=MapTest.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
@@ -311,7 +353,7 @@ community."
         self.assertEquals(map.layer_set.all().count(), 1)
 
         # Test an invalid map creation request
-        log = c.login(username="john", password="johnpassword")
+        log = c.login(username="bobby", password="bob")
         response = c.post("/maps/",data="not a valid viewer config",content_type="text/json")
         self.assertEquals(response.status_code,400)
         c.logout()
@@ -831,6 +873,13 @@ class FormTest(TestCase):
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
+            base_file=SimpleUploadedFile('foo.SHP', ' '),
+            shx_file=SimpleUploadedFile('bar.shx', ' '),
+            dbf_file=SimpleUploadedFile('bar.dbf', ' '),
+            prj_file=SimpleUploadedFile('bar.PRJ', ' '))
+        self.assertFalse(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(
             base_file=SimpleUploadedFile('foo.shp', ' '),
             dbf_file=SimpleUploadedFile('foo.dbf', ' '),
             prj_file=SimpleUploadedFile('foo.PRJ', ' '))
@@ -867,6 +916,19 @@ class FormTest(TestCase):
 
         files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+    def testWriteFiles(self):
+        files = dict(
+            base_file=SimpleUploadedFile('foo.shp', ' '),
+            shx_file=SimpleUploadedFile('foo.shx', ' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', ' '),
+            prj_file=SimpleUploadedFile('foo.prj', ' '))
+        form = LayerUploadForm(dict(), files)
+        self.assertTrue(form.is_valid())
+
+        tempdir, base_file = form.write_files()
+        self.assertEquals(set(os.listdir(tempdir)),
+            set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
 
 
 from geonode.maps.utils import layer_type, get_files, get_valid_name
@@ -946,6 +1008,22 @@ class UtilsTest(TestCase):
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
             self.assertEquals(gotten_files, dict(base="foo.shp", shp="foo.shp", shx="foo.shx",
                 prj="foo.prj", dbf="foo.dbf", sld="foo.sld"))
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
+
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            gotten_files = get_files(os.path.join(d, "foo.SHP"))
+            gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
+            self.assertEquals(gotten_files, dict(base="foo.SHP", shp="foo.SHP", shx="foo.SHX",
+                prj="foo.PRJ", dbf="foo.DBF"))
         finally:
             if d is not None:
                 shutil.rmtree(d)
