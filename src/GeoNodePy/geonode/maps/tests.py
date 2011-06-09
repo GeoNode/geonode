@@ -909,3 +909,92 @@ class FormTest(TestCase):
 
         files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+
+from geonode.maps.utils import layer_type, get_files, get_valid_name
+from geoserver.resource import FeatureType, Coverage
+
+class UtilsTest(TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    fixtures = ['map_data.json']
+
+    def test_layer_type(self):
+        self.assertEquals(layer_type('foo.shp'), FeatureType.resource_type)
+        self.assertEquals(layer_type('foo.SHP'), FeatureType.resource_type)
+        self.assertEquals(layer_type('foo.sHp'), FeatureType.resource_type)
+        self.assertEquals(layer_type('foo.tif'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.TIF'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.TiF'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.geotif'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.GEOTIF'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.gEoTiF'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.tiff'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.TIFF'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.TiFf'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.geotiff'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.GEOTIFF'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.gEoTiFf'), Coverage.resource_type)
+
+        # basically anything else should produce a GeoNodeException
+        self.assertRaises(GeoNodeException, lambda: layer_type('foo.gml'))
+
+    def test_get_files(self):
+        import shutil
+        import tempfile
+
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            gotten_files = get_files(os.path.join(d, "foo.shp"))
+            gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
+            self.assertEquals(gotten_files, dict(base="foo.shp", shp="foo.shp", shx="foo.shx",
+                prj="foo.prj", dbf="foo.dbf"))
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
+
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.shp", "foo.shx", "foo.prj"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
+
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            gotten_files = get_files(os.path.join(d, "foo.shp"))
+            gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
+            self.assertEquals(gotten_files, dict(base="foo.shp", shp="foo.shp", shx="foo.shx",
+                prj="foo.prj", dbf="foo.dbf", sld="foo.sld"))
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
+
+    def test_get_valid_name(self):
+        self.assertEquals(get_valid_name("blug"), "blug")
+        self.assertEquals(get_valid_name("<-->"), "_")
+        self.assertEquals(get_valid_name("<ab>"), "_ab_")
+        self.assertEquals(get_valid_name("CA"), "CA_1")
+        self.assertEquals(get_valid_name("CA"), "CA_1")
