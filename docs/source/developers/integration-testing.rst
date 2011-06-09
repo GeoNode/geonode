@@ -113,9 +113,10 @@ GeoNetwork, GeoServer, and the Django application should all be reset between ru
 
     $ rm -rf gs-data/ && cp -R gs-data.bk/ gs-data/
 
-**Reset GeoNetwork** by erasing the builtin database's storage directory::
+**Reset GeoNetwork** by deleting the deployed web application and redeploying it::
 
-    $ rm -rf webapps/geonetwork/WEB-INF/db/data/
+    $ rm -rf webapps/geonetwork && \
+        unzip webapps/geonetwork.war -d webapps/geonetwork
 
 After resetting, start Tomcat with::
 
