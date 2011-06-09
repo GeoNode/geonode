@@ -44,7 +44,7 @@ GeoNetwork, GeoServer, and the Django application should all be reset between ru
 
 **Reset Django** by issuing the following command::
 
-    (geonode) $ django-admin.py flush --settings=geonode.settings --no-input \
+    (geonode) $ django-admin.py flush --settings=geonode.settings --noinput \
         && django-admin.py loaddata geonode-integration/admin.fixture.json --settings=geonode.settings
 
 **Reset GeoServer** by deleting the data/ directory and replacing it with a clean copy::
@@ -98,21 +98,22 @@ GeoNetwork, GeoServer, and the Django application should all be reset between ru
 
 **Reset Django** by issuing the following command::
    
-    (genode) $ django-admin.py flush --settings=geonode.settings --no-input \
+    (geonode) $ django-admin.py flush --settings=geonode.settings --noinput \
         && django-admin.py loaddata geonode-integration/admin.fixture.json --settings=geonode.settings
 
 **Reset GeoServer** by deleting the data/ directory and replacing it with a clean copy::
 
     $ rm -rf gs-data/ && cp -R gs-data.bk/ gs-data/
 
-**Reset GeoNetwork** by erasing the builtin database's storage directory::
+**Reset GeoNetwork** by deleting the deployed web application and redeploying it::
 
-    $ rm -rf webapps/geonetwork/WEB-INF/db/data/
+    $ rm -rf webapps/geonetwork && \
+        unzip webapps/geonetwork.war -d webapps/geonetwork
 
 After resetting, start Tomcat with::
 
-    $ cd src/geoserver-geonode-dev/
-    $ mvn jetty:run
+    $ cd src/geoserver-geonode-ext/
+    $ sh startup.sh
 
 and paster with::
 
