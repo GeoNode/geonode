@@ -30,12 +30,6 @@ Setup
      $ unzip geonode/webapps/geonetwork.war -d webapps/geonetwork/
      $ unzip geonode/src/geoserver-geonode-ext/target/geoserver-geonode-ext.zip -d webapps/geoserver/
 
-3. Create a Django fixture defining an administrative user named ``admin`` with the password ``admin``::
-
-     (geonode) $ django-admin.py flush --settings=geonode.settings
-     ## you will be prompted for the administrative credentials
-     (geonode) $ django-admin.py dumpdata auth --settings=geonode.settings > admin.fixture.json
-
    .. note::
 
        Renaming the GeoNode webapp from ``geoserver-geonode-ext`` to ``geoserver`` matches more closely with the default configuration; if you choose a different name you should modify your ``local_settings.py`` to reflect that.
@@ -51,7 +45,7 @@ GeoNetwork, GeoServer, and the Django application should all be reset between ru
 **Reset Django** by issuing the following command::
 
     (geonode) $ django-admin.py flush --settings=geonode.settings --no-input \
-        && django-admin.py loaddata admin.fixture.json --settings=geonode.settings
+        && django-admin.py loaddata geonode-integration/admin.fixture.json --settings=geonode.settings
 
 **Reset GeoServer** by deleting the data/ directory and replacing it with a clean copy::
 
@@ -97,11 +91,6 @@ Setup
 
    $ cp gs-data/ -R gs-data.bk/
 
-2. Create a Django fixture defining an administrative user named ``admin`` with the password ``admin``::
-
-   (geonode) $ django-admin.py flush --settings=geonode.settings
-   (geonode) $ django-admin.py dumpdata auth --settings=geonode.settings > admin.fixture.json
-
 Resetting Before Test Runs
 ..........................
 
@@ -110,7 +99,7 @@ GeoNetwork, GeoServer, and the Django application should all be reset between ru
 **Reset Django** by issuing the following command::
    
     (genode) $ django-admin.py flush --settings=geonode.settings --no-input \
-        && django-admin.py loaddata admin.fixture.json --settings=geonode.settings
+        && django-admin.py loaddata geonode-integration/admin.fixture.json --settings=geonode.settings
 
 **Reset GeoServer** by deleting the data/ directory and replacing it with a clean copy::
 
