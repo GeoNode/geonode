@@ -297,8 +297,7 @@ community."
         self.assertEqual(response.status_code,401)
 
         # Test successful new map creation
-        user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-        log = c.login(username="john", password="johnpassword")
+        log = c.login(username="bobby", password="bob")
         response = c.post("/maps/",data=MapTest.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
@@ -311,7 +310,7 @@ community."
         self.assertEquals(map.layer_set.all().count(), 1)
 
         # Test an invalid map creation request
-        log = c.login(username="john", password="johnpassword")
+        log = c.login(username="bobby", password="bob")
         response = c.post("/maps/",data="not a valid viewer config",content_type="text/json")
         self.assertEquals(response.status_code,400)
         c.logout()
