@@ -5,7 +5,10 @@ GeoNode's integration testing suite requires a full deployment with live data fo
 This means that running the integration tests requires deploying GeoServer, GeoNetwork and the Django application, although it is possible to run the tests against those servers running in "development" mode.
 To ensure repeatability of the tests, GeoNode should be **fully reset** between runs of the suite.
 
-The integration test suite itself is maintained in a separate source repository from the main GeoNode code; it is available at http://github.com/GeoNode/geonode-integration.git/ .
+The integration test suite itself is maintained in a separate source repository from the main GeoNode code; it is available at http://github.com/GeoNode/geonode-integration.git/ .  The command below assume that you have cloned this repository into your working directory.
+   $ git clone http://github.com/GeoNode/geonode-integration.git/ geonode-integration
+
+
 
 Running against Paster and Tomcat Standalone
 ============================================
@@ -27,12 +30,6 @@ Setup
      $ unzip geonode/webapps/geonetwork.war -d webapps/geonetwork/
      $ unzip geonode/src/geoserver-geonode-ext/target/geoserver-geonode-ext.zip -d webapps/geoserver/
 
-3. Create a Django fixture defining an administrative user named ``admin`` with the password ``admin``::
-
-     (geonode) $ django-admin.py flush --settings=geonode.settings
-     ## you will be prompted for the administrative credentials
-     (geonode) $ django-admin.py dumpdata auth --settings=geonode.settings > admin.fixture.json
-
    .. note::
 
        Renaming the GeoNode webapp from ``geoserver-geonode-ext`` to ``geoserver`` matches more closely with the default configuration; if you choose a different name you should modify your ``local_settings.py`` to reflect that.
@@ -47,8 +44,8 @@ GeoNetwork, GeoServer, and the Django application should all be reset between ru
 
 **Reset Django** by issuing the following command::
 
-    (geonode) $ django-admin.py flush --settings=geonode.settings --no-input \
-        && django-admin.py loaddata admin.fixture.json --settings=geonode.settings
+    (geonode) $ django-admin.py flush --settings=geonode.settings --noinput \
+        && django-admin.py loaddata geonode-integration/admin.fixture.json --settings=geonode.settings
 
 **Reset GeoServer** by deleting the data/ directory and replacing it with a clean copy::
 
@@ -94,11 +91,6 @@ Setup
 
    $ cp gs-data/ -R gs-data.bk/
 
-2. Create a Django fixture defining an administrative user named ``admin`` with the password ``admin``::
-
-   (geonode) $ django-admin.py flush --settings=geonode.settings
-   (geonode) $ django-admin.py dumpdata auth --settings=geonode.settings > admin.fixture.json
-
 Resetting Before Test Runs
 ..........................
 
@@ -106,21 +98,22 @@ GeoNetwork, GeoServer, and the Django application should all be reset between ru
 
 **Reset Django** by issuing the following command::
    
-    (genode) $ django-admin.py flush --settings=geonode.settings --no-input \
-        && django-admin.py loaddata admin.fixture.json --settings=geonode.settings
+    (geonode) $ django-admin.py flush --settings=geonode.settings --noinput \
+        && django-admin.py loaddata geonode-integration/admin.fixture.json --settings=geonode.settings
 
 **Reset GeoServer** by deleting the data/ directory and replacing it with a clean copy::
 
     $ rm -rf gs-data/ && cp -R gs-data.bk/ gs-data/
 
-**Reset GeoNetwork** by erasing the builtin database's storage directory::
+**Reset GeoNetwork** by deleting the deployed web application and redeploying it::
 
-    $ rm -rf webapps/geonetwork/WEB-INF/db/data/
+    $ rm -rf webapps/geonetwork && \
+        unzip webapps/geonetwork.war -d webapps/geonetwork
 
 After resetting, start Tomcat with::
 
-    $ cd src/geoserver-geonode-dev/
-    $ mvn jetty:run
+    $ cd src/geoserver-geonode-ext/
+    $ sh startup.sh
 
 and paster with::
 
