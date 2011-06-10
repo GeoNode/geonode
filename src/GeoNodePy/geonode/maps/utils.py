@@ -100,6 +100,7 @@ def get_valid_name(layer_name):
 
     return proposed_name
 
+## TODO: Remove default arguments here, they are never used.
 def get_valid_layer_name(layer=None, overwrite=False):
     """Checks if the layer is a string and fetches it from the database.
     """
@@ -143,7 +144,8 @@ def cleanup(name, uuid):
        gs_store = cat.get_store(name)
        if gs_store is not None:
            gs_layer = cat.get_layer(name)
-           gs_resource = gs_layer.resource
+           if gs_layer is not None:
+               gs_resource = gs_layer.resource
        else:
            gs_layer = None
            gs_resource = None
@@ -168,9 +170,7 @@ def cleanup(name, uuid):
 
    gn = Layer.objects.geonetwork
    csw_record = gn.get_by_uuid(uuid)
-   if csw_record is None:
-       pass
-   else:
+   if csw_record is not None:
        logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
        try:
            # this is a bit hacky, delete_layer expects an instance of the layer

@@ -931,9 +931,6 @@ class FormTest(TestCase):
             set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
 
 
-from geonode.maps.utils import layer_type, get_files, get_valid_name
-from geoserver.resource import FeatureType, Coverage
-
 class UtilsTest(TestCase):
     def setUp(self):
         pass
@@ -944,6 +941,8 @@ class UtilsTest(TestCase):
     fixtures = ['map_data.json']
 
     def test_layer_type(self):
+        from geonode.maps.utils import layer_type
+        from geoserver.resource import FeatureType, Coverage
         self.assertEquals(layer_type('foo.shp'), FeatureType.resource_type)
         self.assertEquals(layer_type('foo.SHP'), FeatureType.resource_type)
         self.assertEquals(layer_type('foo.sHp'), FeatureType.resource_type)
@@ -964,6 +963,7 @@ class UtilsTest(TestCase):
         self.assertRaises(GeoNodeException, lambda: layer_type('foo.gml'))
 
     def test_get_files(self):
+        from geonode.maps.utils import get_files
         import shutil
         import tempfile
 
@@ -1029,8 +1029,60 @@ class UtilsTest(TestCase):
                 shutil.rmtree(d)
 
     def test_get_valid_name(self):
+        from geonode.maps.utils import get_valid_name
         self.assertEquals(get_valid_name("blug"), "blug")
         self.assertEquals(get_valid_name("<-->"), "_")
         self.assertEquals(get_valid_name("<ab>"), "_ab_")
         self.assertEquals(get_valid_name("CA"), "CA_1")
         self.assertEquals(get_valid_name("CA"), "CA_1")
+
+    def test_get_valid_layer_name(self):
+        from geonode.maps.utils import get_valid_layer_name
+        self.assertEquals(get_valid_layer_name("blug", False), "blug")
+        self.assertEquals(get_valid_layer_name("blug", True), "blug")
+
+        self.assertEquals(get_valid_layer_name("<ab>", False), "_ab_")
+        self.assertEquals(get_valid_layer_name("<ab>", True), "<ab>")
+
+        self.assertEquals(get_valid_layer_name("<-->", False), "_")
+        self.assertEquals(get_valid_layer_name("<-->", True), "<-->")
+
+        self.assertEquals(get_valid_layer_name("CA", False), "CA_1")
+        self.assertEquals(get_valid_layer_name("CA", False), "CA_1")
+        self.assertEquals(get_valid_layer_name("CA", True), "CA")
+        self.assertEquals(get_valid_layer_name("CA", True), "CA")
+
+        layer = Layer.objects.get(name="CA")
+        self.assertEquals(get_valid_layer_name(layer, False), "CA_1")
+        self.assertEquals(get_valid_layer_name(layer, True), "CA")
+
+        self.assertRaises(GeoNodeException, get_valid_layer_name, 12, False)
+        self.assertRaises(GeoNodeException, get_valid_layer_name, 12, True)
+
+    def test_cleanup(self):
+        from geonode.maps.utils import cleanup
+        from geoserver.catalog import FailedRequestError
+        from mock import patch
+
+        self.assertRaises(GeoNodeException, cleanup, "CA", "1234")
+        cleanup("FOO", "1234")
+
+        def blowup(self):
+            raise FailedRequestError()
+
+        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_catalog:
+            mock_catalog.get_store.return_value = None
+            cleanup("FOO", "1234")
+
+        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_catalog:
+            mock_catalog.get_store.side_effect = blowup
+
+            cleanup("FOO", "1234")
+
+        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_catalog:
+            mock_catalog.get_layer.return_value = None
+            cleanup("FOO", "1234")
+
+        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_catalog:
+            mock_catalog.delete.side_effect = blowup
+            cleanup("FOO", "1234")
