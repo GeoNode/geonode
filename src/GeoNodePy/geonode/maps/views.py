@@ -843,7 +843,7 @@ def upload_layer(request):
     elif request.method == 'POST':
         from geonode.maps.forms import NewLayerUploadForm
         from geonode.maps.utils import save
-        from django.template import escape
+        from django.utils.html import escape
         import os, shutil
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
