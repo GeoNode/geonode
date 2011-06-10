@@ -64,6 +64,7 @@ def ajax_login(request):
                 status=400
             )
 
+@csrf_exempt
 def ajax_lookup(request):
     if request.method != 'POST':
         return HttpResponse(
