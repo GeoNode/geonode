@@ -967,6 +967,7 @@ class UtilsTest(TestCase):
         import shutil
         import tempfile
 
+        # Check that a well-formed Shapefile has its components all picked up
         d = None
         try:
             d = tempfile.mkdtemp()
@@ -983,6 +984,7 @@ class UtilsTest(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
+        # Check that a Shapefile missing required components raises an exception
         d = None
         try:
             d = tempfile.mkdtemp()
@@ -996,6 +998,7 @@ class UtilsTest(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
+        # Check that including an SLD with a valid shapefile results in the SLD getting picked up
         d = None
         try:
             d = tempfile.mkdtemp()
@@ -1012,6 +1015,7 @@ class UtilsTest(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
+        # Check that capitalized extensions are ok
         d = None
         try:
             d = tempfile.mkdtemp()
@@ -1024,6 +1028,68 @@ class UtilsTest(TestCase):
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
             self.assertEquals(gotten_files, dict(base="foo.SHP", shp="foo.SHP", shx="foo.SHX",
                 prj="foo.PRJ", dbf="foo.DBF"))
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
+
+        # Check that mixed capital and lowercase extensions are ok
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.SHP", "foo.shx", "foo.pRJ", "foo.DBF"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            gotten_files = get_files(os.path.join(d, "foo.SHP"))
+            gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
+            self.assertEquals(gotten_files, dict(base="foo.SHP", shp="foo.SHP", shx="foo.shx",
+                prj="foo.pRJ", dbf="foo.DBF"))
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
+
+        # Check that including both capital and lowercase extensions raises an exception
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
+            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
+
+        # Check that including both capital and lowercase PRJ (this is special-cased in the implementation) 
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.prj"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
+            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
+
+        # Check that including both capital and lowercase SLD (this is special-cased in the implementation) 
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.SLD", "foo.sld"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
+            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
             if d is not None:
                 shutil.rmtree(d)
