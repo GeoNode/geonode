@@ -1152,3 +1152,31 @@ class UtilsTest(TestCase):
         with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_catalog:
             mock_catalog.delete.side_effect = blowup
             cleanup("FOO", "1234")
+
+    def test_check_geonode_is_up(self):
+        from contextlib import nested
+        from geonode.maps.utils import check_geonode_is_up
+        from mock import patch
+
+        def blowup():
+            raise Exception("BOOM")
+
+        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_gs:
+            mock_gs.get_workspaces.side_effect = blowup
+
+            self.assertRaises(GeoNodeException, check_geonode_is_up)
+
+        with nested(
+                patch('geonode.maps.models.Layer.objects.gs_catalog'),
+                patch('geonode.maps.models.Layer.objects.geonetwork')
+            ) as (mock_gs, mock_gn):
+                mock_gn.login.side_effect = blowup
+                self.assertRaises(GeoNodeException, check_geonode_is_up)
+                self.assertTrue(mock_gs.get_workspaces.called)
+
+        with nested(
+                patch('geonode.maps.models.Layer.objects.gs_catalog'),
+                patch('geonode.maps.models.Layer.objects.geonetwork')
+            ) as (mock_gs, mock_gn):
+                # no assertion, this should just run without error
+                check_geonode_is_up()
