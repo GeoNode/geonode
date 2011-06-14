@@ -812,6 +812,36 @@ community."
         finally:
             lyr.resource.latlon_bbox = orig_bbox
 
+from mock import patch
+
+class ViewTest(TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    fixtures = ['test_data.json', 'map_data.json']
+
+    def test_new_map_without_layers(self):
+        client = Client()
+        response = client.get("/maps/new")
+
+    def test_new_map_with_layer(self):
+        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_gs:
+            mock_gs.get_resource.return_value.latlon_bbox = ["0", "1", "0", "1"]
+            client = Client()
+            layer = Layer.objects.all()[0]
+            response = client.get("/maps/new?layer=" + layer.typename)
+
+    def test_new_map_with_empty_bbox_layer(self):
+        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_gs:
+            mock_gs.get_resource.return_value.latlon_bbox = ["0", "0", "0", "0"]
+            client = Client()
+            layer = Layer.objects.all()[0]
+            response = client.get("/maps/new?layer=" + layer.typename)
+
+
 from geonode.maps.forms import JSONField, LayerUploadForm, NewLayerUploadForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 
