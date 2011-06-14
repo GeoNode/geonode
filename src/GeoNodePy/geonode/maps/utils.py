@@ -1,27 +1,41 @@
-from itertools import cycle, izip
+"""GeoNode SDK for managing GeoNode layers and users
+"""
+
+# Standard Modules
 import logging
 import re
-from django.db import transaction
-from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
-import geoserver
-from geoserver.catalog import FailedRequestError
-from geoserver.resource import FeatureType, Coverage
 import uuid
-from django.template.defaultfilters import slugify
-import datetime
-from django.conf import settings
 import sys
 import os
-import glob
+import datetime
 import traceback
 import inspect
 import string
 import urllib2
+import glob
+from itertools import cycle, izip
 
-logger = logging.getLogger("geonode.maps.utils")
+# Django functionality
+from django.db import transaction
+from django.utils.translation import ugettext as _
+from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
+from django.conf import settings
+
+# Geonode functionality
+from geonode.maps.models import Map, Layer, MapLayer
+from geonode.maps.models import Contact, ContactRole, Role, get_csw
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
+
+# Geoserver functionality
+import geoserver
+from geoserver.catalog import FailedRequestError
+from geoserver.resource import FeatureType, Coverage
+
+
+logger = logging.getLogger('geonode.maps.utils')
+_separator = '\n' + ('-' * 100) + '\n'
+
 
 class GeoNodeException(Exception):
     """Base class for exceptions in this module."""
@@ -175,14 +189,13 @@ def cleanup(name, uuid):
        try:
            # this is a bit hacky, delete_layer expects an instance of the layer
            # model but it just passes it to a Django template so a dict works too.
-           gn.delete_layer({ "uuid": uuid }) 
+           gn.delete_layer({ "uuid": uuid })
        except:
            logger.exception("Couldn't delete GeoNetwork record during cleanup()")
 
    logger.warning("Finished cleanup after failed GeoNetwork/Django import for layer: %s", name)
 
 
-_separator = '\n' + ('-' * 100) + '\n'
 def save(layer, base_file, user, overwrite = True, title=None, abstract=None, permissions=None, keywords = []):
     """Upload layer data to Geoserver and registers it with Geonode.
 
