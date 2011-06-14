@@ -3,6 +3,7 @@
 if (window.GeoExplorer) {
     Ext.apply(GeoExplorer.prototype, {
         addLayersButtonText: gettext("Add Layers"),
+        arcGisRestLabel: gettext("Add ArcGIS REST Server"),
         areaActionText: gettext("Area"),
         backgroundContainerText: gettext("Background"),
         capGridAddLayersText: gettext("Add Layers"),
