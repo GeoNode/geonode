@@ -9,7 +9,7 @@ import geonode.maps.views
 from geonode.maps.models import Map, Layer, User
 from geonode.maps.utils import get_valid_user, GeoNodeException
 
-from mock import Mock
+from mock import Mock, patch
 
 import json
 import os
@@ -812,8 +812,6 @@ community."
         finally:
             lyr.resource.latlon_bbox = orig_bbox
 
-from mock import patch
-
 class ViewTest(TestCase):
     def setUp(self):
         pass
@@ -1210,3 +1208,60 @@ class UtilsTest(TestCase):
             ) as (mock_gs, mock_gn):
                 # no assertion, this should just run without error
                 check_geonode_is_up()
+
+
+    def test_save(self):
+        import shutil
+        import tempfile
+        from contextlib import nested
+        from geonode.maps.utils import save
+
+        # Check that including both capital and lowercase SLD (this is special-cased in the implementation) 
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld", "foo.sld"):
+                path = os.path.join(d, f)
+                # open and immediately close to create empty file
+                open(path, 'w').close()  
+
+            class MockWMS(object):
+
+                def __init__(self):
+                    self.contents = { 'geonode:a_layer': 'geonode:a_layer' }
+
+                def __getitem__(self, idx):
+                    return self.contents[idx]
+
+            with nested(
+                    patch.object(geonode.maps.models, '_wms', new=MockWMS()),
+                    patch('geonode.maps.models.Layer.objects.gs_catalog'),
+                    patch('geonode.maps.models.Layer.objects.geonetwork')
+                ) as (mock_wms, mock_gs, mock_gn):
+                    # Setup
+                    mock_gs.get_store.return_value.get_resources.return_value = []
+                    mock_resource = mock_gs.get_resource.return_value
+                    mock_resource.name = 'a_layer'
+                    mock_resource.title = 'a_layer'
+                    mock_resource.abstract = 'a_layer'
+                    mock_resource.store.name = "a_layer"
+                    mock_resource.store.resource_type = "dataStore"
+                    mock_resource.store.workspace.name = "geonode"
+                    mock_resource.native_bbox = ["0", "0", "0", "0"]
+                    mock_resource.projection = "EPSG:4326"
+                    mock_gn.url_for_uuid.return_value = "http://example.com/metadata"
+
+                    # Exercise
+                    base_file = os.path.join(d, 'foo.shp')
+                    owner = User.objects.get(username="admin")
+                    save('a_layer', base_file, owner)
+
+                    # Assertions
+                    (md_link,) = mock_resource.metadata_links
+                    md_mime, md_spec, md_url = md_link
+                    self.assertEquals(md_mime, "text/xml")
+                    self.assertEquals(md_spec, "TC211")
+                    self.assertEquals(md_url,  "http://example.com/metadata")
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
