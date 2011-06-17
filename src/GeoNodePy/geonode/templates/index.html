@@ -4,9 +4,44 @@
 {% block indexclass %} class="here" {% endblock %}
 
 {% block head %}
-{% include "geonode/ext_header.html" %}
+{% include "geonode/jquery_header.html" %}
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery.nivo.slider.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nivo-slider.css" />
+
+
 {{ block.super }}
 
+ <!--script type="text/javascript">
+$(window).load(function() {
+    $('#slider').nivoSlider({
+        effect:'random', // Specify sets like: 'fold,fade,sliceDown'
+        slices:15, // For slice animations
+        boxCols: 8, // For box animations
+        boxRows: 4, // For box animations
+        animSpeed:500, // Slide transition speed
+        pauseTime:3000, // How long each slide will show
+        startSlide:0, // Set starting Slide (0 index)
+        directionNav:true, // Next & Prev navigation
+        directionNavHide:false, // Only show on hover
+        controlNav:false, // 1,2,3... navigation
+        controlNavThumbs:false, // Use thumbnails for Control Nav
+        controlNavThumbsFromRel:false, // Use image rel for thumbs
+        controlNavThumbsSearch: '.jpg', // Replace this with...
+        controlNavThumbsReplace: '_thumb.jpg', // ...this in thumb Image src
+        keyboardNav:true, // Use left & right arrows
+        pauseOnHover:true, // Stop animation while hovering
+        manualAdvance:true, // Force manual transitions
+        captionOpacity:0.8, // Universal caption opacity
+        prevText: 'Prev', // Prev directionNav text
+        nextText: 'Next', // Next directionNav text
+        beforeChange: function(){}, // Triggers before a slide transition
+        afterChange: function(){}, // Triggers after a slide transition
+        slideshowEnd: function(){}, // Triggers after all slides have been shown
+        lastSlide: function(){}, // Triggers when last slide is shown
+        afterLoad: function(){} // Triggers when slider has loaded
+    });
+});
+</script-->
 {% endblock %}
 
 {% block main %}
@@ -18,6 +53,14 @@
 
     {% blocktrans %}
 <div class=Section1>
+
+
+<!--div id="slider">
+    <a href="/africamap/"><img src="{{STATIC_URL}}theme/img/slide-africa.jpg">
+    <a href="/chinamap/"><img src="{{STATIC_URL}}theme/img/slide-china.jpg">
+    <a href="/boston/"><img src="{{STATIC_URL}}theme/img/slide-boston.jpg">
+</div-->
+
 
 <p class=MsoNormal><span style='font-size:14.0pt;font-family:Arial'>Get started
 by <a
