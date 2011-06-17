@@ -240,6 +240,7 @@ def newmap(request):
                     continue
                     
                 layer_bbox = layer.resource.latlon_bbox
+                # assert False, str(layer_bbox)
                 if bbox is None:
                     bbox = list(layer_bbox[0:4])
                 else:
@@ -263,8 +264,14 @@ def newmap(request):
                 center = GEOSGeometry(wkt, srid=4326)
                 center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
 
-                width_zoom = math.log(360 / (maxx - minx), 2)
-                height_zoom = math.log(360 / (maxy - miny), 2)
+                if maxx == minx:
+                    width_zoom = 15
+                else:
+                    width_zoom = math.log(360 / (maxx - minx), 2)
+                if maxy == miny:
+                    height_zoom = 15
+                else:
+                    height_zoom = math.log(360 / (maxy - miny), 2)
 
                 map.center_x = center.x
                 map.center_y = center.y
@@ -843,7 +850,7 @@ def upload_layer(request):
     elif request.method == 'POST':
         from geonode.maps.forms import NewLayerUploadForm
         from geonode.maps.utils import save
-        from django.template import escape
+        from django.utils.html import escape
         import os, shutil
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
