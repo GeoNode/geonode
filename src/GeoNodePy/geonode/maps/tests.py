@@ -656,8 +656,18 @@ community."
     
     # Layer Tests
 
+    # Test layer upload endpoint
     def test_upload_layer(self):
-        pass
+        c = Client()
+
+        # Test redirection to login form when not logged in
+        response = c.get("/data/upload")
+        self.assertEquals(response.status_code,302)
+
+        # Test return of upload form when logged in
+        c.login(username="bobby", password="bob")
+        response = c.get("/data/upload")
+        self.assertEquals(response.status_code,200)
 
     def test_handle_layer_upload(self):
         pass
