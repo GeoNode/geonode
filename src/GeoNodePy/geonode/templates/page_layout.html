@@ -20,7 +20,7 @@
     	  <!--[if lte IE 6]><link rel="stylesheet" href="{{ STATIC_URL }}theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
     {% endif %}  
   <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-  <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
+  <script type="text/javascript" src="{% url lang %}"></script>
   {% endblock %}
     {% autoescape off %}
         {{ GOOGLE_ANALYTICS_CODE }}
@@ -44,7 +44,9 @@
           <div id="welcomediv">Welcome <span style="font-weight:bold">{{user.username}}</span></div>
           <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">My Profile</a> | <a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Sign out" %}</a>
         {% else %}
-          <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">Sign in</a>
+          <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">{% trans "Sign in" %}</a>
+          {% if REGISTRATION_OPEN %} or <a href="{% url registration_register %}">{% trans "Register" %}</a>{% endif %}
+          {% trans "for extra features" %}
       {% endif %}
       </div>
     </div><!-- /.wrap -->
@@ -69,6 +71,22 @@
                 <li class="sitenav-divider"><span>|</span></li>
 		<li class=""><a class="" id="dataLink" href="{% url geonode.views.static page='help'%}">Help</a></li>
       {% endblock %}
+
+   {% get_current_language as LANGUAGE %}
+    <form class="langbar" id="target" action="/i18n/setlang/" method="post">
+      {% csrf_token %}
+       <div style="display: inline;">
+         <select id="langval" name="language" onchange="javascript:form.submit()">
+           {% for lang in LANGUAGES %}
+            <option value="{{ lang.0 }}"
+                {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                {{ lang.1 }}
+            </option>
+           {% endfor %}
+         </select>
+       </div>
+     </form>
+
     </div><!-- /.wrap -->
   </div><!-- /#crossbar -->
   <div id="main">

@@ -640,7 +640,7 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 def get_wms():
     global _wms
-    wms_url = "%swms?request=GetCapabilities&version=1.1.1" % settings.GEOSERVER_BASE_URL
+    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
     http = httplib2.Http()
     http.add_credentials(_user, _password)
@@ -855,7 +855,7 @@ class Layer(models.Model, PermissionLevelMixin):
         dx = float(bbox[1]) - float(bbox[0])
         dy = float(bbox[3]) - float(bbox[2])
 
-        dataAspect = dx / dy
+        dataAspect = 1 if dy == 0 else dx / dy
 
         height = 550
         width = int(height * dataAspect)
@@ -1240,7 +1240,6 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
             self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
-            logger.debug("saved?")
             gn.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
@@ -1278,12 +1277,12 @@ class Layer(models.Model, PermissionLevelMixin):
         if meta is None:
             return
         self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
-        onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
-        if len(onlineresources) == 1:
+        if hasattr(meta.distribution, 'online'):
+            onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+            if len(onlineresources) == 1:
                 res = onlineresources[0]
                 self.distribution_url = res.url
                 self.distribution_description = res.description
-
 
     def keyword_list(self):
         if self.keywords is None:
@@ -1393,7 +1392,7 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=200)
+    title = models.CharField(_('Title'),max_length=1000)
     """
     A display name suitable for search results and page headers
     """

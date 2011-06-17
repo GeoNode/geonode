@@ -280,7 +280,7 @@ the Sites application (the default is example.com)::
     http://localhost:8000/admin/sites/site/1
 
 
-PostGIS Integration
+POSTGIS INTEGRATION
 .................
 To automatically import uploaded shapefiles to a PostGIS database, open the settings.py file and set  'DB_DATASTORE' to 'True'.
 Then assign the appropriate connection values to the other DB_DATASTORE_* settings below it:
@@ -291,6 +291,7 @@ DB_DATASTORE_PASSWORD = '<Database user password>'
 DB_DATASTORE_HOST = '<Database hostname (typically localhost)'
 DB_DATASTORE_PORT = '<Database port (typically 5432)>'
 DB_DATASTORE_TYPE='postgis'
+
 
 
 TILE CACHING
@@ -318,11 +319,6 @@ Create or edit the 'gwc-gs.xml' file under the gwc directory within your GeoServ
      <string>image/png</string>
    </defaultOtherCacheFormats>
 </GeoServerGWCConfig>
-
-
-Also, if using Tomcat, add the following line to your catalaina.sh file:
-    CATALINA_OPTS="-DGWC_METASTORE_JDBC_URL=jdbc:h2:file:/<path to meta_jdbc_h2>"
-    where "meta_jdbc_h2" should be a directory under the gwc directory mentioned above.
 
 
 

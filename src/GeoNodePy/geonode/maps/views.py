@@ -1,11 +1,9 @@
-from random import choice
-from xml.etree.ElementTree import XML
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, CHARSETS
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
 from geonode.maps.encode import num_encode, num_decode
-import geoserver.catalog
-import geoserver.resource
+import geoserver
+from geoserver.resource import FeatureType, Coverage
 import base64
 from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
@@ -41,7 +39,6 @@ from registration.models import RegistrationProfile
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
-from zipfile import ZipFile
 from datetime import datetime, timedelta
 
 logger = logging.getLogger("geonode.maps.views")
@@ -320,6 +317,7 @@ def newmap(request):
                     continue
 
                 layer_bbox = layer.resource.latlon_bbox
+                # assert False, str(layer_bbox)
                 if bbox is None:
                     bbox = list(layer_bbox[0:4])
                 else:
@@ -343,8 +341,14 @@ def newmap(request):
                 center = GEOSGeometry(wkt, srid=4326)
                 center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
 
-                width_zoom = math.log(360 / (maxx - minx), 2)
-                height_zoom = math.log(360 / (maxy - miny), 2)
+                if maxx == minx:
+                    width_zoom = 15
+                else:
+                    width_zoom = math.log(360 / (maxx - minx), 2)
+                if maxy == miny:
+                    height_zoom = 15
+                else:
+                    height_zoom = math.log(360 / (maxy - miny), 2)
 
                 map.center_x = center.x
                 map.center_y = center.y
@@ -1257,7 +1261,7 @@ def upload_layer(request):
     elif request.method == 'POST':
         from geonode.maps.forms import NewLayerUploadForm
         from geonode.maps.utils import save
-        from django.template import escape
+        from django.utils.html import escape
         import os, shutil
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None

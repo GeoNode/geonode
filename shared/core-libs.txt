@@ -1,6 +1,6 @@
 PIL
 http://www.reportlab.com/ftp/reportlab-2.3.tar.gz#egg=reportlab
--e  svn+http://svn.gispython.org/svn/gispy/OWSLib/trunk/@1716#egg=OWSLib
+-e  svn+http://svn.gispython.org/svn/gispy/OWSLib/trunk/@1717#egg=OWSLib
 -r py-base-libs.txt
 -e git+http://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 #django-registration
