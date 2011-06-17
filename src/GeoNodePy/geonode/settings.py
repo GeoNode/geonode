@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django settings for GeoNode project.
 from urllib import urlencode
 import logging
@@ -58,8 +59,10 @@ TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('en', _('English')),
-    ('es', _('Spanish')),
+    ('en', 'English'),
+    ('es', 'Español'),
+    ('it', 'Italiano'),
+    ('fr', 'François'),
 )
 
 SITE_ID = 1
@@ -329,6 +332,7 @@ CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 CUSTOM_GROUP_EMAIL_SUFFIX = ''
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_AUTH_URL = ''
+
 
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE=False

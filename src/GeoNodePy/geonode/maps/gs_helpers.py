@@ -121,8 +121,6 @@ def fixup_style(cat, resource, style):
             cat.save(lyr)
 
 def cascading_delete(cat, resource):
-    #Maybe it's already been deleted from geoserver?
-    logger.debug("CASCADE DELETE %s", resource.name if resource else 'NULL')
     if resource:
         resource_name = resource.name
         store = resource.store
@@ -140,6 +138,10 @@ def cascading_delete(cat, resource):
 
 
 def delete_from_postgis(resource_name):
+    """
+    Delete a table from PostGIS (because Geoserver won't do it yet);
+    to be used after deleting a layer from the system.
+    """
     conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_NAME + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
         cur = conn.cursor()
@@ -150,4 +152,3 @@ def delete_from_postgis(resource_name):
     finally:
         if conn:
             conn.close()
-
