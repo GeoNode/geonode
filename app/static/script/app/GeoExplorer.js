@@ -402,12 +402,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
             var layer = e.layer;
             if (layer instanceof OpenLayers.Layer.WMS) {
-                // we need to keep this until the default of tiled is true again
-                // in gxp for WMSCSource, see: 
-                // https://github.com/opengeo/gxp/commit/6abb29b474c4296a4a3ddd52d2c14c267cac7d79
-                !layer.singleTile && layer.mergeNewParams({
-                    tiled: true
-                });
                 layer.events.on({
                     "loadstart": function() {
                         layerCount++;
