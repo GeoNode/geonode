@@ -1511,9 +1511,6 @@ def maps_search(request):
 def _maps_search(query, start, limit, sort_field, sort_dir):
 
     keywords = _split_query(query)
- 
-    if len(keywords) == 0:
-        maps = Map.objects.all()
 
     maps = Map.objects
     for keyword in keywords:
