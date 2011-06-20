@@ -1,5 +1,7 @@
 import os, sys
 import urllib2
+from urlparse import urljoin
+from urllib import urlencode
 import contextlib 
 import json
 
@@ -477,13 +479,20 @@ class GeoNodeMapTest(TestCase):
         """Check that keywords can be passed to file_upload
         """
         thefile = os.path.join(TEST_DATA, 'lembang_schools.shp')
-
         uploaded = file_upload(thefile, keywords=['foo', 'bar'], overwrite=True)
-
         keywords = uploaded.keyword_list()
-
         msg='No keywords found in layer %s' % uploaded.name
         assert len(keywords)>0, msg
         assert 'foo' in uploaded.keyword_list(), 'Could not find "foo" in %s' % keywords
         assert 'bar' in uploaded.keyword_list(), 'Could not find "bar" in %s' % keywords
 
+
+    def test_empty_bbox(self):
+        """Regression-test for failures caused by zero-width bounding boxes"""
+        thefile = os.path.join(TEST_DATA, 'single_point.shp')
+        uploaded = file_upload(thefile, overwrite=True)
+        detail_page_url = urljoin(settings.SITEURL, uploaded.get_absolute_url())
+        get_web_page(detail_page_url)  # no assertion, but this will fail if the page 500's
+        new_map_url = urljoin(settings.SITEURL, "/maps/new") + "?" + \
+                urlencode(dict(layer=uploaded.typename))
+        get_web_page(new_map_url)  # no assertion, but this will fail if the page 500's
