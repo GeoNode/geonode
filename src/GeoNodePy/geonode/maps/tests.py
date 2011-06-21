@@ -708,7 +708,6 @@ community."
         c = Client()
 
         #test around _metadata_search helper
-<<<<<<< HEAD
         with patch.object(geonode.maps.views,'_metadata_search') as mock_ms:
             result = {
                 'rows' : [{
@@ -724,27 +723,6 @@ community."
             self.assertEqual(call_args[0][0], "foo")
             self.assertEqual(call_args[0][1], 5)
             self.assertEqual(call_args[0][2], 10)
-=======
-        _metadata_search_orig = geonode.maps.views._metadata_search
-        result = {
-            'rows' : [{
-                    'uuid' : 1214431  # does not exist
-                    }
-                ]
-            }
-        geonode.maps.views._metadata_search = Mock(return_value=result)
-
-        response = c.get("/data/search/api?q=foo&start=5&limit=10")
-
-        call_args = geonode.maps.views._metadata_search.call_args
-        self.assertEqual(call_args[0][0], "foo")
-        self.assertEqual(call_args[0][1], 5)
-        self.assertEqual(call_args[0][2], 10)
-
-        #restore _metadata_search
-        geonode.maps.views._metadata_search = _metadata_search_orig
-
->>>>>>> test for test_metadata_search
 
     def test_search_result_detail(self):
         pass
