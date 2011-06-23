@@ -1184,7 +1184,6 @@ def _changeLayerDefaultStyle(request,layer):
             # in layer model or deeper (gsconfig.py, REST API)
 
             old_default = layer.default_style
-            logger.debug('OLD STYLE IS %s', old_default)
             if old_default.name == style_name:
                 return HttpResponse("Default style for %s remains %s" % (layer.name, style_name), status=200)
 
@@ -1193,17 +1192,11 @@ def _changeLayerDefaultStyle(request,layer):
             # in the list of possible styles.
 
             new_style = (style for style in layer.styles if style.name == style_name).next()
-            logger.debug('NEW STYLE IS %s', new_style.name)
 
             layer.default_style = new_style
-            for s in layer.styles:
-                    logger.debug('before: %s', s.name)
             layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
             layer.save()
-            for s in layer.styles:
-                    logger.debug('after: %s', s.name)
-            logger.debug("Default style for %s changed from %s  to %s", layer.name, old_default.name, style_name)
-            return HttpResponse("Default style for %s changed from %s  to %s" % (layer.name, old_default.name, style_name),status=200)
+            return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
         else:
             return HttpResponse("Not allowed",status=403)
     else:

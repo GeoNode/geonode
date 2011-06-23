@@ -97,8 +97,6 @@
             Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
                 showStyle(Ext.get(elem).prev("input").getAttribute("value"));
             });
-
-
 {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
 {% if can_change_permissions %}
             new GeoNode.WorldMapPermissionsEditor({
