@@ -13,6 +13,8 @@
     h3{font-size:1.5em;line-height:1;margin-bottom:1em;margin-top:1em}p{margin-bottom:0.5em}strong{font-weight:bold}caption{background:#ffc}
     th{font: bold 11px tahoma,arial,helvetica,sans-serif;}
 
+
+
 </style>
 
 
@@ -134,7 +136,7 @@
 
                                 var geoEx = window.app;
                                 var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name', name: 'tiled'}]);
-                                var thisLayerRec = new LayerRec({title: '{{ layer.title }}', name: '{{ layer.typename }}', tiled: false});
+                                var thisLayerRec = new LayerRec({title: '{{ layer.title }}', name: '{{ layer.typename }}', tiled: true});
                                 //geoEx.reloadWorldMapSource([thisLayerRec]);
                                 geoEx.addWorldMapLayers([thisLayerRec]);
                              } catch (Exception) {

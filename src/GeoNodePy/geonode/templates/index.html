@@ -11,7 +11,7 @@
 
 {{ block.super }}
 
- <!--script type="text/javascript">
+ <script type="text/javascript">
 $(window).load(function() {
     $('#slider').nivoSlider({
         effect:'random', // Specify sets like: 'fold,fade,sliceDown'
@@ -32,7 +32,7 @@ $(window).load(function() {
         pauseOnHover:true, // Stop animation while hovering
         manualAdvance:true, // Force manual transitions
         captionOpacity:0.8, // Universal caption opacity
-        prevText: 'Prev', // Prev directionNav text
+        prevText: 'Fu', // Prev directionNav text
         nextText: 'Next', // Next directionNav text
         beforeChange: function(){}, // Triggers before a slide transition
         afterChange: function(){}, // Triggers after a slide transition
@@ -41,37 +41,78 @@ $(window).load(function() {
         afterLoad: function(){} // Triggers when slider has loaded
     });
 });
-</script-->
+</script>
+
+<style type="text/css">
+.wmButton {
+	-moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #378de5) );
+	background:-moz-linear-gradient( center top, #79bbff 5%, #378de5 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#378de5');
+	background-color:#79bbff;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #84bbf3;
+	display:inline-block;
+	color:#ffffff;
+	font-family:arial;
+	font-size:20px;
+	font-weight:bold;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #528ecc;
+    width:125px;
+}.wmButton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #378de5), color-stop(1, #79bbff) );
+	background:-moz-linear-gradient( center top, #378de5 5%, #79bbff 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#378de5', endColorstr='#79bbff');
+	background-color:#378de5;
+}.wmButton:active {
+	position:relative;
+	top:1px;
+}
+
+</style>
 {% endblock %}
 
 {% block main %}
-<div class="twocol">
+<div class="onecol">
 <!-- TODO: i18n on the text here -->
-  <div class="block">
+  <div id="content">
 
 
+<div id="buttonsDiv" style="clear:both;margin: 0 auto;height:10px;width:550px" align="center">
+    <div  style="float:left;padding-right:10px;"><a class="wmButton"  href="/maps/new">Create a Map</a></div>
+    <div  style="float:left;padding-right:10px;"><a  class="wmButton" href="/maps/search?sort=last_modified&dir=DESC">View a Map</a></div>
+    <div style="float:left;"><a  class="wmButton" href="#about">About</a></div>
+</div>
 
+<div id="slider-wrapper">
+      <div id="slider" class="nivoSlider">
+                <a href="/africamap/"><img src="{{STATIC_URL}}theme/img/slide-africa.jpg" alt="AfricaMap" title="#africamap_caption"></a>
+                <a href="/chinamap/"><img src="{{STATIC_URL}}theme/img/slide-china.jpg" alt="ChinaMap" title="#chinamap_caption"></a>
+                <a href="/boston/"><img src="{{STATIC_URL}}theme/img/slide-boston.jpg" alt="Boston Research Map" title="#boston_caption"></a>
+            </div>
+</div>
+<div id="africamap_caption" class="nivo-html-caption"><a href="/africamap/">AfricaMap</a></div>
+<div id="chinamap_caption" class="nivo-html-caption"><a href="/chinamap/">ChinaMap</a></div>
+ <div id="boston_caption" class="nivo-html-caption"><a href="/boston/">Boston Research Map</a></div>
+
+<div style="clear:both;padding: 10px;width:800px;margin: 0 auto;">
+            <div style="position:relative;float:left;font-size: 14pt;font-weight:bold;height:188px;width:480px;top:20px;">
+                Explore, visualize, and publish geographic information. Any scholar can create a custom mapping portal and make it viewable by the world or by trusted collaborators.
+            </div>
+             <div style="position:relative;float:right;font-size: 14pt;font-weight:bold;height:188px;width:300px;">
+                 <iframe class="youtube-player" type="text/html"  width="300" height="188" src="http://www.youtube.com/embed/UiOWTshF9Xg" frameborder="0"></iframe>
+             </div>
+</div>
+<div style="clear:both;padding: 10px;width:800px;margin: 0 auto;">
     {% blocktrans %}
-<div class=Section1>
-
-
-<!--div id="slider">
-    <a href="/africamap/"><img src="{{STATIC_URL}}theme/img/slide-africa.jpg">
-    <a href="/chinamap/"><img src="{{STATIC_URL}}theme/img/slide-china.jpg">
-    <a href="/boston/"><img src="{{STATIC_URL}}theme/img/slide-boston.jpg">
-</div-->
-
-
-<p class=MsoNormal><span style='font-size:14.0pt;font-family:Arial'>Get started
-by <a
-href="/maps/search?sort=last_modified&amp;dir=DESC"><span
-style='mso-bidi-font-family:Arial'>Viewing a Map</span></a> or <a
-href="/maps/new"><span
-style='mso-bidi-font-family:Arial'>Creating a Map</span></a>.<o:p></o:p></span></p>
-
-
-
-<p class=MsoNormal><span class=SpellE><span style='font-family:Arial'>WorldMap</span></span><span
+<a name="about"></a>
+    <p class=MsoNormal><span class=SpellE><span style='font-family:Arial'>WorldMap</span></span><span
 style='font-family:Arial'> </span><span style='font-size:10.0pt;font-family:
 Arial'>ALPHA</span><span style='font-family:Arial'> is an experimental platform
 designed for viewing and interpreting maps collaboratively. <span
@@ -80,9 +121,6 @@ many forms, from paper atlases to digital satellite images to census files. <spa
 style='mso-spacerun:yes'></span><span class=SpellE>WorldMap</span> aims to
 pull these and other hard-to-find maps together and <span class=GramE>make</span>
 them available to researchers to explore, share, annotate, and remix. <o:p></o:p></span></p>
-
-
-
 <p class=MsoNormal><span class=SpellE><span style='font-family:Arial'>WorldMap</span></span><span
 style='font-family:Arial'> combines modeling capabilities of Geographic
 Information Systems (GIS) with current web technologies, and is made available
@@ -99,13 +137,13 @@ class=SpellE><a href="http://www.postgis.org" target="_blank">PostGIS</a></span>
 class=SpellE>WorldMap</span> is licensed under Version 3 of the </span><a
 href="http://www.gnu.org/licenses/gpl.html"><span style='font-family:Arial'>GNU
 General Public License (GPL)</span></a><span style='font-family:Arial'>.<o:p></o:p></span></p>
-
-
-
-</div>
-
 {% endblocktrans %}
-  </div>
+
+
+
+
+
+
 
 
     <div class="block">
@@ -163,15 +201,9 @@ Center for Geographic Analysis
 <p><a href="http://www.metacarta.com"  target="_blank"><img src="{{STATIC_URL}}theme/img/metacarta.png" width="75" /></a></p>
 <br/>
 <p>Hosting provided by <a href="http://www.telascience.org">TelaScience</a></p>
-
+</div>
+ </div>
 </div>
 {% endblock %}
 {% block sidebar %}
-<div id="sidebar" class="threecol">
-<h3>Featured Maps</h3>
-<div class="featmap"><a href="/boston/"><img src="{{STATIC_URL}}theme/img/boston-tn.png"></a><br/><a href="/boston/">Boston</a></div>
-<div  class="featmap"><a href="/africamap/"><img src="{{STATIC_URL}}theme/img/africamap-tn.png"></a><br/><a href="/africamap/">Africa</a></div>
-<div  class="featmap"><a href="/chinamap/"><img src="{{STATIC_URL}}theme/img/china-tn.png"></a><br/><a href="/chinamap/">East Asia</a></div>
-
-</div>
 {% endblock %}
