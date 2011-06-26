@@ -42,16 +42,16 @@
 
 	
 
-        <div id="login-area">
-          {% if user.is_authenticated %}
-          <div id="welcomediv">Welcome <span style="font-weight:bold">{{user.username}}</span></div>
-          <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">My Profile</a> | <a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>
-          {% else %}
+      <div id="login-area">
+        {% if user.is_authenticated %}
+          Welcome <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><span style="font-weight:bold">{{user.username}}</span></a>
+                 | <a href="{% url auth_logout %}">{% trans "Sign out" %}</a>
+        {% else %}
           <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">{% trans "Sign in" %}</a>
-          {% if REGISTRATION_OPEN %} {% trans "or" %} <a href="{% url registration_register %}">{% trans "Register" %}</a>{% endif %}
-          {% trans "for extra features" %}
-          {% endif %}
-        </div>
+      {% endif %}
+          | <a class="" id="mapLink" href="/maps/new">Create Map</a>
+          | <a class="" id="mapLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">View Maps</a>
+      </div>
       </div><!-- /.wrap -->
     </div><!-- /#header -->
     {% endblock header-wrapper %}
