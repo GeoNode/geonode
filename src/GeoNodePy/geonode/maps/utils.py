@@ -5,7 +5,7 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
 import geoserver
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
@@ -15,6 +15,7 @@ import datetime
 from django.conf import settings
 import sys
 import os
+import glob
 import traceback
 import inspect
 import string
@@ -45,29 +46,41 @@ def get_files(filename):
        a dictionary with all the required files
     """
     files = {'base': filename}
+
     base_name, extension = os.path.splitext(filename)
 
-    if extension == '.shp':
-        required_extensions =  ['.shp', '.dbf', '.shx']
-        for ext in required_extensions:
-            other_file = base_name + ext
-            if os.path.exists(other_file):
-                files[ext[1:]] = other_file
-            else:
-                msg = ('Expected file %s does not exist. A shapefile requires helper'
-                       ' files with the following extensions: [%s]'
-                             % (ext, required_extensions))
+    if extension.lower() == '.shp':
+        required_extensions = dict(
+            shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]')
+        for ext, pattern in required_extensions.iteritems():
+            matches = glob.glob(base_name + pattern)
+            if len(matches) == 0:
+                msg = ('Expected helper file %s does not exist; a Shapefile '
+                    'requires helper files with the following extensions: %s') % (
+                    base_name + "." + ext, required_extensions.keys())
                 raise GeoNodeException(msg)
+            elif len(matches) > 1:
+                msg = ('Multiple helper files for %s exist; they need to be '
+                       'distinct by spelling and not just case.') % filename
+                raise GeoNodeException(msg)
+            else:
+                files[ext] = matches[0]
 
-        prj_file = base_name + ".prj"
-        if os.path.exists(prj_file):
-            files["prj"] = prj_file
+        matches = glob.glob(base_name + ".[pP][rR][jJ]")
+        if len(matches) == 1:
+            files['prj'] = matches[0]
+        elif len(matches) > 1:
+            msg = ('Multiple helper files for %s exist; they need to be '
+                   'distinct by spelling and not just case.') % filename
+            raise GeoNodeException(msg)
 
-    # Always upload stylefile if it exist
-    style_file = base_name + ".sld"
-    if os.path.exists(style_file):
-        files['sld'] = style_file
-
+    matches = glob.glob(base_name + ".[sS][lL][dD]")
+    if len(matches) == 1:
+        files['sld'] = matches[0]
+    elif len(matches) > 1:
+        msg = ('Multiple style files for %s exist; they need to be '
+               'distinct by spelling and not just case.') % filename
+        raise GeoNodeException(msg)
 
     return files
 
@@ -87,6 +100,7 @@ def get_valid_name(layer_name):
 
     return proposed_name
 
+## TODO: Remove default arguments here, they are never used.
 def get_valid_layer_name(layer=None, overwrite=False):
     """Checks if the layer is a string and fetches it from the database.
     """
@@ -130,7 +144,8 @@ def cleanup(name, uuid):
        gs_store = cat.get_store(name)
        if gs_store is not None:
            gs_layer = cat.get_layer(name)
-           gs_resource = gs_layer.resource
+           if gs_layer is not None:
+               gs_resource = gs_layer.resource
        else:
            gs_layer = None
            gs_resource = None
@@ -155,9 +170,7 @@ def cleanup(name, uuid):
 
    gn = Layer.objects.geonetwork
    csw_record = gn.get_by_uuid(uuid)
-   if csw_record is None:
-       pass
-   else:
+   if csw_record is not None:
        logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
        try:
            # this is a bit hacky, delete_layer expects an instance of the layer
@@ -230,7 +243,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     logger.info('>>> Step 3. Identifying if [%s] is vector or raster and gathering extra files', name)
     if the_layer_type == FeatureType.resource_type:
         logger.debug('Uploading vector layer: [%s]', base_file)
-        create_store = cat.create_featurestore
+        create_store = _create_db_featurestore if settings.DB_DATASTORE else cat.create_featurestore
 
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
@@ -341,7 +354,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     # FIXME: Do this inside the layer object
     typename = gs_resource.store.workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
-    saved_layer,__ = Layer.objects.get_or_create(name=gs_resource.name, defaults=dict(
+    saved_layer, created = Layer.objects.get_or_create(name=gs_resource.name, defaults=dict(
                                  store=gs_resource.store.name,
                                  storeType=gs_resource.store.resource_type,
                                  typename=typename,
@@ -353,6 +366,9 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
                                  owner=user,
                                  )
     )
+
+    if created:
+        saved_layer.set_default_permissions()
 
     # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this
@@ -372,9 +388,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
     logger.info('>>> Step 11. Setting default permissions for [%s]', name)
-    if permissions is None:
-        saved_layer.set_default_permissions()
-    else:
+    if permissions is not None:
         from geonode.maps.views import set_layer_permissions
         set_layer_permissions(saved_layer, permissions)
 
@@ -488,6 +502,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords = []):
 
     new_layer = save(layer, filename, theuser, overwrite, keywords=keywords)
 
+
     return new_layer
 
 
@@ -533,3 +548,27 @@ def upload(incoming, user=None, overwrite=True, keywords = []):
                     else:
                         results.append({'file': filename, 'name': layer.name})
         return results
+
+
+def _create_db_featurestore(name, data, overwrite = False, charset = None):
+    """
+        Create a database store then use it to import a shapefile into the database.
+        If the import fails then delete the store (and delete the PostGIS table for it).
+    """
+    cat = Layer.objects.gs_catalog
+    ds = cat.create_datastore(name)
+    ds.connection_parameters.update(
+            host=settings.DB_DATASTORE_HOST, port=settings.DB_DATASTORE_PORT, database=settings.DB_DATASTORE_NAME, user=settings.DB_DATASTORE_USER,
+            passwd=settings.DB_DATASTORE_PASSWORD, dbtype=settings.DB_DATASTORE_TYPE)
+    cat.save(ds)
+    ds = cat.get_store(name)
+    try:
+        cat.add_data_to_store(ds,name, data, overwrite, charset)
+    except:
+        store_params = ds.connection_parameters
+        cat.delete(ds, purge=True)
+        if store_params['dbtype'] and store_params['dbtype'] == 'postgis':
+            delete_from_postgis(name)
+        raise
+
+

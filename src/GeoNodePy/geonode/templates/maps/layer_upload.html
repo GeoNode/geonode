@@ -64,7 +64,14 @@ Ext.onReady(function(){
         fieldLabel: gettext('DBF'),
         name: 'dbf_file',
         allowBlank: true,
-        listeners: listeners
+        listeners: listeners,
+        validator: function(name) {
+            if ((name.length > 0) && (name.search(/\.dbf$/i) == -1)) {
+                return gettext("Invalid DBF File.");
+            } else {
+                return true;
+            }
+        }
     });
 
     var shx_file = new Ext.ux.form.FileUploadField({
@@ -73,7 +80,14 @@ Ext.onReady(function(){
         fieldLabel: gettext('SHX'),
         name: 'shx_file',
         allowBlank: true,
-        listeners: listeners
+        listeners: listeners,
+        validator: function(name) {
+            if ((name.length > 0) && (name.search(/\.shx$/i) == -1)) {
+                return gettext("Invalid SHX File.");
+            } else {
+                return true;
+            }
+        }
     });
 
     var prj_file = new Ext.ux.form.FileUploadField({
@@ -82,7 +96,14 @@ Ext.onReady(function(){
         fieldLabel: gettext('PRJ'),
         name: 'prj_file',
         allowBlank: true,
-        listeners: listeners
+        listeners: listeners,
+        validator: function(name) {
+            if ((name.length > 0) && (name.search(/\.prj$/i) == -1)) {
+                return gettext("Invalid PRJ File.");
+            } else {
+                return true;
+            }
+        }
     });
 
     var sld_file = new Ext.ux.form.FileUploadField({
@@ -174,7 +195,7 @@ Ext.onReady(function(){
             disable_shapefile_inputs();
         }
     };
-  
+
     base_file.addListener('fileselected', function(cmp, value) {
         check_shapefile();
     });
@@ -192,7 +213,7 @@ Ext.onReady(function(){
             anonymous: 'layer_readonly',
             authenticated: 'layer_readonly',
             users:[]
-        },
+        }
     });
     permissionsEditor.fireEvent("updated", permissionsEditor);
 });
