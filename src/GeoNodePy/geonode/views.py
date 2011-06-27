@@ -7,10 +7,13 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.translation import ugettext as _
 import json
 
 def index(request): 
-    return render_to_response('index.html', RequestContext(request))
+    return render_to_response('index.html', RequestContext(request, {
+        "title": _("A Map-Based Platform to Support Teaching and Research")
+    }))
 
 def static(request, page):
     return render_to_response(page + '.html', RequestContext(request, {
