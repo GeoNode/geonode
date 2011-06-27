@@ -5,6 +5,8 @@
 
 {% block head %}
 {% include "geonode/jquery_header.html" %}
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery.simplemodal.1.4.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/simplemodal.css" />
 <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery.nivo.slider.pack.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nivo-slider.css" />
 
@@ -74,7 +76,6 @@ $(window).load(function() {
 	position:relative;
 	top:1px;
 }
-
 </style>
 {% endblock %}
 
@@ -103,61 +104,41 @@ $(window).load(function() {
 
 <div style="clear:both;padding: 10px;width:800px;margin: 0 auto;">
             <div style="position:relative;float:left;font-size: 14pt;font-weight:bold;height:188px;width:480px;top:20px;">
-                Explore, visualize, and publish geographic information. Any scholar can create a custom mapping portal and make it viewable by the world or by trusted collaborators.
+                 {% blocktrans %}Explore, visualize, and publish geographic information. Any scholar can create a custom mapping portal and make it viewable by the world or by trusted collaborators.{% endblocktrans %}
             </div>
              <div style="position:relative;float:right;font-size: 14pt;font-weight:bold;height:188px;width:300px;">
                  <iframe class="youtube-player" type="text/html"  width="300" height="188" src="http://www.youtube.com/embed/UiOWTshF9Xg" frameborder="0"></iframe>
              </div>
 </div>
-<div style="clear:both;padding: 10px;width:800px;margin: 0 auto;">
-    {% blocktrans %}
+<div style="clear:both;padding-top:40px;width:800px;margin: 0 auto;">
+  {% blocktrans %}
 <a name="about"></a>
-    <p class=MsoNormal><span class=SpellE><span style='font-family:Arial'>WorldMap</span></span><span
-style='font-family:Arial'> </span><span style='font-size:10.0pt;font-family:
-Arial'>ALPHA</span><span style='font-family:Arial'> is an experimental platform
-designed for viewing and interpreting maps collaboratively. <span
-style='mso-spacerun:yes'></span>Today maps come from many sources and take
-many forms, from paper atlases to digital satellite images to census files. <span
-style='mso-spacerun:yes'></span><span class=SpellE>WorldMap</span> aims to
-pull these and other hard-to-find maps together and <span class=GramE>make</span>
-them available to researchers to explore, share, annotate, and remix. <o:p></o:p></span></p>
-<p class=MsoNormal><span class=SpellE><span style='font-family:Arial'>WorldMap</span></span><span
-style='font-family:Arial'> combines modeling capabilities of Geographic
+<p>WorldMap is an experimental platform
+designed for viewing and interpreting maps collaboratively. Today maps come from many sources and take
+many forms, from paper atlases to digital satellite images to census files. WorldMap aims to
+pull these and other hard-to-find maps together and make
+them available to researchers to explore, share, annotate, and remix.</p>
+
+<p>WorldMap combines modeling capabilities of Geographic
 Information Systems (GIS) with current web technologies, and is made available
-as </span><a href="http://en.wikipedia.org/wiki/Open-source_software"><span
-style='font-family:Arial'>Open Source</span></a><span style='font-family:Arial'>
-software. <span style='mso-spacerun:yes'></span>Use the hosted version of <span
-class=SpellE>WorldMap</span> here or <a
-href="https://github.com/cga-harvard/cga-worldmap"><span style='mso-bidi-font-family:
-Arial'>download</span></a> and run the application on your own server. <span
-style='mso-spacerun:yes'></span><span class=SpellE>WorldMap</span> stands on
-the shoulders of other Open Source projects including <span class=SpellE>AfricaMap</span>,
-<span class=SpellE><a href="http://www.geonode.org" target="_blank">GeoNode</a></span>, <span class=SpellE><a href="http://www.openlayers.org" target="_blank">OpenLayers</a></span>, <span
-class=SpellE><a href="http://www.postgis.org" target="_blank">PostGIS</a></span>, and <a href="http://trac.osgeo.org/geos/" target="_blank">GEOS</a>. <span style='mso-spacerun:yes'></span><span
-class=SpellE>WorldMap</span> is licensed under Version 3 of the </span><a
-href="http://www.gnu.org/licenses/gpl.html"><span style='font-family:Arial'>GNU
-General Public License (GPL)</span></a><span style='font-family:Arial'>.<o:p></o:p></span></p>
+as <a href="http://en.wikipedia.org/wiki/Open-source_software">Open Source</a>
+software. Use the hosted version of WorldMap here or <a
+href="https://github.com/cga-harvard/cga-worldmap">download</a> and run the application on your own server. WorldMap stands on
+the shoulders of other Open Source projects including AfricaMap,<a href="http://www.geonode.org" target="_blank">GeoNode</a>
+<a href="http://www.openlayers.org" target="_blank">OpenLayers</a>
+<a href="http://www.postgis.org" target="_blank">PostGIS</a>, and <a href="http://trac.osgeo.org/geos/" target="_blank">GEOS</a>.
+WorldMap is licensed under Version 3 of the <a
+href="http://www.gnu.org/licenses/gpl.html">GNU
+General Public License (GPL)</a></p>
 {% endblocktrans %}
+</div>
 
-
-
-
-
-
-
-
-    <div class="block">
-    <h2> {% trans "Source Code" %} </h2>
-    <p>
-    {% blocktrans %}
-	All the code for WorldMap is open source and freely available at <a href="https://github.com/cga-harvard/cga-worldmap">github</a>.
-    {% endblocktrans %}
-  </p>
-  </div>
-
-
-
-<div id="sponsor_block" class="block">
+ <div style="padding: 20px">
+<div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#sponsor_block").modal();return false;'>Sponsors</a></div>
+<div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#webdevcontrib_block").modal();return false;'>Contributors</a></div>
+ <div style="width:100%;text-align:center;clear:both;font-size:12pt;"><a href="mailto:contact@help.cga.harvard.edu">Contact Us</a></div>
+ </div>
+<div id="sponsor_block" style="display:none">
 <h2> {% trans "Sponsors" %} </h2>
 
 Center for Geographic Analysis
@@ -192,9 +173,7 @@ Center for Geographic Analysis
 
 <br/>Weatherhead Center for International Affairs (ChinaMap)
 </div>
-
-<br/>
-<div id="webdevcontrib_block" class="block"></div>
+<div id="webdevcontrib_block" style="display:none">
 <h2> {% trans "Software Development Contributions" %} </h2>
 <p><a href="http://www.opengeo.org"  target="_blank"><img src="{{STATIC_URL}}theme/img/opengeo-logo.png" width="75" /></a></p>
 <p><a href="http://www.azavea.com" target="_blank"><img src="{{STATIC_URL}}theme/img/azavea.png" width="75" /></a></p>
@@ -202,7 +181,7 @@ Center for Geographic Analysis
 <br/>
 <p>Hosting provided by <a href="http://www.telascience.org">TelaScience</a></p>
 </div>
- </div>
+
 </div>
 {% endblock %}
 {% block sidebar %}
