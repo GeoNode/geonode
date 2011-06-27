@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     # Example:
     # (r'^geonode/', include('geonode.foo.urls')),
     (r'^(?:index/?)?$', 'geonode.views.index'),
+    (r'^(?:about/?)?$', 'geonode.views.about'),
     (r'^(?P<page>developer|help|maphelp)/?$', 'geonode.views.static'),
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
                {'template': 'lang.js', 'mimetype': 'text/javascript'}, 'lang'),

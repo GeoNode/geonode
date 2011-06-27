@@ -15,6 +15,11 @@ def index(request):
         "title": _("A Map-Based Platform to Support Teaching and Research")
     }))
 
+def about(request): 
+    return render_to_response('about.html', RequestContext(request, {
+        "title": _("About WorldMap")
+    }))
+
 def static(request, page):
     return render_to_response(page + '.html', RequestContext(request, {
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,

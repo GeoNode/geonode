@@ -93,7 +93,7 @@ $(window).load(function() {
 <div id="buttonsDiv" style="clear:both;margin: 0 auto;height:10px;width:550px" align="center">
     <div  style="float:left;padding-right:10px;"><a class="wmButton"  href="/maps/new">Create a Map</a></div>
     <div  style="float:left;padding-right:10px;"><a  class="wmButton" href="/maps/search?sort=last_modified&dir=DESC">View a Map</a></div>
-    <div style="float:left;"><a  class="wmButton" href="#about">About</a></div>
+    <div style="float:left;"><a  class="wmButton" href="/about">About</a></div>
 </div>
 
 <div id="slider-wrapper">
@@ -107,93 +107,22 @@ $(window).load(function() {
 <div id="chinamap_caption" class="nivo-html-caption"><a href="/chinamap/">ChinaMap</a></div>
  <div id="boston_caption" class="nivo-html-caption"><a href="/boston/">Boston Research Map</a></div>
 
-<div style="clear:both;padding: 10px;width:800px;margin: 0 auto;">
-            <div style="position:relative;float:left;font-size: 14pt;font-weight:bold;height:188px;width:480px;top:20px;">
+<div style="clear:both;padding: 20px;width:800px;margin: 0 auto;">
+            <div style="position:relative;float:left;font-size: 14pt;font-weight:bold;height:250px;width:480px;top:20px;">
                  {% blocktrans %}Explore, visualize, and publish geographic information. Any scholar can create a custom mapping portal and make it viewable by the world or by trusted collaborators.{% endblocktrans %}
             </div>
-             <div style="position:relative;float:right;font-size: 10pt;font-weight:bold;height:188px;width:300px;text-align:center;"  onclick='$("#tutorial_block").modal();return false;'>
+             <div style="position:relative;float:right;font-size: 10pt;font-weight:bold;height:250px;width:300px;text-align:center;"  onclick='$("#tutorial_block").modal();return false;'>
                  <a href='' onclick='$("#tutorial_block").modal();startVideoOnOpen();return false;'>
                      <img src="{{STATIC_URL}}theme/img/youtube_tutorial.png" border="0" /><br/>Watch the WorldMap tutorial video
                  </a>
              </div>
 </div>
-<div style="clear:both;padding-top:40px;width:800px;margin: 0 auto;">
-  {% blocktrans %}
-<a name="about"></a>
-<p>WorldMap is an experimental platform
-designed for viewing and interpreting maps collaboratively. Today maps come from many sources and take
-many forms, from paper atlases to digital satellite images to census files. WorldMap aims to
-pull these and other hard-to-find maps together and make
-them available to researchers to explore, share, annotate, and remix.</p>
 
-<p>WorldMap combines modeling capabilities of Geographic
-Information Systems (GIS) with current web technologies, and is made available
-as <a href="http://en.wikipedia.org/wiki/Open-source_software">Open Source</a>
-software. Use the hosted version of WorldMap here or <a
-href="https://github.com/cga-harvard/cga-worldmap">download</a> and run the application on your own server. WorldMap stands on
-the shoulders of other Open Source projects including AfricaMap,<a href="http://www.geonode.org" target="_blank">GeoNode</a>
-<a href="http://www.openlayers.org" target="_blank">OpenLayers</a>
-<a href="http://www.postgis.org" target="_blank">PostGIS</a>, and <a href="http://trac.osgeo.org/geos/" target="_blank">GEOS</a>.
-WorldMap is licensed under Version 3 of the <a
-href="http://www.gnu.org/licenses/gpl.html">GNU
-General Public License (GPL)</a></p>
-{% endblocktrans %}
-</div>
 
- <div style="padding: 20px">
-<div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#sponsor_block").modal();return false;'>Sponsors</a></div>
-<div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#webdevcontrib_block").modal();return false;'>Contributors</a></div>
- <div style="width:100%;text-align:center;clear:both;font-size:12pt;"><a href="mailto:contact@help.cga.harvard.edu">Contact Us</a></div>
- </div>
  <div id="tutorial_block" style="display:none;width:640px;height:400px">
      <iframe id="youtube_video" class="youtube-player" type="text/html"  width="640" height="400" src="http://www.youtube.com/embed/UiOWTshF9Xg" frameborder="0"></iframe>
  </div>
-<div id="sponsor_block" style="display:none">
-<h2> {% trans "Sponsors" %} </h2>
-
-Center for Geographic Analysis
-
-<br/>Committee on African Studies (AfricaMap)
-
-<br/>Department of African and African American Studies (AfricaMap)
-
-<br/>Department of Earth and Planetary Sciences (Vermont Geology Map)
-
-<br/>Fairbank Center for Chinese Studies (ChinaMap)
-
-<br/>FAS Academic Technology Group (ParisMap)
-
-<br/>Folger Fund (ChinaMap)
-
-<br/>Harvard Forest (Harvard Forest Map)
-
-<br/>Harvard-MIT Data Center
-
-<br/>Institute for Quantitative Social Science
-
-<br/>Milton Fund (AfricaMap)
-
-<br/>Provost Fund
-
-<br/>Radcliffe Institute for Advanced Study (BostonMap)
-
-<br/>Rappaport Institute for Greater Boston (BostonMap)
-
-<br/>W.E.B. Du Bois Institute for African and African-American Research (AfricaMap)
-
-<br/>Weatherhead Center for International Affairs (ChinaMap)
-</div>
-<div id="webdevcontrib_block" style="display:none">
-<h2> {% trans "Software Development Contributions" %} </h2>
-<p><a href="http://www.opengeo.org"  target="_blank"><img src="{{STATIC_URL}}theme/img/opengeo-logo.png" width="150" /></a></p>
-<p><a href="http://www.azavea.com" target="_blank"><img src="{{STATIC_URL}}theme/img/azavea.png" width="150" /></a></p>
- <br/>
-<p><a href="http://www.metacarta.com"  target="_blank"><img src="{{STATIC_URL}}theme/img/metacarta.png" width="150" /></a></p>
-<br/>
-<p>Hosting provided by <a href="http://www.telascience.org">TelaScience</a></p>
-</div>
 
 </div>
-{% endblock %}
-{% block sidebar %}
+</div>
 {% endblock %}
