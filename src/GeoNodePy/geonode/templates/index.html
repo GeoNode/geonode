@@ -16,7 +16,7 @@
  <script type="text/javascript">
 $(window).load(function() {
     $('#slider').nivoSlider({
-        effect:'random', // Specify sets like: 'fold,fade,sliceDown'
+        effect:'fade', // Specify sets like: 'fold,fade,sliceDown'
         slices:15, // For slice animations
         boxCols: 8, // For box animations
         boxRows: 4, // For box animations
@@ -32,9 +32,9 @@ $(window).load(function() {
         controlNavThumbsReplace: '_thumb.jpg', // ...this in thumb Image src
         keyboardNav:true, // Use left & right arrows
         pauseOnHover:true, // Stop animation while hovering
-        manualAdvance:true, // Force manual transitions
+        manualAdvance:false, // Force manual transitions
         captionOpacity:0.8, // Universal caption opacity
-        prevText: 'Fu', // Prev directionNav text
+        prevText: 'Prev', // Prev directionNav text
         nextText: 'Next', // Next directionNav text
         beforeChange: function(){}, // Triggers before a slide transition
         afterChange: function(){}, // Triggers after a slide transition
@@ -42,7 +42,12 @@ $(window).load(function() {
         lastSlide: function(){}, // Triggers when last slide is shown
         afterLoad: function(){} // Triggers when slider has loaded
     });
-});
+    });
+
+     function startVideoOnOpen() {
+         $('#youtube_video').attr('src', 'http://www.youtube.com/embed/UiOWTshF9Xg?autoplay=1');
+     }
+
 </script>
 
 <style type="text/css">
@@ -106,8 +111,10 @@ $(window).load(function() {
             <div style="position:relative;float:left;font-size: 14pt;font-weight:bold;height:188px;width:480px;top:20px;">
                  {% blocktrans %}Explore, visualize, and publish geographic information. Any scholar can create a custom mapping portal and make it viewable by the world or by trusted collaborators.{% endblocktrans %}
             </div>
-             <div style="position:relative;float:right;font-size: 14pt;font-weight:bold;height:188px;width:300px;">
-                 <iframe class="youtube-player" type="text/html"  width="300" height="188" src="http://www.youtube.com/embed/UiOWTshF9Xg" frameborder="0"></iframe>
+             <div style="position:relative;float:right;font-size: 10pt;font-weight:bold;height:188px;width:300px;text-align:center;"  onclick='$("#tutorial_block").modal();return false;'>
+                 <a href='' onclick='$("#tutorial_block").modal();startVideoOnOpen();return false;'>
+                     <img src="{{STATIC_URL}}theme/img/youtube_tutorial.png" border="0" /><br/>Watch the WorldMap tutorial video
+                 </a>
              </div>
 </div>
 <div style="clear:both;padding-top:40px;width:800px;margin: 0 auto;">
@@ -137,6 +144,9 @@ General Public License (GPL)</a></p>
 <div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#sponsor_block").modal();return false;'>Sponsors</a></div>
 <div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#webdevcontrib_block").modal();return false;'>Contributors</a></div>
  <div style="width:100%;text-align:center;clear:both;font-size:12pt;"><a href="mailto:contact@help.cga.harvard.edu">Contact Us</a></div>
+ </div>
+ <div id="tutorial_block" style="display:none;width:640px;height:400px">
+     <iframe id="youtube_video" class="youtube-player" type="text/html"  width="640" height="400" src="http://www.youtube.com/embed/UiOWTshF9Xg" frameborder="0"></iframe>
  </div>
 <div id="sponsor_block" style="display:none">
 <h2> {% trans "Sponsors" %} </h2>
