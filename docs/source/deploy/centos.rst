@@ -411,18 +411,3 @@ Prepare the Django database
     
     If you have problems uploading files, please enable the verbose logging
     http://docs.geonode.org/1.0/logging.html
-
-
-Miscellaneous Configuration
----------------------------
-
-In order to generate the sitemap properly, the sites domain name must be set  
-within the sites framework. This requires that an admin user login to the  
-admin interface and navigate to the sites module and change example.com to the
-actual domain name (and port if applicable). The admin interface can be accessed
-at http://<host>:<port>/admin/sites/site/
-
-It is possible to 'inform' google of changes to your sitemap. This is accomplished
-using the ping_google management command. More information can be found here
-http://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
-It is recommended to put this call into a cron (scheduled) job to update google periodically.
