@@ -35,6 +35,7 @@ from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
 import simplejson
+import itertools
 from registration.models import RegistrationProfile
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -2054,13 +2055,23 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
               Q(title__icontains=keyword)
             | Q(abstract__icontains=keyword))
 
+    officialMaps = maps.filter(Q(officialurl__isnull=False))
+    maps = maps.filter(Q(officialurl__isnull=True))
+
     if sort_field:
         order_by = ("" if sort_dir == "ASC" else "-") + sort_field
         maps = maps.order_by(order_by)
+        officialMaps = officialMaps.order_by(order_by)
+
+
+
 
     maps_list = []
+    maps = officialMaps | maps
 
-    for map in maps.all()[start:start+limit]:
+    allmaps = [i for i in itertools.chain(officialMaps,maps)]
+
+    for map in allmaps[start:start+limit]:
         try:
             owner_name = Contact.objects.get(user=map.owner).name
             if not owner_name:
