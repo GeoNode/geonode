@@ -2067,8 +2067,6 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
 
     maps_list = []
-    maps = officialMaps | maps
-
     allmaps = [i for i in itertools.chain(officialMaps,maps)]
 
     for map in allmaps[start:start+limit]:
