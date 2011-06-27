@@ -6,11 +6,11 @@ package org.geonode.security;
 
 import java.io.IOException;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.AuthenticationServiceException;
-import org.acegisecurity.providers.AuthenticationProvider;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.AuthenticationServiceException;
+import org.springframework.security.providers.AuthenticationProvider;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.util.Assert;
 
 /**
@@ -29,7 +29,7 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     * @see org.acegisecurity.providers.AuthenticationProvider#authenticate(org.acegisecurity.Authentication)
+     * @see org.springframework.security.providers.AuthenticationProvider#authenticate(org.acegisecurity.Authentication)
      */
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
@@ -47,7 +47,7 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     * @see org.acegisecurity.providers.AuthenticationProvider#supports(java.lang.Class)
+     * @see org.springframework.security.providers.AuthenticationProvider#supports(java.lang.Class)
      */
     public boolean supports(Class authentication) {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
