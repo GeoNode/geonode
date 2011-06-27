@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django settings for GeoNode project.
 from urllib import urlencode
 import os
@@ -36,8 +37,10 @@ TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('en', _('English')),
-    ('es', _('Spanish')),
+    ('en', 'English'),
+    ('es', 'Español'),
+    ('it', 'Italiano'),
+    ('fr', 'François'),
 )
 
 SITE_ID = 1
@@ -176,7 +179,7 @@ MAP_BASELAYERSOURCES = {
         "ptype":"gx_olsource"
     },
     "capra": {
-        "url":"http://localhost:8001/geoserver/wms"
+        "url":"/geoserver/wms"
     },
     "google":{
         "ptype":"gx_googlesource",
@@ -288,6 +291,17 @@ SERVE_MEDIA = DEBUG;
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/media/static/"
+
+#Import uploaded shapefiles into a database such as PostGIS?
+DB_DATASTORE=False
+
+#Database datastore connection settings
+DB_DATASTORE_NAME = ''
+DB_DATASTORE_USER = ''
+DB_DATASTORE_PASSWORD = ''
+DB_DATASTORE_HOST = ''
+DB_DATASTORE_PORT = ''
+DB_DATASTORE_TYPE=''
 
 try:
     from local_settings import *

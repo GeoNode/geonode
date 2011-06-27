@@ -1,6 +1,8 @@
 from itertools import cycle, izip
 import logging
 import re
+import psycopg2
+from django.conf import settings
 
 logger = logging.getLogger("geonode.maps.gs_helpers")
 
@@ -128,7 +130,8 @@ def fixup_style(cat, resource, style):
             logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
-    lyr = cat.get_layer(resource.name)
+    resource_name = resource.name
+    lyr = cat.get_layer(resource_name)
     if(lyr is not None): #Already deleted
         store = resource.store
         styles = lyr.styles + [lyr.default_style]
@@ -137,4 +140,25 @@ def cascading_delete(cat, resource):
             if s is not None:
                 cat.delete(s, purge=True)
         cat.delete(resource)
-        cat.delete(store)
+        if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
+            cat.delete(store)
+            delete_from_postgis(resource_name)
+        else:
+            cat.delete(store)
+
+
+
+def delete_from_postgis(resource_name):
+    """
+    Delete a table from PostGIS (because Geoserver won't do it yet);
+    to be used after deleting a layer from the system.
+    """
+    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_NAME + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
+        conn.commit()
+    except Exception, e:
+        logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))
+    finally:
+        conn.close()

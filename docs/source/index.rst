@@ -12,7 +12,7 @@ the web.
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    about-geonode
    getting-started
