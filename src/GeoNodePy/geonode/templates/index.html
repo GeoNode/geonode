@@ -105,17 +105,20 @@ $(window).load(function() {
 </div>
 <div id="africamap_caption" class="nivo-html-caption"><a href="/africamap/">AfricaMap</a></div>
 <div id="chinamap_caption" class="nivo-html-caption"><a href="/chinamap/">ChinaMap</a></div>
- <div id="boston_caption" class="nivo-html-caption"><a href="/boston/">Boston Research Map</a></div>
+<div id="boston_caption" class="nivo-html-caption"><a href="/boston/">Boston Research Map</a></div>
 
 <div style="clear:both;padding: 20px;width:800px;margin: 0 auto;">
-            <div style="position:relative;float:left;font-size: 14pt;font-weight:bold;height:250px;width:480px;top:20px;">
-                 {% blocktrans %}Explore, visualize, and publish geographic information. Any scholar can create a custom mapping portal and make it viewable by the world or by trusted collaborators.{% endblocktrans %}
+            <div style="position:relative;float:left;font-size: 14pt;font-weight:bold;height:220px;width:460px;top:30px;">
+                 {% blocktrans %}Explore, visualize, and publish geographic information. You can create a custom mapping portal and make it viewable by the world or by trusted collaborators.{% endblocktrans %}
             </div>
-             <div style="position:relative;float:right;font-size: 10pt;font-weight:bold;height:250px;width:300px;text-align:center;"  onclick='$("#tutorial_block").modal();return false;'>
+             <div style="position:relative;float:right;font-size: 10pt;font-weight:bold;height:250px;width:340px;text-align:center;">
                  <a href='' onclick='$("#tutorial_block").modal();startVideoOnOpen();return false;'>
                      <img src="{{STATIC_URL}}theme/img/youtube_tutorial.png" border="0" /><br/>Watch the WorldMap tutorial video
                  </a>
              </div>
+
+<div style="margin: 0 auto;clear:both;">WorldMap is being developed by the <a href="http://gis.harvard.edu/">Center for Geographic Analysis</a> at <a href="http://www.harvard.edu">Harvard University</a>.  It is freely available to the world for educational use.</div>
+
 </div>
 
 
@@ -123,6 +126,8 @@ $(window).load(function() {
      <iframe id="youtube_video" class="youtube-player" type="text/html"  width="640" height="400" src="http://www.youtube.com/embed/UiOWTshF9Xg" frameborder="0"></iframe>
  </div>
 
+
+      
 </div>
 </div>
 {% endblock %}
