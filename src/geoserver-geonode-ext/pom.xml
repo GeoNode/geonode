@@ -154,7 +154,7 @@
   </dependencies>
   <properties>
     <geotools.version>2.7-SNAPSHOT</geotools.version>
-    <geoserver.version>2.1-GWC</geoserver.version>
+    <geoserver.version>2.1-SNAPSHOT</geoserver.version>
     <jetty.version>6.1.8</jetty.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
