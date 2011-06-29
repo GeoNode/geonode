@@ -191,8 +191,9 @@ Ext.onReady(function(){
     var enable_shapefile_inputs = function() {
         dbf_file.enable();
         dbf_file.show();
-
+        shx_file.enable();
         shx_file.show();
+        prj_file.enable();
         prj_file.show();
 
         encoding.enable();
@@ -263,7 +264,7 @@ if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
     {% empty %}
     <li> {% trans "No maps are using this layer." %} </li>
 	{% endfor %}
-<ul>
+</ul>
 </p>
 <p></p>
 
