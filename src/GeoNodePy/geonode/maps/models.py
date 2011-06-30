@@ -754,6 +754,15 @@ class LayerManager(models.Manager):
         # Doing a logout since we know we don't need this object anymore.
         gn.logout()
 
+    def update_bboxes(self):
+        for layer in Layer.objects.all():
+            logger.debug('Process %s', layer.name)
+            if layer.srs is None or layer.llbbox is None or layer.bbox is None:
+                logger.debug('Process %s', layer.name)
+                layer._populate_from_gs()
+                layer.save()
+
+                
 class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
     title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
