@@ -1,5 +1,6 @@
 import urllib, urllib2, cookielib
 from datetime import date
+from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
 from owslib.csw import CatalogueServiceWeb, namespaces
@@ -65,6 +66,7 @@ class Catalog(object):
         tpl = get_template(template)
         ctx = Context({
             'layer': layer,
+            'SITEURL': settings.SITEURL[:-1],
         })
         md_doc = tpl.render(ctx)
         url = "%ssrv/en/csw" % self.base
