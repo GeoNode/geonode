@@ -46,8 +46,8 @@
         {% else %}
           <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">{% trans "Sign in" %}</a>
       {% endif %}
-          | <a class="" id="mapLink" href="/maps/new">Create Map</a>
-          | <a class="" id="mapLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">View Maps</a>
+          | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
+          | <a class="" id="mapLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
           | <a class="" id="dataLink" href="{% url geonode.views.static page='help'%}">Help</a>
       </div>
     </div><!-- /.wrap -->
@@ -64,10 +64,9 @@
     <div class="wrap selfclear">
       {% block footer %}
       <div class="onecol">
-        Powered by <a href="/">{% trans "WorldMap" %}</a>
-        | <a href="{% url geonode.views.static "help" %}">{% trans "Need Help?" %}</a>
+| <a href="{% url geonode.views.static "help" %}">{% trans "Need Help?" %}</a>
         | <a href="mailto:worldmap@harvard.edu">{%  trans "Contact Us" %}</a>
-        | <a href="https://github.com/cga-harvard/cga-worldmap">Source Code</a>
+        | <a href="https://github.com/cga-harvard/cga-worldmap">{% trans "Source Code" %}</a>
         | Copyright 2011 President and Fellows of Harvard College
       </div>
       {% endblock %}

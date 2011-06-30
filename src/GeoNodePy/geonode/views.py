@@ -12,7 +12,7 @@ import json
 
 def index(request): 
     return render_to_response('index.html', RequestContext(request, {
-        "title": _("A Map-Based Platform to Support Teaching and Research")
+        "title": _("Open Source Infrastructure for Collaboration")
     }))
 
 def about(request): 

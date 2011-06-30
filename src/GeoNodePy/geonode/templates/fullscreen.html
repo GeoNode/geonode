@@ -49,8 +49,8 @@
         {% else %}
           <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">{% trans "Sign in" %}</a>
       {% endif %}
-          | <a class="" id="mapLink" href="/maps/new">Create Map</a>
-          | <a class="" id="mapLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">View Maps</a>
+          | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
+          | <a class="" id="mapLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
       </div>
       </div><!-- /.wrap -->
     </div><!-- /#header -->
