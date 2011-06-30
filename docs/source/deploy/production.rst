@@ -125,3 +125,21 @@ On the WMS Service page
      * Don't set the "Resource Consumption Limits."
        This sounds a bit counterintuitive, but these limits are implemented in an inefficient way such that unless resource-intensive requests are common on your server it is more efficient to avoid the limits.
        A better implementation of this feature is available for GeoServer 2.1 and will be incorporated in GeoNode 1.1.
+
+Sitemaps Configuration
+======================
+
+GeoNode can automatically generate a sitemap suitable for submission to search
+engines which can help them to index your GeoNode site more efficiently and 
+effectively.
+
+In order to generate the sitemap properly, the sites domain name must be set
+within the sites framework. This requires that an admin user login to the
+admin interface and navigate to the sites module and change example.com to the
+actual domain name (and port if applicable). The admin interface can be accessed
+at http://<host>:<port>/admin/sites/site/
+
+It is possible to 'inform' google of changes to your sitemap. This is accomplished
+using the ping_google management command. More information can be found here
+http://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
+It is recommended to put this call into a cron (scheduled) job to update google periodically.
