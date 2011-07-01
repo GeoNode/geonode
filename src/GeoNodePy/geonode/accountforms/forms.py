@@ -2,6 +2,7 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from registration.forms import RegistrationFormUniqueEmail
 from django.utils.translation import ugettext_lazy as _
 from geonode.maps.models import Contact
@@ -37,7 +38,7 @@ class UserRegistrationForm(RegistrationFormUniqueEmail):
         new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
         password=self.cleaned_data['password1'],
         email=self.cleaned_data['email'],
-        site = settings.SITE_ID)
+        site = Site.objects.get_current())
         new_profile = Contact(user=new_user)
         new_profile.email = new_user.email
         if (settings.USE_CUSTOM_ORG_AUTHORIZATION):
