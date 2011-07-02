@@ -48,7 +48,11 @@
         /**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,gnAnonymousProcessingFilter,filterInvocationInterceptor
 
         LEGACY NEW:
+        CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+        PATTERN_TYPE_APACHE_ANT
         /web/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
+        /j_spring_security_check/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
+        /j_spring_security_logout/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
         /gwc/rest/web/**=anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
@@ -58,7 +62,10 @@
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
         /web/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
+        /j_spring_security_check/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
+        /j_spring_security_logout/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
+        /gwc/rest/web/**=gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
         /**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,securityContextHolderAwareRequestFilter,filterInvocationInterceptor
       </value>

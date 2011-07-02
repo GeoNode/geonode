@@ -400,6 +400,68 @@ community."
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
 
+
+    def test_browse_data(self):
+        pass
+
+    def test_describe_data(self):
+        '''/data/base:CA?describe -> Test accessing the description of a layer '''
+        from django.contrib.auth.models import User
+        self.assertEqual(2, User.objects.all().count())
+        c = Client()
+        response = c.get('/data/base:CA?describe')
+        # Since we are not authenticated, we should not be able to access it
+        self.failUnlessEqual(response.status_code, 302)
+        # but if we log in ...
+        c.login(username='bobby', password='bob')
+        # ... all should be good
+        if self.GEOSERVER:
+            response = c.get('/data/base:CA?describe')
+            self.failUnlessEqual(response.status_code, 200)
+        else:
+            # If Geoserver is not running, this should give a runtime error
+            try:
+                c.get('/data/base:CA?describe')
+            except RuntimeError:
+                pass
+    
+    # Layer Tests
+
+    # Test layer upload endpoint
+    def test_upload_layer(self):
+        c = Client()
+
+        # Test redirection to login form when not logged in
+        response = c.get("/data/upload")
+        self.assertEquals(response.status_code,302)
+
+        # Test return of upload form when logged in
+        c.login(username="bobby", password="bob")
+        response = c.get("/data/upload")
+        self.assertEquals(response.status_code,200)
+
+    def test_handle_layer_upload(self):
+        pass
+
+    def test_update_layer(self):
+        pass
+
+    def test_describe_layer(self):
+        pass
+
+    def test_remove_layer(self):
+        pass
+
+    def test_change_layer_default_style(self):
+        pass
+
+    def test_layer_controller(self):
+        pass
+
+    def test_extract_links(self):
+        pass
+
+    # Search Tests
     def test_search(self):
         '''/data/search/ -> Test accessing the data search page'''
         c = Client()
@@ -413,7 +475,24 @@ community."
         pass
 
     def test_metadata_search(self):
-        pass
+        c = Client()
+
+        #test around _metadata_search helper
+        with patch.object(geonode.maps.views,'_metadata_search') as mock_ms:
+            result = {
+                'rows' : [{
+                        'uuid' : 1214431  # does not exist
+                        }
+                          ]
+                }
+            mock_ms.return_value = result
+
+            response = c.get("/data/search/api?q=foo&start=5&limit=10")
+
+            call_args = geonode.maps.views._metadata_search.call_args
+            self.assertEqual(call_args[0][0], "foo")
+            self.assertEqual(call_args[0][1], 5)
+            self.assertEqual(call_args[0][2], 10)
 
     def test_search_result_detail(self):
         pass

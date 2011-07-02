@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from staticfiles.urls import staticfiles_urlpatterns
+from geonode.sitemap import LayerSitemap, MapSitemap
 
 
 # Uncomment the next two lines to enable the admin:
@@ -9,6 +10,11 @@ admin.autodiscover()
 
 js_info_dict = {
     'packages': ('geonode.maps',),
+}
+
+sitemaps = {
+    "layer": LayerSitemap,
+    "map": MapSitemap
 }
 
 urlpatterns = patterns('',
@@ -54,8 +60,10 @@ urlpatterns = patterns('',
     (r'^profiles/', include('geonode.profileforms.urls')),
     (r'^(?P<site>\w+)/$', 'geonode.maps.views.official_site'),
     (r'^(?P<site>\w+)/edit$', 'geonode.maps.views.official_site_controller'),
-    
-)
+    (r'^accounts/', include('registration.urls')),
+    (r'^profiles/', include('profiles.urls')),
+    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps})
+    )
 
 # Extra static file endpoint for development use
 if settings.SERVE_MEDIA:
