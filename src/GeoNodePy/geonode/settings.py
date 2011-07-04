@@ -40,7 +40,7 @@ LANGUAGES = (
     ('en', 'English'),
     ('es', 'Español'),
     ('it', 'Italiano'),
-    ('fr', 'François'),
+    ('fr', 'Français'),
 )
 
 SITE_ID = 1
