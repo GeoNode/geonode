@@ -579,8 +579,10 @@ class Contact(models.Model):
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True, unique=False)
+    display_email = models.BooleanField(_('Display my email address on my profile'), blank=False, default=False, null=False)
     is_org_member = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
     member_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
+
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """

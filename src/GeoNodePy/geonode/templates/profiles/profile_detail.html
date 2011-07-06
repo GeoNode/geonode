@@ -15,7 +15,7 @@
   <h2>{{ profile.name }}</h2>
   <div style="padding-left:20px;">
   <p><strong>{% trans "Name" %}:</strong> {{ profile.username }}</p>
-   {% if user == profile.user %}
+   {% if user == profile.user or profile.display_email %}
     <p><strong>{% trans "Email" %}:</strong>
         {%  if profile.email %}
             {{ profile.email }}
