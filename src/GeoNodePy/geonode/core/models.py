@@ -251,13 +251,16 @@ class PermissionLevelMixin(object):
 
         # get all user-specific permissions
         user_levels = {}
+        user_names = {}
         for rm in UserObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
             user_levels[rm.user.email] = rm.role.codename
+            user_names[rm.user.email] = rm.user.username
 
         levels = {}
         for rm in GenericObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
             levels[rm.subject] = rm.role.codename
         levels['users'] = user_levels
+        levels['names'] = user_names
 
         return levels
 

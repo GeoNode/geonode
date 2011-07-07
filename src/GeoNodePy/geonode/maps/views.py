@@ -1454,6 +1454,7 @@ def _perms_info_email(obj, level_names):
     info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
     info[CUSTOM_GROUP_USERS] = info.get(CUSTOM_GROUP_USERS, obj.LEVEL_NONE)
     info['users'] = sorted(info['users'].items())
+    info['names'] = sorted(info['names'].items())
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
     if hasattr(obj, 'owner') and obj.owner is not None:
         info['owner'] = obj.owner.username
