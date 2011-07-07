@@ -12,7 +12,7 @@ import json
 
 def index(request): 
     return render_to_response('index.html', RequestContext(request, {
-        "title": _("Open Source Infrastructure for Research Collaboration")
+        "title": _("Explore, Visualize, and Publish Geographic Information")
     }))
 
 def about(request): 
