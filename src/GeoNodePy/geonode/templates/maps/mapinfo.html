@@ -41,7 +41,7 @@ Ext.onReady(function() {
             'admin': 'map_admin',
             'readwrite': 'map_readwrite',
             'readonly': 'map_readonly',
-            '_none': '_none'
+            'none': '_none'
         },
         renderTo: "permissions_form",
         submitTo: "{% url geonode.maps.views.ajax_map_permissions_by_email map.id  %}",

@@ -107,7 +107,7 @@ def ajax_lookup_email(request):
             content='use a field named "query" to specify a prefix to filter usernames',
             mimetype='text/plain'
         )
-    users = User.objects.filter(email__startswith=request.POST['query'])
+    users = User.objects.filter(username__startswith=request.POST['query'])
     json_dict = {
         'users': [({'email': u.email, 'user':u.username}) for u in users],
         'count': users.count(),
