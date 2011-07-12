@@ -739,7 +739,7 @@ class Layer(models.Model, PermissionLevelMixin):
                         "service": "WCS",
                         "version": "1.0.0",
                         "request": "DescribeCoverage",
-                        "coverages": self.typename
+                        "coverage": self.typename
                     })
                 response, content = client.request(description_url)
                 doc = parse(StringIO(content))
@@ -766,6 +766,7 @@ class Layer(models.Model, PermissionLevelMixin):
             except Exception, e:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
+                # TODO: This is a bad idea to eat errors like this.
                 pass 
 
         def wms_link(mime):
