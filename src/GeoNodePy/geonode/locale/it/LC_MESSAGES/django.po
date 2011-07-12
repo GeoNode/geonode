@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-09 13:37-0500\n"
+"POT-Creation-Date: 2011-07-12 09:30+0200\n"
 "PO-Revision-Date: 2010-12-07 15:33\n"
 "Last-Translator: <>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "title"
 msgstr "titolo"
 
-#: core/models.py:25 maps/models.py:1592
+#: core/models.py:25 maps/models.py:1593
 msgid "permissions"
 msgstr "permessi"
 
@@ -36,12 +36,12 @@ msgstr ""
 "Determina l'ordine con cui i ruoli vengono visualizzati nell'interfaccia "
 "utente"
 
-#: core/models.py:67 maps/views.py:994
+#: core/models.py:67 maps/views.py:1001
 #: templates/maps/layer_permissions.html:18
 msgid "Anonymous Users"
 msgstr "Utente anonimo"
 
-#: core/models.py:68 maps/views.py:998
+#: core/models.py:68 maps/views.py:1005
 #: templates/maps/layer_permissions.html:19
 msgid "Registered Users"
 msgstr "Utente registrato"
@@ -1171,79 +1171,79 @@ msgstr "KML"
 msgid "View in Google Earth"
 msgstr "Visualizza in Google Earth"
 
-#: maps/models.py:1151
+#: maps/models.py:1152
 msgid "Title"
 msgstr "Titolo"
 
-#: maps/models.py:1156 templates/maps/layer.html:128
+#: maps/models.py:1157 templates/maps/layer.html:128
 msgid "Abstract"
 msgstr "Abstract"
 
-#: maps/models.py:1162
+#: maps/models.py:1163
 msgid "zoom"
 msgstr "zoom"
 
-#: maps/models.py:1168
+#: maps/models.py:1169
 msgid "projection"
 msgstr "proiezione"
 
-#: maps/models.py:1174
+#: maps/models.py:1175
 msgid "center X"
 msgstr "centro X"
 
-#: maps/models.py:1180
+#: maps/models.py:1181
 msgid "center Y"
 msgstr "centro Y"
 
-#: maps/models.py:1186
+#: maps/models.py:1187
 msgid "owner"
 msgstr "proprietario"
 
-#: maps/models.py:1443
+#: maps/models.py:1444
 msgid "stack order"
 msgstr "ordinamento"
 
-#: maps/models.py:1449
+#: maps/models.py:1450
 msgid "format"
 msgstr "formato"
 
-#: maps/models.py:1455
+#: maps/models.py:1456
 msgid "name"
 msgstr "nome"
 
-#: maps/models.py:1464
+#: maps/models.py:1465
 msgid "opacity"
 msgstr "opacità"
 
-#: maps/models.py:1469
+#: maps/models.py:1470
 msgid "styles"
 msgstr "stili"
 
-#: maps/models.py:1474
+#: maps/models.py:1475
 msgid "transparent"
 msgstr "trasparente"
 
-#: maps/models.py:1479
+#: maps/models.py:1480
 msgid "fixed"
 msgstr "fissato"
 
-#: maps/models.py:1485
+#: maps/models.py:1486
 msgid "group"
 msgstr "gruppo"
 
-#: maps/models.py:1491
+#: maps/models.py:1492
 msgid "visibility"
 msgstr "visibilità"
 
-#: maps/models.py:1496
+#: maps/models.py:1497
 msgid "ows URL"
 msgstr "ows URL"
 
-#: maps/models.py:1501
+#: maps/models.py:1502
 msgid "layer params"
 msgstr "parametri del layer"
 
-#: maps/models.py:1510
+#: maps/models.py:1511
 msgid "source params"
 msgstr "parametri sorgente"
 
@@ -1271,43 +1271,43 @@ msgstr "Devi entrare per salvare questa mappa"
 msgid "You are not permitted to view or copy this map."
 msgstr "Non hai i permessi per visualizzare o copiare questa mappa."
 
-#: maps/views.py:310 maps/views.py:655 maps/views.py:671 templates/401.html:10
+#: maps/views.py:317 maps/views.py:662 maps/views.py:678 templates/401.html:10
 msgid "Not Permitted"
 msgstr "Non Permesso"
 
-#: maps/views.py:445
+#: maps/views.py:452
 msgid "You are not permitted to view this map's permissions"
 msgstr "Non hai i permessi per visualizzare i privilegi su questa mappa"
 
-#: maps/views.py:553
+#: maps/views.py:560
 msgid "You are not permitted to delete this map."
 msgstr "Non hai i permessi per eliminare questa mappa."
 
-#: maps/views.py:575 maps/views.py:639
+#: maps/views.py:582 maps/views.py:646
 msgid "You are not allowed to view this map."
 msgstr "Non hai i permessi per visualizzare questa mappa."
 
-#: maps/views.py:598
+#: maps/views.py:605
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Non hai i permessi per modificare i metadati di questa mappa."
 
-#: maps/views.py:690
+#: maps/views.py:697
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Non hai i permessi per modificare i metadati di questo layer"
 
-#: maps/views.py:752
+#: maps/views.py:759
 msgid "You are not permitted to delete this layer"
 msgstr "Non hai i permessi per eliminare questo layer"
 
-#: maps/views.py:772 maps/views.py:883
+#: maps/views.py:779 maps/views.py:890
 msgid "You are not permitted to modify this layer"
 msgstr "Non hai i permessi per modificare questo layer"
 
-#: maps/views.py:816
+#: maps/views.py:823
 msgid "You are not permitted to view this layer"
 msgstr "Non hai i permessi per visualizzare questo layer"
 
-#: maps/views.py:834
+#: maps/views.py:841
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -1315,23 +1315,23 @@ msgstr ""
 "E' occorso un errore durante l'invio dei tuoi dati. Riprova o contatta un "
 "amministratore se il problema persiste."
 
-#: maps/views.py:933
+#: maps/views.py:940
 msgid "You are not permitted to view this layer's permissions"
 msgstr "Non hai i permessi per visualizzare i privilegi di questo layer"
 
-#: maps/views.py:943
+#: maps/views.py:950
 msgid "???"
 msgstr "???"
 
-#: maps/views.py:985
+#: maps/views.py:992
 msgid "Invalid permission level."
 msgstr "Livello di permessi non valido."
 
-#: maps/views.py:1007 templates/maps/layer_permissions.html:15
+#: maps/views.py:1014 templates/maps/layer_permissions.html:15
 msgid "User"
 msgstr "Utente"
 
-#: maps/views.py:1065
+#: maps/views.py:1072
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Credenziali di autorizzazione HTTP errate."
 
@@ -1416,13 +1416,13 @@ msgstr "Carica"
 
 #: templates/data_base.html:59
 msgid "We support Shapefile and GeoTIFF uploads."
-msgstr "Supportiamo l'invio di Shapefile e GeoTIFF "
+msgstr "Attualmente è possibile caricare ESRI Shapefile e GeoTIFF "
 
 #: templates/data_base.html:60
 msgid "Upload a new layer"
 msgstr "Carica un nuovo layer"
 
-#: templates/data_base.html:65 templates/page_layout.html:62
+#: templates/data_base.html:65 templates/page_layout.html:78
 msgid "For Developers"
 msgstr "Per gli sviluppatori"
 
@@ -1478,17 +1478,28 @@ msgstr "Cambia password"
 msgid "Log out"
 msgstr "Esci"
 
+#: templates/fullscreen.html:22 templates/page_layout.html:23
+msgid "Sign in"
+msgstr "Entra"
+
+#: templates/fullscreen.html:23
+msgid "or"
+msgstr "oppure"
+
 #: templates/fullscreen.html:23 templates/login.html:14
 #: templates/page_layout.html:24
 msgid "Register"
 msgstr "Registrati"
+
+#: templates/fullscreen.html:24 templates/page_layout.html:25
+msgid "for extra features"
+msgstr "per l'utilizzo completo"
 
 #: templates/help.html:3
 msgid "User Guide"
 msgstr "Guida per l'utilizzatore"
 
 #: templates/help.html:7
-#, fuzzy
 msgid ""
 "\n"
 "  <p>The GeoNode provides access to data sets and a map editing application "
@@ -1718,14 +1729,14 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-" GeoNode è una piattaforma open source per la condivisione di dati territoriali e mappe. "
-"Per qualsiasi domanda relativa al software o al servizio, iscriviti alla nostra lista di discussione "
-" inviando una mail a <em>geonode@librelist.com</em>.\n"
+" GeoNode è una piattaforma open source per la condivisione di dati "
+"territoriali e mappe. Per qualsiasi domanda relativa al software o al "
+"servizio, iscriviti alla nostra lista di discussione  inviando una mail a "
+"<em>geonode@librelist.com</em>.\n"
 "    "
 
-
-#: templates/index.html:52 templates/maps/layer.html:209
-#: templates/maps/view.html:88
+#: templates/index.html:52 templates/page_layout.html:36
+#: templates/maps/layer.html:209 templates/maps/view.html:88
 msgid "Maps"
 msgstr "Mappe"
 
@@ -1739,11 +1750,13 @@ msgid ""
 msgstr ""
 " \n"
 " GeoNode permette di creare e condividere mappe. <strong>Crea</strong>\n"
-"      una mappa con il nostro strumento cartografico, oppure <strong>consulta</strong> mappe\n"
+"      una mappa con il nostro strumento cartografico, oppure "
+"<strong>consulta</strong> mappe\n"
 "      condivise da altri.\n"
 "    "
 
-#: templates/index.html:66 templates/maps/layer.html:197
+#: templates/index.html:66 templates/page_layout.html:35
+#: templates/maps/layer.html:197
 msgid "Data"
 msgstr "Dati"
 
@@ -1755,6 +1768,11 @@ msgid ""
 "      <strong>upload</strong> your own data.\n"
 "    "
 msgstr ""
+" \n"
+"  GeoNode ti permette di caricare, gestire e ricercare dati geografici. \n"
+"      <strong>Ricercare</strong> dati che sono importanti per te o \n"
+"      <strong>caricare</strong> dati in tuo possesso.\n"
+"   "
 
 #: templates/index.html:94
 msgid "Upload data"
@@ -1827,15 +1845,28 @@ msgstr "Per memorizzare la ricerca corrente usa questo"
 msgid "permalink"
 msgstr "permalink"
 
-#: templates/page_layout.html:59
+#: templates/page_layout.html:34 templates/maps/change_poc.html:5
+#: templates/registration/logged_out.html:4
+msgid "Home"
+msgstr "Home"
+
+#: templates/page_layout.html:38
+msgid "Profile"
+msgstr "Profilo"
+
+#: templates/page_layout.html:40
+msgid "Admin"
+msgstr "Amministrazione"
+
+#: templates/page_layout.html:75
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/page_layout.html:60
+#: templates/page_layout.html:76
 msgid "Need Help?"
 msgstr "Serve aiuto?"
 
-#: templates/page_layout.html:61
+#: templates/page_layout.html:77
 msgid "Help"
 msgstr "Aiuto"
 
@@ -1888,10 +1919,6 @@ msgstr "Non hai ancora caricato un avatar. Per favore caricane uno ora."
 #: templates/avatar/add.html:12 templates/profiles/edit_profile.html:22
 msgid "Upload New Image"
 msgstr "Carica una nuova immagine"
-
-#: templates/maps/change_poc.html:5 templates/registration/logged_out.html:4
-msgid "Home"
-msgstr "Home"
 
 #: templates/maps/change_poc.html:5 templates/maps/change_poc.html.py:7
 msgid "Change point of contact"
@@ -2057,7 +2084,6 @@ msgid "Styles"
 msgstr "Stili"
 
 #: templates/maps/layer.html:223
-#, fuzzy
 msgid ""
 "The following styles are associated with this data set.  Choose a style to "
 "view it in the preview to the left.  Click on a style name to view or edit "
@@ -2168,7 +2194,6 @@ msgid "Upload Layer"
 msgstr "Carica layer"
 
 #: templates/maps/layer_upload.html:20
-#, fuzzy
 msgid "Add data"
 msgstr "Carica dati"
 
@@ -2280,9 +2305,8 @@ msgid "Choose new Default"
 msgstr "Scegli un nuovo Default"
 
 #: templates/profiles/profile_detail.html:13
-#, fuzzy
 msgid "Actions"
-msgstr "Istruzioni"
+msgstr "Operazioni"
 
 #: templates/profiles/profile_detail.html:15
 msgid "Upload new data"
