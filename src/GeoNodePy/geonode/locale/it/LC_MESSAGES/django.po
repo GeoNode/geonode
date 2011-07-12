@@ -1448,11 +1448,11 @@ msgstr "OGC Services"
 
 #: templates/developer.html:48
 msgid "GeoNode's Web Services"
-msgstr ""
+msgstr "Web Services di GeoNode"
 
 #: templates/developer.html:49
 msgid "GeoNode's Web Services are available from the following URLs:"
-msgstr ""
+msgstr "I Web Services di GeoNode sono disponibili ai seguenti indirizzi:"
 
 #: templates/developer.html:51
 msgid "Dynamic tiles via WMS:"
@@ -1717,6 +1717,12 @@ msgid ""
 "list by emailing <em>geonode@librelist.com</em>.\n"
 "    "
 msgstr ""
+"\n"
+" GeoNode è una piattaforma open source per la condivisione di dati territoriali e mappe. "
+"Per qualsiasi domanda relativa al software o al servizio, iscriviti alla nostra lista di discussione "
+" inviando una mail a <em>geonode@librelist.com</em>.\n"
+"    "
+
 
 #: templates/index.html:52 templates/maps/layer.html:209
 #: templates/maps/view.html:88
@@ -1731,6 +1737,11 @@ msgid ""
 "      shared by others.\n"
 "    "
 msgstr ""
+" \n"
+" GeoNode permette di creare e condividere mappe. <strong>Crea</strong>\n"
+"      una mappa con il nostro strumento cartografico, oppure <strong>consulta</strong> mappe\n"
+"      condivise da altri.\n"
+"    "
 
 #: templates/index.html:66 templates/maps/layer.html:197
 msgid "Data"
