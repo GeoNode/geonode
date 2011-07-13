@@ -440,6 +440,7 @@ def make_release(options):
         tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
         for file in out_pkg.walkfiles():
             tar.add(file)
+        tar.add('../README.release.rst', arcname=('%s/README.rst' % out_pkg))
         tar.close()
 
         out_pkg.rmtree()
