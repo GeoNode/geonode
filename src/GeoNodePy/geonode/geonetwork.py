@@ -1,11 +1,14 @@
 import urllib, urllib2, cookielib
 from datetime import date
+from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
 from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.util import nspath
 from xml.dom import minidom
 from xml.etree.ElementTree import XML
+
+
 
 class Catalog(object):
 
@@ -29,16 +32,12 @@ class Catalog(object):
             "password": self.password
         })
         request = urllib2.Request(url, post, headers)
-        response = urllib2.urlopen(request)
+        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(),
+                urllib2.HTTPRedirectHandler())
+        response = self.opener.open(request)
         body = response.read()
         dom = minidom.parseString(body)
         assert dom.childNodes[0].nodeName == 'ok', "GeoNetwork login failed!"
-
-        self.cookies = cookielib.CookieJar()
-        self.cookies.extract_cookies(response, request)
-        cookie_handler = urllib2.HTTPCookieProcessor(self.cookies)
-        redirect_handler = urllib2.HTTPRedirectHandler()
-        self.opener = urllib2.build_opener(redirect_handler, cookie_handler)
         self.connected = True
 
     def logout(self):
@@ -67,6 +66,7 @@ class Catalog(object):
         tpl = get_template(template)
         ctx = Context({
             'layer': layer,
+            'SITEURL': settings.SITEURL[:-1],
         })
         md_doc = tpl.render(ctx)
         url = "%ssrv/en/csw" % self.base
@@ -191,6 +191,6 @@ class Catalog(object):
 
     def urlopen(self, request):
         if self.opener is None:
-            return urllib2.urlopen(request)
+            raise Exception("No URL opener defined in geonetwork module!!")
         else:
             return self.opener.open(request)

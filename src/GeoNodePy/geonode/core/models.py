@@ -93,7 +93,7 @@ class GenericObjectRoleMapping(models.Model):
     class Meta:
         unique_together = (('subject', 'object_ct', 'object_id', 'role'), )
 
-def PermissionLevelError(Exception):
+class PermissionLevelError(Exception):
     pass
 
 class PermissionLevelMixin(object):
@@ -175,12 +175,20 @@ class PermissionLevelMixin(object):
         else:
             try:
                 role = ObjectRole.objects.get(codename=level, content_type=my_ct)
-            except ObjectRole.NotFound: 
+            except ObjectRole.DoesNotExist: 
                 raise PermissionLevelError("Invalid Permission Level (%s)" % level)
             # remove any existing mapping              
             GenericObjectRoleMapping.objects.filter(subject=gen_role, object_id=self.id, object_ct=my_ct).delete()
             # grant new level
             GenericObjectRoleMapping.objects.create(subject=gen_role, object=self, role=role)
+
+    def get_user_levels(self):
+        ct = ContentType.objects.get_for_model(self)
+        return UserObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
+
+    def get_generic_levels(self):
+        ct = ContentType.objects.get_for_model(self)
+        return GenericObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
 
     def get_all_level_info(self):
         """
@@ -214,3 +222,19 @@ class PermissionLevelMixin(object):
         levels['users'] = user_levels
 
         return levels
+
+# Logic to login a user automatically when it has successfully
+# activated an account:
+from registration.signals import user_activated
+from django.contrib.auth import login
+
+def autologin(sender, **kwargs):
+    user = kwargs['user']
+    request = kwargs['request']
+    # Manually setting the default user backed to avoid the
+    # 'User' object has no attribute 'backend' error
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    # This login function does not need password.
+    login(request, user)
+
+user_activated.connect(autologin)

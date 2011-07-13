@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django settings for GeoNode project.
 from urllib import urlencode
 import os
@@ -36,14 +37,38 @@ TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('en', _('English')),
-    ('es', _('Spanish')),
+    ('en', 'English'),
+    ('es', 'Español'),
+    ('it', 'Italiano'),
+    ('fr', 'Français'),
 )
 
 SITE_ID = 1
 
 # Setting a custom test runner to avoid running the tests for some problematic 3rd party apps
-TEST_RUNNER='geonode.testrunner.GeoNodeTestRunner'
+TEST_RUNNER='django_nose.NoseTestSuiteRunner'
+
+NOSE_ARGS = [
+      '--verbosity=2',
+      '--cover-erase',
+      '--nocapture',
+      '--with-coverage',
+      '--cover-package=geonode',
+      '--cover-inclusive',
+      '--cover-tests',
+      '--detailed-errors',
+      '--with-xunit',
+
+# This is very beautiful/usable but requires: pip install rudolf
+#      '--with-color',
+
+# The settings below are useful while debugging test failures or errors
+
+#      '--failed',
+#      '--pdb-failures',
+#      '--stop',
+#      '--pdb',
+      ]
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -85,7 +110,8 @@ SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    #'django.template.loaders.eggs.load_template_source',
+    'django.template.loaders.app_directories.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -153,7 +179,7 @@ MAP_BASELAYERSOURCES = {
         "ptype":"gx_olsource"
     },
     "capra": {
-        "url":"http://localhost:8001/geoserver/wms"
+        "url":"/geoserver/wms"
     },
     "google":{
         "ptype":"gx_googlesource",
@@ -237,6 +263,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'django.contrib.sitemaps',
     'staticfiles',
     'django_extensions',
     'registration',
@@ -247,6 +274,16 @@ INSTALLED_APPS = (
     'geonode.proxy',
 )
 
+def get_user_url(u):
+    from django.contrib.sites.models import Site
+    s = Site.objects.get_current()
+    return "http://" + s.domain + "/profiles/" + u.username
+
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': get_user_url
+}
+
 AUTH_PROFILE_MODULE = 'maps.Contact'
 REGISTRATION_OPEN = False
 
@@ -254,6 +291,17 @@ SERVE_MEDIA = DEBUG;
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/media/static/"
+
+#Import uploaded shapefiles into a database such as PostGIS?
+DB_DATASTORE=False
+
+#Database datastore connection settings
+DB_DATASTORE_NAME = ''
+DB_DATASTORE_USER = ''
+DB_DATASTORE_PASSWORD = ''
+DB_DATASTORE_HOST = ''
+DB_DATASTORE_PORT = ''
+DB_DATASTORE_TYPE=''
 
 try:
     from local_settings import *

@@ -9,7 +9,7 @@
   <!--[if lte IE 6]><link rel="stylesheet" href="{{ STATIC_URL }}theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css" media="screen" />
   <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-  <script type="text/javascript" src="{% url geonode.views.lang %}"></script>
+  <script type="text/javascript" src="{% url lang %}"></script>
   {% endblock %}
 </head>
 <body>
@@ -20,9 +20,9 @@
         {% if user.is_authenticated %}
           <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
         {% else %}
-          <!-- this should be updated to a url var --><a href="/accounts/login">Sign in</a>
+          <!-- this should be updated to a url var --><a href="/accounts/login">{% trans "Sign in" %}</a>
           {% if REGISTRATION_OPEN %} or <a href="{% url registration_register %}">{% trans "Register" %}</a>{% endif %}
-          for extra features
+          {% trans "for extra features" %}
       {% endif %}
       </div>
     </div><!-- /.wrap -->
@@ -31,18 +31,34 @@
     <div class="wrap selfclear">             
       {% block nav %}
     <ul id="sitenav" class="selfclear">
-        <li class="home"><a href="{% url geonode.views.index %}">Home</a></li> 
-        <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">Data</a></li>
-        <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">Maps</a></li>
+        <li class="home"><a href="{% url geonode.views.index %}">{% trans "Home" %}</a></li> 
+        <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a></li>
+        <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a></li>
     {% if user.is_authenticated %}
-        <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">Profile</a></li>
+        <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">{% trans "Profile" %}</a></li>
     {% if user.is_staff %}
-        <li class=""><a class="" id="adminLink" href="/admin/">Admin</a></li>
+        <li class=""><a class="" id="adminLink" href="/admin/">{% trans "Admin" %}</a></li>
     {% endif %}
 
     {% endif %}
     </ul>
       {% endblock %}
+
+   {% get_current_language as LANGUAGE %}
+    <form class="langbar" id="target" action="/i18n/setlang/" method="post">
+      {% csrf_token %}
+       <div style="display: inline;">
+         <select id="langval" name="language" onchange="javascript:form.submit()">
+           {% for lang in LANGUAGES %}
+            <option value="{{ lang.0 }}"
+                {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                {{ lang.1 }}
+            </option>
+           {% endfor %}
+         </select>
+       </div>
+     </form>
+
     </div><!-- /.wrap -->
   </div><!-- /#crossbar -->
   <div id="main">
@@ -59,7 +75,7 @@
         Powered by <a href="http://geonode.org">{% trans "GeoNode" %}</a>
         | <strong>{% trans "Need Help?" %}</strong>
         <a href="{% url geonode.views.static "help" %}">{% trans "Help" %}</a> 
-        | <a href="{% url geonode.views.static "developer" %}">{% trans "For Developers" %}</a>
+        | <a href="{% url geonode.views.developer %}">{% trans "For Developers" %}</a>
       </div>
       {% endblock %}
     </div><!-- /.wrap -->
