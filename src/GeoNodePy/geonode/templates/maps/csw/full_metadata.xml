@@ -11,34 +11,34 @@
      <gmd:MD_CharacterSetCode codeListValue="utf8"
        codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode" />
    </gmd:characterSet>
-   <gmd:contact>
+   <gmd:contact> {% with layer.poc as poc %}
      <gmd:CI_ResponsibleParty>
-       <gmd:individualName>
-         <gco:CharacterString>{{ layer.poc.name }}</gco:CharacterString>
+       <gmd:individualName {% if not poc.name %}gco:nilReason="missing"{% endif %}>
+         {% if poc.name %} <gco:CharacterString>{{ poc.name }}</gco:CharacterString> {% endif %}
        </gmd:individualName>
-       <gmd:organisationName>
-         <gco:CharacterString>{{ layer.poc.organization }}</gco:CharacterString>
+       <gmd:organisationName {% if not poc.organization %}gco:nilReason="missing"{% endif %}>
+         {% if poc.organization %} <gco:CharacterString>{{ poc.organization }}</gco:CharacterString> {% endif %}
        </gmd:organisationName>
-       <gmd:positionName>
-         <gco:CharacterString>{{ layer.poc.position }}</gco:CharacterString>
+       <gmd:positionName {% if not poc.position %}gco:nilReason="missing"{%endif%}>
+         {% if poc.position %}<gco:CharacterString>{{ poc.position }}</gco:CharacterString> {% endif %}
        </gmd:positionName>
        <gmd:contactInfo>
          <gmd:CI_Contact>
            <gmd:phone>
              <gmd:CI_Telephone>
-               <gmd:voice gco:nilReason="missing">
-		         <gco:CharacterString>{{ layer.poc.voice }}</gco:CharacterString>
+               <gmd:voice {% if not poc.voice %}gco:nilReason="missing"{% endif %}>
+                 {% if poc.voice %}<gco:CharacterString>{{ poc.voice }}</gco:CharacterString>{% endif %}
                </gmd:voice>
-               <gmd:facsimile gco:nilReason="missing">
-		         <gco:CharacterString>{{ layer.poc.fax }}</gco:CharacterString>
+               <gmd:facsimile {% if not poc.fax %}gco:nilReason="missing"{% endif %}>
+                 {% if poc.fax %}<gco:CharacterString>{{ poc.fax }}</gco:CharacterString> {%endif %}
                </gmd:facsimile>
              </gmd:CI_Telephone>
            </gmd:phone>
-           {% if layer.poc.user %}
+           {% if poc.user %}
            <gmd:onlineResource>
                 <gmd:CI_OnlineResource>
                     <gmd:linkage>
-                        <gmd:URL>{{ layer.poc.get_absolute_url }}</gmd:URL>
+                        <gmd:URL>{{ SITEURL }}{{ layer.poc.get_absolute_url }}</gmd:URL>
                     </gmd:linkage>
                     <gmd:protocol>
                         <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WWW:LINK-1.0-http--link</gco:CharacterString>
@@ -51,23 +51,21 @@
             {% endif %}
            <gmd:address>
              <gmd:CI_Address>
-               <gmd:deliveryPoint>
-		         <gco:CharacterString>{{ layer.poc.delivery }}</gco:CharacterString>
+               <gmd:deliveryPoint {% if not poc.delivery %}gco:nilReason="missing"{% endif %}>
+                 {% if poc.delivery %}<gco:CharacterString>{{ poc.delivery }}</gco:CharacterString>{% endif %}
                </gmd:deliveryPoint>
-               <gmd:city>
-		         <gco:CharacterString>{{ layer.poc.city }}</gco:CharacterString>
+               <gmd:city {% if not poc.city %}gco:nilReason="missing"{% endif %}>
+                 {% if poc.city %}<gco:CharacterString>{{ poc.city }}</gco:CharacterString>{% endif %}
                </gmd:city>
-               <gmd:administrativeArea gco:nilReason="missing">
-                 <gco:CharacterString />
-               </gmd:administrativeArea>
-               <gmd:postalCode>
-		         <gco:CharacterString>{{ layer.poc.zipcode }}</gco:CharacterString>
+               <gmd:administrativeArea gco:nilReason="missing"/>
+               <gmd:postalCode {%if not poc.zipcode %}gco:nilReason="missing"{% endif %}>
+                 {% if poc.zipcode %}<gco:CharacterString>{{ poc.zipcode }}</gco:CharacterString>{% endif %}
                </gmd:postalCode>
-               <gmd:country>
-		         <gco:CharacterString>{{ layer.poc.country }}</gco:CharacterString>
+               <gmd:country {% if not poc.country %}gco:nilReason="missing"{% endif %}>
+                 {% if poc.country %}<gco:CharacterString>{{ poc.country }}</gco:CharacterString>{% endif %}
                </gmd:country>
-               <gmd:electronicMailAddress>
-		         <gco:CharacterString>{{ layer.poc.email }}</gco:CharacterString>
+               <gmd:electronicMailAddress {% if not poc.email %}gco:nilReason="missing"{% endif %}>
+                 {% if poc.email %}<gco:CharacterString>{{ poc.email }}</gco:CharacterString>{% endif %}
                </gmd:electronicMailAddress>
              </gmd:CI_Address>
            </gmd:address>
@@ -78,7 +76,7 @@
            codeListValue="pointOfContact" />
        </gmd:role>
      </gmd:CI_ResponsibleParty>
-   </gmd:contact>
+   </gmd:contact> {% endwith %}
    <gmd:dateStamp>
      <gco:DateTime xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gmx="http://www.isotc211.org/2005/gmx">2009-12-17T20:31:07</gco:DateTime>
    </gmd:dateStamp>
@@ -262,7 +260,7 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>{{layer.get_absolute_url}}</gmd:URL>
+                   <gmd:URL>{{ SITEURL }}{{layer.get_absolute_url}}</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
