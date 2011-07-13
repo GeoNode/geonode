@@ -6,7 +6,7 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
-{{ block.super }} 
+{{ block.super }}
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 <script type="text/javascript">
     google.load("earth", "1");
@@ -22,8 +22,8 @@ Ext.onReady(function() {
         useToolbar: false,
         proxy: "/proxy/?url=",
 
-        /* The URL to a REST map configuration service.  This service 
-         * provides listing and, with an authenticated user, saving of 
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
          * maps on the server for sharing and editing.
          */
         rest: "/maps/"
