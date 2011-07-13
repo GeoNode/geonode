@@ -33,6 +33,7 @@ import org.geotools.data.FeatureWriter;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -214,7 +215,7 @@ public class ShapeZipWriter {
             tb.init(c.getSchema());
             tb.setName(c.getSchema().getTypeName().replace('.', '_'));
             SimpleFeatureType renamed = tb.buildFeatureType();
-            c = new RetypingFeatureCollection(c, renamed);
+            c = new RetypingFeatureCollection((SimpleFeatureCollection)c, renamed);
         }
 
         FeatureWriter<SimpleFeatureType, SimpleFeature> writer = null;
@@ -226,8 +227,8 @@ public class ShapeZipWriter {
             // - field names have a max length of 10
             Map<String, String> attributeMappings = createAttributeMappings(c.getSchema());
             // wraps the original collection in a remapping wrapper
-            FeatureCollection<SimpleFeatureType, SimpleFeature> remapped;
-            remapped = new RemappingFeatureCollection(c, attributeMappings);
+            SimpleFeatureCollection remapped;
+            remapped = new RemappingFeatureCollection((SimpleFeatureCollection)c, attributeMappings);
             SimpleFeatureType remappedSchema = (SimpleFeatureType) remapped.getSchema();
             dstore = buildStore(tempDir, charset, remappedSchema);
             writer = dstore.getFeatureWriter(remappedSchema.getTypeName(), Transaction.AUTO_COMMIT);
@@ -299,7 +300,7 @@ public class ShapeZipWriter {
             }
             tb.setName(fc.getSchema().getTypeName().replace('.', '_'));
             SimpleFeatureType renamed = tb.buildFeatureType();
-            fc = new RetypingFeatureCollection(fc, renamed);
+            fc = new RetypingFeatureCollection((SimpleFeatureCollection)fc, renamed);
         }
 
         // create attribute name mappings, to be compatible
@@ -307,7 +308,7 @@ public class ShapeZipWriter {
         // - geometry field is always named the_geom
         // - field names have a max length of 10
         Map<String, String> attributeMappings = createAttributeMappings(schema);
-        return new RemappingFeatureCollection(fc, attributeMappings);
+        return new RemappingFeatureCollection((SimpleFeatureCollection)fc, attributeMappings);
     }
 
     /**

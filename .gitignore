@@ -12,14 +12,13 @@ target
 /setuptools-0.6c11-py2.6.egg
 
 # supporting stuff pulled in by paver script
+/src/GeoNodePy/geonode/media/static/
 /geoserver_token
 /development.db
 /django.log
 /gs-data/
 /jetty.log
 /shared/geonode-geoserver-data.zip
-/shared/ext-3.2.1.zip
-/src/geonode-client/externals/ext/
 /src/geoserver-geonode-ext/logs/
 /src/gsconfig.py/
 /src/owslib/
@@ -37,3 +36,7 @@ pip-log.txt
 
 #Temporary files
 *~
+
+#Testing output
+.coverage
+nosetests.xml

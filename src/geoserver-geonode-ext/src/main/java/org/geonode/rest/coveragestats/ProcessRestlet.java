@@ -300,7 +300,7 @@ public class ProcessRestlet extends Restlet {
                         + " parameter was provided but " + POLITICAL_LAYER_ATTRIBUTES_PARAM
                         + " was not");
             }
-            Collection collection = JSONArray.toCollection(politicalLayerAttsParam);
+            Collection collection = JSONArray.toList(politicalLayerAttsParam);
             politicalLayerAttribtues = new ArrayList<String>(collection);
         }
 
