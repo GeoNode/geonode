@@ -40,3 +40,7 @@ pip-log.txt
 #Testing output
 .coverage
 nosetests.xml
+
+man/man1/nosetests.1
+
+.gitignore
