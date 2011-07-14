@@ -81,7 +81,6 @@ The following steps should prepare a Python virtual environment for you::
 
   git clone git://github.com/GeoNode/geonode.git geonode
   cd geonode
-  git submodule update --init
   python bootstrap.py --no-site-packages # see note below
   source bin/activate
   paver build
@@ -94,6 +93,7 @@ Once fully started, you should see a message indicating the address of your geon
   The GeoNode is an unstoppable machine
   Press CTRL-C to shut down
 
+For more detailed information about how to get started with GeoNode Development, please see :doc:`docs/source/getting-started`.
 
 .. note:: 
 
