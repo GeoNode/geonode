@@ -179,7 +179,7 @@ def setup_geoserver(options):
     geoserver_target.remove()
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn clean install")
-    copy('src/externals/geoserver-restconfig-2-1.jar', 'src/geoserver-geonode-ext/target/geoserver-geonode-dev/WEB-INF/lib/')
+    #copy('src/externals/geoserver-restconfig-2-1.jar', 'src/geoserver-geonode-ext/target/geoserver-geonode-dev/WEB-INF/lib/')
 
 @task
 def setup_geonetwork(options):

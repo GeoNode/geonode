@@ -27,6 +27,23 @@
     <p>{% csrf_token %}<input type="submit" value="{% trans "Upload New Image" %}" /></p>
   </form>
 
+   {%  if USE_CUSTOM_ORG_AUTHORIZATION %}
+    <div style="padding: 10px">
+    {%  if not is_org_user  %}
+        <p>{%  trans "Are you affiliated with  " %}{{ CUSTOM_GROUP_NAME }}?
+            <a href="/affiliation/confirm">{% trans "Click here to confirm" %}</a></p>
+    {%  endif %}
+    {%  if is_org_user  %}
+        {% if is_org_current %}
+            <p>
+            {% trans "Your affiliation with " %}{{ CUSTOM_GROUP_NAME }}{% trans " expires on " %}{{ org_expiration_dt }}
+        {%  else %}
+            {% trans "Your affiliation with " %}{{ CUSTOM_GROUP_NAME }}{% trans " expired on " %}{{ org_expiration_dt }}
+        {%  endif  %}
+            : <a href="/affiliation/confirm">{% trans "Click here to renew" %}</a></p>
+    {%  endif %}
+       </div>
+    {%  endif  %}
   <form action="" method="post">
   {% csrf_token %}
   <ul class="form">

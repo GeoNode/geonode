@@ -1,0 +1,73 @@
+{% load i18n %}
+{% load officialsites %}
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title>{% block title %} {{ SITENAME }} {% endblock %}</title>
+  <link rel="shortcut icon" href="/media/theme/img/favicon.ico"/>
+  {% block head %}
+
+
+
+    	<link rel="stylesheet" type="text/css" href="/site_media/theme/boilerplate-min.css" media="screen" />
+    	<link rel="stylesheet" type="text/css" href="/site_media/theme/site.css"  media="screen" />
+    	  <!--[if lte IE 6]><link rel="stylesheet" href="/site_media/theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+
+  <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+  <script type="text/javascript" src="{% url lang %}"></script>
+  {% endblock %}
+    {% autoescape off %}
+        {{ GOOGLE_ANALYTICS_CODE }}
+    {% endautoescape %}
+</head>
+<body>
+  <div id="header">
+    <div class="wrap selfclear">
+        	{% block logos %}
+        	    {% block breadcrumb %}
+        	    	{% if urlsuffix %}
+						 <div id="page-breadcrumb"><a href="{% url geonode.maps.views.official_site map.officialurl %}">{{title}}</a></div>
+    				{% else %}
+      					<a id="logo" href="{% url geonode.views.index %}"><img src="/site_media/theme/img/WorldMap-Logo_26px.png" border="0"></a>
+  						<div id="page-breadcrumb"><span>{{title}}</span></div>
+      				{% endif %}
+  	  			{% endblock %}
+        	{% endblock logos %}
+      <div id="login-area">
+        {% if user.is_authenticated %}
+          Welcome <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><span style="font-weight:bold">{{user.username}}</span></a>
+                 | <a href="{% url auth_logout %}">{% trans "Sign out" %}</a>
+        {% else %}
+          <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">{% trans "Sign in" %}</a>
+      {% endif %}
+          | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
+          | <a class="" id="mapLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
+          | <a class="" id="dataLink" href="{% url geonode.views.static page='help'%}">Help</a>
+      </div>
+    </div><!-- /.wrap -->
+  </div><!-- /#header -->
+
+  <div id="main">
+    <div class="wrap selfclear">
+      {% block main %}{% endblock %}
+      {% block content %}{% endblock %}
+      {% block sidebar %}{% endblock %}
+    </div><!-- /.wrap -->
+  </div><!-- /#main -->
+  <div id="footer">
+    <div class="wrap selfclear">
+      {% block footer %}
+      <div class="onecol" style="text-align:center">
+         <a href="{% url geonode.views.static "help" %}">{% trans "Need Help?" %}</a>&nbsp;&nbsp;
+         <a href="mailto:worldmap@harvard.edu">{%  trans "Contact Us" %}</a>&nbsp;&nbsp;
+          <a href="http://projects.iq.harvard.edu/worldmap/blog">{% trans "Blog" %}</a>&nbsp;&nbsp;
+         <a href="https://github.com/cga-harvard/cga-worldmap">{% trans "Source Code" %}</a>&nbsp;&nbsp;
+         Copyright 2011 &copy; The President and Fellows of Harvard College
+      </div>
+      {% endblock %}
+    </div><!-- /.wrap -->
+  </div><!-- /#footer -->
+</body>
+</html>

@@ -4,129 +4,130 @@
 {% block indexclass %} class="here" {% endblock %}
 
 {% block head %}
-{% include "geonode/ext_header.html" %}
+{% include "geonode/jquery_header.html" %}
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery.simplemodal.1.4.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/simplemodal.css" />
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery.nivo.slider.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nivo-slider.css" />
+
+
 {{ block.super }}
 
+ <script type="text/javascript">
+$(window).load(function() {
+    $('#slider').nivoSlider({
+        effect:'fade', // Specify sets like: 'fold,fade,sliceDown'
+        slices:15, // For slice animations
+        boxCols: 8, // For box animations
+        boxRows: 4, // For box animations
+        animSpeed:500, // Slide transition speed
+        pauseTime:3000, // How long each slide will show
+        startSlide:0, // Set starting Slide (0 index)
+        directionNav:true, // Next & Prev navigation
+        directionNavHide:false, // Only show on hover
+        controlNav:false, // 1,2,3... navigation
+        controlNavThumbs:false, // Use thumbnails for Control Nav
+        controlNavThumbsFromRel:false, // Use image rel for thumbs
+        controlNavThumbsSearch: '.jpg', // Replace this with...
+        controlNavThumbsReplace: '_thumb.jpg', // ...this in thumb Image src
+        keyboardNav:true, // Use left & right arrows
+        pauseOnHover:true, // Stop animation while hovering
+        manualAdvance:false, // Force manual transitions
+        captionOpacity:0.8, // Universal caption opacity
+        prevText: 'Prev', // Prev directionNav text
+        nextText: 'Next', // Next directionNav text
+        beforeChange: function(){}, // Triggers before a slide transition
+        afterChange: function(){}, // Triggers after a slide transition
+        slideshowEnd: function(){}, // Triggers after all slides have been shown
+        lastSlide: function(){}, // Triggers when last slide is shown
+        afterLoad: function(){} // Triggers when slider has loaded
+    });
+    });
+
+     function startVideoOnOpen() {
+         $('#youtube_video').attr('src', 'http://www.youtube.com/embed/UiOWTshF9Xg?autoplay=1');
+     }
+
+</script>
+
+<style type="text/css">
+.wmButton {
+	-moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #378de5) );
+	background:-moz-linear-gradient( center top, #79bbff 5%, #378de5 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#378de5');
+	background-color:#79bbff;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #84bbf3;
+	display:inline-block;
+	color:#ffffff;
+	font-family:arial;
+	font-size:20px;
+	font-weight:bold;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #528ecc;
+    width:125px;
+}.wmButton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #378de5), color-stop(1, #79bbff) );
+	background:-moz-linear-gradient( center top, #378de5 5%, #79bbff 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#378de5', endColorstr='#79bbff');
+	background-color:#378de5;
+}.wmButton:active {
+	position:relative;
+	top:1px;
+}
+</style>
 {% endblock %}
 
 {% block main %}
-<div class="twocol">
+<div class="onecol">
 <!-- TODO: i18n on the text here -->
-  <div class="block">
+  <div id="content">
 
 
+<div id="buttonsDiv" style="clear:both;margin: 0 auto;height:10px;width:550px" align="center">
+    <div  style="float:left;padding-right:10px;"><a class="wmButton"  href="/maps/new">Create a Map</a></div>
+    <div  style="float:left;padding-right:10px;"><a  class="wmButton" href="/maps/search?sort=last_modified&dir=DESC">View a Map</a></div>
+    <div style="float:left;"><a  class="wmButton" href="/about">About</a></div>
+</div>
 
-    {% blocktrans %}
-<div class=Section1>
+<div id="slider-wrapper">
+      <div id="slider" class="nivoSlider">
+                <a href="/africamap/"><img src="{{STATIC_URL}}theme/img/slide-africa.jpg" alt="AfricaMap" title="#africamap_caption"></a>
+                <a href="/chinamap/"><img src="{{STATIC_URL}}theme/img/slide-china.jpg" alt="ChinaMap" title="#chinamap_caption"></a>
+                <a href="/boston/"><img src="{{STATIC_URL}}theme/img/slide-boston.jpg" alt="Boston Research Map" title="#boston_caption"></a>
+            </div>
+</div>
+<div id="africamap_caption" class="nivo-html-caption"><a href="/africamap/">AfricaMap</a></div>
+<div id="chinamap_caption" class="nivo-html-caption"><a href="/chinamap/">ChinaMap</a></div>
+<div id="boston_caption" class="nivo-html-caption"><a href="/boston/">Boston Research Map</a></div>
 
-<p class=MsoNormal><span style='font-size:14.0pt;font-family:Arial'>Get started
-by <a
-href="/maps/search?sort=last_modified&amp;dir=DESC"><span
-style='mso-bidi-font-family:Arial'>Viewing a Map</span></a> or <a
-href="/maps/new"><span
-style='mso-bidi-font-family:Arial'>Creating a Map</span></a>.<o:p></o:p></span></p>
+<div style="clear:both;padding: 20px;width:800px;margin: 0 auto;">
+            <div style="position:relative;float:left;font-size: 14pt;font-weight:bold;height:220px;width:460px;top:40px;">
+                 {% blocktrans %}Build your own mapping portal and publish it to the world or to just a few collaborators. WorldMap is open source software. {% endblocktrans %}
+            </div>
+             <div style="position:relative;float:right;font-size: 10pt;font-weight:bold;height:250px;width:340px;text-align:center;">
+                 <a href='' onclick='$("#tutorial_block").modal();startVideoOnOpen();return false;'>
+                     <img src="{{STATIC_URL}}theme/img/youtube_tutorial.png" border="0" /><br/>Watch the WorldMap Quick Start video
+                 </a>
+             </div>
 
-
-
-<p class=MsoNormal><span class=SpellE><span style='font-family:Arial'>WorldMap</span></span><span
-style='font-family:Arial'> </span><span style='font-size:10.0pt;font-family:
-Arial'>ALPHA</span><span style='font-family:Arial'> is an experimental platform
-designed for viewing and interpreting maps collaboratively. <span
-style='mso-spacerun:yes'></span>Today maps come from many sources and take
-many forms, from paper atlases to digital satellite images to census files. <span
-style='mso-spacerun:yes'></span><span class=SpellE>WorldMap</span> aims to
-pull these and other hard-to-find maps together and <span class=GramE>make</span>
-them available to researchers to explore, share, annotate, and remix. <o:p></o:p></span></p>
-
-
-
-<p class=MsoNormal><span class=SpellE><span style='font-family:Arial'>WorldMap</span></span><span
-style='font-family:Arial'> combines modeling capabilities of Geographic
-Information Systems (GIS) with current web technologies, and is made available
-as </span><a href="http://en.wikipedia.org/wiki/Open-source_software"><span
-style='font-family:Arial'>Open Source</span></a><span style='font-family:Arial'>
-software. <span style='mso-spacerun:yes'></span>Use the hosted version of <span
-class=SpellE>WorldMap</span> here or <a
-href="https://github.com/cga-harvard/cga-worldmap"><span style='mso-bidi-font-family:
-Arial'>download</span></a> and run the application on your own server. <span
-style='mso-spacerun:yes'></span><span class=SpellE>WorldMap</span> stands on
-the shoulders of other Open Source projects including <span class=SpellE>AfricaMap</span>,
-<span class=SpellE><a href="http://www.geonode.org" target="_blank">GeoNode</a></span>, <span class=SpellE><a href="http://www.openlayers.org" target="_blank">OpenLayers</a></span>, <span
-class=SpellE><a href="http://www.postgis.org" target="_blank">PostGIS</a></span>, and <a href="http://trac.osgeo.org/geos/" target="_blank">GEOS</a>. <span style='mso-spacerun:yes'></span><span
-class=SpellE>WorldMap</span> is licensed under Version 3 of the </span><a
-href="http://www.gnu.org/licenses/gpl.html"><span style='font-family:Arial'>GNU
-General Public License (GPL)</span></a><span style='font-family:Arial'>.<o:p></o:p></span></p>
-
-
+<div style="margin: 0 auto;clear:both;">WorldMap is being developed by the <a href="http://gis.harvard.edu/">Center for Geographic Analysis</a> at <a href="http://www.harvard.edu">Harvard University</a>.</div>
 
 </div>
 
-{% endblocktrans %}
-  </div>
+
+ <div id="tutorial_block" style="display:none;width:640px;height:400px">
+     <iframe id="youtube_video" class="youtube-player" type="text/html"  width="640" height="400" src="http://www.youtube.com/embed/UiOWTshF9Xg" frameborder="0"></iframe>
+ </div>
 
 
-    <div class="block">
-    <h2> {% trans "Source Code" %} </h2>
-    <p>
-    {% blocktrans %}
-	All the code for WorldMap is open source and freely available at <a href="https://github.com/cga-harvard/cga-worldmap">github</a>.
-    {% endblocktrans %}
-  </p>
-  </div>
-
-
-
-<div id="sponsor_block" class="block">
-<h2> {% trans "Sponsors" %} </h2>
-
-Center for Geographic Analysis
-
-<br/>Committee on African Studies (AfricaMap)
-
-<br/>Department of African and African American Studies (AfricaMap)
-
-<br/>Department of Earth and Planetary Sciences (Vermont Geology Map)
-
-<br/>Fairbank Center for Chinese Studies (ChinaMap)
-
-<br/>FAS Academic Technology Group (ParisMap)
-
-<br/>Folger Fund (ChinaMap)
-
-<br/>Harvard Forest (Harvard Forest Map)
-
-<br/>Harvard-MIT Data Center
-
-<br/>Institute for Quantitative Social Science
-
-<br/>Milton Fund (AfricaMap)
-
-<br/>Provost Fund
-
-<br/>Radcliffe Institute for Advanced Study (BostonMap)
-
-<br/>Rappaport Institute for Greater Boston (BostonMap)
-
-<br/>W.E.B. Du Bois Institute for African and African-American Research (AfricaMap)
-
-<br/>Weatherhead Center for International Affairs (ChinaMap)
+      
 </div>
-
-<br/>
-<div id="webdevcontrib_block" class="block"></div>
-<h2> {% trans "Software Development Contributions" %} </h2>
-<p><a href="http://www.azavea.com" target="_blank"><img src="{{STATIC_URL}}theme/img/azavea.png" width="75" /></a></p>
-<p><a href="http://www.metacarta.com"  target="_blank"><img src="{{STATIC_URL}}theme/img/metacarta.png" width="75" /></a></p>
-<br/>
-
-</div>
-{% endblock %}
-{% block sidebar %}
-<div id="sidebar" class="threecol">
-<h3>Featured Maps</h3>
-<div class="featmap"><a href="/boston/"><img src="{{STATIC_URL}}theme/img/boston-tn.png"></a><br/><a href="/boston/">Boston</a></div>
-<div  class="featmap"><a href="/africamap/"><img src="{{STATIC_URL}}theme/img/africamap-tn.png"></a><br/><a href="/africamap/">Africa</a></div>
-<div  class="featmap"><a href="/chinamap/"><img src="{{STATIC_URL}}theme/img/china-tn.png"></a><br/><a href="/chinamap/">East Asia</a></div>
-
 </div>
 {% endblock %}

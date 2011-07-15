@@ -15,7 +15,8 @@ from django.views.generic.list_detail import object_list
 from geonode.profileforms.forms import ContactProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-
+from django.conf import settings
+from datetime import datetime, timedelta
 from profiles import utils
 
 def edit_profile(request, form_class=None, success_url=None,
@@ -76,6 +77,7 @@ def edit_profile(request, form_class=None, success_url=None,
     """
     try:
         profile_obj = request.user.get_profile()
+            
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse('profiles_create_profile'))
     
@@ -103,9 +105,16 @@ def edit_profile(request, form_class=None, success_url=None,
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
-    
+
+
+
+
     return render_to_response(template_name,
                               { 'form': form,
-                                'profile': profile_obj, },
+                                'profile': profile_obj,
+                                'is_org_user': settings.USE_CUSTOM_ORG_AUTHORIZATION and profile_obj.is_org_member,
+                                'is_org_current': settings.USE_CUSTOM_ORG_AUTHORIZATION and profile_obj.member_expiration_dt is not None and profile_obj.member_expiration_dt > datetime.today().date(),
+                                'org_expiration_dt': datetime.today().date().strftime("%B %d %Y") if profile_obj.member_expiration_dt is None else profile_obj.member_expiration_dt.strftime("%B %d %Y")
+                                },
                               context_instance=context)
 edit_profile = login_required(edit_profile)

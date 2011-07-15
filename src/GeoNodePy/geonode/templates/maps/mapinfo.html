@@ -41,7 +41,7 @@ Ext.onReady(function() {
             'admin': 'map_admin',
             'readwrite': 'map_readwrite',
             'readonly': 'map_readonly',
-            '_none': '_none'
+            'none': '_none'
         },
         renderTo: "permissions_form",
         submitTo: "{% url geonode.maps.views.ajax_map_permissions_by_email map.id  %}",
@@ -105,7 +105,7 @@ Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 			<li><a href="{% url geonode.maps.views.view map.id %}">
 		{% endif %}
 	{% endif %}
-	{% trans "Return to map" %}</a></li>
+	{% trans "View map" %}</a></li>
 
     {% if can_change %}
     <li><a href="{% url geonode.maps.views.map_controller map.id %}/describe/">{% trans "Edit map information" %}</a></li>
@@ -116,7 +116,7 @@ Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
     {% if can_delete %}
     <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
     {% endif %}
-    <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
+    <!--li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li-->
   </ul>
   {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
   {% if can_change_permissions %}

@@ -115,8 +115,17 @@ Ext.onReady(function(){
         listeners: listeners
     });
 
+    var sld_file = new Ext.ux.form.FileUploadField({
+        id: 'sld_file',
+        emptyText: gettext('Select a .sld style file (optional)'),
+        fieldLabel: gettext('SLD'),
+        name: 'sld_file',
+        allowBlank: true,
+        listeners: listeners
+    });
 
-    form_fields = [layer_title, layer_name, base_file, dbf_file, shx_file, prj_file, encoding];
+
+    form_fields = [layer_title, layer_name, base_file, dbf_file, shx_file, prj_file, encoding, sld_file];
 
 
   var fp = new Ext.FormPanel({
@@ -174,6 +183,7 @@ Ext.onReady(function(){
         shx_file.hide();
         prj_file.disable();
         prj_file.hide();
+
         encoding.disable();
         encoding.hide();
     };
@@ -181,21 +191,39 @@ Ext.onReady(function(){
     var enable_shapefile_inputs = function() {
         dbf_file.enable();
         dbf_file.show();
-
+        shx_file.enable();
         shx_file.show();
+        prj_file.enable();
         prj_file.show();
 
         encoding.enable();
         encoding.show();
     };
 
+    var disable_encoding_input = function() {
+        encoding.disable();
+        encoding.hide();
+    };
 
+    var enable_encoding_input = function() {
+        encoding.enable();
+        encoding.show();
+    };
+
+    
     var check_shapefile = function() {
         var main_filename = base_file.getValue();
         if ((/\.shp$/i).test(base_file.getValue())) {
             enable_shapefile_inputs();
+            enable_encoding_input();
+        }
+        else if (main_filename.search(/\.zip$/i) != -1)
+        {
+            enable_encoding_input();
+            disable_shapefile_inputs();
         }
         else {
+            disable_encoding_input();
             disable_shapefile_inputs();
         }
     };
@@ -204,6 +232,7 @@ Ext.onReady(function(){
         check_shapefile();
     });
     disable_shapefile_inputs();
+    disable_encoding_input();
 
 
 
@@ -235,7 +264,7 @@ if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
     {% empty %}
     <li> {% trans "No maps are using this layer." %} </li>
 	{% endfor %}
-<ul>
+</ul>
 </p>
 <p></p>
 

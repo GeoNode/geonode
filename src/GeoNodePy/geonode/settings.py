@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 # Django settings for GeoNode project.
 from urllib import urlencode
 import logging
 import os
 
-logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'w')
+#logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'w')
 
 _ = lambda x: x
 
@@ -58,14 +59,38 @@ TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('en', _('English')),
-    ('es', _('Spanish')),
+    ('en', 'English'),
+    ('es', 'Español'),
+    ('it', 'Italiano'),
+    ('fr', 'François'),
 )
 
 SITE_ID = 1
 
 # Setting a custom test runner to avoid running the tests for some problematic 3rd party apps
-TEST_RUNNER='geonode.testrunner.GeoNodeTestRunner'
+TEST_RUNNER='django_nose.NoseTestSuiteRunner'
+
+NOSE_ARGS = [
+      '--verbosity=2',
+      '--cover-erase',
+      '--nocapture',
+      '--with-coverage',
+      '--cover-package=geonode',
+      '--cover-inclusive',
+      '--cover-tests',
+      '--detailed-errors',
+      '--with-xunit',
+
+# This is very beautiful/usable but requires: pip install rudolf
+#      '--with-color',
+
+# The settings below are useful while debugging test failures or errors
+
+#      '--failed',
+#      '--pdb-failures',
+#      '--stop',
+#      '--pdb',
+      ]
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -107,7 +132,8 @@ SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    #'django.template.loaders.eggs.load_template_source',
+    'django.template.loaders.app_directories.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -261,6 +287,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'django.contrib.sitemaps',
     'staticfiles',
     'django_extensions',
     'registration',
@@ -303,8 +330,11 @@ CUSTOM_GROUP_NAME = 'Organization Users'
 #If you want to redirect members of your organization to a separate authentication system when registering, change the following settings
 USE_CUSTOM_ORG_AUTHORIZATION = False
 CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
+#Automatically add users with the following email address suffix to the custom group, if created via layer/map permissions
+CUSTOM_GROUP_EMAIL_SUFFIX = ''
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_AUTH_URL = ''
+
 
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE=False

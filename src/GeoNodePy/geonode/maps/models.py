@@ -578,9 +578,11 @@ class Contact(models.Model):
     area = models.CharField(_('State/Province'), max_length=255, blank=True, null=True)
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True, unique=True)
+    email = models.EmailField(blank=True, null=True, unique=False)
+    display_email = models.BooleanField(_('Display my email address on my profile'), blank=False, default=False, null=False)
     is_org_member = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
     member_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
+
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
@@ -640,7 +642,7 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 
 def get_wms():
     global _wms
-    wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
+    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
     http = httplib2.Http()
     http.add_credentials(_user, _password)
@@ -729,6 +731,9 @@ class LayerManager(models.Manager):
                     else:
                         layer.date_type = Layer.VALID_DATE_TYPES[0]
 
+                if layer.bbox is None:
+                    layer._populate_from_gs()
+
                 layer.save()
 		if created:
                     layer.set_default_permissions()
@@ -751,6 +756,15 @@ class LayerManager(models.Manager):
         # Doing a logout since we know we don't need this object anymore.
         gn.logout()
 
+    def update_bboxes(self):
+        for layer in Layer.objects.all():
+            logger.debug('Process %s', layer.name)
+            if layer.srs is None or layer.llbbox is None or layer.bbox is None:
+                logger.debug('Process %s', layer.name)
+                layer._populate_from_gs()
+                layer.save()
+
+                
 class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
     title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
@@ -824,6 +838,10 @@ class Layer(models.Model, PermissionLevelMixin):
     distribution_url = models.TextField(_('distribution URL'), blank=True, null=True)
     distribution_description = models.TextField(_('distribution description'), blank=True, null=True)
 
+    # WMS attributes
+    srs = models.CharField(_('SRS'), max_length=24, blank=True, null=True, default="EPSG:4326")
+    bbox  = models.TextField(_('bbox'), blank=True, null=True)
+    llbbox = models.TextField(_('llbbox'), blank=True, null=True)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
@@ -848,7 +866,7 @@ class Layer(models.Model, PermissionLevelMixin):
         dx = float(bbox[1]) - float(bbox[0])
         dy = float(bbox[3]) - float(bbox[2])
 
-        dataAspect = dx / dy
+        dataAspect = 1 if dy == 0 else dx / dy
 
         height = 550
         width = int(height * dataAspect)
@@ -1094,9 +1112,11 @@ class Layer(models.Model, PermissionLevelMixin):
                 response, body = http.request(dc_url)
                 doc = XML(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
-                atts = [n.text for n in doc.findall(path)]
+                atts = {}
+                for n in doc.findall(path):
+                    atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:
-                atts = []
+                atts = {}
             return atts
 
     @property
@@ -1107,10 +1127,7 @@ class Layer(models.Model, PermissionLevelMixin):
         }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
-        try:
-            cascading_delete(Layer.objects.gs_catalog, self.resource)
-        except:
-            logger.warn('Could not delete from geoserver, resource not found')
+        cascading_delete(Layer.objects.gs_catalog, self.resource)
 
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
@@ -1232,8 +1249,8 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.abstract = self.abstract
             self.resource.name= self.name
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
+            self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
-            logger.debug("saved?")
             gn.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
@@ -1248,9 +1265,11 @@ class Layer(models.Model, PermissionLevelMixin):
             gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
         if gs_resource is None:
             return
-        srs = gs_resource.projection
+        self.srs = gs_resource.projection
+        self.bbox = str([ float(gs_resource.native_bbox[0]),float(gs_resource.native_bbox[2]),float(gs_resource.native_bbox[1]),float(gs_resource.native_bbox[3])])
+        self.llbbox = str([ float(gs_resource.latlon_bbox[0]),float(gs_resource.latlon_bbox[2]),float(gs_resource.latlon_bbox[1]),float(gs_resource.latlon_bbox[3])])
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
-            self.set_bbox(gs_resource.native_bbox, srs=srs)
+            self.set_bbox(gs_resource.native_bbox, srs=self.srs)
 
     def _autopopulate(self):
         if self.poc is None:
@@ -1268,16 +1287,19 @@ class Layer(models.Model, PermissionLevelMixin):
         meta = self.metadata_csw()
         if meta is None:
             return
-        self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
-        onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
-        if len(onlineresources) == 1:
+        self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
+        if hasattr(meta.distribution, 'online'):
+            onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+            if len(onlineresources) == 1:
                 res = onlineresources[0]
                 self.distribution_url = res.url
                 self.distribution_description = res.description
 
-
     def keyword_list(self):
-        return self.keywords.split(" ")
+        if self.keywords is None:
+            return []
+        else:
+            return self.keywords.split(" ")
 
     def set_bbox(self, box, srs=None):
         """
@@ -1290,7 +1312,8 @@ class Layer(models.Model, PermissionLevelMixin):
         self.geographic_bounding_box = bbox_to_wkt(box[0], box[1], box[2], box[3], srid=srid )
 
     def get_absolute_url(self):
-        return "%s/data/%s" % (settings.SITEURL.rstrip('/'),self.typename)
+        return "/data/%s" % (self.typename)
+
 
     def __str__(self):
         return "%s Layer" % self.typename
@@ -1322,6 +1345,36 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
+    def layer_config(self, user):
+        """
+        Generate a dict that can be serialized to a GXP layer configuration
+        suitable for loading this layer.
+
+        The "source" property will be left unset; the layer is not aware of the
+        name assigned to its source plugin.  See
+        :method:`geonode.maps.models.Map.viewer_json` for an example of
+        generating a full map configuration.
+        """
+
+        cfg = dict()
+        cfg['name'] = self.typename
+        cfg['title'] =self.title
+        cfg['transparent'] = True
+        if self.topic_category:
+            cfg['group'] = self.topic_category.title
+        else:
+            cfg['group'] = 'General'
+        cfg['url'] = settings.GEOSERVER_BASE_URL + "wms"
+        cfg['srs'] = self.srs
+        cfg['bbox'] = simplejson.loads(self.bbox)
+        cfg['llbbox'] = simplejson.loads(self.llbbox)
+        cfg['queryable'] = (self.storeType == 'dataStore'),
+        cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=self)
+        cfg['visibility'] = True
+        cfg['abstract'] = self.abstract
+        cfg['styles'] = ''
+        logger.debug("layer config for [%s] is [%s]", self.name, str(cfg))
+        return cfg
 
 class LayerAttribute(models.Model):
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
@@ -1351,7 +1404,7 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=200)
+    title = models.CharField(_('Title'),max_length=1000)
     """
     A display name suitable for search results and page headers
     """
@@ -1397,7 +1450,7 @@ class Map(models.Model, PermissionLevelMixin):
     The date/time the map was created.
     """
 
-    last_modified = models.DateTimeField(auto_now=True)
+    last_modified = models.DateTimeField(auto_now_add=True)
     """
     The last time the map was modified.
     """
@@ -1492,6 +1545,9 @@ class Map(models.Model, PermissionLevelMixin):
         return simplejson.dumps(map)
 
     def viewer_json(self, *added_layers):
+        return viewer_json(self, None, *addedLayers)
+
+    def viewer_json(self, user=None, *added_layers):
         """
         Convert this map to a nested dictionary structure matching the JSON
         configuration for GXP Viewers.
@@ -1503,7 +1559,6 @@ class Map(models.Model, PermissionLevelMixin):
         """
         layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
         sejumps = self.jump_set.all()
-        logger.debug("sejumps: %s", sejumps)
         server_lookup = {}
         sources = dict()
 
@@ -1521,7 +1576,7 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-        configs.append({"ptype":"gxp_wmscsource", "url": settings.GEOSERVER_BASE_URL + "wms"})
+        configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms"})
 
         i = 0
         for source in uniqify(configs):
@@ -1534,12 +1589,12 @@ class Map(models.Model, PermissionLevelMixin):
                 if v == source: return k
             return None
 
-        def layer_config(l):
-            cfg = l.layer_config()
+        def layer_config(l, user):
+            cfg = l.layer_config(user)
             src_cfg = l.source_config();
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
-            if src_cfg.get("ptype", "gxp_wmscsource") == "gxp_wmscsource": cfg["buffer"] = 0
+            if src_cfg.get("ptype", "gxp_wmscsource") == "gxp_wmscsource"  or src_cfg.get("ptype", "gxp_gnsource") == "gxp_gnsource" : cfg["buffer"] = 0
             return cfg
 
         config = {
@@ -1555,7 +1610,7 @@ class Map(models.Model, PermissionLevelMixin):
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
-                'layers': [layer_config(l) for l in layers],
+                'layers': [layer_config(l, user) for l in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
@@ -1850,13 +1905,13 @@ class MapLayer(models.Model):
         try:
             cfg = simplejson.loads(self.source_params)
         except:
-            cfg = dict(ptype = "gxp_wmscsource")
+            cfg = dict(ptype = "gxp_gnsource")
 
         if self.ows_url:
             cfg["url"] = self.ows_url
         return cfg
 
-    def layer_config(self):
+    def layer_config(self, user):
         """
         Generate a dict that can be serialized to a GXP layer configuration
         suitable for loading this layer.
@@ -1877,10 +1932,38 @@ class MapLayer(models.Model):
         if self.styles: cfg['styles'] = self.styles
         if self.transparent: cfg['transparent'] = True
 
-        cfg["fixed"] = self.fixed
+
+        if self.ows_url:cfg['url'] = self.ows_url
         if self.group: cfg["group"] = self.group
         cfg["visibility"] = self.visibility
 
+        logger.debug("TYPENAME:[%s]", self.name)
+        gnLayer = Layer.objects.filter(typename=self.name)
+        logger.debug("GN Layer Count:[%s]", gnLayer.count())
+        if gnLayer.count() == 1:
+            logger.debug("Get projection info for GeoNode layer")
+            if gnLayer[0].srs: cfg['srs'] = gnLayer[0].srs
+            if gnLayer[0].bbox: cfg['bbox'] = simplejson.loads(gnLayer[0].bbox)
+            if gnLayer[0].llbbox: cfg['llbbox'] = simplejson.loads(gnLayer[0].llbbox)
+            cfg['queryable'] = (gnLayer[0].storeType == 'dataStore'),
+            cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=gnLayer[0])
+            cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
+            cfg['abstract'] = gnLayer[0].abstract
+            cfg['styles'] = self.styles
+#            if gnLayer[0].storeType == 'dataStore':
+#                if self.styles:
+#                    cfg['styles'].push(gnLayer[0].styles)
+#                else:
+#                    cfg['styles'] = gnLayer[0].styles
+#                if gnLayer[0].styles:
+#                    for style in gnLayer[0].styles:
+#                        cfg['styles'].push(style)
+#                logger.debug('STYLES: [%s]', str(cfg['styles']))
+
+        cfg["fixed"] = self.fixed
+
+
+        logger.debug("layer config for [%s] is [%s]", self.name, str(cfg))
         return cfg
 
 
@@ -1976,8 +2059,8 @@ def post_save_layer(instance, sender, **kwargs):
             instance.save(force_update=True)
         except:
             logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
-            instance.delete_from_geonetwork()
-            logger.warning("Deleted geonetwork record for [%s]", instance.name)
+#            instance.delete_from_geonetwork()
+#            logger.warning("Deleted geonetwork record for [%s]", instance.name)
             raise
         logger.debug("save instance")
 

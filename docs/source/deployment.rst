@@ -12,6 +12,7 @@ please consider writing or updating a guide.
 
    /deploy/centos
    /deploy/ubuntu
+   /deploy/production
 
 
 Recommended Minimum System Requirements
@@ -19,10 +20,11 @@ Recommended Minimum System Requirements
 
 For deployment of GeoNode on a single server, the following are the bare minimum system requirements:
 
-* 2GB of RAM
+* 6GB of RAM, including swap space.
 * 2.2GHz processor.  (Additional processing power may be required for multiple concurrent styling renderings)
 * 1 GB software disk usage.
 * Additional disk space for any data hosted with GeoNode and tiles cached with GeoWebCache.
+  For spatial data, cached tiles, and "scratch space" useful for administration, a decent baseline size for GeoNode deployments is 100GB.
 * 64-bit hardware recommended.
 
 Java Web Applications (WARs)
@@ -198,3 +200,14 @@ Some other things that require tweaking:
 
 * Configuring GeoNetwork/Django to use a "real" Postgres database instead of
   embedded ones.
+
+* In order to generate the sitemap properly, the sites domain name must be set
+  within the sites framework. This requires that an admin user login to the
+  admin interface and navigate to the sites module and change example.com to the
+  actual domain name (and port if applicable). The admin interface can be accessed
+  at http://<host>:<port>/admin/sites/site/
+
+* It is possible to 'inform' google of changes to your sitemap. This is accomplished
+  using the ping_google management command. More information can be found here
+  http://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
+  It is recommended to put this call into a cron (scheduled) job to update google periodically.

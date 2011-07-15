@@ -1,0 +1,103 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+{% block title %}{{ block.super }} {% endblock %}
+{% block indexclass %} class="here" {% endblock %}
+
+{% block head %}
+{% include "geonode/jquery_header.html" %}
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery.simplemodal.1.4.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/simplemodal.css" />
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery.nivo.slider.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nivo-slider.css" />
+
+
+{{ block.super }}
+{% endblock %}
+
+{% block main %}
+<div class="onecol">
+<!-- TODO: i18n on the text here -->
+  <div id="content">
+
+      <div style="clear:both;padding-top:40px;width:800px;margin: 0 auto;">
+        {% blocktrans %}
+      <a name="about"></a>
+      <p>WorldMap is an experimental platform
+      designed for viewing and interpreting maps collaboratively. Today maps come from many sources and take
+      many forms, from paper atlases to digital satellite images to census files. WorldMap aims to
+      pull these and other hard-to-find maps together and make
+      them available to researchers to explore, share, annotate, and remix.</p>
+
+      <p>WorldMap combines modeling capabilities of Geographic
+      Information Systems (GIS) with current web technologies, and is made available
+      as <a href="http://en.wikipedia.org/wiki/Open-source_software">Open Source</a>
+      software. Use the hosted version of WorldMap here or <a
+      href="https://github.com/cga-harvard/cga-worldmap">download</a> and run the application on your own server. WorldMap stands on
+      the shoulders of other Open Source projects including AfricaMap, <a href="http://www.geonode.org" target="_blank">GeoNode</a>,
+      <a href="http://www.openlayers.org" target="_blank">OpenLayers</a>,
+      <a href="http://www.postgis.org" target="_blank">PostGIS</a>, and <a href="http://trac.osgeo.org/geos/" target="_blank">GEOS</a>.
+      WorldMap is licensed under Version 3 of the <a
+      href="http://www.gnu.org/licenses/gpl.html">GNU
+      General Public License (GPL)</a></p>
+      {% endblocktrans %}
+      </div>
+
+       <div style="padding: 20px">
+      <div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#sponsor_block").modal();return false;'>Sponsors</a></div>
+      <div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#webdevcontrib_block").modal();return false;'>Contributors</a></div>
+       <div style="width:100%;text-align:center;clear:both;font-size:12pt;"><a href="mailto:worldmap@harvard.edu">Contact Us</a></div>
+       </div>
+      <div id="sponsor_block" style="display:none">
+      <h2> {% trans "Sponsors" %} </h2>
+
+      Center for Geographic Analysis
+
+      <br/>Committee on African Studies (AfricaMap)
+
+      <br/>Department of African and African American Studies (AfricaMap)
+
+      <br/>Department of Earth and Planetary Sciences (Vermont Geology Map)
+
+      <br/>Fairbank Center for Chinese Studies (ChinaMap)
+
+      <br/>FAS Academic Technology Group (ParisMap)
+
+      <br/>Folger Fund (ChinaMap)
+
+      <br/>Harvard Forest (Harvard Forest Map)
+
+      <br/>Harvard-MIT Data Center
+
+      <br/>Institute for Quantitative Social Science
+
+      <br/>Milton Fund (AfricaMap)
+
+      <br/>Provost Fund
+
+      <br/>Radcliffe Institute for Advanced Study (BostonMap)
+
+      <br/>Rappaport Institute for Greater Boston (BostonMap)
+
+      <br/>W.E.B. Du Bois Institute for African and African-American Research (AfricaMap)
+
+      <br/>Weatherhead Center for International Affairs (ChinaMap)
+
+      <br />Amazon.com
+      </div>
+      <div id="webdevcontrib_block" style="display:none">
+      <h2> {% trans "Software Development Contributions" %} </h2>
+      <p><a href="http://www.opengeo.org"  target="_blank"><img src="{{STATIC_URL}}theme/img/opengeo-logo.png" width="150" /></a></p>
+      <p><a href="http://www.azavea.com" target="_blank"><img src="{{STATIC_URL}}theme/img/azavea.png" width="150" /></a></p>
+       <br/>
+      <p><a href="http://www.metacarta.com"  target="_blank"><img src="{{STATIC_URL}}theme/img/metacarta.png" width="150" /></a></p>
+      <br/>
+      <p>Hosting provided by <a href="http://www.telascience.org">TelaScience</a></p>
+          <br/>
+          <br/>
+      </div>
+
+      </div>
+    </div>
+      {% endblock %}
+      {% block sidebar %}
+      {% endblock %}

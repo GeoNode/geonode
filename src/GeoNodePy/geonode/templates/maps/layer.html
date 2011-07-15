@@ -58,7 +58,13 @@
                 listeners: {
                     "ready": function() {
                         var map = app.mapPanel.map;
-                        map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
+                        layerExtent = map.layers.slice(-1)[0].maxExtent;
+                        if (layerExtent.left <= map.maxExtent.left || layerExtent.right >= map.maxExtent.right || layerExtent.top >= map.maxExtent.top || layerExtent.bottom <= map.maxExtent.bottom)
+                            {map.zoomTo(1)}
+                        else
+                            {map.zoomToExtent(layerExtent)};
+                        Ext.get(Ext.DomQuery.select("input[@id='{{layer.publishing.default_style.name}}']")).elements[0].click();
+
                     },
                     "beforeunload": function() {
                         if (modified) {
@@ -239,9 +245,11 @@
         <label for="{{layer.publishing.default_style.name}}" class="style-title"> {{ layer.default_style.name|title }} </label>
         <a href="{{ layer.default_style.body_href }}">SLD</a><br/>
     {% for style in layer.styles %}
-        <input type="radio" name="style" id="{{style.name}}" value="{{style.name}}"/>
-        <label for="{{style.name}}" class="style-title"> {{ style.name|title }} </label>
-        <a href="{{ style.body_href }}">SLD</a><br/>
+        {% if style.name != layer.default_style.name %}
+            <input type="radio" name="style" id="{{style.name}}" value="{{style.name}}"/>
+            <label for="{{style.name}}" class="style-title"> {{ style.name|title }} </label>
+            <a href="{{ style.body_href }}">SLD</a><br/>
+        {% endif %}
     {% endfor %}
     </span>
     {% if user.is_authenticated %}
@@ -251,7 +259,9 @@
           {{layer.publishing.default_style.name|title}}
         </option>
     {% for style in layer.styles %}
-        <option value="{{style.name}}"> {{ style.name|title }} </option>
+         {% if style.name != layer.default_style.name %}
+            <option value="{{style.name}}"> {{ style.name|title }} </option>
+        {% endif %}
     {% endfor %}
     </select><br/>
     <a href="javascript:showStyle()">Create new style</a>

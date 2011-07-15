@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from staticfiles.urls import staticfiles_urlpatterns
+from geonode.sitemap import LayerSitemap, MapSitemap
 
 
 # Uncomment the next two lines to enable the admin:
@@ -11,12 +12,18 @@ js_info_dict = {
     'packages': ('geonode.maps',),
 }
 
+sitemaps = {
+    "layer": LayerSitemap,
+    "map": MapSitemap
+}
+
 urlpatterns = patterns('',
     # Example:
     # (r'^geonode/', include('geonode.foo.urls')),
     (r'^(?:index/?)?$', 'geonode.views.index'),
-    (r'^(?P<page>developer|help|maphelp)/?$', 'geonode.views.static'),
-    (r'^lang\.js$', 'geonode.views.lang'),
+    (r'^(?P<page>developer|help|maphelp|about)/?$', 'geonode.views.static'),
+    url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
+               {'template': 'lang.js', 'mimetype': 'text/javascript'}, 'lang'),
     (r'^maps/', include('geonode.maps.urls')),
     (r'^proxy/', 'geonode.proxy.views.proxy'),
     (r'^geoserver/','geonode.proxy.views.geoserver'),
@@ -47,12 +54,16 @@ urlpatterns = patterns('',
     (r'^accounts/ajax_lookup_email$', 'geonode.views.ajax_lookup_email'),
     (r'^accounts/login', 'django.contrib.auth.views.login'),
     (r'^accounts/logout', 'django.contrib.auth.views.logout'),
+    (r'^affiliation/confirm', 'geonode.accountforms.views.confirm'),
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('geonode.accountforms.urls')),  
     (r'^profiles/', include('geonode.profileforms.urls')),
     (r'^(?P<site>\w+)/$', 'geonode.maps.views.official_site'),
     (r'^(?P<site>\w+)/edit$', 'geonode.maps.views.official_site_controller'),
-)
+    (r'^accounts/', include('registration.urls')),
+    (r'^profiles/', include('profiles.urls')),
+    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps})
+    )
 
 # Extra static file endpoint for development use
 if settings.SERVE_MEDIA:

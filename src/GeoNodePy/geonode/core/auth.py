@@ -76,7 +76,7 @@ class GranularBackend(ModelBackend):
         if not user_obj.is_anonymous():
             generic_roles.append(AUTHENTICATED_USERS)
             profile = user_obj.get_profile()
-            if profile and profile.is_org_member:
+            if profile and profile.is_org_member and profile.member_expiration_dt >= datetime.today().date():
                 generic_roles.append(CUSTOM_GROUP_USERS)
         obj_perms.update(self._get_generic_obj_perms(generic_roles, obj))
         

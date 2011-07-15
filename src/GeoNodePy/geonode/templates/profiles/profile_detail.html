@@ -15,7 +15,15 @@
   <h2>{{ profile.name }}</h2>
   <div style="padding-left:20px;">
   <p><strong>{% trans "Name" %}:</strong> {{ profile.username }}</p>
-  <p><strong>{% trans "Email" %}:</strong>  {{ profile.user.email }}</p>
+   {% if user == profile.user or profile.display_email %}
+    <p><strong>{% trans "Email" %}:</strong>
+        {%  if profile.email %}
+            {{ profile.email }}
+         {%  else  %}
+            {{  profile.user.email }}
+         {%  endif %}
+     </p>
+  {%  endif %}
   <p><strong>{% trans "Organization" %}:</strong> {{ profile.organization}}</p>
   <p><strong>{% trans "Position" %}:</strong>: {{ profile.position}}</p>
   <p><strong>{% trans "Voice" %}:</strong>  {{ profile.voice}}</p>
@@ -33,6 +41,7 @@
   </ul>
   <h3>{% trans "Settings" %}</h3>
   <ul>
+    <li><a href="{% url auth_password_change %}">{% trans "Change password" %}</a></li>
     <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
   </ul>
   {% endif %}
@@ -108,13 +117,17 @@ Ext.onReady(function() {
                 });
                 var edit = doToRecord(function(rec) {
                     var link = rec.get("href");
-                    if (rec.get("type") !== "map") {
-                        link += "?describe";
+                    if (rec.get("type") == "map") {
+                        link += "/edit/";
                     }
                     window.location = link;
                 });
                 var delete_ = doToRecord(function(rec) {
-                    var link = rec.get("href") + "?remove";
+                    var link = rec.get("href");
+                    if (rec.get("type") == "map") {
+                        link += "/edit/";
+                    }
+                    link += "?remove&next=" + window.location;
                     window.location = link;
                 });
                 grid.getEl().on("click", view, this, { delegate: 'a' });

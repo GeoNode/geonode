@@ -1,5 +1,6 @@
 import urllib, urllib2, cookielib
 from datetime import date
+from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
 from geonode.maps.owslib_csw import CatalogueServiceWeb
@@ -7,6 +8,8 @@ from owslib.csw import namespaces
 from owslib.util import nspath
 from xml.dom import minidom
 from xml.etree.ElementTree import XML
+
+
 
 class Catalog(object):
 
@@ -30,16 +33,12 @@ class Catalog(object):
             "password": self.password
         })
         request = urllib2.Request(url, post, headers)
-        response = urllib2.urlopen(request)
+        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(),
+                urllib2.HTTPRedirectHandler())
+        response = self.opener.open(request)
         body = response.read()
         dom = minidom.parseString(body)
         assert dom.childNodes[0].nodeName == 'ok', "GeoNetwork login failed!"
-
-        self.cookies = cookielib.CookieJar()
-        self.cookies.extract_cookies(response, request)
-        cookie_handler = urllib2.HTTPCookieProcessor(self.cookies)
-        redirect_handler = urllib2.HTTPRedirectHandler()
-        self.opener = urllib2.build_opener(redirect_handler, cookie_handler)
         self.connected = True
 
     def logout(self):
@@ -68,6 +67,7 @@ class Catalog(object):
         tpl = get_template(template)
         ctx = Context({
             'layer': layer,
+            'SITEURL': settings.SITEURL[:-1],
         })
         md_doc = tpl.render(ctx)
         url = "%ssrv/en/csw" % self.base
@@ -87,10 +87,10 @@ class Catalog(object):
         # Turn on the "view" permission (aka publish) for
         # the "all" group in GeoNetwork so that the layer
         # will be searchable via CSW without admin login.
-        # all other privileges are set to False for all 
+        # all other privileges are set to False for all
         # groups.
         self.set_metadata_privs(layer.uuid, {"all":  {"view": True}})
-        
+
         return self.base + "srv/en/csw?" + urllib.urlencode({
             "request": "GetRecordById",
             "service": "CSW",
@@ -110,23 +110,23 @@ class Catalog(object):
 
     def set_metadata_privs(self, uuid, privileges):
         """
-        set the full set of geonetwork privileges on the item with the 
-        specified uuid based on the dictionary given of the form: 
+        set the full set of geonetwork privileges on the item with the
+        specified uuid based on the dictionary given of the form:
         {
           'group_name1': {'operation1': True, 'operation2': True, ...},
           'group_name2': ...
         }
 
-        all unspecified operations and operations for unspecified groups 
+        all unspecified operations and operations for unspecified groups
         are set to False.
         """
-        
-        # XXX This is a fairly ugly workaround that makes 
+
+        # XXX This is a fairly ugly workaround that makes
         # requests similar to those made by the GeoNetwork
-        # admin based on the recommendation here: 
+        # admin based on the recommendation here:
         # http://bit.ly/ccVEU7
 
-        
+
         get_dbid_url = self.base + 'srv/en/portal.search.present?' + urllib.urlencode({'uuid': uuid})
 
         # get the id of the data.
@@ -143,7 +143,7 @@ class Catalog(object):
 
         # build params that represent the privilege configuration
         priv_params = {
-            "id": data_dbid, # "uuid": layer.uuid, # you can say this instead in newer versions of GN 
+            "id": data_dbid, # "uuid": layer.uuid, # you can say this instead in newer versions of GN
         }
         for group, privs in privileges.items():
             group_id = self._group_ids[group.lower()]
@@ -158,11 +158,11 @@ class Catalog(object):
         request = urllib2.Request(update_privs_url)
         response = self.urlopen(request)
 
-        # TODO: check for error report  
-        
+        # TODO: check for error report
+
     def _get_group_ids(self):
         """
-        helper to fetch the set of geonetwork 
+        helper to fetch the set of geonetwork
         groups.
         """
         # get the ids of the groups.
@@ -177,10 +177,10 @@ class Catalog(object):
 
     def _get_operation_ids(self):
         """
-        helper to fetch the set of geonetwork 
+        helper to fetch the set of geonetwork
         'operations' (privileges)
         """
-        # get the ids of the operations    
+        # get the ids of the operations
         get_ops_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'operations'})
         request = urllib2.Request(get_ops_url)
         response = self.urlopen(request)
@@ -192,6 +192,6 @@ class Catalog(object):
 
     def urlopen(self, request):
         if self.opener is None:
-            return urllib2.urlopen(request)
+            raise Exception("No URL opener defined in geonetwork module!!")
         else:
             return self.opener.open(request)

@@ -85,7 +85,14 @@ Ext.onReady(function(){
         fieldLabel: gettext('DBF'),
         name: 'dbf_file',
         allowBlank: false,
-        listeners: listeners
+        listeners: listeners,
+        validator: function(name) {
+            if ((name.length > 0) && (name.search(/\.dbf$/i) == -1)) {
+                return gettext("Invalid DBF File.");
+            } else {
+                return true;
+            }
+        }
     });
 
     var shx_file = new Ext.ux.form.FileUploadField({
@@ -94,7 +101,14 @@ Ext.onReady(function(){
         fieldLabel: gettext('SHX'),
         name: 'shx_file',
         allowBlank: false,
-        listeners: listeners
+        listeners: listeners,
+        validator: function(name) {
+            if ((name.length > 0) && (name.search(/\.shx$/i) == -1)) {
+                return gettext("Invalid SHX File.");
+            } else {
+                return true;
+            }
+        }
     });
 
     var prj_file = new Ext.ux.form.FileUploadField({
@@ -103,13 +117,20 @@ Ext.onReady(function(){
         fieldLabel: gettext('PRJ'),
         name: 'prj_file',
         allowBlank: false,
-        listeners: listeners
+        listeners: listeners,
+        validator: function(name) {
+            if ((name.length > 0) && (name.search(/\.prj$/i) == -1)) {
+                return gettext("Invalid PRJ File.");
+            } else {
+                return true;
+            }
+        }
     });
 
 
     var encoding = new Ext.form.ComboBox({
-        id: 'charset',
-        name: ' charset',
+        id: 'charset_cb',
+        name: ' charset_cb',
         fieldLabel: gettext('Encoding'),
         hiddenName: 'charset',
         displayField:'description',
@@ -155,7 +176,6 @@ Ext.onReady(function(){
             anchor: '95%',
             msgTarget: 'side'
         },
-
         items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, abstractField, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
@@ -177,12 +197,6 @@ Ext.onReady(function(){
                                 error_message += '<li>' + o.result.errors[i] + '</li>'
                             }
                             error_message += '</ul>'
-
-
-                            if (o.result.detail.length > 0)
-                            {
-                                error_message += '<li><a style="font-size:small;padding-top:10px;" href="#" onclick="javascript:Ext.Msg.alert(\'Error Details\', \'' + o.result.detail + '\');return false;">Details</a></li>';
-                            }
 
                             Ext.Msg.show({
                                 title: gettext("Error"),

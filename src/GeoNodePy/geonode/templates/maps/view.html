@@ -4,10 +4,10 @@
 {% block title %} {{maptitle}}{% endblock %}
 
 {% block head %}
-{% include "geonode/jquery_header.html" %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
+
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 
 
@@ -35,7 +35,16 @@ Ext.onReady(function() {
         rest: "/maps/",
         homeUrl: "{% url geonode.views.index %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
-        csrfToken: "{{ csrf_token }}"
+        csrfToken: "{{ csrf_token }}",
+        tools:  [{
+                    ptype: "gxp_geonodequerytool",
+                    actionTarget:  {target: "paneltbar", index: 4},
+                    toolText: '<span class="x-btn-text">Identify</span>',
+                    iconCls: null,
+                    outputConfig: {width: 400, height: 200, panIn: false},
+                    featurePanel: 'queryPanel',
+                    attributePanel: 'gridWinPanel'
+                }]
     }, {{ config }});
 
 
@@ -58,6 +67,8 @@ Ext.onReady(function() {
     app.on("saved", function(id) {
         //reset title header
         Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
+
+
 
 
     }, this);

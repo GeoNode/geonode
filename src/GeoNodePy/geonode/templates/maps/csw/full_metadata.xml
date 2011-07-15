@@ -36,19 +36,19 @@
            </gmd:phone>
            {% if poc.user %}
            <gmd:onlineResource>
-               <gmd:CI_OnlineResource>
-                   <gmd:linkage>
-                       <gmd:URL>{{ poc.get_absolute_url }}</gmd:URL>
-                   </gmd:linkage>
-                   <gmd:protocol>
-                       <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WWW:LINK-1.0-http--link</gco:CharacterString>
-                   </gmd:protocol>
-                   <gmd:description>
-                       <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">GeoNode profile page</gco:CharacterString>
-                   </gmd:description>
-               </gmd:CI_OnlineResource>
-           </gmd:onlineResource>
-           {% endif %}
+                <gmd:CI_OnlineResource>
+                    <gmd:linkage>
+                        <gmd:URL>{{ SITEURL }}{{ layer.poc.get_absolute_url }}</gmd:URL>
+                    </gmd:linkage>
+                    <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WWW:LINK-1.0-http--link</gco:CharacterString>
+                    </gmd:protocol>
+                    <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">GeoNode profile page</gco:CharacterString>
+                    </gmd:description>
+                </gmd:CI_OnlineResource>
+            </gmd:onlineResource>
+            {% endif %}
            <gmd:address>
              <gmd:CI_Address>
                <gmd:deliveryPoint {% if not poc.delivery %}gco:nilReason="missing"{% endif %}>
@@ -260,7 +260,7 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>{{layer.get_absolute_url}}</gmd:URL>
+                   <gmd:URL>{{ SITEURL }}{{layer.get_absolute_url}}</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>

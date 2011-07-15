@@ -48,7 +48,11 @@
         /**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,gnAnonymousProcessingFilter,filterInvocationInterceptor
 
         LEGACY NEW:
+        CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+        PATTERN_TYPE_APACHE_ANT
         /web/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
+        /j_spring_security_check/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
+        /j_spring_security_logout/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
         /gwc/rest/web/**=anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
@@ -58,7 +62,10 @@
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
         /web/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
+        /j_spring_security_check/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
+        /j_spring_security_logout/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
+        /gwc/rest/web/**=gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
         /**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,securityContextHolderAwareRequestFilter,filterInvocationInterceptor
       </value>
@@ -158,15 +165,15 @@
     <description>httpclient used by geonodeSecurityClient to request authentication to GeoNode</description>
     <constructor-arg index="0">
       <description>Max connections per host</description>
-      <value>10</value>
+      <value>30</value>
     </constructor-arg>
     <constructor-arg index="1">
       <description>Connection time out in milliseconds</description>
-      <value>1000</value>
+      <value>30000</value>
     </constructor-arg>
     <constructor-arg index="2">
       <description>Read time out in milliseconds</description>
-      <value>1000</value>
+      <value>30000</value>
     </constructor-arg>
   </bean>
 
@@ -189,12 +196,6 @@
   <!-- The custom data access manager using the GeoNode granted authorities -->
   <bean id="geonodeAccessManager" class="org.geonode.security.GeoNodeDataAccessManager"/>
 
-
-
-
-
-
-
     <!-- The dao used to deal with layer level security -->
   <bean id="accessRulesDao" class="org.geoserver.security.impl.DataAccessRuleDAO">
   	<constructor-arg ref="dataDirectory"/>
@@ -212,6 +213,7 @@
     <constructor-arg ref="dataDirectory"/>
   </bean>
 
+  
   <!--
     This callback will be used before calling operations on OWS stuff, and making it secure
    -->
@@ -220,6 +222,7 @@
     <constructor-arg ref="serviceRulesDao"/>
   </bean>
 
+  
   <!--
     This filter integrates the authentication information in the http sessions, so it's
     meant to be used only for the administration console, but not for the services.
@@ -233,6 +236,7 @@
     class="org.springframework.security.context.HttpSessionContextIntegrationFilter">
     <property name="allowSessionCreation" value="true" />
   </bean>
+
 
   <!--
     Same as the one above, but this one uses a session if it's already there, otherwise
@@ -262,9 +266,10 @@
     </constructor-arg>
   </bean>
 
-  <!--
-    This entry point gets called when basic authentication is needed
-    (or a previous attempt fail) to commence authentication
+  
+  <!-- 
+    This entry point gets called when basic authentication is needed 
+    (or a previous attempt fail) to commence authentication 
     with the basic processing filter
   -->
   <bean id="basicProcessingFilterEntryPoint"
@@ -274,8 +279,8 @@
     </property>
   </bean>
 
-  <!--
-    The actual authorization checks at the filter level.
+  <!-- 
+    The actual authorization checks at the filter level. 
     The voters make sure the user is both authenticated (the
     anonymous filter ensures there is at least an anonymous one)
     and have the roles required.
@@ -315,6 +320,7 @@
       <constructor-arg ref="restRulesDao"/>
   </bean>
 
+
   <!--
     During the request execution security exceptions may be thrown, either during the
     authentication or authorization phase. This filter redirects authentication failures
@@ -337,10 +343,12 @@
     </property>
   </bean>
 
+
   <!--
     Double check, this may not be necessary
   -->
   <bean id="securityContextHolderAwareRequestFilter"
     class="org.springframework.security.wrapper.SecurityContextHolderAwareRequestFilter" />
+
 
 </beans>
