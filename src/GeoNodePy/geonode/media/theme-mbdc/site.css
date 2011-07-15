@@ -200,8 +200,8 @@ color: #fff;
 
 /* needs to match crossbar, but also have self-clearing float behavior */
 #topPanel {
-background: #003c4c;
-border-bottom: 2px solid #008cb3;
+background: #b8a532;
+border-bottom: 2px solid #908128;
 color: #fff;
 padding: 8px 10px;
 }
