@@ -909,9 +909,9 @@ def view(request, mapid, snapshot=None):
     the map with the given map ID.
     """
     if mapid.isdigit():
-        map = Map.objects.get(pk=mapid)
+        map = get_object_or_404(Map,pk=mapid)
     else:
-        map = Map.objects.get(urlsuffix=mapid)
+        map = get_object_or_404(Map,urlsuffix=mapid)
     if not request.user.has_perm('maps.view_map', obj=map):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
