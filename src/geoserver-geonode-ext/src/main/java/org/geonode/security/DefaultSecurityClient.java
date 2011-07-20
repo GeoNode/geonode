@@ -4,10 +4,14 @@
  */
 package org.geonode.security;
 
+import static org.geonode.security.GeoNodeCookieProcessingFilter.GEONODE_COOKIE_NAME;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,12 +19,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
 import org.apache.commons.codec.binary.Base64;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.platform.GeoServerExtensions;
@@ -28,6 +26,13 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.GrantedAuthorityImpl;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
+import org.springframework.util.Assert;
 
 /**
  * Default implementation, which actually talks to a GeoNode server (there are also mock
@@ -46,8 +51,20 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
 
     private String baseUrl;
 
+    /**
+     * Caches anonymous and cookie based authorizations for a given time
+     */
+    private final AuthCache authCache;
+
+    /**
+     * Used by {@link #authenticateAnonymous()} and {@link #authenticateCookie(String)} to update
+     * {@link #authCache}
+     */
+    private Lock authLock = new ReentrantLock();
+
     public DefaultSecurityClient(final HTTPClient httpClient) {
         this.client = httpClient;
+        this.authCache = new AuthCache();
     }
 
     /**
@@ -64,17 +81,32 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
      */
     public Authentication authenticateCookie(final String cookieValue)
             throws AuthenticationException, IOException {
+        Assert.notNull(cookieValue);
+        
+        Authentication cachedAuth = authCache.get(cookieValue);
+        if (null == cachedAuth) {
+            authLock.lock();
+            try {
+                // got the lock, check again
+                cachedAuth = authCache.get(cookieValue);
+                if (null == cachedAuth) {
 
-        final String headerName = "Cookie";
-        final String headerValue = GeoNodeCookieProcessingFilter.GEONODE_COOKIE_NAME + "="
-                + cookieValue;
+                    final String headerName = "Cookie";
+                    final String headerValue = GEONODE_COOKIE_NAME + "=" + cookieValue;
 
-        Authentication authentication = authenticate(cookieValue, headerName, headerValue);
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            authentication = new GeoNodeSessionAuthToken(authentication.getPrincipal(),
-                    authentication.getCredentials(), authentication.getAuthorities());
+                    cachedAuth = authenticate(cookieValue, headerName, headerValue);
+                    if (cachedAuth instanceof UsernamePasswordAuthenticationToken) {
+                        cachedAuth = new GeoNodeSessionAuthToken(cachedAuth.getPrincipal(),
+                                cachedAuth.getCredentials(), cachedAuth.getAuthorities());
+                    }
+                    authCache.put(cookieValue, cachedAuth);
+                }
+            } finally {
+                authLock.unlock();
+            }
         }
-        return authentication;
+
+        return cachedAuth;
     }
 
     /**
@@ -94,12 +126,25 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
      * @see org.geonode.security.GeonodeSecurityClient#authenticateAnonymous()
      */
     public Authentication authenticateAnonymous() throws AuthenticationException, IOException {
-        return authenticate(null, (String[]) null);
+        Authentication cachedAuth = authCache.get("__anonymous__");
+        if (null == cachedAuth) {
+            authLock.lock();
+            try {
+                // got the lock, check again
+                cachedAuth = authCache.get("__anonymous__");
+                if (null == cachedAuth) {
+                    cachedAuth = authenticate(null, (String[]) null);
+                    authCache.put("__anonymous__", cachedAuth);
+                }
+            } finally {
+                authLock.unlock();
+            }
+        }
+        return cachedAuth;
     }
 
     private Authentication authenticate(final Object credentials, final String... requestHeaders)
             throws AuthenticationException, IOException {
-
         final String url = baseUrl + "data/acls";
 
         if (LOGGER.isLoggable(Level.FINEST)) {
