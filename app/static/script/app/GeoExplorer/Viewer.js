@@ -18,6 +18,18 @@ Ext.namespace("GeoExplorer");
  */
 GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
 
+    loadConfig: function(config) {
+        config.tools = (config.tools || []).concat({
+            ptype: "gxp_styler",
+            id: "styler",
+            rasterStyling: true,
+            actionTarget: undefined
+        });
+        // load the super's super, because we don't want the default tools from
+        // GeoExplorer
+        GeoExplorer.superclass.loadConfig.apply(this, arguments);
+    },
+    
     /** private: method[initPortal]
      * Create the various parts that compose the layout.
      */
@@ -42,6 +54,7 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
         this.mapPanelContainer = new Ext.Panel({
             layout: "card",
             region: "center",
+            ref: "../main",
             tbar: this.toolbar,
             defaults: {
                 border: false
@@ -49,6 +62,7 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
             items: [
                 this.mapPanel
             ],
+            ref: "../main",
             activeItem: 0
         });
         if (window.google && google.earth) {
