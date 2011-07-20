@@ -21,10 +21,18 @@ from django.core.exceptions import ValidationError
 from string import lower
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
+from gs_helpers import cascading_delete
+import logging
+
+logger = logging.getLogger("geonode.maps.models")
+
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+
+
+
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -41,7 +49,7 @@ ROLE_VALUES = [
 ]
 
 COUNTRIES = (
-    ('AFG', _('Afghanistan')), 
+    ('AFG', _('Afghanistan')),
     ('ALA', _('Aland Islands')),
     ('ALB', _('Albania')),
     ('DZA', _('Algeria')),
@@ -473,6 +481,9 @@ create custom structures, but they have to be validated by the \
 system, so know what you do :-)'
 )
 
+class GeoNodeException(Exception):
+    pass
+
 
 class Contact(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
@@ -503,14 +514,9 @@ class Contact(models.Model):
         return u"%s (%s)" % (self.name, self.organization)
 
 
-def get_csw():
-    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    csw = CatalogueServiceWeb(csw_url);
-    return csw
-
 _viewer_projection_lookup = {
     "EPSG:900913": {
-        "maxResolution": 156543.0339,
+        "maxResolution": 156543.03390625,
         "units": "m",
         "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
     },
@@ -528,6 +534,32 @@ def _get_viewer_projection_info(srid):
 _wms = None
 _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
+
+def get_wms():
+    global _wms
+    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
+    netloc = urlparse(wms_url).netloc
+    http = httplib2.Http()
+    http.add_credentials(_user, _password)
+    http.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user, _password), 
+                netloc,
+                wms_url,
+                {},
+                None,
+                None, 
+                http
+            )
+        )
+    response, body = http.request(wms_url)
+    _wms = WebMapService(wms_url, xml=body)
+
+def get_csw():
+    global _csw
+    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+    _csw = CatalogueServiceWeb(csw_url)
+    return _csw
 
 class LayerManager(models.Manager):
     
@@ -628,7 +660,7 @@ class Layer(models.Model, PermissionLevelMixin):
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication')
 
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
-    abstract = models.TextField(_('abstract'))
+    abstract = models.TextField(_('abstract'), blank=True)
     purpose = models.TextField(_('purpose'), null=True, blank=True)
     maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
 
@@ -671,7 +703,7 @@ class Layer(models.Model, PermissionLevelMixin):
         dx = float(bbox[1]) - float(bbox[0])
         dy = float(bbox[3]) - float(bbox[2])
 
-        dataAspect = dx / dy
+        dataAspect = 1 if dy == 0 else dx / dy
 
         height = 550
         width = int(height * dataAspect)
@@ -707,7 +739,7 @@ class Layer(models.Model, PermissionLevelMixin):
                         "service": "WCS",
                         "version": "1.0.0",
                         "request": "DescribeCoverage",
-                        "coverages": self.typename
+                        "coverage": self.typename
                     })
                 response, content = client.request(description_url)
                 doc = parse(StringIO(content))
@@ -734,6 +766,7 @@ class Layer(models.Model, PermissionLevelMixin):
             except Exception, e:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
+                # TODO: This is a bad idea to eat errors like this.
                 pass 
 
         def wms_link(mime):
@@ -771,6 +804,58 @@ class Layer(models.Model, PermissionLevelMixin):
 
         return links
 
+    def verify(self):
+        """Makes sure the state of the layer is consistent in GeoServer and GeoNetwork.
+        """
+        http = httplib2.Http() # Do we need to add authentication?
+        
+        # Check the layer is in the wms get capabilities record
+        # FIXME: Implement caching of capabilities record site wide
+        if (_wms is None) or (self.typename not in _wms.contents):
+            get_wms()
+        try:
+            wms_layer = _wms[self.typename]
+        except:
+            msg = "WMS Record missing for layer [%s]" % self.typename 
+            raise GeoNodeException(msg)
+        
+        # Check the layer is in GeoServer's REST API
+        # It would be nice if we could ask for the definition of a layer by name
+        # rather than searching for it
+        #api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
+        #response, body = http.request(api_url)
+        #api_json = simplejson.loads(body)
+        #api_layer = None
+        #for row in api_json['rows']:
+        #    if(row['name'] == self.typename):
+        #        api_layer = row
+        #if(api_layer == None):
+        #    msg = "API Record missing for layer [%s]" % self.typename
+        #    raise GeoNodeException(msg)
+ 
+        # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
+        if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
+            get_csw()
+        try:
+            _csw.getrecordbyid([self.uuid])
+            csw_layer = _csw.records.get(self.uuid)
+        except:
+            msg = "CSW Record Missing for layer [%s]" % self.typename
+            raise GeoNodeException(msg)
+
+        if(csw_layer.uri != self.get_absolute_url()):
+            msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
+            
+        # Visit get_absolute_url and make sure it does not give a 404
+        #logger.info(self.get_absolute_url())
+        #response, body = http.request(self.get_absolute_url())
+        #if(int(response['status']) != 200):
+        #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
+        #    raise GeoNodeException(msg)
+
+        #FIXME: Add more checks, for example making sure the title, keywords and description
+        # are the same in every database.
+
     def maps(self):
         """Return a list of all the maps that use this layer"""
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
@@ -779,6 +864,8 @@ class Layer(models.Model, PermissionLevelMixin):
     def metadata(self):
         global _wms
         if (_wms is None) or (self.typename not in _wms.contents):
+            get_wms()
+            """
             wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
             netloc = urlparse(wms_url).netloc
             http = httplib2.Http()
@@ -796,12 +883,15 @@ class Layer(models.Model, PermissionLevelMixin):
             )
             response, body = http.request(wms_url)
             _wms = WebMapService(wms_url, xml=body)
+            """
         return _wms[self.typename]
 
     def metadata_csw(self):
-        csw = get_csw()
-        csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
-        return csw.records.get(self.uuid)
+        global _csw
+        if(_csw is None):
+            _csw = get_csw()
+        _csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
+        return _csw.records.get(self.uuid)
 
     @property
     def attribute_names(self):
@@ -848,27 +938,12 @@ class Layer(models.Model, PermissionLevelMixin):
         }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
-        layerURL = "%srest/layers/%s.xml" % (settings.GEOSERVER_BASE_URL,self.name)
-        if self.storeType == "dataStore":
-            featureUrl = "%srest/workspaces/%s/datastores/%s/featuretypes/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store, self.name)
-            storeUrl = "%srest/workspaces/%s/datastores/%s.xml" % (settings.GEOSERVER_BASE_URL, self.workspace, self.store)
-        elif self.storeType == "coverageStore":
-            featureUrl = "%srest/workspaces/%s/coveragestores/%s/coverages/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store, self.name)
-            storeUrl = "%srest/workspaces/%s/coveragestores/%s.xml" % (settings.GEOSERVER_BASE_URL,self.workspace,self.store)
-        urls = (layerURL,featureUrl,storeUrl)
-
-        # GEOSERVER_CREDENTIALS
-        HTTP = httplib2.Http()
-        HTTP.add_credentials(_user,_password)
-
-        for u in urls:
-            output = HTTP.request(u,"DELETE")
-            if output[0]["status"][0] == '4':
-                raise RuntimeError("Unable to remove from Geoserver: %s" % output[1])
+        cascading_delete(Layer.objects.gs_catalog, self.resource)
 
     def delete_from_geonetwork(self):
         gn = Layer.objects.gn_catalog
         gn.delete_layer(self)
+        gn.logout()
 
     def save_to_geonetwork(self):
         gn = Layer.objects.gn_catalog
@@ -878,6 +953,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.metadata_links = [("text/xml", "TC211", md_link)]
         else:
             gn.update_layer(self)
+        gn.logout()
 
     @property
     def resource(self):
@@ -981,10 +1057,13 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.abstract = self.abstract
             self.resource.name= self.name
             self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
+            self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
+            gn.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
-            self.publishing.attribution_link = self.poc.user.get_absolute_url()
+            profile = Contact.objects.get(user=self.poc.user)
+            self.publishing.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
             Layer.objects.gs_catalog.save(self.publishing)
 
     def  _populate_from_gs(self):
@@ -1009,12 +1088,19 @@ class Layer(models.Model, PermissionLevelMixin):
         meta = self.metadata_csw()
         if meta is None:
             return
-        self.keywords = ', '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
-        self.distribution_url = meta.distribution.onlineresource.url
-        self.distribution_description = meta.distribution.onlineresource.description
+        self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
+        if hasattr(meta.distribution, 'online'):
+            onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+            if len(onlineresources) == 1:
+                res = onlineresources[0]
+                self.distribution_url = res.url
+                self.distribution_description = res.description
 
     def keyword_list(self):
-        return self.keywords.split(" ")
+        if self.keywords is None:
+            return []
+        else:
+            return self.keywords.split(" ")
 
     def set_bbox(self, box, srs=None):
         """
@@ -1027,7 +1113,7 @@ class Layer(models.Model, PermissionLevelMixin):
         self.geographic_bounding_box = bbox_to_wkt(box[0], box[1], box[2], box[3], srid=srid )
 
     def get_absolute_url(self):
-        return "%sdata/%s" % (settings.SITEURL,self.typename)
+        return "/data/%s" % (self.typename)
 
     def __str__(self):
         return "%s Layer" % self.typename
@@ -1065,7 +1151,7 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=200)
+    title = models.CharField(_('Title'),max_length=1000)
     """
     A display name suitable for search results and page headers
     """
@@ -1192,7 +1278,7 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-        configs.append({"ptype":"gx_wmssource", "url": settings.GEOSERVER_BASE_URL + "wms"})
+        configs.append({"ptype":"gxp_wmscsource", "url": "/geoserver/wms"})
 
         i = 0
         for source in uniqify(configs):
@@ -1210,7 +1296,6 @@ class Map(models.Model, PermissionLevelMixin):
             src_cfg = l.source_config();
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
-            if src_cfg.get("ptype", "gx_wmssource") == "gx_wmssource": cfg["buffer"] = 0
             return cfg
 
         config = {
@@ -1219,7 +1304,7 @@ class Map(models.Model, PermissionLevelMixin):
                 'title':    self.title,
                 'abstract': self.abstract
             },
-            'defaultSourceType': "gx_wmssource",
+            'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
                 'layers': [layer_config(l) for l in layers],
@@ -1228,6 +1313,10 @@ class Map(models.Model, PermissionLevelMixin):
                 'zoom': self.zoom
             }
         }
+        '''
+        Mark the last added layer as selected - important for data page
+        '''
+        config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
@@ -1449,7 +1538,7 @@ class MapLayer(models.Model):
         try:
             cfg = simplejson.loads(self.source_params)
         except:
-            cfg = dict(ptype = "gx_wmssource")
+            cfg = dict(ptype = "gxp_wmscsource")
 
         if self.ows_url: cfg["url"] = self.ows_url
 

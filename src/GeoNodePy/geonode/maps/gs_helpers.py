@@ -1,6 +1,8 @@
 from itertools import cycle, izip
 import logging
 import re
+import psycopg2
+from django.conf import settings
 
 logger = logging.getLogger("geonode.maps.gs_helpers")
 
@@ -92,16 +94,34 @@ _style_templates = dict(
 def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
-def fixup_style(cat, resource):
+def get_sld_for(layer):
+    # FIXME: GeoServer sometimes fails to associate a style with the data, so
+    # for now we default to using a point style.(it works for lines and
+    # polygons, hope this doesn't happen for rasters  though)
+    name = layer.default_style.name if layer.default_style is not None else "point"
+
+    # FIXME: When gsconfig.py exposes the default geometry type for vector
+    # layers we should use that rather than guessing based on the autodetected
+    # style.
+
+    if name in _style_templates:
+        fg, bg, mark = _style_contexts.next()
+        return _style_templates[name] % dict(name=layer.name, fg=fg, bg=bg, mark=mark)
+    else:
+        return None
+
+def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
-    logger.info("Found %d layers associated with [%s]", resource)
+    logger.info("Found %d layers associated with [%s]", len(layers), resource)
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
-            fg, bg, mark = _style_contexts.next()
-            sld = _style_templates[lyr.default_style.name] % dict(name=name, fg=fg, bg=bg, mark=mark)
+            if style is None:
+                sld = get_sld_for(lyr)
+            else: 
+                sld = style.read()
             logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
@@ -110,8 +130,35 @@ def fixup_style(cat, resource):
             logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
-    lyr = cat.get_layer(resource.name)
-    store = resource.store
-    cat.delete(lyr)
-    cat.delete(resource)
-    cat.delete(store)
+    resource_name = resource.name
+    lyr = cat.get_layer(resource_name)
+    if(lyr is not None): #Already deleted
+        store = resource.store
+        styles = lyr.styles + [lyr.default_style]
+        cat.delete(lyr)
+        for s in styles:
+            if s is not None:
+                cat.delete(s, purge=True)
+        cat.delete(resource)
+        if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
+            cat.delete(store)
+            delete_from_postgis(resource_name)
+        else:
+            cat.delete(store)
+
+
+
+def delete_from_postgis(resource_name):
+    """
+    Delete a table from PostGIS (because Geoserver won't do it yet);
+    to be used after deleting a layer from the system.
+    """
+    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_NAME + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
+        conn.commit()
+    except Exception, e:
+        logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))
+    finally:
+        conn.close()

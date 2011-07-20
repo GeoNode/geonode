@@ -242,18 +242,17 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    webapps = path("./webapps")
-    if not webapps.exists():
-        webapps.mkdir()
+    static = path("./src/GeoNodePy/geonode/media/static")
+    if not static.exists():
+        static.mkdir()
 
-    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_war_url'))
-    dst_war = webapps / "geonode-client.war"
-    deployed_url = webapps / "geonode-client"
+    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
+    dst_zip = static / "geonode-client.zip"
 
-    grab(src_url, dst_war)
+    grab(src_url, dst_zip)
 
-    deployed_url.rmtree()
-    zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
+    zip_extractall(zipfile.ZipFile(dst_zip), static)
+    dst_zip.remove()
 
 @task
 def sync_django_db(options):
@@ -441,6 +440,7 @@ def make_release(options):
         tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
         for file in out_pkg.walkfiles():
             tar.add(file)
+        tar.add('../README.release.rst', arcname=('%s/README.rst' % out_pkg))
         tar.close()
 
         out_pkg.rmtree()
@@ -518,15 +518,13 @@ def install_sphinx_conditionally(options):
 
 
 @task
+@needs('package_client')
 @cmdopts([
-    ('bind=', 'b', 'IP address to bind to. Default is localhost.'),
-    ('client_src=', 's', 'geonode-client project directory, e.g. ../geonode-client/. If provided, unminified javascript resources will be used.')
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
 ])
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
-    if hasattr(options.host, 'client_src'):
-        os.environ["READYGXP_FILES_ROOT"] = os.path.abspath(options.host.client_src)
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
