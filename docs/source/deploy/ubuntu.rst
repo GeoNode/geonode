@@ -27,18 +27,18 @@ Release archives of geonode are produced from the geonode sources using::
 
   paver make_release # from the root of a working dir
 
-If you don't have a checkout, you can get the latest release from
-http://geonode.org/ or the `GeoNode project wiki
-<http://projects.opengeo.org/CAPRA/>`_ .  You can unpack it like::
+You can also get the latest release from http://dev.geonode.org/release/ or
+the `GeoNode project wiki <http://dev.geonode.org/trac/>`_ .
+You can unpack it like::
 
-  $ tar xvzf GeoNode-1.0-RC1.tar.gz
-  GeoNode-1.0-RC1/geonetwork.war
-  GeoNode-1.0-RC1/pavement.py
-  GeoNode-1.0-RC1/geonode-webapp.pybundle
-  GeoNode-1.0-RC1/geoserver-geonode-dev.war
-  GeoNode-1.0-RC1/bootstrap.py
-  GeoNode-1.0-RC1/deploy-libs.txt
-  GeoNode-1.0-RC1/deploy.ini.ex
+   $ tar xvzf GeoNode-1.0.1.tar.gz
+   GeoNode-1.0.1/geonetwork.war
+   GeoNode-1.0.1/pavement.py
+   GeoNode-1.0.1/geonode-webapp.pybundle
+   GeoNode-1.0.1/geoserver-geonode-dev.war
+   GeoNode-1.0.1/bootstrap.py
+   GeoNode-1.0.1/deploy-libs.txt
+   GeoNode-1.0.1/deploy.ini.ex
 
 Runtimes
 --------
@@ -50,8 +50,10 @@ Python::
 Java:
 
 For Sun/Oracle Java (recommended for better rendering performance)::
+
   # vi /etc/apt/sources.list
   # <enable partners repository>
+  # apt-get update
   # apt-get install sun-java6-jre
 
 For OpenJDK (simpler install)::
@@ -61,69 +63,29 @@ For OpenJDK (simpler install)::
 Servlet Container Installation
 ------------------------------
 
-We do not recommend the Ubuntu package for Tomcat since its default security
-settings are known to cause problems for GeoNetwork and GeoServer.
+1. Install tomcat from ubuntu packages::
 
-1. Fetch the Tomcat archive from http://tomcat.apache.org/downloads/::
+   # apt-get install tomcat6
 
-     # wget http://ftp.wayne.edu/apache//tomcat/tomcat-6/v6.0.29/bin/apache-tomcat-6.0.29.zip
- 
-2. Unpack the archive to :file:`/opt/apache-tomcat-{version}`; for example
-   :file:`/opt/apache-tomcat-6.0.26/` ::
+2. Update JAVA_OPTS::
 
-     # unzip apache-tomcat-6.0.29.zip -d /opt/
-
-3. Ensure the startup scripts are executable, and create a dedicated user
-   account to run tomcat under::
-
-     # useradd tomcat6
-     # chmod +x /opt/apache-tomcat-6.0.29/bin/*.sh
-     # chown tomcat6 -R /opt/apache-tomcat-6.0.29/
-
-4. Create a startup script in /etc/init.d/tomcat6::
-
-     # Tomcat auto-start
-     #
-     # description: Auto-starts tomcat
-     # processname: tomcat
-     # pidfile: /var/run/tomcat.pid
-
-     export CATALINA_HOME=/opt/apache-tomcat-6.0.29/
-     export JAVA_HOME=/usr/lib/jvm/java-6-sun
-     # for openjdk: JAVA_HOME=/usr/lib/jvm/java-6-openjdk
-     export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
-
-     TOMCAT="${CATALINA_HOME}/bin/catalina.sh"
-
-     case $1 in
-     start)
-             su tomcat6 -c "${TOMCAT} start"
-             ;; 
-     stop)   
-             su tomcat6 -c "${TOMCAT} stop"
-             ;; 
-     restart)
-             su tomcat6 -c "${TOMCAT} stop"
-             su tomcat6 -c "${TOMCAT} start"
-             ;;
-     esac    
-     exit 0
+   # vi /etc/init.d/tomcat6
+   # export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement"
 
    .. note::
 
-      The Java options used are as follows:
+     The Java options used are as follows:
 
-      * ``-Xmx1024m`` tells Java to use 1GB of RAM instead of the default value
-      * ``-XX:MaxPermSize=256M`` increase the amount of space used for
-        "permgen", needed to run geonetwork/geoserver.
-      * ``-XX:CompileCommand=...`` is a workaround for a JVM bug that affects
-        GeoNetwork; see http://trac.osgeo.org/geonetwork/ticket/301
+     * ``-Xmx1024m`` tells Java to use 1GB of RAM instead of the default value
 
-5. Mark the startup script executable and set it to automatically run on system
-   startup::
+     * ``-XX:MaxPermSize=256M`` increase the amount of space used for "permgen", needed to run geonetwork/geoserver.
 
-     # chmod +x /etc/init.d/tomcat6
-     # ln -s /etc/rc3.d/S92tomcat6
+     * ``-XX:CompileCommand=...`` is a workaround for a JVM bug that affect GeoNetwork; see http://trac.osgeo.org/geonetwork/ticket/301
+
+
+3. Restart tomcat::
+   
+   # sudo /etc/init.d/tomcat6 restart
 
 Deploying GeoNetwork
 --------------------
@@ -131,12 +93,12 @@ Deploying GeoNetwork
 1. Move :file:`geonetwork.war` from the GeoNode release archive into the Tomcat
    deployment directory::
 
-     # cp /tmp/GeoNode-1.0-RC1/geonetwork.war /opt/apache-tomcat-6.0.29/webapps/
+     # sudo cp geonetwork.war /var/lib/tomcat6/webapps/ 
 
 .. note:: 
 
-     The GeoNetwork username and password defaults to admin/admin and
-     should be changed, but they cannot be changed while the server is not running.
+     The GeoNetwork username and password both default to ``admin`` and
+     should be changed, but they cannot be changed unless the server is running.
      See the instructions below for starting up Tomcat.
 
 Deploying GeoServer
@@ -145,18 +107,13 @@ Deploying GeoServer
 1. Move :file:`geoserver-geonode-dev.war` from the GeoNode release archive into
    the Tomcat deployment directory::
 
-     # mv /tmp/GeoNode-1.0-beta/geoserver-geonode-dev.war /opt/apache-tomcat-6.0.29/webapps/
-
-2. Tomcat will normally auto-deploy WARs upon startup, but in order to make
-   some configuration changes, unpack it manually::
-
-     # cd /opt/apache-tomcat-6.0.29/webapps && unzip geoserver-geonode-dev.war -d geoserver-geonode-dev
+     # sudo cp geoserver-geonode-dev.war /var/lib/tomcat6/webapps/
 
 2. GeoServer uses the Django web application to authenticate users.  By
    default, it will look for GeoNode at http://localhost:8000/ but we will be
    running the Django application on http://localhost:80/ so we have to
    configure GeoServer to look at that URL.  To do so, edit
-   :file:`/opt/apache-tomcat-6.0.29/webapps/geoserver-geonode-dev/WEB-INF/web.xml` 
+   :file:`/var/lib/tomcat6/webapps/geoserver-geonode-dev/WEB-INF/web.xml` 
    and add a context-parameter::
 
      <context-param>
@@ -175,8 +132,12 @@ Deploying GeoServer
    GeoServer requires a particular directory structure in data directories, so
    also copy the template datadir from the tomcat webapps directory::
 
-     # cp -R /opt/apache-tomcat-6.0.29/webapps/geoserver-geonode-dev/data/ /opt/geoserver_data
+     # cp -R /var/lib/tomcat6/webapps/geoserver-geonode-dev/data/ /opt/geoserver_data
      # chown tomcat6 -R /opt/geoserver_data/
+
+4. Restart tomcat::
+
+   # sudo /etc/init.d/tomcat6 restart
 
 Changes after Tomcat is Running
 -------------------------------
@@ -192,7 +153,7 @@ Changes after Tomcat is Running
 
 3. The GeoNetwork administrative account will be using the default password.  You
    should navigate to `the GeoNetwork web interface
-   <http://localhost:8080/geonetwork/>` and change the password for this account,
+   <http://localhost:8080/geonetwork/>`_ and change the password for this account,
    taking note of the new password for later use. (Log in with the username
    ``admin`` and password ``admin``, then use the "Administration" link in the
    top navigation menu to change the password.)
@@ -206,7 +167,7 @@ Changes after Tomcat is Running
 .. note::
 
     The GeoNetwork configuration, including metadata documents and password
-    configuration, is stored inside of [tomcat]/webapps/geonetwork/ .  This
+    configuration, is stored inside of ``[tomcat]/webapps/geonetwork/`` .  This
     directory can be copied between machines to quickly reproduce a
     configuration with a given administrative password across multiple
     machines.
@@ -233,10 +194,10 @@ Install GeoNode Django Site
 
 1. Install required libraries::
 
-     # apt-get install gcc libjpeg-dev libpng-dev python-gdal python-psycopg2
+     # apt-get install gcc libjpeg-dev libpng-dev python-gdal python-psycopg2 libproj-dev proj-bin proj-data
 
-2. Create new directories in /var/www/ for the geonode static files, uploads,
-   and python scripts (``htdocs``,``htdocs/media``, ``htdocs/uploads``,``wsgi/geonode``,
+2. Create new directories in ``/var/www/`` for the geonode static files, uploads,
+   and python scripts (``htdocs``, ``htdocs/media``, ``htdocs/uploads``, ``wsgi/geonode``,
    respectively)::
 
     # mkdir -p /var/www/geonode/{htdocs,htdocs/media,wsgi/geonode/} 
@@ -302,9 +263,12 @@ Install GeoNode Django Site
 
      DEFAULT_LAYERS_OWNER='admin'
 
-     GEONODE_CLIENT_LOCATION = SITEURL
+     GEONODE_CLIENT_LOCATION = SITEURL + 'media/static/' 
 
-6. Place a wsgi launcher script in /var/www/geonode/wsgi/geonode.wsgi::
+     ADMIN_MEDIA_PREFIX = ("/admin-media/")
+
+
+6. Place a wsgi launcher script in ``/var/www/geonode/wsgi/geonode.wsgi``::
 
      import site, os
 
@@ -348,9 +312,7 @@ Install GeoNode Django Site
 
         CustomLog /var/log/apache2/access.log combined
 
-        Alias /media/static/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/static/
-        Alias /media/theme/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/theme/
-        Alias /media/ /var/www/geonode/htdocs/media/
+        Alias /media/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/
         Alias /admin-media/ /var/www/geonode/wsgi/geonode/lib/python2.6/site-packages/django/contrib/admin/media/
 
         WSGIPassAuthorization On
@@ -364,7 +326,7 @@ Install GeoNode Django Site
         ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
      </VirtualHost>
 
-9. Set the filesystem ownership to the Apache user for the geonode/ folder::
+9. Set the filesystem ownership to the Apache user for the ``geonode`` folder::
 
       # chown www-data -R /var/www/geonode/
 
@@ -387,3 +349,12 @@ Install GeoNode Django Site
     prompted for an admin username and account)::
 
       # /var/www/geonode/wsgi/geonode/bin/django-admin.py syncdb --settings=geonode.settings
+
+13. You should now be able to see the GeoNode site at http://localhost/
+
+
+.. note::
+
+ If you have problems uploading files, please enable the verbose logging
+ http://docs.geonode.org/1.0.1/logging.html
+

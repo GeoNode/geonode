@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from staticfiles.urls import staticfiles_urlpatterns
+from geonode.sitemap import LayerSitemap, MapSitemap
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -10,12 +11,19 @@ js_info_dict = {
     'packages': ('geonode.maps',),
 }
 
+sitemaps = {
+    "layer": LayerSitemap,
+    "map": MapSitemap
+}
+
 urlpatterns = patterns('',
     # Example:
     # (r'^geonode/', include('geonode.foo.urls')),
     (r'^(?:index/?)?$', 'geonode.views.index'),
-    (r'^(?P<page>developer|help)/?$', 'geonode.views.static'),
-    (r'^lang\.js$', 'geonode.views.lang'),
+    (r'^(?P<page>help)/?$', 'geonode.views.static'),
+    (r'^developer/?$', 'geonode.views.developer'),
+    url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
+               {'template': 'lang.js', 'mimetype': 'text/javascript'}, 'lang'),
     (r'^maps/', include('geonode.maps.urls')),
     (r'^proxy/', 'geonode.proxy.views.proxy'),
     (r'^geoserver/','geonode.proxy.views.geoserver'),
@@ -24,6 +32,8 @@ urlpatterns = patterns('',
     url(r'^data/search/?$', 'geonode.maps.views.search_page', name='search'),
     url(r'^data/search/api/?$', 'geonode.maps.views.metadata_search', name='search_api'),
     url(r'^data/search/detail/?$', 'geonode.maps.views.search_result_detail', name='search_result_detail'),
+    url(r'^data/api/batch_permissions/?$', 'geonode.maps.views.batch_permissions'),
+    url(r'^data/api/batch_delete/?$', 'geonode.maps.views.batch_delete'),
     url(r'^data/upload$', 'geonode.maps.views.upload_layer', name='data_upload'),
     (r'^data/download$', 'geonode.maps.views.batch_layer_download'),
     (r'^data/(?P<layername>[^/]*)$', 'geonode.maps.views.layerController'),
@@ -38,6 +48,7 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
+    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps})
     )
 
 # Extra static file endpoint for development use

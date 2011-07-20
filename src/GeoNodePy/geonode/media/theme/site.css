@@ -437,6 +437,14 @@ background-image: url(img/silk/map_add.png);
 background-image: url(img/silk/map_magnify.png);
 }
 
+.x-btn .icon-delete { 
+    background-image: url(img/silk/delete.png);
+}
+
+.x-btn .icon-security { 
+    background-image: url(img/silk/lock.png);
+}
+
 a.download { 
 background-repeat:no-repeat;
 padding-left: 18px;
@@ -695,4 +703,53 @@ padding: 0 4px;
 /* SLD titles on the layer.html template */
 span.style-title {
 cursor: pointer;
+}
+
+.x-grid3-col .data-type, .x-grid3-col .data-delete, .x-grid3-col .data-edit {
+    height: 16px; width: 16px;
+}
+
+.x-grid3-col .data-type.layer {
+    background-image: url(img/silk/page_green.png); 
+}
+
+.x-grid3-col .data-type.map {
+    background-image: url(img/silk/map.png); 
+}
+
+.x-grid3-col .data-edit {
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    background-image: url(img/silk/pencil.png);
+}
+
+.x-grid3-col .data-delete {
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    background-image: url(img/silk/delete.png);
+}
+
+.x-btn .icon-adduser {
+    background-image: url(img/silk/add.png);
+}
+
+.x-btn .icon-removeuser {
+    background-image: url(img/silk/delete.png);
+}
+
+.user_item button {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+}
+
+.x-list-body dl { margin: 0; }
+
+.langbar {
+     margin-right: 150px;
+     right: 0;
+     position: absolute;
+     padding-top: 5px;
 }
