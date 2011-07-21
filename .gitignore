@@ -23,6 +23,7 @@ target
 /src/gsconfig.py/
 /src/owslib/
 /src/avatar/
+/src/nosexcover/
 /webapps/
 /src/GeoNodePy/capra/development.db
 
