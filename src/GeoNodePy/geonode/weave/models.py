@@ -7,7 +7,6 @@ from django.contrib.auth.models import User, Permission
 from geonode.core.models import PermissionLevelMixin
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
-from jsonfield.fields import JSONField
 import simplejson
 
 try:
