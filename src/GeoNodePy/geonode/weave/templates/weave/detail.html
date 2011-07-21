@@ -49,11 +49,11 @@
 
 <div class="twocol">
 	<div id="weavediv">
-		<object width="600" height="400" id="weave" type="application/x-shockwave-flash" data="http://127.0.0.1:8080/weave.swf" id="weavediv" style="visibility: visible;">
+		<object width="600" height="400" id="weave" type="application/x-shockwave-flash" data="{{ WEAVE_URL }}weave.swf" id="weavediv" style="visibility: visible;">
 			<param name="quality" value="high"><param name="bgcolor" value="#ffffff">
 			<param name="allowfullscreen" value="true">
 			<param name="allowscriptaccess" value="always">
-			<param name="base" value="http://127.0.0.1:8080/">
+			<param name="base" value="{{ WEAVE_URL }}">
 			<param name="wmode" value="transparent">
 		</object>
 	</div>
