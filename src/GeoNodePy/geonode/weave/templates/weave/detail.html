@@ -7,7 +7,6 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {{ block.super }}
-{% has_obj_perm user visualization "weave.view_visualization" as can_view %}
 <script type="text/javascript" src="{{ STATIC_URL }}weave/utils.js"></script>
 <script language="JavaScript" type="text/javascript">
 	var weaveReady = function() {
