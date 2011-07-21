@@ -226,7 +226,7 @@ display: block;
 zoom: 1; /* IE < 7 */
 }
 
-#topPanel * {
+#topPanel {
 color: #fff;
 }
 
@@ -752,4 +752,22 @@ cursor: pointer;
      right: 0;
      position: absolute;
      padding-top: 5px;
+}
+
+/* Visualizations */
+
+.visualization-button {
+	float: right;
+	color: #000;
+	margin-left: 4px;
+}
+
+#visualization-title-header, #visualization-title-header a {
+	float: left;
+	margin-right: 4px;
+	color: #fff;
+}
+
+#savemsg {
+	font-weight: bold;
 }

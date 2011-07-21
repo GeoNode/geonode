@@ -1,0 +1,52 @@
+{% extends "fullscreen.html" %}
+{% load i18n %}
+{% load geonode_auth %}
+
+{% block title %} "Weave" - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{{ block.super }}
+{% has_obj_perm user visualization "weave.view_visualization" as can_copy %}
+{% has_obj_perm user visualization "weave.change_visualization" as can_change %}
+<script type="text/javascript" src="{{ STATIC_URL }}weave/app.js"></script>
+<script type="text/javascript">
+	var weaveReady = function() {
+		var weave = document.getElementById("weave");
+		initWeave(weave);
+		{% if user.is_authenticated %}initMetadataForm(
+			weave,
+			{
+				"title": "{{ visualization.title }}",
+				"abstract": "{{ visualization.abstract }}",
+				"permissions": {
+					"copy": {% if can_copy and visualization.id > 1 %}true{% else %}false{% endif %},
+					"change": {% if can_change %}true{% else %}false{% endif %}
+				}
+			}
+		);{% endif %}
+	}
+</script>
+
+{% endblock %}
+
+{% block body %}
+<div id="header-wrapper">
+  {{ block.super }}
+  	<div id="topPanel">
+		<div class="wrap">
+		{% if user.is_authenticated %}<div id="save_visualization" class="visualization-button"></div>{% else %}<div class="visualization-button">Please sign in to save this Visualization.</div>{% endif %}
+		<span id="visualization-title-header">{% if visualization.title %}{{ visualization.title }}{% else %}Your Visualization{% endif %}</span><span id="savemsg"><span>
+		</div>
+	</div>
+</div>
+<div id="weavediv">
+	<object id="weave" type="application/x-shockwave-flash" data="{{ WEAVE_URL }}weave.swf" id="weavediv" style="visibility: visible;">
+		<param name="quality" value="high"><param name="bgcolor" value="#ffffff">
+		<param name="allowfullscreen" value="true">
+		<param name="allowscriptaccess" value="always">
+		<param name="base" value="{{ WEAVE_URL }}">
+		<param name="wmode" value="transparent">
+	</object>
+</div>
+{% endblock %}
