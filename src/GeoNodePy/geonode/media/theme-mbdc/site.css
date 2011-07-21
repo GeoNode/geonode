@@ -200,8 +200,8 @@ color: #fff;
 
 /* needs to match crossbar, but also have self-clearing float behavior */
 #topPanel {
-background: #003c4c;
-border-bottom: 2px solid #008cb3;
+background: #b8a532;
+border-bottom: 2px solid #908128;
 color: #fff;
 padding: 8px 10px;
 }
@@ -226,7 +226,7 @@ display: block;
 zoom: 1; /* IE < 7 */
 }
 
-#topPanel * {
+#topPanel {
 color: #fff;
 }
 
@@ -752,4 +752,22 @@ cursor: pointer;
      right: 0;
      position: absolute;
      padding-top: 5px;
+}
+
+/* Visualizations */
+
+.visualization-button {
+	float: right;
+	color: #000;
+	margin-left: 4px;
+}
+
+#visualization-title-header, #visualization-title-header a {
+	float: left;
+	margin-right: 4px;
+	color: #fff;
+}
+
+#savemsg {
+	font-weight: bold;
 }

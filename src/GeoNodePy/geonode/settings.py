@@ -94,6 +94,7 @@ STATIC_URL = "/media/"
 # Additional directories which hold static files
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, "media"),
+    os.path.join(PROJECT_ROOT, "weave/static"),
 ]
 
 GEONODE_UPLOAD_PATH = os.path.join(STATIC_URL, "upload/")
@@ -120,6 +121,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "geonode.maps.context_processors.resource_urls",
+    "geonode.weave.context_processors.weave_media",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -273,6 +275,7 @@ INSTALLED_APPS = (
     'geonode.maps',
     'geonode.proxy',
     'geonode.mbdc',
+    'geonode.weave',
 )
 
 def get_user_url(u):
