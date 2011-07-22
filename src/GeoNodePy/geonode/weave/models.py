@@ -42,16 +42,17 @@ class Visualization(models.Model, PermissionLevelMixin):
 
 	# TODO: cleanup Booleans from Python 'True' to JavaScript 'true'
 	# sessionstate = JSONField(_('Session State'))
+	# ...if we ever need the JSONField
 	sessionstate = models.TextField(_('Session State'))
 	"""
 	The configuration that specifies all aspects of a visualization.
 	"""
 
 	def __unicode__(self):
-			return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
+		return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
 	class Meta:
-		unique_together = (('name', 'user'),)
+		unique_together = (('title', 'owner'),)
 
 	def update_from_viewer(self, conf):
 		"""
@@ -65,10 +66,11 @@ class Visualization(models.Model, PermissionLevelMixin):
 		self.sessionstate = conf['sessionstate']
 
 		self.save()
-
+	
+	@models.permalink
 	def get_absolute_url(self):
-		return '/visualizations/%i' % self.id
-
+		return ('geonode.weave.views.edit', None, { 'visid': self.id, })
+	
 	class Meta:
 		# custom permissions, 
 		# change and delete are standard in django

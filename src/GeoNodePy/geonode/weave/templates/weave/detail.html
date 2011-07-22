@@ -12,7 +12,7 @@
 	var weaveReady = function() {
 		var weave = document.getElementById("weave");
 		Ext.Ajax.request({
-			url: "{{ visualization.get_absolute_url }}/sessionstate",
+			url: "{{ visualization.get_absolute_url }}sessionstate",
 			method: 'GET',
 			success: function(xhr) {
 				var sessionstate = Ext.decode(xhr.responseText);
