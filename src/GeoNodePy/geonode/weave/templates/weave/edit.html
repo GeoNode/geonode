@@ -34,7 +34,7 @@
   {{ block.super }}
   	<div id="topPanel">
 		<div class="wrap">
-		{% if user.is_authenticated %}<div id="save_visualization" class="visualization-button"></div>{% else %}<div class="visualization-button">Please sign in to save this Visualization.</div>{% endif %}
+		{% if user.is_authenticated %}<div id="save_visualization" class="visualization-button"></div><div id="embed_code" class="embed-button"></div>{% else %}<div class="visualization-button">Please sign in to save this Visualization.</div>{% endif %}
 		<span id="visualization-title-header">{% if visualization.title %}{{ visualization.title }}{% else %}Your Visualization{% endif %}</span><span id="savemsg"></span>
 		</div>
 	</div>

@@ -111,8 +111,7 @@ def sessionstate(request, visid=1):
 		mimetype='application/json'
 	)
 
-@csrf_exempt
-@transaction.commit_manually
+
 def detail(request, visid):
 	"""	 
 	The view that returns the weave detail page for given visualization ID.
@@ -131,7 +130,24 @@ def detail(request, visid):
 	
 	return render_to_response("weave/detail.html", locals(), 
 		context_instance=RequestContext(request))
-			
+
+
+def embed(request, visid):
+	"""
+	The view that creates the embeddable page.
+	"""
+	visualization = get_object_or_404(Visualization, pk=visid)
+	
+	if not request.user.has_perm("weave.view_visualization", obj=visualization):
+		return HttpResponse(
+			"You don't have permission to view this visualizations.",
+			mimetype="text/plain",
+			status=401
+		)
+	
+	return render_to_response("weave/embed.html", locals(), 
+		context_instance=RequestContext(request))	
+
 
 def ajax_visualization_permissions(request, visid):
 	visualization = get_object_or_404(Visualization, pk=visid)

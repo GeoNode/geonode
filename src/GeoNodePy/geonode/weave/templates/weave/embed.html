@@ -1,0 +1,45 @@
+{% load i18n %}
+{% load geonode_auth %}
+<!doctype html >
+<html>
+<head>
+<title>{{ visualization.title }}</title>
+
+{% include "geonode/ext_header.html" %}
+
+<script type="text/javascript" src="{{ STATIC_URL }}weave/utils.js"></script>
+<script type="text/javascript">
+	var weaveReady = function(weave) {
+		Ext.Ajax.request({
+			url: "{{ visualization.get_absolute_url }}sessionstate",
+			method: "GET",
+			success: function(xhr) {
+				var sessionstate = Ext.decode(xhr.responseText);
+				sessionstate = embedWeave(sessionstate);
+				weave.setSessionState([], sessionstate);
+			},
+			failure: function(xhr) {
+				console.log("Failure!\n" + xhr.responseText);
+			}
+		});
+	}
+</script>
+<style type="text/css">
+	html, body, #weave {
+		width: 100%;
+		height: 100%;
+	}
+</style>
+</head>
+<body>
+	<embed id="weave" src="{{ WEAVE_URL }}weave.swf" quality="high" bgcolor="#FFFFFF"
+		name="weave" 
+		play="true"
+		loop="false"
+		allowScriptAccess="always"
+		allowfullscreen="true" 
+		base="{{ WEAVE_URL }}"
+		type="application/x-shockwave-flash"
+		wmode="transparent" 
+		pluginspage="http://www.adobe.com/go/getflashplayer" />
+</body>

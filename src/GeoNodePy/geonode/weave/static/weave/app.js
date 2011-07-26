@@ -23,8 +23,11 @@ var initWeave = function(weave) {
 }
 
 var initMetadataForm = function(weave, options) {
-	
-	// initial visualization url
+/*
+* Handles Visualization metadata (title & description)
+* and saving the session state.
+*/
+	// initial visualization url, used for form-POST
 	var visUrl = window.location.href;
 	
 	// metadata window
@@ -111,20 +114,22 @@ var initMetadataForm = function(weave, options) {
 	// upate existing title and abstract
 	Ext.getCmp("metadataForm").getForm().setValues({
 		"title": options["title"],
-		"abstract": options["abstract"]
+		"abstract": options["abstract"],
+		"sessionstate": JSON.stringify(weave.getSessionState([]))
 	});
 	
+	// save session state
 	var saveVisualization = function() {
 		// get form data
-		var metadata = Ext.getCmp("metadataForm").getForm().getValues();		
+		var metadata = Ext.getCmp("metadataForm").getForm().getValues();
 		Ext.Ajax.request({
 			url: visUrl,
 			method: "POST",
 			params: metadata,
 			success: function(xhr, params) {
 				// url for newly created visualization
-				// no responseText (visid) return for existing visualization
-				if (xhr.responseText) visUrl = "/visualizations/" + Ext.decode(xhr.responseText).visid + "/";
+				// no responseText (visid) returned if existing visualization is saved
+				if (xhr.responseText) visUrl = visUrl + Ext.decode(xhr.responseText).visid + "/";
 				// change title
 				var vistitle = Ext.DomHelper.overwrite(
 					"visualization-title-header",
@@ -147,4 +152,42 @@ var initMetadataForm = function(weave, options) {
 			}
 		});
 	}
+	
+	// embed button
+	var embedVisualizationButton = new Ext.Button({
+		renderTo: "embed_code",
+		text: "Embed Visualization",
+		handler: function() {
+			// embed code
+			var embedCodeWin = new Ext.Window({
+				title: "Copy the code below to embed your Visualization",
+				width: 340,
+				height: 160,
+				x: Ext.get(document.body).getWidth()/2 - 170,
+				y: 140,
+				layout: "fit",
+				border: false,
+				closable: true,
+				items: [{
+					xtype: "form",
+					id: "embedCodeForm",
+					bodyStyle:"padding:10px",
+					hideLabels: true,
+					items: [{
+						xtype: "textarea",
+						id: "embedcode",
+						height: 110,
+						width: 306,
+						value: getEmbedCode(visUrl)
+					}]
+				}]
+			}).show();
+		}
+	});
+}
+
+// little helper to compile the embed string
+var getEmbedCode = function(visUrl) {
+	embedCode = "<iframe width='500' height='350' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='" + visUrl + "embed'></iframe><br /><small><a href='" + visUrl + "'>View Larger Visualization</a></small>";
+	return embedCode;
 }

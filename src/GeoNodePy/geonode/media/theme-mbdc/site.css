@@ -756,7 +756,7 @@ cursor: pointer;
 
 /* Visualizations */
 
-.visualization-button {
+.visualization-button, .embed-button {
 	float: right;
 	color: #000;
 	margin-left: 4px;
