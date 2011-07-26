@@ -8,9 +8,8 @@
 {% include "geonode/app_header.html" %}
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}weave/utils.js"></script>
-<script language="JavaScript" type="text/javascript">
-	var weaveReady = function() {
-		var weave = document.getElementById("weave");
+<script type="text/javascript">
+	var weaveReady = function(weave) {
 		Ext.Ajax.request({
 			url: "{{ visualization.get_absolute_url }}sessionstate",
 			method: 'GET',
@@ -49,13 +48,16 @@
 
 <div class="twocol">
 	<div id="weavediv">
-		<object width="600" height="400" id="weave" type="application/x-shockwave-flash" data="{{ WEAVE_URL }}weave.swf" id="weavediv" style="visibility: visible;">
-			<param name="quality" value="high"><param name="bgcolor" value="#ffffff">
-			<param name="allowfullscreen" value="true">
-			<param name="allowscriptaccess" value="always">
-			<param name="base" value="{{ WEAVE_URL }}">
-			<param name="wmode" value="transparent">
-		</object>
+		<embed id="weave" src="{{ WEAVE_URL }}weave.swf" quality="high" bgcolor="#FFFFFF"
+			width="100%" height="100%" name="weave"
+			play="true"
+			loop="false"
+			allowScriptAccess="always"
+			allowfullscreen="true" 
+			base="{{ WEAVE_URL }}"
+			type="application/x-shockwave-flash"
+			wmode="transparent" 
+			pluginspage="http://www.adobe.com/go/getflashplayer" />
 	</div>
 </div>
 <div class="threecol">
@@ -65,9 +67,6 @@
 	<ul>
 		<li><a href="{{ visualization.get_absolute_url }}">View or edit this Visualization</a></li>
 	</ul>
-
-
-
 		{% has_obj_perm user visualization "weave.change_visualization_permissions" as can_change_permissions %}
 		{% if can_change_permissions %}
 		<h3>{% trans "Permissions" %}</h3>
@@ -75,7 +74,7 @@
 		<div id="permissions_form"></div>
 		{% endif %}
 </div>
-</div>
+
 
 {% endblock %}
 
