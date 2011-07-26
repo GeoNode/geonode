@@ -7,6 +7,7 @@ var setWeaveDashboard = function (sessionstate) {
 		if (this.objectName === "WeaveProperties") {
 			this.sessionState.dashboardMode = true;
 			this.sessionState.enableMenuBar = false;
+			this.sessionState.enableToolControls = false;
 			// exit the iterator
 			return false;
 		}
