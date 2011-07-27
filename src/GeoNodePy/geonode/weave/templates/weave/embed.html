@@ -32,14 +32,5 @@
 </style>
 </head>
 <body>
-	<embed id="weave" src="{{ WEAVE_URL }}weave.swf" quality="high" bgcolor="#FFFFFF"
-		name="weave" 
-		play="true"
-		loop="false"
-		allowScriptAccess="always"
-		allowfullscreen="true" 
-		base="{{ WEAVE_URL }}"
-		type="application/x-shockwave-flash"
-		wmode="transparent" 
-		pluginspage="http://www.adobe.com/go/getflashplayer" />
+	{% include "weave/object.html" %}
 </body>

@@ -25,9 +25,15 @@
 			}
 		});
 	}
-	
-	{% if user.is_authenticated %}
 	Ext.onReady(function(){
+		
+		// set weave instance dimensions
+		Ext.get("weave").set({
+			height: 400,
+			width: 600
+		});
+		
+	{% if user.is_authenticated %}
 		{% has_obj_perm user visualization "weave.change_visualization_permissions" as can_change_permissions %}
 		{% autoescape off %}
 		{% if can_change_permissions %}
@@ -39,8 +45,9 @@
 		});
 		{% endif %}
 		{% endautoescape %}
-		});
-	{% endif %}
+		{% endif %}
+	});
+	
 </script>
 
 {% endblock %}
@@ -49,16 +56,7 @@
 
 <div class="twocol">
 	<div id="weavediv">
-		<embed id="weave" src="{{ WEAVE_URL }}weave.swf" quality="high" bgcolor="#FFFFFF"
-			width="100%" height="400" name="weave"
-			play="true"
-			loop="false"
-			allowScriptAccess="always"
-			allowfullscreen="true" 
-			base="{{ WEAVE_URL }}"
-			type="application/x-shockwave-flash"
-			wmode="transparent" 
-			pluginspage="http://www.adobe.com/go/getflashplayer" />
+		{% include "weave/object.html" %}
 	</div>
 </div>
 <div class="threecol">
@@ -75,7 +73,6 @@
 		<div id="permissions_form"></div>
 		{% endif %}
 </div>
-
 
 {% endblock %}
 
