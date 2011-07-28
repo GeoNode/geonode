@@ -8,7 +8,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 js_info_dict = {
-    'packages': ('geonode.maps',),
+    'domain': 'djangojs',
+    'packages': ('geonode',)
 }
 
 sitemaps = {
