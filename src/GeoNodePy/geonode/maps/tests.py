@@ -381,6 +381,13 @@ community."
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
         self.assertEquals(layernames, ['base:CA',])
 
+    def test_newmap_to_json(self):
+        """ Make some assertions about the data structure produced for serialization
+            to a new JSON map configuration"""
+        response = Client().get("/maps/new/data")
+        cfg = json.loads(response.content)
+        self.assertEquals(cfg['defaultSourceType'], "gxp_wmscsource")
+
     def test_map_details(self): 
         """/maps/1 -> Test accessing the detail view of a map"""
         map = Map.objects.get(id=1) 
