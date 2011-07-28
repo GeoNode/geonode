@@ -1278,7 +1278,7 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-        configs.append({"ptype":"gxp_wmscsource", "url": "/geoserver/wms"})
+        configs.insert(0, {"ptype":"gxp_wmscsource", "url": "/geoserver/wms"})
 
         i = 0
         for source in uniqify(configs):
