@@ -286,22 +286,22 @@ def newmap_config(request):
 @csrf_exempt            
 def newmap(request):
     config = newmap_config(request);
-    if isinstance(config, str):
+    if isinstance(config, HttpResponse):
+        return config;
+    else:
         return render_to_response('maps/view.html', RequestContext(request, {
             'config': config, 
             'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
             'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
         }))
-    else:
-        return config;
 
 @csrf_exempt
 def newmapJSON(request):
     config = newmap_config(request);
-    if isinstance(config, str):
-        return HttpResponse(config)
-    else:
+    if isinstance(config, HttpResponse):
         return config
+    else:
+        return HttpResponse(config)
 
 h = httplib2.Http()
 h.add_credentials(_user, _password)
