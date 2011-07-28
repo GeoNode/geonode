@@ -1,0 +1,107 @@
+[
+    {
+        "pk": 7,
+        "model": "core.objectrole",
+        "fields": {
+            "codename": "visualization_readonly",
+            "title": "Read Only",
+            "list_order": 0,
+            "permissions": [ 
+                ["view_visualization", "weave", "visualization"]
+            ],
+            "content_type": ["weave", "visualization"]
+        }
+    },
+    {
+        "pk": 8,
+        "model": "core.objectrole",
+        "fields": {
+            "codename": "visualization_readwrite",
+            "title": "Read/Write",
+            "list_order": 1,
+            "permissions": [ 
+                ["view_visualization", "weave", "visualization"],
+                ["change_visualization", "weave", "visualization"]
+            ],
+            "content_type": ["weave", "visualization"]
+        }
+    },
+    {
+        "pk": 9,
+        "model": "core.objectrole",
+        "fields": {
+            "codename": "visualization_admin",
+            "title": "Administrative",
+            "list_order": 2,
+            "permissions": [ 
+                ["view_visualization", "weave", "visualization"],
+                ["change_visualization", "weave", "visualization"],
+                ["delete_visualization", "weave", "visualization"],
+                ["change_visualization_permissions", "weave", "visualization"]
+            ],
+            "content_type": ["weave", "visualization"]
+        }
+    },
+    {
+        "pk": 1,
+        "model": "weave.visualization",
+        "fields": {
+            "owner": 1,
+            "abstract": "",
+            "last_modified": "2011-07-19 15:20:35",
+            "sessionstate": "[{\"sessionState\":{\"probeOuterGlowColor\":0,\"probeOuterGlowStrength\":3,\"cssStyleSheetName\":\"weaveStyle.css\",\"probeOuterGlowAlpha\":1,\"dashboardMode\":false,\"enableAddMap\":true,\"axisFontFamily\":\"Sophia Nubian\",\"probeInnerGlowBlur\":5,\"enableAddPieChart\":true,\"enableDebugAlert\":false,\"rServiceURL\":\"/WeaveServices/RService\",\"enableProbeAnimation\":true,\"enableAddPieChartHistogram\":true,\"enablePanelCoordsPercentageMode\":true,\"enableAddRScriptEditor\":true,\"enableGeometryProbing\":true,\"axisFontItalic\":false,\"enableAddScatterplot\":true,\"enableSaveCurrentSubset\":true,\"axisFontColor\":0,\"enableAddThermometerTool\":true,\"probeToolTipBackgroundAlpha\":1,\"windowSnapGridSize\":5,\"enableAddTimeSliderTool\":true,\"enableAdd2DHistogram\":true,\"axisFontBold\":true,\"enableSelectionsMenu\":true,\"probeOuterGlowBlur\":3,\"enableNewUserWizard\":true,\"enableAddDataFilter\":true,\"shadowDistance\":2,\"enableSubsetsMenu\":true,\"shadowAngle\":45,\"enableRemoveSubsets\":true,\"enableToolAttributeEditing\":true,\"enableMenuBar\":true,\"probeToolTipFontColor\":0,\"shadowColor\":0,\"enableSaveCurrentSelection\":true,\"shadowBlur\":4,\"debugScreenBounds\":false,\"enableMouseWheel\":true,\"searchServiceURLs\":\"Wikipedia|http://en.wikipedia.org/wiki/Special:Search?search=\\u000aGoogle|http://www.google.com/search?q=\\u000aGoogle Images|http://images.google.com/images?q=\\u000aGoogle Maps|http://maps.google.com/maps?t=h&q=\",\"selectionAlphaAmount\":0.5,\"enableManageSavedSelections\":true,\"enableManageSavedSubsets\":true,\"shadowAlpha\":0.5,\"enableTaskbar\":true,\"enableToolProbe\":true,\"enableSearchForRecord\":true,\"enableSessionMenu\":true,\"enableDataMenu\":true,\"enableSessionBookmarks\":true,\"enableRefreshHierarchies\":true,\"enableSubsetControls\":true,\"enableExportDataTable\":true,\"enableSessionEdit\":true,\"enableClearCurrentSelection\":true,\"panelTitleFontColor\":16777215,\"enableRightClick\":true,\"axisFontSize\":11,\"enableSessionImport\":true,\"enableShowAllRecords\":true,\"axisFontUnderline\":false,\"enableSessionExport\":true,\"enableNewDataset\":true,\"panelTitleFontUnderline\":false,\"enableAddWeaveDataSource\":true,\"enableUserPreferences\":true,\"panelTitleFontBold\":false,\"enableAddGrailsDataSource\":true,\"enableWindowMenu\":true,\"panelTitleFontItalic\":false,\"enableExportToolImage\":true,\"panelTitleFontSize\":10,\"panelTitleFontFamily\":\"Verdana\",\"enableGoFullscreen\":true,\"enableExportApplicationScreenshot\":true,\"sessionStateEditor\":null,\"enableDynamicTools\":true,\"enableMinimizeAllWindows\":true,\"probeToolTipBackgroundColor\":null,\"showColorController\":true,\"enableRestoreAllMinimizedWindows\":true,\"showProbeToolTipEditor\":true,\"showEquationEditor\":true,\"enableCloseAllWindows\":true,\"selectionBlurringAmount\":4,\"enableAddBarChart\":true,\"enableCascadeAllWindows\":true,\"showAttributeSelector\":true,\"enableAddColorLegend\":true,\"enableTileAllWindows\":true,\"showVisToolCloseDialog\":false,\"enableAddColormapHistogram\":true,\"enableCreateSubsets\":true,\"enableAddDataSource\":true,\"enableAddDataTable\":true,\"enableToolSelection\":true,\"enableAboutMenu\":true,\"version\":\"1.0 Beta 1\",\"enableFullscreen\":true,\"enableEditDataSource\":true,\"pageTitle\":\"Open Indicators Weave\",\"showKeyTypeInColumnTitle\":false,\"enableAddDimensionSliderTool\":true,\"enableAddGaugeTool\":true,\"dataInfoURL\":null,\"enableProbeLines\":true,\"probeInnerGlowColor\":16777215,\"enableAddHistogram\":true,\"showCopyright\":true,\"backgroundColor\":13421772,\"probeInnerGlowStrength\":10,\"enableAddLineChart\":true,\"probeInnerGlowAlpha\":1},\"objectName\":\"WeaveProperties\",\"className\":\"weave::WeaveProperties\"},{\"sessionState\":{\"internalDynamicColumn\":[{\"sessionState\":null,\"objectName\":\"defaultColorBinColumn\",\"className\":\"weave.core::GlobalObjectReference\"}],\"ramp\":\"<colorRamp name=\\\"Grayscale\\\">\\u000a  <node color=\\\"0x000000\\\" position=\\\"0.0\\\"/>\\u000a  <node color=\\\"0xffffff\\\" position=\\\"1.0\\\"/>\\u000a</colorRamp>\"},\"objectName\":\"defaultColorColumn\",\"className\":\"weave.data.AttributeColumns::ColorColumn\"},{\"sessionState\":{\"binningDefinition\":[{\"sessionState\":{\"numberOfBins\":10},\"objectName\":null,\"className\":\"weave.data.BinningDefinitions::SimpleBinningDefinition\"}],\"internalDynamicColumn\":[{\"sessionState\":null,\"objectName\":\"defaultColorDataColumn\",\"className\":\"weave.core::GlobalObjectReference\"}]},\"objectName\":\"defaultColorBinColumn\",\"className\":\"weave.data.AttributeColumns::BinnedColumn\"},{\"sessionState\":{\"filter\":[{\"sessionState\":null,\"objectName\":\"defaultSubsetKeyFilter\",\"className\":\"weave.core::GlobalObjectReference\"}],\"internalDynamicColumn\":[]},\"objectName\":\"defaultColorDataColumn\",\"className\":\"weave.data.AttributeColumns::FilteredColumn\"},{\"sessionState\":{\"includeMissingKeys\":true,\"includeMissingKeyTypes\":true,\"excluded\":null,\"included\":null},\"objectName\":\"defaultSubsetKeyFilter\",\"className\":\"weave.data.KeySets::KeyFilter\"},{\"sessionState\":null,\"objectName\":\"defaultSelectionKeySet\",\"className\":\"weave.data.KeySets::KeySet\"},{\"sessionState\":null,\"objectName\":\"defaultProbeKeySet\",\"className\":\"weave.data.KeySets::KeySet\"},{\"sessionState\":[],\"objectName\":\"savedSelections\",\"className\":\"weave.core::LinkableHashMap\"},{\"sessionState\":[],\"objectName\":\"savedSubsets\",\"className\":\"weave.core::LinkableHashMap\"},{\"sessionState\":{\"attributeHierarchy\":\"<hierarchy name=\\\"localhost\\\">\\u000a  <category name=\\\"Data Tables\\\">\\u000a    <category name=\\\"towns_cen2k\\\"/>\\u000a  </category>\\u000a  <category name=\\\"Geometry Collections\\\">\\u000a    <attribute dataType=\\\"Geometry\\\" name=\\\"towns_cen2k\\\"/>\\u000a  </category>\\u000a</hierarchy>\",\"hierarchyURL\":null,\"url\":\"/WeaveServices/DataService\"},\"objectName\":\"WeaveDataSource\",\"className\":\"weave.data.DataSources::WeaveDataSource\"}]",
+            "title": "Default Visualization"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "core.userobjectrolemapping",
+        "fields": {
+            "role": [
+                "visualization_admin",
+                "weave",
+                "visualization"
+            ],
+            "object_ct": [
+                "weave",
+                "visualization"
+            ],
+            "user": 1,
+            "object_id": 1
+        }
+    },
+    {
+        "pk": 1,
+        "model": "core.genericobjectrolemapping",
+        "fields": {
+            "role": [
+                "visualization_readonly",
+                "weave",
+                "visualization"
+            ],
+            "object_ct": [
+                "weave",
+                "visualization"
+            ],
+            "object_id": 1,
+            "subject": "anonymous"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "core.genericobjectrolemapping",
+        "fields": {
+            "role": [
+                "visualization_readonly",
+                "weave",
+                "visualization"
+            ],
+            "object_ct": [
+                "weave",
+                "visualization"
+            ],
+            "object_id": 1,
+            "subject": "authenticated"
+        }
+    }
+]
