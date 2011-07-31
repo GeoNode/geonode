@@ -2115,23 +2115,12 @@ def addLayerJSON(request):
     logger.debug("Enter addLayerJSON")
     layername = request.POST.get('layername', False)
     logger.debug("layername is [%s]", layername)
-    searchable_fields = []
-    scount = 0
     if layername:
         try:
             layer = Layer.objects.get(typename=layername)
             if not request.user.has_perm("maps.view_layer", obj=layer):
                 return HttpResponse(status=401)
-
-            if layer.storeType == 'dataStore':
-                #searchable_fields = geoLayer.searchable_fields
-                #logger.debug('There are [%s] attributes', geoLayer.layerattribute_set.length)
-                for la in layer.attribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$').order_by('display_order'):
-                    searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
-                    if la.searchable:
-                        scount+=1
-            logger.debug("layer attributes retrieved for [%s] : %s : %s", layername, searchable_fields, scount)
-            sfJSON = {'layer': layer.layer_config(request.user), 'searchFields' : searchable_fields, 'scount' : scount}
+            sfJSON = {'layer': layer.layer_config(request.user)}
             logger.debug('sfJSON is [%s]', str(sfJSON))
             return HttpResponse(json.dumps(sfJSON))
         except Exception, e:
@@ -2140,39 +2129,9 @@ def addLayerJSON(request):
 
     else:
         return HttpResponse(status=500)
-        logger.debug("searchFieldsJSON DID NOT WORK")
+        logger.debug("addLayerJSON DID NOT WORK")
 
-def searchFieldsJSON(request):
-    logger.debug("Enter searchFieldsJSON")
-    layername = request.POST.get('layername', False);
-    logger.debug("layername is [%s]", layername)
-    searchable_fields = []
-    scount = 0
-    editable = False
-    catname = '';
-    if layername:
-        try:
-            geoLayer = Layer.objects.get(typename=layername)
 
-            category =geoLayer.topic_category
-            if category is not None:
-                catname = category.title
-            else:
-                catname = ''
-            if geoLayer.storeType == 'dataStore':
-                #searchable_fields = geoLayer.searchable_fields
-                #logger.debug('There are [%s] attributes', geoLayer.layerattribute_set.length)
-                for la in geoLayer.attribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$').order_by('display_order'):
-                    searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
-                    if la.searchable:
-                        scount+=1
-        except Exception, e:
-            logger.debug("Could not find matching layer: [%s]", str(e))
-        sfJSON = {'searchFields' : searchable_fields, 'category' : catname, 'scount' : scount}
-        logger.debug('sfJSON is [%s]', str(sfJSON))
-        return HttpResponse(json.dumps(sfJSON))
-    else:
-        logger.debug("searchFieldsJSON DID NOT WORK")
 
 
 @csrf_exempt

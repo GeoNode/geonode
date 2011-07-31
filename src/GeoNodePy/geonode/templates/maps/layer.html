@@ -205,7 +205,7 @@
 {% endif %}
 
 {% if layer.geographic_bounding_box %}<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>{% endif %}
-{% if layer.metadata.crsOptions %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>{% endif %}
+{% if layer.srs %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.srs|default:_("No SRS specified.") }} </p>{% endif %}
 
 </div>
 {% endblock %}

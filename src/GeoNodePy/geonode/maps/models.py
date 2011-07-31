@@ -640,25 +640,25 @@ _wms = None
 _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
-def get_wms():
-    global _wms
-    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
-    netloc = urlparse(wms_url).netloc
-    http = httplib2.Http()
-    http.add_credentials(_user, _password)
-    http.authorizations.append(
-        httplib2.BasicAuthentication(
-            (_user, _password),
-                netloc,
-                wms_url,
-                {},
-                None,
-                None,
-                http
-            )
-        )
-    response, body = http.request(wms_url)
-    _wms = WebMapService(wms_url, xml=body)
+#def get_wms():
+#    global _wms
+#    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
+#    netloc = urlparse(wms_url).netloc
+#    http = httplib2.Http()
+#    http.add_credentials(_user, _password)
+#    http.authorizations.append(
+#        httplib2.BasicAuthentication(
+#            (_user, _password),
+#                netloc,
+#                wms_url,
+#                {},
+#                None,
+#                None,
+#                http
+#            )
+#        )
+#    response, body = http.request(wms_url)
+#    _wms = WebMapService(wms_url, xml=body)
 
 def get_csw():
     global _csw
@@ -843,6 +843,7 @@ class Layer(models.Model, PermissionLevelMixin):
     bbox  = models.TextField(_('bbox'), blank=True, null=True)
     llbbox = models.TextField(_('llbbox'), blank=True, null=True)
 
+
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
     The date/time the object was created.
@@ -970,17 +971,17 @@ class Layer(models.Model, PermissionLevelMixin):
     def verify(self):
         """Makes sure the state of the layer is consistent in GeoServer and GeoNetwork.
         """
-        http = httplib2.Http() # Do we need to add authentication?
+        #http = httplib2.Http() # Do we need to add authentication?
 
         # Check the layer is in the wms get capabilities record
         # FIXME: Implement caching of capabilities record site wide
-        if (_wms is None) or (self.typename not in _wms.contents):
-            get_wms()
-        try:
-            wms_layer = _wms[self.typename]
-        except:
-            msg = "WMS Record missing for layer [%s]" % self.typename
-            raise GeoNodeException(msg)
+        #if (_wms is None) or (self.typename not in _wms.contents):
+        #    get_wms()
+        #try:
+        #    wms_layer = _wms[self.typename]
+        #except:
+        #    msg = "WMS Record missing for layer [%s]" % self.typename
+        #    raise GeoNodeException(msg)
 
         # Check the layer is in GeoServer's REST API
         # It would be nice if we could ask for the definition of a layer by name
@@ -1019,35 +1020,48 @@ class Layer(models.Model, PermissionLevelMixin):
         #FIXME: Add more checks, for example making sure the title, keywords and description
         # are the same in every database.
 
+    def searchFields(self):
+        searchable_fields = []
+        scount = 0
+        for la in self.attribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$').order_by('display_order'):
+            searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
+            if la.searchable:
+                scount+=1
+        return searchable_fields
+
     def maps(self):
         """Return a list of all the maps that use this layer"""
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
         return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename).select_related()])
 
-    def metadata(self):
-        global _wms
-        if (_wms is None) or (self.typename not in _wms.contents):
-            get_wms()
-            """
-            wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
-            netloc = urlparse(wms_url).netloc
-            http = httplib2.Http()
-            http.add_credentials(_user, _password)
-            http.authorizations.append(
-                httplib2.BasicAuthentication(
-                    (_user, _password),
-                    netloc,
-                    wms_url,
-                    {},
-                    None,
-                    None,
-                    http
-                )
-            )
-            response, body = http.request(wms_url)
-            _wms = WebMapService(wms_url, xml=body)
-            """
-        return _wms[self.typename]
+#    def metadata(self):
+#        logger.info('METADATA called here--------<<<<<<<<<<<<<<<<<<<<<')
+#        global _wms
+#        if (_wms is None) or (self.typename not in _wms.contents):
+#            get_wms()
+#            """
+#            wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
+#            netloc = urlparse(wms_url).netloc
+#            http = httplib2.Http()
+#            http.add_credentials(_user, _password)
+#            http.authorizations.append(
+#                httplib2.BasicAuthentication(
+#                    (_user, _password),
+#                    netloc,
+#                    wms_url,
+#                    {},
+#                    None,
+#                    None,
+#                    http
+#                )
+#            )
+#            response, body = http.request(wms_url)
+#            _wms = WebMapService(wms_url, xml=body)
+#            """
+#        return _wms[self.typename]
+
+    def __setattr__(self, name, value):
+        return super(Layer, self).__setattr__(name, value)
 
     def metadata_csw(self):
         global _csw
@@ -1368,7 +1382,8 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['srs'] = self.srs
         cfg['bbox'] = simplejson.loads(self.bbox)
         cfg['llbbox'] = simplejson.loads(self.llbbox)
-        cfg['queryable'] = (self.storeType == 'dataStore'),
+        cfg['queryable'] = (self.storeType == 'dataStore')
+        cfg['searchfields'] = self.searchFields()
         cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=self)
         cfg['visibility'] = True
         cfg['abstract'] = self.abstract
@@ -1945,11 +1960,13 @@ class MapLayer(models.Model):
             if gnLayer[0].srs: cfg['srs'] = gnLayer[0].srs
             if gnLayer[0].bbox: cfg['bbox'] = simplejson.loads(gnLayer[0].bbox)
             if gnLayer[0].llbbox: cfg['llbbox'] = simplejson.loads(gnLayer[0].llbbox)
+            cfg['searchfields'] = (gnLayer[0].searchFields())
             cfg['queryable'] = (gnLayer[0].storeType == 'dataStore'),
             cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=gnLayer[0])
             cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
             cfg['abstract'] = gnLayer[0].abstract
             cfg['styles'] = self.styles
+
 #            if gnLayer[0].storeType == 'dataStore':
 #                if self.styles:
 #                    cfg['styles'].push(gnLayer[0].styles)
