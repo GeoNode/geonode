@@ -91,7 +91,7 @@ var initMetadataForm = function(weave, options) {
 				// hide window
 				metadataWin.hide();
 				// set POST url to default
-				visUrl = "/visualizations/"
+				visUrl = "/visualizations/new"
 				// save form data
 				saveVisualization();
 			}
@@ -129,7 +129,7 @@ var initMetadataForm = function(weave, options) {
 			success: function(xhr, params) {
 				// url for newly created visualization
 				// no responseText (visid) returned if existing visualization is saved
-				if (xhr.responseText) visUrl = visUrl + Ext.decode(xhr.responseText).visid + "/";
+				if (xhr.responseText) visUrl = "/visualizations/" + Ext.decode(xhr.responseText).visid + "/";
 				// change title
 				var vistitle = Ext.DomHelper.overwrite(
 					"visualization-title-header",

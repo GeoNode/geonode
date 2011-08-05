@@ -18,7 +18,7 @@ from geonode.weave.models import Visualization
 
 @csrf_exempt
 @transaction.commit_manually
-def index(request):
+def new(request):
 	"""
 	The view returns the default visualization.
 	A POST request saves a new visualization.
