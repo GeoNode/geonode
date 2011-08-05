@@ -305,8 +305,8 @@ def package_geoserver(options):
 
     zip = zipfile.ZipFile(geoserver_target, "a")
     zip.printdir()
-    zip.write('src/externals/geoserver-restconfig-2-1.jar', 'WEB-INF/lib/geoserver-restconfig.jar')
-    zip.printdir()
+    #zip.write('src/externals/geoserver-restconfig-2-1.jar', 'WEB-INF/lib/geoserver-restconfig.jar')
+    #zip.printdir()
     zip.close()
 
     geoserver_target.copy(options.deploy.out_dir)

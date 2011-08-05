@@ -4,7 +4,7 @@ from urllib import urlencode
 import logging
 import os
 
-#logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'w')
+logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'a')
 
 _ = lambda x: x
 

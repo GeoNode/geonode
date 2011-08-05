@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User, AnonymousUser
@@ -14,19 +15,16 @@ import json
 import os
 import base64
 
-import json, os
-import geonode.maps.models
-
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
+
 Layer.objects.geonetwork = Mock()
 Layer.objects.gs_catalog = Mock()
+
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
 geonode.maps.models.get_csw = Mock()
 geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.url = "http://example.com/"
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.onlineresource.description= "bogus data"
 
 _csw_resource = Mock()
 _csw_resource.protocol = "WWW:LINK-1.0-http--link"
@@ -35,6 +33,8 @@ _csw_resource.description = "example link"
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
 
 class MapTest(TestCase):
+    """Tests geonode.maps app/module
+    """
 
     fixtures = ['test_data.json', 'map_data.json']
     GEOSERVER = False
@@ -48,7 +48,7 @@ class MapTest(TestCase):
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
 use the Save Map button above to contribute your map to the GeoNode \
-community."
+community." 
 
     default_title = "GeoNode Default Map"
 
@@ -365,9 +365,9 @@ community."
         response = c.get("/maps/%s/data" % map.id)
         self.assertEquals(response.status_code, 200)
         cfg = json.loads(response.content)
-        self.assertEquals(cfg["about"]["abstract"], self.default_abstract)
-        self.assertEquals(cfg["about"]["title"], self.default_title)
-        self.assertEquals(len(cfg["map"]["layers"]), 5)
+        self.assertEquals(cfg["about"]["abstract"], self.default_abstract) 
+        self.assertEquals(cfg["about"]["title"], self.default_title) 
+        self.assertEquals(len(cfg["map"]["layers"]), 5) 
 
     def test_map_to_json(self):
         """ Make some assertions about the data structure produced for serialization
@@ -383,10 +383,10 @@ community."
 
     def test_map_details(self):
         """/maps/1 -> Test accessing the detail view of a map"""
-        map = Map.objects.get(id=1)
-        c = Client()
+        map = Map.objects.get(id=1) 
+        c = Client() 
         response = c.get("/maps/%s" % map.id)
-        self.assertEquals(response.status_code,200)
+        self.assertEquals(response.status_code,200) 
 
     def test_delete_map(self):
         pass
@@ -400,8 +400,8 @@ community."
     def test_embed_map(self):
         pass
 
-    # Batch Tests
-
+    # Batch Tests    
+    
     def test_map_download(self):
         pass
 
@@ -428,37 +428,37 @@ community."
     # - LEVEL_WRITE = layer_readwrite
     # - LEVEL_ADMIN = layer_admin
 
-    # Map
+    # Map 
     # - LEVEL_READ = map_read
     # - LEVEL_WRITE = map_readwrite
     # - LEVEL_ADMIN = map_admin
+    
 
-
-    # FIXME: Add a comprehensive set of permissions specifications that allow us
+    # FIXME: Add a comprehensive set of permissions specifications that allow us 
     # to test as many conditions as is possible/necessary
-
-    # If anonymous and/or authenticated are not specified,
+    
+    # If anonymous and/or authenticated are not specified, 
     # should set_layer_permissions remove any existing perms granted??
-
+    
     perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
-
+    
     def test_set_layer_permissions(self):
         """Verify that the set_layer_permissions view is behaving as expected
         """
-
+        
         # Get a layer to work with
         layer = Layer.objects.all()[0]
 
         # Save the Layers current permissions
-        current_perms = layer.get_all_level_info()
-
-        # FIXME Test a comprehensive set of permisssions specifications
+        current_perms = layer.get_all_level_info() 
+       
+        # FIXME Test a comprehensive set of permisssions specifications 
 
         # Set the Permissions
         geonode.maps.views.set_layer_permissions(layer, self.perm_spec)
 
-        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly
-        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE)
+        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
+        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
         self.assertEqual(layer.get_gen_level(geonode.core.models.AUTHENTICATED_USERS), layer.LEVEL_NONE)
 
         # Test that previous permissions for users other than ones specified in
@@ -466,7 +466,7 @@ community."
         users = [n for (n, p) in self.perm_spec['users']]
         levels = layer.get_user_levels().exclude(user__username__in = users + [layer.owner])
         self.assertEqual(len(levels), 0)
-
+       
         # Test that the User permissions specified in the perm_spec were applied properly
         for username, level in self.perm_spec['users']:
             user = geonode.maps.models.User.objects.get(username=username)
@@ -478,57 +478,57 @@ community."
 
         # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
 
-        pass
+        pass        
 
     def test_ajax_layer_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
         """
-
-        # Setup some layer names to work with
+        
+        # Setup some layer names to work with 
         valid_layer_typename = Layer.objects.all()[0].typename
         invalid_layer_typename = "n0ch@nc3"
 
         c = Client()
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post("/data/%s/ajax-permissions" % invalid_layer_typename,
+        response = c.post("/data/%s/ajax-permissions" % invalid_layer_typename, 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
-        self.assertEquals(response.status_code, 404)
+        self.assertEquals(response.status_code, 404) 
 
         # Test that POST is required
         response = c.get("/data/%s/ajax-permissions" % valid_layer_typename)
         self.assertEquals(response.status_code, 405)
-
+        
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
-        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.status_code, 401) 
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
-        self.assertEquals(logged_in, True)
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
+        self.assertEquals(logged_in, True) 
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
-        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.status_code, 401) 
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 
-        # Test that the method returns 200
-        self.assertEquals(response.status_code, 200)
+        # Test that the method returns 200         
+        self.assertEquals(response.status_code, 200) 
 
         # Test that the permissions specification is applied
 
-        # Should we do this here, or assume the tests in
+        # Should we do this here, or assume the tests in 
         # test_set_layer_permissions will handle for that?
 
     def test_layer_acls(self):
@@ -542,25 +542,25 @@ community."
         valid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
         }
-
+        
         invalid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
         }
-
-        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json
+       
+        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json 
         expected_result = {'rw': [],'ro': [],'name': settings.GEOSERVER_CREDENTIALS[0],'is_superuser':  True,'is_anonymous': False}
         c = Client()
         response = c.get('/data/acls', **valid_auth_headers)
         response_json = json.loads(response.content)
-        self.assertEquals(expected_result, response_json)
+        self.assertEquals(expected_result, response_json) 
 
         # Test that requesting when supplying invalid credentials returns the appropriate error code
         response = c.get('/data/acls', **invalid_auth_headers)
-        self.assertEquals(response.status_code, 401)
-
-        # Test logging in using Djangos normal auth system
+        self.assertEquals(response.status_code, 401)  
+       
+        # Test logging in using Djangos normal auth system 
         logged_in = c.login(username='admin', password='admin')
-
+       
         # Basic check that the returned content is at least valid json
         response = c.get("/data/acls")
         response_json = json.loads(response.content)
@@ -571,26 +571,26 @@ community."
         # It seems that since view_layer_permissions and view_map_permissions
         # are no longer used, that this view is also no longer used since those
         # are the only 2 places it is ever called (jj0hns0n 2011-04-13)
-
+ 
         pass
 
     def test_perms_info(self):
         """ Verify that the perms_info view is behaving as expected
         """
-
+        
         # Test with a Layer object
         layer = Layer.objects.all()[0]
         layer_info = layer.get_all_level_info()
         info = geonode.maps.views._perms_info(layer, geonode.maps.views.LAYER_LEV_NAMES)
-
+        
         # Test that ANONYMOUS_USERS and AUTHENTICATED_USERS are set properly
         self.assertEqual(info[geonode.maps.models.ANONYMOUS_USERS], layer.LEVEL_READ)
         self.assertEqual(info[geonode.maps.models.AUTHENTICATED_USERS], layer.LEVEL_READ)
-
+        
         self.assertEqual(info['users'], sorted(layer_info['users'].items()))
 
         # TODO Much more to do here once jj0hns0n understands the ACL system better
-
+ 
         # Test with a Map object
         # TODO
 
@@ -691,6 +691,7 @@ community."
         pass
 
     # Search Tests
+    
     def test_search(self):
         '''/data/search/ -> Test accessing the data search page'''
         c = Client()
@@ -732,14 +733,13 @@ community."
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")
         self.assertEqual(keywords[2], "delta")
-
+    
     def test_search_api(self):
         '''/data/search/api -> Test accessing the data search api JSON'''
         if self.GEOSERVER:
             c = Client()
             response = c.get('/data/search/api')
             self.failUnlessEqual(response.status_code, 200)
-
 
     def test_search_detail(self):
         '''
@@ -981,7 +981,7 @@ class FormTest(TestCase):
         form = LayerUploadForm(dict(), files)
         self.assertTrue(form.is_valid())
 
-        tempdir, base_file = form.write_files()
+        tempdir, base_file, sld_file = form.write_files()
         self.assertEquals(set(os.listdir(tempdir)),
             set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
 
