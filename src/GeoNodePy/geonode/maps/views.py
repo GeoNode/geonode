@@ -190,8 +190,7 @@ def mapJSON(request, mapid):
                 status=400
             )
 
-@csrf_exempt            
-def newmap(request):
+def newmap_config(request):
     '''
     View that creates a new map.  
     
@@ -282,11 +281,27 @@ def newmap(request):
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
-    return render_to_response('maps/view.html', RequestContext(request, {
-        'config': json.dumps(config), 
-        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
-    }))
+    return json.dumps(config)
+
+@csrf_exempt            
+def newmap(request):
+    config = newmap_config(request);
+    if isinstance(config, HttpResponse):
+        return config;
+    else:
+        return render_to_response('maps/view.html', RequestContext(request, {
+            'config': config, 
+            'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+            'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
+        }))
+
+@csrf_exempt
+def newmapJSON(request):
+    config = newmap_config(request);
+    if isinstance(config, HttpResponse):
+        return config
+    else:
+        return HttpResponse(config)
 
 h = httplib2.Http()
 h.add_credentials(_user, _password)

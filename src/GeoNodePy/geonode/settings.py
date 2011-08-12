@@ -277,6 +277,7 @@ INSTALLED_APPS = (
     'geonode.mbdc',
     'geonode.weave',
     'geonode.datastories',
+    'geonode'
 )
 
 def get_user_url(u):
