@@ -34,7 +34,7 @@
         <li class="home"><a href="{% url geonode.views.index %}">{% trans "Home" %}</a></li> 
         <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a></li>
         <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a></li>
-        <li class=""><a class="" id="visualizationsLink" href="{% url weave-new %}">{% trans "Visualizations" %}</a></li>
+        <li class=""><a class="" id="visualizationsLink" href="{% url weave-index %}">{% trans "Visualizations" %}</a></li>
     {% if user.is_authenticated %}
         <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">{% trans "Profile" %}</a></li>
     {% if user.is_staff %}
