@@ -1,0 +1,68 @@
+{% extends "mbdc/page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Browse Visualizations" %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+Ext.onReady(function(){
+
+{% autoescape off %}
+  var submitForm = function() {
+      Ext.query('#search_form form')[0].submit();
+  };
+  var searchButton = new Ext.Button({renderTo: 'submit_search', text: '{% trans "Search" %}',
+                                     handler: submitForm});
+  var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
+{% endautoescape %}
+
+});
+</script> 
+{% endblock %}
+
+{% block main %}
+<div class="twocol">
+
+  <div id="search_form" class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for visualizations" %}</span></h2>
+
+    <form action="{% url weave-search %}" method="POST">
+      {% csrf_token %}
+      <table>
+        <tr>
+          <td>
+            <input type="text" id="search_query" name="q" />
+          </td>
+          <td>
+            <div id="submit_search"></div>
+          </td>
+        </tr>
+      </table>
+      <p>
+        <a href="{% url weave-search %}">{% trans "All Visualizations" %}</a> |
+        <a href="{% url weave-search %}?sort=last_modified&dir=DESC">{% trans "New Visualization" %}</a>
+      </p>
+    </form>
+  </div>
+  
+  <div id="create" class="block">
+    <h2>{% trans "Create Visualizations" %}</h2>
+    <p>{% trans "Use Weave to create your own Visualization.  Add data from this GeoNode and visualize them graphs, maps and tables." %}
+    </p>
+    <p>
+      <a href="{%url weave-new %}">{% trans "Create your own visualization" %}</a>
+    </p>
+  </div>
+
+  <!-- "Your Maps" button goes here -->
+  <!-- create map button goes here -->
+
+</div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+

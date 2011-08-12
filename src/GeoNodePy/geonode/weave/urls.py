@@ -5,7 +5,7 @@ from django.conf import settings
 
 urlpatterns = patterns('',
 	# url(r'^$', views.index, name='weave-index'),
-	(r'^$', 'maps'),
+	url(r'^$', views.index, name='weave-index'),
 	url(r'^new$', views.new, name='weave-new'),
 	url(r'sessionstate$', views.sessionstate, name='weave-sessionstate'),
 	url(r'^(?P<visid>\d+)/$', views.edit, name='weave-edit'),
@@ -13,6 +13,7 @@ urlpatterns = patterns('',
 	url(r'^(?P<visid>\d+)/embed$', views.embed, name='weave-embed'),
 	url(r'^(?P<visid>\d+)/sessionstate$', views.sessionstate, name='weave-sessionstate'),
 	url(r'^(?P<visid>\d+)/ajax-permissions$', views.ajax_visualization_permissions, name='ajax_visualization_permissions'),
+	url(r'^search/?$', views.search, name='weave-search'),
 	# url(r'^weaveStyle.css', direct_to_template, {'template': 'weaveStyle.css','mimetype': 'text/css'}),
 )
 
