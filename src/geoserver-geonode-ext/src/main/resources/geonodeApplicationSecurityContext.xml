@@ -44,7 +44,7 @@
         
         /gwc/rest/web/**=gnAnonymousProcessingFilter,filterInvocationInterceptor
         
-        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,gnBasicProcessingFilter,gnAnonymousProcessingFilter,gnRestFilterInvocationInterceptor
+        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,gnBasicProcessingFilter,gnRestFilterInvocationInterceptor
         /**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,gnAnonymousProcessingFilter,filterInvocationInterceptor
         
         LEGACY NEW:
