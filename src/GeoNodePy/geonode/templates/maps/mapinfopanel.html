@@ -15,7 +15,7 @@
 <div style="padding:10px;">
   <h3>{% trans "Map Permissions" %}</h3>
     <p>{% trans "Select what kind of privileges to allow." %}</p>
-    <div id="permissions_form"></div>
+    <div id="map_permissions_form"></div>
 </div>
   {% endif %}
 
@@ -35,14 +35,14 @@
 {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
 {% autoescape off %}
 {% if can_change_permissions %}
-    new GeoNode.WorldMapPermissionsEditor({
+    var mpe = new GeoNode.WorldMapPermissionsEditor({
         levels: {
             'admin': 'map_admin',
             'readwrite': 'map_readwrite',
             'readonly': 'map_readonly',
             'none': '_none'
         },
-        renderTo: "permissions_form",
+        renderTo: "map_permissions_form",
         submitTo: "{% url geonode.maps.views.ajax_map_permissions_by_email map.id %}",
         userLookup: "{% url geonode.views.ajax_lookup_email %}",
         customGroup: "{{ customGroup }}",
@@ -54,6 +54,7 @@
             }
         }
     });
+mpe.fireEvent("updated", mpe);
 {% endif %}
 
 

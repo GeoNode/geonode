@@ -12,6 +12,7 @@
     {% else %}
     	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css" /> 
     {% endif %}
+
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script type="text/javascript" src="{% url lang %}"></script>
     {% autoescape off %}
