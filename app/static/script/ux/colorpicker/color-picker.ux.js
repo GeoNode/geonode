@@ -134,14 +134,14 @@ Ext.extend(Ext.ux.ColorPicker, Ext.util.Observable, {
         this.huePointer.setXY( [ this.huePicker.getLeft()+(this.huePointer.getWidth() / 2)+1, this.huePicker.getTop()-this.config.pickerHotPoint.y ] );
         this.formContainer = Ext.DomHelper.append( Ext.DomHelper.append( this.domElement, {
             tag: 'div',
-            cls: 'x-cp-control-container x-unselectable'
+            cls: 'x-cp-control-container'
         }, true ), {
             tag: 'div',
-            cls: 'x-cp-rgb-container x-unselectable',
+            cls: 'x-cp-rgb-container',
             style: 'clear:both'
         }, true );
         this.colorContainer = Ext.DomHelper.append( this.formContainer, {
-            cls: 'x-cp-coloro-container x-unselectable'
+            cls: 'x-cp-coloro-container'
         }, true ).update( this.config.captions.color || 'Color' );
         this.form = new Ext.FormPanel({
             frame:true,
