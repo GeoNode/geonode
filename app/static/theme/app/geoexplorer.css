@@ -359,3 +359,14 @@ div.overlay-scaleline {
 #more-info{ 
 float:right;
 }
+
+/* gxp overrides for different folder structure */
+.olControlZoomPanel div {
+    background-image:url(../../../externals/ext/resources/images/gray/panel/tool-sprites.gif);
+}
+.x-tree-node img.gxp-folder, .x-tree-node-collapsed img.gxp-folder{
+    background: url(../../../externals/ext/resources/images/default/tree/folder.gif);
+}
+.x-tree-node-expanded img.gxp-folder {
+    background: url(../../../externals/ext/resources/images/default/tree/folder-open.gif);
+}

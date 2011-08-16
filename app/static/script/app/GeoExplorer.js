@@ -753,7 +753,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 ],
                                 eventListeners: {
                                     "preaddlayer": function(evt) {
-                                        if(evt.layer instanceof OpenLayers.Layer.Google) {
+                                        if(evt.layer instanceof OpenLayers.Layer.GoogleNG) {
                                             unsupportedLayers.push(evt.layer.name);
                                             return false;
                                         }
