@@ -1,5 +1,7 @@
 {% load i18n %}
 
+GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+
 if (window.GeoExplorer) {
     Ext.apply(GeoExplorer.prototype, {
         addLayersButtonText: gettext("Add Layers"),
