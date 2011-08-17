@@ -1,6 +1,8 @@
 {% load i18n %}
 
-GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+if (window.GeoExt && GeoExt.Lang) {
+    GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+}
 
 if (window.GeoExplorer) {
     Ext.apply(GeoExplorer.prototype, {
