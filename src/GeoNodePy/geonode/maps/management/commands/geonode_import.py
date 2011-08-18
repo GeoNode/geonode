@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
+from geonode.maps.utils import upload
 
 class Command(BaseCommand):
     help = ("Brings a data file or a directory full of data files into a"
