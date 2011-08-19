@@ -721,7 +721,8 @@ class Layer(models.Model, PermissionLevelMixin):
                     'service': 'WFS',
                     'request': 'GetFeature',
                     'typename': self.typename,
-                    'outputFormat': mime
+                    'outputFormat': mime,
+                    'format_options': 'charset:UTF-8'
                 })
             types = [
                 ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
