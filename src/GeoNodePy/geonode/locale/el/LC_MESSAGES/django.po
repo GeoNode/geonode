@@ -1,0 +1,2047 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-08-19 16:00+0300\n"
+"PO-Revision-Date: 2011-08-19 17:47+0200\n"
+"Last-Translator: \n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: core/models.py:24
+#: maps/models.py:657
+msgid "title"
+msgstr "τίτλος"
+
+#: core/models.py:25
+#: maps/models.py:1595
+msgid "permissions"
+msgstr "δικαιώματα"
+
+#: core/models.py:26
+msgid "codename"
+msgstr "κωδική ονομασία"
+
+#: core/models.py:28
+msgid "Determines the order that roles are presented in the user interface."
+msgstr "Καθορίζει τη σειρά που οι ρόλοι παρουσιάζονται στο περιβάλλον εργασίας χρήστη."
+
+#: core/models.py:67
+#: maps/views.py:1016
+#: templates/maps/layer_permissions.html:18
+msgid "Anonymous Users"
+msgstr "Ανώνυμοι Χρήστες"
+
+#: core/models.py:68
+#: maps/views.py:1020
+#: templates/maps/layer_permissions.html:19
+msgid "Registered Users"
+msgstr "Εγγεγραμμένοι Χρήστες"
+
+#: maps/models.py:52
+msgid "Afghanistan"
+msgstr "Αφγανιστάν"
+
+#: maps/models.py:53
+msgid "Aland Islands"
+msgstr "Νήσοι Άλαντ"
+
+#: maps/models.py:54
+msgid "Albania"
+msgstr "Αλβανία"
+
+#: maps/models.py:55
+msgid "Algeria"
+msgstr "Αλγερία"
+
+#: maps/models.py:56
+msgid "American Samoa"
+msgstr "Αμερικανική Σαμόα"
+
+#: maps/models.py:57
+msgid "Andorra"
+msgstr "Ανδόρα"
+
+#: maps/models.py:58
+msgid "Angola"
+msgstr "Ανγκόλα"
+
+#: maps/models.py:59
+msgid "Anguilla"
+msgstr "Ανγκουίλα"
+
+#: maps/models.py:60
+msgid "Antigua and Barbuda"
+msgstr "Αντίγκουα και Μπαρμπούντα"
+
+#: maps/models.py:61
+msgid "Argentina"
+msgstr "Αργεντινή"
+
+#: maps/models.py:62
+msgid "Armenia"
+msgstr "Αρμενία"
+
+#: maps/models.py:63
+msgid "Aruba"
+msgstr "Αρούμπα"
+
+#: maps/models.py:64
+msgid "Australia"
+msgstr "Αυστραλία"
+
+#: maps/models.py:65
+msgid "Austria"
+msgstr "Αυστρία"
+
+#: maps/models.py:66
+msgid "Azerbaijan"
+msgstr "Αζερμπαϊτζάν"
+
+#: maps/models.py:67
+msgid "Bahamas"
+msgstr "Μπαχάμες"
+
+#: maps/models.py:68
+msgid "Bahrain"
+msgstr "Μπαχρέιν"
+
+#: maps/models.py:69
+msgid "Bangladesh"
+msgstr "Μπανγκλαντές"
+
+#: maps/models.py:70
+msgid "Barbados"
+msgstr "Μπαρμπάντος"
+
+#: maps/models.py:71
+msgid "Belarus"
+msgstr "Λευκορωσία"
+
+#: maps/models.py:72
+msgid "Belgium"
+msgstr "Βέλγιο"
+
+#: maps/models.py:73
+msgid "Belize"
+msgstr "Μπελίζ"
+
+#: maps/models.py:74
+msgid "Benin"
+msgstr "Μπενίν"
+
+#: maps/models.py:75
+msgid "Bermuda"
+msgstr "Βερμούδα"
+
+#: maps/models.py:76
+msgid "Bhutan"
+msgstr "Μπουτάν"
+
+#: maps/models.py:77
+msgid "Bolivia"
+msgstr "Βολιβία"
+
+#: maps/models.py:78
+msgid "Bosnia and Herzegovina"
+msgstr "Βοσνία-Ερζεγοβίνη"
+
+#: maps/models.py:79
+msgid "Botswana"
+msgstr "Μποτσουάνα"
+
+#: maps/models.py:80
+msgid "Brazil"
+msgstr "Βραζιλία"
+
+#: maps/models.py:81
+msgid "British Virgin Islands"
+msgstr "Βρετανικές Παρθένοι Νήσοι"
+
+#: maps/models.py:82
+msgid "Brunei Darussalam"
+msgstr "Μπρουνέι Νταρουσαλάμ"
+
+#: maps/models.py:83
+msgid "Bulgaria"
+msgstr "Βουλγαρία"
+
+#: maps/models.py:84
+msgid "Burkina Faso"
+msgstr "Μπουρκίνα Φάσο"
+
+#: maps/models.py:85
+msgid "Burundi"
+msgstr "Μπουρούντι"
+
+#: maps/models.py:86
+msgid "Cambodia"
+msgstr "Καμπότζη"
+
+#: maps/models.py:87
+msgid "Cameroon"
+msgstr "Καμερούν"
+
+#: maps/models.py:88
+msgid "Canada"
+msgstr "Καναδάς"
+
+#: maps/models.py:89
+msgid "Cape Verde"
+msgstr "Πράσινο Ακρωτήριο"
+
+#: maps/models.py:90
+msgid "Cayman Islands"
+msgstr "Νησιά Καϊμάν"
+
+#: maps/models.py:91
+msgid "Central African Republic"
+msgstr "Κεντροαφρικανική Δημοκρατία"
+
+#: maps/models.py:92
+msgid "Chad"
+msgstr "Τσαντ"
+
+#: maps/models.py:93
+msgid "Channel Islands"
+msgstr "Νησιά της Μάγχης"
+
+#: maps/models.py:94
+msgid "Chile"
+msgstr "Χιλή"
+
+#: maps/models.py:95
+msgid "China"
+msgstr "Κίνα"
+
+#: maps/models.py:96
+msgid "China - Hong Kong"
+msgstr "Κίνα - Χονγκ Κονγκ"
+
+#: maps/models.py:97
+msgid "China - Macao"
+msgstr "Κίνα - Μακάο"
+
+#: maps/models.py:98
+msgid "Colombia"
+msgstr "Κολομβία"
+
+#: maps/models.py:99
+msgid "Comoros"
+msgstr "Κομόρες"
+
+#: maps/models.py:100
+msgid "Congo"
+msgstr "Κογκό"
+
+#: maps/models.py:101
+msgid "Cook Islands"
+msgstr "Νήσοι Κουκ"
+
+#: maps/models.py:102
+msgid "Costa Rica"
+msgstr "Κόστα Ρίκα"
+
+#: maps/models.py:103
+msgid "Cote d'Ivoire"
+msgstr "Ακτή Ελεφαντοστού"
+
+#: maps/models.py:104
+msgid "Croatia"
+msgstr "Κροατία"
+
+#: maps/models.py:105
+msgid "Cuba"
+msgstr "Κούβα"
+
+#: maps/models.py:106
+msgid "Cyprus"
+msgstr "Κύπρος"
+
+#: maps/models.py:107
+msgid "Czech Republic"
+msgstr "Δημοκρατία της Τσεχίας"
+
+#: maps/models.py:108
+msgid "Democratic People's Republic of Korea"
+msgstr "Λαϊκή Δημοκρατία της Κορέας"
+
+#: maps/models.py:109
+msgid "Democratic Republic of the Congo"
+msgstr "Λαϊκή Δημοκρατία του Κονγκό"
+
+#: maps/models.py:110
+msgid "Denmark"
+msgstr "Δανία"
+
+#: maps/models.py:111
+msgid "Djibouti"
+msgstr "Τζιμπουτί"
+
+#: maps/models.py:112
+msgid "Dominica"
+msgstr "Ντομίνικα"
+
+#: maps/models.py:113
+msgid "Dominican Republic"
+msgstr "Δομινικανή Δημοκρατία"
+
+#: maps/models.py:114
+msgid "Ecuador"
+msgstr "Εκουαδόρ"
+
+#: maps/models.py:115
+msgid "Egypt"
+msgstr "Αίγυπτος"
+
+#: maps/models.py:116
+msgid "El Salvador"
+msgstr "Ελ Σαλβαδόρ"
+
+#: maps/models.py:117
+msgid "Equatorial Guinea"
+msgstr "Ισημερινή Γουινέα"
+
+#: maps/models.py:118
+msgid "Eritrea"
+msgstr "Ερυθραία"
+
+#: maps/models.py:119
+msgid "Estonia"
+msgstr "Εσθονία"
+
+#: maps/models.py:120
+msgid "Ethiopia"
+msgstr "Αιθιοπία"
+
+#: maps/models.py:121
+msgid "Faeroe Islands"
+msgstr "Νήσοι Φερόες"
+
+#: maps/models.py:122
+msgid "Falkland Islands (Malvinas)"
+msgstr "Νησιά Φώκλαντ (Μαλβίνες)"
+
+#: maps/models.py:123
+msgid "Fiji"
+msgstr "Φίτζι"
+
+#: maps/models.py:124
+msgid "Finland"
+msgstr "Φινλανδία"
+
+#: maps/models.py:125
+msgid "France"
+msgstr "Γαλλία"
+
+#: maps/models.py:126
+msgid "French Guiana"
+msgstr "Γαλλική Γουιάνα"
+
+#: maps/models.py:127
+msgid "French Polynesia"
+msgstr "Γαλλική Πολυνησία"
+
+#: maps/models.py:128
+msgid "Gabon"
+msgstr "Γκαμπόν"
+
+#: maps/models.py:129
+msgid "Gambia"
+msgstr "Γκάμπια"
+
+#: maps/models.py:130
+msgid "Georgia"
+msgstr "Γεωργία"
+
+#: maps/models.py:131
+msgid "Germany"
+msgstr "Γερμανία"
+
+#: maps/models.py:132
+msgid "Ghana"
+msgstr "Γκάνα"
+
+#: maps/models.py:133
+msgid "Gibraltar"
+msgstr "Γιβραλτάρ"
+
+#: maps/models.py:134
+msgid "Greece"
+msgstr "Ελλάδα"
+
+#: maps/models.py:135
+msgid "Greenland"
+msgstr "Γροιλανδία"
+
+#: maps/models.py:136
+msgid "Grenada"
+msgstr "Γρενάδα"
+
+#: maps/models.py:137
+msgid "Guadeloupe"
+msgstr "Γουαδελούπη"
+
+#: maps/models.py:138
+msgid "Guam"
+msgstr "Γκουάμ"
+
+#: maps/models.py:139
+msgid "Guatemala"
+msgstr "Γουατεμάλα"
+
+#: maps/models.py:140
+msgid "Guernsey"
+msgstr "Γκέρνσεϊ"
+
+#: maps/models.py:141
+msgid "Guinea"
+msgstr "Γουινέα"
+
+#: maps/models.py:142
+msgid "Guinea-Bissau"
+msgstr "Γουινέα-Μπισάου"
+
+#: maps/models.py:143
+msgid "Guyana"
+msgstr "Γουιάνα"
+
+#: maps/models.py:144
+msgid "Haiti"
+msgstr "Αϊτή"
+
+#: maps/models.py:145
+msgid "Holy See (Vatican City)"
+msgstr "Αγία Έδρα (Πόλη του Βατικανού)"
+
+#: maps/models.py:146
+msgid "Honduras"
+msgstr "Ονδούρα"
+
+#: maps/models.py:147
+msgid "Hungary"
+msgstr "Ουγγαρία"
+
+#: maps/models.py:148
+msgid "Iceland"
+msgstr "Ισλανδία"
+
+#: maps/models.py:149
+msgid "India"
+msgstr "Ινδία"
+
+#: maps/models.py:150
+msgid "Indonesia"
+msgstr "Ινδονησία"
+
+#: maps/models.py:151
+msgid "Iran"
+msgstr "Ιράν"
+
+#: maps/models.py:152
+msgid "Iraq"
+msgstr "Ιράκ"
+
+#: maps/models.py:153
+msgid "Ireland"
+msgstr "Ιρλανδία"
+
+#: maps/models.py:154
+msgid "Isle of Man"
+msgstr "Νήσος του Μαν"
+
+#: maps/models.py:155
+msgid "Israel"
+msgstr "Ισραήλ"
+
+#: maps/models.py:156
+msgid "Italy"
+msgstr "Ιταλία"
+
+#: maps/models.py:157
+msgid "Jamaica"
+msgstr "Ιαμαϊκή"
+
+#: maps/models.py:158
+msgid "Japan"
+msgstr "Ιαπωνία"
+
+#: maps/models.py:159
+msgid "Jersey"
+msgstr "Φανέλα"
+
+#: maps/models.py:160
+msgid "Jordan"
+msgstr "Ιορδανία"
+
+#: maps/models.py:161
+msgid "Kazakhstan"
+msgstr "Καζακστάν"
+
+#: maps/models.py:162
+msgid "Kenya"
+msgstr "Κένυα"
+
+#: maps/models.py:163
+msgid "Kiribati"
+msgstr "Κιριμπάτι"
+
+#: maps/models.py:164
+msgid "Kuwait"
+msgstr "Κουβέιτ"
+
+#: maps/models.py:165
+msgid "Kyrgyzstan"
+msgstr "Κιργιστάν"
+
+#: maps/models.py:166
+msgid "Lao People's Democratic Republic"
+msgstr "Δημοκρατική Λάος Δημοκρατία"
+
+#: maps/models.py:167
+msgid "Latvia"
+msgstr "Λετονία"
+
+#: maps/models.py:168
+msgid "Lebanon"
+msgstr "Λίβανος"
+
+#: maps/models.py:169
+msgid "Lesotho"
+msgstr "Λεσόθο"
+
+#: maps/models.py:170
+msgid "Liberia"
+msgstr "Λιβερία"
+
+#: maps/models.py:171
+msgid "Libyan Arab Jamahiriya"
+msgstr "Αραβική Δημοκρατία της Λιβύης"
+
+#: maps/models.py:172
+msgid "Liechtenstein"
+msgstr "Λιχτενστάιν"
+
+#: maps/models.py:173
+msgid "Lithuania"
+msgstr "Λιθουανία"
+
+#: maps/models.py:174
+msgid "Luxembourg"
+msgstr "Λουξεμβούργο"
+
+#: maps/models.py:175
+msgid "Macedonia"
+msgstr "Μακεδονίας"
+
+#: maps/models.py:176
+msgid "Madagascar"
+msgstr "Μαδαγασκάρη"
+
+#: maps/models.py:177
+msgid "Malawi"
+msgstr "Μαλάουι"
+
+#: maps/models.py:178
+msgid "Malaysia"
+msgstr "Μαλαισία"
+
+#: maps/models.py:179
+msgid "Maldives"
+msgstr "Μαλδίβες"
+
+#: maps/models.py:180
+msgid "Mali"
+msgstr "Μάλι"
+
+#: maps/models.py:181
+msgid "Malta"
+msgstr "Μάλτα"
+
+#: maps/models.py:182
+msgid "Marshall Islands"
+msgstr "Νησιά Μάρσαλ"
+
+#: maps/models.py:183
+msgid "Martinique"
+msgstr "Μαρτινίκα"
+
+#: maps/models.py:184
+msgid "Mauritania"
+msgstr "Μαυριτανία"
+
+#: maps/models.py:185
+msgid "Mauritius"
+msgstr "Μαυρίκιος"
+
+#: maps/models.py:186
+msgid "Mayotte"
+msgstr "Μαγιότ"
+
+#: maps/models.py:187
+msgid "Mexico"
+msgstr "Μεξικό"
+
+#: maps/models.py:188
+msgid "Micronesia, Federated States of"
+msgstr "Μικρονησία, Ομόσπονδες Πολιτείες της"
+
+#: maps/models.py:189
+msgid "Monaco"
+msgstr "Μονακό"
+
+#: maps/models.py:190
+msgid "Mongolia"
+msgstr "Μογγολία"
+
+#: maps/models.py:191
+msgid "Montenegro"
+msgstr "Μαυροβούνιο"
+
+#: maps/models.py:192
+msgid "Montserrat"
+msgstr "Μοντσεράτ"
+
+#: maps/models.py:193
+msgid "Morocco"
+msgstr "Μαρόκο"
+
+#: maps/models.py:194
+msgid "Mozambique"
+msgstr "Μοζαμβίκη"
+
+#: maps/models.py:195
+msgid "Myanmar"
+msgstr "Μιανμάρ"
+
+#: maps/models.py:196
+msgid "Namibia"
+msgstr "Ναμίμπια"
+
+#: maps/models.py:197
+msgid "Nauru"
+msgstr "Ναουρού"
+
+#: maps/models.py:198
+msgid "Nepal"
+msgstr "Νεπάλ"
+
+#: maps/models.py:199
+msgid "Netherlands"
+msgstr "Ολλανδία"
+
+#: maps/models.py:200
+msgid "Netherlands Antilles"
+msgstr "Ολλανδικές Αντίλλες"
+
+#: maps/models.py:201
+msgid "New Caledonia"
+msgstr "Νέα Καληδονία"
+
+#: maps/models.py:202
+msgid "New Zealand"
+msgstr "Νέα Ζηλανδία"
+
+#: maps/models.py:203
+msgid "Nicaragua"
+msgstr "Νικαράγουα"
+
+#: maps/models.py:204
+msgid "Niger"
+msgstr "Νίγηρας"
+
+#: maps/models.py:205
+msgid "Nigeria"
+msgstr "Νιγηρία"
+
+#: maps/models.py:206
+msgid "Niue"
+msgstr "Νιούε"
+
+#: maps/models.py:207
+msgid "Norfolk Island"
+msgstr "Νησί Νόρφολκ"
+
+#: maps/models.py:208
+msgid "Northern Mariana Islands"
+msgstr "Βόρειες Μαριάνες"
+
+#: maps/models.py:209
+msgid "Norway"
+msgstr "Νορβηγία"
+
+#: maps/models.py:210
+msgid "Occupied Palestinian Territory"
+msgstr "Κατεχόμενα Παλαιστινιακά Εδάφη"
+
+#: maps/models.py:211
+msgid "Oman"
+msgstr "Ομάν"
+
+#: maps/models.py:212
+msgid "Pakistan"
+msgstr "Πακιστάν"
+
+#: maps/models.py:213
+msgid "Palau"
+msgstr "Παλάου"
+
+#: maps/models.py:214
+msgid "Panama"
+msgstr "Παναμάς"
+
+#: maps/models.py:215
+msgid "Papua New Guinea"
+msgstr "Παπούα Νέα Γουινέα"
+
+#: maps/models.py:216
+msgid "Paraguay"
+msgstr "Παραγουάη"
+
+#: maps/models.py:217
+msgid "Peru"
+msgstr "Περού"
+
+#: maps/models.py:218
+msgid "Philippines"
+msgstr "Φιλιππίνες"
+
+#: maps/models.py:219
+msgid "Pitcairn"
+msgstr "Πίτκερν"
+
+#: maps/models.py:220
+msgid "Poland"
+msgstr "Πολωνία"
+
+#: maps/models.py:221
+msgid "Portugal"
+msgstr "Πορτογαλία"
+
+#: maps/models.py:222
+msgid "Puerto Rico"
+msgstr "Πουέρτο Ρίκο"
+
+#: maps/models.py:223
+msgid "Qatar"
+msgstr "Κατάρ"
+
+#: maps/models.py:224
+msgid "Republic of Korea"
+msgstr "Δημοκρατία της Κορέας"
+
+#: maps/models.py:225
+msgid "Republic of Moldova"
+msgstr "Δημοκρατία της Μολδαβίας"
+
+#: maps/models.py:226
+msgid "Reunion"
+msgstr "Ρεουνιόν"
+
+#: maps/models.py:227
+msgid "Romania"
+msgstr "Ρουμανία"
+
+#: maps/models.py:228
+msgid "Russian Federation"
+msgstr "Ρωσική Ομοσπονδία"
+
+#: maps/models.py:229
+msgid "Rwanda"
+msgstr "Ρουάντα"
+
+#: maps/models.py:230
+msgid "Saint-Barthelemy"
+msgstr "Του Αγίου Βαρθολομαίου"
+
+#: maps/models.py:231
+msgid "Saint Helena"
+msgstr "Αγία Ελένη"
+
+#: maps/models.py:232
+msgid "Saint Kitts and Nevis"
+msgstr "Άγιος Χριστόφορος και Νέβις"
+
+#: maps/models.py:233
+msgid "Saint Lucia"
+msgstr "Αγία Λουκία"
+
+#: maps/models.py:234
+msgid "Saint-Martin (French part)"
+msgstr "Άγιος-Μαρτίνος (γαλλικό τμήμα)"
+
+#: maps/models.py:235
+msgid "Saint Pierre and Miquelon"
+msgstr "Σεν Πιερ και Μικελόν"
+
+#: maps/models.py:236
+msgid "Saint Vincent and the Grenadines"
+msgstr "Άγιος Βικέντιος και Γρεναδίνες"
+
+#: maps/models.py:237
+msgid "Samoa"
+msgstr "Σαμόα"
+
+#: maps/models.py:238
+msgid "San Marino"
+msgstr "Σαν Μαρίνο"
+
+#: maps/models.py:239
+msgid "Sao Tome and Principe"
+msgstr "Σάο Τομέ και Πρίνσιπε"
+
+#: maps/models.py:240
+msgid "Saudi Arabia"
+msgstr "Σαουδική Αραβία"
+
+#: maps/models.py:241
+msgid "Senegal"
+msgstr "Σενεγάλη"
+
+#: maps/models.py:242
+msgid "Serbia"
+msgstr "Σερβία"
+
+#: maps/models.py:243
+msgid "Seychelles"
+msgstr "Σεϋχέλλες"
+
+#: maps/models.py:244
+msgid "Sierra Leone"
+msgstr "Σιέρα Λεόνε"
+
+#: maps/models.py:245
+msgid "Singapore"
+msgstr "Σιγκαπούρη"
+
+#: maps/models.py:246
+msgid "Slovakia"
+msgstr "Σλοβακία"
+
+#: maps/models.py:247
+msgid "Slovenia"
+msgstr "Σλοβενία"
+
+#: maps/models.py:248
+msgid "Solomon Islands"
+msgstr "Νησιά Σολομώντα"
+
+#: maps/models.py:249
+msgid "Somalia"
+msgstr "Σομαλία"
+
+#: maps/models.py:250
+msgid "South Africa"
+msgstr "Νότια Αφρική"
+
+#: maps/models.py:251
+msgid "Spain"
+msgstr "Ισπανία"
+
+#: maps/models.py:252
+msgid "Sri Lanka"
+msgstr "Σρι Λάνκα"
+
+#: maps/models.py:253
+msgid "Sudan"
+msgstr "Σουδάν"
+
+#: maps/models.py:254
+msgid "Suriname"
+msgstr "Σουρινάμ"
+
+#: maps/models.py:255
+msgid "Svalbard and Jan Mayen Islands"
+msgstr "Σβάλμπαρντ και Γιαν Μαγιέν Νήσοι"
+
+#: maps/models.py:256
+msgid "Swaziland"
+msgstr "Ζουαζιλάνδη"
+
+#: maps/models.py:257
+msgid "Sweden"
+msgstr "Σουηδία"
+
+#: maps/models.py:258
+msgid "Switzerland"
+msgstr "Ελβετία"
+
+#: maps/models.py:259
+msgid "Syrian Arab Republic"
+msgstr "Αραβική Δημοκρατία της Συρίας"
+
+#: maps/models.py:260
+msgid "Tajikistan"
+msgstr "Τατζικιστάν"
+
+#: maps/models.py:261
+msgid "Thailand"
+msgstr "Ταϊλάνδη"
+
+#: maps/models.py:262
+msgid "Timor-Leste"
+msgstr "Ανατολικό Τιμόρ"
+
+#: maps/models.py:263
+msgid "Togo"
+msgstr "Τόγκο"
+
+#: maps/models.py:264
+msgid "Tokelau"
+msgstr "Τοκελάου"
+
+#: maps/models.py:265
+msgid "Tonga"
+msgstr "Τόνγκα"
+
+#: maps/models.py:266
+msgid "Trinidad and Tobago"
+msgstr "Τρινιντάντ και Τομπάγκο"
+
+#: maps/models.py:267
+msgid "Tunisia"
+msgstr "Τυνησία"
+
+#: maps/models.py:268
+msgid "Turkey"
+msgstr "Τουρκία"
+
+#: maps/models.py:269
+msgid "Turkmenistan"
+msgstr "Τουρκμενιστάν"
+
+#: maps/models.py:270
+msgid "Turks and Caicos Islands"
+msgstr "Τερκς και Κέικος"
+
+#: maps/models.py:271
+msgid "Tuvalu"
+msgstr "Τουβαλού"
+
+#: maps/models.py:272
+msgid "Uganda"
+msgstr "Ουγκάντα"
+
+#: maps/models.py:273
+msgid "Ukraine"
+msgstr "Ουκρανία"
+
+#: maps/models.py:274
+msgid "United Arab Emirates"
+msgstr "Ηνωμένα Αραβικά Εμιράτα"
+
+#: maps/models.py:275
+msgid "United Kingdom"
+msgstr "Ηνωμένο Βασίλειο"
+
+#: maps/models.py:276
+msgid "United Republic of Tanzania"
+msgstr "Ενωμένη Δημοκρατία της Τανζανίας"
+
+#: maps/models.py:277
+msgid "United States of America"
+msgstr "Ηνωμένες Πολιτείες Αμερικής"
+
+#: maps/models.py:278
+msgid "United States Virgin Islands"
+msgstr "Αμερικανικές Παρθένοι Νήσοι"
+
+#: maps/models.py:279
+msgid "Uruguay"
+msgstr "Ουρουγουάη"
+
+#: maps/models.py:280
+msgid "Uzbekistan"
+msgstr "Ουζμπεκιστάν"
+
+#: maps/models.py:281
+msgid "Vanuatu"
+msgstr "Βανουάτου"
+
+#: maps/models.py:282
+msgid "Venezuela (Bolivarian Republic of)"
+msgstr "Βενεζουέλα (Βολιβαριανή Δημοκρατία της)"
+
+#: maps/models.py:283
+msgid "Viet Nam"
+msgstr "Βιετνάμ"
+
+#: maps/models.py:284
+msgid "Wallis and Futuna Islands"
+msgstr "Νήσοι Γουόλις και Φουτούνα"
+
+#: maps/models.py:285
+msgid "Western Sahara"
+msgstr "Δυτική Σαχάρα"
+
+#: maps/models.py:286
+msgid "Yemen"
+msgstr "Υεμένη"
+
+#: maps/models.py:287
+msgid "Zambia"
+msgstr "Ζάμπια"
+
+#: maps/models.py:288
+msgid "Zimbabwe"
+msgstr "Ζιμπάμπουε"
+
+#: maps/models.py:475
+#: maps/models.py:490
+msgid "Individual Name"
+msgstr "Όνομα Ατόμου"
+
+#: maps/models.py:491
+msgid "Organization Name"
+msgstr "Όνομα Οργανισμού"
+
+#: maps/models.py:492
+msgid "Position Name"
+msgstr "Όνομα Θέσης"
+
+#: maps/models.py:493
+#: templates/maps/layer.html:161
+msgid "Voice"
+msgstr "Φωνή"
+
+#: maps/models.py:494
+msgid "Facsimile"
+msgstr "Πανομοιότυπο"
+
+#: maps/models.py:495
+msgid "Delivery Point"
+msgstr "Σημείο παράδοσης"
+
+#: maps/models.py:496
+msgid "City"
+msgstr "Πόλη"
+
+#: maps/models.py:497
+msgid "Administrative Area"
+msgstr "Διοικητική Περιοχή"
+
+#: maps/models.py:498
+msgid "Postal Code"
+msgstr "Ταχυδρομικός Κώδικας"
+
+#: maps/models.py:658
+msgid "date"
+msgstr "ημερομηνία"
+
+#: maps/models.py:660
+msgid "date type"
+msgstr "τύπος ημερομηνίας"
+
+#: maps/models.py:662
+msgid "edition"
+msgstr "έκδοση"
+
+#: maps/models.py:663
+msgid "abstract"
+msgstr "περίληψη"
+
+#: maps/models.py:664
+msgid "purpose"
+msgstr "σκοπός"
+
+#: maps/models.py:665
+msgid "maintenance frequency"
+msgstr "συχνότητα συντήρησης"
+
+#: maps/models.py:671
+msgid "keywords"
+msgstr "λέξεις-κλειδιά"
+
+#: maps/models.py:672
+msgid "keywords region"
+msgstr "λέξεις-κλειδιά περιοχή"
+
+#: maps/models.py:673
+msgid "constraints use"
+msgstr "περιορισμοί χρήσης"
+
+#: maps/models.py:674
+msgid "constraints other"
+msgstr "άλλοι περιορισμοί"
+
+#: maps/models.py:675
+msgid "spatial representation type"
+msgstr "τύπος χωρικής αναπαράστασης"
+
+#: maps/models.py:678
+msgid "language"
+msgstr "γλώσσα"
+
+#: maps/models.py:679
+msgid "topic_category"
+msgstr "θεματική_κατηγορία"
+
+#: maps/models.py:682
+msgid "temporal extent start"
+msgstr "χρονική διάρκεια έναρξη"
+
+#: maps/models.py:683
+msgid "temporal extent end"
+msgstr "χρονική διάρκεια τέλος"
+
+#: maps/models.py:684
+msgid "geographic bounding box"
+msgstr "γεωγραφικό πλαίσιο οριοθέτησης"
+
+#: maps/models.py:685
+msgid "supplemental information"
+msgstr "συμπληρωματικές πληροφορίες"
+
+#: maps/models.py:688
+msgid "distribution URL"
+msgstr "URL διανομής"
+
+#: maps/models.py:689
+msgid "distribution description"
+msgstr "περιγραφή διανομής"
+
+#: maps/models.py:692
+msgid "data quality statement"
+msgstr "δήλωση ποιότητας δεδομένων"
+
+#: maps/models.py:727
+msgid "Zipped Shapefile"
+msgstr "Zipped Shapefile"
+
+#: maps/models.py:728
+msgid "GML 2.0"
+msgstr "GML 2.0"
+
+#: maps/models.py:729
+msgid "GML 3.1.1"
+msgstr "GML 3.1.1"
+
+#: maps/models.py:730
+msgid "CSV"
+msgstr "CSV"
+
+#: maps/models.py:731
+msgid "Excel"
+msgstr "Excel"
+
+#: maps/models.py:732
+msgid "GeoJSON"
+msgstr "GeoJSON"
+
+#: maps/models.py:785
+msgid "JPEG"
+msgstr "JPEG"
+
+#: maps/models.py:786
+msgid "PDF"
+msgstr "PDF"
+
+#: maps/models.py:787
+msgid "PNG"
+msgstr "PNG"
+
+#: maps/models.py:802
+msgid "KML"
+msgstr "KML"
+
+#: maps/models.py:803
+msgid "View in Google Earth"
+msgstr "Προβολή στο Google Earth"
+
+#: maps/models.py:1154
+msgid "Title"
+msgstr "Τίτλος"
+
+#: maps/models.py:1159
+#: templates/maps/layer.html:130
+msgid "Abstract"
+msgstr "Περίληψη"
+
+#: maps/models.py:1165
+msgid "zoom"
+msgstr "ζουμ"
+
+#: maps/models.py:1171
+msgid "projection"
+msgstr "προβολή"
+
+#: maps/models.py:1177
+msgid "center X"
+msgstr "κέντρο X"
+
+#: maps/models.py:1183
+msgid "center Y"
+msgstr "κέντρο Y"
+
+#: maps/models.py:1189
+msgid "owner"
+msgstr "ιδιοκτήτης"
+
+#: maps/models.py:1446
+msgid "stack order"
+msgstr "ταξινόμηση στοίβας"
+
+#: maps/models.py:1452
+msgid "format"
+msgstr "μορφή"
+
+#: maps/models.py:1458
+msgid "name"
+msgstr "όνομα"
+
+#: maps/models.py:1467
+msgid "opacity"
+msgstr "αδιαφάνεια"
+
+#: maps/models.py:1472
+msgid "styles"
+msgstr "στυλ"
+
+#: maps/models.py:1477
+msgid "transparent"
+msgstr "διαφανής"
+
+#: maps/models.py:1482
+msgid "fixed"
+msgstr "σταθερό"
+
+#: maps/models.py:1488
+msgid "group"
+msgstr "ομάδα"
+
+#: maps/models.py:1494
+msgid "visibility"
+msgstr "ορατότητα"
+
+#: maps/models.py:1499
+msgid "ows URL"
+msgstr "OWS URL"
+
+#: maps/models.py:1504
+msgid "layer params"
+msgstr "παράμετροι στρώματος"
+
+#: maps/models.py:1513
+msgid "source params"
+msgstr "παράμετροι πηγής"
+
+#: maps/views.py:123
+#: maps/views.py:129
+msgid "No Permissions"
+msgstr "Δεν Έχετε Δικαιώματα"
+
+#: maps/views.py:124
+#: maps/views.py:130
+msgid "Read Only"
+msgstr "Μόνο για ανάγνωση"
+
+#: maps/views.py:125
+#: maps/views.py:131
+msgid "Read/Write"
+msgstr "Ανάγνωση/Εγγραφή"
+
+#: maps/views.py:126
+#: maps/views.py:132
+msgid "Administrative"
+msgstr "Διοικητικές"
+
+#: maps/views.py:173
+msgid "You must be logged in to save this map"
+msgstr "Θα πρέπει να συνδεθείτε για να σώσετε αυτό το χάρτη"
+
+#: maps/views.py:211
+msgid "You are not permitted to view or copy this map."
+msgstr "Δεν σας επιτρέπεται να δείτε ή να αντιγράψετε αυτό το χάρτη."
+
+#: maps/views.py:332
+#: maps/views.py:677
+#: maps/views.py:693
+#: templates/401.html:10
+msgid "Not Permitted"
+msgstr "Δεν επιτρέπεται"
+
+#: maps/views.py:467
+msgid "You are not permitted to view this map's permissions"
+msgstr "Δεν σας επιτρέπεται να δείτε τα δικαιώματα αυτού του χάρτη"
+
+#: maps/views.py:575
+msgid "You are not permitted to delete this map."
+msgstr "Δεν επιτρέπεται να διαγράψετε αυτό το χάρτη."
+
+#: maps/views.py:597
+#: maps/views.py:661
+msgid "You are not allowed to view this map."
+msgstr "Δεν σας επιτρέπεται να δείτε αυτό το χάρτη."
+
+#: maps/views.py:620
+msgid "You are not allowed to modify this map's metadata."
+msgstr "Δεν επιτρέπεται να τροποποιήσετε τα μεταδεδομένα αυτού του χάρτη."
+
+#: maps/views.py:712
+msgid "You are not permitted to modify this layer's metadata"
+msgstr "Δεν επιτρέπεται να τροποποιήσετε τα μεταδεδομένα αυτού του στρώματος"
+
+#: maps/views.py:774
+msgid "You are not permitted to delete this layer"
+msgstr "Δεν επιτρέπεται να διαγράψετε αυτό το στρώμα"
+
+#: maps/views.py:794
+#: maps/views.py:905
+msgid "You are not permitted to modify this layer"
+msgstr "Δεν επιτρέπεται να τροποποιήσετε αυτό το στρώμα"
+
+#: maps/views.py:838
+msgid "You are not permitted to view this layer"
+msgstr "Δεν σας επιτρέπεται να δείτε αυτό το στρώμα"
+
+#: maps/views.py:856
+#: maps/views.py:955
+msgid "You are not permitted to view this layer's permissions"
+msgstr "Δεν σας επιτρέπεται να δείτε τα δικαιώματα αυτού του στρώματος"
+
+#: maps/views.py:965
+msgid "???"
+msgstr "???"
+
+#: maps/views.py:1007
+msgid "Invalid permission level."
+msgstr "Άκυρο επίπεδο δικαιωμάτων."
+
+#: maps/views.py:1029
+#: templates/maps/layer_permissions.html:15
+msgid "User"
+msgstr "Χρήστης"
+
+#: maps/views.py:1087
+msgid "Bad HTTP Authorization Credentials."
+msgstr "Άκυρα Διαπιστευτήρια Εξουσιοδότησης HTTP."
+
+#: templates/401.html:18
+#: templates/401.html:25
+msgid "Please verify that you are logged in as the correct user."
+msgstr "Παρακαλώ βεβαιωθείτε ότι είστε συνδεδεμένοι ως ο σωστός χρήστης."
+
+#: templates/401.html:27
+msgid "Please login or register and retry."
+msgstr "Παρακαλούμε συνδεθείτε ή εγγραφείτε και δοκιμάστε ξανά."
+
+#: templates/404.html:6
+msgid "Page Not Found"
+msgstr "Η σελίδα δεν βρέθηκε"
+
+#: templates/404.html:7
+#: templates/500.html:6
+msgid "Internal Server Error"
+msgstr "Εσωτερικό σφάλμα διακομιστή"
+
+#: templates/500.html:7
+#: templates/data_base.html:4
+msgid "Browse Data"
+msgstr "Αναζήτηση Δεδομένων"
+
+#: templates/data_base.html:16
+#: templates/data_base.html.py:28
+#: templates/index.html:30
+#: templates/maps.html:17
+#: templates/maps.html.py:30
+#: templates/maps_search_base.html:31
+#: templates/search_base.html:54
+msgid "Search"
+msgstr "Αναζήτηση"
+
+#: templates/data_base.html:28
+#: templates/search_base.html:54
+msgid "for geospatial data"
+msgstr "για γεωχωρικά δεδομένα"
+
+#: templates/data_base.html:43
+#: templates/index.html:89
+msgid "Advanced Search"
+msgstr "Σύνθετη Αναζήτηση"
+
+#: templates/data_base.html:50
+msgid "Browse"
+msgstr "Εύρεση"
+
+#: templates/data_base.html:50
+msgid "by keyword"
+msgstr "με λέξη-κλειδί"
+
+#: templates/data_base.html:58
+msgid "Upload"
+msgstr "Ανεβάστε"
+
+#: templates/data_base.html:59
+msgid "We support Shapefile and GeoTIFF uploads."
+msgstr "Υποστηρίζουμε Shapefile και GeoTIFF προσθήκες."
+
+#: templates/data_base.html:60
+msgid "Upload a new layer"
+msgstr "Ανέβασε ένα νέο στρώμα"
+
+#: templates/data_base.html:65
+#: templates/page_layout.html:78
+msgid "For Developers"
+msgstr "Για προγραμματιστές"
+
+#: templates/data_base.html:66
+#: templates/data_base.html:69
+msgid "developer page"
+msgstr "σελίδα προγραμματιστών"
+
+#: templates/developer.html:3
+msgid "OGC Services"
+msgstr "OGC Υπηρεσίες"
+
+#: templates/developer.html:48
+msgid "GeoNode's Web Services"
+msgstr "Υπηρεσίες Διαδικτύου GeoNode"
+
+#: templates/developer.html:49
+msgid "GeoNode's Web Services are available from the following URLs:"
+msgstr "Υπηρεσίες Διαδικτύου GeoNode είναι διαθέσιμα από τις ακόλουθες διευθύνσεις URL:"
+
+#: templates/developer.html:51
+msgid "Dynamic tiles via WMS:"
+msgstr "Δυναμικά πλακίδια μέσω WMS:"
+
+#: templates/developer.html:52
+msgid "Vector data via WFS:"
+msgstr "Διανυσματικά δεδομένα μέσω WFS:"
+
+#: templates/developer.html:53
+msgid "Metadata search via CSW:"
+msgstr "Αναζήτηση μεταδεδομένων μέσω CSW:"
+
+#: templates/developer.html:54
+msgid "Cached tiles via WMTS:"
+msgstr "Προσωρινής αποθήκευσης πλακίδια μέσω WMTS:"
+
+#: templates/fullscreen.html:20
+#: templates/page_layout.html:21
+msgid "Change password"
+msgstr "Αλλαγή κωδικού πρόσβασης"
+
+#: templates/fullscreen.html:20
+#: templates/page_layout.html:21
+msgid "Log out"
+msgstr "Αποσύνδεση"
+
+#: templates/fullscreen.html:22
+#: templates/page_layout.html:23
+msgid "Sign in"
+msgstr "Είσοδος"
+
+#: templates/fullscreen.html:23
+msgid "or"
+msgstr "ή"
+
+#: templates/fullscreen.html:23
+#: templates/login.html:14
+#: templates/page_layout.html:24
+msgid "Register"
+msgstr "Εγγραφή"
+
+#: templates/fullscreen.html:24
+#: templates/page_layout.html:25
+msgid "for extra features"
+msgstr "για επιπλέον λειτουργίες"
+
+#: templates/help.html:3
+msgid "User Guide"
+msgstr "Οδηγός χρήσης"
+
+#: templates/help.html:7
+#: templates/help.html:61
+msgid "GeoNode Help"
+msgstr "GeoNode Βοήθεια"
+
+#: templates/help.html:62
+#: templates/index.html:4
+msgid "Welcome!"
+msgstr "Καλώς ήρθατε!"
+
+#: templates/index.html:16
+msgid "Explore Maps"
+msgstr "Εξερευνήστε Χάρτες"
+
+#: templates/index.html:22
+msgid "Create Map"
+msgstr "Δημιουργία χάρτη"
+
+#: templates/index.html:44
+msgid "Welcome"
+msgstr "Καλωσόρισμα"
+
+#: templates/index.html:46
+#: templates/index.html:52
+#: templates/page_layout.html:36
+#: templates/maps/layer.html:211
+#: templates/maps/view.html:90
+msgid "Maps"
+msgstr "Χάρτες"
+
+#: templates/index.html:54
+#: templates/index.html:66
+#: templates/page_layout.html:35
+#: templates/maps/layer.html:199
+msgid "Data"
+msgstr "Δεδομένα"
+
+#: templates/index.html:68
+#: templates/index.html:94
+msgid "Upload data"
+msgstr "Ανεβάστε δεδομένα"
+
+#: templates/login.html:9
+#: templates/registration/activate.html:8
+#: templates/registration/password_reset_complete.html:9
+msgid "Log in"
+msgstr "Σύνδεση"
+
+#: templates/login.html:13
+msgid "Forgot password"
+msgstr "Ξεχάσατε τον κωδικό"
+
+#: templates/login.html:13
+msgid "Reset it"
+msgstr "Επαναφορά αυτό"
+
+#: templates/login.html:14
+msgid "Not member"
+msgstr "Δεν είναι μέλος"
+
+#: templates/maps.html:4
+msgid "Browse Maps"
+msgstr "Αναζήτηση Χάρτες"
+
+#: templates/maps.html:30
+#: templates/maps_search_base.html:31
+msgid "for maps"
+msgstr "για χάρτες"
+
+#: templates/maps.html:45
+msgid "All Maps"
+msgstr "Όλοι οι Χάρτες"
+
+#: templates/maps.html:46
+msgid "New Maps"
+msgstr "Νέοι Χάρτες"
+
+#: templates/maps.html:52
+msgid "Create Maps"
+msgstr "Δημιουργήστε Χάρτες"
+
+#: templates/maps.html:53
+#: templates/maps.html:56
+msgid "Create your own map"
+msgstr "Δημιουργήστε το δικό σας χάρτη"
+
+#: templates/maps_search_base.html:4
+msgid "Search Maps"
+msgstr "Αναζήτηση Χάρτες"
+
+#: templates/maps_search_base.html:35
+msgid "Click the <b>+</b> on any row to show map abstract."
+msgstr "Κάντε κλικ στο <b>+</b> για κάθε σειρά για να δείξει την περίληψη του χάρτη."
+
+#: templates/maps_search_base.html:36
+#: templates/search_base.html:58
+msgid "To bookmark your current search use this"
+msgstr "Για να προσθέσετε την τρέχουσα αναζήτηση στους σελιδοδείκτες χρησιμοποιήσετε αυτό"
+
+#: templates/maps_search_base.html:36
+#: templates/search_base.html:58
+msgid "permalink"
+msgstr "μόνιμος σύνδεσμος"
+
+#: templates/page_layout.html:34
+#: templates/maps/change_poc.html:5
+#: templates/registration/logged_out.html:4
+msgid "Home"
+msgstr "Αρχική Σελίδα"
+
+#: templates/page_layout.html:38
+msgid "Profile"
+msgstr "Προφίλ"
+
+#: templates/page_layout.html:40
+msgid "Admin"
+msgstr "Διαχειριστής"
+
+#: templates/page_layout.html:75
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: templates/page_layout.html:76
+msgid "Need Help?"
+msgstr "Χρειάζεστε βοήθεια;"
+
+#: templates/page_layout.html:77
+msgid "Help"
+msgstr "Βοήθεια"
+
+#: templates/search_base.html:4
+msgid "Search Data"
+msgstr "Δεδομένα Αναζήτηση"
+
+#: templates/search_base.html:57
+#: templates/search_base.html:67
+msgid "Refine Search"
+msgstr "Σύνθετη Αναζήτηση"
+
+#: templates/search_base.html:69
+msgid "By area"
+msgstr "Με την περιοχή"
+
+#: templates/search_base.html:70
+msgid "Limit the search to data that includes features in the displayed area."
+msgstr "Περιορισμός της αναζήτησης των δεδομένων που περιλαμβάνει χαρακτηριστικά στην περιοχή που εμφανίζεται."
+
+#: templates/search_base.html:77
+msgid "Selected Data"
+msgstr "Επιλεγμένα δεδομένα"
+
+#: templates/search_base.html:78
+msgid "Use the checkboxes in the search results to add data to your selection."
+msgstr "Χρησιμοποιήστε τα πλαίσια ελέγχου στα αποτελέσματα της αναζήτησης για να προσθέσετε δεδομένα στην επιλογή σας."
+
+#: templates/search_base.html:84
+#: templates/profiles/profile_detail.html:16
+msgid "Create a new map"
+msgstr "Δημιουργήστε ένα νέο χάρτη"
+
+#: templates/search_base.html:85
+#: templates/search_base.html.py:88
+msgid "Export selected"
+msgstr "Εξαγωγή επιλεγμένων"
+
+#: templates/avatar/add.html:5
+#: templates/profiles/edit_profile.html:7
+msgid "Your current avatar: "
+msgstr "Τρέχον σας avatar:"
+
+#: templates/avatar/add.html:8
+#: templates/profiles/edit_profile.html:10
+msgid "You haven't uploaded an avatar yet. Please upload one now."
+msgstr "Δεν έχετε ανεβάσει ένα avatar ακόμα. Παρακαλούμε να ανεβάσετε ένα τώρα."
+
+#: templates/avatar/add.html:12
+#: templates/profiles/edit_profile.html:22
+msgid "Upload New Image"
+msgstr "Ανεβάστε Νέα Εικόνα"
+
+#: templates/maps/change_poc.html:5
+#: templates/maps/change_poc.html.py:7
+msgid "Change point of contact"
+msgstr "Αλλαγή σημείου επαφής"
+
+#: templates/maps/download.html:67
+#: templates/maps/download.html:81
+#: templates/maps/download.html:89
+#: templates/maps/embed.html:3
+#: templates/maps/view.html:4
+msgid "Map Viewer"
+msgstr "Προβολέας Χάρτη"
+
+#: templates/maps/layer.html:130
+msgid "No abstract for this layer."
+msgstr "Δεν υπάρχει περίληψη για αυτό το στρώμα."
+
+#: templates/maps/layer.html:134
+msgid "Type"
+msgstr "Τύπος"
+
+#: templates/maps/layer.html:135
+msgid "Keywords"
+msgstr "Λέξεις-κλειδιά"
+
+#: templates/maps/layer.html:136
+msgid "Edition"
+msgstr "Έκδοση"
+
+#: templates/maps/layer.html:137
+msgid "Topic Category"
+msgstr "Θεματική Κατηγορία"
+
+#: templates/maps/layer.html:140
+msgid "Citation"
+msgstr "Παραπομπή"
+
+#: templates/maps/layer.html:146
+msgid "Owner"
+msgstr "Ιδιοκτήτης"
+
+#: templates/maps/layer.html:152
+msgid "Point of Contact"
+msgstr "Σημείο επαφής"
+
+#: templates/maps/layer.html:157
+msgid "Name"
+msgstr "Όνομα"
+
+#: templates/maps/layer.html:158
+msgid "Email"
+msgstr "Email"
+
+#: templates/maps/layer.html:159
+msgid "Organization"
+msgstr "Οργανισμός"
+
+#: templates/maps/layer.html:160
+msgid "Position"
+msgstr "Θέση"
+
+#: templates/maps/layer.html:162
+msgid "Fax"
+msgstr "Φαξ"
+
+#: templates/maps/layer.html:163
+msgid "Delivery"
+msgstr "Διανομή"
+
+#: templates/maps/layer.html:164
+msgid "Area"
+msgstr "Έκταση"
+
+#: templates/maps/layer.html:165
+msgid "Zip Code"
+msgstr "Τ.Κ."
+
+#: templates/maps/layer.html:166
+msgid "Country"
+msgstr "Χώρα"
+
+#: templates/maps/layer.html:173
+msgid "Attributes"
+msgstr "Γνωρίσματα"
+
+#: templates/maps/layer.html:179
+msgid "Supplemental Information"
+msgstr "Συμπληρωματικές πληροφορίες"
+
+#: templates/maps/layer.html:185
+msgid "Data Quality Statement"
+msgstr "Δήλωση Ποιότητας Δεδομένων"
+
+#: templates/maps/layer.html:190
+msgid "Bounding Box"
+msgstr "Πλαίσιο οριοθέτησης"
+
+#: templates/maps/layer.html:191
+msgid "Native SRS"
+msgstr "Εγγενής SRS"
+
+#: templates/maps/layer.html:191
+msgid "No SRS specified."
+msgstr "Δεν καθορίζετε το SRS."
+
+#: templates/maps/layer.html:198
+#: templates/maps/mapinfo.html:63
+msgid "Download"
+msgstr "Λήψη"
+
+#: templates/maps/layer.html:204
+msgid "Metadata"
+msgstr "Μεταδεδομένα"
+
+#: templates/maps/layer.html:208
+msgid "No metadata links provided for this data."
+msgstr "Δεν υπάρχουν σχετικοί σύνδεσμοι μεταδεδομένων για αυτά τα δεδομένα."
+
+#: templates/maps/layer.html:213
+msgid "The following maps use this data set"
+msgstr "Οι ακόλουθοι χάρτες χρησιμοποιούν αυτό το σύνολο δεδομένων"
+
+#: templates/maps/layer.html:220
+msgid "This layer is not currently used in any maps."
+msgstr "Αυτό το στρώμα δεν χρησιμοποιείται επί του παρόντος σε οποιονδήποτε χάρτη."
+
+#: templates/maps/layer.html:224
+msgid "Styles"
+msgstr "Στυλ"
+
+#: templates/maps/layer.html:225
+#: templates/maps/layer.html:238
+msgid "Default style:"
+msgstr "Προεπιλεγμένο στυλ:"
+
+#: templates/maps/layer.html:259
+#: templates/maps/mapinfo.html:74
+msgid "Manage"
+msgstr "Διαχείριση"
+
+#: templates/maps/layer.html:263
+msgid "Update the description of this data"
+msgstr "Ενημέρωση της περιγραφής των εν λόγω στοιχείων"
+
+#: templates/maps/layer.html:264
+msgid "Upload a new version of this data"
+msgstr "Φορτώστε μια νέα έκδοση των εν λόγω στοιχείων"
+
+#: templates/maps/layer.html:267
+msgid "Edit Permissions"
+msgstr "Επεξεργασία δικαιωμάτων"
+
+#: templates/maps/layer.html:270
+msgid "Remove"
+msgstr "Κατάργηση"
+
+#: templates/maps/layer.html:279
+#: templates/maps/layer_upload.html:228
+#: templates/maps/mapinfo.html:93
+msgid "Permissions"
+msgstr "Δικαιώματα"
+
+#: templates/maps/layer_describe.html:12
+#: templates/maps/map_describe.html:12
+msgid "Editing details for "
+msgstr "Επεξεργασία στοιχείων για την"
+
+#: templates/maps/layer_describe.html:25
+#: templates/maps/map_describe.html:17
+msgid "Update"
+msgstr "Ενημέρωση"
+
+#: templates/maps/layer_permissions.html:15
+msgid "Permission Level"
+msgstr "Επίπεδο δικαιωμάτων"
+
+#: templates/maps/layer_remove.html:8
+#: templates/maps/map_remove.html:7
+msgid "Are you sure you want to remove"
+msgstr "Είστε σίγουροι ότι θέλετε να καταργήσετε"
+
+#: templates/maps/layer_remove.html:13
+msgid "Yes I am sure"
+msgstr "Ναι, είμαι βέβαιος"
+
+#: templates/maps/layer_remove.html:16
+#: templates/maps/map_remove.html:14
+msgid "No, don't remove it"
+msgstr "Όχι, μην το αφαιρέσετε"
+
+#: templates/maps/layer_remove.html:22
+#: templates/maps/layer_replace.html:168
+msgid "This action affects the following maps:"
+msgstr "Η ενέργεια αυτή επηρεάζει τους παρακάτω χάρτες:"
+
+#: templates/maps/layer_remove.html:27
+#: templates/maps/layer_replace.html:174
+msgid "No maps are using this layer."
+msgstr "Κανένας χάρτης δεν χρησιμοποιεί αυτό το στρώμα."
+
+#: templates/maps/layer_replace.html:4
+#: templates/maps/layer_replace.html:156
+msgid "Update Layer"
+msgstr "Ενημέρωση Layer"
+
+#: templates/maps/layer_replace.html:157
+msgid "This form allows you to update the data for this layer."
+msgstr "Αυτή η φόρμα σας επιτρέπει να ενημερώσετε τα δεδομένα για αυτό το στρώμα."
+
+#: templates/maps/layer_replace.html:158
+#: templates/maps/layer_replace.html:166
+msgid "Select a layer data file and submit the form to begin the transfer."
+msgstr "Επιλέξτε ένα επίπεδο αρχείο δεδομένων και υποβάλετε τη φόρμα για να ξεκινήσει η μεταφορά."
+
+#: templates/maps/layer_replace.html:180
+msgid "Supported Formats"
+msgstr "Υποστηριζόμενες μορφές"
+
+#: templates/maps/layer_upload.html:4
+msgid "Upload Layer"
+msgstr "Ανεβάστε Layer"
+
+#: templates/maps/layer_upload.html:20
+msgid "Add data"
+msgstr "Προσθήκη στοιχείων"
+
+#: templates/maps/map_remove.html:11
+msgid "Yes, I am sure"
+msgstr "Ναι, είμαι βέβαιος"
+
+#: templates/maps/mapinfo.html:54
+#: templates/maps/search_result_snippet.html:4
+msgid "Abstract:"
+msgstr "Περίληψη:"
+
+#: templates/maps/mapinfo.html:58
+msgid "Contact:"
+msgstr "Επικοινωνία:"
+
+#: templates/maps/mapinfo.html:64
+msgid "Download all layers included in this map"
+msgstr "Λήψη όλων των στρωμάτων που περιλαμβάνονται σε αυτόν τον χάρτη"
+
+#: templates/maps/mapinfo.html:65
+msgid "Layers"
+msgstr "Στρώματα"
+
+#: templates/maps/mapinfo.html:66
+msgid "This map uses the following layers"
+msgstr "Αυτός ο χάρτης χρησιμοποιεί τα ακόλουθα στρώματα"
+
+#: templates/maps/mapinfo.html:79
+msgid "View or edit this map"
+msgstr "Προβολή ή επεξεργασία αυτού τον χάρτη"
+
+#: templates/maps/mapinfo.html:81
+msgid "Edit metadata"
+msgstr "Επεξεργασία μεταδεδομένων"
+
+#: templates/maps/mapinfo.html:84
+msgid "Edit permissions"
+msgstr "Επεξεργασία δικαιώματα"
+
+#: templates/maps/mapinfo.html:87
+msgid "Delete map"
+msgstr "Διαγραφή χάρτη"
+
+#: templates/maps/mapinfo.html:89
+msgid "Duplicate map"
+msgstr "Διπλότυπο χάρτη"
+
+#: templates/maps/mapinfo.html:94
+msgid "Select what kind of privileges to allow."
+msgstr "Επιλέξτε τι είδους προνόμια να επιτρέψετε."
+
+#: templates/maps/search_result_snippet.html:8
+msgid "No abstract is provided for this layer."
+msgstr "Δεν υπάρχει περίληψη για αυτό το στρώμα."
+
+#: templates/maps/search_result_snippet.html:12
+msgid "Provided by:"
+msgstr "Παρέχεται από:"
+
+#: templates/maps/search_result_snippet.html:20
+msgid "No attribution information is provided for this layer."
+msgstr "Δεν υπάρχουν πληροφορίες απόδοσης για αυτό το στρώμα."
+
+#: templates/maps/search_result_snippet.html:24
+msgid "Metadata Links:"
+msgstr "Σύνδεσμοι Μεταδεδομένων:"
+
+#: templates/maps/search_result_snippet.html:28
+msgid "No metadata URLs are defined for this layer."
+msgstr "Δεν ορίζονται διευθύνσεις μεταδεδομένων για αυτό το στρώμα."
+
+#: templates/maps/search_result_snippet.html:32
+msgid "Keywords:"
+msgstr "Λέξεις-κλειδιά:"
+
+#: templates/maps/search_result_snippet.html:36
+msgid "No keywords are listed for this layer."
+msgstr "Δεν υπάρχουν λέξεις-κλειδιά για αυτό το στρώμα."
+
+#: templates/maps/search_result_snippet.html:41
+#: templates/maps/search_result_snippet.html:58
+msgid "Download:"
+msgstr "Λήψη:"
+
+#: templates/maps/search_result_snippet.html:45
+#: templates/maps/search_result_snippet.html:62
+msgid "No download URLs are defined for this layer."
+msgstr "Δεν ορίζονται διευθύνσεις λήψης για αυτό το στρώμα."
+
+#: templates/maps/search_result_snippet.html:51
+msgid "Visit originating site for more information about this layer."
+msgstr "Επισκεφθείτε την σελίδα από όπου προήλθε για περισσότερες πληροφορίες σχετικά με αυτό το στρώμα."
+
+#: templates/maps/search_result_snippet.html:68
+msgid "Click here for more information about this layer."
+msgstr "Κάντε κλικ εδώ για περισσότερες πληροφορίες σχετικά με αυτό το στρώμα."
+
+#: templates/maps/search_result_snippet.html:72
+msgid "You do not have permission to view or download this layer"
+msgstr "Δεν έχετε άδεια για να δείτε ή να κατεβάσετε αυτό το στρώμα"
+
+#: templates/maps/view.html:89
+msgid "View info"
+msgstr "Δείτε πληροφορίες"
+
+#: templates/profiles/edit_profile.html:16
+msgid "Choose new Default"
+msgstr "Επιλέξτε νέα Προεπιλογή"
+
+#: templates/profiles/profile_detail.html:13
+msgid "Actions"
+msgstr "Ενέργειες"
+
+#: templates/profiles/profile_detail.html:15
+msgid "Upload new data"
+msgstr "Ανέβασε νέα δεδομένα"
+
+#: templates/profiles/profile_detail.html:18
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#: templates/profiles/profile_detail.html:20
+msgid "Edit profile information"
+msgstr "Επεξεργασία πληροφοριών προφίλ"
+
+#: templates/profiles/profile_detail.html:27
+msgid "Maps & Data"
+msgstr "Χάρτες & Δεδομένα"
+
+#: templates/registration/activate.html:7
+msgid "Account successfully activated"
+msgstr "Ο λογαριασμός ενεργοποιήθηκε με επιτυχία"
+
+#: templates/registration/activate.html:10
+msgid "Account activation failed"
+msgstr "Ενεργοποίηση λογαριασμού απέτυχε"
+
+#: templates/registration/logged_out.html:8
+msgid "Thanks for spending some quality time with the GeoNode today."
+msgstr "Ευχαριστούμε που περάσατε ποιοτικό χρόνο με τον GeoNode σήμερα."
+
+#: templates/registration/logged_out.html:10
+msgid "Log in again"
+msgstr "Σύνδεση και πάλι"
+
+#: templates/registration/logout.html:6
+msgid "Logged out"
+msgstr "Αποσυνδεθήκατε"
+
+#: templates/registration/password_change_done.html:6
+msgid "Password changed"
+msgstr "Κωδικός πρόσβασης άλλαξε"
+
+#: templates/registration/password_change_form.html:10
+#: templates/registration/password_reset_confirm.html:14
+#: templates/registration/password_reset_form.html:11
+#: templates/registration/registration_form.html:10
+msgid "Submit"
+msgstr "Υποβολή"
+
+#: templates/registration/password_reset_complete.html:7
+msgid "Password reset successfully"
+msgstr "Επαναφοράς κωδικού πρόσβασης με επιτυχία"
+
+#: templates/registration/password_reset_confirm.html:19
+msgid "Password reset failed"
+msgstr "Επαναφορά του κωδικού πρόσβασης απέτυχε"
+
+#: templates/registration/password_reset_done.html:6
+msgid "Email with password reset instructions has been sent."
+msgstr "E-mail με τις οδηγίες επαναφοράς κωδικού πρόσβασης έχει σταλεί."
+
+#: templates/registration/password_reset_email.html:2
+#, python-format
+msgid "Reset password at %(site_name)s"
+msgstr "Επαναφορά κωδικού πρόσβασης στο %(site_name)s"
+
+#: templates/registration/registration_complete.html:6
+msgid "You are now registered. Activation email sent."
+msgstr "Τώρα είστε εγγεγραμμένος. Το e-mail ενεργοποίησης έχει αποσταλεί."
+
