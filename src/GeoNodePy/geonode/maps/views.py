@@ -219,6 +219,7 @@ def maps(request, mapid=None):
             map.save()
             map.set_default_permissions()
             map.update_from_viewer(request.raw_post_data)
+            MapSnapshot.objects.create(config=request.raw_post_data,map=map,user=request.user)
             response = HttpResponse('', status=201)
             response['Location'] = map.officialurl if map.officialurl else (map.urlsuffix if map.urlsuffix else map.id)
             transaction.commit()
