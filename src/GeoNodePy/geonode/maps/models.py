@@ -886,7 +886,8 @@ class Layer(models.Model, PermissionLevelMixin):
                     'version':'1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
-                    'outputFormat': mime
+                    'outputFormat': mime,
+                    'format_options': 'charset:UTF-8' #TODO: make this a settings property?
                 })
             types = [
                 ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
