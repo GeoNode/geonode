@@ -55,6 +55,7 @@ if (window.GeoExplorer) {
         publishBtnText: gettext("Link"),
         removeLayerActionText: gettext("Remove Layer"),
         removeLayerActionTipText: gettext("Remove Layer"),
+        revisionBtnText: gettext("Revisions"),
         saveFailMessage: gettext("Sorry, your map could not be saved."),
         saveFailTitle: gettext("Error While Saving"),
         saveMapText: gettext("Save Map"),
