@@ -39,7 +39,7 @@ def proxy(request):
     return response
 
 @csrf_exempt
-def geoserver_style_proxy(request):
+def geoserver_rest_proxy(request, proxy_path, downstream_path):
     if not request.user.is_authenticated():
         return HttpResponse(
             "You must be logged in to access GeoServer",
@@ -50,8 +50,8 @@ def geoserver_style_proxy(request):
         assert path.startswith(prefix)
         return path[len(prefix):]
 
-    path = strip_prefix(request.get_full_path(), "/gs_rest/styles")
-    url = "".join([settings.GEOSERVER_BASE_URL, "rest/styles", path])
+    path = strip_prefix(request.get_full_path(), proxy_path)
+    url = "".join([settings.GEOSERVER_BASE_URL, downstream_path, path])
 
     http = httplib2.Http()
     http.add_credentials(*settings.GEOSERVER_CREDENTIALS)
