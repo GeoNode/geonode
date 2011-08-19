@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-08-19 16:00+0300\n"
-"PO-Revision-Date: 2011-08-19 17:47+0200\n"
+"PO-Revision-Date: 2011-08-19 18:55+0200\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -1292,21 +1292,21 @@ msgstr "Δεν επιτρέπεται να τροποποιήσετε τα με�
 
 #: maps/views.py:774
 msgid "You are not permitted to delete this layer"
-msgstr "Δεν επιτρέπεται να διαγράψετε αυτό το στρώμα"
+msgstr "Δεν επιτρέπεται να διαγράψετε αυτή την επιφάνεια"
 
 #: maps/views.py:794
 #: maps/views.py:905
 msgid "You are not permitted to modify this layer"
-msgstr "Δεν επιτρέπεται να τροποποιήσετε αυτό το στρώμα"
+msgstr "Δεν επιτρέπεται να τροποποιήσετε αυτή την επιφάνεια"
 
 #: maps/views.py:838
 msgid "You are not permitted to view this layer"
-msgstr "Δεν σας επιτρέπεται να δείτε αυτό το στρώμα"
+msgstr "Δεν σας επιτρέπεται να δείτε αυτή την επιφάνεια"
 
 #: maps/views.py:856
 #: maps/views.py:955
 msgid "You are not permitted to view this layer's permissions"
-msgstr "Δεν σας επιτρέπεται να δείτε τα δικαιώματα αυτού του στρώματος"
+msgstr "Δεν σας επιτρέπεται να δείτε τα δικαιώματα αυτής της επιφάνειας"
 
 #: maps/views.py:965
 msgid "???"
@@ -1382,11 +1382,11 @@ msgstr "Ανεβάστε"
 
 #: templates/data_base.html:59
 msgid "We support Shapefile and GeoTIFF uploads."
-msgstr "Υποστηρίζουμε Shapefile και GeoTIFF προσθήκες."
+msgstr "Υποστηρίζουμε για ανέβασμα αρχεία Shapefile και GeoTIFF."
 
 #: templates/data_base.html:60
 msgid "Upload a new layer"
-msgstr "Ανέβασε ένα νέο στρώμα"
+msgstr "Ανέβασε μια νέα επιφάνεια"
 
 #: templates/data_base.html:65
 #: templates/page_layout.html:78
@@ -1408,7 +1408,7 @@ msgstr "Υπηρεσίες Διαδικτύου GeoNode"
 
 #: templates/developer.html:49
 msgid "GeoNode's Web Services are available from the following URLs:"
-msgstr "Υπηρεσίες Διαδικτύου GeoNode είναι διαθέσιμα από τις ακόλουθες διευθύνσεις URL:"
+msgstr "Υπηρεσίες Διαδικτύου GeoNode είναι διαθέσιμες από τις ακόλουθες διευθύνσεις URL:"
 
 #: templates/developer.html:51
 msgid "Dynamic tiles via WMS:"
@@ -1552,7 +1552,7 @@ msgstr "Αναζήτηση Χάρτες"
 
 #: templates/maps_search_base.html:35
 msgid "Click the <b>+</b> on any row to show map abstract."
-msgstr "Κάντε κλικ στο <b>+</b> για κάθε σειρά για να δείξει την περίληψη του χάρτη."
+msgstr "Κάντε κλικ στο <b>+</b> για κάθε σειρά για να εμφανιστεί η περίληψη του χάρτη."
 
 #: templates/maps_search_base.html:36
 #: templates/search_base.html:58
@@ -1683,7 +1683,7 @@ msgstr "Ιδιοκτήτης"
 
 #: templates/maps/layer.html:152
 msgid "Point of Contact"
-msgstr "Σημείο επαφής"
+msgstr "Σημείο Επικοινωνίας"
 
 #: templates/maps/layer.html:157
 msgid "Name"
@@ -1764,7 +1764,7 @@ msgstr "Οι ακόλουθοι χάρτες χρησιμοποιούν αυτό
 
 #: templates/maps/layer.html:220
 msgid "This layer is not currently used in any maps."
-msgstr "Αυτό το στρώμα δεν χρησιμοποιείται επί του παρόντος σε οποιονδήποτε χάρτη."
+msgstr "Αυτή η επιφάνεια δεν χρησιμοποιείται επί του παρόντος σε οποιονδήποτε χάρτη."
 
 #: templates/maps/layer.html:224
 msgid "Styles"
@@ -1838,33 +1838,33 @@ msgstr "Η ενέργεια αυτή επηρεάζει τους παρακάτ�
 #: templates/maps/layer_remove.html:27
 #: templates/maps/layer_replace.html:174
 msgid "No maps are using this layer."
-msgstr "Κανένας χάρτης δεν χρησιμοποιεί αυτό το στρώμα."
+msgstr "Κανένας χάρτης δεν χρησιμοποιεί αυτή την επιφάνεια."
 
 #: templates/maps/layer_replace.html:4
 #: templates/maps/layer_replace.html:156
 msgid "Update Layer"
-msgstr "Ενημέρωση Layer"
+msgstr "Ενημέρωση Επιφάνειας"
 
 #: templates/maps/layer_replace.html:157
 msgid "This form allows you to update the data for this layer."
-msgstr "Αυτή η φόρμα σας επιτρέπει να ενημερώσετε τα δεδομένα για αυτό το στρώμα."
+msgstr "Αυτή η φόρμα σας επιτρέπει να ενημερώσετε τα δεδομένα για αυτή την επιφάνεια."
 
 #: templates/maps/layer_replace.html:158
 #: templates/maps/layer_replace.html:166
 msgid "Select a layer data file and submit the form to begin the transfer."
-msgstr "Επιλέξτε ένα επίπεδο αρχείο δεδομένων και υποβάλετε τη φόρμα για να ξεκινήσει η μεταφορά."
+msgstr "Επιλέξτε ένα αρχείο δεδομένων επιφάνειας και υποβάλετε τη φόρμα για να ξεκινήσει η μεταφορά."
 
 #: templates/maps/layer_replace.html:180
 msgid "Supported Formats"
-msgstr "Υποστηριζόμενες μορφές"
+msgstr "Υποστηριζόμενοι Τύποι Αρχείου"
 
 #: templates/maps/layer_upload.html:4
 msgid "Upload Layer"
-msgstr "Ανεβάστε Layer"
+msgstr "Ανεβάστε Επιφάνεια"
 
 #: templates/maps/layer_upload.html:20
 msgid "Add data"
-msgstr "Προσθήκη στοιχείων"
+msgstr "Προσθήκη δεδομένων"
 
 #: templates/maps/map_remove.html:11
 msgid "Yes, I am sure"
@@ -1881,15 +1881,15 @@ msgstr "Επικοινωνία:"
 
 #: templates/maps/mapinfo.html:64
 msgid "Download all layers included in this map"
-msgstr "Λήψη όλων των στρωμάτων που περιλαμβάνονται σε αυτόν τον χάρτη"
+msgstr "Λήψη όλων των επιφανειών που περιλαμβάνονται σε αυτόν τον χάρτη"
 
 #: templates/maps/mapinfo.html:65
 msgid "Layers"
-msgstr "Στρώματα"
+msgstr "Επιφάνειες"
 
 #: templates/maps/mapinfo.html:66
 msgid "This map uses the following layers"
-msgstr "Αυτός ο χάρτης χρησιμοποιεί τα ακόλουθα στρώματα"
+msgstr "Αυτός ο χάρτης χρησιμοποιεί τις ακόλουθες επιφάνειες"
 
 #: templates/maps/mapinfo.html:79
 msgid "View or edit this map"
@@ -1901,7 +1901,7 @@ msgstr "Επεξεργασία μεταδεδομένων"
 
 #: templates/maps/mapinfo.html:84
 msgid "Edit permissions"
-msgstr "Επεξεργασία δικαιώματα"
+msgstr "Επεξεργασία δικαιωμάτων"
 
 #: templates/maps/mapinfo.html:87
 msgid "Delete map"
@@ -1917,7 +1917,7 @@ msgstr "Επιλέξτε τι είδους προνόμια να επιτρέψ�
 
 #: templates/maps/search_result_snippet.html:8
 msgid "No abstract is provided for this layer."
-msgstr "Δεν υπάρχει περίληψη για αυτό το στρώμα."
+msgstr "Δεν υπάρχει περίληψη για αυτή την επιφάνεια."
 
 #: templates/maps/search_result_snippet.html:12
 msgid "Provided by:"
@@ -1925,7 +1925,7 @@ msgstr "Παρέχεται από:"
 
 #: templates/maps/search_result_snippet.html:20
 msgid "No attribution information is provided for this layer."
-msgstr "Δεν υπάρχουν πληροφορίες απόδοσης για αυτό το στρώμα."
+msgstr "Δεν υπάρχουν πληροφορίες απόδοσης για αυτή την επιφάνεια."
 
 #: templates/maps/search_result_snippet.html:24
 msgid "Metadata Links:"
@@ -1933,7 +1933,7 @@ msgstr "Σύνδεσμοι Μεταδεδομένων:"
 
 #: templates/maps/search_result_snippet.html:28
 msgid "No metadata URLs are defined for this layer."
-msgstr "Δεν ορίζονται διευθύνσεις μεταδεδομένων για αυτό το στρώμα."
+msgstr "Δεν ορίζονται διευθύνσεις μεταδεδομένων για αυτή την επιφάνεια."
 
 #: templates/maps/search_result_snippet.html:32
 msgid "Keywords:"
@@ -1941,7 +1941,7 @@ msgstr "Λέξεις-κλειδιά:"
 
 #: templates/maps/search_result_snippet.html:36
 msgid "No keywords are listed for this layer."
-msgstr "Δεν υπάρχουν λέξεις-κλειδιά για αυτό το στρώμα."
+msgstr "Δεν υπάρχουν λέξεις-κλειδιά για αυτή την επιφάνεια."
 
 #: templates/maps/search_result_snippet.html:41
 #: templates/maps/search_result_snippet.html:58
@@ -1951,19 +1951,19 @@ msgstr "Λήψη:"
 #: templates/maps/search_result_snippet.html:45
 #: templates/maps/search_result_snippet.html:62
 msgid "No download URLs are defined for this layer."
-msgstr "Δεν ορίζονται διευθύνσεις λήψης για αυτό το στρώμα."
+msgstr "Δεν ορίζονται διευθύνσεις λήψης για αυτή την επιφάνεια."
 
 #: templates/maps/search_result_snippet.html:51
 msgid "Visit originating site for more information about this layer."
-msgstr "Επισκεφθείτε την σελίδα από όπου προήλθε για περισσότερες πληροφορίες σχετικά με αυτό το στρώμα."
+msgstr "Επισκεφθείτε την σελίδα από όπου προήλθε για περισσότερες πληροφορίες σχετικά με αυτή την επιφάνεια."
 
 #: templates/maps/search_result_snippet.html:68
 msgid "Click here for more information about this layer."
-msgstr "Κάντε κλικ εδώ για περισσότερες πληροφορίες σχετικά με αυτό το στρώμα."
+msgstr "Κάντε κλικ εδώ για περισσότερες πληροφορίες σχετικά με αυτή την επιφάνεια."
 
 #: templates/maps/search_result_snippet.html:72
 msgid "You do not have permission to view or download this layer"
-msgstr "Δεν έχετε άδεια για να δείτε ή να κατεβάσετε αυτό το στρώμα"
+msgstr "Δεν έχετε άδεια για να δείτε ή να κατεβάσετε αυτή την επιφάνεια"
 
 #: templates/maps/view.html:89
 msgid "View info"
