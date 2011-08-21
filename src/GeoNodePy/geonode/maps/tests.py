@@ -60,107 +60,107 @@ community."
 
     # maps.models.Layer
 
-    def test_layer_save_to_geoserver(self):
-        pass
+#    def test_layer_save_to_geoserver(self):
+#        pass
 
-    def test_layer_save_to_geonetwork(self):
-        pass
+#    def test_layer_save_to_geonetwork(self):
+#        pass
 
-    def test_post_save_layer(self):
-        pass
+#    def test_post_save_layer(self):
+#        pass
 
-    def test_layer_verify(self):
-        pass
+#    def test_layer_verify(self):
+#        pass
 
-    def test_layer_download_links(self):
-        pass
+#    def test_layer_download_links(self):
+#        pass
 
-    def test_layer_maps(self):
-        pass
+#    def test_layer_maps(self):
+#        pass
 
-    def test_layer_metadata(self):
-        pass
+#    def test_layer_metadata(self):
+#        pass
     
-    def test_layer_metadata_csw(self):
-        pass
+#    def test_layer_metadata_csw(self):
+#        pass
 
-    def test_layer_attribute_names(self):
-        pass
+#    def test_layer_attribute_names(self):
+#        pass
 
-    def test_layer_display_type(self):
-        pass
+#    def test_layer_display_type(self):
+#        pass
 
-    def test_layer_delete_from_geoserver(self):
-        pass
+#    def test_layer_delete_from_geoserver(self):
+#        pass
 
-    def test_layer_delete_from_geonetwork(self):
-        pass
+#    def test_layer_delete_from_geonetwork(self):
+#        pass
 
-    def test_delete_layer(self):
-        pass
+#    def test_delete_layer(self):
+#        pass
 
-    def test_layer_resource(self):
-        pass
+#    def test_layer_resource(self):
+#        pass
 
-    def test_layer_get_metadata_links(self):
-        pass
+#    def test_layer_get_metadata_links(self):
+#        pass
 
-    def test_layer_set_metadata_links(self):
-        pass
+#    def test_layer_set_metadata_links(self):
+#        pass
 
-    def test_layer_get_default_style(self):
-        pass
+#    def test_layer_get_default_style(self):
+#        pass
     
-    def test_layer_set_default_style(self):
-        pass
+#    def test_layer_set_default_style(self):
+#        pass
 
-    def test_layer_get_styles(self):
-        pass
+#    def test_layer_get_styles(self):
+#        pass
 
-    def test_layer_set_styles(self):
-        pass
+#    def test_layer_set_styles(self):
+#        pass
 
-    def test_layer_service_type(self):
-        pass
+#    def test_layer_service_type(self):
+#        pass
 
-    def test_layer_publishing(self):
-        pass
+#    def test_layer_publishing(self):
+#        pass
 
-    def test_layer_poc_role(self):
-        pass
+#    def test_layer_poc_role(self):
+#        pass
 
-    def test_layer_metadata_author_role(self):
-        pass
+#    def test_layer_metadata_author_role(self):
+#        pass
 
-    def test_layer_set_poc(self):
-        pass
+#    def test_layer_set_poc(self):
+#        pass
 
-    def test_layer_get_poc(self):
-        pass
+#    def test_layer_get_poc(self):
+#        pass
 
-    def test_layer_set_metadata_author(self):
-        pass
+#    def test_layer_set_metadata_author(self):
+#        pass
 
-    def test_layer_get_metadata_author(self):
-        pass
+#    def test_layer_get_metadata_author(self):
+#        pass
 
-    def test_layer_populate_from_gs(self):
-        pass
+#    def test_layer_populate_from_gs(self):
+#        pass
 
-    def test_layer_autopopulate(self):
-        pass
+#    def test_layer_autopopulate(self):
+#        pass
 
-    def test_layer_populate_from_gn(self):
-        pass
+#    def test_layer_populate_from_gn(self):
+#        pass
 
-    def test_layer_keyword_list(self):
-        pass
+#    def test_layer_keyword_list(self):
+#        pass
 
-    def test_layer_set_bbox(self):
-        pass
+#    def test_layer_set_bbox(self):
+#        pass
 
-    def test_layer_get_absolute_url(self):
-        pass
+#    def test_layer_get_absolute_url(self):
+#        pass
 
     def test_layer_set_default_permissions(self):
         """Verify that Layer.set_default_permissions is behaving as expected
@@ -192,14 +192,14 @@ community."
 
     # maps.models.Map
 
-    def test_map_center(self):
-        pass
+#    def test_map_center(self):
+#        pass
 
-    def test_map_layers(self):
-        pass
+#    def test_map_layers(self):
+#        pass
 
-    def test_map_local_layers(self):
-        pass
+#    def test_map_local_layers(self):
+#        pass
 
 
     viewer_config_alternative = """
@@ -247,53 +247,53 @@ community."
         self.assertEquals(map.abstract, "Abstract2")
         self.assertEquals(map.layer_set.all().count(), 1)
 
-    def test_map_viewer_json(self):
-        pass
+#    def test_map_viewer_json(self):
+#        pass
 
-    def test_map_update_from_viewer(self):
-        pass
+#    def test_map_update_from_viewer(self):
+#        pass
 
-    def test_map_get_absolute_url(self):
-        pass
+#    def test_map_get_absolute_url(self):
+#        pass
 
-    def test_map_set_default_permissions(self):
-        pass
+#    def test_map_set_default_permissions(self):
+#        pass
 
     # maps.models.MapLayerManager
 
-    def test_mlm_from_viewer_config(self):
-        pass
+#    def test_mlm_from_viewer_config(self):
+#        pass
     
     # maps.models.MapLayer
 
-    def test_map_layer_from_viewer_config(self):
-        pass
+#    def test_map_layer_from_viewer_config(self):
+#        pass
 
-    def test_map_layer_source_config(self):
-        pass
+#    def test_map_layer_source_config(self):
+#        pass
 
-    def test_map_layer_layer_config(self):
-        pass
+#    def test_map_layer_layer_config(self):
+#        pass
 
-    def test_map_layer_local_link(self):
-        pass
+#    def test_map_layer_local_link(self):
+#        pass
 
     # maps/views.py tests
 
-    def test_project_center(self):
-        pass
+#    def test_project_center(self):
+#        pass
 
-    def test_baselayer(self):
-        pass
+#    def test_baselayer(self):
+#        pass
 
-    def test_bbox_to_wkt(self):
-        pass
+#    def test_bbox_to_wkt(self):
+#        pass
 
-    def test_view_js(self):
-        pass
+#    def test_view_js(self):
+#        pass
 
-    def test_view(self):
-        pass
+#    def test_view(self):
+#        pass
 
     # Maps Tests
 
@@ -328,11 +328,11 @@ community."
     }
     """
 
-    def test_map_controller(self):
-        pass
+#    def test_map_controller(self):
+#        pass
 
-    def test_new_map(self):
-        pass
+#    def test_new_map(self):
+#        pass
 
     def test_map_save(self):
         """POST /maps -> Test saving a new map"""
@@ -399,31 +399,31 @@ community."
         response = c.get("/maps/%s" % map.id)
         self.assertEquals(response.status_code,200) 
 
-    def test_delete_map(self):
-        pass
+#    def test_delete_map(self):
+#        pass
 
-    def test_map_detail(self):
-        pass
+#    def test_map_detail(self):
+#        pass
 
-    def test_describe_map(self):
-        pass
+#    def test_describe_map(self):
+#        pass
 
-    def test_embed_map(self):
-        pass
+#    def test_embed_map(self):
+#        pass
 
     # Batch Tests    
     
-    def test_map_download(self):
-        pass
+#    def test_map_download(self):
+#        pass
 
-    def test_check_download(self):
-        pass
+#    def test_check_download(self):
+#        pass
 
-    def test_batch_layer_download(self):
-        pass
+#    def test_batch_layer_download(self):
+#        pass
 
-    def test_batch_delete(self):
-        pass
+#    def test_batch_delete(self):
+#        pass
 
     # Permissions Tests
 
@@ -578,12 +578,12 @@ community."
 
         # TODO Lots more to do here once jj0hns0n understands the ACL system better
 
-    def test_view_perms_context(self):
+#    def test_view_perms_context(self):
         # It seems that since view_layer_permissions and view_map_permissions
         # are no longer used, that this view is also no longer used since those
         # are the only 2 places it is ever called (jj0hns0n 2011-04-13)
  
-        pass
+#        pass
 
     def test_perms_info(self):
         """ Verify that the perms_info view is behaving as expected
@@ -605,33 +605,33 @@ community."
         # Test with a Map object
         # TODO
 
-    def test_perms_info_json(self):
-        # Should only need to verify that valid json is returned?
-        pass
+#    def test_perms_info_json(self):
+#        # Should only need to verify that valid json is returned?
+#        pass
 
-    def test_fix_map_perms_for_editor(self):
+#    def test_fix_map_perms_for_editor(self):
         # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-        pass
+#        pass
 
-    def test_handle_perms_edit(self):
+#    def test_handle_perms_edit(self):
         # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-        pass
+#        pass
 
-    def test_get_basic_auth_info(self):
+#    def test_get_basic_auth_info(self):
         # How do we test this? Perhaps as a part of test_layer_acls
-        pass
+#        pass
 
-    def test_view_map_permissions(self):
-        pass
+#    def test_view_map_permissions(self):
+#        pass
 
-    def test_set_map_permissions(self):
-        pass
+#    def test_set_map_permissions(self):
+#        pass
 
-    def test_ajax_map_permissions(self):
-        pass
+#    def test_ajax_map_permissions(self):
+#        pass
 
-    def test_batch_permissions(self):
-        pass
+#    def test_batch_permissions(self):
+#        pass
 
     # Data Tests
 
@@ -641,8 +641,8 @@ community."
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_browse_data(self):
-        pass
+#    def test_browse_data(self):
+#        pass
 
     def test_describe_data(self):
         '''/data/base:CA?describe -> Test accessing the description of a layer '''
@@ -673,26 +673,26 @@ community."
         response = c.get("/data/upload")
         self.assertEquals(response.status_code,200)
 
-    def test_handle_layer_upload(self):
-        pass
+#    def test_handle_layer_upload(self):
+#        pass
 
-    def test_update_layer(self):
-        pass
+#    def test_update_layer(self):
+#        pass
 
-    def test_describe_layer(self):
-        pass
+#    def test_describe_layer(self):
+#        pass
 
-    def test_remove_layer(self):
-        pass
+#    def test_remove_layer(self):
+#        pass
 
-    def test_change_layer_default_style(self):
-        pass
+#    def test_change_layer_default_style(self):
+#        pass
 
-    def test_layer_controller(self):
-        pass
+#    def test_layer_controller(self):
+#        pass
 
-    def test_extract_links(self):
-        pass
+#    def test_extract_links(self):
+#        pass
 
     # Search Tests
     
@@ -702,11 +702,11 @@ community."
         response = c.get('/data/search/')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_search_page(self):
-        pass
+#    def test_search_page(self):
+#        pass
 
-    def test_build_search_result(self):
-        pass
+#    def test_build_search_result(self):
+#        pass
 
     def test_metadata_search(self):
         c = Client()
@@ -728,8 +728,8 @@ community."
             self.assertEqual(call_args[0][1], 5)
             self.assertEqual(call_args[0][2], 10)
 
-    def test_search_result_detail(self):
-        pass
+#    def test_search_result_detail(self):
+#        pass
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
