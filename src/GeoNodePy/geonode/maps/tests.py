@@ -37,13 +37,6 @@ class MapTest(TestCase):
     """
 
     fixtures = ['test_data.json', 'map_data.json']
-    GEOSERVER = False
-
-    def setUp(self):
-        # If Geoserver and GeoNetwork are not running
-        # avoid running tests that call those views.
-        if "GEOSERVER" in os.environ:
-            self.GEOSERVER = True
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
@@ -651,15 +644,8 @@ community."
         # but if we log in ...
         c.login(username='bobby', password='bob')
         # ... all should be good
-        if self.GEOSERVER:
-            response = c.get('/data/base:CA?describe')
-            self.failUnlessEqual(response.status_code, 200)
-        else:
-            # If Geoserver is not running, this should give a runtime error
-            try:
-                c.get('/data/base:CA?describe')
-            except RuntimeError:
-                pass
+        response = c.get('/data/base:CA?describe')
+        self.failUnlessEqual(response.status_code, 200)
     
     # Layer Tests
 
@@ -743,26 +729,24 @@ community."
     
     def test_search_api(self):
         '''/data/search/api -> Test accessing the data search api JSON'''
-        if self.GEOSERVER:
-            c = Client()
-            response = c.get('/data/search/api')
-            self.failUnlessEqual(response.status_code, 200)
+        c = Client()
+        response = c.get('/data/search/api')
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_search_detail(self):
         '''
         /data/search/detail -> Test accessing the data search detail for a layer
         Disabled due to reliance on consistent UUIDs across loads.
         '''
-        if self.GEOSERVER:
-            layer = Layer.objects.all()[0]
+        layer = Layer.objects.all()[0]
 
-            # save to geonetwork so we know the uuid is consistent between
-            # django db and geonetwork
-            layer.save_to_geonetwork()
+        # save to geonetwork so we know the uuid is consistent between
+        # django db and geonetwork
+        layer.save_to_geonetwork()
 
-            c = Client()
-            response = c.get('/data/search/detail', {'uuid':layer.uuid})
-            self.failUnlessEqual(response.status_code, 200)
+        c = Client()
+        response = c.get('/data/search/detail', {'uuid':layer.uuid})
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_search_template(self):
         from django.template import Context
@@ -789,15 +773,8 @@ community."
         # but if we log in ...
         c.login(username='bobby', password='bob')
         # ... all should be good
-        if self.GEOSERVER:
-            response = c.get('/data/base:CA?describe')
-            self.failUnlessEqual(response.status_code, 200)
-        else:
-            # If Geoserver is not running, this should give a runtime error
-            try:
-                c.get('/data/base:CA?describe')
-            except RuntimeError:
-                pass
+        response = c.get('/data/base:CA?describe')
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
