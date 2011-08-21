@@ -32,6 +32,17 @@ _csw_resource.url = "http://example.com/"
 _csw_resource.description = "example link"
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
 
+DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
+
+geonode.maps.views._metadata_search = Mock()
+geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
+
+geonode.maps.views.get_csw = Mock()
+geonode.maps.views.get_csw.return_value.getrecordbyid.return_value = None
+geonode.maps.views.get_csw.return_value.records.values.return_value = [None]
+geonode.maps.views._extract_links = Mock()
+geonode.maps.views._extract_links.return_value = {}
+
 class MapTest(TestCase):
     """Tests geonode.maps app/module
     """
