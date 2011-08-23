@@ -41,7 +41,7 @@ You can unpack it like::
   GeoNode-1.0.1/geonetwork.war
   GeoNode-1.0.1/pavement.py
   GeoNode-1.0.1/geonode-webapp.pybundle
-  GeoNode-1.0.1/geoserver-geonode-dev.war
+  GeoNode-1.0.1/geoserver.war
   GeoNode-1.0.1/bootstrap.py
   GeoNode-1.0.1/deploy-libs.txt
   GeoNode-1.0.1/deploy.ini.ex
@@ -141,16 +141,16 @@ Deploying GeoNetwork
 Deploying GeoServer
 -------------------
 
-1. Move :file:`geoserver-geonode-dev.war` from the GeoNode release archive into
+1. Move :file:`geoserver.war` from the GeoNode release archive into
    the Tomcat deployment directory::
 
-     $ mv GeoNode-1.0.1/geoserver-geonode-dev.war /var/lib/tomcat5/webapps/
+     $ mv GeoNode-1.0.1/geoserver.war /var/lib/tomcat5/webapps/
 
 2. GeoServer uses the Django web application to authenticate users.  By
    default, it will look for GeoNode at http://localhost:8000/ but we will be
    running the Django application on http://localhost:80/ so we have to
    configure GeoServer to look at that URL.  To do so, edit
-   :file:`/var/lib/tomcat5/webapps/geoserver-geonode-dev/WEB-INF/web.xml` 
+   :file:`/var/lib/tomcat5/webapps/geoserver/WEB-INF/web.xml` 
    and add a context-parameter::
 
      <context-param>
@@ -166,7 +166,7 @@ Deploying GeoServer
 
 3. Move the GeoServer "data directory" outside of the servlet container to
    avoid having it overwritten on later upgrades. Edit the file
-   :file:`/var/lib/tomcat5/webapps/geoserver-geonode-dev/WEB-INF/web.xml`
+   :file:`/var/lib/tomcat5/webapps/geoserver/WEB-INF/web.xml`
    by uncommenting the block below and setting the param-value to 
    ``/opt/geoserver_data``::
 
@@ -178,7 +178,7 @@ Deploying GeoServer
 4. GeoServer requires a particular directory structure in data directories, so 
    also copy the template datadir from the tomcat webapps directory::
    
-     $ cp -rp /var/lib/tomcat5/webapps/geoserver-geonode-dev/data/* /opt/geoserver_data/.
+     $ cp -rp /var/lib/tomcat5/webapps/geoserver/data/* /opt/geoserver_data/.
      $ chown tomcat. /opt/geoserver_data/ -R
 
 4. After modifying ``web.xml`` you will need to restart Tomcat for changes to
@@ -187,7 +187,7 @@ Deploying GeoServer
      $ service tomcat5 restart
 
 5. You should now be able to visit the GeoServer web interface at
-   http://localhost:8080/geoserver-geonode-dev/ . 
+   http://localhost:8080/geoserver/ . 
    
 .. note::
 
@@ -226,8 +226,8 @@ its configuration are necessary.
 
      ProxyPreserveHost On
 
-     ProxyPass /geoserver-geonode-dev http://localhost:8080/geoserver-geonode-dev
-     ProxyPassReverse /geoserver-geonode-dev http://localhost:8080/geoserver-geonode-dev
+     ProxyPass /geoserver http://localhost:8080/geoserver
+     ProxyPassReverse /geoserver http://localhost:8080/geoserver
      ProxyPass /geonetwork http://localhost:8080/geonetwork
      ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
 
@@ -243,7 +243,7 @@ its configuration are necessary.
    services are working properly::
 
      http://localhost/geonetwork/
-     http://localhost/geoserver-geonode-dev/
+     http://localhost/geoserver/
 
 Installing the GeoNode Django Application
 -----------------------------------------
@@ -297,7 +297,7 @@ Installing the GeoNode Django Application
      SECRET_KEY = ''
 
      # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-     GEOSERVER_BASE_URL = SITEURL + "geoserver-geonode-dev/"
+     GEOSERVER_BASE_URL = SITEURL + "geoserver/"
 
      # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
      GEONETWORK_BASE_URL = SITEURL + "geonetwork/"
