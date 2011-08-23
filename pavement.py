@@ -65,7 +65,7 @@ bundle = path('shared/geonode.pybundle')
 dl_cache = "--download-cache=./build"
 dlname = 'geonode.bundle'
 gs_data = "gs-data"
-geoserver_target = path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war')
+geoserver_target = path('src/geoserver-geonode-ext/target/geoserver.war')
 geonetwork_target = path('webapps/geonetwork.war')
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
 geonode_client_target_war = path('webapps/geonode-client.war')
