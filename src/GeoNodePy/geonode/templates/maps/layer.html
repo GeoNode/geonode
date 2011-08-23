@@ -80,10 +80,13 @@
                     params: {"defaultStyle" : elem.value}
                 });
             });
-            
+{% has_obj_perm user layer "maps.change_layer" as can_change %}
+{% if can_change %}
             Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
                 showStyle(Ext.get(elem).prev("input").getAttribute("value"));
             });
+{% endif %}
+
 {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
 {% if can_change_permissions %}
             new GeoNode.PermissionsEditor({
@@ -221,6 +224,9 @@
     {% endif %}
     <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.typename}}">Create new map</a></p> 
 
+    {% has_obj_perm user layer "maps.change_layer" as can_change %}
+    {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
+
     <h3> {% trans "Styles" %} </h3>
     <p> {% trans "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style." %}
     <br/>
@@ -234,7 +240,7 @@
         <a href="{{ style.body_href }}">SLD</a><br/>
     {% endfor %}
     </span>
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and can_change %}
     {% trans "Default style:" %}
     <select name="default-style">
         <option value="{{layer.publishing.default_style.name}}" selected="selected">
@@ -252,8 +258,6 @@
 
 
     {% if user.is_authenticated %}
-    {% has_obj_perm user layer "maps.change_layer" as can_change %}
-    {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
     {% if can_change or can_delete or can_change_permissions %}
 
         <h3> {% trans "Manage" %} </h3>

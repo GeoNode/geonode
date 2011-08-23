@@ -35,7 +35,7 @@ You can unpack it like::
    GeoNode-1.0.1/geonetwork.war
    GeoNode-1.0.1/pavement.py
    GeoNode-1.0.1/geonode-webapp.pybundle
-   GeoNode-1.0.1/geoserver-geonode-dev.war
+   GeoNode-1.0.1/geoserver.war
    GeoNode-1.0.1/bootstrap.py
    GeoNode-1.0.1/deploy-libs.txt
    GeoNode-1.0.1/deploy.ini.ex
@@ -104,16 +104,16 @@ Deploying GeoNetwork
 Deploying GeoServer
 -------------------
 
-1. Move :file:`geoserver-geonode-dev.war` from the GeoNode release archive into
+1. Move :file:`geoserver.war` from the GeoNode release archive into
    the Tomcat deployment directory::
 
-     # sudo cp geoserver-geonode-dev.war /var/lib/tomcat6/webapps/
+     # sudo cp geoserver.war /var/lib/tomcat6/webapps/
 
 2. GeoServer uses the Django web application to authenticate users.  By
    default, it will look for GeoNode at http://localhost:8000/ but we will be
    running the Django application on http://localhost:80/ so we have to
    configure GeoServer to look at that URL.  To do so, edit
-   :file:`/var/lib/tomcat6/webapps/geoserver-geonode-dev/WEB-INF/web.xml` 
+   :file:`/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml` 
    and add a context-parameter::
 
      <context-param>
@@ -132,7 +132,7 @@ Deploying GeoServer
    GeoServer requires a particular directory structure in data directories, so
    also copy the template datadir from the tomcat webapps directory::
 
-     # cp -R /var/lib/tomcat6/webapps/geoserver-geonode-dev/data/ /opt/geoserver_data
+     # cp -R /var/lib/tomcat6/webapps/geoserver/data/ /opt/geoserver_data
      # chown tomcat6 -R /opt/geoserver_data/
 
 4. Restart tomcat::
@@ -147,7 +147,7 @@ Changes after Tomcat is Running
      # /etc/init.d/tomcat6 start
 
 2. You should now be able to visit the GeoServer web interface at
-   http://localhost:8080/geoserver-geonode-dev/ .  GeoServer is configured to
+   http://localhost:8080/geoserver/ .  GeoServer is configured to
    use the Django database for authentication, so you won't be able to log in
    to the GeoServer console until Django is up and running.
 
@@ -249,7 +249,7 @@ Install GeoNode Django Site
      SECRET_KEY = '' 
 
      # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-     GEOSERVER_BASE_URL = SITEURL + "geoserver-geonode-dev/"
+     GEOSERVER_BASE_URL = SITEURL + "geoserver/"
 
      # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
      GEONETWORK_BASE_URL = SITEURL + "geonetwork/"
@@ -320,8 +320,8 @@ Install GeoNode Django Site
 
         ProxyPreserveHost On
 
-        ProxyPass /geoserver-geonode-dev http://localhost:8080/geoserver-geonode-dev
-        ProxyPassReverse /geoserver-geonode-dev http://localhost:8080/geoserver-geonode-dev
+        ProxyPass /geoserver http://localhost:8080/geoserver
+        ProxyPassReverse /geoserver http://localhost:8080/geoserver
         ProxyPass /geonetwork http://localhost:8080/geonetwork
         ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
      </VirtualHost>
