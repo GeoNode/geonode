@@ -18,7 +18,7 @@ if (window.GeoExplorer) {
         helpLabel: gettext("Help"),
         infoButtonText: gettext("About"),
         largeSizeLabel: gettext("Large"),
-        layerAdditionLabel: gettext("Add WMS Server"),
+        layerAdditionLabel: gettext("Add another server"),
         layerContainerText: gettext("Map Layers"),
         layerSelectionLabel: gettext("View available data from:"),
         layerLocalLabel: gettext("Upload your own data"),
