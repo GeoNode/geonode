@@ -1018,7 +1018,7 @@ msgstr "Φωνή"
 
 #: maps/models.py:494
 msgid "Facsimile"
-msgstr "Πανομοιότυπο"
+msgstr "Fax"
 
 #: maps/models.py:495
 msgid "Delivery Point"
