@@ -441,7 +441,7 @@ msgstr "Επόμενη"
 #: templates/lang.js:159
 #: templates/lang.js.py:180
 msgid "of"
-msgstr "του"
+msgstr "από"
 
 #: templates/lang.js:160
 #: templates/lang.js.py:181
