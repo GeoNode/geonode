@@ -164,6 +164,11 @@ Ext.onReady(function(){
         name: "permissions"
     });
 
+    var termsAgreeCheck = new Ext.form.CheckBox({
+        id: 'agreeCheck',
+        label: 'I agree to the <a href="blah.html" >Terms and Conditions</a> '
+    });
+
     var fp = new Ext.FormPanel({
         renderTo: 'upload_form',
         fileUpload: true,
@@ -176,7 +181,7 @@ Ext.onReady(function(){
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, abstractField, permissionsField, {
+        items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, abstractField, termsAgreeCheck, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"

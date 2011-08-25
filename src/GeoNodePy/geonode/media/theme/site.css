@@ -888,3 +888,8 @@ cursor: pointer;
      position: absolute;
      padding-top: 5px;
 }
+
+.checkright {
+    color: Red;
+    left:100px;
+}
