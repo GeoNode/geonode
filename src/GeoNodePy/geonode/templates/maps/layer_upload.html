@@ -164,9 +164,17 @@ Ext.onReady(function(){
         name: "permissions"
     });
 
-    var termsAgreeCheck = new Ext.form.CheckBox({
+    var termsAgreeCheck = new Ext.form.Checkbox({
         id: 'agreeCheck',
-        label: 'I agree to the <a href="blah.html" >Terms and Conditions</a> '
+        fieldLabel: 'I agree to the <a href="" onclick="javascript:showTOC();return false;">Terms and Conditions</a>',
+        handler: function(){
+                if (this.checked) {
+                        Ext.getCmp('uploadButton').enable();
+                } else
+                    Ext.getCmp('uploadButton').disable();
+        },
+        labelStyle: 'position:absolute;float:left;left:80px;width:200px',
+        labelSeparator : ''
     });
 
     var fp = new Ext.FormPanel({
@@ -188,6 +196,7 @@ Ext.onReady(function(){
         }],
         buttons: [{
             text: gettext('Upload'),
+            disabled: true,
             handler: function(){
                 if (fp.getForm().isValid()) {
                     fp.getForm().submit({
@@ -288,6 +297,37 @@ Ext.onReady(function(){
     permissionsEditor.fireEvent("updated", permissionsEditor);
 
 });
+
+    var showTOC = function() {
+        var TOCPanel = new Ext.Panel({
+            id: 'worldmap_mapshare_panel',
+            title: 'Share Map',
+            header: false,
+            autoLoad: {url: '/maps/upload_terms'},
+            autoScroll: true
+        });
+
+        var TOCWindow = new Ext.Window({
+            title: "WorldMap Terms and Conditions",
+            closeAction: 'destroy',
+            layout: 'fit',
+            width: 400,
+            height:400,
+            items: [TOCPanel],
+            modal: true,
+            autoScroll: false,
+            bodyStyle: 'background-color:#FFF',
+            buttons: [
+                {
+                    text: 'Close',
+                    handler: function() {TOCWindow.close();}
+                }
+            ]
+        });
+
+        TOCWindow.show();
+
+    };
 {% endautoescape %}
 </script>
 

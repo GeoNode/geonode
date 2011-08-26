@@ -559,7 +559,8 @@ def set_layer_permissions(layer, perm_spec, use_email = False):
             user = User.objects.get(username=username)
             layer.set_user_level(user, level)
     # Always make sure owner keeps control
-    layer.set_user_level(layer.owner, layer.LEVEL_ADMIN)
+    if layer.owner is not None:
+        layer.set_user_level(layer.owner, layer.LEVEL_ADMIN)
 
 def set_map_permissions(m, perm_spec, use_email = False):
     if "authenticated" in perm_spec:

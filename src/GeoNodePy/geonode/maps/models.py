@@ -832,7 +832,7 @@ class Layer(models.Model, PermissionLevelMixin):
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True)
     temporal_extent_end = models.DateField(_('temporal extent end'), blank=True, null=True)
     geographic_bounding_box = models.TextField(_('geographic bounding box'))
-    supplemental_information = models.TextField(_('supplemental information'), blank=True, null=True)
+    supplemental_information = models.TextField(_('supplemental information'), blank=True, null=True, default='')
 
     # Section 6
     distribution_url = models.TextField(_('distribution URL'), blank=True, null=True)
@@ -1346,12 +1346,14 @@ class Layer(models.Model, PermissionLevelMixin):
     LEVEL_ADMIN = 'layer_admin'
 
     def set_default_permissions(self):
+        logger.info("Set group permissions")
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
         self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
         self.set_gen_level(CUSTOM_GROUP_USERS, self.LEVEL_READ)
 
         # remove specific user permissions
         current_perms =  self.get_all_level_info()
+
         for username in current_perms['users'].keys():
             user = User.objects.get(username=username)
             self.set_user_level(user, self.LEVEL_NONE)
@@ -1673,7 +1675,9 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.featured = conf['about'].get('featured', False)
 
-        self.group_params = simplejson.dumps(conf["treeconfig"])
+        logger.info("Try to save treeconfig")
+        self.group_params = simplejson.dumps(conf['treeconfig'])
+        logger.info("Saved treeconfig")
 
         def source_for(layer):
             return conf["sources"][layer["source"]]
@@ -1688,7 +1692,9 @@ class Map(models.Model, PermissionLevelMixin):
                 self.layer_set.from_viewer_config(
                     self, layer, source_for(layer), ordering
             ))
+        logger.info("About to save")
         self.save()
+        logger.info("Saved")
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
@@ -1749,6 +1755,9 @@ class MapSnapshot(models.Model):
                 "user": self.user.username if self.user else None,
                 "url": num_encode(self.id)
         }
+
+
+
 
 class SocialExplorerLocation(models.Model):
     map = models.ForeignKey(Map, related_name="jump_set")

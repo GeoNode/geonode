@@ -451,12 +451,14 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
                     keywords=' '.join(keywords),
                     abstract=abstract or gs_resource.abstract or '',
                     owner=user)
+    logger.info('%s,  ', gs_resource.store.name, )
     saved_layer, created = Layer.objects.get_or_create(name=gs_resource.name,
                                                        defaults=defaults)
-
+    logger.info('WTF')
     if created:
         saved_layer.set_default_permissions()
 
+    logger.info('HELLO')
     # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this
     logger.info('>>> Step 9. Creating points of contact records for '

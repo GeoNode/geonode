@@ -16,5 +16,16 @@
             "email": "bobby@bob.com", 
             "date_joined": "2010-06-10 16:58:18"
         }
+    },
+    {
+        "pk":1,
+        "model" : "maps.contact",
+        "fields" : {
+            "user": "1",
+            "email" : "bobby@bob.com",
+            "is_org_member" : "False",
+            "created_dttm": "2010-06-10 16:58:18",
+            "member_expiration_dt" : "2010-06-10"
+        }
     }
 ]
