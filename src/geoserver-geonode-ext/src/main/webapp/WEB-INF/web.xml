@@ -63,10 +63,10 @@
 
     <!-- Use GeoNode specific filter chain -->
     <filter>
-     <filter-name>Spring Security Filter Chain Proxy</filter-name>
-     <filter-class>org.springframework.security.util.FilterToBeanProxy</filter-class>
+     <filter-name>filterChainProxy</filter-name>
+     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
      <init-param>
-       <param-name>targetBean</param-name>
+       <param-name>targetBeanName</param-name>
        <param-value>geonodeFilterChainProxy</param-value>
      </init-param>
     </filter>
@@ -191,7 +191,7 @@
       If you want to use your security system comment out this one too
     -->
     <filter-mapping>
-      <filter-name>Spring Security Filter Chain Proxy</filter-name>
+      <filter-name>filterChainProxy</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
     
