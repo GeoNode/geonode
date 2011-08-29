@@ -24,6 +24,7 @@ from xml.etree.ElementTree import parse, XML
 import re
 import logging
 from geonode.maps.encode import num_encode
+from django.core.cache import cache
 
 logger = logging.getLogger("geonode.maps.models")
 from gs_helpers import cascading_delete
@@ -683,6 +684,7 @@ class LayerManager(models.Manager):
         # Make sure to logout after you have finished using it.
         return self.geonetwork
 
+
     def admin_contact(self):
         # this assumes there is at least one superuser
         superusers = User.objects.filter(is_superuser=True).order_by('id')
@@ -1022,12 +1024,18 @@ class Layer(models.Model, PermissionLevelMixin):
         # are the same in every database.
 
     def searchFields(self):
-        searchable_fields = []
-        scount = 0
-        for la in self.attribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$').order_by('display_order'):
-            searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
-            if la.searchable:
-                scount+=1
+        searchable_fields = cache.get('layer_searchfields_' + self.typename)
+        if searchable_fields is None:
+            logger.debug("Create searchfields for %s", self.typename)
+            searchable_fields = []
+            scount = 0
+            attributes = self.attribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$').order_by('display_order')
+            for la in attributes:
+                searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
+                if la.searchable:
+                    scount+=1
+            cache.add('layer_searchfields_' + self.typename, searchable_fields)
+            logger.debug("cache created for layer %s", self.typename)
         return searchable_fields
 
     def maps(self):
@@ -1391,7 +1399,8 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['visibility'] = True
         cfg['abstract'] = self.abstract
         cfg['styles'] = ''
-        logger.debug("layer config for [%s] is [%s]", self.name, str(cfg))
+        logger.debug("layer config for [%s] is [%s]", self.typename, str(cfg))
+        
         return cfg
 
 class LayerAttribute(models.Model):
@@ -1515,8 +1524,12 @@ class Map(models.Model, PermissionLevelMixin):
         return (self.center_x, self.center_y)
 
     @property
-    def layers(self):
-        layers = MapLayer.objects.filter(map=self.id)
+    def maplayers(self):
+        layers = cache.get('maplayerset_' + str(self.id))
+        if layers is None:
+            logger.debug('maplayerset cache was None')
+            layers = MapLayer.objects.filter(map=self.id)
+            cache.add('maplayerset_' + str(self.id), layers)
         return  [layer for layer in layers]
 
     @property
@@ -1529,7 +1542,7 @@ class Map(models.Model, PermissionLevelMixin):
         return True
 
     def json(self, layer_filter):
-        map_layers = MapLayer.objects.filter(map=self.id)
+        map_layers = self.maplayers
         layers = []
         for map_layer in map_layers:
             if map_layer.local():
@@ -1575,7 +1588,7 @@ class Map(models.Model, PermissionLevelMixin):
         configuration. These are not persisted; if you want to add layers you
         should use ``.layer_set.create()``.
         """
-        layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
+        layers = list(self.maplayers) + list(added_layers) #implicitly sorted by stack_order
         sejumps = self.jump_set.all()
         server_lookup = {}
         sources = dict()
@@ -1694,6 +1707,7 @@ class Map(models.Model, PermissionLevelMixin):
             ))
         logger.info("About to save")
         self.save()
+        cache.delete('maplayerset_' + str(self.id))
         logger.info("Saved")
 
     def get_absolute_url(self):
@@ -1918,7 +1932,12 @@ class MapLayer(models.Model):
         but we try to err on the side of false negatives.
         """
         if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
-            return Layer.objects.filter(typename=self.name).count() != 0
+            isLocal = cache.get('islocal_' + self.name)
+            if isLocal is None:
+                logger.debug('isLocal_%s is None', self.name)
+                isLocal = Layer.objects.filter(typename=self.name).count() != 0
+                cache.add('islocal_' + self.name, isLocal)
+            return isLocal
         else:
             return False
 
@@ -1963,8 +1982,14 @@ class MapLayer(models.Model):
         cfg["visibility"] = self.visibility
 
         logger.debug("TYPENAME:[%s]", self.name)
+
+        #gnLayer = cache.get("layer_cache_by_user" + str(self.name) +"_" + str(user.id if user is not None else 0))
+        #if gnLayer is None:
         gnLayer = Layer.objects.filter(typename=self.name)
-        logger.debug("GN Layer Count:[%s]", gnLayer.count())
+        #    if gnLayer.count() == 1:
+        #        cache.add(("layer_cache_by_user" + str(self.name) +"_" + str(user.id if user is not None else 0)), gnLayer[0])
+        #        logger.debug('Added cache for layer %s, user %s', self.name,  str(user.id if user is not None else 0))
+        #logger.debug("GN Layer Count:[%s]", gnLayer.count())
         if gnLayer.count() == 1:
             logger.debug("Get projection info for GeoNode layer")
             if gnLayer[0].srs: cfg['srs'] = gnLayer[0].srs

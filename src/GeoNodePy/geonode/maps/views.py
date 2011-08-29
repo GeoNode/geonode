@@ -41,6 +41,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
 from datetime import datetime, timedelta
+from django.core.cache import cache
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -1045,6 +1046,9 @@ def _describe_layer(request, layer):
                         la.searchable = form["searchable"]
                         la.display_order = form["display_order"]
                         la.save()
+                    cache.delete('layer_searchfields_' + layer.typename)
+                    logger.debug("Deleted cache for layer_searchfields_" + layer.typename)
+
 
 
                 new_poc = layer_form.cleaned_data['poc']
@@ -1074,6 +1078,7 @@ def _describe_layer(request, layer):
                     logger.debug("About to save")
                     the_layer.save()
                     logger.debug("Saved")
+
 
 
                 if request.is_ajax():
@@ -1353,7 +1358,8 @@ def _updateLayer(request, layer):
 
                 try:
                     #Delete layer attributes if they no longer exist in an updated layer
-                    for la in LayerAttribute.objects.filter(layer=saved_layer):
+                    attributes = LayerAttribute.objects.filter(layer=saved_layer)
+                    for la in attributes:
                         lafound = False
                         if layer.attribute_names is not None:
                             for field, ftype in saved_layer.attribute_names.iteritems():
