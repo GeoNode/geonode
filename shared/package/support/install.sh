@@ -1,17 +1,7 @@
 #!/bin/bash
 
 # GeoNode installation file, this only copies the files in the right folder
-HERE=.
-TARGET_ROOT=''
-TOMCAT_WEBAPPS=$ROOT/var/lib/tomcat6/webapps
-GEOSERVER_DATA_DIR=$ROOT/var/lib/geoserver/data
-GEONODE_WWW=$ROOT/var/www/geonode
-APACHE_SITES=$ROOT/etc/apache2/sites-available
-GEONODE_LIB=$ROOT/var/lib/geonode
-GEONODE_BIN=$ROOT/usr/bin/
-GEONODE_SHARE=$ROOT/usr/share/geonode
-GEONODE_ETC=$ROOT/etc/geonode
-
+source $1
 #
 # First step is to unpack the wars in the tomcat webapps dir
 #
@@ -61,7 +51,7 @@ mkdir -p $GEONODE_SHARE
 cp -rp $HERE/support/geonode.admin $GEONODE_SHARE/admin.json
 cp -rp $HERE/support/geoserver.patch $GEONODE_SHARE
 cp -rp $HERE/support/geonetwork.patch $GEONODE_SHARE
-cp -rp $HERE/support/create_template_postgis-debian.sh $GEONODE_SHARE
+cp -rp $HERE/support/create_geonode_postgis.sh $GEONODE_SHARE
 #
 # Sixth step is to configure /etc/geonode/ with folders for custom media and templates
 #
