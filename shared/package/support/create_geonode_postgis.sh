@@ -18,7 +18,7 @@ else
 fi
 
 createdb -E UTF8 geonode && \
-createlang -d genode plpgsql && \
+createlang -d geonode plpgsql && \
 psql -d geonode -f $POSTGIS_SQL_PATH/$POSTGIS_SQL && \
 psql -d geonode -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql && \
 psql -d geonode -c "GRANT ALL ON geometry_columns TO PUBLIC;" && \
