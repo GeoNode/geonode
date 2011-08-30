@@ -1380,7 +1380,6 @@ class Layer(models.Model, PermissionLevelMixin):
         :method:`geonode.maps.models.Map.viewer_json` for an example of
         generating a full map configuration.
         """
-
         cfg = dict()
         cfg['name'] = self.typename
         cfg['title'] =self.title
@@ -1399,8 +1398,6 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['visibility'] = True
         cfg['abstract'] = self.abstract
         cfg['styles'] = ''
-        logger.debug("layer config for [%s] is [%s]", self.typename, str(cfg))
-        
         return cfg
 
 class LayerAttribute(models.Model):
@@ -1534,6 +1531,7 @@ class Map(models.Model, PermissionLevelMixin):
 
     @property
     def snapshots(self):
+        logger.debug('+_+_+_+_+_+_+_GETTING SNAPSHOTS')
         snapshots = MapSnapshot.objects.exclude(user=None).filter(map=self.id)
         return [snapshot for snapshot in snapshots]
 
@@ -1588,6 +1586,8 @@ class Map(models.Model, PermissionLevelMixin):
         configuration. These are not persisted; if you want to add layers you
         should use ``.layer_set.create()``.
         """
+        logger.debug("++++++++++++++++++CALLING viewer_json+++++++++++++++++++++")
+
         layers = list(self.maplayers) + list(added_layers) #implicitly sorted by stack_order
         sejumps = self.jump_set.all()
         server_lookup = {}
@@ -1621,6 +1621,7 @@ class Map(models.Model, PermissionLevelMixin):
             return None
 
         def layer_config(l, user):
+            logger.debug("_________CALLING viewer_json.layer_config for %s", l)
             cfg = l.layer_config(user)
             src_cfg = l.source_config();
             source = source_lookup(src_cfg)
@@ -1965,6 +1966,13 @@ class MapLayer(models.Model):
         :method:`geonode.maps.models.Map.viewer_json` for an example of
         generating a full map configuration.
         """
+##       Caching of  maplayer config - appears to hurt rather than help performance in initial testing, turn off for now
+#        if self.id is not None:
+#            cfg = cache.get("maplayer_config_" + str(self.id) + "_" + str(0 if user.id is None else user.id))
+#            if cfg is not None:
+#                logger.debug("Cached cfg: %s", str(cfg))
+#                return cfg
+
         try:
             cfg = simplejson.loads(self.layer_params)
         except:
@@ -1981,41 +1989,36 @@ class MapLayer(models.Model):
         if self.group: cfg["group"] = self.group
         cfg["visibility"] = self.visibility
 
-        logger.debug("TYPENAME:[%s]", self.name)
 
-        #gnLayer = cache.get("layer_cache_by_user" + str(self.name) +"_" + str(user.id if user is not None else 0))
-        #if gnLayer is None:
-        gnLayer = Layer.objects.filter(typename=self.name)
-        #    if gnLayer.count() == 1:
-        #        cache.add(("layer_cache_by_user" + str(self.name) +"_" + str(user.id if user is not None else 0)), gnLayer[0])
-        #        logger.debug('Added cache for layer %s, user %s', self.name,  str(user.id if user is not None else 0))
-        #logger.debug("GN Layer Count:[%s]", gnLayer.count())
-        if gnLayer.count() == 1:
-            logger.debug("Get projection info for GeoNode layer")
-            if gnLayer[0].srs: cfg['srs'] = gnLayer[0].srs
-            if gnLayer[0].bbox: cfg['bbox'] = simplejson.loads(gnLayer[0].bbox)
-            if gnLayer[0].llbbox: cfg['llbbox'] = simplejson.loads(gnLayer[0].llbbox)
-            cfg['searchfields'] = (gnLayer[0].searchFields())
-            cfg['queryable'] = (gnLayer[0].storeType == 'dataStore'),
-            cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=gnLayer[0])
-            cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
-            cfg['abstract'] = gnLayer[0].abstract
-            cfg['styles'] = self.styles
+        if self.source_params.find( "gxp_gnsource") > -1:
+            try:
+                gnLayer = Layer.objects.get(typename=self.name)
+                if gnLayer.srs: cfg['srs'] = gnLayer.srs
+                if gnLayer.bbox: cfg['bbox'] = simplejson.loads(gnLayer.bbox)
+                if gnLayer.llbbox: cfg['llbbox'] = simplejson.loads(gnLayer.llbbox)
+                cfg['searchfields'] = (gnLayer.searchFields())
+                cfg['queryable'] = (gnLayer.storeType == 'dataStore'),
+                cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=gnLayer)
+                cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
+                cfg['abstract'] = gnLayer.abstract
+                cfg['styles'] = self.styles
+            except Exception, e:
+                # Give it some default values so it will still show up on the map, but disable it in the layer tree
+                cfg['srs'] = 'EPSG:900913'
+                cfg['llbbox'] = [-180,-90,180,90]
+                cfg['searchfields'] = []
+                cfg['queryable'] =False,
+                cfg['disabled'] = True
+                cfg['visibility'] = False
+                cfg['abstract'] = ''
+                cfg['styles'] =''
+                logger.error("Could not retrieve Layer with typename of %s : %s", self.name, str(e))
 
-#            if gnLayer[0].storeType == 'dataStore':
-#                if self.styles:
-#                    cfg['styles'].push(gnLayer[0].styles)
-#                else:
-#                    cfg['styles'] = gnLayer[0].styles
-#                if gnLayer[0].styles:
-#                    for style in gnLayer[0].styles:
-#                        cfg['styles'].push(style)
-#                logger.debug('STYLES: [%s]', str(cfg['styles']))
 
         cfg["fixed"] = self.fixed
 
-
-        logger.debug("layer config for [%s] is [%s]", self.name, str(cfg))
+#        if self.id is not None:
+#            cache.set("maplayer_config_" + str(self.id) + "_" + str(0 if user is None else user.id), cfg, 60)
         return cfg
 
 

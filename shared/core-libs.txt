@@ -18,4 +18,5 @@ coverage==3.4
 -e git+https://github.com/cmheisel/nose-xcover.git#egg=nosexcover
 mock
 django-staticfiles
-
+#Uncomment the following to use the django debug toolbar
+#-e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar

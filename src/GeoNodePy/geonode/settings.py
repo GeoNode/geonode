@@ -151,7 +151,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
+
+#This is only required for the Django Debug Toolbar
+INTERNAL_IPS = ('127.0.0.1',)
 
 # This isn't required for running the geonode site, but it when running sites that inherit the geonode.settings module.
 LOCALE_PATHS = (
@@ -298,6 +302,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'geonode.accountforms',
     'geonode.profileforms',
+    #'debug_toolbar',
 )
 
 def get_user_url(u):

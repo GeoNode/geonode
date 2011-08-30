@@ -938,8 +938,6 @@ def view(request, mapid, snapshot=None):
 
     config['first_visit'] = first_visit
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map)
-    logger.debug("CONFIG: [%s]", str(config))
-
 
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
