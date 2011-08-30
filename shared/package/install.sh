@@ -134,8 +134,8 @@ function configurepostgres() {
         then
 	    echo
 	else
-	    su - postgres $GEONODE_SHARE/create_template_postgis-debian.sh
-	    echo "CREATE ROLE geonode with login password '$psqlpass' SUPERUSER INHERIT;" > /usr/share/geonode/role.sql
+	    su - postgres $GEONODE_SHARE/create_geonode_postgis.sh
+	    echo "CREATE ROLE geonode with login password '$psqlpass' SUPERUSER INHERIT;" > $GEONODE_SHARE/role.sql
 	    su - postgres -c "psql < $GEONODE_SHARE/role.sql"
 	fi
 }
