@@ -1,4 +1,4 @@
-HERE=.
+INSTALL_DIR=.
 TARGET_ROOT=''
 TOMCAT_WEBAPPS=$ROOT/var/lib/tomcat6/webapps
 GEOSERVER_DATA_DIR=$ROOT/var/lib/geoserver/data
@@ -9,3 +9,5 @@ GEONODE_BIN=$ROOT/usr/bin/
 GEONODE_SHARE=$ROOT/usr/share/geonode
 GEONODE_ETC=$ROOT/etc/geonode
 GEONODE_LOG=$ROOT/var/log/geonode
+TOMCAT_SERVICE="invoke-rc.d tomcat6"
+APACHE_SERVICE="invoke-rc.d apache2"
