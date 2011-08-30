@@ -1,0 +1,11 @@
+HERE=.
+TARGET_ROOT=''
+TOMCAT_WEBAPPS=$ROOT/var/lib/tomcat6/webapps
+GEOSERVER_DATA_DIR=$ROOT/var/lib/geoserver/data
+GEONODE_WWW=$ROOT/var/www/geonode
+APACHE_SITES=$ROOT/etc/apache2/sites-available
+GEONODE_LIB=$ROOT/var/lib/geonode
+GEONODE_BIN=$ROOT/usr/bin/
+GEONODE_SHARE=$ROOT/usr/share/geonode
+GEONODE_ETC=$ROOT/etc/geonode
+GEONODE_LOG=$ROOT/var/log/geonode
