@@ -3,6 +3,7 @@
 
 set -e
 
+source $1
 
 function randpass() {
   [ "$2" == "0" ] && CHAR="[:alnum:]" || CHAR="[:graph:]"
