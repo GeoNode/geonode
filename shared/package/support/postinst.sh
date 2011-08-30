@@ -3,16 +3,6 @@
 
 set -e
 
-TOMCAT_WEBAPPS=/var/lib/tomcat6/webapps
-GEOSERVER_DATA_DIR=/var/lib/geoserver/data
-GEONODE_WWW=/var/www/geonode
-APACHE_SITES=/etc/apache2/sites-available
-GEONODE_LIB=/var/lib/geonode
-GEONODE_BIN=/usr/bin/
-GEONODE_SHARE=/usr/share/geonode
-GEONODE_ETC=/etc/geonode
-GEONODE_LOG=/var/log/geonode
-
 
 function randpass() {
   [ "$2" == "0" ] && CHAR="[:alnum:]" || CHAR="[:graph:]"
