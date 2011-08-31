@@ -1,0 +1,78 @@
+Installing GeoNode
+==================
+
+The easiest way to install GeoNode is using the official packages for one of the supported Operating Systems. Please be advised that GeoNode requires at least 4GB of RAM (6GB including swap).
+
+Ubuntu 10.04, 10.10 and 11.04
+-----------------------------
+
+Open a terminal and run the following commands::
+
+    wget -qO- http://apt.opengeo.org/gpg.key | sudo apt-key add -
+    sudo add-apt-repo "deb http://apt.opengeo.org/ubuntu lucid main"
+    sudo apt-get update
+    sudo apt-get install geonode
+ 
+CentOS and RHEL 5
+-----------------
+
+Create a file called opengeo.repo with the following::
+
+    [opengeo]
+    name=opengeo
+    baseurl=http://yum.opengeo.org/centos/
+    enabled=1
+    gpgcheck=0
+
+
+Open a terminal and copy that file to::
+
+    cp opengeo.repo /etc/yum.repos.d/
+    yum install geonode
+
+OSX, Windows and other operating systems
+----------------------------------------
+
+Our recommendation is to use a Virtual Machine with one of the supported Operating Systems. If that is not an option then you could try to follow manually the steps of the install script adjusting for paths and commands in your OS.
+
+Manual installation
+-------------------
+
+This is mostly targeted to Linux based distributions, it has only been tested in Ubuntu Linux but should work with minimal changes to the config file.
+
+# First you need to install the OS specific dependencies, here is the complete list (the actual package name may vary)::
+
+    python, python-support, python-dev, sun-java6-jre | openjdk-6-jre, tomcat6, postgresql-8.4, gcc, patch, zip,  python-imaging, python-reportlab, gdal-bin, libgeos-dev, python-urlgrabber, python-pastescript, gettext, postgresql-contrib, postgresql-8.4-postgis,libpq-dev, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi
+
+# Then you have to edit the config file that is in the support directory with the appropiate paths, sample config files for Ubuntu and CentOS are distributed with the release packages.
+
+# After that, open a terminal and run the following command as a super user::
+
+    ./install.sh support/config.sh
+
+# To test your GeoNode installation simply type the following in your terminal::
+
+    geonode help
+
+  You should also navigate to your browser window and type `http://localhost/`
+
+# After you have installing your GeoNode we recommend you to read the following guide to learn how to create users, serve the site on a DNS or IP address and optimize your GeoNode.
+
+    #FIXME: Link to 'post install' guide.
+
+Note for packagers
+~~~~~~~~~~~~~~~~~~
+
+There is an advanced flag for the install script called 'step'. There are two main steps to install GeoNode, the first one is to place the required files in the right places (referred to as pre-install) and the other to create the postgis database and edit the required Django, GeoServer and Geonetwork config files (referred to as post-install).
+
+By default the install script does both, but usually it is appropriate to perform the first of these steps during package creation and the second one at install time.
+
+The step flag supports three values: 'pre', 'post' and 'all'. Default is 'all'. Here is usage example::
+
+    # in debian/rules#install
+    ./install.sh -s pre support/config.sh
+
+    # in debian/postinst
+    ./install.sh -s post support/config.sh
+
+
