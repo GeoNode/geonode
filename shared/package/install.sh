@@ -116,8 +116,8 @@ function configuretomcat() {
 	cp -rp $GEONODE_ETC/geoserver/web.xml $TOMCAT_WEBAPPS/geoserver/WEB-INF/web.xml
 	# Set up logging symlinks to /var/log/geonode
 	mkdir -p $GEONODE_LOG
-	ln -sf /var/logs/tomcat6/catalina.out $GEONODE_LOG/tomcat.log
-	ln -sf /var/logs/tomcat6/geonetwork.log $GEONODE_LOG/geonetwork.log
+	ln -sf /var/log/tomcat6/catalina.out $GEONODE_LOG/tomcat.log
+	ln -sf /var/log/tomcat6/geonetwork.log $GEONODE_LOG/geonetwork.log
 	ln -sf $GEOSERVER_DATA_DIR/logs/geoserver.log $GEONODE_LOG/geoserver.log
 
         # Set the tomcat user as the owner
