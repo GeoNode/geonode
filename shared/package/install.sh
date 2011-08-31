@@ -137,6 +137,17 @@ function configurepostgres() {
         then
 	    echo
 	else
+	    su - postgres createdb -E UTF8 geonode
+	    su - postgres createlang -d geonode plpgsql
+	    su - postgres psql -d geonode -f $POSTGIS_SQL_PATH/$POSTGIS_SQL
+	    su - postgres psql -d geonode -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
+	    su - postgres psql -d geonode -c "GRANT ALL ON geometry_columns TO PUBLIC;"
+	    su - postgres psql -d geonode -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+
+	    if ((GEOGRAPHY))
+	    then
+	        su - postgres psql -d geonode -c "GRANT ALL ON geography_columns TO PUBLIC;"
+	    fi
 	    su - postgres $GEONODE_SHARE/create_geonode_postgis.sh
 	    echo "CREATE ROLE geonode with login password '$psqlpass' SUPERUSER INHERIT;" > $GEONODE_SHARE/role.sql
 	    su - postgres -c "psql < $GEONODE_SHARE/role.sql"

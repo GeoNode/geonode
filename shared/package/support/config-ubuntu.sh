@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Location of the expanded GeoNode tarball
 INSTALL_DIR=.
 # Location of the target filesystem, it may be blank
@@ -26,3 +28,20 @@ GEONODE_LOG=$ROOT/var/log/geonode
 APACHE_SERVICE="invoke-rc.d apache2"
 # sama sama
 TOMCAT_SERVICE="invoke-rc.d tomcat6"
+
+# For Ubuntu 10.04
+if [ -d "/usr/share/postgresql/8.4/contrib" ]
+then
+    POSTGIS_SQL_PATH=/usr/share/postgresql/8.4/contrib
+    POSTGIS_SQL=postgis.sql
+fi
+
+# For Ubuntu 10.10 (with PostGIS 1.5)
+if [ -d "/usr/share/postgresql/8.4/contrib/postgis-1.5" ]
+then
+    POSTGIS_SQL_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
+    POSTGIS_SQL=postgis.sql
+    GEOGRAPHY=1
+else
+    GEOGRAPHY=0
+fi
