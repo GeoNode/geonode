@@ -105,6 +105,9 @@ function configuretomcat() {
 		JAVA_OPTS='-Djava.awt.headless=true -Xmx1024m -Xms1024M -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement'
 		EOF
 	fi
+	# Patch geoserver and geonetwork config files
+	patch $GEONODE_ETC/geonetwork/config.xml $GEONODE_SHARE/geonetwork.patch
+	patch $GEONODE_ETC/geoserver/web.xml $GEONODE_SHARE/geoserver.patch
 	# Let geonetwork know the geonode password
 	sed -i "s/GEONODE_DATABASE_PASSWORD/$psqlpass/g" $GEONODE_ETC/geonetwork/config.xml
 	rm -rf $TOMCAT_WEBAPPS/geonetwork/WEB-INF/config.xml
