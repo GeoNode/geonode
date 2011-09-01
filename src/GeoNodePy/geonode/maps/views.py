@@ -811,6 +811,9 @@ def map_share(request,mapid):
     The view that shows map permissions in a window from map
     '''
     map = get_object_or_404(Map,pk=mapid)
+    mapstats,created = MapStats.objects.get_or_create(map=map)
+    
+
     if not request.user.has_perm('maps.view_map', obj=map):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
@@ -819,6 +822,7 @@ def map_share(request,mapid):
 
     return render_to_response("maps/mapinfopanel.html", RequestContext(request, {
         "map": map,
+        "mapstats": mapstats,
         'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
         'customGroup': settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
     }))
