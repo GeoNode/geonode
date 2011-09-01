@@ -90,6 +90,11 @@ Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
     {% endif %}
     {% endfor %}
   </ul>
+
+  <h3>{% trans "Map Views" %}</h3>
+  <p>{% trans "This map has been viewed " %} {{ mapstats.visits }} {% trans "time(s) " %}  {% trans "by " %} {{ mapstats.uniques }} {% trans "user(s)" %}  </p>
+
+
   <h3>{% trans "Manage Map" %}</h3>
   <ul>
     {% has_obj_perm user map "maps.change_map" as can_change %}

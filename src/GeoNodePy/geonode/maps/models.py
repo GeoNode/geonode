@@ -883,7 +883,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
         if self.resource.resource_type == "featureType":
             def wfs_link(mime):
-                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
+                return "/download/wfs/" + str(self.id) + "?" + urllib.urlencode({
                     'service': 'WFS',
                     'version':'1.0.0',
                     'request': 'GetFeature',
@@ -903,7 +903,7 @@ class Layer(models.Model, PermissionLevelMixin):
         elif self.resource.resource_type == "coverage":
             try:
                 client = httplib2.Http()
-                description_url = settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
+                description_url = "/download/wcs/" + str(self.id) + "?" + urllib.urlencode({
                         "service": "WCS",
                         "version": "1.0.0",
                         "request": "DescribeCoverage",
@@ -917,7 +917,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 w, h = [int(h) - int(l) for (h, l) in zip(high, low)]
 
                 def wcs_link(mime):
-                    return settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
+                    return "/download/wcs/" + str(self.id) + "?" + urllib.urlencode({
                         "service": "WCS",
                         "version": "1.0.0",
                         "request": "GetCoverage",
@@ -937,7 +937,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 pass
 
         def wms_link(mime):
-            return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
+            return "/download/wms/" + str(self.id) + "?"  + urllib.urlencode({
                 'service': 'WMS',
                 'request': 'GetMap',
                 'layers': self.typename,
@@ -956,12 +956,12 @@ class Layer(models.Model, PermissionLevelMixin):
 
         links.extend((ext, name, wms_link(mime)) for ext, name, mime in types)
 
-        kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
+        kml_reflector_link_download ="/download/wms_kml/" + str(self.id) + "?"  + urllib.urlencode({
             'layers': self.typename,
             'mode': "download"
         })
 
-        kml_reflector_link_view = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
+        kml_reflector_link_view = "/download/wms_kml/" + str(self.id) + "?" + urllib.urlencode({
             'layers': self.typename,
             'mode': "refresh"
         })
@@ -1469,12 +1469,12 @@ class Map(models.Model, PermissionLevelMixin):
     """
 
 
-    created_dttm = models.DateTimeField(auto_now_add=True)
+    created_dttm = models.DateTimeField(_("Date Created"), auto_now_add=True)
     """
     The date/time the map was created.
     """
 
-    last_modified = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(_("Date Last Modified"),auto_now_add=True)
     """
     The last time the map was modified.
     """
@@ -1528,6 +1528,7 @@ class Map(models.Model, PermissionLevelMixin):
             layers = MapLayer.objects.filter(map=self.id)
             cache.add('maplayerset_' + str(self.id), layers)
         return  [layer for layer in layers]
+
 
     @property
     def snapshots(self):
@@ -1589,6 +1590,7 @@ class Map(models.Model, PermissionLevelMixin):
         logger.debug("++++++++++++++++++CALLING viewer_json+++++++++++++++++++++")
 
         layers = list(self.maplayers) + list(added_layers) #implicitly sorted by stack_order
+        
         sejumps = self.jump_set.all()
         server_lookup = {}
         sources = dict()
@@ -1966,12 +1968,12 @@ class MapLayer(models.Model):
         :method:`geonode.maps.models.Map.viewer_json` for an example of
         generating a full map configuration.
         """
-##       Caching of  maplayer config - appears to hurt rather than help performance in initial testing, turn off for now
-#        if self.id is not None:
-#            cfg = cache.get("maplayer_config_" + str(self.id) + "_" + str(0 if user.id is None else user.id))
-#            if cfg is not None:
-#                logger.debug("Cached cfg: %s", str(cfg))
-#                return cfg
+#       Caching of  maplayer config, per user (due to permissions)
+        if self.id is not None:
+            cfg = cache.get("maplayer_config_" + str(self.id) + "_" + str(0 if user.id is None else user.id))
+            if cfg is not None:
+                logger.debug("Cached cfg: %s", str(cfg))
+                return cfg
 
         try:
             cfg = simplejson.loads(self.layer_params)
@@ -1998,7 +2000,7 @@ class MapLayer(models.Model):
                 if gnLayer.llbbox: cfg['llbbox'] = simplejson.loads(gnLayer.llbbox)
                 cfg['searchfields'] = (gnLayer.searchFields())
                 cfg['queryable'] = (gnLayer.storeType == 'dataStore'),
-                cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=gnLayer)
+                cfg['disabled'] = user.id is not None and not user.has_perm('maps.view_layer', obj=gnLayer)
                 cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
                 cfg['abstract'] = gnLayer.abstract
                 cfg['styles'] = self.styles
@@ -2017,8 +2019,9 @@ class MapLayer(models.Model):
 
         cfg["fixed"] = self.fixed
 
-#        if self.id is not None:
-#            cache.set("maplayer_config_" + str(self.id) + "_" + str(0 if user is None else user.id), cfg, 60)
+        #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)
+        if self.id is not None:
+            cache.set("maplayer_config_" + str(self.id) + "_" + str(0 if user is None else user.id), cfg, 60)
         return cfg
 
 
@@ -2121,3 +2124,20 @@ def post_save_layer(instance, sender, **kwargs):
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
+
+
+
+#===================#
+#    NEW WORLDMAP MODELS      #
+#===================#
+
+class MapStats(models.Model):
+    map = models.ForeignKey(Map)
+    visits = models.IntegerField(_("Visits"), default= 0)
+    uniques = models.IntegerField(_("Unique Visitors"), default = 0)
+
+class LayerStats(models.Model):
+    layer = models.ForeignKey(Layer)
+    visits = models.IntegerField(_("Visits"), default = 0)
+    uniques = models.IntegerField(_("Unique Visitors"), default = 0)
+    downloads = models.IntegerField(_("Downloads"), default = 0)

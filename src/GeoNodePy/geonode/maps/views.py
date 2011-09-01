@@ -1,5 +1,5 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
-from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, CHARSETS
+from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, MapStats, LayerStats, CHARSETS
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
 from geonode.maps.encode import num_encode, num_decode
 import geoserver
@@ -42,6 +42,7 @@ from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
 from datetime import datetime, timedelta
 from django.core.cache import cache
+
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -789,13 +790,16 @@ def mapdetail(request,mapid):
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this map.")})), status=401)
 
+
     config = map.viewer_json(request.user)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map.id)
+    mapstats, created = MapStats.objects.get_or_create(map=map)
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
         'config': config,
         'map': map,
         'layers': layers,
+        'mapstats': mapstats,
         'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
         'customGroup': settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
         'urlsuffix':get_suffix_if_custom(map)
@@ -931,6 +935,12 @@ def view(request, mapid, snapshot=None):
         first_visit = False
     else:
         request.session['visit' + str(map.id)] = True
+
+    mapstats, created = MapStats.objects.get_or_create(map=map)
+    mapstats.visits += 1
+    if created or first_visit:
+            mapstats.uniques+=1
+    mapstats.save()
 
     #Remember last visited map
     request.session['lastmap'] = map.id
@@ -1234,9 +1244,12 @@ def layerController(request, layername):
         # center/zoom don't matter; the viewer will center on the layer bounds
         map = Map(projection="EPSG:900913")
 
+        layerstats,created = LayerStats.objects.get_or_create(layer=layer)
+
         return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
             "metadata": metadata,
+            "layerstats": layerstats,
             "viewer": json.dumps(map.viewer_json(request.user, * (DEFAULT_BASE_LAYERS + [maplayer]))),
             "permissions_json": _perms_info_email_json(layer, LAYER_LEV_NAMES),
             "customGroup": settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
@@ -2383,3 +2396,28 @@ def snapshot_config(snapshot, map, user):
     return config
 
 
+@csrf_exempt
+def ajax_increment_layer_stats(request):
+    if request.method != 'POST':
+        return HttpResponse(
+            content='ajax user lookup requires HTTP POST',
+            status=405,
+            mimetype='text/plain'
+        )
+    if request.POST['layername'] != '':
+        layer_match = Layer.objects.filter(typename=request.POST['layername'])[:1]
+        for l in layer_match:
+            layerStats,created = LayerStats.objects.get_or_create(layer=l)
+            layerStats.visits += 1
+            first_visit = True
+            if request.session.get('visitlayer' + str(l.id), False):
+                first_visit = False
+            else:
+                request.session['visitlayer' + str(l.id)] = True
+            if first_visit or created:
+                layerStats.uniques += 1
+            layerStats.save()
+
+    return HttpResponse(
+                            status=200
+    )

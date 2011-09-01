@@ -8,6 +8,9 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import logging
+import urlparse
+from geonode.maps.models import LayerStats
+import re
 
 logger = logging.getLogger("geonode.proxy.views")
 
@@ -138,3 +141,23 @@ def youtube(request):
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
 
+def download(request, service, layer):
+    layerstats,created = LayerStats.objects.get_or_create(layer=layer)
+    layerstats.downloads += 1
+    layerstats.save()
+
+    params = request.GET
+    #mimetype = params.get("outputFormat") if service == "wfs" else params.get("format")
+    
+    service=service.replace("_","/")
+    url = settings.GEOSERVER_BASE_URL + service + "?" + params.urlencode()
+    download_response = urllib.urlopen(url)
+    headers = download_response.info()
+    content_disposition = headers.get('Content-Disposition')
+    mimetype = headers.get('Content-Type')
+    content = download_response.read()
+    response = HttpResponse(content, mimetype = mimetype)
+    if content_disposition is not None:
+        response['Content-Disposition'] = content_disposition
+
+    return response

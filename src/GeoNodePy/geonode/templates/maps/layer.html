@@ -237,6 +237,9 @@
     {% endif %}
     <!-- <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.typename}}">Create new map</a></p> -->
 
+    <h3>{% trans "Layer Views" %} </h3>
+  <p>{% trans "This layer has been viewed " %} {{ layerstats.visits }} {% trans "time(s) " %}  {% trans "by " %} {{ layerstats.uniques }} {% trans "user(s)" %}  </p>
+
     <h3> {% trans "Layer Styles" %} </h3>
     <p> {% trans "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style." %}
     <br/>

@@ -46,6 +46,7 @@ urlpatterns = patterns('',
     (r'^data/(?P<layername>[^/]*)/ajax-permissions$', 'geonode.maps.views.ajax_layer_permissions'),
     (r'^data/(?P<layername>[^/]*)/ajax-permissions-email$', 'geonode.maps.views.ajax_layer_permissions_by_email'),
     (r'^data/(?P<layername>[^/]*)/ajax_layer_edit_check/?$', 'geonode.maps.views.ajax_layer_edit_check'),
+    (r'^data/layerstats/?$', 'geonode.maps.views.ajax_increment_layer_stats'),
     (r'^admin/', include(admin.site.urls)),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
@@ -62,7 +63,8 @@ urlpatterns = patterns('',
     (r'^(?P<site>\w+)/edit$', 'geonode.maps.views.official_site_controller'),
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
-    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps})
+    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/?$','geonode.proxy.views.download'),
     )
 
 # Extra static file endpoint for development use
