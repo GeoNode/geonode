@@ -145,7 +145,7 @@ function configurepostgres() {
 	    then
 	        su - postgres -c "psql -d geonode -c 'GRANT ALL ON geography_columns TO PUBLIC;'"
 	    fi
-	    echo "CREATE ROLE geonode with login password '$psqlpass' SUPERUSER INHERIT;'" >> $GEONODE_SHARE/role.sql
+	    echo "CREATE ROLE geonode with login password '$psqlpass' SUPERUSER INHERIT;" >> $GEONODE_SHARE/role.sql
 	    su - postgres -c "psql < $GEONODE_SHARE/role.sql"
 	fi
 }
