@@ -48,12 +48,12 @@ options(
         paver_command_line='post_bootstrap'
     ),
     deploy=Bunch(
-        pavement=path('shared/package/pavement.py'),
+#        pavement=path('shared/package/pavement.py'),
         req_file=path('shared/package/deploy-libs.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
-        install_paver=True,
-        paver_command_line='post_bootstrap'      
+#        install_paver=True,
+#        paver_command_line='post_bootstrap'      
     ),
     host=Bunch(
     	bind='localhost'
