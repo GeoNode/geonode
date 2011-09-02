@@ -8,7 +8,7 @@ TARGET_ROOT=''
 # Tomcat webapps directory
 TOMCAT_WEBAPPS=$ROOT/var/lib/tomcat6/webapps
 # Geoserver data dir, it will survive removals and upgrades
-GEOSERVER_DATA_DIR=$ROOT/var/lib/geoserver/data
+GEOSERVER_DATA_DIR=$ROOT/var/lib/geoserver/geonode-data
 # Place where GeoNode media is going to be served
 GEONODE_WWW=$ROOT/var/www/geonode
 # Apache sites directory
