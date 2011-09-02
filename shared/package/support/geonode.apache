@@ -1,0 +1,35 @@
+WSGIDaemonProcess geonode user=www-data threads=15 processes=2 python-path=REPLACE_WITH_SITEDIR
+<VirtualHost *:80>
+    Servername localhost
+    ServerAdmin webmaster@localhost
+
+    ErrorLog /var/log/apache2/error.log
+    LogLevel warn
+    CustomLog /var/log/apache2/access.log combined
+
+    WSGIProcessGroup geonode
+    WSGIPassAuthorization On
+    WSGIScriptAlias / /var/www/geonode/wsgi/geonode.wsgi
+
+    <Directory "/var/www/geonode/">
+       Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        IndexOptions FancyIndexing
+    </Directory>
+
+    Alias /static/ /var/www/geonode/static/
+    Alias /uploads/ /var/www/geonode/uploads/
+    Alias /robots.txt /var/www/geonode/robots.txt
+
+    <Proxy *>
+      Order allow,deny
+      Allow from all
+    </Proxy>
+
+    ProxyPreserveHost On
+    ProxyPass /geoserver http://localhost:8080/geoserver
+    ProxyPassReverse /geoserver http://localhost:8080/geoserver
+    ProxyPass /geonetwork http://localhost:8080/geonetwork
+    ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
+</VirtualHost>
