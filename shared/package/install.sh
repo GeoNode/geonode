@@ -55,8 +55,6 @@ function preinstall() {
 	# Third step is to unpack the pybundle and put the virtualenv in the right place
 	#
 	mkdir -p $GEONODE_LIB
-	cp -rp $INSTALL_DIR/pavement.py $GEONODE_LIB
-	cp -rp $INSTALL_DIR/bootstrap.py $GEONODE_LIB
 	cp -rp $INSTALL_DIR/geonode-webapp.pybundle $GEONODE_LIB
 	# Fourth step is to install the binary
 	mkdir -p $GEONODE_BIN
@@ -75,7 +73,6 @@ function preinstall() {
 	cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
 	cp -rp $INSTALL_DIR/support/geoserver.patch $GEONODE_SHARE
 	cp -rp $INSTALL_DIR/support/geonetwork.patch $GEONODE_SHARE
-	cp -rp $INSTALL_DIR/support/create_geonode_postgis.sh $GEONODE_SHARE
 	#
 	# Sixth step is to configure /etc/geonode/ with folders for custom media and templates
 	#
@@ -137,19 +134,18 @@ function configurepostgres() {
         then
 	    echo
 	else
-	    su - postgres createdb -E UTF8 geonode
-	    su - postgres createlang -d geonode plpgsql
-	    su - postgres psql -d geonode -f $POSTGIS_SQL_PATH/$POSTGIS_SQL
-	    su - postgres psql -d geonode -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
-	    su - postgres psql -d geonode -c "GRANT ALL ON geometry_columns TO PUBLIC;"
-	    su - postgres psql -d geonode -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+	    su - postgres -c "createdb -E UTF8 geonode"
+	    su - postgres -c "createlang -d geonode plpgsql"
+	    su - postgres -c "psql -d geonode -f $POSTGIS_SQL_PATH/$POSTGIS_SQL"
+	    su - postgres -c "psql -d geonode -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql"
+	    su - postgres -c "psql -d geonode -c 'GRANT ALL ON geometry_columns TO PUBLIC;'"
+	    su - postgres -c "psql -d geonode -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'"
 
 	    if ((GEOGRAPHY))
 	    then
-	        su - postgres psql -d geonode -c "GRANT ALL ON geography_columns TO PUBLIC;"
+	        su - postgres -c "psql -d geonode -c 'GRANT ALL ON geography_columns TO PUBLIC;'"
 	    fi
-	    su - postgres $GEONODE_SHARE/create_geonode_postgis.sh
-	    echo "CREATE ROLE geonode with login password '$psqlpass' SUPERUSER INHERIT;" > $GEONODE_SHARE/role.sql
+	    echo "CREATE ROLE geonode with login password '$psqlpass' SUPERUSER INHERIT;'" >> $GEONODE_SHARE/role.sql
 	    su - postgres -c "psql < $GEONODE_SHARE/role.sql"
 	fi
 }
@@ -158,7 +154,10 @@ function configuredjango() {
 	# set up django
 	#
 	cd $GEONODE_LIB
-	python bootstrap.py
+	virtualenv .
+	source bin/activate
+	touch geoserver_token
+	pip install geonode-webapp.pybundle
 
 	if [ -d src/GeoNodePy/geonode/media/static ]
 	then
