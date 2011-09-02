@@ -1,0 +1,20 @@
+--- web.xml	2011-08-29 19:25:04.000000000 +0000
++++ web.xml.new	2011-08-29 19:50:48.000000000 +0000
+@@ -39,7 +39,16 @@
+     <param-name>PARTIAL_BUFFER_STRATEGY_SIZE</param-name>
+     <param-value>50</param-value>
+   </context-param>
+-  
++ 
++  <context-param>
++    <param-name>GEONODE_BASE_URL</param-name>
++    <param-value>http://localhost/</param-value>
++  </context-param>
++
++  <context-param>
++     <param-name>GEOSERVER_DATA_DIR</param-name>
++     <param-value>/var/lib/geoserver/data/</param-value>
++  </context-param> 
+     <!-- 
+     <context-param>
+       <param-name>PROXY_BASE_URL</param-name>
