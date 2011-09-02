@@ -6,23 +6,23 @@ INSTALL_DIR=.
 # or something like $(CURDIR)/debian/geonode/
 TARGET_ROOT=''
 # Tomcat webapps directory
-TOMCAT_WEBAPPS=$ROOT/var/lib/tomcat6/webapps
+TOMCAT_WEBAPPS=$TARGET_ROOT/var/lib/tomcat6/webapps
 # Geoserver data dir, it will survive removals and upgrades
-GEOSERVER_DATA_DIR=$ROOT/var/lib/geoserver/geonode-data
+GEOSERVER_DATA_DIR=$TARGET_ROOT/var/lib/geoserver/geonode-data
 # Place where GeoNode media is going to be served
-GEONODE_WWW=$ROOT/var/www/geonode
+GEONODE_WWW=$TARGET_ROOT/var/www/geonode
 # Apache sites directory
-APACHE_SITES=$ROOT/etc/apache2/sites-available
+APACHE_SITES=$TARGET_ROOT/etc/apache2/sites-available
 # Place where the GeoNode virtualenv would be installed
-GEONODE_LIB=$ROOT/var/lib/geonode
+GEONODE_LIB=$TARGET_ROOT/var/lib/geonode
 # Path to preferred location of binaries (might be /usr/sbin for CentOS)
-GEONODE_BIN=$ROOT/usr/bin/
+GEONODE_BIN=$TARGET_ROOT/usr/bin/
 # Path to place miscelaneous patches and scripts used during the install
-GEONODE_SHARE=$ROOT/usr/share/geonode
+GEONODE_SHARE=$TARGET_ROOT/usr/share/geonode
 # Path to GeoNode configuration and customization
-GEONODE_ETC=$ROOT/etc/geonode
+GEONODE_ETC=$TARGET_ROOT/etc/geonode
 # Path to GeoNode logging folder
-GEONODE_LOG=$ROOT/var/log/geonode
+GEONODE_LOG=$TARGET_ROOT/var/log/geonode
 # OS preferred way of starting or stopping services
 # for example 'service httpd' or '/etc/init.d/apache2'
 APACHE_SERVICE="invoke-rc.d apache2"
