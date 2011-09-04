@@ -212,9 +212,10 @@ class GeoNodeMapTest(TestCase):
         except GeoNodeException, e:
             pass
         except Exception, e:
-            msg = ('Was expecting a %s, got %s instead.' %
-                   (GeoNodeException, type(e)))
-            assert e is GeoNodeException, msg
+            raise
+            # msg = ('Was expecting a %s, got %s instead.' %
+            #        (GeoNodeException, type(e)))
+            # assert e is GeoNodeException, msg
 
 
     def test_tiff(self):
