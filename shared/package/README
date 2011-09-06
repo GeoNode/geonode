@@ -64,8 +64,7 @@ sample config files for Ubuntu and CentOS are distributed with the release packa
 
 # After you have installing your GeoNode we recommend you to read the following guide to learn how to create users,
 serve the site on a DNS or IP address and optimize your GeoNode.
-
-    #FIXME: Link to 'post install' guide.
+    http://docs.geonode.org/1.1/deploy/production.html
 
 Note for packagers
 ~~~~~~~~~~~~~~~~~~
