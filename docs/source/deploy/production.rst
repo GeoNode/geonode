@@ -1,23 +1,28 @@
 Configuring GeoNode for Production
 ==================================
 
-This page documents recommendations for improving performance of GeoNode in production environments.
+This page documents recommendations for configuring GeoNode in production environments.
 
-Limiting GeoNetwork Sessions
-============================
 
-In GeoNode 1.0, there is an issue causing each CSW request that the GeoNode Django application makes to store additional session information in GeoNetwork.
-Since GeoNetwork stores these sessions for 3 hours by default, and GeoNode may make multiple CSW requests to serve a single page view, the accumulation of these sessions can add significant burden to a GeoNode server.
+Creating a super user
+=====================
 
-This issue will be automatically resolved in the next release of GeoNode, but administrators of GeoNode 1.0 can install a patch to avoid this session proliferation problem. 
-To do so, simply download the replacement geonetwork.py file and replace the existing one::
+To create a superuser you can run::
 
-    $ cd .../wsgi/geonode/ # Use the appropriate path to your geonode deployment.
-    $ wget https://github.com/dwins/geonode/raw/9d652605cf79fe134011344148a3784c6d31a10f/src/GeoNodePy/geonode/geonetwork.py
-    $ mv src/GeoNodePy/geonode/geonetwork.py src/GeoNodePy/geonode/geonetwork.py.bk
-    $ cp geonetwork.py src/GeoNodePy/geonode/geonetwork.py
+    geonode createsuperuser
 
-The Django site must be restarted in order for this change to be applied.
+or, if you installed by source::
+
+    source path/to/geonode/virtualenv/bin/activate
+    django-admin.py createsuperuser --settings=geonode.settings
+
+
+Configuring the correct DNS or IP address
+=========================================
+
+By default GeoNode runs in ``http://localhost/``, but when running in production in needs to know the public IP address or the DNS entry.
+To configure it, edit the ``SITEURL`` setting in ``local_settings.py`` (which can be found either in your GeoNodePy/src/geonode folder or in ``/etc/geonode/local_settings.py`` if you used an automated installer.
+
 
 Robot Exclusion File
 ====================
