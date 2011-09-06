@@ -31,14 +31,32 @@ You can also get the latest release from http://dev.geonode.org/release/ or
 the `GeoNode project wiki <http://dev.geonode.org/trac/>`_ .
 You can unpack it like::
 
-   $ tar xvzf GeoNode-1.0.1.tar.gz
-   GeoNode-1.0.1/geonetwork.war
-   GeoNode-1.0.1/pavement.py
-   GeoNode-1.0.1/geonode-webapp.pybundle
-   GeoNode-1.0.1/geoserver.war
-   GeoNode-1.0.1/bootstrap.py
-   GeoNode-1.0.1/deploy-libs.txt
-   GeoNode-1.0.1/deploy.ini.ex
+    $ tar xvzf GeoNode-1.1.tar.gz
+    GeoNode-1.1/geonetwork.war
+    GeoNode-1.1/geonode-webapp.pybundle
+    GeoNode-1.1/geoserver.war
+    GeoNode-1.1/bootstrap.py
+    GeoNode-1.1/deploy-libs.txt
+    GeoNode-1.1/install.sh
+    GeoNode-1.1/support/
+
+This tarball comes with an install script and a directory with supporting config files.
+
+Automatic installation
+----------------------
+
+Here are the steps to use the automated installer::
+
+    sudo apt-get install python python-support python-dev python-virtualenv openjdk-6-jre tomcat6 postgresql-8.4 gcc patch zip  python-imaging python-reportlab gdal-bin libgeos-dev python-urlgrabber python-pastescript gettext postgresql-contrib postgresql-8.4-postgis,libpq-dev unzip libjpeg-dev libpng-dev python-gdal libproj-dev python-psycopg2 apache2 libapache2-mod-wsgi
+    cd GeoNode-1.1/
+    sudo ./install.sh support/config-ubuntu.sh
+
+More instructions can be found in the README distributed with the release as well as the pointer to the documentation page about configuring GeoNode for production after it has been installed.
+
+Manual Installation
+===================
+
+Here is the complete set of instructions to install GeoNode manually:
 
 Runtimes
 --------
@@ -196,139 +214,54 @@ Install GeoNode Django Site
 
      # apt-get install gcc libjpeg-dev libpng-dev python-gdal python-psycopg2 libproj-dev proj-bin proj-data
 
-2. Create new directories in ``/var/www/`` for the geonode static files, uploads,
-   and python scripts (``htdocs``, ``htdocs/media``, ``htdocs/uploads``, ``wsgi/geonode``,
-   respectively)::
 
-    # mkdir -p /var/www/geonode/{htdocs,htdocs/media,wsgi/geonode/} 
-
-3. Place the Python bundle and installer scripts into the ``wsgi/geonode``
+2. Place the Python bundle and installer scripts into the ``/var/lib/geonode``
    directory::
 
-     # cp bootstrap.py geonode-webapp.pybundle pavement.py /var/www/geonode/wsgi/geonode/
+    # mkdir -p /var/lib/geonode/
+    # cp bootstrap.py geonode-webapp.pybundle /var/lib/geonode/
 
-4. Use the bootstrap script to set up a virtualenv sandbox and install Python
+3. Use the bootstrap script to set up a virtualenv sandbox and install Python
    dependencies::
 
-     # cd /var/www/geonode/wsgi/geonode
+     # cd /var/lib/geonode/
      # python bootstrap.py
 
-5. Create a file
-   ``/var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/local_settings.py``
-   with appropriate values for the current server, for example::
 
-     DEBUG = TEMPLATE_DEBUG = False
-     MINIFIED_RESOURCES = True
-     SERVE_MEDIA=False
+4. Create new directories in ``/var/www/geonode`` for the geonode static files, uploads,
+   and python scripts (``static``, ``uploads``, ``wsgi``,
+   respectively)::
 
-     SITENAME = "GeoNode"
-     SITEURL = "http://localhost/"
-
-     DATABASE_ENGINE = 'postgresql_psycopg2'
-     DATABASE_NAME = 'geonode'
-     DATABASE_USER = 'geonode'
-     DATABASE_PASSWORD = 'geonode-password'
-     DATABASE_HOST = 'localhost'
-     DATABASE_PORT = '5432'
-
-     LANGUAGE_CODE = 'en'
-
-     MEDIA_ROOT = "/var/www/geonode/htdocs/media/"
-
-     # the web url to get to those saved files
-     MEDIA_URL = SITEURL + "media/"
-
-     # the filesystem path where uploaded data should be saved
-     GEONODE_UPLOAD_PATH = "/var/www/geonode/htdocs/uploads/"
-
-     # secret key used in hashing, should be a long, unique string for each
-     # site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
-     # 
-     # Here is one quick way to randomly generate a string for this use:
-     # python -c 'import random, string; print "".join(random.sample(string.printable.strip(), 50))'
-     SECRET_KEY = '' 
-
-     # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-     GEOSERVER_BASE_URL = SITEURL + "geoserver/"
-
-     # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-     GEONETWORK_BASE_URL = SITEURL + "geonetwork/"
-
-     # The username and password for a user with write access to GeoNetwork
-     GEONETWORK_CREDENTIALS = "admin", 'admin'
-
-     # A Google Maps API key is needed for the 3D Google Earth view of maps
-     # See http://code.google.com/apis/maps/signup.html
-     GOOGLE_API_KEY = ""
-
-     DEFAULT_LAYERS_OWNER='admin'
-
-     GEONODE_CLIENT_LOCATION = SITEURL + 'media/static/' 
-
-     ADMIN_MEDIA_PREFIX = ("/admin-media/")
+    # mkdir -p /var/www/geonode/{static,uploads,wsgi}
 
 
-6. Place a wsgi launcher script in ``/var/www/geonode/wsgi/geonode.wsgi``::
 
-     import site, os
+5. Configure the ``local_settings.py``  using the one provided in the ``support`` directory with the release as the base::
 
-     site.addsitedir('/var/www/geonode/wsgi/geonode/lib/python2.6/site-packages')
-     os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'
+    # mkdir -p /etc/geonode
+    # cp support/geonode.local_settings /etc/geonode
+    # ln -s /etc/geonode/local_settings.py /var/lib/geonode/src/GeoNodePy/geonode/local_settings.py
 
-     from django.core.handlers.wsgi import WSGIHandler
-     application = WSGIHandler()
+6. Copy the wsgi launcher script in the ``support`` folder to ``/var/www/geonode/wsgi/geonode.wsgi``::
+
+    # cp support/geonode.wsgi /var/www/geonode/wsgi/geonode.wsgi
+
 
 7. Install the httpd package::
 
-     # apt-get install apache2 libapache2-mod-wsgi
+    # apt-get install apache2 libapache2-mod-wsgi
 
-8. Create a new configuration file in
-   :file:`/etc/apache2/sites-available/geonode` ::
+8. Copy the apache configuration file to the apache dir::
 
-     <VirtualHost *:80>
-        ServerAdmin webmaster@localhost
+    # cp support/geonode.apache /etc/apache2/sites-available/geonode
 
-        DocumentRoot /var/www/geonode/htdocs/
-        <Directory />
-            Options FollowSymLinks
-            AllowOverride None
-        </Directory>
-        <Directory /var/www/>
-            Options Indexes FollowSymLinks MultiViews
-            AllowOverride None
-            Order allow,deny
-            allow from all
-        </Directory>
-        <Proxy *>
-            Order allow,deny
-            Allow from all
-        </Proxy>
-
-        ErrorLog /var/log/apache2/error.log
-
-        # Possible values include: debug, info, notice, warn, error, crit,
-        # alert, emerg.
-        LogLevel warn
-
-        CustomLog /var/log/apache2/access.log combined
-
-        Alias /media/ /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/media/
-        Alias /admin-media/ /var/www/geonode/wsgi/geonode/lib/python2.6/site-packages/django/contrib/admin/media/
-
-        WSGIPassAuthorization On
-        WSGIScriptAlias / /var/www/geonode/wsgi/geonode.wsgi
-
-        ProxyPreserveHost On
-
-        ProxyPass /geoserver http://localhost:8080/geoserver
-        ProxyPassReverse /geoserver http://localhost:8080/geoserver
-        ProxyPass /geonetwork http://localhost:8080/geonetwork
-        ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
-     </VirtualHost>
+   And put the correct path to your virtualenv site-packages dir in the first line ``/var/lib/geonode/lib/python2.6/site-packages`` it will depend on the version of Python you are using.
+   
 
 9. Set the filesystem ownership to the Apache user for the ``geonode`` folder::
 
       # chown www-data -R /var/www/geonode/
+      # chown www-data -R /var/lib/geonode/
 
 10. Disable the default site that comes with apache, enable the one just
     created, and activate the WSGI and HTTP Proxy modules for apache::
@@ -348,7 +281,7 @@ Install GeoNode Django Site
 12. Set up the database tables using the Django admin tool (you will be
     prompted for an admin username and account)::
 
-      # /var/www/geonode/wsgi/geonode/bin/django-admin.py syncdb --settings=geonode.settings
+      # /var/lib/geonode/bin/django-admin.py syncdb --settings=geonode.settings
 
 13. You should now be able to see the GeoNode site at http://localhost/
 
@@ -356,5 +289,5 @@ Install GeoNode Django Site
 .. note::
 
  If you have problems uploading files, please enable the verbose logging
- http://docs.geonode.org/1.0.1/logging.html
+ http://docs.geonode.org/1.1/logging.html
 
