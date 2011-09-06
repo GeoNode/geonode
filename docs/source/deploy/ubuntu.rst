@@ -31,14 +31,14 @@ You can also get the latest release from http://dev.geonode.org/release/ or
 the `GeoNode project wiki <http://dev.geonode.org/trac/>`_ .
 You can unpack it like::
 
-   $ tar xvzf GeoNode-1.1.tar.gz
-   GeoNode-1.1/geonetwork.war
-   GeoNode-1.1/geonode-webapp.pybundle
-   GeoNode-1.1/geoserver.war
-   GeoNode-1.1/bootstrap.py
-   GeoNode-1.1/deploy-libs.txt
-   GeoNode-1.1/install.sh
-   GeoNode-1.1/support/
+    $ tar xvzf GeoNode-1.1.tar.gz
+    GeoNode-1.1/geonetwork.war
+    GeoNode-1.1/geonode-webapp.pybundle
+    GeoNode-1.1/geoserver.war
+    GeoNode-1.1/bootstrap.py
+    GeoNode-1.1/deploy-libs.txt
+    GeoNode-1.1/install.sh
+    GeoNode-1.1/support/
 
 This tarball comes with an install script and a directory with supporting config files.
 
@@ -47,7 +47,7 @@ Automatic installation
 
 Here are the steps to use the automated installer::
 
-    sudo apt-get install python python-support python-dev python-virtualenv sun-java6-jre | openjdk-6-jre tomcat6 postgresql-8.4 gcc patch zip  python-imaging python-reportlab gdal-bin libgeos-dev python-urlgrabber python-pastescript gettext postgresql-contrib postgresql-8.4-postgis,libpq-dev unzip libjpeg-dev libpng-dev python-gdal libproj-dev python-psycopg2 apache2 libapache2-mod-wsgi
+    sudo apt-get install python python-support python-dev python-virtualenv openjdk-6-jre tomcat6 postgresql-8.4 gcc patch zip  python-imaging python-reportlab gdal-bin libgeos-dev python-urlgrabber python-pastescript gettext postgresql-contrib postgresql-8.4-postgis,libpq-dev unzip libjpeg-dev libpng-dev python-gdal libproj-dev python-psycopg2 apache2 libapache2-mod-wsgi
     cd GeoNode-1.1/
     sudo ./install.sh support/config-ubuntu.sh
 
