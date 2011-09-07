@@ -8,12 +8,20 @@ platform-specific instructions are also available.  The platform-specific
 guides are contributed by the community, so if you deploy on a new platform
 please consider writing or updating a guide.
 
+
 .. toctree::
 
    /deploy/centos
    /deploy/ubuntu
    /deploy/production
 
+
+Overview
+========
+
+A GeoNode installation has two webservers running alongside, one for the Java applications and another one for the Python/Django applications and static files.
+
+Included with each release there is an ``install.sh`` script and a ``support`` directory that contains sample config files that will be mentioned later in this guide.
 
 Recommended Minimum System Requirements
 =======================================
