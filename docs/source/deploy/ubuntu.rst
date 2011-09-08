@@ -13,7 +13,7 @@ The easiest way to get the .deb is to install it using APT, the standard install
 
 1) Set up the OpenGeo repository (you only need to do this once; the repository will still be available for upgrades later)::
 
-   $ sudo add-apt-repository deb http://apt.opengeo.org/ lucid main
+   $ sudo add-apt-repository deb http://apt.opengeo.org/ubuntu lucid main
 
 2) Install the package. This step will also automatically download any needed dependencies::
 
