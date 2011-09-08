@@ -1,5 +1,5 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
+from geonode.maps.models import Map, Layer, LayerAttribute, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
 from geonode import geonetwork
 import geoserver
@@ -79,6 +79,19 @@ class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
         exclude = ('user',)
+
+class LayerAttributeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(LayerAttributeForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.attribute_type != 'xsd:string':
+            self.fields['searchable'].widget.attrs['disabled'] = True
+        self.fields['attribute'].widget.attrs['readonly'] = True
+        self.fields['display_order'].widget.attrs['size'] = 3
+
+    class Meta:
+        model = LayerAttribute
+        exclude = ('attribute_type',)
 
 class LayerForm(forms.ModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
@@ -518,6 +531,19 @@ def ajax_layer_permissions(request, layername):
         mimetype='text/plain'
     )
 
+
+def ajax_layer_attributes(request, layername):
+    try :
+        layer = Layer.objects.get(typename=layername)
+    except:
+        pass
+    return HttpResponse(
+        json.dumps(layer.layer_attributes()) if layer else '',
+        status=200,
+        mimetype='text/plain'
+    )
+
+
 def ajax_map_permissions(request, mapid):
     map = get_object_or_404(Map, pk=mapid)
 
@@ -715,15 +741,32 @@ def _describe_layer(request, layer):
         metadata_author = layer.metadata_author
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
+        layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm)
 
         if request.method == "POST":
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+            attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
         else:
             layer_form = LayerForm(instance=layer, prefix="layer")
+            attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
 
-        if request.method == "POST" and layer_form.is_valid():
+
+        
+        if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid():
+
+            #Save attribute info
+            logger.debug('Save attributes')
+            for form in attribute_form.cleaned_data:
+                    la = LayerAttribute.objects.get(id=int(form['id'].id))
+                    la.attribute_label = form["attribute_label"]
+                    la.searchable = form["searchable"]
+                    la.visible = form["visible"]
+                    la.display_order = form["display_order"]
+                    la.save()
+
             new_poc = layer_form.cleaned_data['poc']
             new_author = layer_form.cleaned_data['metadata_author']
+
 
             if new_poc is None:
                 poc_form = ContactForm(request.POST, prefix="poc")
@@ -742,6 +785,9 @@ def _describe_layer(request, layer):
                 the_layer.save()
                 return HttpResponseRedirect("/data/" + layer.typename)
 
+
+
+
         if poc.user is None:
             poc_form = ContactForm(instance=poc, prefix="poc")
         else:
@@ -759,6 +805,7 @@ def _describe_layer(request, layer):
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
             "layer_form": layer_form,
+            "attribute_form": attribute_form,
             "poc_form": poc_form,
             "author_form": author_form,
         }))

@@ -14,6 +14,17 @@
 	  {% csrf_token %}
       <ul class="form">
 	      {{ layer_form.as_ul }}
+          <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
+	        <legend>Attributes</legend>
+	        {{ attribute_form.management_form }}
+	        <table cellpadding="5" cellspacing="5" width="100%"><tr><th>Attribute</th><th>Display Title</th><th>Display Order</th><th>Visible?</th><th>Searchable?</th>
+	        {% for form in attribute_form.forms %}
+	        	{% if form.attribute %}
+	        	<tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.display_order}}</td><td> {{form.visible}}</td><td> {{form.searchable}}</td></tr>
+	        	{% endif %}
+	        {% endfor %}
+	        </table>
+          </fieldset>
           <fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
 	        <legend>Point of Contact</legend>
             {{ poc_form.as_ul }}
