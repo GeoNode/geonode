@@ -1078,7 +1078,7 @@ class Layer(models.Model, PermissionLevelMixin):
             logger.debug("Create searchfields for %s", self.typename)
             searchable_fields = []
             scount = 0
-            attributes = self.attribute_set.filter(attribute__iregex=r'^((?!geom)(?!gid)(?!oid)(?!object[\w]*id).)*$').order_by('display_order')
+            attributes = self.attribute_set.filter(visible=True).order_by('display_order')
             for la in attributes:
                 searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
                 if la.searchable:
@@ -1455,6 +1455,7 @@ class LayerAttribute(models.Model):
     attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
     attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
     searchable = models.BooleanField(_('Searchable?'), default=False)
+    visible = models.BooleanField(_('Visible?'), default=True)
     display_order = models.IntegerField(_('Display Order'), default=1)
 
     created_dttm = models.DateTimeField(auto_now_add=True)

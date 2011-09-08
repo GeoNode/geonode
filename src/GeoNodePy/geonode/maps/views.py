@@ -1056,6 +1056,7 @@ def _describe_layer(request, layer):
                         la = LayerAttribute.objects.get(id=int(form['id'].id))
                         la.attribute_label = form["attribute_label"]
                         la.searchable = form["searchable"]
+                        la.visible = form["visible"]
                         la.display_order = form["display_order"]
                         la.save()
                     cache.delete('layer_searchfields_' + layer.typename)
@@ -1308,7 +1309,6 @@ def upload_layer(request):
                     iter = 1
                     mark_searchable = True
                     for field, ftype in saved_layer.attribute_names.iteritems():
-                        if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
                             logger.debug("Field is [%s]", field)
                             la = LayerAttribute.objects.create(layer=saved_layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
                             la.save()
