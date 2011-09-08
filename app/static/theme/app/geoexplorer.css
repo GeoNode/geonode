@@ -206,7 +206,7 @@ div.overlay-scaleline {
 
 .olControlAttribution{ 
     color: gray;
-    bottom: .5em;
+    bottom: .1em;
     left: .4em;
     right: 220px;
     font-size: smaller;
@@ -369,4 +369,11 @@ float:right;
 }
 .x-tree-node-expanded img.gxp-folder {
     background: url(../../externals/ext/resources/images/default/tree/folder-open.gif);
+}
+
+.olLayerGoogleV3.olLayerGoogleCopyright {
+    bottom: 1em !important;
+}
+.olLayerGoogleV3.olLayerGooglePoweredBy {
+    bottom: 2em !important;
 }
