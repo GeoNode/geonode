@@ -446,8 +446,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
             iter = 1
             mark_searchable = True
             for field, ftype in saved_layer.attribute_names.iteritems():
-                if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
-                    logger.debug("Field is [%s]", field)
                     las = LayerAttribute.objects.filter(layer=saved_layer, attribute=field)
                     if len(las) == 0:
                         la = LayerAttribute.objects.create(layer=saved_layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
