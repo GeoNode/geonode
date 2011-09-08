@@ -1,20 +1,17 @@
 Deploying your GeoNode Site
 ***************************
 
-This page provides a high-level description of the software required to set up
-a publicly accessible GeoNode web site.  Since deployment details will vary
-between platforms this information is deliberately vague.  Some
-platform-specific instructions are also available.  The platform-specific
-guides are contributed by the community, so if you deploy on a new platform
-please consider writing or updating a guide.
-
+This page describes a generic installation process for GeoNode systems.
+For some platforms the GeoNode project also provides customized installers which are easier to use and more reliable.
+Please check the following list before following these general instructions.
 
 .. toctree::
+   :maxdepth: 1
 
    /deploy/centos
    /deploy/ubuntu
+   /deploy/tarball
    /deploy/production
-
 
 Overview
 ========
