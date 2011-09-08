@@ -701,6 +701,59 @@ class LayerManager(models.Manager):
     def default_metadata_author(self):
         return self.admin_contact()
 
+    def import_existing_layer(self, resource_name):
+        #Like slurp but for just one particular layer
+        cat = self.gs_catalog
+        gn = self.gn_catalog
+        resource = cat.get_resource(resource_name)
+        if resource:
+            store = resource.store
+            workspace = store.workspace
+            layer, created = self.get_or_create(name=resource.name, defaults = {
+                    "workspace": workspace.name,
+                    "store": store.name,
+                    "storeType": store.resource_type,
+                    "typename": "%s:%s" % (workspace.name, resource.name),
+                    "title": resource.title or 'No title provided',
+                    "abstract": resource.abstract or 'No abstract provided',
+                    "uuid": str(uuid.uuid4())
+            })
+            ## Due to a bug in GeoNode versions prior to 1.0RC2, the data
+            ## in the database may not have a valid date_type set.  The
+            ## invalid values are expected to differ from the acceptable
+            ## values only by case, so try to convert, then fallback to a
+            ## default.
+            ##
+            ## We should probably drop this adjustment in 1.1. --David Winslow
+            if layer.date_type not in Layer.VALID_DATE_TYPES:
+                candidate = lower(layer.date_type)
+                if candidate in Layer.VALID_DATE_TYPES:
+                    layer.date_type = candidate
+                else:
+                    layer.date_type = Layer.VALID_DATE_TYPES[0]
+
+            if layer.bbox is None:
+                layer._populate_from_gs()
+
+            layer.save()
+
+            if created:
+                layer.set_default_permissions()
+                #Create layer attributes if they don't already exist
+                try:
+                    if layer.attribute_names is not None:
+                        for field, ftype in layer.attribute_names.iteritems():
+                            if field is not None:
+                                la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
+                                if created:
+                                    logger.debug("Created [%s] attribute for [%s]", field, layer.name)
+                except Exception, e:
+                    logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
+                finally:
+                    pass
+        # Doing a logout since we know we don't need this object anymore.
+        gn.logout()
+
     def slurp(self):
         cat = self.gs_catalog
         gn = self.gn_catalog
@@ -749,10 +802,6 @@ class LayerManager(models.Manager):
                                     logger.debug("Created [%s] attribute for [%s]", field, layer.name)
                 except Exception, e:
                     logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
-
-
-
-
             finally:
                 pass
         # Doing a logout since we know we don't need this object anymore.

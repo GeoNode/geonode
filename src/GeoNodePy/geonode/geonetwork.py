@@ -67,7 +67,7 @@ class Catalog(object):
         tpl = get_template(template)
         ctx = Context({
             'layer': layer,
-            'SITEURL': settings.SITEURL[:-1],
+            'SITEURL': settings.SITEURL,
         })
         md_doc = tpl.render(ctx)
         url = "%ssrv/en/csw" % self.base

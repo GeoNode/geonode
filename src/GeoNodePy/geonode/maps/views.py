@@ -130,7 +130,7 @@ class LayerAttributeForm(forms.ModelForm):
             self.fields['searchable'].widget.attrs['disabled'] = True
         self.fields['attribute'].widget.attrs['readonly'] = True
         self.fields['display_order'].widget.attrs['size'] = 3
-        self.fields['display_order'].widget.attrs['size'] = 3
+
 
 
     class Meta:
