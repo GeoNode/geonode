@@ -357,6 +357,22 @@ Ext.onReady(function(){
 </p>
 </div>
 
+Ext.Ajax.on('requestcomplete', function(connection, response, options) {
+if (options.form) {
+    if (!response.status || response.status >= 400)
+    {
+                            Ext.Msg.show({
+                                title: gettext("Error"),
+                                msg: response.responseText.contains("413") ? gettext("Upload is too large") : response.responseText,
+                                minWidth: 200,
+                                modal: true,
+                                icon: Ext.Msg.ERROR,
+                                buttons: Ext.Msg.OK
+                            });
+    }
+
+}
+});
 
 
 {% endblock %}

@@ -2182,12 +2182,12 @@ signals.post_save.connect(post_save_layer, sender=Layer)
 #===================#
 
 class MapStats(models.Model):
-    map = models.ForeignKey(Map)
+    map = models.ForeignKey(Map, unique=True)
     visits = models.IntegerField(_("Visits"), default= 0)
     uniques = models.IntegerField(_("Unique Visitors"), default = 0)
 
 class LayerStats(models.Model):
-    layer = models.ForeignKey(Layer)
+    layer = models.ForeignKey(Layer, unique=True)
     visits = models.IntegerField(_("Visits"), default = 0)
     uniques = models.IntegerField(_("Unique Visitors"), default = 0)
     downloads = models.IntegerField(_("Downloads"), default = 0)

@@ -322,15 +322,23 @@
     };
 
 
-//Ext.ajax.on('requestcomplete', function(connection, response, options) {
-//if (options.form) {
-//    if (response.responseText.length == 0 || response.responseText.contains("errors"))
-//    {
-//
-//    }
-//
-//}
-//});
+Ext.Ajax.on('requestcomplete', function(connection, response, options) {
+if (options.form) {
+    if (!response.status || response.status >= 400)
+    {
+                            Ext.Msg.show({
+                                title: gettext("Error"),
+                                msg: response.responseText.contains("413") ? gettext("Upload is too large") : response.responseText,
+                                minWidth: 200,
+                                modal: true,
+                                icon: Ext.Msg.ERROR,
+                                buttons: Ext.Msg.OK
+                            });
+    }
+
+}
+});
+
 
 {% endautoescape %}
 </script>
