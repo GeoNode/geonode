@@ -6,10 +6,9 @@ distribution.
 
 .. note:: 
 
-    While we intend to provide a detailed, accurate explanation of the
-    installation process, it may become out of date.  If you run into problems
-    with the process described in this document, please don't hesitate to let
-    the GeoNode team know so we can keep it up to date.
+   This documentation still needs updating for GeoNode 1.1!
+   If you are interested in helping out with the CentOS installation process please ask about it on the development mailing list.
+
 
 .. note::
 
