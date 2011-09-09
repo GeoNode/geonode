@@ -3,7 +3,7 @@ Deploying on Ubuntu 10.04
 
 For Ubuntu, GeoNode provides a .deb installer to fully automate the installation process.
 It is also possible to use a tar archive for the installation; this provides a bit more flexibility about the configuration.
-See :doc:/deploy/tarball for details.
+See :doc:`/deploy/tarball` for details.
 If you aren't sure though, the .deb is the most reliable and easiest way.
 
 Hosted Package
@@ -19,6 +19,7 @@ The easiest way to get the .deb is to install it using APT, the standard install
 
    $ sudo apt-get update && sudo apt-get install geonode
 
+Once the package is installed, please consult the :doc:`/deploy/production` to learn how to create the admin user and tweak the settings to get more performance.
  
 Custom Package
 --------------
