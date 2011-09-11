@@ -154,7 +154,16 @@ function configuredjango() {
 	# set up django
 	#
 	cd $GEONODE_LIB
+
 	virtualenv .
+
+	# Verify if the virtualenv has been created and abort if bin/activate does not exist
+	if [ ! -f bin/activate ]
+	then
+	    echo "Creation of virtualenv failed, aborting installation"
+	    exit -1
+	fi
+
 	source bin/activate
 	touch geoserver_token
 	pip install geonode-webapp.pybundle
