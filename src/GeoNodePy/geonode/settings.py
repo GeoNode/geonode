@@ -162,6 +162,10 @@ GEONETWORK_CREDENTIALS = "admin", "admin"
 AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
 
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
+
+# Key for http://demo.geonode.org/. Create your own at http://bingmapsportal.com/
+BING_API_KEY = "AhaJDO_bWhekq58C0nGLRkwJSMphRFDTYeccozENkqZTAAa1W0OgoaWmcgbPxatZ"
+
 LOGIN_REDIRECT_URL = "/"
 
 DEFAULT_LAYERS_OWNER='admin'
@@ -176,14 +180,14 @@ DEFAULT_MAP_ZOOM = 7
 
 MAP_BASELAYERSOURCES = {
     "any": {
-        "ptype":"gx_olsource"
+        "ptype":"gxp_olsource"
     },
     "capra": {
         "url":"/geoserver/wms"
     },
-    "google":{
-        "ptype":"gx_googlesource",
-        "apiKey": GOOGLE_API_KEY
+    "bing":{
+        "ptype":"gxp_bingsource",
+        "apiKey": BING_API_KEY
     }
 }
 
@@ -219,9 +223,9 @@ MAP_BASELAYERS = [{
       {"buffer":0}
     ]
   },{
-    "source":"google",
+    "source":"bing",
     "group":"background",
-    "name":"SATELLITE",
+    "name":"Aerial",
     "visibility": False,
     "fixed": True,
 }]
