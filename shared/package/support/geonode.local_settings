@@ -45,6 +45,7 @@ STATIC_ROOT = '/var/www/geonode/static/'
 STATIC_URL = '/static/'
 GEONODE_UPLOAD_PATH = MEDIA_ROOT + 'geonode'
 GEONODE_CLIENT_LOCATION = STATIC_URL + 'geonode/'
+ADMIN_MEDIA_PREFIX = STATIC_URL, 'admin/'
 
 STATICFILES_STORAGE = 'staticfiles.storage.StaticFilesStorage'
 
