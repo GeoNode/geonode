@@ -43,7 +43,8 @@ Ext.onReady(function() {
         rest: "/maps/",
         homeUrl: "{% url geonode.views.index %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
-        csrfToken: "{{ csrf_token }}"
+        csrfToken: "{{ csrf_token }}",
+        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
     }, {{ config }});
 
     app = new GeoExplorer(config);
