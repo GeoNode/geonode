@@ -373,13 +373,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }, {
             ptype: "gxp_layerproperties",
             layerPanelConfig: {
-                "gxp_wmslayerpanel": {rasterStyling: true, sameOriginStyling: false}
+                "gxp_wmslayerpanel": {rasterStyling: true}
             },
             actionTarget: ["treetbar", "treecontent.contextMenu"]
         }, {
             ptype: "gxp_styler",
             rasterStyling: true,
-            sameOriginStyling: false,
             actionTarget: ["treetbar", "treecontent.contextMenu"]
         });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
