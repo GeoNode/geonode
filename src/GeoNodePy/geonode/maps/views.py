@@ -62,7 +62,7 @@ def default_map_config():
         return MapLayer.objects.from_viewer_config(
             map = _default_map,
             layer = lyr,
-            source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
+            source = lyr["source"],
             ordering = order
         )
 
