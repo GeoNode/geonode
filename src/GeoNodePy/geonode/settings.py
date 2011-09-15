@@ -174,35 +174,28 @@ DEFAULT_MAP_CENTER = (-84.7, 12.8)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 7
 
-MAP_BASELAYERSOURCES = {
-    "any": {
-        "ptype":"gx_olsource"
-    },
-    # It is important to have this layer named local because
-    # it should be the first one in the add layers dialog.
-    "local": {
-        "ptype":"gxp_wmscsource",
-        "url":"/geoserver/wms",
-        "restUrl": "/gs/rest"
-    },
+DEFAULT_LAYER_SOURCE = {
+    "ptype":"gxp_wmscsource",
+    "url":"/geoserver/wms",
+    "restUrl": "/gs/rest"
 }
 
 MAP_BASELAYERS = [{
-    "source":"any",
+    "source": {"ptype": "gx_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
     "visibility": False,
     "fixed": True,
     "group":"background"
   },{
-    "source":"any",
+    "source": { "ptype":"gx_olsource"},
     "type":"OpenLayers.Layer.OSM",
     "args":["OpenStreetMap"],
     "visibility": True,
     "fixed": True,
     "group":"background"
   },{
-    "source":"any",
+    "source": {"ptype":"gx_olsource"},
     "type":"OpenLayers.Layer.WMS",
     "group":"background",
     "visibility": False,
