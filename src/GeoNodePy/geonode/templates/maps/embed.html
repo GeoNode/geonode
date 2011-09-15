@@ -18,7 +18,6 @@ Ext.onReady(function() {
 {% autoescape off %}
     var config = {
         useCapabilities: false,
-        useBackgroundCapabilities: false,
         useToolbar: false,
         proxy: "/proxy/?url=",
 
@@ -34,4 +33,6 @@ Ext.onReady(function() {
 {% endautoescape %}
 });
 </script>
+{% endblock %}
+{% block body %}
 {% endblock %}
