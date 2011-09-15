@@ -181,7 +181,9 @@ MAP_BASELAYERSOURCES = {
     # It is important to have this layer named local because
     # it should be the first one in the add layers dialog.
     "local": {
-        "url":"/geoserver/wms"
+        "ptype":"gxp_wmscsource",
+        "url":"/geoserver/wms",
+        "restUrl": "/gs/rest"
     },
 }
 
