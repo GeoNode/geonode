@@ -24,6 +24,58 @@ By default GeoNode runs in ``http://localhost/``, but when running in production
 To configure it, edit the ``SITEURL`` setting in ``local_settings.py`` (which can be found either in your GeoNodePy/src/geonode folder or in ``/etc/geonode/local_settings.py`` if you used an automated installer.
 
 
+Adding layers from Google, Bing and other providers
+---------------------------------------------------
+
+Bing
+++++
+
+Get an API key from Microsoft at http://bingmapsportal.com/ and place it in ``local_settings.py``, for example::
+
+    BING_API_KEY="zxcxzcXAWdqwdQWWQEDzxcxz"
+
+Copy the ``MAP_BASELAYERSOURCES`` dictionary from ``settings.py`` into ``local_settings.py`` and add the following snippet::
+
+     "bing":{	 	
+         "ptype":"gxp_bingsource", 	
+         "apiKey": BING_API_KEY	
+     }
+
+Add the following to ``MAP_BASELAYERS``::
+
+    },{
+    "source":"bing",
+    "group":"background",
+    "name":"Aerial",
+    "visibility": False,
+    "fixed": True,
+
+
+
+Google
+++++++
+
+Get an API key from Google at http://code.google.com/apis/maps/signup.html and place it in ``local_settings.py``, for example::
+
+    GOOGLE_API_KEY="zxcxzcXAWdqwdQWWQEDzxcxz"
+
+Copy the ``MAP_BASELAYERSOURCES`` dictionary from ``settings.py`` into ``local_settings.py`` and add the following snippet::
+
+     "google":{	 	
+         "ptype":"gxp_googlesource", 	
+         "apiKey": GOOGLE_API_KEY	
+     }
+
+Add the following to ``MAP_BASELAYERS``::
+
+    },{
+    "source":"google",
+    "group":"background",
+    "name":"SATELLITE",
+    "visibility": False,
+    "fixed": True,
+
+
 Robot Exclusion File
 --------------------
 
