@@ -178,7 +178,9 @@ MAP_BASELAYERSOURCES = {
     "any": {
         "ptype":"gx_olsource"
     },
-    "capra": {
+    # It is important to have this layer named local because
+    # it should be the first one in the add layers dialog.
+    "local": {
         "url":"/geoserver/wms"
     },
 }
