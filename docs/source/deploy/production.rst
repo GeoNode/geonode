@@ -30,21 +30,13 @@ Adding layers from Google, Bing and other providers
 Bing
 ++++
 
-Get an API key from Microsoft at http://bingmapsportal.com/ and place it in ``local_settings.py``, for example::
-
-    BING_API_KEY="zxcxzcXAWdqwdQWWQEDzxcxz"
-
-Copy the ``MAP_BASELAYERSOURCES`` dictionary from ``settings.py`` into ``local_settings.py`` and add the following snippet::
-
-     "bing":{	 	
-         "ptype":"gxp_bingsource", 	
-         "apiKey": BING_API_KEY	
-     }
-
-Add the following to ``MAP_BASELAYERS``::
+Get an API key from Microsoft at http://bingmapsportal.com/ and place it in ``local_settings.py``. Add the following to ``MAP_BASELAYERS``::
 
     },{
-    "source":"bing",
+    "source": {
+               "ptype":"gxp_bingsource", 	
+               "apiKey": "YOUR_BING_API"
+              },
     "group":"background",
     "name":"Aerial",
     "visibility": False,
@@ -59,17 +51,13 @@ Get an API key from Google at http://code.google.com/apis/maps/signup.html and p
 
     GOOGLE_API_KEY="zxcxzcXAWdqwdQWWQEDzxcxz"
 
-Copy the ``MAP_BASELAYERSOURCES`` dictionary from ``settings.py`` into ``local_settings.py`` and add the following snippet::
-
-     "google":{	 	
-         "ptype":"gxp_googlesource", 	
-         "apiKey": GOOGLE_API_KEY	
-     }
-
-Add the following to ``MAP_BASELAYERS``::
+Copy the ``MAP_BASELAYERS`` dictionary from ``settings.py`` into ``local_settings.py`` and add the following snippet::
 
     },{
-    "source":"google",
+    "source": {
+         "ptype":"gxp_googlesource", 	
+         "apiKey": GOOGLE_API_KEY	
+        },
     "group":"background",
     "name":"SATELLITE",
     "visibility": False,
