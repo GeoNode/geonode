@@ -187,7 +187,7 @@ function configuredjango() {
 	    sed -i "s/THE_DATABASE_PASSWORD/$psqlpass/g" $GEONODE_ETC/local_settings.py
 	fi
 
-	ln -s $GEONODE_ETC/local_settings.py $GEONODE_LIB/src/GeoNodePy/geonode/local_settings.py
+	ln -sf $GEONODE_ETC/local_settings.py $GEONODE_LIB/src/GeoNodePy/geonode/local_settings.py
 	# Set up logging symlink
 	ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
