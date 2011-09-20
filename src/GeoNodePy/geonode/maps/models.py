@@ -1263,7 +1263,7 @@ class Map(models.Model, PermissionLevelMixin):
         """
         layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
         server_lookup = {}
-        sources = dict()
+        sources = {'local': settings.DEFAULT_LAYER_SOURCE }
 
         def uniqify(seq):
             """
@@ -1279,10 +1279,6 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-        configs.insert(0, {
-            "ptype":"gxp_wmscsource",
-            "url": "/geoserver/wms",
-            "restUrl": "/gs/rest"})
 
         i = 0
         for source in uniqify(configs):
