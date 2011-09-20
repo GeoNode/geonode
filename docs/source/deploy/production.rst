@@ -1,10 +1,13 @@
+==================================
 Configuring GeoNode for Production
 ==================================
 
 This page documents recommendations for configuring GeoNode in production environments.
 
+Required steps
+==============
 
-Creating a super user
+Create a super user
 ---------------------
 
 To create a superuser you can run::
@@ -17,12 +20,33 @@ or, if you installed by source::
     django-admin.py createsuperuser --settings=geonode.settings
 
 
-Configuring the correct DNS or IP address
+Configure the correct DNS or IP address
 -----------------------------------------
 
 By default GeoNode runs in ``http://localhost/``, but when running in production in needs to know the public IP address or the DNS entry.
 To configure it, edit the ``SITEURL`` setting in ``local_settings.py`` (which can be found either in your GeoNodePy/src/geonode folder or in ``/etc/geonode/local_settings.py`` if you used an automated installer.
 
+
+Set the correct GeoServer Proxy URL value
+---------------------------------------------
+
+Navigate to ``http://localhost/geoserver``, log in and click on ``Settings/Global`` and look for the ``Proxy Base URL`` text field, put the complete address there::
+
+    http://%SITEURL%/geoserver/
+
+Configure the Printing Module
+-----------------------------
+
+This lives in the GeoServer Data dir ``/var/lib/geoserver/geonode-data/printing/config.yaml``, add your server's IP address or domain name to the list of exceptions::
+
+    hosts:
+      - !dnsMatch
+        host: YOUR_IP_ADDRESS
+        port: 80
+
+
+Recommended Steps (optional)
+============================
 
 Adding layers from Google, Bing and other providers
 ---------------------------------------------------
@@ -145,12 +169,12 @@ Using the native-code implementation of JAI and JAI ImageIO speeds up GeoServer,
 The GeoServer manual contains `platform-specific instructions <http://docs.geoserver.org/stable/en/user/production/java.html#install-native-jai-and-jai-image-i-o-extensions>`_ for configuring JAI and JAI ImageIO.
 
 GeoServer Configuration
------------------------
++++++++++++++++++++++++
 
 There are a few controls to be set in the GeoServer configuration itself as well.
 
 On the JAI Settings page
-------------------------
+++++++++++++++++++++++++
 
 .. figure:: GeoServer-JAI-Settings.png
 
@@ -161,7 +185,7 @@ On the JAI Settings page
       * Disable Tile Recycling as this optimization is less relevant on recent JVM implementations and has some overhead itself.
 
 On the WMS Service page
------------------------
++++++++++++++++++++++++
 
 .. figure:: GeoServer-Web-Map-Service.png
 
