@@ -19,7 +19,7 @@ WSGIDaemonProcess geonode user=www-data threads=15 processes=2 python-path=REPLA
     </Directory>
 
     Alias /static/ /var/www/geonode/static/
-    Alias /uploads/ /var/www/geonode/uploads/
+    Alias /uploaded/ /var/www/geonode/uploaded/
     Alias /robots.txt /var/www/geonode/robots.txt
 
     <Proxy *>
