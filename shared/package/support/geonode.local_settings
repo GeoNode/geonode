@@ -40,7 +40,7 @@ DB_DATASTORE=True
 LANGUAGE_CODE = 'en'
 
 MEDIA_ROOT = '/var/www/geonode/uploaded'
-MEDIA_URL = SITEURL + 'uploaded/'
+MEDIA_URL = '/uploaded/'
 STATIC_ROOT = '/var/www/geonode/static/'
 STATIC_URL = '/static/'
 GEONODE_UPLOAD_PATH = MEDIA_ROOT + 'geonode'
