@@ -13,6 +13,7 @@ SITEURL = "http://localhost:8000/"
 #TEMPLATE_DEBUG = DEBUG
 TEMPLATE_DEBUG = True
 DEFAULT_FROM_EMAIL="me@me.com"
+NO_REPLY_EMAIL = "do-not-reply@worldmap.harvard.edu"
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 

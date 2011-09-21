@@ -6,7 +6,7 @@ from django.contrib.auth.models import User, AnonymousUser
 import geonode.maps.models
 import geonode.maps.views
 
-from geonode.maps.models import Map, Layer, LayerCategory, User
+from geonode.maps.models import Map, Layer, LayerCategory, LayerAttribute, User
 from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock, patch
@@ -810,6 +810,32 @@ community."
         self.assertEqual(lyr.keyword_list(), ["saving", "keywords"])
         self.assertEqual(lyr.resource.keywords, ["saving", "keywords"])
         self.assertEqual(_gs_resource.keywords, ["saving", "keywords"])
+
+
+
+    def test_layer_attributes(self):
+        lyr = Layer.objects.get(pk=1)
+        attribute1 = LayerAttribute.objects.create(layer=lyr, attribute='ATTR1', attribute_label="Test Attribute 1", attribute_type="xsd:string", searchable=False, visible=True, display_order=3)
+        attribute2 = LayerAttribute.objects.create(layer=lyr, attribute='ATTR2', attribute_label="Test Attribute 2", attribute_type="xsd:string", searchable=False, visible=False, display_order=1)
+        attribute3 = LayerAttribute.objects.create(layer=lyr, attribute='ATTR3', attribute_label="Test Attribute 3", attribute_type="xsd:string", searchable=False, visible=True, display_order=2)
+
+        # This method should return a sorted list containing details of attribute 3, then attribute 1 (based on display order);
+        # attribute2 should not be included (visible=False)
+        identify_attributes = lyr.layer_attributes()
+
+        attribute_num = len(identify_attributes)
+        msg = "Expected 2 attributes, received %s instead", attribute_num
+        assert len(identify_attributes) == 2, msg
+
+        attrFirst = identify_attributes[0]
+        msg =  "Expected 1st attribute  to be 'Test Attribute 3, got %s instead", attrFirst["header"]
+        assert attrFirst["header"] == "Test Attribute 3", msg
+
+        attrSecond = identify_attributes[1]
+        msg =  "Expected 2nd attribute  to be 'Test Attribute 3, got %s instead", attrSecond["header"]
+        assert attrSecond["header"] == "Test Attribute 1", msg
+
+
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user

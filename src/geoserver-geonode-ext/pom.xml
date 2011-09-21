@@ -233,7 +233,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <warName>geoserver-geonode-dev</warName> 
+          <warName>geoserver-geonode-dev</warName>
           <webappDirectory>${project.build.directory}/geoserver-geonode-dev</webappDirectory> -->
         </configuration>
         <executions>

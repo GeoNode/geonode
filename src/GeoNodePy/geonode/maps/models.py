@@ -795,11 +795,15 @@ class LayerManager(models.Manager):
                 #Create layer attributes if they don't already exist
                 try:
                     if layer.attribute_names is not None:
+                        iter = 1;
                         for field, ftype in layer.attribute_names.iteritems():
                             if field is not None:
                                 la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
-                                if created:
+                                if created and la.attribute_type.find("gsm:") != 0:
                                     logger.debug("Created [%s] attribute for [%s]", field, layer.name)
+                                    la.display_order = iter
+                                    la.save()
+                                    iter += 1
                 except Exception, e:
                     logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
             finally:
@@ -1072,20 +1076,17 @@ class Layer(models.Model, PermissionLevelMixin):
         #FIXME: Add more checks, for example making sure the title, keywords and description
         # are the same in every database.
 
-    def searchFields(self):
-        searchable_fields = cache.get('layer_searchfields_' + self.typename)
-        if searchable_fields is None:
+    def layer_attributes(self):
+        attribute_fields = cache.get('layer_searchfields_' + self.typename)
+        if attribute_fields is None:
             logger.debug("Create searchfields for %s", self.typename)
-            searchable_fields = []
-            scount = 0
+            attribute_fields = []
             attributes = self.attribute_set.filter(visible=True).order_by('display_order')
             for la in attributes:
-                searchable_fields.append( {"attribute": la.attribute, "label": la.attribute_label, "searchable": str(la.searchable)})
-                if la.searchable:
-                    scount+=1
-            cache.add('layer_searchfields_' + self.typename, searchable_fields)
+                attribute_fields.append( {"id": la.attribute, "header": la.attribute_label, "searchable" : la.searchable})
+            cache.add('layer_searchfields_' + self.typename, attribute_fields)
             logger.debug("cache created for layer %s", self.typename)
-        return searchable_fields
+        return attribute_fields
 
     def maps(self):
         """Return a list of all the maps that use this layer"""
@@ -1442,8 +1443,8 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['bbox'] = simplejson.loads(self.bbox)
         cfg['llbbox'] = simplejson.loads(self.llbbox)
         cfg['queryable'] = (self.storeType == 'dataStore')
-        cfg['searchfields'] = self.searchFields()
-        cfg['disabled'] = user and not user.has_perm('maps.view_layer', obj=self)
+        cfg['attributes'] = self.layer_attributes()
+        cfg['disabled'] =  not user.has_perm('maps.view_layer', obj=self)
         cfg['visibility'] = True
         cfg['abstract'] = self.abstract
         cfg['styles'] = ''
@@ -2020,7 +2021,7 @@ class MapLayer(models.Model):
         """
 #       Caching of  maplayer config, per user (due to permissions)
         if self.id is not None:
-            cfg = cache.get("maplayer_config_" + str(self.id) + "_" + str(0 if user.id is None else user.id))
+            cfg = cache.get("maplayer_config_" + str(self.id) + "_" + str(0 if user is None else user.id))
             if cfg is not None:
                 logger.debug("Cached cfg: %s", str(cfg))
                 return cfg
@@ -2048,9 +2049,9 @@ class MapLayer(models.Model):
                 if gnLayer.srs: cfg['srs'] = gnLayer.srs
                 if gnLayer.bbox: cfg['bbox'] = simplejson.loads(gnLayer.bbox)
                 if gnLayer.llbbox: cfg['llbbox'] = simplejson.loads(gnLayer.llbbox)
-                cfg['searchfields'] = (gnLayer.searchFields())
+                cfg['attributes'] = (gnLayer.layer_attributes())
                 cfg['queryable'] = (gnLayer.storeType == 'dataStore'),
-                cfg['disabled'] = user.id is not None and not user.has_perm('maps.view_layer', obj=gnLayer)
+                cfg['disabled'] =  not user.has_perm('maps.view_layer', obj=gnLayer)
                 cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
                 cfg['abstract'] = gnLayer.abstract
                 cfg['styles'] = self.styles
@@ -2058,7 +2059,7 @@ class MapLayer(models.Model):
                 # Give it some default values so it will still show up on the map, but disable it in the layer tree
                 cfg['srs'] = 'EPSG:900913'
                 cfg['llbbox'] = [-180,-90,180,90]
-                cfg['searchfields'] = []
+                cfg['attributes'] = []
                 cfg['queryable'] =False,
                 cfg['disabled'] = True
                 cfg['visibility'] = False
