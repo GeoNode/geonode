@@ -446,13 +446,14 @@ def save(layer, base_file, user, overwrite = True, title=None,
             iter = 1
             mark_searchable = True
             for field, ftype in saved_layer.attribute_names.iteritems():
-                    las = LayerAttribute.objects.filter(layer=saved_layer, attribute=field)
-                    if len(las) == 0:
-                        la = LayerAttribute.objects.create(layer=saved_layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
-                        la.save()
-                        if la.searchable:
-                            mark_searchable = False
-                        iter+=1
+                    if field is not None and  ftype.find("gml:") != 0:
+                        las = LayerAttribute.objects.filter(layer=saved_layer, attribute=field)
+                        if len(las) == 0:
+                            la = LayerAttribute.objects.create(layer=saved_layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
+                            la.save()
+                            if la.searchable:
+                                mark_searchable = False
+                            iter+=1
         else:
             logger.debug("No attributes found")
 

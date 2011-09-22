@@ -635,7 +635,8 @@ class LayerManager(models.Manager):
                     if layer.attribute_names is not None:
                         iter = 1;
                         for field, ftype in layer.attribute_names.iteritems():
-                            if field is not None:
+                            logger.debug("%s: %s", field, ftype)
+                            if field is not None and  ftype.find("gml:") != 0:
                                 la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
                                 if created:
                                     logger.debug("Created [%s] attribute for [%s]", field, layer.name)
@@ -875,13 +876,9 @@ class Layer(models.Model, PermissionLevelMixin):
     def layer_attributes(self):
         # Return  user-defined title, sort order, searchability of VISIBLE layer attributes
         attribute_fields = []
-        scount = 0
         attributes = self.attribute_set.filter(visible=True).order_by('display_order')
-        #attributes = self.attribute_set.order_by('display_order')
         for la in attributes:
             attribute_fields.append( {"id": la.attribute, "header": la.attribute_label, "searchable" : la.searchable, "visible": la.visible})
-            if la.searchable:
-                scount+=1
         return attribute_fields
 
     def maps(self):
@@ -1615,15 +1612,11 @@ class MapLayer(models.Model):
         except: 
             cfg = dict()
 
-        #if self.ows_url and self.ows_url.find(settings.SITEURL) > -1:
-        try:
+        if self.ows_url and self.ows_url.find(settings.GEOSERVER_BASE_URL) > -1:
             geonodeLayer = Layer.objects.get(typename=self.name)
             if geonodeLayer is not None:
                 cfg['attributes'] = geonodeLayer.layer_attributes()
             logger.debug("ATTRIBUTES: %s", str(cfg['attributes']))
-        except Exception, e:
-            logger.debug(str(e))
-            cfg['attributes'] = []
         if self.format: cfg['format'] = self.format
         if self.name: cfg["name"] = self.name
         if self.opacity: cfg['opacity'] = self.opacity
