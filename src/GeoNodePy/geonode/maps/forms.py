@@ -3,6 +3,8 @@ from django import forms
 import json
 import os
 import tempfile
+import pdb
+
 
 class JSONField(forms.CharField):
     def clean(self, text):
@@ -32,10 +34,10 @@ class LayerUploadForm(forms.Form):
                 raise forms.ValidationError("When uploading Shapefiles, .SHX and .DBF files are also required.")
             dbf_name, __ = os.path.splitext(dbf_file.name)
             shx_name, __ = os.path.splitext(shx_file.name)
-            if dbf_name != base_name or shx_name != base_name:
-                raise forms.ValidationError("It looks like you're uploading "
-                    "components from different Shapefiles. Please "
-                    "double-check your file selections.")
+            if dbf_name != base_name:
+            	dbf_file.name = base_name + ".dbf"
+            if shx_name != base_name:
+                shx_file.name = base_name + ".shx"
             if cleaned["prj_file"] is not None:
                 prj_file = cleaned["prj_file"].name
                 if os.path.splitext(prj_file)[0] != base_name:
