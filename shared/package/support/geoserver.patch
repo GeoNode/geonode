@@ -13,7 +13,7 @@
 +
 +  <context-param>
 +     <param-name>GEOSERVER_DATA_DIR</param-name>
-+     <param-value>/var/lib/geoserver/data/</param-value>
++     <param-value>/var/lib/geoserver/geonode-data/</param-value>
 +  </context-param> 
      <!-- 
      <context-param>
