@@ -64,7 +64,7 @@
     <div class="wrap selfclear">
       {% block footer %}
       <div class="onecol" style="text-align:center">
-         <a href="{% url geonode.views.static "help" %}">{% trans "Need Help?" %}</a>&nbsp;&nbsp;
+         <a href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf">{% trans "Need Help?" %}</a>&nbsp;&nbsp;
          <a href="mailto:worldmap@harvard.edu">{%  trans "Contact Us" %}</a>&nbsp;&nbsp;
           <a href="http://projects.iq.harvard.edu/worldmap/blog">{% trans "Blog" %}</a>&nbsp;&nbsp;
          <a href="https://github.com/cga-harvard/cga-worldmap">{% trans "Source Code" %}</a>&nbsp;&nbsp;

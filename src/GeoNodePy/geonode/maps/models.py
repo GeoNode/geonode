@@ -792,20 +792,22 @@ class LayerManager(models.Manager):
                 layer.save()
 		if created:
                     layer.set_default_permissions()
+
                 #Create layer attributes if they don't already exist
                 try:
                     if layer.attribute_names is not None:
                         iter = 1;
                         for field, ftype in layer.attribute_names.iteritems():
-                            if field is not None:
+                            logger.debug("%s: %s", field, ftype)
+                            if field is not None and  ftype.find("gml:") != 0:
                                 la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
-                                if created and la.attribute_type.find("gsm:") != 0:
+                                if created:
                                     logger.debug("Created [%s] attribute for [%s]", field, layer.name)
                                     la.display_order = iter
                                     la.save()
                                     iter += 1
                 except Exception, e:
-                    logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
+                    logger.error("Could not create attributes for [%s] : [%s]", layer.name, str(e))
             finally:
                 pass
         # Doing a logout since we know we don't need this object anymore.
