@@ -1303,24 +1303,6 @@ def upload_layer(request):
                         sldfile = sld_file
                         )
 
-                #Add new layer attributes if they dont already exist
-                if saved_layer.attribute_names is not None:
-                    logger.debug("Attributes are not None")
-                    iter = 1
-                    mark_searchable = True
-                    for field, ftype in saved_layer.attribute_names.iteritems():
-                            logger.debug("Field is [%s]", field)
-                            la = LayerAttribute.objects.create(layer=saved_layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable))
-                            if la.attribute_type.find("gsm:") != 0:
-                                la.display_order = iter
-                                la.save()
-                                iter +=1
-                            if la.searchable:
-                                mark_searchable = False
-
-                else:
-                    logger.debug("No attributes found")
-
                 redirect_to  = reverse('geonode.maps.views.layerController', args=(saved_layer.typename,)) + '?describe'
                 if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
                     redirect_to+= "&tab=true"

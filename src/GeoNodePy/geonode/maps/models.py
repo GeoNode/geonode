@@ -823,8 +823,8 @@ class LayerManager(models.Manager):
 
     def update_stores(self):
         cat = self.gs_catalog
-        for layer in Layer.objects.all():
-            logger.debug('Process %s', layer.name)
+	for layer in Layer.objects.all():
+    	    logger.debug('Process %s', layer.name)
             resource = cat.get_resource(layer.name)
             if resource:
                 store = resource.store
@@ -1345,11 +1345,7 @@ class Layer(models.Model, PermissionLevelMixin):
             Layer.objects.gs_catalog.save(self.publishing)
 
     def  _populate_from_gs(self):
-        try:
-            gs_store = Layer.objects.gs_catalog.get_store(self.name)
-            gs_resource = Layer.objects.gs_catalog.get_resource(self.name, store=gs_store)
-        except:
-            gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
+        gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
         if gs_resource is None:
             return
         self.srs = gs_resource.projection
