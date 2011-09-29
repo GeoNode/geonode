@@ -634,6 +634,38 @@ class LayerManager(models.Manager):
         # Doing a logout since we know we don't need this object anymore.
         gn.logout()
 
+    def update_stores(self):
+        cat = self.gs_catalog
+        for layer in Layer.objects.all():
+            logger.debug('Process %s', layer.name)
+            resource = cat.get_resource(layer.name)
+            if resource:
+                store = resource.store
+                if layer.store != store.name:
+                    logger.debug('Change store name of %s from %s to %s', layer.name, layer.store, store.name)
+                    layer.store = store.name
+                    layer.save()
+
+
+class LayerCategory(models.Model):
+    name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
+    title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
+    description = models.TextField(_('Category Description'), blank=True, null=True)
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+
 class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
