@@ -647,24 +647,6 @@ class LayerManager(models.Manager):
                     layer.save()
 
 
-class LayerCategory(models.Model):
-    name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
-    title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
-    description = models.TextField(_('Category Description'), blank=True, null=True)
-    created_dttm = models.DateTimeField(auto_now_add=True)
-    """
-    The date/time the object was created.
-    """
-
-    last_modified = models.DateTimeField(auto_now=True)
-    """
-    The last time the object was modified.
-    """
-
-    def __str__(self):
-        return "%s" % self.name
-
-
 
 class Layer(models.Model, PermissionLevelMixin):
     """
