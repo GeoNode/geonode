@@ -5,7 +5,7 @@ from zipfile import ZipFile
 import logging
 import re
 import psycopg2
-
+from django.conf import settings
 
 logger = logging.getLogger("geonode.maps.gs_helpers")
 
@@ -132,9 +132,11 @@ def cascading_delete(cat, resource):
                 if s is not None:
                     cat.delete(s, purge=True)
         cat.delete(resource)
-        if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis' and store.name != 'wmdata':
-                delete_from_postgis(resource_name)
-        cat.delete(store)
+        if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
+            delete_from_postgis(resource_name)
+        else:
+            cat.delete(store)
+
 
 
 def delete_from_postgis(resource_name):
@@ -142,7 +144,7 @@ def delete_from_postgis(resource_name):
     Delete a table from PostGIS (because Geoserver won't do it yet);
     to be used after deleting a layer from the system.
     """
-    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_NAME + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
         cur = conn.cursor()
         cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
@@ -150,5 +152,4 @@ def delete_from_postgis(resource_name):
     except Exception, e:
         logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))
     finally:
-        if conn:
             conn.close()

@@ -308,13 +308,16 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
         logger.debug('Uploading vector layer: [%s]', base_file)
 
         if settings.DB_DATASTORE:
-            create_store = _create_db_featurestore
+            create_store_and_resource = _create_db_featurestore
         else:
-            create_store = cat.create_featurestore
-
+            def create_store_and_resource(name, data, overwrite, charset):
+                ft = cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
+                return cat.get_store(name), cat.get_resource(name)
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
-        create_store = cat.create_coveragestore
+        def create_store_and_resource(name, data, overwrite, charset):
+            cat.create_coveragestore(name, data, overwrite=overwrite)
+            return cat.get_store(name), cat.get_resource(name)
     else:
         msg = ('The layer type for name %s is %s. It should be '
                '%s or %s,' % (layer_name,
@@ -341,11 +344,7 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
     # ------------------
 
     try:
-        if create_store == cat.create_coveragestore:
-            create_store(name, data, overwrite=overwrite)
-        else:
-            create_store(name, data, overwrite=overwrite, charset=charset)
-
+        store, gs_resource = create_store_and_resource(name, data, overwrite=overwrite, charset=charset)
     except geoserver.catalog.UploadError, e:
         msg = ('Could not save the layer %s, there was an upload '
                'error: %s' % (name, str(e)))
@@ -370,8 +369,6 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
     # Step 5. Create the resource in GeoServer
     logger.info('>>> Step 5. Generating the metadata for [%s] after '
                 'successful import to GeoSever', name)
-    store = cat.get_store(name)
-    gs_resource = cat.get_resource(name=name, store=store)
 
     # Verify the resource was created
     if gs_resource is not None:
@@ -700,20 +697,26 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     (and delete the PostGIS table for it).
     """
     cat = Layer.objects.gs_catalog
-    ds = cat.create_datastore(name)
-    ds.connection_parameters.update(host=settings.DB_DATASTORE_HOST,
+    try:
+        ds = cat.get_store(settings.DB_DATASTORE_NAME)
+    except FailedRequestError, e:
+        ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
+        ds.connection_parameters.update(
+            host=settings.DB_DATASTORE_HOST,
                                     port=settings.DB_DATASTORE_PORT,
-                                    database=settings.DB_DATASTORE_NAME,
+                                    database=settings.DB_DATASTORE_DATABASE,
                                     user=settings.DB_DATASTORE_USER,
                                     passwd=settings.DB_DATASTORE_PASSWORD,
                                     dbtype=settings.DB_DATASTORE_TYPE)
-    cat.save(ds)
-    ds = cat.get_store(name)
+        cat.save(ds)
+        ds = cat.get_store(settings.DB_DATASTORE_NAME)
+
     try:
         cat.add_data_to_store(ds,name, data, overwrite, charset)
+        return ds, cat.get_resource(name, store=ds)
     except:
         store_params = ds.connection_parameters
         cat.delete(ds, purge=True)
-        if store_params['dbtype'] and store_params['dbtype'] == 'postgis' and name != 'wmdata':
+        if store_params['dbtype'] and store_params['dbtype'] == 'postgis':
             delete_from_postgis(name)
         raise

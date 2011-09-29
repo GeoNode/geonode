@@ -821,6 +821,18 @@ class LayerManager(models.Manager):
                 layer._populate_from_gs()
                 layer.save()
 
+    def update_stores(self):
+        cat = self.gs_catalog
+        for layer in Layer.objects.all():
+            logger.debug('Process %s', layer.name)
+            resource = cat.get_resource(layer.name)
+            if resource:
+                store = resource.store
+                if layer.store != store.name:
+                    logger.debug('Change store name of %s from %s to %s', layer.name, layer.store, store.name)
+                    layer.store = store.name
+                    layer.save()
+
                 
 class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
