@@ -1,7 +1,6 @@
 from itertools import cycle, izip
 import logging
 import re
-import psycopg2
 from django.conf import settings
 
 logger = logging.getLogger("geonode.maps.gs_helpers")
@@ -153,6 +152,7 @@ def delete_from_postgis(resource_name):
     Delete a table from PostGIS (because Geoserver won't do it yet);
     to be used after deleting a layer from the system.
     """
+    import psycopg2
     conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
         cur = conn.cursor()
