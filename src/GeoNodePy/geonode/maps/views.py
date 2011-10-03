@@ -9,7 +9,6 @@ from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -40,15 +39,9 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 
-def _project_center(llcenter):
-    wkt = "POINT({x} {y})".format(x=llcenter[0],y=llcenter[1])
-    center = GEOSGeometry(wkt, srid=4326)
-    center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
-    return center.x, center.y
-
 def default_map_config():
-
-    _DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
+    from geonode.maps.utils import forward_mercator
+    _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = Map(
         title=DEFAULT_TITLE, 
@@ -200,6 +193,7 @@ def newmap_config(request):
     and the map specified does not exist a 404 is returned.
     '''
     DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+    from geonode.maps.utils import forward_mercator
 
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
@@ -259,9 +253,8 @@ def newmap_config(request):
                 minx, maxx, miny, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
-                wkt = "POINT(" + str(x) + " " + str(y) + ")"
-                center = GEOSGeometry(wkt, srid=4326)
-                center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+
+                center = forward_mercator((x, y))
 
                 if maxx == minx:
                     width_zoom = 15
@@ -272,8 +265,8 @@ def newmap_config(request):
                 else:
                     height_zoom = math.log(360 / (maxy - miny), 2)
 
-                map.center_x = center.x
-                map.center_y = center.y
+                map.center_x = center[0]
+                map.center_y = center[1]
                 map.zoom = math.ceil(min(width_zoom, height_zoom))
 
             
