@@ -10,6 +10,11 @@
     <target name="init">
 
         <mkdir dir="${build}"/>
+        
+        <echo message="pulling in submoudles"/>
+        <exec executable="git">
+            <arg line="submodule update --init"/>
+        </exec>
 
         <echo message="pulling in ringo (ignore fatal warning)"/>
         <mkdir dir="${build}/ringo"/>
