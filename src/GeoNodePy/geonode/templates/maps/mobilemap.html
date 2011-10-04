@@ -1,4 +1,4 @@
-{% extends "fullscreen.html" %}
+{% extends "mobile.html" %}
 {% load i18n %}
 {% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
 
@@ -21,14 +21,13 @@ Ext.onReady(function() {
         tools: [{
                     ptype: "gxp_wmsgetfeatureinfo",
                     // uncomment the line below if you want feature info in a grid
-                    //format: "grid",
+                    format: "grid",
                     actionTarget: "main.tbar",
                     iconCls: "icon-getfeatureinfo",
-                    outputConfig: {width: 400, height: 200, panIn: false}
+                    outputConfig: {width: 100, height: 100, panIn: false}
         },{
                     ptype: "gxp_geolocator",
-                    // uncomment the line below if you want feature info in a grid
-                    //format: "grid",
+                    maxZoom: 15,
                     iconCls: "icon-geolocate",
                     actionTarget: "main.tbar"
         }],
