@@ -14,6 +14,7 @@ from mock import Mock, patch
 import json
 import os
 import base64
+import math
 
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
@@ -31,6 +32,7 @@ _csw_resource.protocol = "WWW:LINK-1.0-http--link"
 _csw_resource.url = "http://example.com/"
 _csw_resource.description = "example link"
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
+from geonode.maps.utils import forward_mercator
 
 class MapTest(TestCase):
     """Tests geonode.maps app/module
@@ -1299,3 +1301,30 @@ class UtilsTest(TestCase):
         finally:
             if d is not None:
                 shutil.rmtree(d)
+
+    def test_forward_mercator(self):
+        arctic = forward_mercator((0, 85))
+        antarctic = forward_mercator((0, -85))
+        hawaii = forward_mercator((-180, 0))
+        phillipines = forward_mercator((180, 0))
+        ne = forward_mercator((180, 90))
+        sw = forward_mercator((-180, -90))
+
+        self.assertEqual(round(arctic[0]), 0, "Arctic longitude is correct")
+        self.assertEqual(round(arctic[1]), 19971869, "Arctic latitude is correct")
+
+        self.assertEqual(round(antarctic[0]), 0, "Antarctic longitude is correct")
+        self.assertEqual(round(antarctic[1]), -19971869, "Antarctic latitude is correct")
+
+        self.assertEqual(round(hawaii[1]), 0, "Hawaiian lat is correct")
+        self.assertEqual(round(hawaii[0]), -20037508, "Hawaiian lon is correct")
+
+        self.assertEqual(round(phillipines[1]), 0, "Phillipines lat is correct")
+        self.assertEqual(round(phillipines[0]), 20037508, "Phillipines lon is correct")
+
+        self.assertTrue(ne[1] > 50000000, "NE lat is correct")
+        self.assertEqual(round(ne[0]), 20037508, "NE lon is correct")
+
+        self.assertTrue(math.isinf(sw[1]), "SW lat is correct")
+        self.assertEqual(round(sw[0]), -20037508, "SW lon is correct")
+
