@@ -588,8 +588,11 @@ def forward_mercator(lonlat):
         Given geographic coordinates, return a x,y tuple in spherical mercator.
     """
     x = lonlat[0] * 20037508.34 / 180
-    y = math.log(math.tan((90 + lonlat[1]) * math.pi / 360)) / (math.pi / 180)
-    y = y * 20037508.34 / 180
+    n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    if n == 0:
+        y = float("-inf")
+    else:
+        y = math.log(n) / (math.pi / 180) * 20037508.34 / 180
     return (x, y)
 
 def inverse_mercator(xy):
