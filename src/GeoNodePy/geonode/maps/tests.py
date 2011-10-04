@@ -32,7 +32,7 @@ _csw_resource.protocol = "WWW:LINK-1.0-http--link"
 _csw_resource.url = "http://example.com/"
 _csw_resource.description = "example link"
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
-from geonode.maps.utils import forward_mercator
+from geonode.maps.utils import forward_mercator, inverse_mercator
 
 class MapTest(TestCase):
     """Tests geonode.maps app/module
@@ -1316,15 +1316,41 @@ class UtilsTest(TestCase):
         self.assertEqual(round(antarctic[0]), 0, "Antarctic longitude is correct")
         self.assertEqual(round(antarctic[1]), -19971869, "Antarctic latitude is correct")
 
-        self.assertEqual(round(hawaii[1]), 0, "Hawaiian lat is correct")
         self.assertEqual(round(hawaii[0]), -20037508, "Hawaiian lon is correct")
+        self.assertEqual(round(hawaii[1]), 0, "Hawaiian lat is correct")
 
-        self.assertEqual(round(phillipines[1]), 0, "Phillipines lat is correct")
         self.assertEqual(round(phillipines[0]), 20037508, "Phillipines lon is correct")
+        self.assertEqual(round(phillipines[1]), 0, "Phillipines lat is correct")
 
-        self.assertTrue(ne[1] > 50000000, "NE lat is correct")
         self.assertEqual(round(ne[0]), 20037508, "NE lon is correct")
+        self.assertTrue(ne[1] > 50000000, "NE lat is correct")
 
-        self.assertTrue(math.isinf(sw[1]), "SW lat is correct")
         self.assertEqual(round(sw[0]), -20037508, "SW lon is correct")
+        self.assertTrue(math.isinf(sw[1]), "SW lat is correct")
+
+    def test_inverse_mercator(self):
+        arctic = inverse_mercator(forward_mercator((0, 85)))
+        antarctic = inverse_mercator(forward_mercator((0, -85)))
+        hawaii = inverse_mercator(forward_mercator((-180, 0)))
+        phillipines = inverse_mercator(forward_mercator((180, 0)))
+        ne = inverse_mercator(forward_mercator((180, 90)))
+        sw = inverse_mercator(forward_mercator((-180, -90)))
+
+        self.assertAlmostEqual(arctic[0], 0.0, msg="Arctic longitude is correct")
+        self.assertAlmostEqual(arctic[1], 85.0, msg="Arctic latitude is correct")
+
+        self.assertAlmostEqual(antarctic[0], 0.0, msg="Antarctic longitude is correct")
+        self.assertAlmostEqual(antarctic[1], -85.0, msg="Antarctic latitude is correct")
+
+        self.assertAlmostEqual(hawaii[0], -180.0, msg="Hawaiian lon is correct")
+        self.assertAlmostEqual(hawaii[1], 0.0, msg="Hawaiian lat is correct")
+
+        self.assertAlmostEqual(phillipines[0], 180.0, msg="Phillipines lon is correct")
+        self.assertAlmostEqual(phillipines[1], 0.0, msg="Phillipines lat is correct")
+
+        self.assertAlmostEqual(ne[0], 180.0, msg="NE lon is correct")
+        self.assertAlmostEqual(ne[1], 90.0, msg="NE lat is correct")
+
+        self.assertAlmostEqual(sw[0], -180.0, msg="SW lon is correct")
+        self.assertAlmostEqual(sw[1], -90.0, msg="SW lat is correct")
 
