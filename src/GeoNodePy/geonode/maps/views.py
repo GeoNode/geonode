@@ -31,6 +31,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
+from geonode.maps.utils import forward_mercator
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -40,7 +41,6 @@ DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 
 def default_map_config():
-    from geonode.maps.utils import forward_mercator
     _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = Map(
@@ -193,7 +193,6 @@ def newmap_config(request):
     and the map specified does not exist a 404 is returned.
     '''
     DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
-    from geonode.maps.utils import forward_mercator
 
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
