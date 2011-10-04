@@ -20,6 +20,7 @@ import traceback
 import inspect
 import string
 import urllib2
+import math
 
 logger = logging.getLogger("geonode.maps.utils")
 
@@ -581,3 +582,24 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     except:
         delete_from_postgis(name)
         raise
+
+def forward_mercator(lonlat):
+    """
+        Given geographic coordinates, return a x,y tuple in spherical mercator.
+    """
+    x = lonlat[0] * 20037508.34 / 180
+    n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    if n == 0:
+        y = float("-inf")
+    else:
+        y = math.log(n) / math.pi * 20037508.34
+    return (x, y)
+
+def inverse_mercator(xy):
+    """
+        Given coordinates in spherical mercator, return a lon,lat tuple.
+    """
+    lon = (xy[0] / 20037508.34) * 180
+    lat = (xy[1] / 20037508.34) * 180
+    lat = 180/math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+    return (lon, lat)
