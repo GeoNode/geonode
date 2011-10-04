@@ -592,7 +592,7 @@ def forward_mercator(lonlat):
     if n == 0:
         y = float("-inf")
     else:
-        y = math.log(n) / (math.pi / 180) * 20037508.34 / 180
+        y = math.log(n) / math.pi * 20037508.34
     return (x, y)
 
 def inverse_mercator(xy):
