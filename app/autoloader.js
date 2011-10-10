@@ -5,7 +5,7 @@ var FS = require("fs");
 var STATIC = require("ringo/middleware/static").middleware;
 
 // TODO: unhack this
-var path = FS.normal(FS.join(module.directory, "..", "externals", "buildkit", "lib"));
+var path = FS.normal(FS.join(module.directory, "..", "build", "buildkit", "lib"));
 require.paths.push(path);
 var CONFIG = require("buildkit/config");
 var MERGE = require("buildkit/merge");
