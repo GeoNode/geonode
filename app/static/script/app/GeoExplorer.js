@@ -386,6 +386,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     
     initMapPanel: function() {
         this.mapItems = [{
+            xtype: "gxp_scaleoverlay"
+        }, {
             xtype: "gx_zoomslider",
             vertical: true,
             height: 100,
@@ -438,10 +440,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 return false;
             }
         }, this);
-
-        // TODO: make a proper component out of this
-        var mapOverlay = this.createMapOverlay();
-        this.mapPanel.add(mapOverlay);
 
         this.on("ready", function() {
             this.mapPanel.layers.on({
@@ -614,104 +612,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         GeoExplorer.superclass.initPortal.apply(this, arguments);
     },
     
-    /** private: method[createMapOverlay]
-     * Builds the :class:`Ext.Panel` containing components to be overlaid on the
-     * map, setting up the special configuration for its layout and 
-     * map-friendliness.
-     */
-    createMapOverlay: function() {
-        var scaleLinePanel = new Ext.BoxComponent({
-            autoEl: {
-                tag: "div",
-                cls: "olControlScaleLine overlay-element overlay-scaleline"
-            }
-        });
-
-        scaleLinePanel.on('render', function(){
-            var scaleLine = new OpenLayers.Control.ScaleLine({
-                div: scaleLinePanel.getEl().dom,
-                geodesic: true
-            });
-
-            this.mapPanel.map.addControl(scaleLine);
-            scaleLine.activate();
-        }, this);
-
-        var zoomSelectorWrapper = new Ext.Panel({
-            cls: 'overlay-element overlay-scalechooser',
-            border: false 
-        });
-
-        this.on("ready", function() {
-            var zoomStore = new GeoExt.data.ScaleStore({
-                map: this.mapPanel.map
-            });
-        
-            var zoomSelector = new Ext.form.ComboBox({
-                emptyText: this.zoomSelectorText,
-                tpl: '<tpl for="."><div class="x-combo-list-item">1 : {[parseInt(values.scale)]}</div></tpl>',
-                editable: false,
-                triggerAction: 'all',
-                mode: 'local',
-                store: zoomStore,
-                width: 110
-            });
-    
-            zoomSelector.on({
-                click: function(evt) {
-                    evt.stopEvent();
-                },
-                mousedown: function(evt) {
-                    evt.stopEvent();
-                },
-                select: function(combo, record, index) {
-                    this.mapPanel.map.zoomTo(record.data.level);
-                },
-                scope: this
-            });
-            
-            function setScale() {
-                var scale = zoomStore.queryBy(function(record) {
-                    return this.mapPanel.map.getZoom() == record.data.level;
-                }, this);
-    
-                if (scale.length > 0) {
-                    scale = scale.items[0];
-                    zoomSelector.setValue("1 : " + parseInt(scale.data.scale, 10));
-                } else {
-                    if (!zoomSelector.rendered) {
-                        return;
-                    }
-                    zoomSelector.clearValue();
-                }
-            }
-            setScale.call(this);
-            this.mapPanel.map.events.register('zoomend', this, setScale);
-
-            zoomSelectorWrapper.add(zoomSelector);
-            zoomSelectorWrapper.doLayout();
-        }, this);
-
-        var mapOverlay = new Ext.Panel({
-            // title: "Overlay",
-            cls: 'map-overlay',
-            items: [
-                scaleLinePanel,
-                zoomSelectorWrapper
-            ]
-        });
-
-        mapOverlay.on("afterlayout", function(){
-            scaleLinePanel.getEl().dom.style.position = 'relative';
-            scaleLinePanel.getEl().dom.style.display = 'inline';
-
-            mapOverlay.getEl().on("click", function(x){x.stopEvent();});
-            mapOverlay.getEl().on("mousedown", function(x){x.stopEvent();});
-        }, this);
-
-        return mapOverlay;
-    },
-
     createTools: function() {
         var toolGroup = "toolGroup";
         
