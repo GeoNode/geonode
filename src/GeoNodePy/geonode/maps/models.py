@@ -23,6 +23,7 @@ from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 from gs_helpers import cascading_delete
 import logging
+import sys
 
 logger = logging.getLogger("geonode.maps.models")
 
