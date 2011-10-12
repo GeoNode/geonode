@@ -2,6 +2,7 @@
 import httplib2
 import logging
 import simplejson
+import sys
 import urllib
 import uuid
 from string import lower
