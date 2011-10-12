@@ -16,7 +16,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
         verbosity = options.get('verbosity')
-        output = slurp(ignore_errors, verbosity)
+        output = Layer.objects.slurp(ignore_errors, verbosity)
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']
         failed = [dict_['name'] for dict_ in output if dict_['status']=='failed']
