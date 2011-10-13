@@ -42,5 +42,5 @@ class Command(BaseCommand):
             print "%d Created layers" % len(created)
             print "%d Updated layers" % len(updated)
             print "%d Failed layers" % len(failed)
-            print "%s seconds per layer" % (duration / len(output))
+            print "%f seconds per layer" % (duration * 1.0 / len(output))
 
