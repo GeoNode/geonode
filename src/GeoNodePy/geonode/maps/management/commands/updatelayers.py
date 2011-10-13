@@ -27,19 +27,20 @@ class Command(BaseCommand):
         duration = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
         duration_rounded = round(duration, 2)
 
+        if verbosity > 1:
+            print "\nDetailed report of failures:"
+            for dict_ in output:
+                if dict_['status'] == 'failed':
+                    print "\n\n", dict_['name'], "\n================"
+                    traceback.print_exception(dict_['exception_type'],
+                                              dict_['error'],
+                                              dict_['traceback'])
+
         if verbosity > 0:
             print "\n\nFinished processing %d layers in %s seconds.\n" % (
                                               len(output), duration_rounded)
             print "%d Created layers" % len(created)
             print "%d Updated layers" % len(updated)
             print "%d Failed layers" % len(failed)
-            print "%s seconds per layer" % round(duration / len(output), 2)
-        if verbosity > 1:
-            print "\nDetailed report of failures:"
-            for dict_ in output:
-                if dict_['status'] == 'failed':
-                    print "\n=========\n"
-                    print dict_['name']
-                    traceback.print_exception(dict_['exception_type'],
-                                              dict_['error'],
-                                              dict_['traceback'])
+            print "%s seconds per layer" % (duration / len(output))
+
