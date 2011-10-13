@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
 from geonode.maps.models import Layer
-
+import traceback
 
 class Command(BaseCommand):
     help = 'Update the GeoNode application with data from GeoServer'
@@ -32,4 +32,4 @@ class Command(BaseCommand):
                 if dict_['status'] == 'failed':
                     print "\n=========\n"
                     print dict_['name'], dict_['error']
-                    print dict_['traceback']
+                    traceback.print_exception(Exception ,dict_['error'],dict_['traceback'])
