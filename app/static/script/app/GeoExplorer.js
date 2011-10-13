@@ -43,12 +43,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     mapPanel: null,
 
     /**
-     * Property: legendPanel
-     * {GeoExt.LegendPanel} the legend for the main viewport's map
-     */
-    legendPanel: null,
-    
-    /**
      * Property: toolbar
      * {Ext.Toolbar} the toolbar for the main viewport
      */
@@ -90,7 +84,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     layersContainerText: "UT:Data",
     layersPanelText: "UT:Layers",
     legendPanelText: "UT:Legend",
-    loadingMapMessage: "UT:Loading Map...",
     mapSizeLabel: 'UT: Map Size', 
     metadataFormCancelText : "UT:Cancel",
     metadataFormSaveAsCopyText : "UT:Save as Copy",
@@ -375,6 +368,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ptype: "gxp_styler",
             rasterStyling: true,
             actionTarget: ["treetbar", "treecontent.contextMenu"]
+        }, {
+            ptype: "gxp_legend",
+            outputTarget: 'legend',
+            outputConfig: {
+                autoScroll: true,
+                title: null
+            }
         });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
@@ -423,23 +423,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
        var layersContainer = new Ext.Panel({
             id: "layertree",
-            autoScroll: true,
             border: false,
             title: this.layersContainerText,
             tbar: {
                 id: 'treetbar'
             }
-        });
-
-        this.legendPanel = new GeoExt.LegendPanel({
-            title: this.legendPanelText,
-            border: false,
-            hideMode: "offsets",
-            split: true,
-            autoScroll: true,
-            ascending: false,
-            map: this.mapPanel.map,
-            defaults: {cls: 'legend-item'}
         });
 
         var layerTree;
@@ -474,7 +462,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var layersTabPanel = new Ext.TabPanel({
             border: false,
             deferredRender: false,
-            items: [layersContainer, this.legendPanel],
+            items: [
+                layersContainer, {
+                xtype: 'panel',
+                title: this.legendPanelText,
+                layout: 'fit', 
+                id: 'legend', 
+                split: true, 
+                autoScroll: true
+            }],
             activeTab: 0
         });
 
