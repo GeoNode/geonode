@@ -160,7 +160,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         options.url = url.replace(new RegExp("^" +
                             localUrl), "/geoserver/");
                         return;
-                    };
+                    }
                 }
                 // use the proxy for all non-local requests
                 if(this.proxy && options.url.indexOf(this.proxy) !== 0 &&
@@ -423,6 +423,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
        var layersContainer = new Ext.Panel({
             id: "layertree",
+            autoScroll: true,
             border: false,
             title: this.layersContainerText,
             tbar: {
