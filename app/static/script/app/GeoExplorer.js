@@ -93,8 +93,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     metaDataMapTitle: 'UT:Title',
     miniSizeLabel: 'UT: Mini',
     premiumSizeLabel: 'UT: Premium',
-    printTipText: "UT:Print Map",
-    printWindowTitleText: "UT:Print Preview",
     propertiesText: "UT:Properties",
     publishActionText: 'UT:Publish Map',
     saveFailMessage: "UT: Sorry, your map could not be saved.",
@@ -107,8 +105,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     switchTo3DActionText: "UT:Switch to Google Earth 3D Viewer",
     unknownMapMessage: 'UT: The map that you are trying to load does not exist.  Creating a new map instead.',
     unknownMapTitle: 'UT: Unknown Map',
-    unsupportedLayersTitleText: 'UT:Unsupported Layers',
-    unsupportedLayersText: 'UT:The following layers cannot be printed:',
     widthLabel: 'UT: Width',
     zoomSelectorText: 'UT:Zoom level',
     zoomSliderTipText: "UT: Zoom Level",
@@ -375,6 +371,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 autoScroll: true,
                 title: null
             }
+        }, {
+            ptype: "gxp_print",
+            includeLegend: true,
+            printCapabilities: window.printCapabilities,
+            actionTarget: {target: "paneltbar", index: 3}
         });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
@@ -578,85 +579,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
     
     createTools: function() {
-        var toolGroup = "toolGroup";
-        
-        var printButton = new Ext.Button({
-            tooltip: this.printTipText,
-            iconCls: "icon-print",
-            handler: function() {
-                var unsupportedLayers = [];
-                var printWindow = new Ext.Window({
-                    title: this.printWindowTitleText,
-                    modal: true,
-                    border: false,
-                    autoHeight: true,
-                    resizable: false,
-                    items: [{
-                        xtype: "gxux_printpreview",
-                        mapTitle: this.about["title"],
-                        comment: this.about["abstract"],
-                        minWidth: 336,
-                        printMapPanel: {
-                            height: Math.min(450, Ext.get(document.body).getHeight()-150),
-                            autoWidth: true,
-                            limitScales: true,
-                            map: {
-                                controls: [
-                                    new OpenLayers.Control.Navigation({
-                                        zoomWheelEnabled: false,
-                                        zoomBoxEnabled: false
-                                    }),
-                                    new OpenLayers.Control.PanPanel(),
-                                    new OpenLayers.Control.Attribution()
-                                ],
-                                eventListeners: {
-                                    "preaddlayer": function(evt) {
-                                        if(evt.layer instanceof OpenLayers.Layer.GoogleNG) {
-                                            unsupportedLayers.push(evt.layer.name);
-                                            return false;
-                                        }
-                                    },
-                                    scope: this
-                                }
-                            }
-                        },
-                        printProvider: {
-                            capabilities: window.printCapabilities,
-                            listeners: {
-                                "beforeprint": function() {
-                                    // The print module does not like array params.
-                                    //TODO Remove when http://trac.geoext.org/ticket/216 is fixed.
-                                    printWindow.items.get(0).printMapPanel.layers.each(function(l){
-                                        var params = l.getLayer().params;
-                                        for(var p in params) {
-                                            if (params[p] instanceof Array) {
-                                                params[p] = params[p].join(",");
-                                            }
-                                        }
-                                    });
-                                },
-                                "print": function() {printWindow.close();},
-                                "printException": function(cmp, response) {
-                                    this.displayXHRTrouble(response);
-                                },
-                                scope: this
-                            }
-                        },
-                        includeLegend: true,
-                        sourceMap: this.mapPanel,
-                        legend: this.legendPanel
-                    }]
-                }).show();                
-                printWindow.center();
-                
-                unsupportedLayers.length &&
-                    Ext.Msg.alert(this.unsupportedLayersTitleText, this.unsupportedLayersText +
-                        "<ul><li>" + unsupportedLayers.join("</li><li>") + "</li></ul>");
-
-            },
-            scope: this
-        });
-
         var enable3DButton = new Ext.Button({
             iconCls:"icon-3D",
             tooltip: this.switchTo3DActionText,
@@ -688,7 +610,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 iconCls: 'icon-export',
                 disabled: !this.mapID
             }),
-            window.printCapabilities ? printButton : "",
             "-",
             enable3DButton
         ];
