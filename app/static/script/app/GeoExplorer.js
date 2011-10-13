@@ -102,7 +102,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     saveNotAuthorizedMessage: "UT: You Must be logged in to save this map.",
     smallSizeLabel: 'UT: Small',
     sourceLoadFailureMessage: 'UT: Error contacting server.\n Please check the url and try again.',
-    switchTo3DActionText: "UT:Switch to Google Earth 3D Viewer",
     unknownMapMessage: 'UT: The map that you are trying to load does not exist.  Creating a new map instead.',
     unknownMapTitle: 'UT: Unknown Map',
     widthLabel: 'UT: Width',
@@ -376,6 +375,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             includeLegend: true,
             printCapabilities: window.printCapabilities,
             actionTarget: {target: "paneltbar", index: 3}
+        }, {
+            ptype: "gxp_googleearth",
+            actionTarget: {target: "paneltbar", index: 4},
+            apiKeys: {
+                "localhost": "ABQIAAAAeDjUod8ItM9dBg5_lz0esxTnme5EwnLVtEDGnh-lFVzRJhbdQhQBX5VH8Rb3adNACjSR5kaCLQuBmw",
+                "localhost:8080": "ABQIAAAAeDjUod8ItM9dBg5_lz0esxTnme5EwnLVtEDGnh-lFVzRJhbdQhQBX5VH8Rb3adNACjSR5kaCLQuBmw",
+                "localhost:8000": "ABQIAAAAeDjUod8ItM9dBg5_lz0esxTnme5EwnLVtEDGnh-lFVzRJhbdQhQBX5VH8Rb3adNACjSR5kaCLQuBmw",
+                "example.com": "-your-api-key-here-"
+            }
         });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
@@ -579,23 +587,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
     
     createTools: function() {
-        var enable3DButton = new Ext.Button({
-            iconCls:"icon-3D",
-            tooltip: this.switchTo3DActionText,
-            enableToggle: true,
-            toggleHandler: function(button, state) {
-                if (state === true) {
-                    this.mapPanelContainer.getLayout().setActiveItem(1);
-                    this.toolbar.disable();
-                    button.enable();
-                } else {
-                    this.mapPanelContainer.getLayout().setActiveItem(0);
-                    this.toolbar.enable();
-                }
-            },
-            scope: this
-        });
-
         var tools = [
             new Ext.Button({
                 tooltip: this.saveMapText,
@@ -610,8 +601,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 iconCls: 'icon-export',
                 disabled: !this.mapID
             }),
-            "-",
-            enable3DButton
+            "-"
         ];
         this.on("saved", function() {
             // enable the "Publish Map" button
