@@ -469,8 +469,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 title: this.legendPanelText,
                 layout: 'fit', 
                 id: 'legend', 
-                split: true, 
-                autoScroll: true
+                split: true
             }],
             activeTab: 0
         });
