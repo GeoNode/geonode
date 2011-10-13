@@ -73,11 +73,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     popupCache: null,
     
-    /** private: property[busyMask]
-     *  ``Ext.LoadMask``
-     */
-    busyMask: null,
-    
     /** private: property[urlPortRegEx]
      *  ``RegExp``
      */
@@ -189,7 +184,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 if(options.failure) {
                     // exceptions are handled elsewhere
                 } else {
-                    this.busyMask && this.busyMask.hide();
+                    this.mapPlugins[0].busyMask && this.mapPlugins[0].busyMask.hide();
                     var url = options.url;
                     if (response.status == 401 && url.indexOf("http" != 0) &&
                                             url.indexOf(this.proxy) === -1) {
@@ -395,38 +390,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 template: "<div>"+this.zoomSliderTipText+": {zoom}<div>"
             })
         }];
-        
+        this.mapPlugins = [{
+            ptype: "gxp_loadingindicator", 
+            onlyShowOnFirstLoad: true
+        }];
+         
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
-        
-        var layerCount = 0;
-        
-        this.mapPanel.map.events.register("preaddlayer", this, function(e) {
-            var layer = e.layer;
-            if (layer instanceof OpenLayers.Layer.WMS) {
-                layer.events.on({
-                    "loadstart": function() {
-                        layerCount++;
-                        if (!this.busyMask) {
-                            this.busyMask = new Ext.LoadMask(
-                                this.mapPanel.map.div, {
-                                    msg: this.loadingMapMessage
-                                }
-                            );
-                            this.busyMask.show();
-                        }
-                        layer.events.unregister("loadstart", this, arguments.callee);
-                    },
-                    "loadend": function() {
-                        layerCount--;
-                        if(layerCount === 0) {
-                            this.busyMask.hide();
-                        }
-                        layer.events.unregister("loadend", this, arguments.callee);
-                    },
-                    scope: this
-                });
-            } 
-        });
     },
     
     /**
