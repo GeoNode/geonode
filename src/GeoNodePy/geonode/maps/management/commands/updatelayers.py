@@ -31,5 +31,7 @@ class Command(BaseCommand):
             for dict_ in output:
                 if dict_['status'] == 'failed':
                     print "\n=========\n"
-                    print dict_['name'], dict_['error']
-                    traceback.print_exception(Exception ,dict_['error'],dict_['traceback'])
+                    print dict_['name']
+                    traceback.print_exception(dict_['exception_type'],
+                                              dict_['error'],
+                                              dict_['traceback'])
