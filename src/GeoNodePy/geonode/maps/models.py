@@ -629,13 +629,11 @@ class LayerManager(models.Manager):
             except Exception, e:
                 if ignore_errors:
                     status = 'failed'
-                    traceback = sys.exc_info()[2]
-                    error = str(e)
+                    exception_type, error, traceback = sys.exc_info()
                 else:
                     if verbosity > 0:
                         msg = "Stopping process because --strict=True and an error was found."
                         print >> sys.stderr, msg
-                    traceback = sys.exc_info()[2]
                     raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
             else:
                 if created:
@@ -643,10 +641,12 @@ class LayerManager(models.Manager):
                     status = 'created'
                 else:
                     status = 'updated'
+
             msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
             info = {'name': name, 'status': status}
             if status == 'failed':
                 info['traceback'] = traceback
+                info['exception_type'] = exception_type
                 info['error'] = error
             output.append(info)
             if verbosity > 0:
