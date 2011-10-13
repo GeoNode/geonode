@@ -29,6 +29,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * ``String`` url of the local GeoServer instance
      */
     localGeoServerBaseUrl: "",
+
+    /**
+     * api: config[useMapOverlay]
+     * ``Boolean`` Should we add a scale overlay to the map? Set to false
+     * to not add a scale overlay.
+     */
+    useMapOverlay: null,
     
     /**
      * api: config[fromLayer]
@@ -390,8 +397,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     
     initMapPanel: function() {
         this.mapItems = [{
-            xtype: "gxp_scaleoverlay"
-        }, {
             xtype: "gx_zoomslider",
             vertical: true,
             height: 100,
@@ -399,6 +404,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 template: "<div>"+this.zoomSliderTipText+": {zoom}<div>"
             })
         }];
+        if (this.useMapOverlay !== false) {
+            this.mapItems.push({
+                xtype: "gxp_scaleoverlay"
+            });
+        }
         this.mapPlugins = [{
             ptype: "gxp_loadingindicator", 
             onlyShowOnFirstLoad: true
