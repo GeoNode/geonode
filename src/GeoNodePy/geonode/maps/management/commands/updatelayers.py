@@ -28,8 +28,8 @@ class Command(BaseCommand):
         duration_rounded = round(duration, 2)
 
         if verbosity > 0:
-            print "\n\nFinished processing %d layers in %s seconds.\n" %
-                                          (len(output), duration_rounded)
+            print "\n\nFinished processing %d layers in %s seconds.\n" % (
+                                              len(output), duration_rounded)
             print "%d Created layers" % len(created)
             print "%d Updated layers" % len(updated)
             print "%d Failed layers" % len(failed)
