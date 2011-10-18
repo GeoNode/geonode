@@ -1,0 +1,52 @@
+Contributing to GeoNode
+=======================
+
+## THIS IS A DRAFT PROPOSAL.  IT HAS NOT YET BEEN VOTED INTO EFFECT BY THE PSC.
+
+If you are interested in helping us to make GeoNode, there are many ways to do so.
+
+Participate in the Discussion
+-----------------------------
+
+GeoNode has a mailing list (geonode@librelist.org) where users can ask and answer questions about the software.
+There is also an IRC chat room on [Freenode](http://freenode.net/) where users and developers can discuss GeoNode in real time.
+Sometimes users also post interesting tips for managing sites running GeoNode.
+If you want to help out with GeoNode, one easy way is to sign up for the mailing list and help answer questions.
+
+Report Problems
+---------------
+
+While we do our best to keep GeoNode fast and bug-free, problems can and do arise.
+Informative bug reports are a key part of the bug fixing process, so if you do run into a problem with GeoNode, please don't hesitate to report it on our bug tracker, available online at [[http://dev.geonode.org/trac]].
+Useful information for bug reports includes:
+
+  * What were you doing when the bug occurred?
+    Does the problem occur every time you do that, or only occasionally?
+  * What were you expecting to happen?
+    What happened instead?
+  * What version of the software are you using?
+    Please also note any changes from the default configuration.
+  * If there is a data file involved in the bug (such as a Shapefile that doesn't render properly), please consider including it in the bug report.
+    We do respect that not all data files are freely distributable.
+
+Write Documentation
+-------------------
+
+GeoNode's documentation can always use improvement - there are always more questions to be answered.
+For managing contributions to the manual, GeoNode uses a process similar to that used for managing the code itself.
+The documentation is generated from source files in the `docs/` directory within the GeoNode source repository.
+See [[http://sphinx.pocoo.org/]] for more information on the documentation system we use.
+
+Provide Translations
+--------------------
+
+If GeoNode doesn't provide a user interface in your native language, consider contributing a new translation file.
+See [[https://docs.djangoproject.com/en/1.2/topics/i18n/]] for an overview of the internationalization system used in GeoNode.
+
+Write Code
+----------
+
+Of course since GeoNode is an open source project we do encourage contributions of source code as well.
+If you are interested in making small changes, you can find an open ticket on [[http://dev.geonode.org/trac/]], hack away, and get started on the [[Patch Review Process]].
+
+
