@@ -21,28 +21,15 @@ var template = '                                                            \n\
     parts.pop();                                                            \n\
     var path = parts.join("/");                                             \n\
                                                                             \n\
-    var appendable = !(/MSIE/.test(navigator.userAgent) ||                  \n\
-                       /Safari/.test(navigator.userAgent));                 \n\
     var pieces = new Array(jsfiles.length);                                 \n\
                                                                             \n\
-    var element = document.getElementsByTagName("head").length ?            \n\
-                    document.getElementsByTagName("head")[0] :              \n\
-                    document.body;                                          \n\
-    var script, src;                                                        \n\
+    var src;                                                                \n\
                                                                             \n\
     for(var i=0; i<jsfiles.length; i++) {                                   \n\
         src = path + "/" + jsfiles[i];                                      \n\
-        if(!appendable) {                                                   \n\
-            pieces[i] = "<script src=\'" + src + "\'></script>";            \n\
-        } else {                                                            \n\
-            script = document.createElement("script");                      \n\
-            script.src = src;                                               \n\
-            element.appendChild(script);                                    \n\
-        }                                                                   \n\
+        pieces[i] = "<script src=\'" + src + "\'></script>";                \n\
     }                                                                       \n\
-    if(!appendable) {                                                       \n\
-        document.write(pieces.join(""));                                    \n\
-    }                                                                       \n\
+    document.write(pieces.join(""));                                        \n\
 })();                                                                       \n\
 ';
 
