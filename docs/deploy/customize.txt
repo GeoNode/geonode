@@ -1,0 +1,50 @@
+========================================
+Customizing the look and feel of GeoNode
+========================================
+
+This section will explain how to change GeoNode's main logo, the index page and the colors.
+It also contains an introduction to Django's template and media management.
+
+The paths to the different locations are assumed to be on Ubuntu with GeoNode installed via packages, but the same notions can be applied in any deployment.
+
+Customizing the home page
+=========================
+
+GeoNode uses Django's template engine, :file:`/etc/geonode/templates` is empty by default but it is abover other folders in the template lookup hierarchy.
+This means that it is possible to copy any html template to that location and it will take precence.
+Let's start by doing the following::
+
+    sudo cp /var/lib/geonode/src/GeoNodePy/geonode/templates/index.html /etc/geonode/templates
+
+The copy of :file:`index.html` that was just created takes precedence over the default one, the text in the main section can be changed there and a reload of the web page in the browser will show the updated version.
+
+.. note:: Changes to templates are picked up automatically and do not require a server restart.
+
+With the same approach, the structure of all pages can be modified by copying and then editing ``page_template.html``. We recommend reading about the `Django template language`_ for advanced customizations.
+
+.. _ Django template language: http://docs.djangoproject.com/
+
+.. note:: While editing the templates in place will also achieve the expected results, it will make upgrading GeoNode harder, therefore it is recommended to follow the approach described above.
+
+
+Changing the default logo
+=========================
+
+Similarly to the way the templates work, GeoNode's images and css files can be overriden in :file:`/etc/geonode/media`.
+
+The original GeoNode logo is located at :file:`/var/lib/geonode/src/GeoNode/geonode/media/theme/img/logo-bg.png`.
+Make a copy and edit it using Photoshop, GIMP, or your preferred image editor and then save it in :file:`/etc/geonode/media/theme/img/logo-bg.png`.
+
+Once the logo is placed there, it is neccessary to run the media collection command::
+
+    sudo geonode collectstatic -v0
+
+This will gather all the media in the diferent locations (both source and the user customizations) and put it in the directory being served by apache: :file:`/var/www/geonode/static/`.
+
+.. note:: It is not recommended to change the files directly in :file:`/var/www/geonode/static/` because they are overwritten any time the media collaction command is run.
+
+
+Changing the entire site media
+==============================
+
+All the files in :file:`/var/lib/geonode/src/GeoNodePy/geonode/media/theme` can be overriden using this method, including :file:`css/base.css` which contains most of the color schemes for the entire site.

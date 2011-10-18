@@ -3,11 +3,12 @@ Configuring GeoNode for Production
 ==================================
 
 This page documents recommendations for configuring GeoNode in production environments.
+The steps mentioned in the first section are required to run GeoNode, the ones in the second section are either optional or ways to get more performance.
 
 Required steps
 ==============
 
-Create a super user
+Creating a super user
 ---------------------
 
 To create a superuser you can run::
@@ -19,12 +20,21 @@ or, if you installed by source::
     source path/to/geonode/virtualenv/bin/activate
     django-admin.py createsuperuser --settings=geonode.settings
 
+Once your user is created, you can navigate to your site using the IP address and log in. But don't forget to change the SITEURL as explained in the next step before uploading data.
 
-Configure the correct DNS or IP address
+Configuring the correct DNS or IP address
 -----------------------------------------
 
 By default GeoNode runs in ``http://localhost/``, but when running in production in needs to know the public IP address or the DNS entry.
-To configure it, edit the ``SITEURL`` setting in ``local_settings.py`` (which can be found either in your GeoNodePy/src/geonode folder or in ``/etc/geonode/local_settings.py`` if you used an automated installer.
+To configure it, edit the ``SITEURL`` setting in ``local_settings.py`` (which can be found either in your GeoNodePy/src/geonode folder or in ``/etc/geonode/local_settings.py`` if you used an automated installer, for example::
+
+    SITEURL='http://127.0.0.1/'
+
+Once that it is changed you have to re-start the apache server::
+
+    sudo service apache2 restart
+
+.. warning:: Don't forget the trailing slash, because it is used to construct the ``GEOSERVER_BASE_URL`` param.
 
 
 Set the correct GeoServer Proxy URL value
@@ -58,7 +68,7 @@ Get an API key from Microsoft at http://bingmapsportal.com/ and place it in ``lo
 
     },{
     "source": {
-               "ptype":"gxp_bingsource", 	
+               "ptype":"gxp_bingsource",    
                "apiKey": "YOUR_BING_API"
               },
     "group":"background",
@@ -79,13 +89,81 @@ Copy the ``MAP_BASELAYERS`` dictionary from ``settings.py`` into ``local_setting
 
     },{
     "source": {
-         "ptype":"gxp_googlesource", 	
-         "apiKey": GOOGLE_API_KEY	
+         "ptype":"gxp_googlesource",	
+         "apiKey": GOOGLE_API_KEY
         },
     "group":"background",
     "name":"SATELLITE",
     "visibility": False,
     "fixed": True,
+
+
+Sitemaps Configuration
+----------------------
+
+GeoNode can automatically generate a sitemap suitable for submission to search
+engines which can help them to index your GeoNode site more efficiently and 
+effectively.
+
+In order to generate the sitemap properly, the sites domain name must be set
+within the sites framework. This requires that an admin user login to the
+admin interface and navigate to the sites module and change example.com to the
+actual domain name (and port if applicable). The admin interface can be accessed
+at http://<host>:<port>/admin/sites/site/
+
+It is possible to 'inform' google of changes to your sitemap. This is accomplished
+using the ping_google management command. More information can be found here
+http://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
+It is recommended to put this call into a cron (scheduled) job to update google periodically.
+
+
+Configuring User Registration
+-----------------------------
+
+.. note:: This is done by default in the Ubuntu packages.
+
+You can optionally configure GeoNode to allow new users to register through the web.  New registrants will be sent an email inviting them to activate their account.
+
+To allow new user registration:
+
+1. Set up the email backend for Django (see `Django documentation <http://docs.djangoproject.com/en/dev/topics/email/#e-mail-backends>`_) and add the appropriate settings to ``./src/GeoNodePy/geonode/settings.py``.  For example::
+
+       EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+       EMAIL_HOST = 'smtp.gmail.com'
+       EMAIL_HOST_USER = 'foo@gmail.com'
+       EMAIL_HOST_PASSWORD = 'bar'
+       EMAIL_PORT = 587
+       EMAIL_USE_TLS = True
+
+2. One week activation window::
+
+       ACCOUNT_ACTIVATION_DAYS = 7 
+       
+3. In the same settings file set::
+
+       REGISTRATION_OPEN=True   
+
+4. With the Django application running, set the domain name of the service properly through the admin interface.  (This domain name is used in the account activation emails.)::
+
+       http://localhost:8000/admin/sites/site/1
+
+To register as a new user, click the ''Register'' link in the GeoNode index header.
+
+Additional Configuration
+------------------------
+
+Some other things that require tweaking:
+
+* Web-accessible uploads directory for user profile photos
+
+* Configuring GeoNetwork/Django to use a "real" Postgres database instead of
+  embedded ones.
+
+* In order to generate the sitemap properly, the sites domain name must be set
+  within the sites framework. This requires that an admin user login to the
+  admin interface and navigate to the sites module and change example.com to the
+  actual domain name (and port if applicable). The admin interface can be accessed
+  at http://<host>:<port>/admin/sites/site/
 
 
 Robot Exclusion File
@@ -101,6 +179,7 @@ In order to request that "robots" do not make requests directly to GeoServer, yo
     Disallow: /geonetwork/
 
 This will only affect automated web agents; web browsers in particular are unaffected.
+
 
 Memory Management
 -----------------
@@ -120,12 +199,14 @@ On Linux and MacOSX hosts, you can check the available RAM with the following co
 The "total" column lists the available physical memory and swap space in megabytes; adding them together yields the amount of virtual memory available to the system.
 In this example, there is no Swap space so that field is 0 and the available RAM on the system is 6096MB (6 GB). 
 
+
 Configuring the Servlet Container
 ---------------------------------
 
 GeoServer is the most resource intensive component of GeoNode.
 There are some general notes on setting up GeoServer for production environments in the `GeoServer manual <http://docs.geoserver.org/stable/en/user/production/index.html>`_ .
 However, the following are some GeoServer recommendations with GeoNode's specific needs in mind.
+
 
 JVM Options
 -----------
@@ -139,6 +220,7 @@ Startup options should include the following::
         -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startEvent
 
 These can be specified using the ``CATALINA_OPTS`` variable in Tomcat's ``bin/catalina.sh`` file, or the ``JETTY_OPTS`` in Jetty's ``bin/jetty.sh`` file.
+
 
 Constrain GeoServer Worker Threads
 ----------------------------------
@@ -162,19 +244,22 @@ Add a ``maxThreads`` attribute to limit the number of threads (concurrent reques
 
 .. note:: This configuration is possible in Jetty as well but not yet documented in this manual.
 
+
 Native JAI and JAI ImageIO
 --------------------------
 
 Using the native-code implementation of JAI and JAI ImageIO speeds up GeoServer, thereby requiring less concurrency at the same level of throughput.
 The GeoServer manual contains `platform-specific instructions <http://docs.geoserver.org/stable/en/user/production/java.html#install-native-jai-and-jai-image-i-o-extensions>`_ for configuring JAI and JAI ImageIO.
 
+
 GeoServer Configuration
-+++++++++++++++++++++++
+=======================
 
 There are a few controls to be set in the GeoServer configuration itself as well.
 
+
 On the JAI Settings page
-++++++++++++++++++++++++
+------------------------
 
 .. figure:: GeoServer-JAI-Settings.png
 
@@ -184,8 +269,9 @@ On the JAI Settings page
 
       * Disable Tile Recycling as this optimization is less relevant on recent JVM implementations and has some overhead itself.
 
+
 On the WMS Service page
-+++++++++++++++++++++++
+-----------------------
 
 .. figure:: GeoServer-Web-Map-Service.png
 
@@ -195,20 +281,47 @@ On the WMS Service page
        This sounds a bit counterintuitive, but these limits are implemented in an inefficient way such that unless resource-intensive requests are common on your server it is more efficient to avoid the limits.
        A better implementation of this feature is available for GeoServer 2.1 and will be incorporated in GeoNode 1.1.
 
-Sitemaps Configuration
-----------------------
 
-GeoNode can automatically generate a sitemap suitable for submission to search
-engines which can help them to index your GeoNode site more efficiently and 
-effectively.
+Printing with the Mapfish Print Service
+=======================================
 
-In order to generate the sitemap properly, the sites domain name must be set
-within the sites framework. This requires that an admin user login to the
-admin interface and navigate to the sites module and change example.com to the
-actual domain name (and port if applicable). The admin interface can be accessed
-at http://<host>:<port>/admin/sites/site/
+The GeoNode map composer can "print" maps to PDF documents using the `Mapfish
+print service <http://www.mapfish.org/doc/print>`_.  The recommended way to run
+this service is by using the printing extension to GeoServer (if you are using
+the pre-built GeoNode package, this extension is already installed for you).
+However, the print service includes restrictions on the servers that can
+provide map tiles for printed maps.  These restrictions have a fairly strict
+default, so you may want to loosen these constraints.
 
-It is possible to 'inform' google of changes to your sitemap. This is accomplished
-using the ping_google management command. More information can be found here
-http://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
-It is recommended to put this call into a cron (scheduled) job to update google periodically.
+Adding servers by hostname
+..........................
+
+.. highlight:: yaml
+
+The Mapfish printing module is configured through a `YAML <yaml>`_
+configuration file, usually named :file:`print.yaml`.  If you are using the
+GeoServer plugin to run the printing module, this configuration file can be
+found at :file:`{GEOSERVER_DATA_DIR}/printing/config.yaml`.  The default
+configuration should contain an entry like so::
+
+    hosts:
+      - !dnsMatch
+        host: labs.metacarta.com
+        port: 80
+      - !dnsMatch
+        host: terraservice.net
+        port: 80
+
+You can add host/port entries to this list to allow other servers.
+
+.. seealso:: 
+  
+   The `Mapfish documentation
+   <http://www.mapfish.org/doc/print/configuration.html>`_ on configuring the
+   print module.
+
+   The `GeoServer documentation
+   <http://docs.geoserver.org/stable/en/user/community/printing/>`_ on
+   configuring the print module.
+
+
