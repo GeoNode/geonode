@@ -1,3 +1,60 @@
+===================
+GeoNode Django Apps
+===================
+
+The user interface of a GeoNode site is built on top of the Django web
+framework.  GeoNode includes a few "apps" (reusable Django modules) to support
+development of those user interfaces.  While these apps have reasonable default
+configurations, for customized GeoNode sites you will probably want to adjust
+these apps for your specific needs.
+
+.. toctree::
+   :maxdepth: 2
+
+   django-apps/core
+   django-apps/maps
+   django-apps/proxy
+
+.. comment:
+
+    geonode.core
+      Provide site navigation support and other miscellaneous tasks
+
+    geonode.maps
+      manage layers, maps, styles
+
+    geonode.proxy
+      support JavaScript applications accessing GeoServer/GeoNetwork
+
+
+``geonode.core`` - Miscellaneous site utilities
+===============================================
+
+This Django app provides some basic website features in an extensible fashion.
+For example, many sites should be able to add tabs to the site navigation bar
+without having to modify templates by taking advantage of the navigation
+features provided by this module.
+
+``settings.py`` Entries
+-----------------------
+
+MEDIA_LOCATIONS
+  GeoNode uses a lot of JavaScript and CSS includes due to the distribution
+  restrictions imposed by ExtJS.  The MEDIA_LOCATIONS settings file should be a
+  Python dict providing mappings from abstracted library prefixes to actual
+  media URLs, suitable for use in the site.  To see the prefix names used in
+  the default templates, an example, consult the settings.py for the example
+  ``geonode`` site included in the source tree.
+
+Template Tags
+-------------
+geonode_media <media_name>
+  Accesses entries in MEDIA_LOCATIONS without requiring the view to explicitly
+  add it to the template context.  Example usage::
+
+  {% include geonode_media %}
+  {% geonode_media "ext_base" %}
+
 ``geonode.maps`` - Map creation and geospatial data management
 ==============================================================
 
@@ -82,3 +139,26 @@ GOOGLE_API_KEY
 updatelayers
   Scan GeoServer for data that hasn't been added to the GeoNode yet, and ensure
   that each layer in the Django database is indexed in GeoNetwork
+
+``geonode.proxy`` - Assist JavaScript applications in accessing remote servers
+==============================================================================
+
+This Django app provides some HTTP proxies for accessing data from remote
+servers, to overcome restrictions imposed by the same-origin policy used by
+browsers.  This helps the GeoExt applications in a GeoNode site to access various XML documents from OGC-compliant data services.
+
+Views
+-----
+
+geonode.proxy.views.proxy
+  This view forwards requests without authentication to a URL provided in the
+  request, similar to the proxy.cgi script provided by the OpenLayers project.
+
+geonode.proxy.views.geoserver
+  This view proxies requests to GeoServer.  Instead of a URL-encoded URL
+  parameter, the path component of the request is expected to be a path
+  component for GeoServer.  Requests to this URL require valid authentication
+  against the Django site, and will use the GEOSERVER_CREDENTIALS and
+  GEOSERVER_BASE_URL settings as defined in the maps application.
+
+
