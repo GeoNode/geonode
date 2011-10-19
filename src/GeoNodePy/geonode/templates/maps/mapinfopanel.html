@@ -17,7 +17,7 @@
   <p>{% trans "This map has been viewed " %} {{ mapstats.visits }} {% trans "time(s) " %}  {% trans "by " %} {{ mapstats.uniques }} {% trans "user(s)" %}  </p>
 </div>
 
-  {% if can_change_permissions %}
+  {% if can_change %}
 <div style="padding:10px;">
   <h3>{% trans "Map Permissions" %}</h3>
     <p>{% trans "Select what kind of privileges to allow." %}</p>
