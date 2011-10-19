@@ -50,7 +50,6 @@ def proxy(request):
 @csrf_exempt
 def geoserver(request):
     logger.info("GEOSERVER PROXY REQUEST")
-    logging.debug("GEOSEREVR PROPROPRPPROXY")
     if not (request.method in ("GET") or request.user.is_authenticated() ):
         return HttpResponse(
             "You must be logged in to access GeoServer",
