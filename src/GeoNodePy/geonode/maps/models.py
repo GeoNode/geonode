@@ -721,7 +721,8 @@ class Layer(models.Model, PermissionLevelMixin):
                     'service': 'WFS',
                     'request': 'GetFeature',
                     'typename': self.typename,
-                    'outputFormat': mime
+                    'outputFormat': mime,
+                    'format_options': 'charset:UTF-8'
                 })
             types = [
                 ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
@@ -1156,7 +1157,7 @@ class Map(models.Model, PermissionLevelMixin):
     A display name suitable for search results and page headers
     """
 
-    abstract = models.CharField(_('Abstract'),max_length=200)
+    abstract = models.TextField(_('Abstract'))
     """
     A longer description of the themes in the map.
     """
