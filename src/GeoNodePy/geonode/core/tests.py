@@ -1,6 +1,7 @@
-from django.test.client import Client
-from django.test import TestCase
 import os
+from django.test import TestCase
+from django.test.client import Client
+
 
 class GeoNodeClientTests(TestCase):
     
@@ -15,7 +16,6 @@ class GeoNodeClientTests(TestCase):
 
     def tearDown(self):
         pass
-
 
     def test_HomePage(self):
         '''Test if the homepage renders.'''

@@ -1,7 +1,7 @@
 from django import template
-from django.contrib.auth.models import User
 
 register = template.Library()
+
 
 class HasObjPermNode(template.Node):
     def __init__(self, user, obj, perm, varname):
@@ -16,8 +16,10 @@ class HasObjPermNode(template.Node):
         context[self.varname] = user.has_perm(self.perm, obj=obj)
         return ''
 
+
 def _check_quoted(string):
     return string[0] == '"' and string[-1] == '"'
+
 
 @register.tag('has_obj_perm')
 def do_has_obj_perm(parser, token):
