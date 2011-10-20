@@ -213,8 +213,8 @@
          <gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"
            codeListValue="utf8" />
        </gmd:characterSet>
-       <gmd:topicCategory nilReason="missing">
-         <gmd:MD_TopicCategoryCode></gmd:MD_TopicCategoryCode>
+       <gmd:topicCategory>
+         <gmd:MD_TopicCategoryCode>{{layer.topic_category}}</gmd:MD_TopicCategoryCode>
        </gmd:topicCategory>
        <gmd:extent>
          <gmd:EX_Extent>
