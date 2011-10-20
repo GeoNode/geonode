@@ -5,11 +5,12 @@ from django.conf import settings
 
 logger = logging.getLogger("geonode.maps.gs_helpers")
 
-_punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
+_punc = re.compile(r"[\.:]")  # regex for punctuation that confuses restconfig
 _foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"]
 _backgrounds = ["#880000", "#008800", "#000088", "#888800", "#008888", "#880088"]
 _marks = ["square", "circle", "star", "cross", "x", "triangle"]
 _style_contexts = izip(cycle(_foregrounds), cycle(_backgrounds), cycle(_marks))
+
 
 def _add_sld_boilerplate(symbolizer):
     """
@@ -90,8 +91,10 @@ _style_templates = dict(
     point = _add_sld_boilerplate(_point_template)
 )
 
+
 def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
+
 
 def get_sld_for(layer):
     # FIXME: GeoServer sometimes fails to associate a style with the data, so
@@ -109,6 +112,7 @@ def get_sld_for(layer):
     else:
         return None
 
+
 def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
@@ -119,7 +123,7 @@ def fixup_style(cat, resource, style):
             name = _style_name(resource)
             if style is None:
                 sld = get_sld_for(lyr)
-            else: 
+            else:
                 sld = style.read()
             logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
@@ -128,10 +132,11 @@ def fixup_style(cat, resource, style):
             cat.save(lyr)
             logger.info("Successfully updated %s", lyr)
 
+
 def cascading_delete(cat, resource):
     resource_name = resource.name
     lyr = cat.get_layer(resource_name)
-    if(lyr is not None): #Already deleted
+    if(lyr is not None):  # Already deleted
         store = resource.store
         styles = lyr.styles + [lyr.default_style]
         cat.delete(lyr)
@@ -146,17 +151,16 @@ def cascading_delete(cat, resource):
             cat.delete(store)
 
 
-
 def delete_from_postgis(resource_name):
     """
     Delete a table from PostGIS (because Geoserver won't do it yet);
     to be used after deleting a layer from the system.
     """
     import psycopg2
-    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    conn = psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
         cur = conn.cursor()
-        cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
+        cur.execute("SELECT DropGeometryTable ('%s')" % resource_name)
         conn.commit()
     except Exception, e:
         logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))
