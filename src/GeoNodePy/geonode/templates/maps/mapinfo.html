@@ -57,21 +57,20 @@ Ext.onReady(function() {
   <div id="embedded_map">
   </div>
   <p><strong>{% trans "Contact:" %}</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p>
-</div>
-<div class="twocol">
+
 	<h3>Comments</h1>
 	{% comments map as comments %}
 	{% for comment in comments %}
-		<div class="comment_author">
-			{{ comment.author }}
+		<div class="comment">
+			<p class="comment_author">{{ comment.author.get_full_name|default:comment.author }}</p>
+			<div class="comment_content">
+				{{ comment.comment|escape|urlize|safe }} &mdash; <span class="comment_ago">{{ comment.submit_date|timesince }} ago</span>
+			</div>
 		</div>
-		<div class="comment_box comment_content">
-			{{ comment.comment|escape|urlize|safe }} &mdash; <span class="comment_ago">{{ comment.submit_date|timesince }} ago</span>
-		</div>
-		<div class="clearleft"></div>
 	{% endfor %}
 
 	{% if request.user.is_authenticated %}
+		<h3>Post a comment</h3>
 		{% comment_form map as comment_form %}
 		<form method="POST" action="{% comment_target map %}">
 			{% csrf_token %}
@@ -86,7 +85,6 @@ Ext.onReady(function() {
 	{% else %}
 		<p><a href="{% url auth_login %}">Login</a> to add a comment</p>
 	{% endif %}
-
 </div>
 {% endblock %}
 {% block sidebar %}
