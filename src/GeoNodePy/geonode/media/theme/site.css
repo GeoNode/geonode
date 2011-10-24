@@ -757,9 +757,30 @@ cursor: pointer;
 /*-----------------------
 Comments
 -----------------------*/
+.comments_container {
+  margin-left: 10px;
+}
+
 .comment_author {
   margin:0;
+  font-size: 1.2em;
 }
 .comment_content {
   margin-bottom: 1.5em;
+}
+
+.comment_box textarea {
+  height: 80px;
+  width: 100%;
+}
+
+.comment_post input {
+  border: 1px solid #000;
+  font-size: 1.1em;
+  margin-top: 10px;
+  padding: 5px;
+}
+
+.comment_post input:hover {
+  background-color: #F2FFE6;
 }
