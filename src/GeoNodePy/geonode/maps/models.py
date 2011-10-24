@@ -1118,7 +1118,14 @@ class Layer(models.Model, PermissionLevelMixin):
         meta = self.metadata_csw()
         if meta is None:
             return
-        self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word, str)])
+        # PTA: Left during rebase as I wasn't sure if this should stay or the block after it was more correct 
+        # self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word, str)])
+        kw_list = reduce(
+                lambda x, y: x + y["keywords"],
+                meta.identification.keywords,
+                [])
+        kw_list = filter(lambda x: x is not None, kw_list)
+        self.keywords = ' '.join(kw_list)
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:

@@ -26,6 +26,8 @@ Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
 geonode.maps.models.get_csw = Mock()
 geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = {'list': [] }
+# PTA: Not sure if the line below or above is correct but was a conflict on updating from upstream remote
+# geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = []
 
 _csw_resource = Mock()
 _csw_resource.protocol = "WWW:LINK-1.0-http--link"

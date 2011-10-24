@@ -21,7 +21,7 @@ setup(name=name,
       include_package_data=True,
       install_requires = [
           "gsconfig.py",
-          "OWSLib>0.3.1",
+          "OWSLib==0.4.0",
           "Django>=1.1",
           "ReportLab",
           "PIL",
