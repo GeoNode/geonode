@@ -819,7 +819,6 @@ def _changeLayerDefaultStyle(request,layer):
     else:  
         return HttpResponse("Not allowed",status=403)
 
-@csrf_exempt
 def layerController(request, layername):
     DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
     layer = get_object_or_404(Layer, typename=layername)
