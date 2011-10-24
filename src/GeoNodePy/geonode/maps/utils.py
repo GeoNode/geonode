@@ -23,7 +23,7 @@ from django.template.defaultfilters import slugify
 from django.conf import settings
 
 # Geonode functionality
-from geonode.maps.models import Map, Layer, MapLayer
+from geonode.maps.models import Map, Layer, MapLayer, LayerAttribute
 from geonode.maps.models import Contact, ContactRole, Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
 
@@ -429,6 +429,40 @@ def save(layer, base_file, user, overwrite = True, title=None,
     if created:
         saved_layer.set_default_permissions()
 
+    try:
+        #Delete layer attributes if they no longer exist in an updated layer
+        attributes = LayerAttribute.objects.filter(layer=saved_layer)
+        for la in attributes:
+            lafound = False
+            if layer.attribute_names is not None:
+                for field, ftype in saved_layer.attribute_names.iteritems():
+                    if field == la.attribute:
+                        lafound = True
+            if not lafound:
+                logger.debug("Going to delete [%s] for [%s]", la.attribute, saved_layer.name)
+                la.delete()
+
+        #Add new layer attributes if they dont already exist
+        if saved_layer.attribute_names is not None:
+            logger.debug("Attributes are not None")
+            iter = 1
+            mark_searchable = True
+            for field, ftype in saved_layer.attribute_names.iteritems():
+                    if field is not None and  ftype.find("gml:") != 0:
+                        las = LayerAttribute.objects.filter(layer=saved_layer, attribute=field)
+                        if len(las) == 0:
+                            la = LayerAttribute.objects.create(layer=saved_layer, attribute=field, attribute_label=field.title(), attribute_type=ftype, searchable=(ftype == "xsd:string" and mark_searchable), display_order = iter)
+                            la.save()
+                            if la.searchable:
+                                mark_searchable = False
+                            iter+=1
+        else:
+            logger.debug("No attributes found")
+
+    except Exception, ex:
+                    logger.debug("Attributes could not be saved:[%s]", str(ex))
+        
+        
     # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this
     logger.info('>>> Step 9. Creating points of contact records for '

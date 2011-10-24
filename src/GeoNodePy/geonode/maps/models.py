@@ -629,6 +629,22 @@ class LayerManager(models.Manager):
                 layer.save()
                 if created: 
                     layer.set_default_permissions()
+
+                #Create layer attributes if they don't already exist
+                try:
+                    if layer.attribute_names is not None:
+                        iter = 1;
+                        for field, ftype in layer.attribute_names.iteritems():
+                            logger.debug("%s: %s", field, ftype)
+                            if field is not None and  ftype.find("gml:") != 0:
+                                la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
+                                if created:
+                                    logger.debug("Created [%s] attribute for [%s]", field, layer.name)
+                                    la.display_order = iter
+                                    la.save()
+                                    iter += 1
+                except Exception, e:
+                    logger.error("Could not create attributes for [%s] : [%s]", layer.name, str(e))
             finally:
                 pass
         # Doing a logout since we know we don't need this object anymore.
@@ -857,6 +873,14 @@ class Layer(models.Model, PermissionLevelMixin):
         #FIXME: Add more checks, for example making sure the title, keywords and description
         # are the same in every database.
 
+    def layer_attributes(self):
+        # Return  user-defined title, sort order, searchability of VISIBLE layer attributes
+        attribute_fields = []
+        attributes = self.attribute_set.filter(visible=True).order_by('display_order')
+        for la in attributes:
+            attribute_fields.append( {"id": la.attribute, "header": la.attribute_label, "searchable" : la.searchable, "visible": la.visible})
+        return attribute_fields
+
     def maps(self):
         """Return a list of all the maps that use this layer"""
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
@@ -909,9 +933,11 @@ class Layer(models.Model, PermissionLevelMixin):
                 response, body = http.request(dft_url)
                 doc = XML(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
-                atts = [n.attrib["name"] for n in doc.findall(path)]
+                atts = {}
+                for n in doc.findall(path):
+                    atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:
-                atts = []
+                atts = {}
             return atts
         elif self.resource.resource_type == "coverage":
             dc_url = settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
@@ -926,9 +952,11 @@ class Layer(models.Model, PermissionLevelMixin):
                 response, body = http.request(dc_url)
                 doc = XML(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
-                atts = [n.text for n in doc.findall(path)]
+                atts = {}
+                for n in doc.findall(path):
+                    atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:
-                atts = []
+                atts = {}
             return atts
 
     @property
@@ -1150,6 +1178,27 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
+class LayerAttribute(models.Model):
+    layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
+    attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
+    attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
+    attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
+    visible = models.BooleanField(_('Visible?'), default=True)
+    searchable = models.BooleanField(_('Searchable?'), default=False)
+    display_order = models.IntegerField(_('Display Order'), default=1)
+
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
+
+    def __str__(self):
+        return "%s" % self.attribute
 
 class Map(models.Model, PermissionLevelMixin):
     """
@@ -1564,6 +1613,11 @@ class MapLayer(models.Model):
         except: 
             cfg = dict()
 
+        if self.ows_url and self.ows_url.find(settings.GEOSERVER_BASE_URL) > -1:
+            geonodeLayer = Layer.objects.get(typename=self.name)
+            if geonodeLayer is not None:
+                cfg['attributes'] = geonodeLayer.layer_attributes()
+            logger.debug("ATTRIBUTES: %s", str(cfg['attributes']))
         if self.format: cfg['format'] = self.format
         if self.name: cfg["name"] = self.name
         if self.opacity: cfg['opacity'] = self.opacity
