@@ -18,4 +18,4 @@ source $GEONODE_HOME/bin/activate
 
 # Run the tests
 echo ">>>> Running GeoNode Integration Tests" 
-python manage.py test
+python manage.py test "$@"
