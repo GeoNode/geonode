@@ -19,5 +19,18 @@ urlpatterns = patterns('geonode.maps.views',
     url(r'^search/api/?$', 'maps_search', name='maps_search_api'),
     url(r'^(?P<mapid>\d+)/ajax-permissions$', 'ajax_map_permissions', name='ajax_map_permissions'),
     url(r'^change-poc/(?P<ids>\w+)$', 'change_poc', name="change_poc"),
+)
 
+datapatterns = patterns('geonode.maps.views',
+  url(r'^$', 'browse_data', name='data'),
+  url(r'^acls/?$', 'layer_acls', name='layer_acls'),
+  url(r'^search/?$', 'search_page', name='search'),
+  url(r'^search/api/?$', 'metadata_search', name='search_api'),
+  url(r'^search/detail/?$', 'search_result_detail', name='search_result_detail'),
+  url(r'^api/batch_permissions/?$', 'batch_permissions'),
+  url(r'^api/batch_delete/?$', 'batch_delete'),
+  url(r'^upload$', 'upload_layer', name='data_upload'),
+  (r'^download$', 'batch_layer_download'),
+  (r'^(?P<layername>[^/]*)$', 'layerController'),
+  (r'^(?P<layername>[^/]*)/ajax-permissions$', 'ajax_layer_permissions'),
 )
