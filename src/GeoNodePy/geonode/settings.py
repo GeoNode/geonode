@@ -252,11 +252,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.sitemaps',
+
     'staticfiles',
     'django_extensions',
     'registration',
     'profiles',
     'avatar',
+    'agon_ratings',
+
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
