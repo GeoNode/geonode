@@ -119,6 +119,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
+    "django.core.context_processors.request",
     "geonode.maps.context_processors.resource_urls",
 )
 
@@ -294,6 +295,16 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
+
+# Agon Ratings
+AGON_RATINGS_CATEGORY_CHOICES = {
+    "maps.Map": {
+        "map": "How good is this map?"
+    },
+    "maps.Layer": {
+        "layer": "How good is this layer?"
+    },
+}
 
 try:
     from local_settings import *
