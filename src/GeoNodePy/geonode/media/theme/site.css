@@ -753,3 +753,7 @@ cursor: pointer;
      position: absolute;
      padding-top: 5px;
 }
+
+#preview_map {
+  margin-bottom: 1em;
+}
