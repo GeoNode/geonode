@@ -98,7 +98,7 @@ Ubuntu
 
     $ sudo apt-get install python python-support python-dev python-virtualenv \
         openjdk-6-jre tomcat6 postgresql-8.4 gcc patch zip python-imaging \
-        python-reportlab gdal-bin libgeos-dev python-urlgrabber \
+        gdal-bin libgeos-dev python-urlgrabber \
         python-pastescript gettext postgresql-contrib \
         postgresql-8.4-postgis,libpq-dev unzip libjpeg-dev libpng-dev
         python-gdal \ libproj-dev python-psycopg2 apache2 libapache2-mod-wsgi
