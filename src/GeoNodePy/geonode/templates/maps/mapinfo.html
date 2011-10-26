@@ -62,9 +62,11 @@ Ext.onReady(function() {
   <div id="embedded_map">
   </div>
   <p><strong>{% trans "Contact:" %}</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p>
-	<h3>Rate this map</h3>
-	{% user_rating request.user map "map" as user_map_rating %}
-	<div id="user_rating" class="category-map"></div>
+	{% if request.user.is_authenticated %}
+		<h3>{% trans "Rate this map" %}</h3>
+		{% user_rating request.user map "map" as user_map_rating %}
+		<div id="user_rating" class="category-map"></div>
+	{% endif %}
 
 
 </div>
@@ -109,7 +111,11 @@ Ext.onReady(function() {
 {% endblock %}
 
 {% block end_body_js %}
-{% user_rating_js request.user map "map" %}
+{% if request.user.is_authenticated %}
+	{% user_rating_js request.user map "map" %}
+{% else %}
+	<script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
+{% endif %}
 <script>
 	$(function() {
 		$('div.overall_rating').raty({
