@@ -64,8 +64,6 @@ The native libraries needed include:
 
 * PIL http://www.pythonware.com/products/pil/
 
-* ReportLab http://www.reportlab.com/software/opensource/rl-toolkit/
-
 * simplejson http://code.google.com/p/simplejson/
 
 For GCC, packages are available for Mac OSX and all Linux distributions;
@@ -102,7 +100,7 @@ Once fully started, you should see a message indicating the address of your geon
   environment from any packages that are installed in the system, useful if
   you have incompatible versions of libraries such as Django installed
   system-wide.  On the other hand, sometimes it is useful to use a version of
-  ReportLab or the Python Imaging Library provided by your operating system
+  the Python Imaging Library provided by your operating system
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option in.
 

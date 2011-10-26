@@ -65,8 +65,6 @@ The native libraries needed include:
 
 * PIL http://www.pythonware.com/products/pil/
 
-* ReportLab http://www.reportlab.com/software/opensource/rl-toolkit/
-
 * simplejson http://code.google.com/p/simplejson/
 
 For GCC, packages are available for Mac OSX and all Linux distributions;
@@ -82,7 +80,7 @@ Ubuntu
 If you are using Ubuntu Linux, you can configure all the above dependencies by running the following comman::
 
     sudo apt-get install -y --force-yes openjdk-6-jre-headless
-    sudo apt-get install -y vim zip unzip subversion git-core binutils build-essential python-dev python-setuptools python-imaging python-reportlab gdal-bin libproj-dev libgeos-dev python-urlgrabber python-scipy python-nose pep8 python-virtualenv python-gdal python-pastescript postgresql-contrib libpq-dev gettext python-psycopg2
+    sudo apt-get install -y vim zip unzip subversion git-core binutils build-essential python-dev python-setuptools python-imaging gdal-bin libproj-dev libgeos-dev python-urlgrabber python-scipy python-nose pep8 python-virtualenv python-gdal python-pastescript postgresql-contrib libpq-dev gettext python-psycopg2
     sudo apt-get install -y --force-yes ant --no-install-recommends
 
 
@@ -115,7 +113,7 @@ Once fully started, you should see a message indicating the address of your geon
   environment from any packages that are installed in the system, useful if
   you have incompatible versions of libraries such as Django installed
   system-wide.  On the other hand, sometimes it is useful to use a version of
-  ReportLab or the Python Imaging Library provided by your operating system
+  the Python Imaging Library provided by your operating system
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option in.
 
