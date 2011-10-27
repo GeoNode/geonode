@@ -48,12 +48,12 @@ options(
         paver_command_line='post_bootstrap'
     ),
     deploy=Bunch(
-        pavement=path('shared/package/pavement.py'),
+#        pavement=path('shared/package/pavement.py'),
         req_file=path('shared/package/deploy-libs.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
-        install_paver=True,
-        paver_command_line='post_bootstrap'      
+#        install_paver=True,
+#        paver_command_line='post_bootstrap'      
     ),
     host=Bunch(
     	bind='localhost'
@@ -65,7 +65,7 @@ bundle = path('shared/geonode.pybundle')
 dl_cache = "--download-cache=./build"
 dlname = 'geonode.bundle'
 gs_data = "gs-data"
-geoserver_target = path('src/geoserver-geonode-ext/target/geoserver-geonode-dev.war')
+geoserver_target = path('src/geoserver-geonode-ext/target/geoserver.war')
 geonetwork_target = path('webapps/geonetwork.war')
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
 geonode_client_target_war = path('webapps/geonode-client.war')
@@ -442,6 +442,7 @@ def make_release(options):
         tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
         for file in out_pkg.walkfiles():
             tar.add(file)
+        tar.add('../README.release.rst', arcname=('%s/README.rst' % out_pkg))
         tar.close()
 
         out_pkg.rmtree()

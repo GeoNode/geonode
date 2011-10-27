@@ -29,6 +29,8 @@
             var config = {
                 tools: [{
                     ptype: "gxp_wmsgetfeatureinfo",
+                    // uncomment the line below if you want feature info in a grid
+                    //format: "grid",
                     actionTarget: "main.tbar",
                     outputConfig: {width: 400, height: 200, panIn: false}
                 }],
@@ -94,9 +96,15 @@
                 });
             });
 
+{% has_obj_perm user layer "maps.change_layer" as can_change %}
+{% has_obj_perm user layer "maps.delete_layer" as can_delete %}
+
+{% if can_change %}
             Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
                 showStyle(Ext.get(elem).prev("input").getAttribute("value"));
             });
+{% endif %}
+
 {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
 {% if can_change_permissions %}
             new GeoNode.WorldMapPermissionsEditor({
@@ -240,6 +248,10 @@
     <h3>{% trans "Layer Views" %} </h3>
   <p>{% trans "This layer has been viewed " %} {{ layerstats.visits }} {% trans "time(s) " %}  {% trans "by " %} {{ layerstats.uniques }} {% trans "user(s)" %}  </p>
 
+
+    {% has_obj_perm user layer "maps.change_layer" as can_change %}
+    {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
+
     <h3> {% trans "Layer Styles" %} </h3>
     <p> {% trans "The following styles are associated with this data set.  Choose a style to view it in the preview to the left.  Click on a style name to view or edit the style." %}
     <br/>
@@ -254,8 +266,11 @@
             <a href="{{ style.body_href }}">SLD</a><br/>
         {% endif %}
     {% endfor %}
+
+
+
     </span>
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and can_change %}
     {% trans "Default style:" %}
     <select name="default-style">
         <option value="{{layer.publishing.default_style.name}}" selected="selected">
@@ -275,8 +290,6 @@
 
 
     {% if user.is_authenticated %}
-    {% has_obj_perm user layer "maps.change_layer" as can_change %}
-    {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
     {% if can_change or can_delete or can_change_permissions %}
 
         <h3> {% trans "Manage Layer" %} </h3>

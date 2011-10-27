@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from staticfiles.urls import staticfiles_urlpatterns
 from geonode.sitemap import LayerSitemap, MapSitemap
+from geonode.proxy.urls import urlpatterns as proxy_urlpatterns
 
 
 # Uncomment the next two lines to enable the admin:
@@ -9,7 +10,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 js_info_dict = {
-    'packages': ('geonode.maps',),
+    'domain': 'djangojs',
+    'packages': ('geonode',)
 }
 
 sitemaps = {
@@ -25,11 +27,6 @@ urlpatterns = patterns('',
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
                {'template': 'lang.js', 'mimetype': 'text/javascript'}, 'lang'),
     (r'^maps/', include('geonode.maps.urls')),
-    (r'^proxy/', 'geonode.proxy.views.proxy'),
-    (r'^geoserver/','geonode.proxy.views.geoserver'),
-    (r'^picasa/','geonode.proxy.views.picasa'),
-    (r'^youtube/','geonode.proxy.views.youtube'),
-    (r'^hglpoint/','geonode.proxy.views.hglpoints'),
     url(r'^data/$', 'geonode.maps.views.browse_data', name='data'),
     url(r'^data/acls/?$', 'geonode.maps.views.layer_acls', name='layer_acls'),
     url(r'^data/search/?$', 'geonode.maps.views.search_page', name='search'),
@@ -59,13 +56,21 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('geonode.accountforms.urls')),  
     (r'^profiles/', include('geonode.profileforms.urls')),
-    (r'^(?P<site>\w+)/$', 'geonode.maps.views.official_site'),
-    (r'^(?P<site>\w+)/edit$', 'geonode.maps.views.official_site_controller'),
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/?$','geonode.proxy.views.download'),
     )
+
+urlpatterns += proxy_urlpatterns
+
+
+official_site_url_patterns = patterns('',
+    (r'^(?P<site>\w+)/$', 'geonode.maps.views.official_site'),
+    (r'^(?P<site>\w+)/edit$', 'geonode.maps.views.official_site_controller'),
+)
+
+urlpatterns += official_site_url_patterns
 
 # Extra static file endpoint for development use
 if settings.SERVE_MEDIA:

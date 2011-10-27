@@ -62,7 +62,7 @@ LANGUAGES = (
     ('en', 'English'),
     ('es', 'Español'),
     ('it', 'Italiano'),
-    ('fr', 'François'),
+    ('fr', 'Français'),
 )
 
 SITE_ID = 1
@@ -219,7 +219,7 @@ MAP_BASELAYERSOURCES = {
 
 MAP_BASELAYERS = [
 {
-    "source":"any",
+    "source": {"ptype": "gx_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
     "visibility": True,
@@ -227,31 +227,31 @@ MAP_BASELAYERS = [
     "group":"background"
   },
  {
-    "source":"google",
+    "source": {"ptype": "gx_googlesource"},
     "group":"background",
     "name":"SATELLITE",
     "visibility": False,
     "fixed": True,
 },{
-    "source":"google",
+    "source": {"ptype": "gx_googlesource"},
     "group":"background",
     "name":"TERRAIN",
     "visibility": True,
     "fixed": True,
 },            {
-    "source":"google",
+    "source": {"ptype": "gx_googlesource"},
     "group":"background",
     "name":"ROADMAP",
     "visibility": False,
     "fixed": True,
 },{
-    "source":"google",
+    "source": {"ptype": "gx_googlesource"},
     "group":"background",
     "name":"HYBRID",
     "visibility": False,
     "fixed": True,
 },{
-    "source":"any",
+    "source": {"ptype": "gx_olsource"},
     "type":"OpenLayers.Layer.OSM",
     "args":["OpenStreetMap"],
     "visibility": False,
@@ -300,6 +300,7 @@ INSTALLED_APPS = (
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
+    'geonode',
     'geonode.accountforms',
     'geonode.profileforms',
     #'debug_toolbar',

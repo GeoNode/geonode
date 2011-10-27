@@ -222,7 +222,7 @@
             </systemProperty>
           </systemProperties>
 
-          <webApp>${project.build.directory}/geoserver-geonode-dev</webApp>
+          <webApp>${project.build.directory}/geoserver</webApp>
           
           <!-- configure the container                 -->
           <jettyConfig>jetty.xml</jettyConfig>
@@ -233,8 +233,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <warName>geoserver-geonode-dev</warName>
-          <webappDirectory>${project.build.directory}/geoserver-geonode-dev</webappDirectory> -->
+          <warName>geoserver</warName> 
+          <webappDirectory>${project.build.directory}/geoserver</webappDirectory> -->
         </configuration>
         <executions>
           <execution>

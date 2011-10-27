@@ -25,6 +25,7 @@ import re
 import logging
 from geonode.maps.encode import num_encode
 from django.core.cache import cache
+import sys
 
 logger = logging.getLogger("geonode.maps.models")
 from gs_helpers import cascading_delete
@@ -615,11 +616,6 @@ class Contact(models.Model):
     def username(self):
         return u"%s" % (self.name if self.name else self.user.username)
 
-def get_csw():
-    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    csw = CatalogueServiceWeb(csw_url);
-    return csw
-
 _viewer_projection_lookup = {
     "EPSG:900913": {
         "maxResolution": 156543.03390625,
@@ -701,68 +697,27 @@ class LayerManager(models.Manager):
     def default_metadata_author(self):
         return self.admin_contact()
 
-    def import_existing_layer(self, resource_name):
-        #Like slurp but for just one particular layer
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout):
+        """Configure the layers available in GeoServer in GeoNode.
+
+           It returns a list of dictionaries with the name of the layer,
+           the result of the operation and the errors and traceback if it failed.
+        """
+        if verbosity > 1:
+            print >> console, "Inspecting the available layers in GeoServer ..."
         cat = self.gs_catalog
-        gn = self.gn_catalog
-        resource = cat.get_resource(resource_name)
-        if resource:
-            store = resource.store
-            workspace = store.workspace
-            layer, created = self.get_or_create(name=resource.name, defaults = {
-                    "workspace": workspace.name,
-                    "store": store.name,
-                    "storeType": store.resource_type,
-                    "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title or 'No title provided',
-                    "abstract": resource.abstract or 'No abstract provided',
-                    "uuid": str(uuid.uuid4())
-            })
-            ## Due to a bug in GeoNode versions prior to 1.0RC2, the data
-            ## in the database may not have a valid date_type set.  The
-            ## invalid values are expected to differ from the acceptable
-            ## values only by case, so try to convert, then fallback to a
-            ## default.
-            ##
-            ## We should probably drop this adjustment in 1.1. --David Winslow
-            if layer.date_type not in Layer.VALID_DATE_TYPES:
-                candidate = lower(layer.date_type)
-                if candidate in Layer.VALID_DATE_TYPES:
-                    layer.date_type = candidate
-                else:
-                    layer.date_type = Layer.VALID_DATE_TYPES[0]
-
-            if layer.bbox is None:
-                layer._populate_from_gs()
-
-            layer.save()
-
-            if created:
-                layer.set_default_permissions()
-                #Create layer attributes if they don't already exist
-                try:
-                    if layer.attribute_names is not None:
-                        for field, ftype in layer.attribute_names.iteritems():
-                            if field is not None:
-                                la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
-                                if created:
-                                    logger.debug("Created [%s] attribute for [%s]", field, layer.name)
-                except Exception, e:
-                    logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
-                finally:
-                    pass
-        # Doing a logout since we know we don't need this object anymore.
-        gn.logout()
-
-    def slurp(self):
-        cat = self.gs_catalog
-        gn = self.gn_catalog
-        for resource in cat.get_resources():
+        resources = cat.get_resources()
+        number = len(resources)
+        if verbosity > 1:
+            msg =  "Found %d layers, starting processing" % number
+            print >> console, msg
+        output = []
+        for i, resource in enumerate(resources):
             try:
+                name = resource.name
                 store = resource.store
                 workspace = store.workspace
-
-                layer, created = self.get_or_create(name=resource.name, defaults = {
+                layer, created = Layer.objects.get_or_create(name=name, defaults = {
                     "workspace": workspace.name,
                     "store": store.name,
                     "storeType": store.resource_type,
@@ -772,46 +727,55 @@ class LayerManager(models.Manager):
                     "uuid": str(uuid.uuid4())
                 })
 
-                ## Due to a bug in GeoNode versions prior to 1.0RC2, the data
-                ## in the database may not have a valid date_type set.  The
-                ## invalid values are expected to differ from the acceptable
-                ## values only by case, so try to convert, then fallback to a
-                ## default.
-                ##
-                ## We should probably drop this adjustment in 1.1. --David Winslow
-                if layer.date_type not in Layer.VALID_DATE_TYPES:
-                    candidate = lower(layer.date_type)
-                    if candidate in Layer.VALID_DATE_TYPES:
-                        layer.date_type = candidate
-                    else:
-                        layer.date_type = Layer.VALID_DATE_TYPES[0]
-
-                if layer.bbox is None:
-                    layer._populate_from_gs()
-
                 layer.save()
-		if created:
+            except Exception, e:
+                if ignore_errors:
+                    status = 'failed'
+                    exception_type, error, traceback = sys.exc_info()
+                else:
+                    if verbosity > 0:
+                        msg = "Stopping process because --strict=True and an error was found."
+                        print >> sys.stderr, msg
+                    raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
+            else:
+                if created:
                     layer.set_default_permissions()
+                    status = 'created'
 
-                #Create layer attributes if they don't already exist
-                try:
-                    if layer.attribute_names is not None:
-                        iter = 1;
-                        for field, ftype in layer.attribute_names.iteritems():
-                            logger.debug("%s: %s", field, ftype)
-                            if field is not None and  ftype.find("gml:") != 0:
-                                la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
-                                if created:
-                                    logger.debug("Created [%s] attribute for [%s]", field, layer.name)
-                                    la.display_order = iter
-                                    la.save()
-                                    iter += 1
-                except Exception, e:
-                    logger.error("Could not create attributes for [%s] : [%s]", layer.name, str(e))
-            finally:
-                pass
+                    #Create layer attributes if they don't already exist
+                    try:
+                        if layer.attribute_names is not None:
+                            for field, ftype in layer.attribute_names.iteritems():
+                                if field is not None:
+                                    la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
+                                    if created:
+                                        msg = ("Created [%s] attribute for [%s]", field, layer.name)
+                                        print >> console, msg
+                    except Exception, e:
+                        msg = ("Could not create attributes for [%s] : [%s]", layer.name, str(e))
+                        print >> console, msg
+                    finally:
+                        pass
+                else:
+                    status = 'updated'
+
+            if layer.bbox is None:
+                layer._populate_from_gs()
+                layer.save()
+
+            msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
+            info = {'name': name, 'status': status}
+            if status == 'failed':
+                info['traceback'] = traceback
+                info['exception_type'] = exception_type
+                info['error'] = error
+            output.append(info)
+            if verbosity > 0:
+                print >> console, msg
+        return output
         # Doing a logout since we know we don't need this object anymore.
         gn.logout()
+
 
     def update_bboxes(self):
         for layer in Layer.objects.all():
@@ -974,7 +938,7 @@ class Layer(models.Model, PermissionLevelMixin):
                         "service": "WCS",
                         "version": "1.0.0",
                         "request": "DescribeCoverage",
-                        "coverages": self.typename
+                        "coverage": self.typename
                     })
                 response, content = client.request(description_url)
                 doc = parse(StringIO(content))
@@ -1001,6 +965,7 @@ class Layer(models.Model, PermissionLevelMixin):
             except Exception, e:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
+                # TODO: This is a bad idea to eat errors like this.
                 pass
 
         def wms_link(mime):
@@ -1341,7 +1306,8 @@ class Layer(models.Model, PermissionLevelMixin):
             gn.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
-            self.publishing.attribution_link = self.poc.user.get_absolute_url()
+            profile = Contact.objects.get(user=self.poc.user)
+            self.publishing.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
             Layer.objects.gs_catalog.save(self.publishing)
 
     def  _populate_from_gs(self):
@@ -1365,12 +1331,15 @@ class Layer(models.Model, PermissionLevelMixin):
             self.title = self.name
 
     def _populate_from_gn(self):
-        #Swallow exception (and don't cancel layer upload) if
-        # geonetwork wigs out, as it tends to do from time to time
         meta = self.metadata_csw()
         if meta is None:
             return
-        self.keywords = ' '.join([word for word in meta.identification.keywords['list'] if isinstance(word,str)])
+        kw_list = reduce(
+                lambda x, y: x + y["keywords"],
+                meta.identification.keywords,
+                [])
+        kw_list = filter(lambda x: x is not None, kw_list)
+        self.keywords = ' '.join(kw_list)
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:
@@ -1397,7 +1366,6 @@ class Layer(models.Model, PermissionLevelMixin):
     def get_absolute_url(self):
         return "/data/%s" % (self.typename)
 
-
     def __str__(self):
         return "%s Layer" % self.typename
 
@@ -1421,7 +1389,6 @@ class Layer(models.Model, PermissionLevelMixin):
 
         # remove specific user permissions
         current_perms =  self.get_all_level_info()
-
         for username in current_perms['users'].keys():
             user = User.objects.get(username=username)
             self.set_user_level(user, self.LEVEL_NONE)
@@ -1593,7 +1560,6 @@ class Map(models.Model, PermissionLevelMixin):
 
     @property
     def snapshots(self):
-        logger.debug('+_+_+_+_+_+_+_GETTING SNAPSHOTS')
         snapshots = MapSnapshot.objects.exclude(user=None).filter(map=self.id)
         return [snapshot for snapshot in snapshots]
 
@@ -1602,7 +1568,7 @@ class Map(models.Model, PermissionLevelMixin):
         return True
 
     def json(self, layer_filter):
-        map_layers = self.maplayers
+        map_layers = MapLayer.objects.filter(map=self.id)
         layers = []
         for map_layer in map_layers:
             if map_layer.local():
@@ -1670,6 +1636,7 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
+
         configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms"})
 
         i = 0
@@ -1724,7 +1691,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
-        logger.debug("CONFIG: %s", config)
+        #logger.debug("CONFIG: %s", config)
 
         return config
 
@@ -1752,9 +1719,9 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.featured = conf['about'].get('featured', False)
 
-        logger.info("Try to save treeconfig")
+        logger.debug("Try to save treeconfig")
         self.group_params = simplejson.dumps(conf['treeconfig'])
-        logger.info("Saved treeconfig")
+        logger.debug("Saved treeconfig")
 
         def source_for(layer):
             return conf["sources"][layer["source"]]
@@ -1769,10 +1736,8 @@ class Map(models.Model, PermissionLevelMixin):
                 self.layer_set.from_viewer_config(
                     self, layer, source_for(layer), ordering
             ))
-        logger.info("About to save")
         self.save()
         cache.delete('maplayerset_' + str(self.id))
-        logger.info("Saved")
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
@@ -1998,7 +1963,6 @@ class MapLayer(models.Model):
         if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
             isLocal = cache.get('islocal_' + self.name)
             if isLocal is None:
-                logger.debug('isLocal_%s is None', self.name)
                 isLocal = Layer.objects.filter(typename=self.name).count() != 0
                 cache.add('islocal_' + self.name, isLocal)
             return isLocal
@@ -2013,10 +1977,14 @@ class MapLayer(models.Model):
         try:
             cfg = simplejson.loads(self.source_params)
         except:
-            cfg = dict(ptype = "gxp_gnsource")
+            cfg = dict(ptype = "gxp_gnsource", restUrl="/gs/rest")
 
         if self.ows_url:
             cfg["url"] = self.ows_url
+
+        if cfg["ptype"] == "gxp_gnsource":
+            cfg["restUrl"] = "/gs/rest"
+
         return cfg
 
     def layer_config(self, user):
@@ -2047,7 +2015,7 @@ class MapLayer(models.Model):
         if self.styles: cfg['styles'] = self.styles
         if self.transparent: cfg['transparent'] = True
 
-
+        cfg["fixed"] = self.fixed
         if self.ows_url:cfg['url'] = self.ows_url
         if self.group: cfg["group"] = self.group
         cfg["visibility"] = self.visibility
@@ -2076,9 +2044,6 @@ class MapLayer(models.Model):
                 cfg['abstract'] = ''
                 cfg['styles'] =''
                 logger.error("Could not retrieve Layer with typename of %s : %s", self.name, str(e))
-
-
-        cfg["fixed"] = self.fixed
 
         #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)
         if self.id is not None:
@@ -2163,10 +2128,11 @@ def delete_layer(instance, sender, **kwargs):
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
     if (re.search("coverageStore|dataStore", instance.storeType)):
-        logger.debug("Call save_to_geoserver")
+        logger.info("Call save_to_geoserver for %s", instance.name)
         instance.save_to_geoserver()
 
         if kwargs['created']:
+            logger.info("Call populate_from_geoserver for %s", instance.name)
             instance._populate_from_gs()
 
     instance.save_to_geonetwork()
@@ -2178,8 +2144,6 @@ def post_save_layer(instance, sender, **kwargs):
             instance.save(force_update=True)
         except:
             logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
-#            instance.delete_from_geonetwork()
-#            logger.warning("Deleted geonetwork record for [%s]", instance.name)
             raise
         logger.debug("save instance")
 
