@@ -623,6 +623,15 @@ def ajax_layer_edit_check(request, layername):
             mimetype='text/plain'
         )
 
+def ajax_layer_update_bounds(request, layername):
+    layer = get_object_or_404(Layer, typename=layername);
+    layer._populate_from_gs();
+    layer.save();
+    return HttpResponse(
+            "Bounds updated",
+            status=200,
+            mimetype='text/plain'
+        )
 
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
