@@ -34,3 +34,6 @@ Enabling DEBUG mode
 Django can be set to return pretty formatted exceptions instead of ``500 errors``.
 This can be set by setting ``DEBUG=True`` in :file:`/etc/geonode/local_settings.py`.
 
+After enabling DEBUG, the Apache server has to be restarted for the changes to be picked up. In Ubuntu::
+
+    sudo service apache2 restart
