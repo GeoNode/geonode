@@ -773,8 +773,7 @@ class LayerManager(models.Manager):
             if verbosity > 0:
                 print >> console, msg
         return output
-        # Doing a logout since we know we don't need this object anymore.
-        gn.logout()
+
 
 
     def update_bboxes(self):
