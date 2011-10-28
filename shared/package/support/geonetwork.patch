@@ -1,0 +1,35 @@
+--- config.xml	2011-01-12 23:42:12.000000000 +0000
++++ config.xml.new	2011-08-29 19:53:25.000000000 +0000
+@@ -93,7 +93,7 @@
+ 		<!-- mckoi standalone -->
+ 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+ 
+-		<resource enabled="true">
++		<resource enabled="false">
+ 			<name>main-db</name>
+ 			<provider>jeeves.resources.dbms.DbmsPool</provider>
+ 			<config>
+@@ -145,19 +145,19 @@
+ 		<!-- postgresql -->
+ 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+ 		
+-		<resource enabled="false">
++		<resource enabled="true">
+ 			<name>main-db</name>
+ 			<provider>jeeves.resources.dbms.DbmsPool</provider>
+ 			<config>
+-				<user>www-data</user>
+-				<password>www-data</password>
++				<user>geonode</user>
++				<password>GEONODE_DATABASE_PASSWORD</password>
+ 				<driver>org.postgresql.Driver</driver>
+ 				<!--					
+ 					jdbc:postgresql:database
+ 					jdbc:postgresql://host/database
+ 					jdbc:postgresql://host:port/database
+ 				-->
+-                <url>jdbc:postgresql:geonetwork</url>
++                <url>jdbc:postgresql:geonode</url>
+ 				<poolSize>10</poolSize>
+ 			</config>
+ 		</resource>

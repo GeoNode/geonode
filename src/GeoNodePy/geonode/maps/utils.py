@@ -382,26 +382,32 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
     # Step 6. Make sure our data always has a valid projection
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 6. Making sure [%s] has a valid projection' % name)
-    if gs_resource.latlon_bbox is None:
-        box = gs_resource.native_bbox[:4]
-        minx, maxx, miny, maxy = [float(a) for a in box]
-        if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
-           -90  <= miny <= 90  and -90  <= maxy <= 90:
-            logger.warn('GeoServer failed to detect the projection for layer '
+    try:
+        if gs_resource.latlon_bbox is None:
+            box = gs_resource.native_bbox[:4]
+            minx, maxx, miny, maxy = [float(a) for a in box]
+            if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
+            -90  <= miny <= 90  and -90  <= maxy <= 90:
+                logger.warn('GeoServer failed to detect the projection for layer '
                         '[%s]. Guessing EPSG:4326', name)
-            # If GeoServer couldn't figure out the projection, we just
-            # assume it's lat/lon to avoid a bad GeoServer configuration
+                # If GeoServer couldn't figure out the projection, we just
+                # assume it's lat/lon to avoid a bad GeoServer configuration
 
-            gs_resource.latlon_bbox = gs_resource.native_bbox
-            gs_resource.projection = "EPSG:4326"
-            cat.save(gs_resource)
-        else:
-            msg = ('GeoServer failed to detect the projection for layer '
+                gs_resource.latlon_bbox = gs_resource.native_bbox
+                gs_resource.projection = "EPSG:4326"
+                cat.save(gs_resource)
+            else:
+                msg = ('GeoServer failed to detect the projection for layer '
                    '[%s]. It doesn\'t look like EPSG:4326, so backing out '
                    'the layer.')
-            logger.warn(msg, name)
-            cascading_delete(cat, gs_resource)
-            raise GeoNodeException(msg % name)
+                logger.warn(msg, name)
+                cascading_delete(cat, gs_resource)
+                raise GeoNodeException(msg % name)
+    except:
+                msg = ('GeoServer failed to read the layer projection, so backing out '
+                   'the layer.')
+                cascading_delete(cat, gs_resource)
+                raise GeoNodeException(msg % name)        
 
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
@@ -716,7 +722,8 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         return ds, cat.get_resource(name, store=ds)
     except:
         store_params = ds.connection_parameters
-        cat.delete(ds, purge=True)
         if store_params['dbtype'] and store_params['dbtype'] == 'postgis':
             delete_from_postgis(name)
+        else:
+            cat.delete(ds, purge=True)
         raise

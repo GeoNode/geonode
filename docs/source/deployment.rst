@@ -1,19 +1,24 @@
 Deploying your GeoNode Site
 ***************************
 
-This page provides a high-level description of the software required to set up
-a publicly accessible GeoNode web site.  Since deployment details will vary
-between platforms this information is deliberately vague.  Some
-platform-specific instructions are also available.  The platform-specific
-guides are contributed by the community, so if you deploy on a new platform
-please consider writing or updating a guide.
+This page describes a generic installation process for GeoNode systems.
+For some platforms the GeoNode project also provides customized installers which are easier to use and more reliable.
+Please check the following list before following these general instructions.
 
 .. toctree::
+   :maxdepth: 1
 
    /deploy/centos
    /deploy/ubuntu
+   /deploy/tarball
    /deploy/production
 
+Overview
+========
+
+A GeoNode installation has two webservers running alongside, one for the Java applications and another one for the Python/Django applications and static files.
+
+Included with each release there is an ``install.sh`` script and a ``support`` directory that contains sample config files that will be mentioned later in this guide.
 
 Recommended Minimum System Requirements
 =======================================

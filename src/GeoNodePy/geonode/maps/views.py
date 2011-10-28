@@ -43,7 +43,6 @@ from django.contrib.sites.models import Site
 from datetime import datetime, timedelta
 from django.core.cache import cache
 
-
 logger = logging.getLogger("geonode.maps.views")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -57,7 +56,6 @@ def _project_center(llcenter):
     center = GEOSGeometry(wkt, srid=4326)
     center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
     return center.x, center.y
-
 
 def default_map_config():
 
@@ -75,7 +73,7 @@ def default_map_config():
         return MapLayer.objects.from_viewer_config(
             map = _default_map,
             layer = lyr,
-            source = settings.MAP_BASELAYERSOURCES[lyr["source"]],
+            source = lyr["source"],
             ordering = order
         )
 
@@ -138,33 +136,21 @@ class LayerAttributeForm(forms.ModelForm):
         exclude = ('attribute_type',)
 
 class LayerForm(forms.ModelForm):
-
-
-#    topic_category = forms.ModelChoiceField(empty_label = "Create a new category",
-#                                label = "Topic Category", required=False,
-#                                queryset = LayerCategory.objects.all())
-#
-#    topic_category_new = forms.CharField(label = "New Category", required=False, max_length=255)
-
     map_id = forms.CharField(widget=forms.HiddenInput(), initial='', required=False)
-
     date = forms.DateTimeField(label='*' + _('Date'), widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"date"}
     date.widget.widgets[1].attrs = {"class":"time"}
-
-    #geographic_bounding_box = forms.CharField(label = '*' + _('Geographic Bounding Box'), widget=forms.Textarea)
-
     temporal_extent_start = forms.DateField(required=False,label= _('Temporal Extent Start Date'), widget=forms.DateInput(attrs={"class":"date"}))
     temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
     title = forms.CharField(label = '*' + _('Title'), max_length=255)
     abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea)
     keywords = forms.CharField(label = '*' + _('Keywords (separate with spaces)'), widget=forms.Textarea)
 
-    poc = forms.ModelChoiceField(empty_label = _("Person outside GeoNode (fill form)"),
+    poc = forms.ModelChoiceField(empty_label = _("Person outside WorldMap (fill form)"),
                                  label = "*" + _("Point Of Contact"), required=False,
                                  queryset = Contact.objects.exclude(user=None))
 
-    metadata_author = forms.ModelChoiceField(empty_label = _("Person outside GeoNode (fill form)"),
+    metadata_author = forms.ModelChoiceField(empty_label = _("Person outside WorldMap (fill form)"),
                                              label = _("Metadata Author"), required=False,
                                              queryset = Contact.objects.exclude(user=None))
 
@@ -270,9 +256,8 @@ def mapJSON(request, mapid):
                 mimetype="text/plain",
                 status=400
             )
-@login_required
-@csrf_exempt
-def newmap(request):
+
+def newmap_config(request):
     '''
     View that creates a new map.
 
@@ -363,14 +348,30 @@ def newmap(request):
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
-
         config['edit_map'] = True
-    return render_to_response('maps/view.html', RequestContext(request, {
-        'config': json.dumps(config),
+    return json.dumps(config)
+
+@login_required
+@csrf_exempt            
+def newmap(request):
+    config = newmap_config(request);
+    if isinstance(config, HttpResponse):
+        return config;
+    else:
+        return render_to_response('maps/view.html', RequestContext(request, {
+        'config': config,
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
         'maptitle': settings.SITENAME
     }))
+    
+@csrf_exempt
+def newmapJSON(request):
+    config = newmap_config(request);
+    if isinstance(config, HttpResponse):
+        return config
+    else:
+        return HttpResponse(config)
 
 h = httplib2.Http()
 h.add_credentials(_user, _password)
@@ -754,8 +755,6 @@ def deletemap(request, mapid):
             RequestContext(request, {'error_message':
                 _("You are not permitted to delete this map.")})), status=401)
 
-
-
     if request.method == 'GET':
         return render_to_response("maps/map_remove.html", RequestContext(request, {
             'map': map,
@@ -766,6 +765,7 @@ def deletemap(request, mapid):
         for layer in layers:
             layer.delete()
         map.delete()
+
         return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
 
 @login_required
@@ -798,7 +798,6 @@ def mapdetail(request,mapid):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this map.")})), status=401)
-
 
     config = map.viewer_json(request.user)
     config = json.dumps(config)
@@ -1365,7 +1364,9 @@ def _updateLayer(request, layer):
                 _("You are not permitted to modify this layer")})), status=401)
 
     if request.method == 'GET':
-        is_featuretype = layer.storeType == "dataStore"
+        cat = Layer.objects.gs_catalog
+        info = cat.get_resource(layer.name)
+        is_featuretype = info.resource_type == FeatureType.resource_type
 
         return render_to_response('maps/layer_replace.html',
                                   RequestContext(request, {'layer': layer,
@@ -1597,7 +1598,6 @@ def layer_acls(request):
             if (acl_user is None and
                 username == settings.GEOSERVER_CREDENTIALS[0] and
                 password == settings.GEOSERVER_CREDENTIALS[1]):
-                #logger.debug("GS ADMIN LOGGING IN!")
                 # great, tell geoserver it's an admin.
                 result = {
                    'rw': [],
@@ -1786,7 +1786,6 @@ def _metadata_search(query, start, limit, sortby, sortorder, **kw):
         sortby = 'dc:' + sortby
 
     csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), sortby=sortby, sortorder=sortorder)
-
 
     # build results
     # XXX this goes directly to the result xml doc to obtain

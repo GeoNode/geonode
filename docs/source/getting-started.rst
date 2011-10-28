@@ -60,16 +60,12 @@ process.  So, here are the steps to follow:
      (geonode) $
 
 #. With the virtualenv activated, you can now run paver.
-   This step will take a while and download further dependencies for GeoNode.
+   This step will take a while and download further dependencies for GeoNode::
 
-   .. code-block:: bash
-
-      (geonode) $ paver build
+     (geonode) $ paver build
 
 #. Now, set up a user account in the development site.
-   Some operations in GeoNode require that there be at least one administrative user, so you may get odd errors if you skip this step.
-
-   .. code-block:: bash
+   Some operations in GeoNode require that there be at least one administrative user, so you may get odd errors if you skip this step::
    
       (geonode) $ django-admin.py createsuperuser --settings=geonode.settings
 

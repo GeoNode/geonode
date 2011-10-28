@@ -30,6 +30,15 @@ var app;
 Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
+        tools:  [{
+                    ptype: "gxp_geonodequerytool",
+                    actionTarget:  {target: "paneltbar", index: 4},
+                    toolText: '<span class="x-btn-text">Identify</span>',
+                    iconCls: null,
+                    outputConfig: {width: 400, height: 200, panIn: false},
+                    featurePanel: 'queryPanel',
+                    attributePanel: 'gridWinPanel'
+                }],
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service
@@ -41,15 +50,7 @@ Ext.onReady(function() {
         siteUrl: "{{ SITE_URL }}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         csrfToken: "{{ csrf_token }}",
-        tools:  [{
-                    ptype: "gxp_geonodequerytool",
-                    actionTarget:  {target: "paneltbar", index: 4},
-                    toolText: '<span class="x-btn-text">Identify</span>',
-                    iconCls: null,
-                    outputConfig: {width: 400, height: 200, panIn: false},
-                    featurePanel: 'queryPanel',
-                    attributePanel: 'gridWinPanel'
-                }]
+        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
     }, {{ config }});
 
 

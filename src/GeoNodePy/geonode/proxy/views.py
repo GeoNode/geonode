@@ -46,42 +46,37 @@ def proxy(request):
             )
     return response
 
-
 @csrf_exempt
-def geoserver(request):
-    logger.info("GEOSERVER PROXY REQUEST")
-    logging.debug("GEOSEREVR PROPROPRPPROXY")
-    if not (request.method in ("GET") or request.user.is_authenticated() ):
+def geoserver_rest_proxy(request, proxy_path, downstream_path):
+    if not request.user.is_authenticated():
         return HttpResponse(
             "You must be logged in to access GeoServer",
             mimetype="text/plain",
-            status=401
-        )
-    path = request.get_full_path()[11:] # strip "/geoserver/" from path
-    logger.info("PATH IS [%s]", path)
+            status=401)
 
-    url = "{geoserver}{path}".format(geoserver=settings.GEOSERVER_BASE_URL,path=path)
-    logger.info("URL IS [%s]", url)
-    h = httplib2.Http()
-    h.add_credentials(*settings.GEOSERVER_CREDENTIALS)
+    def strip_prefix(path, prefix):
+        assert path.startswith(prefix)
+        return path[len(prefix):]
+
+    path = strip_prefix(request.get_full_path(), proxy_path)
+    url = "".join([settings.GEOSERVER_BASE_URL, downstream_path, path])
+
+    http = httplib2.Http()
+    http.add_credentials(*settings.GEOSERVER_CREDENTIALS)
     headers = dict()
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
-    resp, content = h.request(
-            url,
-            request.method,
-            body=request.raw_post_data or None,
-            headers=headers
-        )
-    if resp.status != 404:
-        if "content-type" in resp.keys():
-            return HttpResponse(content=content,status=resp.status,mimetype=resp["content-type"])
-        else:
-            return HttpResponse(content=content,status=resp.status)
-    else:
-        return HttpResponse(content="Something went wrong",status=404)
 
+    response, content = http.request(
+        url, request.method,
+        body=request.raw_post_data or None,
+        headers=headers)
+
+    return HttpResponse(
+        content=content,
+        status=response.status,
+        mimetype=response.get("content-type", "text/plain"))
 
 
 def picasa(request):
@@ -148,7 +143,7 @@ def download(request, service, layer):
 
     params = request.GET
     #mimetype = params.get("outputFormat") if service == "wfs" else params.get("format")
-    
+
     service=service.replace("_","/")
     url = settings.GEOSERVER_BASE_URL + service + "?" + params.urlencode()
     download_response = urllib.urlopen(url)
