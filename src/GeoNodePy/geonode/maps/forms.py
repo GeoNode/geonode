@@ -4,6 +4,7 @@ import json
 import os
 import tempfile
 
+
 class JSONField(forms.CharField):
     def clean(self, text):
         text = super(JSONField, self).clean(text)
@@ -11,6 +12,7 @@ class JSONField(forms.CharField):
             return json.loads(text)
         except ValueError:
             raise forms.ValidationError("this field must be valid JSON")
+
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
@@ -56,6 +58,7 @@ class LayerUploadForm(forms.Form):
         absolute_base_file = os.path.join(tempdir,
                 self.cleaned_data["base_file"].name)
         return tempdir, absolute_base_file
+
 
 class NewLayerUploadForm(LayerUploadForm):
     sld_file = forms.FileField(required=False)
