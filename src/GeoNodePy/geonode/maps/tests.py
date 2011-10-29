@@ -1,19 +1,20 @@
+import json
+import os
+import base64
+
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
+
 from django.contrib.auth.models import User, AnonymousUser
 
 import geonode.maps.models
 import geonode.maps.views
-
 from geonode.maps.models import Map, Layer, User
 from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock, patch
 
-import json
-import os
-import base64
 
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
@@ -26,11 +27,13 @@ Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 geonode.maps.models.get_csw = Mock()
 geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = []
 
+
 _csw_resource = Mock()
 _csw_resource.protocol = "WWW:LINK-1.0-http--link"
 _csw_resource.url = "http://example.com/"
 _csw_resource.description = "example link"
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
+
 
 class MapTest(TestCase):
     """Tests geonode.maps app/module
@@ -48,7 +51,7 @@ class MapTest(TestCase):
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
 use the Save Map button above to contribute your map to the GeoNode \
-community." 
+community."
 
     default_title = "GeoNode Default Map"
 
@@ -162,7 +165,7 @@ community."
         """Verify that Layer.set_default_permissions is behaving as expected
         """
         
-        # Get a Layer object to work with 
+        # Get a Layer object to work with
         layer = Layer.objects.all()[0]
 
         # Should we set some 'current' permissions to do further testing?
@@ -197,7 +200,6 @@ community."
     def test_map_local_layers(self):
         pass
 
-
     viewer_config_alternative = """
     {
       "defaultSourceType": "gx_wmssource",
@@ -231,12 +233,12 @@ community."
         c = Client()
 
         # Test that saving a map when not logged in gives 401
-        response = c.put("/maps/1/data",data=MapTest.viewer_config,content_type="text/json")
+        response = c.put("/maps/1/data", data=MapTest.viewer_config, content_type="text/json")
         self.assertEqual(response.status_code,401)
 
         log = c.login(username="bobby", password="bob")
-        response = c.put("/maps/1/data",data=MapTest.viewer_config_alternative,content_type="text/json")
-        self.assertEqual(response.status_code,204)
+        response = c.put("/maps/1/data", data=MapTest.viewer_config_alternative, content_type="text/json")
+        self.assertEqual(response.status_code, 204)
 
         map = Map.objects.get(id=1)
         self.assertEquals(map.title, "Title2")
@@ -336,17 +338,17 @@ community."
         c = Client()
 
         # Test that saving a map when not logged in gives 401
-        response = c.post("/maps/",data=MapTest.viewer_config,content_type="text/json")
-        self.assertEqual(response.status_code,401)
+        response = c.post("/maps/", data=MapTest.viewer_config, content_type="text/json")
+        self.assertEqual(response.status_code, 401)
 
         # Test successful new map creation
         log = c.login(username="bobby", password="bob")
-        response = c.post("/maps/",data=MapTest.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
+        response = c.post("/maps/", data=MapTest.viewer_config, content_type="text/json")
+        self.assertEquals(response.status_code, 201)
         map_id = int(response['Location'].split('/')[-1])
         c.logout()
 
-        self.assertEquals(map_id,2)
+        self.assertEquals(map_id, 2)
         map = Map.objects.get(id=map_id)
         self.assertEquals(map.title, "Title")
         self.assertEquals(map.abstract, "Abstract")
@@ -354,8 +356,8 @@ community."
 
         # Test an invalid map creation request
         log = c.login(username="bobby", password="bob")
-        response = c.post("/maps/",data="not a valid viewer config",content_type="text/json")
-        self.assertEquals(response.status_code,400)
+        response = c.post("/maps/", data="not a valid viewer config", content_type="text/json")
+        self.assertEquals(response.status_code, 400)
         c.logout()
 
     def test_map_fetch(self):
@@ -365,9 +367,9 @@ community."
         response = c.get("/maps/%s/data" % map.id)
         self.assertEquals(response.status_code, 200)
         cfg = json.loads(response.content)
-        self.assertEquals(cfg["about"]["abstract"], self.default_abstract) 
-        self.assertEquals(cfg["about"]["title"], self.default_title) 
-        self.assertEquals(len(cfg["map"]["layers"]), 5) 
+        self.assertEquals(cfg["about"]["abstract"], self.default_abstract)
+        self.assertEquals(cfg["about"]["title"], self.default_title)
+        self.assertEquals(len(cfg["map"]["layers"]), 5)
 
     def test_map_to_json(self):
         """ Make some assertions about the data structure produced for serialization
@@ -376,10 +378,11 @@ community."
         cfg = map.viewer_json()
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
+
         def is_wms_layer(x):
             return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
-        self.assertEquals(layernames, ['base:CA',])
+        self.assertEquals(layernames, ['base:CA', ])
 
     def test_newmap_to_json(self):
         """ Make some assertions about the data structure produced for serialization
@@ -388,12 +391,12 @@ community."
         cfg = json.loads(response.content)
         self.assertEquals(cfg['defaultSourceType'], "gxp_wmscsource")
 
-    def test_map_details(self): 
+    def test_map_details(self):
         """/maps/1 -> Test accessing the detail view of a map"""
-        map = Map.objects.get(id=1) 
-        c = Client() 
+        map = Map.objects.get(id=1)
+        c = Client()
         response = c.get("/maps/%s" % map.id)
-        self.assertEquals(response.status_code,200) 
+        self.assertEquals(response.status_code, 200)
 
     def test_delete_map(self):
         pass
@@ -407,7 +410,7 @@ community."
     def test_embed_map(self):
         pass
 
-    # Batch Tests    
+    # Batch Tests
     
     def test_map_download(self):
         pass
@@ -435,7 +438,7 @@ community."
     # - LEVEL_WRITE = layer_readwrite
     # - LEVEL_ADMIN = layer_admin
 
-    # Map 
+    # Map
     # - LEVEL_READ = map_read
     # - LEVEL_WRITE = map_readwrite
     # - LEVEL_ADMIN = map_admin
@@ -457,21 +460,21 @@ community."
         layer = Layer.objects.all()[0]
 
         # Save the Layers current permissions
-        current_perms = layer.get_all_level_info() 
+        current_perms = layer.get_all_level_info()
        
-        # FIXME Test a comprehensive set of permisssions specifications 
+        # FIXME Test a comprehensive set of permisssions specifications
 
         # Set the Permissions
         geonode.maps.views.set_layer_permissions(layer, self.perm_spec)
 
-        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
-        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
+        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly
+        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE)
         self.assertEqual(layer.get_gen_level(geonode.core.models.AUTHENTICATED_USERS), layer.LEVEL_NONE)
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
         users = [n for (n, p) in self.perm_spec['users']]
-        levels = layer.get_user_levels().exclude(user__username__in = users + [layer.owner])
+        levels = layer.get_user_levels().exclude(user__username__in=users + [layer.owner])
         self.assertEqual(len(levels), 0)
        
         # Test that the User permissions specified in the perm_spec were applied properly
@@ -484,24 +487,23 @@ community."
         """
 
         # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-
-        pass        
+        pass
 
     def test_ajax_layer_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
         """
         
-        # Setup some layer names to work with 
+        # Setup some layer names to work with
         valid_layer_typename = Layer.objects.all()[0].typename
         invalid_layer_typename = "n0ch@nc3"
 
         c = Client()
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post("/data/%s/ajax-permissions" % invalid_layer_typename, 
+        response = c.post("/data/%s/ajax-permissions" % invalid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
-        self.assertEquals(response.status_code, 404) 
+        self.assertEquals(response.status_code, 404)
 
         # Test that POST is required
         response = c.get("/data/%s/ajax-permissions" % valid_layer_typename)
@@ -510,32 +512,32 @@ community."
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
-        self.assertEquals(response.status_code, 401) 
+        self.assertEquals(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
-        self.assertEquals(logged_in, True) 
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
+        self.assertEquals(logged_in, True)
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
-        self.assertEquals(response.status_code, 401) 
+        self.assertEquals(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 
-        # Test that the method returns 200         
-        self.assertEquals(response.status_code, 200) 
+        # Test that the method returns 200
+        self.assertEquals(response.status_code, 200)
 
         # Test that the permissions specification is applied
 
-        # Should we do this here, or assume the tests in 
+        # Should we do this here, or assume the tests in
         # test_set_layer_permissions will handle for that?
 
     def test_layer_acls(self):
@@ -543,7 +545,7 @@ community."
         """
 
         # Test that HTTP_AUTHORIZATION in request.META is working properly
-        valid_uname_pw = "%s:%s" % (settings.GEOSERVER_CREDENTIALS[0],settings.GEOSERVER_CREDENTIALS[1])
+        valid_uname_pw = "%s:%s" % (settings.GEOSERVER_CREDENTIALS[0], settings.GEOSERVER_CREDENTIALS[1])
         invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
 
         valid_auth_headers = {
@@ -554,16 +556,16 @@ community."
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
         }
        
-        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json 
-        expected_result = {'rw': [],'ro': [],'name': settings.GEOSERVER_CREDENTIALS[0],'is_superuser':  True,'is_anonymous': False}
+        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json
+        expected_result = {'rw': [], 'ro': [], 'name': settings.GEOSERVER_CREDENTIALS[0], 'is_superuser':  True, 'is_anonymous': False}
         c = Client()
         response = c.get('/data/acls', **valid_auth_headers)
         response_json = json.loads(response.content)
-        self.assertEquals(expected_result, response_json) 
+        self.assertEquals(expected_result, response_json)
 
         # Test that requesting when supplying invalid credentials returns the appropriate error code
         response = c.get('/data/acls', **invalid_auth_headers)
-        self.assertEquals(response.status_code, 401)  
+        self.assertEquals(response.status_code, 401)
        
         # Test logging in using Djangos normal auth system 
         logged_in = c.login(username='admin', password='admin')
@@ -597,7 +599,7 @@ community."
         self.assertEqual(info['users'], sorted(layer_info['users'].items()))
 
         # TODO Much more to do here once jj0hns0n understands the ACL system better
- 
+
         # Test with a Map object
         # TODO
 
@@ -669,12 +671,12 @@ community."
 
         # Test redirection to login form when not logged in
         response = c.get("/data/upload")
-        self.assertEquals(response.status_code,302)
+        self.assertEquals(response.status_code, 302)
 
         # Test return of upload form when logged in
         c.login(username="bobby", password="bob")
         response = c.get("/data/upload")
-        self.assertEquals(response.status_code,200)
+        self.assertEquals(response.status_code, 200)
 
     def test_handle_layer_upload(self):
         pass
@@ -715,13 +717,12 @@ community."
         c = Client()
 
         #test around _metadata_search helper
-        with patch.object(geonode.maps.views,'_metadata_search') as mock_ms:
+        with patch.object(geonode.maps.views, '_metadata_search') as mock_ms:
             result = {
-                'rows' : [{
-                        'uuid' : 1214431  # does not exist
-                        }
-                          ]
-                }
+                'rows': [
+                    {'uuid': 1214431}  # does not exist
+                ]
+            }
             mock_ms.return_value = result
 
             response = c.get("/data/search/api?q=foo&start=5&limit=10")
@@ -761,7 +762,7 @@ community."
             layer.save_to_geonetwork()
 
             c = Client()
-            response = c.get('/data/search/detail', {'uuid':layer.uuid})
+            response = c.get('/data/search/detail', {'uuid': layer.uuid})
             self.failUnlessEqual(response.status_code, 200)
 
     def test_search_template(self):
@@ -775,7 +776,6 @@ community."
         })
         md_doc = tpl.render(ctx)
         self.assert_("None" not in md_doc, "None in " + md_doc)
-
 
     def test_describe_data(self):
         '''/data/base:CA?describe -> Test accessing the description of a layer '''
@@ -877,15 +877,16 @@ class ViewTest(TestCase):
 from geonode.maps.forms import JSONField, LayerUploadForm, NewLayerUploadForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+
 class FormTest(TestCase):
 
     ## NOTE: we don't care about file content for many of these tests (the
     ## forms under test validate based only on file name, and leave actual
     ## content inspection to GeoServer) but Django's form validation will omit
-    ## any files with empty bodies. 
+    ## any files with empty bodies.
     ##
     ## That is, this leads to mysterious test failures:
-    ##     SimpleUploadedFile('foo', '') 
+    ##     SimpleUploadedFile('foo', '')
     ##
     ## And this should be used instead to avoid that:
     ##     SimpleUploadedFile('foo', ' ')
@@ -1036,7 +1037,7 @@ class UtilsTest(TestCase):
             for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.shp"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -1053,7 +1054,7 @@ class UtilsTest(TestCase):
             for f in ("foo.shp", "foo.shx", "foo.prj"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
@@ -1067,7 +1068,7 @@ class UtilsTest(TestCase):
             for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.shp"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -1084,7 +1085,7 @@ class UtilsTest(TestCase):
             for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -1101,7 +1102,7 @@ class UtilsTest(TestCase):
             for f in ("foo.SHP", "foo.shx", "foo.pRJ", "foo.DBF"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -1118,7 +1119,7 @@ class UtilsTest(TestCase):
             for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
@@ -1126,14 +1127,14 @@ class UtilsTest(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
-        # Check that including both capital and lowercase PRJ (this is special-cased in the implementation) 
+        # Check that including both capital and lowercase PRJ (this is special-cased in the implementation)
         d = None
         try:
             d = tempfile.mkdtemp()
             for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.prj"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
@@ -1141,14 +1142,14 @@ class UtilsTest(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
-        # Check that including both capital and lowercase SLD (this is special-cased in the implementation) 
+        # Check that including both capital and lowercase SLD (this is special-cased in the implementation)
         d = None
         try:
             d = tempfile.mkdtemp()
             for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.SLD", "foo.sld"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
@@ -1243,26 +1244,25 @@ class UtilsTest(TestCase):
                 # no assertion, this should just run without error
                 check_geonode_is_up()
 
-
     def test_save(self):
         import shutil
         import tempfile
         from contextlib import nested
         from geonode.maps.utils import save
 
-        # Check that including both capital and lowercase SLD (this is special-cased in the implementation) 
+        # Check that including both capital and lowercase SLD (this is special-cased in the implementation)
         d = None
         try:
             d = tempfile.mkdtemp()
             for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld", "foo.sld"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             class MockWMS(object):
 
                 def __init__(self):
-                    self.contents = { 'geonode:a_layer': 'geonode:a_layer' }
+                    self.contents = {'geonode:a_layer': 'geonode:a_layer'}
 
                 def __getitem__(self, idx):
                     return self.contents[idx]
