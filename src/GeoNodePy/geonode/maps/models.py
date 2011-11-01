@@ -980,6 +980,7 @@ class Layer(models.Model, PermissionLevelMixin):
             })
 
         types = [
+            ("tiff", _("GeoTIFF"), "image/geotiff"),
             ("jpg", _("JPEG"), "image/jpeg"),
             ("pdf", _("PDF"), "application/pdf"),
             ("png", _("PNG"), "image/png")
@@ -1615,6 +1616,9 @@ class Map(models.Model, PermissionLevelMixin):
         """
         logger.debug("++++++++++++++++++CALLING viewer_json+++++++++++++++++++++")
 
+        logger.info("ADDED Layers: %s", added_layers)
+        
+
         layers = list(self.maplayers) + list(added_layers) #implicitly sorted by stack_order
         
         sejumps = self.jump_set.all()
@@ -1690,7 +1694,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
-        #logger.debug("CONFIG: %s", config)
+        logger.info("CONFIG: %s", config)
 
         return config
 
