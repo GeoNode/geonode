@@ -42,6 +42,7 @@ from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
 from datetime import datetime, timedelta
 from django.core.cache import cache
+from geonode.maps.forms import LayerCreateForm, LAYER_SCHEMA_TEMPLATE, GEOMETRY_CHOICES
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -316,12 +317,17 @@ def newmap_config(request):
                     bbox[2] = min(bbox[2], layer_bbox[2])
                     bbox[3] = max(bbox[3], layer_bbox[3])
 
+                logger.info("GROUP: %s" , layer.topic_category.title)
                 layers.append(MapLayer(
                     map = map,
                     name = layer.typename,
                     ows_url = settings.GEOSERVER_BASE_URL + "wms",
-                    visibility = True
-                ))
+                    visibility = True,
+                    styles='',
+                    group=layer.topic_category.title,
+                    source_params = u'{"ptype": "gxp_gnsource"}',
+                    layer_params= u'{"tiled":true, "title":" '+ layer.title + '", "format":"image/png","queryable":true}')
+                )
 
             if bbox is not None:
                 minx, maxx, miny, maxy = [float(c) for c in bbox]
@@ -345,6 +351,7 @@ def newmap_config(request):
                 map.zoom = math.ceil(min(width_zoom, height_zoom))
 
             config = map.viewer_json(request.user, *(DEFAULT_BASE_LAYERS + layers))
+            config['treeconfig'] = [{"expanded":True, "group":layer.topic_category.title}]
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
@@ -1068,6 +1075,7 @@ def _describe_layer(request, layer):
             #layer_form.fields["topic_category"].initial = topic_category
             if "map" in request.GET:
                 layer_form.fields["map_id"].initial = request.GET["map"]
+
             attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
 
 
@@ -1126,7 +1134,7 @@ def _describe_layer(request, layer):
 
                 if request.is_ajax():
                     return HttpResponse('success', status=200)
-                elif mapid != '':
+                elif mapid != '' and str(mapid).lower() != 'new':
                     logger.debug("adding layer to map [%s]", str(mapid))
                     maplayer = MapLayer.objects.create(map=Map.objects.get(id=mapid),
                         name = layer.typename,
@@ -1140,8 +1148,10 @@ def _describe_layer(request, layer):
                     maplayer.save()
                     return HttpResponseRedirect("/maps/" + mapid)
                 else:
-                    logger.debug("No map value found")
-                    return HttpResponseRedirect("/data/" + layer.typename)
+                    if str(mapid) == "new":
+                        return HttpResponseRedirect("/maps/new?layer" + layer.typename)
+                    else:
+                        return HttpResponseRedirect("/data/" + layer.typename)
 
         if poc.user is None:
             poc_form = ContactForm(instance=poc, prefix="poc")
@@ -1167,7 +1177,8 @@ def _describe_layer(request, layer):
                 "attribute_form": attribute_form,
                 "category_form" : category_form,
                 "lastmap" : request.session.get("lastmap"),
-                "lastmapTitle" : request.session.get("lastmapTitle")
+                "lastmapTitle" : request.session.get("lastmapTitle"),
+                "created" : created
                 }))
                 return HttpResponse(data, status=412)
 
@@ -1314,11 +1325,11 @@ def upload_layer(request):
                 return render_to_response('maps/layer_upload_tab.html',
                                   RequestContext(request, {'charsets': CHARSETS}))
     elif request.method == 'POST':
-        from geonode.maps.forms import NewLayerUploadForm
+        from geonode.maps.forms import WorldMapLayerUploadForm
         from geonode.maps.utils import save
         from django.utils.html import escape
         import os, shutil
-        form = NewLayerUploadForm(request.POST, request.FILES)
+        form = WorldMapLayerUploadForm(request.POST, request.FILES)
         tempdir = None
         if form.is_valid():
             try:
@@ -2440,3 +2451,77 @@ def ajax_increment_layer_stats(request):
     return HttpResponse(
                             status=200
     )
+
+@login_required
+def create_pg_layer(request):
+    if request.method == 'GET':
+        layer_form = LayerCreateForm(prefix="layer")
+
+    if request.method == 'POST':
+        from geonode.maps.utils import check_projection, create_django_record, get_valid_layer_name
+        layer_form = LayerCreateForm(request.POST)
+        if layer_form.is_valid():
+            cat = Layer.objects.gs_catalog
+            ws = cat.get_workspace(settings.DEFAULT_WORKSPACE)
+
+
+            if ws is None:
+                msg = 'Specified workspace [%s] not found' % settings.DEFAULT_WORKSPACE
+                return HttpResponse(msg, status='400')
+            store = settings.DB_DATASTORE_NAME
+            if store is None:
+                msg = 'Specified store [%s] not found' % settings.DB_DATASTORE_NAME
+                return HttpResponse(msg, status='400')
+
+            attributes = LAYER_SCHEMA_TEMPLATE
+            logger.info("TYPE: %s", layer_form.cleaned_data['geom'])
+            attribute_dict = {u"the_geom" : "com.vividsolutions.jts.geom." + layer_form.cleaned_data['geom']}
+            for attribute in attributes.split(','):
+                key, value = attribute.split(':')
+                attribute_dict[key] = value
+
+            name = get_valid_layer_name(layer_form.cleaned_data['name'])
+            logger.info("NAME:%s", name)
+
+            print attribute_dict
+            try:
+                logger.info("Create layer")
+                layer = cat.create_native_layer(settings.DEFAULT_WORKSPACE,
+                                          settings.DB_DATASTORE_NAME,
+                                          name,
+                                          name,
+                                          layer_form.cleaned_data['title'],
+                                          layer_form.cleaned_data['srs'],
+                                          attribute_dict)
+                logger.info("Check projection")
+                check_projection(name, layer)
+                logger.info("Create django record")
+                geonodeLayer = create_django_record(request.user, layer_form.cleaned_data['title'], layer_form.cleaned_data['keywords'].split(" "), layer_form.cleaned_data['abstract'], layer, None)
+                #return HttpResponseRedirect(geonodeLayer.get_absolute_url() + "?describe")
+
+                redirect_to  = reverse('geonode.maps.views.layerController', args=(geonodeLayer.typename,)) + '?describe&create=true'
+                if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
+                    redirect_to+= "&tab=true"
+                elif 'mapid' in request.POST and request.POST['mapid'] != '':
+                    redirect_to += "&map=" + request.POST['mapid']
+                return HttpResponse(json.dumps({
+                    "success": True,
+                    "redirect_to": redirect_to}))
+            except Exception, e:
+                logger.exception("Unexpected error.")
+                return HttpResponse(json.dumps({
+                    "success": False,
+                    "errors": ["Unexpected error: " + escape(str(e))]}))
+
+        else:
+            logger.info(layer_form.errors)
+            
+
+
+
+    return render_to_response("maps/layer_create.html", RequestContext(request, {
+            "layer_form": layer_form,
+            "customGroup": settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
+            "geoms": GEOMETRY_CHOICES
+    }))
+

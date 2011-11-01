@@ -1,3 +1,4 @@
+
 {% extends "page_layout.html" %}
 {% load i18n %}
 
@@ -33,7 +34,6 @@ Ext.onReady(function() {
 {% autoescape off %}
 Ext.onReady(function(){
     Ext.QuickTips.init();
-
 
     var form_target = "{% url geonode.maps.views.upload_layer %}";
     var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
@@ -173,7 +173,7 @@ Ext.onReady(function(){
                 } else
                     Ext.getCmp('uploadButton').disable();
         },
-        labelStyle: 'position:absolute;float:left;left:80px;width:200px',
+        labelStyle: 'position:absolute;float:left;left:100px;width:200px',
         labelSeparator : ''
     });
 
@@ -195,6 +195,7 @@ Ext.onReady(function(){
             value: "{{ csrf_token }}"
         }],
         buttons: [{
+            id: 'uploadButton',
             text: gettext('Upload'),
             disabled: true,
             handler: function(){
@@ -328,9 +329,26 @@ Ext.onReady(function(){
         TOCWindow.show();
 
     };
+
+Ext.Ajax.on('requestcomplete', function(connection, response, options) {
+if (options.form) {
+    if (!response.status || response.status >= 400)
+    {
+                            Ext.Msg.show({
+                                title: gettext("Error"),
+                                msg: response.responseText.contains("413") ? gettext("Upload is too large") : response.responseText,
+                                minWidth: 200,
+                                modal: true,
+                                icon: Ext.Msg.ERROR,
+                                buttons: Ext.Msg.OK
+                            });
+    }
+
+}
+});
+
 {% endautoescape %}
 </script>
-
 
 {% endblock %}
 
@@ -357,22 +375,7 @@ Ext.onReady(function(){
 </p>
 </div>
 
-Ext.Ajax.on('requestcomplete', function(connection, response, options) {
-if (options.form) {
-    if (!response.status || response.status >= 400)
-    {
-                            Ext.Msg.show({
-                                title: gettext("Error"),
-                                msg: response.responseText.contains("413") ? gettext("Upload is too large") : response.responseText,
-                                minWidth: 200,
-                                modal: true,
-                                icon: Ext.Msg.ERROR,
-                                buttons: Ext.Msg.OK
-                            });
-    }
 
-}
-});
 
 
 {% endblock %}
