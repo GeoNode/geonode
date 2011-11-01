@@ -27,7 +27,7 @@
 
 <script type="text/javascript">
 var app;
-Ext.onReady(function() {
+var init = function() {
 {% autoescape off %}
     var config = Ext.apply({
         tools:  [{
@@ -79,7 +79,10 @@ Ext.onReady(function() {
 
     }, this);
 {% endautoescape %}
-});
+}
+
+window.onload = init;
+
 </script>
 
 {% endblock %}
