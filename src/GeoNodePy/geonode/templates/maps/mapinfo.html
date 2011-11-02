@@ -48,7 +48,7 @@ Ext.onReady(function() {
 </script>
 {% endblock %}
 
-{% block main %}
+{% block start_body_js %}
 <div id="fb-root"></div>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
@@ -57,8 +57,9 @@ Ext.onReady(function() {
   js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
+{% endblock %}
 
-
+{% block main %}
 <div class="twocol">
   <h3>{{map.title}}</h3>
   <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
@@ -115,7 +116,7 @@ Ext.onReady(function() {
 <script type="text/javascript">
 	(function() {
 		var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-		po.src = 'http://apis.google.com/js/plusone.js';
+		po.src = 'https://apis.google.com/js/plusone.js';
 		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
 	})();
 </script>
