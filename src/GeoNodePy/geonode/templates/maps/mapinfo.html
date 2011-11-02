@@ -61,6 +61,8 @@ Ext.onReady(function() {
 
 <div class="twocol">
   <h3>{{map.title}}</h3>
+  <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+  <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
   <p><strong>{% trans "Abstract:" %}</strong> {{map.abstract}}</p>
 
   <div id="embedded_map">
@@ -68,7 +70,6 @@ Ext.onReady(function() {
   <p><strong>{% trans "Contact:" %}</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p>
 
   <h3>Social</h3>
-  <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="450" data-show-faces="false"></div>
 </div>
 {% endblock %}
 {% block sidebar %}
@@ -108,4 +109,14 @@ Ext.onReady(function() {
     <div id="permissions_form"></div>
   {% endif %}
 </div>
+{% endblock %}
+
+{% block end_body_js %}
+<script type="text/javascript">
+	(function() {
+		var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+		po.src = 'http://apis.google.com/js/plusone.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	})();
+</script>
 {% endblock %}
