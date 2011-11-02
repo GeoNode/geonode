@@ -1985,7 +1985,7 @@ class MapLayer(models.Model):
         if self.ows_url:
             cfg["url"] = self.ows_url
 
-        if cfg["ptype"] == "gxp_gnsource":
+        if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
             cfg["restUrl"] = "/gs/rest"
 
         return cfg
