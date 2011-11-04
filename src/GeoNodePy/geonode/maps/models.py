@@ -1110,6 +1110,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
     @property
     def attribute_names(self):
+        from ordereddict import OrderedDict
         if self.resource.resource_type == "featureType":
             dft_url = settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
                     "service": "wfs",
@@ -1134,8 +1135,9 @@ class Layer(models.Model, PermissionLevelMixin):
                 response, body = http.request(dft_url)
                 doc = XML(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
-                atts = {}
+                atts = OrderedDict({})
                 for n in doc.findall(path):
+                    logger.info("RESOURCE ATT %s", n.attrib["name"])
                     atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:
                 atts = {}
@@ -1164,7 +1166,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 response, body = http.request(dc_url)
                 doc = XML(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
-                atts = {}
+                atts = OrderedDict({})
                 for n in doc.findall(path):
                     atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:

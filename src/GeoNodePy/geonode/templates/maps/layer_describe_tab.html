@@ -18,7 +18,9 @@
 </style>
 
 
+
 <div id="tab" style="padding:20px">
+<h1>Panel {{ tab }}</h1>
 <h3> {% trans "Editing details for " %} {{ layer.title|default:layer.typename }} </h3>
   <p style="font-weight:bold">{%  trans "Fields marked with an asterisk(*) are required." %}</p>
 
@@ -28,7 +30,7 @@
 
 	      {{ layer_form.as_ul }}
 
-
+      <input type="hidden" id="hiddentab" name="tab" value="{{ tab }}" />
 
       <fieldset id="category_form">
 	  <legend>* {%  trans "Category"  %}</legend>
@@ -131,9 +133,16 @@
                     params : Ext.Ajax.serializeForm(Ext.get("worldmap_describe_form")),
                     success: function(response, options) {
                              try {
-                                var uPanel = Ext.getCmp("worldmap_update_panel");
-                                uPanel.load({url:'/data/upload'});
-
+                                var panelName = "{{ tab }}"
+                                var uPanel = Ext.getCmp(panelName);
+                                switch (panelName) {
+                                        case "worldmap_update_panel":
+                                                uPanel.load({url:'/data/upload?tab=true'});
+                                                break;
+                                        case "worldmap_create_panel":
+                                                uPanel.load({url:'/data/create_pg_layer?tab=true'});
+                                                break;
+                                }
                                 var geoEx = window.app;
                                 var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name', name: 'tiled'}]);
                                 var thisLayerRec = new LayerRec({title: '{{ layer.title|escape }}', name: '{{ layer.typename }}', tiled: true});
@@ -147,7 +156,7 @@
                     failure: function(response, options)
                     {
                             Ext.MessageBox.hide();
-                            var uPanel = Ext.getCmp("worldmap_update_panel");
+                            var uPanel = Ext.getCmp("{{ tab }}");
                             uPanel.update(response.responseText, true);
 
                             Ext.Msg.show({

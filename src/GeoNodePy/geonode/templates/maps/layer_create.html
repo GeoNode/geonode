@@ -1,0 +1,234 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Upload Layer"  %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+
+{{ block.super }}
+<script type="text/javascript">
+    Ext.onReady(function() {});
+</script>
+{% endblock %}
+
+{% block main %}
+<div class="twocol">
+    <h2>{% trans "Create new layer" %}</h2>
+  {% if errors %}
+    <div id="errors">
+      {% for error in errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div id="create_form">
+  </div>
+    </div>
+<script type="text/javascript">
+{% autoescape off %}
+Ext.onReady(function(){
+    Ext.QuickTips.init();
+
+
+    var form_target = "{% url geonode.maps.views.create_pg_layer %}";
+    var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
+
+    var layer_name = new Ext.form.TextField({
+      id: 'name',
+      fieldLabel: gettext('Name'),
+      name: 'name',
+      emptyText: 'Letters & numbers only, no spaces',
+      maskRe: /[A-Za-z0-9]+/,
+      regex: /[A-Za-z0-9]+/,
+      regexText: gettext('Only letters and numbers are allowed'),
+      validateOnBlur: true
+    });
+
+
+    var layer_title = new Ext.form.TextField({
+      id: 'title',
+      fieldLabel: gettext('Title'),
+      name: 'title',
+      allowBlank: false
+    });
+
+    var layer_type = new Ext.form.ComboBox({
+        id: 'type',
+        name: ' type',
+        fieldLabel: gettext('Data Type'),
+        hiddenName: 'geom',
+        displayField:'description',
+        valueField: 'geom',
+        store : new Ext.data.SimpleStore({
+            fields: ['geom', 'description'],
+            data: {{  geoms }}
+        }),
+        mode: 'local',
+        triggerAction: 'all',
+        value: 'Point',
+        allowBlank: false
+    });
+
+    var srs = new Ext.form.TextField({
+      id: 'srs',
+      fieldLabel: gettext('Projection'),
+      name: 'srs',
+      value: 'EPSG:4326',
+      emptyText:'Example: EPSG:4326',
+      allowBlank: false
+    });
+
+    var abstractField = new Ext.form.TextArea({
+        id: 'abstract',
+        fieldLabel: gettext('Abstract'),
+        name: 'abstract',
+        allowBlank: false
+    });
+
+    var keywordsField = new Ext.form.TextArea({
+        id: 'keywords',
+        fieldLabel: gettext('Keywords'),
+        name: 'keywords',
+        emptyText: 'Use spaces to separate keywords',
+        allowBlank: false
+    });
+
+    var permissionsField = new Ext.form.Hidden({
+        name: "permissions"
+    });
+
+    var termsAgreeCheck = new Ext.form.Checkbox({
+        id: 'agreeCheck',
+        fieldLabel: 'I agree to the <a href="" onclick="javascript:showTOC();return false;">Terms and Conditions</a>',
+        handler: function(){
+                if (this.checked) {
+                        Ext.getCmp('createButton').enable();
+                } else
+                    Ext.getCmp('createButton').disable();
+        },
+        labelStyle: 'position:absolute;float:left;left:150px;width:200px',
+        labelSeparator : ''
+    });
+
+
+    var fp = new Ext.FormPanel({
+        renderTo: 'create_form',
+        width: 500,
+        frame: true,
+        autoHeight: true,
+        labelWidth: 100,
+        unstyled:true,
+        defaults: {
+            anchor: '95%',
+            msgTarget: 'side'
+        },
+        items: [layer_name, layer_title, layer_type, srs, abstractField, keywordsField, termsAgreeCheck, permissionsField, {
+            xtype: "hidden",
+            name: "csrfmiddlewaretoken",
+            value: "{{ csrf_token }}"
+        }],
+        buttons: [{
+            id: 'createButton',
+            text: gettext('Create'),
+            disabled: true,
+            handler: function(){
+                if (fp.getForm().isValid()) {
+                    fp.getForm().submit({
+                        url: form_target,
+                        waitMsg: gettext('Creating your layer...'),
+                        success: function(fp, o) {
+                            document.location = o.result.redirect_to;
+                        },
+                        failure: function(fp, o) {
+                            error_message = '<ul>';
+                            for (var i = 0; i < o.result.errors.length; i++) {
+                                error_message += '<li>' + o.result.errors[i] + '</li>'
+                            }
+                            error_message += '</ul>'
+
+                            Ext.Msg.show({
+                                title: gettext("Error"),
+                                msg: error_message,
+                                minWidth: 200,
+                                modal: true,
+                                icon: Ext.Msg.ERROR,
+                                buttons: Ext.Msg.OK
+                            });
+                        }
+                    });
+                }
+            }
+        }]
+    });
+
+
+    var permissionsEditor = new GeoNode.WorldMapPermissionsEditor({
+        renderTo: "permissions_form",
+        userLookup: "{% url geonode.views.ajax_lookup_email %}",
+        customGroup: "{{ customGroup }}",
+        listeners: {
+            updated: function(pe) {
+                permissionsField.setValue(Ext.util.JSON.encode(pe.writePermissions()));
+            }
+        },
+        permissions: {
+            anonymous: 'layer_readonly',
+            authenticated: 'layer_readonly',
+            users:[]
+        }
+    });
+    permissionsEditor.fireEvent("updated", permissionsEditor);
+
+});
+
+    var showTOC = function() {
+        var TOCPanel = new Ext.Panel({
+            id: 'worldmap_mapshare_panel',
+            title: 'Share Map',
+            header: false,
+            autoLoad: {url: '/maps/upload_terms'},
+            autoScroll: true
+        });
+
+        var TOCWindow = new Ext.Window({
+            title: "WorldMap Terms and Conditions",
+            closeAction: 'destroy',
+            layout: 'fit',
+            width: 400,
+            height:400,
+            items: [TOCPanel],
+            modal: true,
+            autoScroll: false,
+            bodyStyle: 'background-color:#FFF',
+            buttons: [
+                {
+                    text: 'Close',
+                    handler: function() {TOCWindow.close();}
+                }
+            ]
+        });
+
+        TOCWindow.show();
+
+    };
+
+
+
+{% endautoescape %}
+</script>
+
+
+{% endblock %}
+
+
+{% block sidebar %}
+<div class="threecol">
+<h3>{%trans "Permissions"  %}</h3>
+ <div id="permissions_form"></div>
+</div>
+
+{% endblock %}

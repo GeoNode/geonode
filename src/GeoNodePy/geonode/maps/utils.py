@@ -232,7 +232,7 @@ def cleanup(name, uuid):
                   'import for layer: %s', name)
 
 
-def save(layer, base_file, user, overwrite = True, title = None, abstract = None, permissions = None, keywords = [], charset = 'ISO-8859-1', sldfile = None):
+def save(layer, base_file, user, overwrite = True, title = None, abstract = None, permissions = None, keywords = ['none'], charset = 'ISO-8859-1', sldfile = None):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -417,7 +417,7 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
     # Step 10. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
     # FIXME: Do this inside the layer object
-    saved_layer = create_django_record(user, title, keywords, abstract, resource, permissions)
+    saved_layer = create_django_record(user, title, keywords, abstract, gs_resource, permissions)
     return saved_layer
 
 def check_projection(name, resource):

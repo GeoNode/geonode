@@ -1,6 +1,6 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, MapStats, LayerStats, CHARSETS
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis, get_sld_for
 from geonode.maps.encode import num_encode, num_decode
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -294,6 +294,7 @@ def newmap_config(request):
 
         if 'layer' in params:
             bbox = None
+            groups = set()
             map = Map(projection="EPSG:900913")
             layers = []
             for layer_name in params.getlist('layer'):
@@ -328,7 +329,9 @@ def newmap_config(request):
                     source_params = u'{"ptype": "gxp_gnsource"}',
                     layer_params= u'{"tiled":true, "title":" '+ layer.title + '", "format":"image/png","queryable":true}')
                 )
+                groups.add(layer.topic_category.title)
 
+            logger.info("BBOX: %s", str(bbox))
             if bbox is not None:
                 minx, maxx, miny, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
@@ -336,6 +339,8 @@ def newmap_config(request):
                 wkt = "POINT(" + str(x) + " " + str(y) + ")"
                 center = GEOSGeometry(wkt, srid=4326)
                 center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+
+                logger.info("%s:%s", str(center.x), str(center.y))
 
                 if maxx == minx:
                     width_zoom = 15
@@ -351,7 +356,10 @@ def newmap_config(request):
                 map.zoom = math.ceil(min(width_zoom, height_zoom))
 
             config = map.viewer_json(request.user, *(DEFAULT_BASE_LAYERS + layers))
-            config['treeconfig'] = [{"expanded":True, "group":layer.topic_category.title}]
+            config['treeconfig'] = []
+            for group in groups:
+                config['treeconfig'].append({"expanded":True, "group":group})
+
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
@@ -1078,11 +1086,19 @@ def _describe_layer(request, layer):
 
             attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
 
+            tab = None
+            if "tab" in request.GET:
+                tab = request.GET["tab"]
+
 
         if request.method == "POST":
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
             category_form = LayerCategoryForm(request.POST, prefix="category_choice_field")
             attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
+
+            if "tab" in request.POST:
+                tab = request.POST["tab"]
+
 
             if layer_form.is_valid() and category_form.is_valid():
 
@@ -1178,7 +1194,7 @@ def _describe_layer(request, layer):
                 "category_form" : category_form,
                 "lastmap" : request.session.get("lastmap"),
                 "lastmapTitle" : request.session.get("lastmapTitle"),
-                "created" : created
+                "tab" : tab
                 }))
                 return HttpResponse(data, status=412)
 
@@ -1192,7 +1208,8 @@ def _describe_layer(request, layer):
             "attribute_form": attribute_form,
             "category_form" : category_form,
             "lastmap" : request.session.get("lastmap"),
-            "lastmapTitle" : request.session.get("lastmapTitle")
+            "lastmapTitle" : request.session.get("lastmapTitle"),
+            "tab" : tab
         }))
 
         #Display the view on a regular page
@@ -1340,13 +1357,14 @@ def upload_layer(request):
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"],
+                        keywords = form.cleaned_data["keywords"].split(" "),
                         charset = request.POST.get('charset'),
                         sldfile = sld_file
                         )
 
                 redirect_to  = reverse('geonode.maps.views.layerController', args=(saved_layer.typename,)) + '?describe'
                 if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
-                    redirect_to+= "&tab=true"
+                    redirect_to+= "&tab=worldmap_update_panel"
                 elif 'mapid' in request.POST and request.POST['mapid'] != '':
                     redirect_to += "&map=" + request.POST['mapid']
                 return HttpResponse(json.dumps({
@@ -2457,35 +2475,54 @@ def create_pg_layer(request):
     if request.method == 'GET':
         layer_form = LayerCreateForm(prefix="layer")
 
+        # Determine if this page will be shown in a tabbed panel or full page
+        pagetorender = "maps/layer_create_tab.html" if "tab" in request.GET else "maps/layer_create.html"
+
+
+        return render_to_response(pagetorender, RequestContext(request, {
+            "layer_form": layer_form,
+            "customGroup": settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
+            "geoms": GEOMETRY_CHOICES
+        }))
+
     if request.method == 'POST':
         from geonode.maps.utils import check_projection, create_django_record, get_valid_layer_name
+        from ordereddict import OrderedDict
         layer_form = LayerCreateForm(request.POST)
         if layer_form.is_valid():
             cat = Layer.objects.gs_catalog
+
+            # Assume default workspace
             ws = cat.get_workspace(settings.DEFAULT_WORKSPACE)
-
-
             if ws is None:
                 msg = 'Specified workspace [%s] not found' % settings.DEFAULT_WORKSPACE
                 return HttpResponse(msg, status='400')
+
+            # Assume datastore used for PostGIS
             store = settings.DB_DATASTORE_NAME
             if store is None:
                 msg = 'Specified store [%s] not found' % settings.DB_DATASTORE_NAME
                 return HttpResponse(msg, status='400')
 
+            #TODO: Let users create their own schema
             attributes = LAYER_SCHEMA_TEMPLATE
-            logger.info("TYPE: %s", layer_form.cleaned_data['geom'])
-            attribute_dict = {u"the_geom" : "com.vividsolutions.jts.geom." + layer_form.cleaned_data['geom']}
+
+            # Add geometry to attributes dictionary, based on user input; use OrderedDict to remember order
+            attribute_dict = OrderedDict({u"the_geom" : "com.vividsolutions.jts.geom." + layer_form.cleaned_data['geom']})
+
             for attribute in attributes.split(','):
                 key, value = attribute.split(':')
+                logger.info("Attribute: %s", key)
                 attribute_dict[key] = value
 
-            name = get_valid_layer_name(layer_form.cleaned_data['name'])
-            logger.info("NAME:%s", name)
+            for k, v in attribute_dict.items():
+                logger.info("Stored Attribute: %s", k)
 
-            print attribute_dict
+            name = get_valid_layer_name(layer_form.cleaned_data['name'])
+            permissions = layer_form.cleaned_data["permissions"]
+
             try:
-                logger.info("Create layer")
+                logger.info("Create layer %s", name)
                 layer = cat.create_native_layer(settings.DEFAULT_WORKSPACE,
                                           settings.DB_DATASTORE_NAME,
                                           name,
@@ -2493,16 +2530,25 @@ def create_pg_layer(request):
                                           layer_form.cleaned_data['title'],
                                           layer_form.cleaned_data['srs'],
                                           attribute_dict)
+                
+                logger.info("Create default style")
+                publishing = cat.get_layer(name)
+                sld = get_sld_for(publishing)
+                cat.create_style(name, sld)
+                publishing.default_style = cat.get_style(name)
+                cat.save(publishing)
+
                 logger.info("Check projection")
                 check_projection(name, layer)
+                
                 logger.info("Create django record")
-                geonodeLayer = create_django_record(request.user, layer_form.cleaned_data['title'], layer_form.cleaned_data['keywords'].split(" "), layer_form.cleaned_data['abstract'], layer, None)
-                #return HttpResponseRedirect(geonodeLayer.get_absolute_url() + "?describe")
+                geonodeLayer = create_django_record(request.user, layer_form.cleaned_data['title'], layer_form.cleaned_data['keywords'].split(" "), layer_form.cleaned_data['abstract'], layer, permissions)
 
-                redirect_to  = reverse('geonode.maps.views.layerController', args=(geonodeLayer.typename,)) + '?describe&create=true'
-                if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
-                    redirect_to+= "&tab=true"
-                elif 'mapid' in request.POST and request.POST['mapid'] != '':
+
+                redirect_to  = reverse('geonode.maps.views.layerController', args=(geonodeLayer.typename,)) + '?describe'
+                if 'mapid' in request.POST and request.POST['mapid'] == 'tab': #if mapid = tab then open metadata form in tabbed panel
+                    redirect_to+= "&tab=worldmap_create_panel"
+                elif 'mapid' in request.POST and request.POST['mapid'] != '': #if mapid = number then add to parameters and open in full page
                     redirect_to += "&map=" + request.POST['mapid']
                 return HttpResponse(json.dumps({
                     "success": True,
@@ -2514,14 +2560,8 @@ def create_pg_layer(request):
                     "errors": ["Unexpected error: " + escape(str(e))]}))
 
         else:
-            logger.info(layer_form.errors)
-            
+            #The form has errors, what are they?
+            return HttpResponse(layer_form.errors, status='500')
 
 
-
-    return render_to_response("maps/layer_create.html", RequestContext(request, {
-            "layer_form": layer_form,
-            "customGroup": settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
-            "geoms": GEOMETRY_CHOICES
-    }))
 

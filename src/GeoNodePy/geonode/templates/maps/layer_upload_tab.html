@@ -6,6 +6,7 @@
 <div id="tabContainer" style="padding:20px;">
 
 <div style="position:relative;float:left;width:500px;">
+
 <h3>{%trans "Instructions"  %}</h3>
 
 <p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
@@ -146,6 +147,14 @@
         allowBlank: false
     });
 
+    var keywordsField = new Ext.form.TextArea({
+        id: 'keywords',
+        fieldLabel: gettext('Keywords'),
+        emptyText: gettext('Separate keywords with spaces'),
+        name: 'keywords',
+        allowBlank: false
+    });
+
     var permissionsField = new Ext.form.Hidden({
         name: "permissions"
     });
@@ -178,7 +187,7 @@
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, abstractField, termsAgreeCheck, permissionsField, {
+        items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, abstractField, keywordsField, termsAgreeCheck, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"
