@@ -18,7 +18,7 @@ msgstr ""
 
 #: media/static/script/GeoNode.js:45
 msgid "Add user..."
-msgstr "Οδηγός χρήσης"
+msgstr "Προσθήκη χρήστη..."
 
 #: media/static/script/GeoNode.js:45
 msgid "Who can view and download this data?"
