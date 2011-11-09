@@ -98,7 +98,7 @@ def picasa(request):
 
 def hglpoints (request):
     #url = "http://dixon.hul.harvard.edu:8080/HGL/HGLGeoRSS?UserQuery="
-    url = "http://pynchon.hul.harvard.edu:8080/HGL/HGLGeoRSS?GeometryType=envelope"
+    url = "http://pynchon.hul.harvard.edu:8080/HGL/HGLGeoRSS?GeometryType=point"
     #bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
     query = request.GET['Q'] if request.method == 'GET' else request.POST['Q']
 #    coords = bbox.split(",")
