@@ -257,6 +257,7 @@ INSTALLED_APPS = (
     'registration',
     'profiles',
     'avatar',
+    'taggit',
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
