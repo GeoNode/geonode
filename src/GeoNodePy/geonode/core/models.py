@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
@@ -59,6 +59,29 @@ class UserObjectRoleMapping(models.Model):
 
     class Meta:
         unique_together = (('user', 'object_ct', 'object_id', 'role'), ) 
+
+class GroupObjectRoleMapping(models.Model):
+    """
+    represents assignment of a role to a group 
+    in the context of a specific object.
+    """
+
+    group = models.ForeignKey(Group, related_name="role_mappings")
+    
+    object_ct = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    object = GenericForeignKey('object_ct', 'object_id')
+
+    role = models.ForeignKey(ObjectRole, related_name="group_mappings")
+
+    def __unicode__(self):
+        return u"%s | %s -> %s" % (
+            unicode(self.object),
+            unicode(self.group), 
+            unicode(self.role))
+
+    class Meta:
+        unique_together = (('group', 'object_ct', 'object_id', 'role'), )
 
 # implicitly defined 'generic' groups of users 
 ANONYMOUS_USERS = 'anonymous'
@@ -128,7 +151,19 @@ class PermissionLevelMixin(object):
             return mapping.role.codename
         except:
             return self.LEVEL_NONE
-
+    
+    def get_group_level(self, user):
+        """
+        get the permission level (if any) specifically assigned to the given group.
+        Returns LEVEL_NONE to indicate no specific level has been assigned.
+        """
+        try:
+            my_ct = ContentType.objects.get_for_model(self)
+            mapping = groupObjectRoleMapping.objects.get(group=group, object_id=self.id, object_ct=my_ct)
+            return mapping.role.codename
+        except:
+            return self.LEVEL_NONE
+        
     def set_user_level(self, user, level):
         """
         set the user's permission level to the level specified. if 
@@ -148,6 +183,26 @@ class PermissionLevelMixin(object):
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()
             # grant new level
             UserObjectRoleMapping.objects.create(user=user, object=self, role=role)
+
+    def set_group_level(self, group, level):
+        """
+        set the group's permission level to the level specified. if 
+        level is LEVEL_NONE, any existing level assignment is removed.
+        """
+        
+        my_ct = ContentType.objects.get_for_model(self)
+        if level == self.LEVEL_NONE:
+            GroupObjectRoleMapping.objects.filter(group=group, object_id=self.id, object_ct=my_ct).delete()
+        else:
+            # lookup new role...
+            try:
+                role = ObjectRole.objects.get(codename=level, content_type=my_ct)
+            except ObjectRole.NotFound: 
+                raise PermissionLevelError("Invalid Permission Level (%s)" % level)
+            # remove any existing mapping              
+            GroupObjectRoleMapping.objects.filter(group=group, object_id=self.id, object_ct=my_ct).delete()
+            # grant new level
+            GroupObjectRoleMapping.objects.create(group=group, object=self, role=role)
 
     def get_gen_level(self, gen_role):
         """
@@ -186,6 +241,10 @@ class PermissionLevelMixin(object):
         ct = ContentType.objects.get_for_model(self)
         return UserObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
 
+    def get_group_levels(self):
+        ct = ContentType.objects.get_for_model(self)
+        return GroupObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
+
     def get_generic_levels(self):
         ct = ContentType.objects.get_for_model(self)
         return GenericObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
@@ -215,12 +274,18 @@ class PermissionLevelMixin(object):
         user_levels = {}
         for rm in UserObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
             user_levels[rm.user.username] = rm.role.codename
-
+        
+        # get all group-specific permissions
+        group_levels = {}
+        for rm in GroupObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
+            group_levels[rm.group.name] = rm.role.codename
+            
         levels = {}
         for rm in GenericObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
             levels[rm.subject] = rm.role.codename
         levels['users'] = user_levels
-
+        levels['groups'] = group_levels
+        
         return levels
 
 # Logic to login a user automatically when it has successfully

@@ -8,7 +8,7 @@ import base64
 from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -24,6 +24,7 @@ import httplib2
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
 import re
+from urllib2 import HTTPError
 from urllib import urlencode
 from urlparse import urlparse
 import uuid
@@ -475,11 +476,17 @@ def set_layer_permissions(layer, perm_spec):
         layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
     if "anonymous" in perm_spec:
         layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n for (n, p) in perm_spec['users']]
-    layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        layer.set_user_level(user, level)
+    users_and_groups = [n for (n, p) in perm_spec['users']]
+    layer.get_user_levels().exclude(user__username__in = users_and_groups + [layer.owner]).delete()
+    layer.get_group_levels().exclude(group__name__in = users_and_groups).delete()
+    
+    for name, level in perm_spec['users']:
+        try:
+            group = Group.objects.get(name=name)
+            layer.set_group_level(group, level)
+        except Group.DoesNotExist:
+            user = User.objects.get(username=name)
+            layer.set_user_level(user, level)
 
 def set_map_permissions(m, perm_spec):
     if "authenticated" in perm_spec:
@@ -831,13 +838,16 @@ def layerController(request, layername):
         return _updateLayer(request,layer)
     if (request.META['QUERY_STRING'] == "style"):
         return _changeLayerDefaultStyle(request,layer)
-    else: 
+    else:
         if not request.user.has_perm('maps.view_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {'error_message': 
                     _("You are not permitted to view this layer")})), status=401)
         
-        metadata = layer.metadata_csw()
+        try:
+            metadata = layer.metadata_csw()
+        except HTTPError:
+            metadata = None
 
         maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
@@ -972,6 +982,12 @@ def _view_perms_context(obj, level_names):
     ulevs.sort()
     ctx['users'] = ulevs
 
+    glevs = []
+    for g, l in ctx['groups'].items():
+        glevs.append([g, lname(l)])
+    glevs.sort()
+    ctx['groups'] = glevs
+    
     return ctx
 
 def _perms_info(obj, level_names):
@@ -979,7 +995,7 @@ def _perms_info(obj, level_names):
     # these are always specified even if none
     info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
     info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
-    info['users'] = sorted(info['users'].items())
+    info['users'] = sorted(info['users'].items() + info['groups'].items())
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
     if hasattr(obj, 'owner') and obj.owner is not None:
         info['owner'] = obj.owner.username
@@ -1091,14 +1107,18 @@ def layer_acls(request):
             
     all_readable = set()
     all_writable = set()
+    acl_objects = [acl_user] + [g for g in acl_user.groups.all()]
     for bck in get_auth_backends():
         if hasattr(bck, 'objects_with_perm'):
-            all_readable.update(bck.objects_with_perm(acl_user,
+            for acl_object in acl_objects:
+                all_readable.update(bck.objects_with_perm(acl_object,
                                                       'maps.view_layer',
                                                       Layer))
-            all_writable.update(bck.objects_with_perm(acl_user,
+            for acl_object in acl_objects:
+                all_writable.update(bck.objects_with_perm(acl_object,
                                                       'maps.change_layer', 
                                                       Layer))
+
     read_only = [x for x in all_readable if x not in all_writable]
     read_write = [x for x in all_writable if x in all_readable]
 
