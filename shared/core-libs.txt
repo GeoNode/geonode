@@ -1,5 +1,4 @@
 PIL
-http://www.reportlab.com/ftp/reportlab-2.3.tar.gz#egg=reportlab
 OWSLib==0.4.0
 -r py-base-libs.txt
 -e git+https://github.com/dwins/gsconfig.py.git#egg=gsconfig.py
