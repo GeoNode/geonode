@@ -60,7 +60,7 @@ Getting help
 Having trouble? We'd like to help!
 
  * Search for information in the `archives of the geonode mailing list`_, or
-  `post a question`_.
+   `post a question`_.
 
  * Ask a question in the `#geonode IRC channel`_ using
    `Freenode's web based client`_

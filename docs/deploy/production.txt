@@ -1,9 +1,14 @@
+:orphan:
+
 ==================================
 Configuring GeoNode for Production
 ==================================
 
 This page documents recommendations for configuring GeoNode in production environments.
 The steps mentioned in the first section are required to run GeoNode, the ones in the second section are either optional or ways to get more performance.
+
+.. note:: This document makes numerous references to the **<host>** variable, please replace it with the IP Address of your GeoNode or the DNS.
+          For example: instead of ``http://<host>/geoserver``, write down: ``http://mygeonode.com/geoserver`` or ``http://127.0.0.1/geoserver``
 
 Required steps
 ==============
@@ -42,7 +47,7 @@ Set the correct GeoServer Proxy URL value
 
 Navigate to ``http://localhost/geoserver``, log in and click on ``Settings/Global`` and look for the ``Proxy Base URL`` text field, put the complete address there::
 
-    http://%SITEURL%/geoserver/
+    http://<host>/geoserver/
 
 Configure the Printing Module
 -----------------------------
@@ -109,7 +114,7 @@ In order to generate the sitemap properly, the sites domain name must be set
 within the sites framework. This requires that an admin user login to the
 admin interface and navigate to the sites module and change example.com to the
 actual domain name (and port if applicable). The admin interface can be accessed
-at http://<host>:<port>/admin/sites/site/
+at http://<host>/admin/sites/site/
 
 It is possible to 'inform' google of changes to your sitemap. This is accomplished
 using the ping_google management command. More information can be found here
@@ -119,8 +124,6 @@ It is recommended to put this call into a cron (scheduled) job to update google 
 
 Configuring User Registration
 -----------------------------
-
-.. note:: This is done by default in the Ubuntu packages.
 
 You can optionally configure GeoNode to allow new users to register through the web.  New registrants will be sent an email inviting them to activate their account.
 
@@ -145,7 +148,7 @@ To allow new user registration:
 
 4. With the Django application running, set the domain name of the service properly through the admin interface.  (This domain name is used in the account activation emails.)::
 
-       http://localhost:8000/admin/sites/site/1
+       http://<host>/admin/sites/site/1
 
 To register as a new user, click the ''Register'' link in the GeoNode index header.
 
@@ -163,7 +166,7 @@ Some other things that require tweaking:
   within the sites framework. This requires that an admin user login to the
   admin interface and navigate to the sites module and change example.com to the
   actual domain name (and port if applicable). The admin interface can be accessed
-  at http://<host>:<port>/admin/sites/site/
+  at http://<host>/admin/sites/site/
 
 
 Robot Exclusion File
@@ -261,7 +264,7 @@ There are a few controls to be set in the GeoServer configuration itself as well
 On the JAI Settings page
 ------------------------
 
-.. figure:: GeoServer-JAI-Settings.png
+.. figure:: images/GeoServer-JAI-Settings.png
 
    There are two considerations for the JAI settings.
    
@@ -273,7 +276,7 @@ On the JAI Settings page
 On the WMS Service page
 -----------------------
 
-.. figure:: GeoServer-Web-Map-Service.png
+.. figure:: images/GeoServer-Web-Map-Service.png
 
    There is only one consideration for the Web Map Service page
 
@@ -294,7 +297,7 @@ provide map tiles for printed maps.  These restrictions have a fairly strict
 default, so you may want to loosen these constraints.
 
 Adding servers by hostname
-..........................
+--------------------------
 
 .. highlight:: yaml
 
