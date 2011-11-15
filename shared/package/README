@@ -47,7 +47,7 @@ it has only been tested in Ubuntu Linux but should work with minimal changes to 
 # First you need to install the OS specific dependencies,
 here is the complete list (the actual package name may vary)::
 
-    python, python-support, python-dev, sun-java6-jre | openjdk-6-jre, tomcat6, postgresql-8.4, gcc, patch, zip,  python-imaging, python-reportlab, gdal-bin, libgeos-dev, python-urlgrabber, python-pastescript, gettext, postgresql-contrib, postgresql-8.4-postgis,libpq-dev, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi
+    python, python-support, python-dev, sun-java6-jre | openjdk-6-jre, tomcat6, postgresql-8.4, gcc, patch, zip,  python-imaging, gdal-bin, libgeos-dev, python-urlgrabber, python-pastescript, gettext, postgresql-contrib, postgresql-8.4-postgis,libpq-dev, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi
 
 # Then you have to edit the config file that is in the support directory with the appropiate paths,
 sample config files for Ubuntu and CentOS are distributed with the release packages.
