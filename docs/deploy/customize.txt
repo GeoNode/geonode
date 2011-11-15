@@ -1,3 +1,5 @@
+:orphan:
+
 ========================================
 Customizing the look and feel of GeoNode
 ========================================
@@ -22,7 +24,7 @@ The copy of :file:`index.html` that was just created takes precedence over the d
 
 With the same approach, the structure of all pages can be modified by copying and then editing ``page_template.html``. We recommend reading about the `Django template language`_ for advanced customizations.
 
-.. _ Django template language: http://docs.djangoproject.com/
+.. _Django template language: http://docs.djangoproject.com/
 
 .. note:: While editing the templates in place will also achieve the expected results, it will make upgrading GeoNode harder, therefore it is recommended to follow the approach described above.
 
