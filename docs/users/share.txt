@@ -1,3 +1,5 @@
+:orphan:
+
 =========================
 Sharing data with GeoNode
 =========================
@@ -75,14 +77,22 @@ Exercises
 #. Within your map add a web service layer.
 
 * Go to *Add Layers*
+
 * Add layers from a new server by clicking *Add WMS Server*
+
 * Paste a URL into the form with no spaces at the end.
+
 * If you don't know valid URLs to use, you can use the `WHO URL <http://apps.who.int/tools/geoserver/wfs?request=GetCapabilities?SERVICE=WMS&REQUEST=GetCapabilities>`_
-#. A list will be returned. Sort it by clicking on the *Title* bar.  Select *Global Health Facilities*, then *Add Layers*. 
-#. Reorder layer display by dragging a layer above another layer so that it displays on top of the other layers.
-#. Change transparency of the layer on top. 
-#. Create an embed link and add it to a blog.  If you don’t have a blog, create one using Google’s Blogger.  Pan and zoom around your embedded map. Click *Link*.
-#. Print your map at 300 dpi with a title and legend.
+
+  #. A list will be returned. Sort it by clicking on the *Title* bar.  Select *Global Health Facilities*, then *Add Layers*. 
+  
+  #. Reorder layer display by dragging a layer above another layer so that it displays on top of the other layers.
+  
+  #. Change transparency of the layer on top. 
+  
+  #. Create an embed link and add it to a blog.  If you don’t have a blog, create one using Google’s Blogger.  Pan and zoom around your embedded map. Click *Link*.
+  
+  #. Print your map at 300 dpi with a title and legend.
 
 
 Optional challenge exercise - Creating an SLD using AtlasStyler

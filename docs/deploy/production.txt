@@ -1,3 +1,5 @@
+:orphan:
+
 ==================================
 Configuring GeoNode for Production
 ==================================
@@ -262,7 +264,7 @@ There are a few controls to be set in the GeoServer configuration itself as well
 On the JAI Settings page
 ------------------------
 
-.. figure:: GeoServer-JAI-Settings.png
+.. figure:: images/GeoServer-JAI-Settings.png
 
    There are two considerations for the JAI settings.
    
@@ -274,7 +276,7 @@ On the JAI Settings page
 On the WMS Service page
 -----------------------
 
-.. figure:: GeoServer-Web-Map-Service.png
+.. figure:: images/GeoServer-Web-Map-Service.png
 
    There is only one consideration for the Web Map Service page
 
@@ -295,7 +297,7 @@ provide map tiles for printed maps.  These restrictions have a fairly strict
 default, so you may want to loosen these constraints.
 
 Adding servers by hostname
-..........................
+--------------------------
 
 .. highlight:: yaml
 
