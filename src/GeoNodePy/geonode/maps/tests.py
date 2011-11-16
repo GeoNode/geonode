@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User, AnonymousUser, Group
 
 import geonode.maps.models
 import geonode.maps.views
@@ -447,7 +447,7 @@ community."
     # If anonymous and/or authenticated are not specified, 
     # should set_layer_permissions remove any existing perms granted??
     
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
+    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"],["group1","layer_readwrite"], ["group2","layer_readonly"]]}
     
     def test_set_layer_permissions(self):
         """Verify that the set_layer_permissions view is behaving as expected
@@ -470,14 +470,27 @@ community."
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
-        users = [n for (n, p) in self.perm_spec['users']]
-        levels = layer.get_user_levels().exclude(user__username__in = users + [layer.owner])
+        users_and_groups = [n for (n, p) in self.perm_spec['users']]
+        levels = layer.get_user_levels().exclude(user__username__in = users_and_groups + [layer.owner])
         self.assertEqual(len(levels), 0)
-       
-        # Test that the User permissions specified in the perm_spec were applied properly
-        for username, level in self.perm_spec['users']:
-            user = geonode.maps.models.User.objects.get(username=username)
-            self.assertEqual(layer.get_user_level(user), level)
+        
+        # Test that previous permissions for groups other than ones specified in
+        # the perm_spec (and the layers owner) were removed
+        levels = layer.get_group_levels().exclude(group__name__in = users_and_groups)
+        self.assertEqual(len(levels), 0)
+        
+        # Test that the users and groups permissions specified in the perm_spec were applied properly
+        for name, level in self.perm_spec['users']:
+            group = None
+            user = None
+            try:
+                group = Group.objects.get(name=name)
+            except Group.DoesNotExist:
+                user = geonode.maps.models.User.objects.get(username=name)
+            if user:
+                self.assertEqual(layer.get_user_level(user), level)
+            else:
+                self.assertEqual(layer.get_group_level(group), level)
 
     def test_view_layer_permissions(self):
         """Verify that the view_layer_permissions view is behaving as expected
@@ -572,7 +585,15 @@ community."
         response = c.get("/data/acls")
         response_json = json.loads(response.content)
 
-        # TODO Lots more to do here once jj0hns0n understands the ACL system better
+        # Test group access rights: robert is not part of the perm_spec, but he
+        # belong to group2 which is mentioned as read_only, so robert should have
+        # read_only access
+        layer = Layer.objects.all()[0]
+        geonode.maps.views.set_layer_permissions(layer, self.perm_spec) 
+        logged_in = c.login(username='robert', password='bob')
+        response = c.get("/data/acls")
+        response_json = json.loads(response.content)
+        self.assertTrue(layer.typename in response_json['ro'])
 
     def test_view_perms_context(self):
         # It seems that since view_layer_permissions and view_map_permissions
@@ -781,7 +802,7 @@ community."
         '''/data/base:CA?describe -> Test accessing the description of a layer '''
 
         from django.contrib.auth.models import User
-        self.assertEqual(2, User.objects.all().count())
+        self.assertEqual(3, User.objects.all().count())
         c = Client()
         response = c.get('/data/base:CA?describe')
         # Since we are not authenticated, we should not be able to access it

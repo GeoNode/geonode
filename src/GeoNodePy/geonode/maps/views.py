@@ -1108,6 +1108,7 @@ def layer_acls(request):
     all_readable = set()
     all_writable = set()
     acl_objects = [acl_user] + [g for g in acl_user.groups.all()]
+
     for bck in get_auth_backends():
         if hasattr(bck, 'objects_with_perm'):
             for acl_object in acl_objects:

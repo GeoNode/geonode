@@ -145,23 +145,23 @@ class PermissionLevelMixin(object):
         get the permission level (if any) specifically assigned to the given user.
         Returns LEVEL_NONE to indicate no specific level has been assigned.
         """
+        my_ct = ContentType.objects.get_for_model(self)
         try:
-            my_ct = ContentType.objects.get_for_model(self)
             mapping = UserObjectRoleMapping.objects.get(user=user, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
-        except:
+        except UserObjectRoleMapping.DoesNotExist:
             return self.LEVEL_NONE
     
-    def get_group_level(self, user):
+    def get_group_level(self, group):
         """
         get the permission level (if any) specifically assigned to the given group.
         Returns LEVEL_NONE to indicate no specific level has been assigned.
         """
+        my_ct = ContentType.objects.get_for_model(self)
         try:
-            my_ct = ContentType.objects.get_for_model(self)
-            mapping = groupObjectRoleMapping.objects.get(group=group, object_id=self.id, object_ct=my_ct)
+            mapping = GroupObjectRoleMapping.objects.get(group=group, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
-        except:
+        except GroupObjectRoleMapping.DoesNotExist:
             return self.LEVEL_NONE
         
     def set_user_level(self, user, level):
