@@ -500,6 +500,8 @@ class Contact(models.Model):
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
 
     def clean(self):
         # the specification says that either name or organization should be provided
@@ -1222,6 +1224,8 @@ class Map(models.Model, PermissionLevelMixin):
     """
     The last time the map was modified.
     """
+    
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
 
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
