@@ -801,11 +801,11 @@ community."
 
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
-        lyr.keywords = "saving keywords"
+        lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
-        self.assertEqual(lyr.keyword_list(), ["saving", "keywords"])
-        self.assertEqual(lyr.resource.keywords, ["saving", "keywords"])
-        self.assertEqual(_gs_resource.keywords, ["saving", "keywords"])
+        self.assertEqual(lyr.keyword_list(), ["keywords", "saving"])
+        self.assertEqual(lyr.resource.keywords, ["keywords", "saving"])
+        self.assertEqual(_gs_resource.keywords, ["keywords", "saving"])
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user

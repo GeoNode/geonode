@@ -366,7 +366,6 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
                                  workspace=gs_resource.store.workspace.name,
                                  title=title or gs_resource.title,
                                  uuid=layer_uuid,
-                                 keywords=' '.join(keywords),
                                  abstract=abstract or gs_resource.abstract or '',
                                  owner=user,
                                  )
@@ -374,6 +373,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
 
     if created:
         saved_layer.set_default_permissions()
+        saved_layer.keywords.add(*keywords)
 
     # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this

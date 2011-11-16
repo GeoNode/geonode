@@ -9,6 +9,7 @@ from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 from django.utils.html import escape
+from taggit.managers import TaggableManager
 import httplib2
 import simplejson
 import urllib
@@ -688,7 +689,7 @@ class Layer(models.Model, PermissionLevelMixin):
     # see poc property definition below
 
     # section 3
-    keywords = models.TextField(_('keywords'), blank=True, null=True)
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
     constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
@@ -1113,7 +1114,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 meta.identification.keywords,
                 [])
         kw_list = filter(lambda x: x is not None, kw_list)
-        self.keywords = ' '.join(kw_list)
+        self.keywords.add(*kw_list)
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:
@@ -1122,10 +1123,11 @@ class Layer(models.Model, PermissionLevelMixin):
                 self.distribution_description = res.description
 
     def keyword_list(self):
-        if self.keywords is None:
-            return []
+        keywords_qs = self.keywords.all()
+        if keywords_qs:
+            return [kw.name for kw in keywords_qs]
         else:
-            return self.keywords.split(" ")
+            return []
 
     def set_bbox(self, box, srs=None):
         """
