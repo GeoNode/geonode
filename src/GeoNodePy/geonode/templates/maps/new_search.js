@@ -1,16 +1,15 @@
 Ext.onReady(function() {
-    var mstart = 0,
-    lstart = 0,
+    var start = 0,
     limit = 5,
     loadnotify = Ext.get('loading'),
     template = "<li id='item{iid}'><img class='thumb' src='{thumb}'></img>" +
     "<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
     "<div class='itemTitle'><a href='{detail}'>{title}</a></div>" +
-    "<div class='itemInfo'>Some kinda of data, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
+    "<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
     "<div class='itemAbstract>{abstract}</div>"+
     "</li>",
     fetching = false,
-    list = Ext.query('#search_results ul')[0],
+    list = Ext.get(Ext.query('#search_results ul')[0]),
     store = new Ext.data.JsonStore({
         autoDestroy: true,
         storeId: 'items',
@@ -20,7 +19,8 @@ Ext.onReady(function() {
         listeners: []
     }),
     selModel = null,
-    dataCartStore = null;
+    dataCartStore = null,
+    queryItems = {};
 
     template = new Ext.DomHelper.createTemplate(template);
     template.compile();
@@ -41,13 +41,20 @@ Ext.onReady(function() {
     }
 
     function appendResults(results) {
-        results = Ext.util.JSON.decode(results.responseText);
-        var read = store.reader.readRecords(results);
-        store.add(read.records);
         fetching = false;
         loadnotify.hide();
-        mstart = results.mstart;
-        lstart = results.lstart;
+        results = Ext.util.JSON.decode(results.responseText);
+        var read = store.reader.readRecords(results);
+        if (read.records.length == 0) {
+            if (start == 0) {
+                Ext.DomHelper.append(list,'<li><h4 class="center">No Results</h4></li>');
+            }
+            start = -1;
+            return;
+        } else {
+            start += limit;
+        }
+        store.add(read.records);
         var saveListeners = {
             click: handleSave
         };
@@ -94,31 +101,38 @@ Ext.onReady(function() {
 
     }
 
+    function reset() {
+        store.removeAll(false);
+        list.select('li').remove();
+        start = 0;
+        fetch();
+    }
+
     function fetch() {
         if (fetching) return;
-        if (lstart < 0 && mstart < 0) return;
+        if (start < 0) return;
         loadnotify.show();
         fetching = true;
+        var params = Ext.apply({
+                start: start,
+                limit: limit
+            },queryItems);
         Ext.Ajax.request({
             // @todo URL
             url: '/maps/newsearch/api',
             method: 'GET',
             success: appendResults,
-            params: {
-                mstart: mstart,
-                lstart: lstart,
-                limit: limit
-            }
+            params: params
         });
     }
 
     fetch();
-    Ext.get('search_results').on('scroll',function() {
-        var scroll = this.getScroll().top;
-        var height = this.child('ul').getHeight();
-        var view = this.getHeight();
-        var perc = (scroll + view) / height;
-        if ( perc > .9) {
+    Ext.fly(document).on('scroll',function() {
+        if (start < 0) return;
+        // don't use this - it seems sometimes the fly object is invalid and reports 0 scroll?
+        var scroll = Ext.fly(document).getScroll().top;
+        var height = list.getHeight() + list.getTop();
+        if (scroll + window.innerHeight > height) {
             fetch();
         }
     });
@@ -186,6 +200,26 @@ Ext.onReady(function() {
             var record = store.getAt(index);
             this.fireEvent(selected ? 'rowselect' : 'rowdeselect',this,index,record);
         }
+    });
+
+    // enable type searchlinks
+    Ext.select('#bytype a').on('click',function(ev) {
+        ev.preventDefault();
+        queryItems['bytype'] = Ext.get(this).getAttribute('href').substring(1);
+        reset();
+    });
+    // enable keyword searchlinks
+    Ext.select('#bykeyword a').on('click',function(ev) {
+        ev.preventDefault();
+        queryItems['kw'] = Ext.get(this).getAttribute('href').substring(1);
+        reset();
+    });
+    // and combine with search form
+    Ext.get('searchForm').on('submit',function(ev) {
+        ev.preventDefault();
+        queryItems['q'] = this.dom.search.value;
+        queryItems['sort'] = this.dom.sortby.value;
+        reset();
     });
 
     // hacking

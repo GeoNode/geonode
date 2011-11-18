@@ -1470,11 +1470,21 @@ def new_search_page(request):
 
     map = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
 
+    counts = {
+        'maps' : Map.objects.count(),
+        'layers' : Layer.objects.count(),
+        'vector' : Layer.objects.filter(storeType='dataStore').count(),
+        'raster' : Layer.objects.filter(storeType='coverageStore').count(),
+        'users' : Contact.objects.count()
+    }
+
     return render_to_response('maps/new_search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
         'viewer_config': json.dumps(map.viewer_json(added_layers=DEFAULT_BASE_LAYERS, authenticated=request.user.is_authenticated())),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        "site" : settings.SITEURL
+        "site" : settings.SITEURL,
+        'counts' : counts,
+        'keywords' : Layer.objects.gn_catalog.get_all_keywords()
     }))
 
 def new_search_api(request):
@@ -1489,93 +1499,131 @@ def new_search_api(request):
     # opposed to panicy django forms behavior.
     query = params.get('q', '')
     try:
-        mstart = int(params.get('mstart', '0'))
-        lstart = int(params.get('lstart', '0'))
+        start = int(params.get('start', '0'))
     except:
-        mstart = 0
-        lstart = 0
+        start = 0
     try:
         limit = min(int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE)),
                     MAX_MAPS_SEARCH_BATCH_SIZE)
     except:
         limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
 
-    sort_field = params.get('sort', u'')
-    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')
-    sort_dir = params.get('dir', 'ASC')
-    result = _new_search(query, lstart, mstart, limit, sort_field, sort_dir)
+    sort_field, sort_asc = {
+        'newest' : ('last_modified',False),
+        'oldest' : ('last_modified',True),
+        'alphaaz' : ('title',True),
+        'alphaza' : ('title',False),
+
+    }[params.get('sort','newest')]
+
+    filters = {}
+    for k in ('bytype','kw'):
+        if k in params:
+            filters[k] = params[k]
+
+    result = _new_search(query, start, limit, sort_field, sort_asc, **filters)
 
     result['success'] = True
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
-def _new_search(query, layer_start, map_start, limit, sort_field, sort_dir):
-    keywords = _split_query(query)
-
+def _combined_search_results(query):
+    # cache based on query key or universal cache key
+    from django.core.cache import cache
+    from time import time
+    cache_key = query and 'search_results_%s' % query or 'search_results_all'
+    cached_results = cache.get(cache_key)
+    if cached_results: return cached_results
+    ts = time()
+    
+    # @todo think about only caching geonetwork results since map queries will be fast
+    
     map_query = Map.objects
-    for keyword in keywords:
-        map_query = map_query.filter(
-              Q(title__icontains=keyword)
-            | Q(abstract__icontains=keyword))
 
-    if sort_field:
-        order_by = ("" if sort_dir == "ASC" else "-") + sort_field
-        map_query = map_query.order_by(order_by)
+    if query:
+        keywords = _split_query(query)
+        for keyword in keywords:
+            map_query = map_query.filter(
+                  Q(title__icontains=keyword)
+                | Q(abstract__icontains=keyword))
 
-    map_results = []
-
-    if map_start >= 0:
-        for map in map_query.all()[map_start:map_start+limit]:
-            try:
-                owner_name = Contact.objects.get(user=map.owner).name
-            except:
-                owner_name = map.owner.first_name + " " + map.owner.last_name
-
-            thumbnail = Thumbnail.objects.get_thumbnail(map)
-
-            mapdict = {
-                'id' : map.id,
-                'title' : map.title,
-                'abstract' : map.abstract,
-                'detail' : reverse('geonode.maps.views.map_controller', args=(map.id,)),
-                'owner' : owner_name,
-                'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,)),
-                'last_modified' : map.last_modified.isoformat(),
-                '_type' : 'map',
-                'thumb' : thumbnail and thumbnail.get_thumbnail_url() or None,
-                }
-            map_results.append(mapdict)
-    if layer_start >= 0:
-        layer_results = _metadata_search(query, layer_start, limit)
-    else:
-        layer_results = { 'rows' : [] }
-    for doc in layer_results['rows']:
+    results = []
+    
+    maps = list(map_query.all())
+    thumbs = Thumbnail.objects.get_thumbnails(maps)
+    for map in maps:
         try:
-            layer = Layer.objects.get(uuid=doc['uuid'])
-            thumbnail = Thumbnail.objects.get_thumbnail(map)
+            owner_name = Contact.objects.get(user=map.owner).name
         except:
-            continue
+            owner_name = map.owner.first_name + " " + map.owner.last_name
+        thumb = thumbs.get(map.id, None)
+        # @todo loop through layers and extract details like keywords
+        mapdict = {
+            'id' : map.id,
+            'title' : map.title,
+            'abstract' : map.abstract,
+            'detail' : reverse('geonode.maps.views.map_controller', args=(map.id,)),
+            'owner' : owner_name,
+            'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,)),
+            'last_modified' : map.last_modified.isoformat(),
+            '_type' : 'map',
+            '_display_type' : 'Map',
+            'thumb' : thumb and thumb.get_thumbnail_url() or None,
+            }
+        results.append(mapdict)
+        
+    layer_results = _metadata_search(query, 0, 1000)['rows']
+    
+    layers = list(Layer.objects.filter(uuid__in=[ doc['uuid'] for doc in layer_results ]))
+    thumbs = Thumbnail.objects.get_thumbnails(layers)
+    layers = dict([ (l.uuid,l) for l in layers])
+    for doc in layer_results:
+        layer = layers.get(doc['uuid'],None)
+        if layer is None: continue #@todo - remote layer (how to get last_modified?)
+        thumb = thumbs.get(layer.id,None)
         doc['owner'] = layer.metadata_author.name
-        doc['thumb'] = thumbnail and thumbnail.get_thumbnail_url() or None
+        doc['thumb'] = thumb and thumb.get_thumbnail_url() or None
         doc['last_modified'] = layer.date.isoformat()
         doc['id'] = layer.id
         doc['_type'] = 'layer'
+        doc['storeType'] = layer.storeType
+        doc['_display_type'] = layer.display_type
         owner = layer.owner
         if owner:
             doc['owner_detail'] = reverse('profiles.views.profile_detail', args=(layer.owner.username,))
+        results.append(doc)
         
-    all_rows = map_results + layer_results['rows']
-    all_rows.sort(key=lambda r: r['last_modified'])
-    all_rows = all_rows[:limit]
-    # unique item id for ext store
-    iid = layer_start + map_start
-    for r in all_rows:
+    # @todo search cache timeout in settings?
+    cache.set(cache_key,results,timeout=300)
+    logger.info('generated combined search cache in %s',time() - ts)
+    return results
+
+def _new_search(query, start, limit, sort_field, sort_asc, **filters):
+
+    results = _combined_search_results(query)
+
+    filter_fun = []
+    if 'bytype' in filters:
+        t = filters['bytype']
+        filter_fun.append(lambda r: r['_type'] == t or r.get('storeType',None) == t)
+    if 'kw' in filters:
+        t = filters['kw']
+        filter_fun.append(lambda r: 'keywords' in r and t in r['keywords'])
+
+    for fun in filter_fun:
+        results = filter(fun,results)
+
+    # default sort order by id (could be last_modified when external layers are dealt with)
+    results.sort(key=lambda r: r[sort_field or 'id'],reverse=not sort_asc)
+
+    results = results[start:start+limit]
+    # unique item id for ext store (this could be done client side)
+    iid = start
+    for r in results:
         r['iid'] = iid
         iid += 1
-    max_id_by_type = lambda t: max([-1] + [r['id'] for r in all_rows if r['_type'] == t])
+        
     return {
-        'mstart': max_id_by_type('map'),
-        'lstart': max_id_by_type('layer'),
-        'rows' : all_rows
+        'rows' : results
     }
 
 def change_poc(request, ids, template = 'maps/change_poc.html'):
