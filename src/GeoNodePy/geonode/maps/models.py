@@ -1381,6 +1381,8 @@ class Map(models.Model, PermissionLevelMixin):
         
         for layer in self.layer_set.all():
             layer.delete()
+            
+        self.keywords.add(*conf['map'].get('keywords', []))
 
         for ordering, layer in enumerate(layers):
             self.layer_set.add(
@@ -1388,6 +1390,13 @@ class Map(models.Model, PermissionLevelMixin):
                     self, layer, source_for(layer), ordering
             ))
         self.save()
+
+    def keyword_list(self):
+        keywords_qs = self.keywords.all()
+        if keywords_qs:
+            return [kw.name for kw in keywords_qs]
+        else:
+            return []
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id

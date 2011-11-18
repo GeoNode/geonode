@@ -319,6 +319,7 @@ community."
           "wms":"capra",
           "name":"base:nic_admin"
         }],
+        "keywords":["saving", "keywords"],
         "zoom":7
       }
     }
@@ -351,6 +352,7 @@ community."
         self.assertEquals(map.title, "Title")
         self.assertEquals(map.abstract, "Abstract")
         self.assertEquals(map.layer_set.all().count(), 1)
+        self.assertEquals(map.keyword_list(), ["keywords", "saving"])
 
         # Test an invalid map creation request
         log = c.login(username="bobby", password="bob")
