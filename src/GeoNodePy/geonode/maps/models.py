@@ -1695,6 +1695,21 @@ class ThumbnailManager(models.Manager):
         if not allow_null and not thumbs:
             thumbs.append(Thumbnail(content_object=obj))
         return thumbs and thumbs[0] or None
+    def get_thumbnails(self,objs):
+        """For the provided objects of the same type, get a dict
+        with object.id as key and thumbnail as value. objs without
+        thumbs will not be present in the dict.
+        """
+        if not objs: return []
+        try:
+            not_null = ( o for o in objs if o is not None ).next()
+        except StopIteration:
+            return []
+        thumb_type = ContentType.objects.get_for_model(not_null)
+        thumbs = self.filter(content_type__pk=thumb_type.id)
+        ids = [ o.id for o in objs]
+        thumbs = thumbs.filter(object_id__in=ids)
+        return dict([ (t.content_object.id,t) for t in thumbs])
 
 class Thumbnail(models.Model):
     objects = ThumbnailManager()
