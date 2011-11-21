@@ -1,5 +1,5 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
+from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw, Thumbnail
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
 from geonode import geonetwork
 import geoserver
@@ -646,6 +646,8 @@ def map_controller(request, mapid):
         return deletemap(request, mapid)
     if 'describe' in request.GET:
         return describemap(request, mapid)
+    if 'thumbnail' in request.GET:
+        return _handleThumbNail(request, Map.objects.get(pk=mapid))
     else:
         return mapdetail(request, mapid)
 
@@ -831,6 +833,8 @@ def layerController(request, layername):
         return _updateLayer(request,layer)
     if (request.META['QUERY_STRING'] == "style"):
         return _changeLayerDefaultStyle(request,layer)
+    if (request.META['QUERY_STRING'] == "thumbnail"):
+        return _handleThumbNail(request, layer)
     else: 
         if not request.user.has_perm('maps.view_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html', 
@@ -852,6 +856,23 @@ def layerController(request, layername):
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
 	    }))
 
+def _handleThumbNail(req, obj):
+    if not req.user.has_perm('maps.change_maps', obj=obj) and not request.user.has_perm('maps.change_layer', obj=obj):
+        return HttpResponse(loader.render_to_string('401.html',
+            RequestContext(request, {'error_message':
+                _("You are not permitted to modify this layer")})), status=401)
+    if req.method == 'GET':
+        thumb = Thumbnail.objects.get_thumbnail(obj,allow_null=False)
+        if thumb:
+            return HttpResponseRedirect(thumb.get_thumbnail_url())
+        else:
+            raise HttpResponse(status=404)
+    elif req.method == 'POST':
+        thumb = Thumbnail.objects.get_thumbnail(obj,allow_null=False)
+        thumb.thumb_spec = req.raw_post_data
+        thumb.generate_thumbnail()
+        thumb.save()
+        return HttpResponseRedirect(thumb.get_thumbnail_url())
 
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
@@ -1236,6 +1257,7 @@ def metadata_search(request):
                 'delete': request.user.has_perm('maps.delete_layer', obj=layer),
                 'change_permissions': request.user.has_perm('maps.change_layer_permissions', obj=layer),
             }
+            thumbnail = Thumbnail.objects.get_thumbnail(layer)
         except Layer.DoesNotExist:
             doc['_local'] = False
             pass
@@ -1435,6 +1457,126 @@ def search_page(request):
         "site" : settings.SITEURL
     }))
 
+def new_search_page(request):
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
+    # for non-ajax requests, render a generic search page
+
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
+    map = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
+
+    return render_to_response('maps/new_search.html', RequestContext(request, {
+        'init_search': json.dumps(params or {}),
+        'viewer_config': json.dumps(map.viewer_json(added_layers=DEFAULT_BASE_LAYERS, authenticated=request.user.is_authenticated())),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        "site" : settings.SITEURL
+    }))
+
+def new_search_api(request):
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
+    # grab params directly to implement defaults as
+    # opposed to panicy django forms behavior.
+    query = params.get('q', '')
+    try:
+        mstart = int(params.get('mstart', '0'))
+        lstart = int(params.get('lstart', '0'))
+    except:
+        mstart = 0
+        lstart = 0
+    try:
+        limit = min(int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE)),
+                    MAX_MAPS_SEARCH_BATCH_SIZE)
+    except:
+        limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
+
+    sort_field = params.get('sort', u'')
+    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')
+    sort_dir = params.get('dir', 'ASC')
+    result = _new_search(query, lstart, mstart, limit, sort_field, sort_dir)
+
+    result['success'] = True
+    return HttpResponse(json.dumps(result), mimetype="application/json")
+
+def _new_search(query, layer_start, map_start, limit, sort_field, sort_dir):
+    keywords = _split_query(query)
+
+    map_query = Map.objects
+    for keyword in keywords:
+        map_query = map_query.filter(
+              Q(title__icontains=keyword)
+            | Q(abstract__icontains=keyword))
+
+    if sort_field:
+        order_by = ("" if sort_dir == "ASC" else "-") + sort_field
+        map_query = map_query.order_by(order_by)
+
+    map_results = []
+
+    if map_start >= 0:
+        for map in map_query.all()[map_start:map_start+limit]:
+            try:
+                owner_name = Contact.objects.get(user=map.owner).name
+            except:
+                owner_name = map.owner.first_name + " " + map.owner.last_name
+
+            thumbnail = Thumbnail.objects.get_thumbnail(map)
+
+            mapdict = {
+                'id' : map.id,
+                'title' : map.title,
+                'abstract' : map.abstract,
+                'detail' : reverse('geonode.maps.views.map_controller', args=(map.id,)),
+                'owner' : owner_name,
+                'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,)),
+                'last_modified' : map.last_modified.isoformat(),
+                '_type' : 'map',
+                'thumb' : thumbnail and thumbnail.get_thumbnail_url() or None,
+                }
+            map_results.append(mapdict)
+    if layer_start >= 0:
+        layer_results = _metadata_search(query, layer_start, limit)
+    else:
+        layer_results = { 'rows' : [] }
+    for doc in layer_results['rows']:
+        try:
+            layer = Layer.objects.get(uuid=doc['uuid'])
+            thumbnail = Thumbnail.objects.get_thumbnail(map)
+        except:
+            continue
+        doc['owner'] = layer.metadata_author.name
+        doc['thumb'] = thumbnail and thumbnail.get_thumbnail_url() or None
+        doc['last_modified'] = layer.date.isoformat()
+        doc['id'] = layer.id
+        doc['_type'] = 'layer'
+        owner = layer.owner
+        if owner:
+            doc['owner_detail'] = reverse('profiles.views.profile_detail', args=(layer.owner.username,))
+        
+    all_rows = map_results + layer_results['rows']
+    all_rows.sort(key=lambda r: r['last_modified'])
+    all_rows = all_rows[:limit]
+    # unique item id for ext store
+    iid = layer_start + map_start
+    for r in all_rows:
+        r['iid'] = iid
+        iid += 1
+    max_id_by_type = lambda t: max([-1] + [r['id'] for r in all_rows if r['_type'] == t])
+    return {
+        'mstart': max_id_by_type('map'),
+        'lstart': max_id_by_type('layer'),
+        'rows' : all_rows
+    }
 
 def change_poc(request, ids, template = 'maps/change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))

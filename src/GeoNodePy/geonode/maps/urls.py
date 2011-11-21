@@ -19,5 +19,6 @@ urlpatterns = patterns('geonode.maps.views',
     url(r'^search/api/?$', 'maps_search', name='maps_search_api'),
     url(r'^(?P<mapid>\d+)/ajax-permissions$', 'ajax_map_permissions', name='ajax_map_permissions'),
     url(r'^change-poc/(?P<ids>\w+)$', 'change_poc', name="change_poc"),
-
+    url(r'^newsearch/?$', 'new_search_page', name='new_search'),
+    url(r'^newsearch/api?$', 'new_search_api', name='new_search_api'),
 )

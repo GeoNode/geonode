@@ -108,6 +108,7 @@
                 }
             });
 {% endif %}
+            {% include "maps/thumbnail_help.js" %}
         });
 
         function showStyle(styleName) {
@@ -267,6 +268,7 @@
         {% if can_change %}
                 <li><a href="?describe">{% trans "Update the description of this data" %}</a></li>
             	<li><a href="?update">{% trans "Upload a new version of this data" %}</a></li>
+            	<li><a id="set_thumbnail" href="?thumbnail">{% trans "Set thumbnail" %}</a></li>
         {% endif %}
         {% if can_change_permissions %}
         <li><a href="{% url edit_layer_permissions layer.typename %}">{% trans "Edit Permissions" %}</a></li>

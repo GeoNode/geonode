@@ -1,0 +1,238 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+    {% autoescape off %}
+    var viewer_config = {{ viewer_config }};
+    {% include "maps/new_search.js" %}
+    {% endautoescape %}
+</script>
+<style type="text/css">
+    #search_results {
+        overflow-y: scroll;
+        height: 40em;
+    }
+    #search_results ul {
+        list-style: none;
+    }
+    #search_results .thumb {
+        width: 100px;
+        float: left;
+        padding-right: 1.5em;
+    }
+    .searchLinks li {
+        list-style: none;
+    }
+    .refineSection h5 {
+        margin: 0;
+    }
+    .searchLinks ul {
+        margin: 0;
+    }
+    .itemInfo {
+        color: gray;
+    }
+    .itemButtons {
+        float: right;
+    }
+    .itemButtons > div {
+        float: left;
+    }
+    #loading {
+        text-align: center;
+        line-height: 32px;
+        height: 32px;
+        /* ha-ha */
+        text-decoration: blink;
+        background: url('/static/static/externals/ext/resources/images/default/shared/blue-loading.gif') no-repeat 50% 0;
+    }
+    /* work around boilerplate setting of margin */
+    ul.x-menu-list {
+        margin: 0;
+    }
+    #search_results li {
+        clear: both;
+        padding: 1.5em 0;
+        height: 100px;
+        overflow: none;
+    }
+    .cartAddButton {
+        /* @todo */
+        background: url('/static/theme/img/silk/add.png');
+    }
+    .cartRemoveButton {
+        /* @todo */
+        background: url('/static/theme/img/silk/delete.png');
+    }
+    .saveButton {
+        /* @todo */
+        background: url('/static/theme/img/geosilk/map_save.png');
+    }
+    .addToMapButton {
+        /* @todo */
+        background: url('/static/theme/img/silk/map_add.png');
+    }
+    .refineSection p {
+        padding-left: 16px;
+        color: gray;
+    }
+    .refineSection h5 {
+        padding-left: 16px;
+        cursor: pointer;
+    }
+    .refineSection.collapse h5 {
+        background: url('/static/static/externals/ext/resources/images/default/grid/group-expand.gif') no-repeat 0 50%;
+    }
+    .refineSection.expand h5 {
+        background: url('/static/static/externals/ext/resources/images/default/grid/group-collapse.gif') no-repeat 0 50%;
+    }
+    .pdf {        /* @todo */
+
+    background-image: url(/static/theme/img/silk/page_white_acrobat.png)
+    }
+
+    .kml,
+    .kmz {        /* @todo */
+
+    background-image: url(/static/theme/img/geosilk/kml.png)
+    }
+
+    .geotiff,
+    .tiff,
+    .png {        /* @todo */
+
+    background-image: url(/static/theme/img/geosilk/page_white_raster.png)
+    }
+
+    .csv
+    .shp,
+    .zip {        /* @todo */
+
+    background-image: url(/static/theme/img/geosilk/page_white_vector.png)
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="twocol">
+  <div class="block">
+    <h2>{% trans "Search" %}</h2>
+    <form id="searchForm">
+        <strong>Search for</strong>
+        <input id="searchField" name="search">
+        <strong>sorted by</strong>
+        <select name="sortby">
+            <option value="relevance">Relevance</option>
+            <option value="newest" selected="true">Newest</option>
+            <option value="oldest">Relevance</option>
+            <option value="alphaaz">Alphabetical (A-Z)</option>
+            <option value="alphaza">Alphabetical (Z-A)</option>
+            <option value="popularity">Popularity</option>
+        </select>
+        <input type="submit" value="Search">
+    </form>
+
+    <div id="search_results"><ul></ul></div>
+    <div id="loading">Loading ...</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div class="threecol">
+  <div>
+    <h3>{% trans "Refine Search" %}</h3>
+
+    <div class="refineSummary">
+        
+    </div>
+
+    <div class="refineSection expand">
+        <h5>By type</h5>
+        <ul class="searchLinks refineControls">
+            <li><a href="#maps">Maps</a><span>({{ counts.maps }})</span></li>
+            <li><a href="#layers">Layers</a><span>({{ counts.layers }})</span>
+                <ul style="margin-left:.5em">
+                <li><a href="#vector">Vector</a><span>({{ counts.vector }})</span></li>
+                <li><a href="#raster">Raster</a><span>({{ counts.raster }})</span></li>
+                </ul>
+            </li>
+            <li><a href="#maps">Users</a><span>({{ counts.users }})</span></li>
+        </ul>
+    </div>
+
+    <div id="refine" class="refineSection collapse">
+        <h5>By spatial extent</h5>
+        <p>Limit the search to a specific area.</p>
+        <div class="bbox-controls refineControls">
+          <div class="bbox-enabled"><input type="checkbox" style="display:none"/></div>
+          <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
+          <div class="bbox-expand">
+          </div>
+        </div>
+    </div>
+
+    <div class="refineSection collapse">
+        <h5>By temporal extent</h5>
+        <p>Limit the search to a specific time period.</p>
+        <div class="refineControls">
+            <div>Added after:</div>
+            <div>Added before:</div>
+        </div>
+    </div>
+
+    <div class="refineSection collapse">
+        <h5>By category</h5>
+        <p>Not sure what these are?.</p>
+        <ul class="searchLinks refineControls">
+            <li>Category 1</li>
+            <li>Category 2</li>
+        </ul>
+    </div>
+
+    <div class="refineSection collapse">
+        <h5>By keywords</h5>
+        <p>Need to figure out how to get list of these.</p>
+        <ul class="searchLinks refineControls">
+            <li>Fish</li>
+            <li>Evil Empires</li>
+        </ul>
+    </div>
+
+    <div class="refineSection collapse">
+        <h5>By date added</h5>
+        <p>Limit the search to a specific time period.</p>
+        <div class="refineControls">
+            <div>Added after:</div>
+            <div>Added before:</div>
+        </div>
+    </div>
+
+    <input type="button" value="Refine"/>
+  </div>
+  <div class="block">
+  <h3>{% trans "Selected Data" %}</h3>
+    <p><span class="explain">{% blocktrans %}Use the checkboxes in the search results to add data to your selection.{% endblocktrans%}</span></p>
+  <div id="selection">
+    <div id="data_cart"></div>
+    </div>
+    <div id="data_ops">
+      <ul>
+        <li><a href="#" class="create-map">{% trans "Create a new map" %}</a></li>
+        <li><span class="export">{% trans "Export selected" %}:</span>
+            <a href="#mixed" class="batch-download">Zip</a>
+        </li>
+      </ul>
+      <form id="create_map_form" action="{% url geonode.maps.views.newmap %}" method="POST">
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
