@@ -49,7 +49,7 @@
         height: 32px;
         /* ha-ha */
         text-decoration: blink;
-        background: url('/static/static/externals/ext/resources/images/default/shared/blue-loading.gif') no-repeat 50% 0;
+        background: url('{{ STATIC_URL }}static/externals/ext/resources/images/default/shared/blue-loading.gif') no-repeat 50% 0;
     }
     /* work around boilerplate setting of margin */
     ul.x-menu-list {
@@ -66,19 +66,19 @@
     }
     .cartAddButton {
         /* @todo */
-        background: url('/static/theme/img/silk/add.png');
+        background: url('{{ STATIC_URL }}theme/img/silk/add.png');
     }
     .cartRemoveButton {
         /* @todo */
-        background: url('/static/theme/img/silk/delete.png');
+        background: url('{{ STATIC_URL }}theme/img/silk/delete.png');
     }
     .saveButton {
         /* @todo */
-        background: url('/static/theme/img/geosilk/map_save.png');
+        background: url('{{ STATIC_URL }}theme/img/geosilk/map_save.png');
     }
     .addToMapButton {
         /* @todo */
-        background: url('/static/theme/img/silk/map_add.png');
+        background: url('{{ STATIC_URL }}theme/img/silk/map_add.png');
     }
     .refineSection {
         margin-bottom: 1em;
@@ -95,34 +95,34 @@
         cursor: pointer;
     }
     .refineSection.collapse h5 {
-        background: url('/static/static/externals/ext/resources/images/default/grid/group-expand.gif') no-repeat 0 50%;
+        background: url('{{ STATIC_URL }}static/externals/ext/resources/images/default/grid/group-expand.gif') no-repeat 0 50%;
     }
     .refineSection.expand h5 {
-        background: url('/static/static/externals/ext/resources/images/default/grid/group-collapse.gif') no-repeat 0 50%;
+        background: url('{{ STATIC_URL }}static/externals/ext/resources/images/default/grid/group-collapse.gif') no-repeat 0 50%;
     }
     .pdf {        /* @todo */
 
-    background-image: url(/static/theme/img/silk/page_white_acrobat.png)
+    background-image: url({{ STATIC_URL }}theme/img/silk/page_white_acrobat.png)
     }
 
     .kml,
     .kmz {        /* @todo */
 
-    background-image: url(/static/theme/img/geosilk/kml.png)
+    background-image: url({{ STATIC_URL }}theme/img/geosilk/kml.png)
     }
 
     .geotiff,
     .tiff,
     .png {        /* @todo */
 
-    background-image: url(/static/theme/img/geosilk/page_white_raster.png)
+    background-image: url({{ STATIC_URL }}theme/img/geosilk/page_white_raster.png)
     }
 
     .csv
     .shp,
     .zip {        /* @todo */
 
-    background-image: url(/static/theme/img/geosilk/page_white_vector.png)
+    background-image: url({{ STATIC_URL }}theme/img/geosilk/page_white_vector.png)
     }
 </style>
 {% endblock %}

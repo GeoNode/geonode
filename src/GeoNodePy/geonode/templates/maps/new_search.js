@@ -60,7 +60,7 @@ Ext.onReady(function() {
         };
         Ext.each(results.rows,function(r,i) {
             if (r.thumb == null) {
-                r.thumb = "/static/theme/img/silk/map.png";
+                r.thumb = "{{ STATIC_URL }}theme/img/silk/map.png";
             }
             template.append(list,r);
             if (r.download_links) {
