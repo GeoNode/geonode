@@ -759,7 +759,7 @@ class LayerManager(models.Manager):
                 else:
                     status = 'updated'
 
-            if layer.bbox is None:
+            if layer and layer.bbox is None:
                 layer._populate_from_gs()
                 layer.save()
 

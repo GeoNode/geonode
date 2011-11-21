@@ -99,6 +99,7 @@ class WorldMapLayerUploadForm(LayerUploadForm):
     sld_file = forms.FileField(required=False)
     encoding = forms.ChoiceField(required=False)
     abstract = forms.CharField(required=False)
+    keywords = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
     permissions = JSONField()
 
