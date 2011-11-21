@@ -119,7 +119,7 @@ Ext.onReady(function() {
             },queryItems);
         Ext.Ajax.request({
             // @todo URL
-            url: '/maps/newsearch/api',
+            url: '/data/newsearch/api',
             method: 'GET',
             success: appendResults,
             params: params
