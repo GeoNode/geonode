@@ -77,7 +77,7 @@
             Ext.get(Ext.DomQuery.select("select[@name='default-style']")).on("change", function(evt, elem) {
                 Ext.Ajax.request({
                     method: "post",
-                    url: "?style",
+                    url: "{% url layer_style layer.typename %}",
                     params: {"defaultStyle" : elem.value}
                 });
             });
@@ -266,18 +266,25 @@
         <ul>
 			{% if user.is_authenticated %}
         {% if can_change %}
-                <li><a href="?describe">{% trans "Update the description of this data" %}</a></li>
-            	<li><a href="?update">{% trans "Upload a new version of this data" %}</a></li>
-            	<li><a id="set_thumbnail" href="?thumbnail">{% trans "Set thumbnail" %}</a></li>
+        <li> <a href="{% url layer_metadata layer.typename %}">
+            {% trans "Update the description of this data" %}
+        </a> </li>
+        <li> <a href="{% url layer_replace layer.typename %}">
+            {% trans "Upload a new version of this data" %}
+        </a></li>
         {% endif %}
         {% if can_change_permissions %}
-        <li><a href="{% url edit_layer_permissions layer.typename %}">{% trans "Edit Permissions" %}</a></li>
+        <li><a href="{% url edit_layer_permissions layer.typename %}">
+            {% trans "Edit Permissions" %}
+        </a></li>
         {% endif %}
             {% if can_delete %}
-				<li><a href="?remove">{% trans "Remove" %}</a></li>
+            <li><a href="{% url layer_remove layer.typename %}">
+                {% trans "Remove" %}
+            </a></li>
 			{% endif %}
 			{% else %}
-				<li>Please authenticate to update or remove layers</li>
+            <li>{% trans "Please authenticate to update or remove layers" %}</li>
 			{% endif %}
         </ul>
     {% endif %}

@@ -706,7 +706,8 @@ class LayerDescriptionForm(forms.Form):
 
 @csrf_exempt
 @login_required
-def _describe_layer(request, layer):
+def layer_metadata(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.change_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html', 
@@ -768,7 +769,8 @@ def _describe_layer(request, layer):
         return HttpResponse("Not allowed", status=403)
 
 @csrf_exempt
-def _removeLayer(request,layer):
+def layer_remove(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.delete_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html', 
@@ -788,7 +790,8 @@ def _removeLayer(request,layer):
         return HttpResponse("Not allowed",status=403)
 
 @csrf_exempt
-def _changeLayerDefaultStyle(request,layer):
+def layer_style(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.change_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html', 
@@ -822,39 +825,27 @@ def _changeLayerDefaultStyle(request,layer):
         return HttpResponse("Not allowed",status=403)
 
 @csrf_exempt
-def layerController(request, layername):
-    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+def layer_detail(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
-    if (request.META['QUERY_STRING'] == "describe"):
-        return _describe_layer(request,layer)
-    if (request.META['QUERY_STRING'] == "remove"):
-        return _removeLayer(request,layer)
-    if (request.META['QUERY_STRING'] == "update"):
-        return _updateLayer(request,layer)
-    if (request.META['QUERY_STRING'] == "style"):
-        return _changeLayerDefaultStyle(request,layer)
-    if (request.META['QUERY_STRING'] == "thumbnail"):
-        return _handleThumbNail(request, layer)
-    else: 
-        if not request.user.has_perm('maps.view_layer', obj=layer):
-            return HttpResponse(loader.render_to_string('401.html', 
-                RequestContext(request, {'error_message': 
-                    _("You are not permitted to view this layer")})), status=401)
-        
-        metadata = layer.metadata_csw()
+    if not request.user.has_perm('maps.view_layer', obj=layer):
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message': 
+                _("You are not permitted to view this layer")})), status=401)
+    
+    metadata = layer.metadata_csw()
+    maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
-        maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
+    # center/zoom don't matter; the viewer will center on the layer bounds
+    map = Map(projection="EPSG:900913")
+    DEFAULT_BASE_LAYERS = default_map_config()[1]
 
-        # center/zoom don't matter; the viewer will center on the layer bounds
-        map = Map(projection="EPSG:900913")
-
-        return render_to_response('maps/layer.html', RequestContext(request, {
-            "layer": layer,
-            "metadata": metadata,
-            "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
-            "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
-            "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
-	    }))
+    return render_to_response('maps/layer.html', RequestContext(request, {
+        "layer": layer,
+        "metadata": metadata,
+        "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
+        "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
+        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
+    }))
 
 def _handleThumbNail(req, obj):
     if not req.user.has_perm('maps.change_maps', obj=obj) and not request.user.has_perm('maps.change_layer', obj=obj):
@@ -919,12 +910,12 @@ def upload_layer(request):
 
 @login_required
 @csrf_exempt
-def _updateLayer(request, layer):
+def layer_replace(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.change_layer', obj=layer):
         return HttpResponse(loader.render_to_string('401.html', 
             RequestContext(request, {'error_message': 
                 _("You are not permitted to modify this layer")})), status=401)
-    
     if request.method == 'GET':
         cat = Layer.objects.gs_catalog
         info = cat.get_resource(layer.name)
