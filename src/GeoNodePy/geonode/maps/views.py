@@ -1449,7 +1449,8 @@ def search_page(request):
     }))
 
 def new_search_page(request):
-    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+    #DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
     # for non-ajax requests, render a generic search page
 
     if request.method == 'GET':
@@ -1471,7 +1472,8 @@ def new_search_page(request):
 
     return render_to_response('maps/new_search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map.viewer_json(added_layers=DEFAULT_BASE_LAYERS, authenticated=request.user.is_authenticated())),
+        #'viewer_config': json.dumps(map.viewer_json(added_layers=DEFAULT_BASE_LAYERS, authenticated=request.user.is_authenticated())),
+        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)), 
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         "site" : settings.SITEURL,
         'counts' : counts,
