@@ -1244,7 +1244,8 @@ class Map(models.Model, PermissionLevelMixin):
 
     @property
     def local_layers(self): 
-        return True
+        names = [layer.name for layer in self.layers]
+        return Layer.objects.filter(typename__in=names)
 
     def json(self, layer_filter):
         map_layers = MapLayer.objects.filter(map=self.id)
