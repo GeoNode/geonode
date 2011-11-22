@@ -1512,7 +1512,8 @@ def new_search_api(request):
     filters = {}
     for k in ('bytype','kw'):
         if k in params:
-            filters[k] = params[k]
+            if params[k]:
+                filters[k] = params[k]
 
     result = _new_search(query, start, limit, sort_field, sort_asc, **filters)
 
@@ -1549,7 +1550,9 @@ def _combined_search_results(query):
         except:
             owner_name = map.owner.first_name + " " + map.owner.last_name
         thumb = thumbs.get(map.id, None)
-        # @todo loop through layers and extract details like keywords
+        # resolve any local layers and their keywords
+        local_kw = [ l.keywords.split(' ') for l in map.local_layers if l.keywords]
+        keywords = local_kw and list(set( reduce(lambda a,b: a+b, local_kw))) or []
         mapdict = {
             'id' : map.id,
             'title' : map.title,
@@ -1561,6 +1564,7 @@ def _combined_search_results(query):
             '_type' : 'map',
             '_display_type' : 'Map',
             'thumb' : thumb and thumb.get_thumbnail_url() or None,
+            'keywords' : keywords
             }
         results.append(mapdict)
         
@@ -1595,12 +1599,15 @@ def _new_search(query, start, limit, sort_field, sort_asc, **filters):
     results = _combined_search_results(query)
 
     filter_fun = []
+    # careful when creating lambda or function filters inline like this
+    # as multiple filters cannot use the same local variable or they
+    # will overwrite each other
     if 'bytype' in filters:
-        t = filters['bytype']
-        filter_fun.append(lambda r: r['_type'] == t or r.get('storeType',None) == t)
+        bytype = filters['bytype']
+        filter_fun.append(lambda r: r['_type'] == bytype or r.get('storeType',None) == bytype)
     if 'kw' in filters:
-        t = filters['kw']
-        filter_fun.append(lambda r: 'keywords' in r and t in r['keywords'])
+        kw = filters['kw']
+        filter_fun.append(lambda r: 'keywords' in r and kw in r['keywords'])
 
     for fun in filter_fun:
         results = filter(fun,results)
