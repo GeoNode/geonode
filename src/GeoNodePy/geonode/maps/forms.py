@@ -66,6 +66,7 @@ class NewLayerUploadForm(LayerUploadForm):
     encoding = forms.ChoiceField(required=False)
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
+    keywords = forms.CharField(required=False)
     permissions = JSONField()
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file")

@@ -1321,6 +1321,7 @@ def upload_layer(request):
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"],
                         charset = request.POST.get('charset'),
+                        keywords = request.POST.get('keywords').split(' '),
                         sldfile = sld_file
                         )
 

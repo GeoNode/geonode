@@ -160,6 +160,13 @@ Ext.onReady(function(){
         allowBlank: true
     });
 
+    var keywordsField = new Ext.form.TextField({
+      id: 'keywords',
+      fieldLabel: gettext('Keywords'),
+      name: 'keywords',
+      allowBlank: false
+    });
+
     var permissionsField = new Ext.form.Hidden({
         name: "permissions"
     });
@@ -189,7 +196,7 @@ Ext.onReady(function(){
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, abstractField, termsAgreeCheck, permissionsField, {
+        items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, abstractField, keywordsField, termsAgreeCheck, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"
