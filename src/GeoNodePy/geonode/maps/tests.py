@@ -271,8 +271,34 @@ community."
     def test_map_layer_layer_config(self):
         pass
 
+    def test_map_layer_local(self):
+        from geoserver.catalog import Catalog
+        from geoserver.layer import Layer as GsLayer
+        _user, _password = settings.GEOSERVER_CREDENTIALS
+        url = "%srest" % settings.GEOSERVER_BASE_URL
+        
+        c = Catalog(url, _user, _password)
+
+        #Assuming that for the test case the non background layers are stored locally, 
+        #this should return a local layer
+        maplayer = MapLayer.objects.exclude(ows_url=None)[0]
+
+        #Checking if the layer is actually stored in the local geoserver
+        local_from_catalog = isinstance(c.get_layer(maplayer.name),GsLayer)
+        self.assertEquals(maplayer.local(),local_from_catalog)
+        
+        
     def test_map_layer_local_link(self):
-        pass
+        # Get a MapLayer to work with. We get a MapLayer which is local and thus can produce a web link      
+        maplayer = MapLayer.objects.exclude(ows_url=None)[0]
+        link = maplayer.local_link
+        
+        c = Client()
+
+        #The local_link is an anchor with the href attribute wrapped in double quotes
+        #We take only the href argument
+        response = c.get(link.split('"')[1])
+        self.assertEqual(response.status_code,200)
 
     # maps/views.py tests
 

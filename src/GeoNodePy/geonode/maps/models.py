@@ -1549,7 +1549,11 @@ class MapLayer(models.Model):
         paired with the GeoNode site.  Currently this is based on heuristics,
         but we try to err on the side of false negatives.
         """
-        if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
+        from geoserver.layer import Layer as GsLayer
+        url = url = "%srest" % settings.GEOSERVER_BASE_URL
+        c = Catalog(url, _user, _password)
+        if isinstance(c.get_layer(self.name),GsLayer):
+        #if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
             return Layer.objects.filter(typename=self.name).count() != 0
         else: 
             return False
