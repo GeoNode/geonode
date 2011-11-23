@@ -1,5 +1,3 @@
-:orphan:
-
 ===============================
 Debugging GeoNode installations
 ===============================
@@ -17,7 +15,7 @@ There are many kinds of logs in GeoNode, most of them are located in :file:`/var
 
  * **GeoServer log**: It contains most of the information related to problems with data, rendering and styling errors.
    This one can be accessed at ``GEOSERVER_DATA_DIR/logs/geoserver.log``, which is usually :file:`/var/lib/geoserver/geonode-data/logs/geoserver.log``.
-   It may also be symlinked in :file:`/var/log/geonode/geoserver.log`.
+  It may also be symlinked in :file:`/var/log/geonode/geoserver.log`.
 
  * **Geonetwork log**: Contains information about CSW and metadata handling.
    Records related to bad html parsing could be further identified by analyzing GeoNetwork logs.

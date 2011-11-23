@@ -48,7 +48,7 @@
             "layer_params": "",
             "map": 1,
             "name": "base:CA",
-            "ows_url": "/geoserver/wms",
+            "ows_url": "http://localhost:8001/geoserver/wms",
             "source_params": "",
             "stack_order": 0
         },

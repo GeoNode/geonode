@@ -1,7 +1,4 @@
-:orphan:
-
-GeoNode Improvement Proposals
-=============================
+# GeoNode Improvement Proposals
 
 GeoNode Improvement Proposals (GNIP) are the formal mechanism used to manage any sort of major change to GeoNode.
 While the definition of "major" is subject to interpretation, examples of changes which are managed by the GNIP process include:
