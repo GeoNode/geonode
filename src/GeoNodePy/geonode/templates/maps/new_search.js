@@ -2,7 +2,7 @@ Ext.onReady(function() {
     var start = 0,
     limit = 5,
     loadnotify = Ext.get('loading'),
-    itemTemplate = "<li id='item{iid}'><img class='thumb' src='{thumb}'></img>" +
+    itemTemplate = "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
     "<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
     "<div class='itemTitle'><a href='{detail}'>{title}</a></div>" +
     "<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
@@ -21,7 +21,8 @@ Ext.onReady(function() {
     }),
     selModel = null,
     dataCartStore = null,
-    queryItems = {};
+    queryItems = {},
+    totalQueryCount;
 
     itemTemplate = new Ext.DomHelper.createTemplate(itemTemplate);
     itemTemplate.compile();
@@ -43,29 +44,69 @@ Ext.onReady(function() {
         alert("You want to add " + item.title + " to a new map. I'm afraid this is not implemented.");
     }
 
+    function enableThumbHover(el) {
+        el.on('mouseover',function(ev) {
+            var hover = Ext.get('thumbHover');
+            if (hover.dom.src != this.dom.src || !hover.isVisible()) {
+                hover.dom.src = this.dom.src;
+                hover.setTop(this.getBottom()).
+                      setLeft(this.getLeft()).fadeIn();
+            }
+        }).on('mouseout',function() {
+             Ext.get('thumbHover').slideOut();
+        });
+    }
+
+    function updateDisplaying() {
+        var cnt = store.getCount(), 
+            displaying = Ext.get('displaying'),
+            note = Ext.get('displayNote');
+        if (cnt == 0) {
+            displaying.hide();
+        } else {
+            if (cnt == totalQueryCount) {
+                note.hide();
+            } else {
+                note.show();
+            }
+            displaying.dom.innerHTML = "Displaying " + cnt + " of " + totalQueryCount;
+            displaying.show();
+        }
+    }
+
     function appendResults(results) {
         fetching = false;
         loadnotify.hide();
         results = Ext.util.JSON.decode(results.responseText);
+        totalQueryCount = results.total;
         var read = store.reader.readRecords(results);
         if (read.records.length == 0) {
             if (start == 0) {
                 Ext.DomHelper.append(list,'<li><h4 class="center">No Results</h4></li>');
             }
             start = -1;
+            updateDisplaying();
             return;
         } else {
             start += limit;
         }
         store.add(read.records);
+        updateDisplaying();
         var saveListeners = {
             click: handleSave
         };
         Ext.each(results.rows,function(r,i) {
             if (r.thumb == null) {
                 r.thumb = "{{ STATIC_URL }}theme/img/silk/map.png";
+                r.thumbclass = "missing";
+            } else {
+                r.thumbclass = "";
             }
-            itemTemplate.append(list,r);
+            var item = itemTemplate.append(list,r,true);
+            var img = item.child('.thumb');
+            if (!img.hasClass('missing')) {
+                enableThumbHover(img);
+            }
             if (r.download_links) {
                 var items = [];
                 Ext.each(r.download_links,function(dl,i) {
@@ -130,12 +171,13 @@ Ext.onReady(function() {
     }
 
     fetch();
-    Ext.fly(document).on('scroll',function() {
+    var scrollEl = Ext.isIE ? document.body : document;
+    Ext.fly(scrollEl).on('scroll',function() {
         if (start < 0) return;
-        // don't use this - it seems sometimes the fly object is invalid and reports 0 scroll?
         var scroll = Ext.fly(document).getScroll().top;
         var height = list.getHeight() + list.getTop();
-        if (scroll + window.innerHeight > height) {
+        var windowHeight = Ext.isIE ? document.body.clientHeight : window.innerHeight;
+        if (scroll + windowHeight > height) {
             fetch();
         }
     });

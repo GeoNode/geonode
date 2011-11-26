@@ -1615,6 +1615,7 @@ def _new_search(query, start, limit, sort_field, sort_asc, **filters):
     # default sort order by id (could be last_modified when external layers are dealt with)
     results.sort(key=lambda r: r[sort_field or 'id'],reverse=not sort_asc)
 
+    totalQueryCount = len(results)
     results = results[start:start+limit]
     # unique item id for ext store (this could be done client side)
     iid = start
@@ -1623,7 +1624,8 @@ def _new_search(query, start, limit, sort_field, sort_asc, **filters):
         iid += 1
         
     return {
-        'rows' : results
+        'rows' : results,
+        'total' : totalQueryCount
     }
 
 def change_poc(request, ids, template = 'maps/change_poc.html'):

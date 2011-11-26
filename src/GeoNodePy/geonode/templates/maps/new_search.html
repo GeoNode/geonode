@@ -15,6 +15,11 @@
     {% endautoescape %}
 </script>
 <style type="text/css">
+    #thumbHover {
+        position: absolute;
+        display: none;
+        z-index: 100;
+    }
     #search_results {
     }
     #search_results ul {
@@ -154,7 +159,9 @@
     </form>
 
     <div id="search_results"><ul></ul></div>
+    <div style="text-align:center;visibility:hidden"><div id="displaying"></div><p id="displayNote">Scroll down for more results</p></div>
     <div id="loading">Loading More Results</div>
+    <img id="thumbHover"/>
   </div>
 </div>
 {% endblock %}
