@@ -1,0 +1,235 @@
+
+{% load i18n %}
+
+<style>h3{font-size:1.5em;line-height:1;margin-bottom:1em;margin-top:1em}p{margin-bottom:0.5em}strong{font-weight:bold}caption{background:#ffc}</style>
+
+<div id="tabContainerCreate" style="padding:20px;">
+
+<div style="position:relative;float:left;width:500px;">
+
+<h3>{%trans "Create a new layer"  %}</h3>
+
+
+<div id="create_form"></div>
+
+</div>
+
+<div style="position:relative;float:left;padding-left:20px;">
+
+
+
+<h3>{%trans "Permissions"  %}</h3>
+ <div id="create_permissions_form"></div>
+
+</div>
+
+</div>
+
+
+<script type="text/javascript">
+{% autoescape off %}
+
+    Ext.QuickTips.init();
+
+
+    var form_target = "{% url geonode.maps.views.create_pg_layer %}";
+    var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
+
+    var layer_name = new Ext.form.TextField({
+      id: 'create_name',
+      fieldLabel: gettext('Name'),
+      name: 'name',
+      emptyText: 'Letters & numbers only, no spaces',
+      maskRe: /[A-Za-z0-9]+/,
+      regex: /[A-Za-z0-9]+/,
+      regexText: gettext('Only letters and numbers are allowed'),
+      validateOnBlur: true
+    });
+
+    var map_id = new Ext.form.Hidden({
+    	id: 'create_mapid',
+        name: 'mapid',
+    	value:  'tab'
+    });
+
+    var layer_title = new Ext.form.TextField({
+      id: 'create_title',
+      fieldLabel: gettext('Title'),
+      name: 'title',
+      allowBlank: false
+    });
+
+    var layer_type = new Ext.form.ComboBox({
+        id: 'create_type',
+        name: 'type',
+        fieldLabel: gettext('Data Type'),
+        hiddenName: 'geom',
+        displayField:'description',
+        valueField: 'geom',
+        store : new Ext.data.SimpleStore({
+            fields: ['geom', 'description'],
+            data: {{  geoms }}
+        }),
+        mode: 'local',
+        triggerAction: 'all',
+        value: 'Point',
+        allowBlank: false
+    });
+
+    var srs = new Ext.form.TextField({
+      id: 'create_srs',
+      fieldLabel: gettext('Projection'),
+      name: 'srs',
+      value: 'EPSG:4326',
+      emptyText:'Example: EPSG:4326',
+      allowBlank: false
+    });
+
+    var abstract_Field = new Ext.form.TextArea({
+        id: 'create_abstract',
+        fieldLabel: gettext('Abstract'),
+        name: 'abstract',
+        allowBlank: false
+    });
+
+    var keywordsField = new Ext.form.TextArea({
+        id: 'create_keywords',
+        fieldLabel: gettext('Keywords'),
+        name: 'keywords',
+        emptyText: 'Use spaces to separate keywords',
+        allowBlank: false
+    });
+
+    var permissionsField = new Ext.form.Hidden({
+        name: "permissions"
+    });
+
+    var termsAgreeCheck = new Ext.form.Checkbox({
+        id: 'create_agreeCheck',
+        name: 'agreeCheck',
+        fieldLabel: 'I agree to the <a href="" onclick="javascript:showTOC();return false;">Terms and Conditions</a>',
+        handler: function(){
+                if (this.checked) {
+                        Ext.getCmp('createButton').enable();
+                } else
+                    Ext.getCmp('createButton').disable();
+        },
+        labelStyle: 'position:absolute;float:left;left:110px;width:200px',
+        labelSeparator : ''
+    });
+
+
+    var fp = new Ext.FormPanel({
+        id: 'ext_create_form',
+        formId: 'c_form',
+        renderTo: 'create_form',
+        fileUpload: true,
+        width: 500,
+        height:500,
+        frame: true,
+        title: gettext('Create Layer Data'),
+        autoHeight: true,
+        bodyStyle: 'padding: 10px 10px 0 10px;',
+        labelWidth: 75,
+        defaults: {
+            anchor: '95%',
+            msgTarget: 'side'
+        },
+        items: [map_id, layer_name, layer_title, layer_type, srs, abstract_Field, keywordsField, termsAgreeCheck, permissionsField, {
+            xtype: "hidden",
+            name: "csrfmiddlewaretoken",
+            value: "{{ csrf_token }}"
+        }],
+        buttons: [{
+            id: 'createButton',
+            text: gettext('Create'),
+            disabled: true,
+            handler: function(){
+                if (fp.getForm().isValid()) {
+                    fp.getForm().submit({
+                        url: form_target,
+                        waitMsg: gettext('Creating your layer...'),
+                        success: function(fp, o) {
+                            var uPanel = Ext.getCmp("worldmap_create_panel");
+                            uPanel.load({url:o.result.redirect_to});
+                        },
+                        failure: function(fp, o) {
+                            error_message = '<ul>';
+                            for (var i = 0; i < o.result.errors.length; i++) {
+                                error_message += '<li>' + o.result.errors[i] + '</li>'
+                            }
+                            error_message += '</ul>'
+
+                            Ext.Msg.show({
+                                title: gettext("Error"),
+                                msg: error_message,
+                                minWidth: 200,
+                                modal: true,
+                                icon: Ext.Msg.ERROR,
+                                buttons: Ext.Msg.OK
+                            });
+                        }
+                    });
+                }
+            }
+        }]
+    });
+
+
+    var permissionsEditor = new GeoNode.WorldMapPermissionsEditor({
+        id: "create_permissions_editor",
+        renderTo: "create_permissions_form",
+        userLookup: "{% url geonode.views.ajax_lookup_email %}",
+        customGroup: "{{ CUSTOM_GROUP_NAME }}",
+        listeners: {
+            updated: function(pe) {
+                permissionsField.setValue(Ext.util.JSON.encode(pe.writePermissions()));
+            }
+        },
+        permissions: {
+            anonymous: 'layer_readonly',
+            authenticated: 'layer_readonly',
+            users:[]
+        }
+    });
+    permissionsEditor.fireEvent("updated", permissionsEditor);
+
+
+    var showTOC = function() {
+        var TOCPanel = new Ext.Panel({
+            id: 'worldmap_mapshare_panel',
+            title: 'Share Map',
+            header: false,
+            autoLoad: {url: '/maps/upload_terms'},
+            autoScroll: true
+        });
+
+        var TOCWindow = new Ext.Window({
+            title: "WorldMap Terms and Conditions",
+            closeAction: 'destroy',
+            layout: 'fit',
+            width: 400,
+            height:400,
+            items: [TOCPanel],
+            modal: true,
+            autoScroll: false,
+            bodyStyle: 'background-color:#FFF',
+            buttons: [
+                {
+                    text: 'Close',
+                    handler: function() {TOCWindow.close();}
+                }
+            ]
+        });
+
+        TOCWindow.show();
+
+    };
+
+
+
+{% endautoescape %}
+</script>
+
+
+

@@ -759,7 +759,7 @@ class LayerManager(models.Manager):
                 else:
                     status = 'updated'
 
-            if layer.bbox is None:
+            if layer and layer.bbox is None:
                 layer._populate_from_gs()
                 layer.save()
 
@@ -980,6 +980,7 @@ class Layer(models.Model, PermissionLevelMixin):
             })
 
         types = [
+            ("tiff", _("GeoTIFF"), "image/geotiff"),
             ("jpg", _("JPEG"), "image/jpeg"),
             ("pdf", _("PDF"), "application/pdf"),
             ("png", _("PNG"), "image/png")
@@ -1109,6 +1110,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
     @property
     def attribute_names(self):
+        from ordereddict import OrderedDict
         if self.resource.resource_type == "featureType":
             dft_url = settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
                     "service": "wfs",
@@ -1133,8 +1135,9 @@ class Layer(models.Model, PermissionLevelMixin):
                 response, body = http.request(dft_url)
                 doc = XML(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
-                atts = {}
+                atts = OrderedDict({})
                 for n in doc.findall(path):
+                    logger.info("RESOURCE ATT %s", n.attrib["name"])
                     atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:
                 atts = {}
@@ -1163,7 +1166,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 response, body = http.request(dc_url)
                 doc = XML(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
-                atts = {}
+                atts = OrderedDict({})
                 for n in doc.findall(path):
                     atts[n.attrib["name"]] = n.attrib["type"]
             except Exception, e:
@@ -1615,6 +1618,9 @@ class Map(models.Model, PermissionLevelMixin):
         """
         logger.debug("++++++++++++++++++CALLING viewer_json+++++++++++++++++++++")
 
+        logger.info("ADDED Layers: %s", added_layers)
+        
+
         layers = list(self.maplayers) + list(added_layers) #implicitly sorted by stack_order
         
         sejumps = self.jump_set.all()
@@ -1690,7 +1696,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
-        #logger.debug("CONFIG: %s", config)
+        logger.info("CONFIG: %s", config)
 
         return config
 
@@ -1981,7 +1987,7 @@ class MapLayer(models.Model):
         if self.ows_url:
             cfg["url"] = self.ows_url
 
-        if cfg["ptype"] == "gxp_gnsource":
+        if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
             cfg["restUrl"] = "/gs/rest"
 
         return cfg

@@ -27,7 +27,7 @@
 
 <script type="text/javascript">
 var app;
-Ext.onReady(function() {
+var init = function() {
 {% autoescape off %}
     var config = Ext.apply({
         tools:  [{
@@ -79,7 +79,10 @@ Ext.onReady(function() {
 
     }, this);
 {% endautoescape %}
-});
+}
+
+window.onload = init;
+
 </script>
 
 {% endblock %}
@@ -129,6 +132,7 @@ Ext.onReady(function() {
 </div>
         <div id="externalDiv"></div>
         <div id="uploadDiv"></div>
+        <div id="createDiv"></div>
     </div>
 
 </div>

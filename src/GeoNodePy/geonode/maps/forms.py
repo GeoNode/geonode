@@ -3,6 +3,30 @@ from django import forms
 import json
 import os
 import tempfile
+from django.utils.translation import ugettext as _
+
+SRS_CHOICES = (
+    ('EPSG:4326', 'EPSG:4326 (WGS 84 Lat/Long)'),
+    ('EPSG:900913', 'EPSG:900913 (Web Mercator)'),
+)
+
+GEOMETRY_CHOICES = [
+    ['Point', 'Points'],
+    ['Line', 'Lines'],
+    ['Polygon', 'Polygons (Shapes)']
+]
+
+
+TYPE_CHOICES = (
+       ('java.lang.Boolean', 'Boolean (true/false)'),
+       ('java.util.Date', 'Date/Time'),
+       ('java.lang.Float', 'Number (Float)'),
+       ('java.lang.Integer', 'Number (Integer)'),
+       ('java.lang.String', 'Text'),
+)
+
+
+LAYER_SCHEMA_TEMPLATE = "Name:java.lang.String,Description:java.lang.String,Start_Date:java.util.Date,End_Date:java.util.Date,String_Value_1:java.lang.String,String_Value_2:java.lang.String,Number_Value_1:java.lang.Float,Number_Value_2:java.lang.Float"
 
 class JSONField(forms.CharField):
     def clean(self, text):
@@ -11,6 +35,16 @@ class JSONField(forms.CharField):
             return json.loads(text)
         except ValueError:
             raise forms.ValidationError("this field must be valid JSON")
+
+
+class LayerCreateForm(forms.Form):
+    name = forms.CharField(label="Name", max_length=256,required=True)
+    title = forms.CharField(label="Title",max_length=256,required=True)
+    srs = forms.CharField(label="Projection",initial="EPSG:4326",required=True)
+    geom = forms.ChoiceField(label="Data type", choices=GEOMETRY_CHOICES,required=True)
+    keywords = forms.CharField(label = '*' + _('Keywords (separate with spaces)'), widget=forms.Textarea)
+    abstract = forms.CharField(widget=forms.Textarea, label="Abstract", required=True)
+    permissions = JSONField()
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
@@ -61,10 +95,11 @@ class LayerUploadForm(forms.Form):
             sld_file = os.path.join(tempdir, self.cleaned_data["sld_file"].name)
         return tempdir,  absolute_base_file, sld_file
 
-class NewLayerUploadForm(LayerUploadForm):
+class WorldMapLayerUploadForm(LayerUploadForm):
     sld_file = forms.FileField(required=False)
     encoding = forms.ChoiceField(required=False)
     abstract = forms.CharField(required=False)
+    keywords = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
     keywords = forms.CharField(required=False)
     permissions = JSONField()

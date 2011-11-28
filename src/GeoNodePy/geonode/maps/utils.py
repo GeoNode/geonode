@@ -128,16 +128,16 @@ def get_valid_name(layer_name):
     """
     xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
     name = xml_unsafe.sub("_", layer_name)
-    proposed_name = name + "_"  + "".join([choice('QqWwEeRrTtYyUuOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMn0123456789') for i in range(3)])
+    proposed_name = name + "_"  + "".join([choice('qwertyuiopasdfghjklzxcvbnm0123456789') for i in range(3)])
     count = 1
     while Layer.objects.filter(name=proposed_name).count() > 0:
-        proposed_name = name + "_"  + "".join([choice('QqWwEeRrTtYyUuOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMn0123456789') for i in range(3)])
+        proposed_name = name + "_"  + "".join([choice('qwertyuiopasdfghjklzxcvbnm0123456789') for i in range(3)])
         logger.info('Requested name already used; adjusting name '
                     '[%s] => [%s]', layer_name, proposed_name)
     else:
         logger.info("Using name as requested")
 
-    return proposed_name
+    return proposed_name.lower()
 
 
 ## TODO: Remove default arguments here, they are never used.
@@ -232,7 +232,7 @@ def cleanup(name, uuid):
                   'import for layer: %s', name)
 
 
-def save(layer, base_file, user, overwrite = True, title = None, abstract = None, permissions = None, keywords = [], charset = 'ISO-8859-1', sldfile = None):
+def save(layer, base_file, user, overwrite = True, title = None, abstract = None, permissions = None, keywords = ['none'], charset = 'ISO-8859-1', sldfile = None):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -380,34 +380,8 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
         raise GeoNodeException(msg)
 
     # Step 6. Make sure our data always has a valid projection
-    # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 6. Making sure [%s] has a valid projection' % name)
-    try:
-        if gs_resource.latlon_bbox is None:
-            box = gs_resource.native_bbox[:4]
-            minx, maxx, miny, maxy = [float(a) for a in box]
-            if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
-            -90  <= miny <= 90  and -90  <= maxy <= 90:
-                logger.warn('GeoServer failed to detect the projection for layer '
-                        '[%s]. Guessing EPSG:4326', name)
-                # If GeoServer couldn't figure out the projection, we just
-                # assume it's lat/lon to avoid a bad GeoServer configuration
-
-                gs_resource.latlon_bbox = gs_resource.native_bbox
-                gs_resource.projection = "EPSG:4326"
-                cat.save(gs_resource)
-            else:
-                msg = ('GeoServer failed to detect the projection for layer '
-                   '[%s]. It doesn\'t look like EPSG:4326, so backing out '
-                   'the layer.')
-                logger.warn(msg, name)
-                cascading_delete(cat, gs_resource)
-                raise GeoNodeException(msg % name)
-    except:
-                msg = ('GeoServer failed to read the layer projection, so backing out '
-                   'the layer.')
-                cascading_delete(cat, gs_resource)
-                raise GeoNodeException(msg % name)        
+    check_projection(name, gs_resource)
 
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
@@ -443,21 +417,57 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
     # Step 10. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
     # FIXME: Do this inside the layer object
-    typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+    saved_layer = create_django_record(user, title, keywords, abstract, gs_resource, permissions)
+    return saved_layer
+
+def check_projection(name, resource):
+    # Get a short handle to the gsconfig geoserver catalog
+    cat = Layer.objects.gs_catalog
+
+    try:
+        if resource.latlon_bbox is None:
+            box = resource.native_bbox[:4]
+            minx, maxx, miny, maxy = [float(a) for a in box]
+            if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
+            -90  <= miny <= 90  and -90  <= maxy <= 90:
+                logger.warn('GeoServer failed to detect the projection for layer '
+                        '[%s]. Guessing EPSG:4326', name)
+                # If GeoServer couldn't figure out the projection, we just
+                # assume it's lat/lon to avoid a bad GeoServer configuration
+
+                resource.latlon_bbox = resource.native_bbox
+                resource.projection = "EPSG:4326"
+                cat.save(resource)
+            else:
+                msg = ('GeoServer failed to detect the projection for layer '
+                   '[%s]. It doesn\'t look like EPSG:4326, so backing out '
+                   'the layer.')
+                logger.warn(msg, name)
+                cascading_delete(cat, resource)
+                raise GeoNodeException(msg % name)
+    except:
+                msg = ('GeoServer failed to read the layer projection, so backing out '
+                   'the layer.')
+                cascading_delete(cat, resource)
+                raise GeoNodeException(msg % name)
+
+def create_django_record(user, title, keywords, abstract, resource, permissions):
+    name = resource.name
+    typename = resource.store.workspace.name + ':' + name
     layer_uuid = str(uuid.uuid1())
-    defaults = dict(store=gs_resource.store.name,
-                    storeType=gs_resource.store.resource_type,
+    defaults = dict(store=resource.store.name,
+                    storeType=resource.store.resource_type,
                     typename=typename,
-                    workspace=gs_resource.store.workspace.name,
-                    title=title or gs_resource.title,
+                    workspace=resource.store.workspace.name,
+                    title=title or resource.title,
                     uuid=layer_uuid,
                     keywords=' '.join(keywords),
-                    abstract=abstract or gs_resource.abstract or '',
+                    abstract=abstract or resource.abstract or '',
                     owner=user)
-    logger.info('%s,  ', gs_resource.store.name, )
-    saved_layer, created = Layer.objects.get_or_create(name=gs_resource.name,
+    logger.info("About to save django record for %s", resource.store.name)
+    saved_layer, created = Layer.objects.get_or_create(name=name,
                                                        defaults=defaults)
-
+    logger.info("Created django record for %s", resource.store.name)
     if created:
         saved_layer.set_default_permissions()
 
@@ -466,7 +476,7 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
         attributes = LayerAttribute.objects.filter(layer=saved_layer)
         for la in attributes:
             lafound = False
-            if layer.attribute_names is not None:
+            if saved_layer.attribute_names is not None:
                 for field, ftype in saved_layer.attribute_names.iteritems():
                     if field == la.attribute:
                         lafound = True
@@ -494,11 +504,6 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
     except Exception, ex:
                     logger.debug("Attributes could not be saved:[%s]", str(ex))
 
-
-    # Step 9. Create the points of contact records for the layer
-    # A user without a profile might be uploading this
-    logger.info('>>> Step 9. Creating points of contact records for '
-                '[%s]', name)
     poc_contact, __ = Contact.objects.get_or_create(user=user,
                                            defaults={"name": user.username })
     author_contact, __ = Contact.objects.get_or_create(user=user,

@@ -912,7 +912,7 @@ class ViewTest(TestCase):
             response = client.get("/maps/new?layer=" + layer.typename)
 
 
-from geonode.maps.forms import JSONField, LayerUploadForm, NewLayerUploadForm
+from geonode.maps.forms import JSONField, LayerUploadForm, WorldMapLayerUploadForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 class FormTest(TestCase):
