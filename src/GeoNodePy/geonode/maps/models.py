@@ -1603,8 +1603,6 @@ class Map(models.Model, PermissionLevelMixin):
 
         return simplejson.dumps(map)
 
-    def viewer_json(self, *added_layers):
-        return viewer_json(self, None, *addedLayers)
 
     def viewer_json(self, user=None, *added_layers):
         """
