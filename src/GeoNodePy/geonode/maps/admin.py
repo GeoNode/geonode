@@ -57,6 +57,13 @@ class LayerAttributeAdmin(admin.ModelAdmin):
     list_display = ('attribute', 'attribute_label', 'layer', 'attribute_type', 'searchable')
     list_filter  = ('layer', 'searchable', 'attribute_type')
 
+class MapLayerAdmin(admin.ModelAdmin):
+    list_display = ('id','map', 'name', 'ows_url', 'stack_order')
+    list_display_links = ('id',)
+    list_editable = ('name', 'stack_order')
+    list_filter  = ('ows_url',)
+    search_fields = ['map__title', 'map__owner__username', 'name','layer_params','ows_url']
+
 class MapStatsAdmin(admin.ModelAdmin):
     list_display = ('map', 'visits', 'uniques')
 
@@ -69,7 +76,7 @@ admin.site.register(Layer, LayerAdmin)
 admin.site.register(LayerCategory, LayerCategoryAdmin)
 admin.site.register(LayerAttribute, LayerAttributeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
-admin.site.register(MapLayer)
+admin.site.register(MapLayer,MapLayerAdmin)
 admin.site.register(Role)
 admin.site.register(MapStats, MapStatsAdmin)
 admin.site.register(LayerStats, LayerStatsAdmin)

@@ -32,12 +32,14 @@ var init = function() {
     var config = Ext.apply({
         tools:  [{
                     ptype: "gxp_geonodequerytool",
-                    actionTarget:  {target: "paneltbar", index: 4},
+                    id: "worldmap_query_tool",
+                    actionTarget:  {target: "paneltbar", index: 5},
                     toolText: '<span class="x-btn-text">Identify</span>',
                     iconCls: null,
                     outputConfig: {width: 400, height: 200, panIn: false},
                     featurePanel: 'queryPanel',
-                    attributePanel: 'gridWinPanel'
+                    attributePanel: 'gridWinPanel',
+                    toggleGroup: 'featureGroup'
                 }],
         proxy: "/proxy/?url=",
 
