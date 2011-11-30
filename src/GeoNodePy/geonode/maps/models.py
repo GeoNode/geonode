@@ -759,9 +759,9 @@ class LayerManager(models.Manager):
                 else:
                     status = 'updated'
 
-            if layer and layer.bbox is None:
-                layer._populate_from_gs()
-                layer.save()
+                if layer is not None and layer.bbox is None:
+                    layer._populate_from_gs()
+                    layer.save()
 
             msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
             info = {'name': name, 'status': status}
@@ -1504,7 +1504,7 @@ class Map(models.Model, PermissionLevelMixin):
     The date/time the map was created.
     """
 
-    last_modified = models.DateTimeField(_("Date Last Modified"),auto_now_add=True)
+    last_modified = models.DateTimeField(_("Date Last Modified"),auto_now=True)
     """
     The last time the map was modified.
     """
