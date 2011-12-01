@@ -52,6 +52,7 @@ Ext.onReady(function() {
 <div class="twocol">
   <h3>{{map.title}}</h3>
   <p><strong>{% trans "Abstract:" %}</strong> {{map.abstract}}</p>
+  <p><strong>{% trans "Keywords:" %}</strong> {{map.keywords.all|join:", "}}
 
   <div id="embedded_map">
   </div>

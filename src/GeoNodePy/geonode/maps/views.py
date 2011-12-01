@@ -111,6 +111,7 @@ class PocForm(forms.Form):
 
 
 class MapForm(forms.ModelForm):
+    keywords = taggit.forms.TagField()
     class Meta:
         model = Map
         exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner')
@@ -625,7 +626,12 @@ def describemap(request, mapid):
         # Change metadata, return to map info page
         map_form = MapForm(request.POST, instance=map, prefix="map")
         if map_form.is_valid():
-            map_form.save()
+            map = map_form.save(commit=False)
+            if map_form.cleaned_data["keywords"]:
+                map.keywords.add(*map_form.cleaned_data["keywords"])
+            else:
+                map.keywords.clear()
+            map.save()
 
             return HttpResponseRedirect(reverse('geonode.maps.views.map_controller', args=(map.id,)))
     else:
