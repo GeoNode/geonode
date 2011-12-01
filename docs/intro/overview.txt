@@ -55,7 +55,7 @@ The development community is very supportive of new projects and contributes ide
 Convinced! Where do I sign?
 ===========================
 
-The next obvious steps are to :doc:`install GeoNode </intro/install>`, :doc:`read the tutorials </users/uploading>` and `join the community`_. Thanks for your interest!
+The next obvious steps are to :doc:`install GeoNode </intro/install>`, :doc:`read the tutorials </users/upload>` and `join the community`_. Thanks for your interest!
 
 .. _Risk in a Box: http://riskinabox.org
 .. _join the community: mailto:geonode@librelist.com

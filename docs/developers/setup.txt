@@ -1,3 +1,5 @@
+:orphan:
+
 =======================================
 Configuring GeoNode in development mode
 =======================================
@@ -10,14 +12,18 @@ Before starting work on the GeoNode, you will need to have the following
 software installed and in your ``PATH``:
 
 * The git command-line client, version 1.5.3 or higher:
+
   - To verify that it is available, run ``git --version`` and verify the
     version is something like ``git version 1.6.6.1``
+
   - If not, you can download one of the installers from http://git-scm.com/ or
     from your operating system provider.
 
 * The Subversion command-line client, version 1.5 or higher.
+
   - To verify that is is available, run ``svn --version`` and verify the output
     starts with something like ``svn, version 1.6.9 (r901367)``
+
   - If not, you can find the appropriate installer at
     http://subversion.apache.org/packages.html
 
@@ -28,23 +34,29 @@ software installed and in your ``PATH``:
 * The OGR geographic vector data access library: http://www.gdal.org/ogr/
 
 * Sun Java Development Kit 1.5 or Higher: 
+
   - To verify that it is available, run
     ``javac -help -version`` and verify that it reports a list of usage flags,
     ending with a line like ``javac 1.5.0_18`` (the numbers will vary with your
     installed version).
+
   - If not, download from http://java.sun.com/javase/downloads/index.jsp 
     (Make sure to install the *JDK*!) 
 
 * Python 2.6:
+
   - To verify that it is available, run 
     ``python --version`` and verify that it reports a version number like
     ``Python 2.6``
+
   - If not, download from http://python.org/download/
+
   - Python must be compiled w/ SSL support and sqlite support to
     support the geonode development setup.  Installing the sqlite and
     openssl development headers before building Python will suffice.
 
 * Apache Maven 2.0.10 or Later:
+
   - To verify that it is available, run
     ``mvn -version`` and verify that it reports version information like::
         
@@ -136,7 +148,7 @@ Minified Scripts
 
 JavaScript Developers can switch to using unminified scripts and CSS:
 
-1. Get and run geonode-client:
+1. Get and run geonode-client::
 
     $ git clone git://github.com/GeoNode/geonode-client.git geonode-client
     $ cd geonode-client

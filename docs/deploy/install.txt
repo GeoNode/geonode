@@ -9,7 +9,7 @@ For some platforms the GeoNode project also provides customized installers which
 
 The most generic package provided by the GeoNode project is the tar.gz ("tarball").
 This is the most customizable, but also the most difficult, installation mechanism for GeoNode.
-Some platforms have more convenient packages available, so check at :doc:`/deployment` to see whether one is available for your OS before going through these steps.
+Some platforms have more convenient packages available, so check below to see whether one is available for your OS before going through these steps.
 
 
 Recommended Minimum System Requirements
@@ -178,7 +178,7 @@ schema pre-installed.  This GeoNetwork is ready to run out-of-the-box; simply
 deploy using your servlet container's usual mechanism.
 
 Steps
-~~~~~
+.....
 
 1. *Deploy* GeoNetwork to your servlet container using the normal mechanism.
    For Tomcat and Jetty, this simply means placing ``geonetwork.war`` in the
@@ -210,7 +210,7 @@ archive with these extensions pre-installed.  However, some manual
 configuration may still be needed.
 
 Steps
-~~~~~
+.....
 
 1. *Deploy* GeoServer to your servlet container using the normal mechanism.
    For Tomcat and Jetty, this simply means placing
@@ -247,7 +247,7 @@ respectively.  Many other web servers are perfectly capable of serving these
 files; Apache httpd and lighttpd are just examples.
 
 Steps:
-~~~~~~
+......
 
 1. *Configure* a document root in your webserver, pointing to some directory on
    your filesystem.
@@ -265,7 +265,7 @@ However, we highly recommend using virtualenv to sandbox the GeoNode
 dependencies from the rest of the Python software on your system.
 
 Steps:
-~~~~~~
+......
 
 1. *Install virtualenv* if you do not already have it available.  It can easily
    be installed via easy_install or pip::
