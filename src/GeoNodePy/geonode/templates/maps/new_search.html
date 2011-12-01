@@ -43,6 +43,9 @@
     .itemButtons > div {
         float: left;
     }
+    #refineSummary {
+        margin-bottom: 1em;
+    }
     #loading {
         text-align: center;
         line-height: 32px;
@@ -63,6 +66,10 @@
     }
     .center {
         text-align: center;
+    }
+    .removeFilter {
+        vertical-align: baseline;
+        cursor: pointer;
     }
     .cartAddButton {
         /* @todo */
@@ -157,7 +164,7 @@
   <div>
     <h3>{% trans "Refine Search" %}</h3>
 
-    <div class="refineSummary">
+    <div id="refineSummary">
         
     </div>
 

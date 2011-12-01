@@ -2,12 +2,13 @@ Ext.onReady(function() {
     var start = 0,
     limit = 5,
     loadnotify = Ext.get('loading'),
-    template = "<li id='item{iid}'><img class='thumb' src='{thumb}'></img>" +
+    itemTemplate = "<li id='item{iid}'><img class='thumb' src='{thumb}'></img>" +
     "<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
     "<div class='itemTitle'><a href='{detail}'>{title}</a></div>" +
     "<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
     "<div class='itemAbstract>{abstract}</div>"+
     "</li>",
+    filterTemplate = "<div class='{typeclass}'><img height='8' src='/static/theme/img/silk/delete.png' class='removeFilter' href='#removeFilter'> </a><strong>{type}</strong> {value}</div>",
     fetching = false,
     list = Ext.get(Ext.query('#search_results ul')[0]),
     store = new Ext.data.JsonStore({
@@ -22,8 +23,10 @@ Ext.onReady(function() {
     dataCartStore = null,
     queryItems = {};
 
-    template = new Ext.DomHelper.createTemplate(template);
-    template.compile();
+    itemTemplate = new Ext.DomHelper.createTemplate(itemTemplate);
+    itemTemplate.compile();
+    filterTemplate = new Ext.DomHelper.createTemplate(filterTemplate);
+    filterTemplate.compile();
 
     function handleSave(item) {
         window.open(item.link);
@@ -62,7 +65,7 @@ Ext.onReady(function() {
             if (r.thumb == null) {
                 r.thumb = "{{ STATIC_URL }}theme/img/silk/map.png";
             }
-            template.append(list,r);
+            itemTemplate.append(list,r);
             if (r.download_links) {
                 var items = [];
                 Ext.each(r.download_links,function(dl,i) {
@@ -138,7 +141,7 @@ Ext.onReady(function() {
     });
 
     function toggleSection(el) {
-        var expand = el.dom.classList.contains('collapse');
+        var expand = el.hasClass('collapse');
         var isbbox = el.dom.id == 'refine';
         if (expand) {
             if (isbbox) {
@@ -161,11 +164,11 @@ Ext.onReady(function() {
         el.first('.refineControls').slideOut('t',{useDisplay:true});
     }
     Ext.select('.refineSection').each(function(e,i) {
-        if (e.dom.classList.contains('collapse')) {
+        if (e.hasClass('collapse')) {
             collapseSection(e);
         }
         var h = e.first('h5');
-        if (e.dom.classList.contains('refine')) {
+        if (e.hasClass('refine')) {
             h.on('click',function() {
                 bbox.enable();
             });
@@ -202,18 +205,54 @@ Ext.onReady(function() {
         }
     });
 
-    // enable type searchlinks
-    Ext.select('#bytype a').on('click',function(ev) {
-        ev.preventDefault();
-        queryItems['bytype'] = Ext.get(this).getAttribute('href').substring(1);
-        reset();
-    });
-    // enable keyword searchlinks
-    Ext.select('#bykeyword a').on('click',function(ev) {
-        ev.preventDefault();
-        queryItems['kw'] = Ext.get(this).getAttribute('href').substring(1);
-        reset();
-    });
+    function addActiveFilter(typename,querykey,value,queryValue,multiple) {
+        var el = filterTemplate.append("refineSummary",{typeclass:typename.replace(' ','_'),type:typename,value:value},true);
+        el.on('click',function(ev) {
+           ev.preventDefault();
+           el.remove();
+           if (multiple) {
+               queryItems[querykey].remove(queryValue);
+               if (queryItems[querykey].length == 0) {
+                   delete queryItems[querykey];
+               }
+           } else {
+               delete queryItems[querykey];
+           }
+           reset();
+        });
+    }
+
+    function enableSearchLink(selector,querykey,multiple) {
+        Ext.select(selector).on('click',function(ev) {
+            ev.preventDefault();
+            var anchor = Ext.get(this),
+                href =  anchor.getAttribute('href'),
+                filterType,
+                existing;
+            if (href[0] == '#') {
+                href = href.substring(1);
+            } else {
+                // IE...
+                href = href.substring(href.indexOf("#") + 1);
+            }
+            if (multiple) {
+                existing = queryItems[querykey] || [];
+                existing.push(href);
+                queryItems[querykey] = existing;
+            } else {
+                queryItems[querykey] = href;
+            }
+            filterType = anchor.parent('.refineSection').first('h5').dom.innerHTML;
+            if (!multiple) {
+                Ext.select('#refineSummary .' + filterType.replace(' ','_')).remove();
+            }
+            addActiveFilter(filterType, querykey, anchor.dom.innerHTML, href, multiple);
+            reset();
+        });
+    }
+    enableSearchLink('#bytype a','bytype',false);
+    enableSearchLink('#bykeyword a','kw',true);
+
     // and combine with search form
     Ext.get('searchForm').on('submit',function(ev) {
         ev.preventDefault();
