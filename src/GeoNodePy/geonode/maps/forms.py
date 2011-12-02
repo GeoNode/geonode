@@ -12,7 +12,7 @@ SRS_CHOICES = (
 
 GEOMETRY_CHOICES = [
     ['Point', 'Points'],
-    ['Line', 'Lines'],
+    ['LineString', 'Lines'],
     ['Polygon', 'Polygons (Shapes)']
 ]
 
