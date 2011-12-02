@@ -471,33 +471,22 @@ def view_map_permissions(request, mapid):
     ctx['map'] = map
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
 
-def set_layer_permissions(layer, perm_spec):
+def set_object_permissions(obj, perm_spec):
     if "authenticated" in perm_spec:
-        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+        obj.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
     if "anonymous" in perm_spec:
-        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+        obj.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
     users_and_groups = [n for (n, p) in perm_spec['users']]
-    layer.get_user_levels().exclude(user__username__in = users_and_groups + [layer.owner]).delete()
-    layer.get_group_levels().exclude(group__name__in = users_and_groups).delete()
+    obj.get_user_levels().exclude(user__username__in = users_and_groups + [obj.owner]).delete()
+    obj.get_group_levels().exclude(group__name__in = users_and_groups).delete()
     
     for name, level in perm_spec['users']:
         try:
             group = Group.objects.get(name=name)
-            layer.set_group_level(group, level)
+            obj.set_group_level(group, level)
         except Group.DoesNotExist:
             user = User.objects.get(username=name)
-            layer.set_user_level(user, level)
-
-def set_map_permissions(m, perm_spec):
-    if "authenticated" in perm_spec:
-        m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-    if "anonymous" in perm_spec:
-        m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n for (n, p) in perm_spec['users']]
-    m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        m.set_user_level(user, level)
+            obj.set_user_level(user, level)
 
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -517,7 +506,7 @@ def ajax_layer_permissions(request, layername):
         )
 
     permission_spec = json.loads(request.raw_post_data)
-    set_layer_permissions(layer, permission_spec)
+    set_object_permissions(layer, permission_spec)
 
     return HttpResponse(
         "Permissions updated",
@@ -543,7 +532,7 @@ def ajax_map_permissions(request, mapid):
         )
 
     spec = json.loads(request.raw_post_data)
-    set_map_permissions(map, spec)
+    set_object_permissions(map, spec)
 
     # _perms = {
     #     Layer.LEVEL_READ: Map.LEVEL_READ,
