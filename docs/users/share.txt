@@ -1,0 +1,105 @@
+:orphan:
+
+=========================
+Sharing data with GeoNode
+=========================
+
+
+Adding remote WMS layer
+=======================
+
+GeoNode supports the addition of a layer to a map via a *web map service* or WMS.  Given a WMS URL to remote server X, GeoNode will then request a list of all the Layers on that remote server and display the list in GeoNode to select from and add to the Map. Let’s look at how a remote WMS layer can be added.  
+
+Copy the `World Health Organization URL <http://Maps.who.int/tools/geoserver/wfs?request=GetCapabilities?SERVICE=WMS&REQUEST=GetCapabilities>`_.
+In the *Map Composer*, click the  *Add Layers* button and then click *Add New Server*.
+Paste the URL into the form and make sure there are no spaces at the end of the URL.  Click *Add Server*.
+After a moment, GeoNode should display a list of Layers from the WHO server.
+
+Click on *Title* list to sort.  Click on *Global Health Facilities* and at the bottom click *Add Layers*. Close the *Add Layers* window.
+
+Now add another `WMS server <http://GeoNode.harvard.edu/africamap/tilecache/tiles.py/1.0.0/>`_.
+Click on the *Title* list to sort.  Click on *Landscan* Layer and then *Add Layers*.
+Save your map.  
+
+Drag *Landscan* so that it is below *Ethnicity Felix* layer and displays underneath them.
+Save your map again.
+
+
+Bookmarking and embedding your map in another web page
+======================================================
+
+In addition to being able to save changes to your map, it is also possible to embed your map in other web pages.  This will provide a live view of your map within a blog or any web page.
+
+Create a view that you like and want to show to someone else.  Then click the *Publish Map* button at the upper left.
+Now you have an embed tag that you can paste into a blog or an HTML page.
+
+Open a blog or page if you have one.  If you don’t have one and would like to try this, go to `blogspot.com <http://blogspot.com>`_ and create a blog.
+Open a blog entry then paste the snippet into the blog and save it.  Now view it.  See that panning and zooming is supported. 
+
+You can change the size of the embedded map by using the pulldown to change the height and width of the embedded map (measured in pixels), or by editing the height and width parameters in the code snippet manually. 
+
+
+Downloading data
+================
+
+Layers may be downloaded from their information pages in a number of file formats including:
+
+* ESRI Shapefile
+* Google Earth KML
+* Adobe PDF
+* Microsoft Excel
+* CSV (comma delimited text)
+* GML (geographic markup language)
+* PNG (image)
+* JPEG (image) 
+* View in Google Earth
+
+
+Printing
+========
+
+Within the *Map Composer*, select the *Open Street Map* base layer and click on the *Print* button at the upper left.  Choose:
+
+* Portrait type
+* Resolution
+* Whether you want a legend 
+* Pan your map in print view if necessary 
+* Provide a title for your printout.
+
+Click *Print* and generate a PDF which you can save, email, or print.
+
+.. note:: Printing is supported at up to 300dpi and creates an Adobe PDF view of your map at 8.5” x 11” (A4: 216mm x 279mm) and 8.5” x 11” (A3: 216mm x 356mm) sizes.
+
+
+Exercises
+=========
+
+#. Within your map add a web service layer.
+
+* Go to *Add Layers*
+
+* Add layers from a new server by clicking *Add WMS Server*
+
+* Paste a URL into the form with no spaces at the end.
+
+* If you don't know valid URLs to use, you can use the `WHO URL <http://apps.who.int/tools/geoserver/wfs?request=GetCapabilities?SERVICE=WMS&REQUEST=GetCapabilities>`_
+
+  #. A list will be returned. Sort it by clicking on the *Title* bar.  Select *Global Health Facilities*, then *Add Layers*. 
+  
+  #. Reorder layer display by dragging a layer above another layer so that it displays on top of the other layers.
+  
+  #. Change transparency of the layer on top. 
+  
+  #. Create an embed link and add it to a blog.  If you don’t have a blog, create one using Google’s Blogger.  Pan and zoom around your embedded map. Click *Link*.
+  
+  #. Print your map at 300 dpi with a title and legend.
+
+
+Optional challenge exercise - Creating an SLD using AtlasStyler
+===============================================================
+
+#. Install the 	`application <http://en.geopublishing.org/AtlasStyler>`_.
+#. Create a style for the *workshop_suitability.shp* shapefile in your packet.  Click *File* then *Import File* then choose the file from your desktop.  Click *Finish*.
+#. Right click on the Layer on the left and choose *Style*. For symbology choose *Colored Quantities*.  Choose for your Value, *Cassava S1*.  Choose 4 classes.  
+#. Save out your style by clicking *Export All Layers as SLD* and put name the file *Cassava_test.sld*, save it in your folder where you have your shapefile
+#. Upload the workshop suitability shape file along with the SLD you created. Give your file a new title following the convention <subject>_<initials>_temp.

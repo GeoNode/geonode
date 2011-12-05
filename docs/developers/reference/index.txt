@@ -1,0 +1,14 @@
+:orphan:
+
+===================================
+Developer's reference documentation
+===================================
+
+This contains detailed information about the implementation of the different sofware modules in GeoNode
+
+.. toctree::
+   :maxdepth: 2
+
+   django-apps
+   geoserver
+   javascript
