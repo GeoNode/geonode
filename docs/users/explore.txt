@@ -1,0 +1,105 @@
+:orphan:
+
+============
+Viewing Maps
+============
+
+
+Finding a map to view
+=====================
+To start searching existing maps, click the *Explore Maps* button on the front page. Here you will see a list of maps others have created, listed in the order in which they were created. Use the search box to find things you want. 
+
+Next to the map titles are the names of the people who created them so you can contact them. GeoNode is about encouraging collaborations between people with common interests.
+
+Click on the *Alyssa Wright* link in the Contact column: this will take you to `Alyssa’s user profile <http://demo.geonode.org/profiles/awright>`_. The profile displays all the maps and data that she's responsible for.
+
+Let’s take a look at the `Haiti Damage Assessment Map <http://demo.geonode.org/maps/85>`_.
+
+
+Map information page
+====================
+Most links to maps in GeoNode go to that map’s information page, which displays metadata for that Map (Title, Abstract, contactable user) and provides other useful information and tools.
+
+To download all the layers in this map as a .zip file, click the *Download all layers included in this map* link.  This will prompt you to log in to the site. If you do not have a user login on the site already, don’t worry; you will make one soon.
+
+This page also links to other information pages about the data used in the map. Click the link to `HaitiHealthFacilityMaster_20100125 <http://demo.geonode.org/data/geonode:HaitiHealthFacilityMaster_20100125>`_.
+You should be directed to a new page with the metadata for this data set. Note that while the Map you were looking at was focused on Port-au-Prince, this page shows the entire data set of Haiti’s health facilities.
+
+From this page, you can download this data in various formats. For example, click the “JPEG” link in the upper left hand corner. This will give you a JPEG version of the data set via the open service WMS.
+
+Look for the buttons in the Style section of this page.  Click around to switch between different styles that users have made for this data.We will explore this sort of page in more detail later.
+
+Go Back (in your browser) to the *Map Information Page*. Then click the link for *View or edit this map.*
+This will take you to the *Map Composer*, with a large map viewer and a side bar with a list of layers.
+
+
+Note on permissions
+===================
+You need to have a registered user account to have permission to save a map. But you can still make changes to a map even when unregistered.
+Without permissions you will be able to add layers from GeoNode as well as add remote web services just for the session, but you will not be able to save your additions.
+
+In next chapter you will create your own map, to which you will have full permissions.
+
+Currently this map is set to be viewable by anyone in the world.
+
+
+Choice of basemaps
+==================
+A number of preset basemap layers are available, including *Google Satellite*, the NASA *Blue Marble* satellite image, *Open Street Map*, and a *No Background* options.  Other commercial and non commercial base maps can be added to a custom GeoNode installation.
+
+
+Ways to zoom
+============
+There are several ways you can zoom (change scales) in GeoNode:
+
+* Map navigation tools include the standard zoom bar and map drag
+* Roll your mouse wheel
+* Choose a scale from the scale bar readout
+* Zoom and pan simultaneously by defining a box on the map (shift-drag box) which upon release zooms you to the area you defined with the box
+* You can right-click on a layer name and select *Zoom to Layer Extent* to zoom to that layer
+
+The shift-drag box approach may be the most powerful once you get the hang of it.
+
+
+Legend, Scale Bar
+=================
+GeoNode generates legends automatically based on the SLD (Styled Layer Descriptor) symbolization.  Legends for any layers being displayed are in the Legend tab next to the Data tab at the upper left.  The scale bar changes with zoom level and the exact scale ratio is displayed. 
+
+
+Layer on/off, Layer order, Transparency
+=======================================
+You can turn layers on and off, move them around to control what is displaying on top of what in the map.  You can also change transparency of any layer by right clicking and going to *Layer Properties* > *Display*.
+
+
+Getting feature info
+====================
+To see more information about a feature, click the *Get Feature Info* button at the far right of the toolbar.  Then click on a feature on the map.
+
+The popup window will display the attributes of all features in the clicked-on location.  GeoNode will return attributes for as many (vector) layers as you have turned on.  
+
+
+Adding a layer from GeoNode
+===========================
+Click the *Add Layers* button, a green plus sign above the layer list.  There is a dropdown of available servers from which you can add data and the option to add your own WMS server.
+
+Scroll down on the layer list and select the *Haiti_Damage_Assessment_Points* layer, then add it to the map.
+
+
+Layer Order
+===========
+Layers which are above others in the layer panel display on the map on top of those which are below.  Display order can be changed by dragging and dropping layers up or down and the names of folders and layers can be changed.
+  
+
+Exercises
+=========
+
+#. Explore the list of available maps (click *Explore maps*) on the main page
+#. Use the search box to refine your search
+#. Open a map of interest
+#. Try each of the 5 different methods for zooming
+#. Notice how the legend and scale bars change as you zoom
+#. Turn display for a layer on and off
+#. Right click on a layer to explore the options
+#. Drag a layer that is turned on but not visible to be above a layer that is turned on and visible
+#. Use transparency control to allow you to see a layer displayed even though it is below another layer
+#. Click on the map and return database information for the layer displayed. (Some image or raster layers will not return information: those which have a checkerboard pattern next to them are image layers and will not return information when you click on them.)

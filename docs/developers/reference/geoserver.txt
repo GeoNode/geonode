@@ -1,3 +1,4 @@
+=====================
 GeoNode and GeoServer
 =====================
 
@@ -148,44 +149,3 @@ That is, a top-level object with two keys:
 All layers not named in this response will be presumed fully restricted, that
 is, neither modifiable nor visible to the user in question.
 
-Printing with the Mapfish Print Service
----------------------------------------
-
-The GeoNode map composer can "print" maps to PDF documents using the `Mapfish
-print service <http://www.mapfish.org/doc/print>`_.  The recommended way to run
-this service is by using the printing extension to GeoServer (if you are using
-the pre-built GeoNode package, this extension is already installed for you).
-However, the print service includes restrictions on the servers that can
-provide map tiles for printed maps.  These restrictions have a fairly strict
-default, so you may want to loosen these constraints.
-
-Adding servers by hostname
-..........................
-
-.. highlight:: yaml
-
-The Mapfish printing module is configured through a `YAML <yaml>`_
-configuration file, usually named :file:`print.yaml`.  If you are using the
-GeoServer plugin to run the printing module, this configuration file can be
-found at :file:`{GEOSERVER_DATA_DIR}/printing/config.yaml`.  The default
-configuration should contain an entry like so::
-
-    hosts:
-      - !dnsMatch
-        host: labs.metacarta.com
-        port: 80
-      - !dnsMatch
-        host: terraservice.net
-        port: 80
-
-You can add host/port entries to this list to allow other servers.
-
-.. seealso:: 
-  
-   The `Mapfish documentation
-   <http://www.mapfish.org/doc/print/configuration.html>`_ on configuring the
-   print module.
-
-   The `GeoServer documentation
-   <http://docs.geoserver.org/stable/en/user/community/printing/>`_ on
-   configuring the print module.

@@ -1,0 +1,34 @@
+:orphan:
+
+==========================
+GeoNode Tutorials Overview
+==========================
+
+
+Downloading material
+====================
+
+`**Download the data** <https://github.com/downloads/GeoNode/workshops/GeoNode-Workshop-Materials.zip>`_ to use with the tutorials.
+Unzip this to your desktop. You should now have a folder on your desktop called GeoNode-Workshop-Materials.
+In this folder are some sample datasets.
+
+
+Terminology
+===========
+
+Layers
+------
+
+In GeoNode you can upload map data (currently Shapefiles or GeoTIFFs) to the GeoNode system. Each map data file you upload is called a “Layer” in GeoNode.  You can control access to your layers by setting permissions.
+
+Maps
+----
+
+GeoNode allows you to organize your Layers and other people’s Layers together into collections, which you can configure in various ways and save. These collections are called “Maps” in GeoNode. You can control permissions in GeoNode at both the Layer and the Map level.
+
+
+The live demo and local Geonodes
+--------------------------------
+
+To follow these examples, you can use the live demo GeoNode at this `URL <http://demo.geonode.org>`_.
+You can also install your own GeoNode locally or on the cloud and run it as your own web service. Information about how to do that can be found in the :doc:`Quick installation guide </intro/install>`.

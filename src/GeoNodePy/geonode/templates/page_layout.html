@@ -41,8 +41,9 @@
     {% endif %}
 
     {% endif %}
-    </ul>
-      {% endblock %}
+
+   <!-- Only show the language form if the csrf_token is present -->
+   {% if csrf_token != "NOTPROVIDED" %}
 
    {% get_current_language as LANGUAGE %}
     <form class="langbar" id="target" action="/i18n/setlang/" method="post">
@@ -58,6 +59,11 @@
          </select>
        </div>
      </form>
+
+   {% endif %}
+    </ul>
+   {% endblock %}
+
 
     </div><!-- /.wrap -->
   </div><!-- /#crossbar -->
