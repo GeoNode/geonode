@@ -27,11 +27,11 @@ msgstr "Zone"
 
 #: maps/templates/lang.js:7
 msgid "Background"
-msgstr ""
+msgstr "Fond"
 
 #: maps/templates/lang.js:9
 msgid "Done"
-msgstr ""
+msgstr "Terminé"
 
 #: maps/templates/lang.js:10
 msgid "Available Layers"
@@ -67,7 +67,7 @@ msgstr "ou ajouter un nouveau serveur."
 
 #: maps/templates/lang.js:19
 msgid "Map Layers"
-msgstr ""
+msgstr "Couches de la Carte"
 
 #: maps/templates/lang.js:20
 msgid "View available data from:"
@@ -147,11 +147,11 @@ msgstr ""
 
 #: maps/templates/lang.js:38
 msgid "Zoom to Next Extent"
-msgstr "Zoom suivant"
+msgstr "Zoom Suivant"
 
 #: maps/templates/lang.js:39
 msgid "Zoom to Previous Extent"
-msgstr "Zoom précédent"
+msgstr "Zoom Précédent"
 
 #: maps/templates/lang.js:40
 msgid "This map has not yet been saved."
@@ -159,7 +159,7 @@ msgstr "Cette carte n'a pas encore été enregistrée."
 
 #: maps/templates/lang.js:42 maps/templates/lang.js.py:111
 msgid "Premium"
-msgstr ""
+msgstr "Taille d'origine"
 
 #: maps/templates/lang.js:43
 msgid "Print Map"
@@ -199,13 +199,15 @@ msgstr "Vous devez être connecté pour enregistrer cette carte."
 
 #: maps/templates/lang.js:53 maps/templates/lang.js.py:114
 msgid "Small"
-msgstr ""
+msgstr "Petit"
 
 #: maps/templates/lang.js:54
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
 msgstr ""
+"Erreur à la connexion au serveur.\n"
+" Merci de vérifier l'url et réessayer."
 
 #: maps/templates/lang.js:55
 msgid "Layer Properties"
