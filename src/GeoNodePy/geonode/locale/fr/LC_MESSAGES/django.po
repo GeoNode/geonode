@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-02 17:04+0100\n"
+"POT-Creation-Date: 2011-12-05 04:15-0600\n"
 "PO-Revision-Date: 2011-06-06 14:42\n"
 "Last-Translator: Matthew Ford <mford@worldbank.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,11 +19,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "X-Translated-Using: django-rosetta 0.6.0\n"
 
-#: core/models.py:24 maps/models.py:657
+#: core/models.py:24 maps/models.py:677
 msgid "title"
 msgstr "titre"
 
-#: core/models.py:25 maps/models.py:1594
+#: core/models.py:25 maps/models.py:1619
 msgid "permissions"
 msgstr "autorisations"
 
@@ -47,955 +47,955 @@ msgstr "Utilisateurs anonymes"
 msgid "Registered Users"
 msgstr "Utilisateurs enregistrés"
 
-#: maps/models.py:52
+#: maps/models.py:53
 msgid "Afghanistan"
 msgstr "Afghanistan"
 
-#: maps/models.py:53
+#: maps/models.py:54
 msgid "Aland Islands"
 msgstr "Iles Aland"
 
-#: maps/models.py:54
+#: maps/models.py:55
 msgid "Albania"
 msgstr "L'Albanie"
 
-#: maps/models.py:55
+#: maps/models.py:56
 msgid "Algeria"
 msgstr "Algérie"
 
-#: maps/models.py:56
+#: maps/models.py:57
 msgid "American Samoa"
 msgstr "Samoa américaines"
 
-#: maps/models.py:57
+#: maps/models.py:58
 msgid "Andorra"
 msgstr "Andorre"
 
-#: maps/models.py:58
+#: maps/models.py:59
 msgid "Angola"
 msgstr "Angola"
 
-#: maps/models.py:59
+#: maps/models.py:60
 msgid "Anguilla"
 msgstr "Anguilla"
 
-#: maps/models.py:60
+#: maps/models.py:61
 msgid "Antigua and Barbuda"
 msgstr "Antigua-et-Barbuda"
 
-#: maps/models.py:61
+#: maps/models.py:62
 msgid "Argentina"
 msgstr "L'Argentine"
 
-#: maps/models.py:62
+#: maps/models.py:63
 msgid "Armenia"
 msgstr "L'Arménie"
 
-#: maps/models.py:63
+#: maps/models.py:64
 msgid "Aruba"
 msgstr "Aruba"
 
-#: maps/models.py:64
+#: maps/models.py:65
 msgid "Australia"
 msgstr "L'Australie"
 
-#: maps/models.py:65
+#: maps/models.py:66
 msgid "Austria"
 msgstr "L'Autriche"
 
-#: maps/models.py:66
+#: maps/models.py:67
 msgid "Azerbaijan"
 msgstr "L'Azerbaïdjan"
 
-#: maps/models.py:67
+#: maps/models.py:68
 msgid "Bahamas"
 msgstr "Bahamas"
 
-#: maps/models.py:68
+#: maps/models.py:69
 msgid "Bahrain"
 msgstr "Bahreïn"
 
-#: maps/models.py:69
+#: maps/models.py:70
 msgid "Bangladesh"
 msgstr "Bangladesh"
 
-#: maps/models.py:70
+#: maps/models.py:71
 msgid "Barbados"
 msgstr "La Barbade"
 
-#: maps/models.py:71
+#: maps/models.py:72
 msgid "Belarus"
 msgstr "Belarus"
 
-#: maps/models.py:72
+#: maps/models.py:73
 msgid "Belgium"
 msgstr "Belgique"
 
-#: maps/models.py:73
+#: maps/models.py:74
 msgid "Belize"
 msgstr "Belize"
 
-#: maps/models.py:74
+#: maps/models.py:75
 msgid "Benin"
 msgstr "Bénin"
 
-#: maps/models.py:75
+#: maps/models.py:76
 msgid "Bermuda"
 msgstr "Bermudes"
 
-#: maps/models.py:76
+#: maps/models.py:77
 msgid "Bhutan"
 msgstr "Bhoutan"
 
-#: maps/models.py:77
+#: maps/models.py:78
 msgid "Bolivia"
 msgstr "Bolivie"
 
-#: maps/models.py:78
+#: maps/models.py:79
 msgid "Bosnia and Herzegovina"
 msgstr "Bosnie-Herzégovine"
 
-#: maps/models.py:79
+#: maps/models.py:80
 msgid "Botswana"
 msgstr "Botswana"
 
-#: maps/models.py:80
+#: maps/models.py:81
 msgid "Brazil"
 msgstr "Brésil"
 
-#: maps/models.py:81
+#: maps/models.py:82
 msgid "British Virgin Islands"
 msgstr "Iles Vierges Britanniques"
 
-#: maps/models.py:82
+#: maps/models.py:83
 msgid "Brunei Darussalam"
 msgstr "Brunei Darussalam"
 
-#: maps/models.py:83
+#: maps/models.py:84
 msgid "Bulgaria"
 msgstr "Bulgarie"
 
-#: maps/models.py:84
+#: maps/models.py:85
 msgid "Burkina Faso"
 msgstr "Burkina Faso"
 
-#: maps/models.py:85
+#: maps/models.py:86
 msgid "Burundi"
 msgstr "Burundi"
 
-#: maps/models.py:86
+#: maps/models.py:87
 msgid "Cambodia"
 msgstr "Cambodge"
 
-#: maps/models.py:87
+#: maps/models.py:88
 msgid "Cameroon"
 msgstr "Cameroun"
 
-#: maps/models.py:88
+#: maps/models.py:89
 msgid "Canada"
 msgstr "Canada"
 
-#: maps/models.py:89
+#: maps/models.py:90
 msgid "Cape Verde"
 msgstr "Cap-Vert"
 
-#: maps/models.py:90
+#: maps/models.py:91
 msgid "Cayman Islands"
 msgstr "Iles Caïmans"
 
-#: maps/models.py:91
+#: maps/models.py:92
 msgid "Central African Republic"
 msgstr "République centrafricaine"
 
-#: maps/models.py:92
+#: maps/models.py:93
 msgid "Chad"
 msgstr "Tchad"
 
-#: maps/models.py:93
+#: maps/models.py:94
 msgid "Channel Islands"
 msgstr "Iles Anglo-Normandes"
 
-#: maps/models.py:94
+#: maps/models.py:95
 msgid "Chile"
 msgstr "Chili"
 
-#: maps/models.py:95
+#: maps/models.py:96
 msgid "China"
 msgstr "La Chine"
 
-#: maps/models.py:96
+#: maps/models.py:97
 msgid "China - Hong Kong"
 msgstr "Chine - Hong Kong"
 
-#: maps/models.py:97
+#: maps/models.py:98
 msgid "China - Macao"
 msgstr "Chine - Macao"
 
-#: maps/models.py:98
+#: maps/models.py:99
 msgid "Colombia"
 msgstr "Colombie"
 
-#: maps/models.py:99
+#: maps/models.py:100
 msgid "Comoros"
 msgstr "Comores"
 
-#: maps/models.py:100
+#: maps/models.py:101
 msgid "Congo"
 msgstr "Congo"
 
-#: maps/models.py:101
+#: maps/models.py:102
 msgid "Cook Islands"
 msgstr "Îles Cook"
 
-#: maps/models.py:102
+#: maps/models.py:103
 msgid "Costa Rica"
 msgstr "Costa Rica"
 
-#: maps/models.py:103
+#: maps/models.py:104
 msgid "Cote d'Ivoire"
 msgstr "Côte d'Ivoire"
 
-#: maps/models.py:104
+#: maps/models.py:105
 msgid "Croatia"
 msgstr "Croatie"
 
-#: maps/models.py:105
+#: maps/models.py:106
 msgid "Cuba"
 msgstr "Cuba"
 
-#: maps/models.py:106
+#: maps/models.py:107
 msgid "Cyprus"
 msgstr "Chypre"
 
-#: maps/models.py:107
+#: maps/models.py:108
 msgid "Czech Republic"
 msgstr "République tchèque"
 
-#: maps/models.py:108
+#: maps/models.py:109
 msgid "Democratic People's Republic of Korea"
 msgstr "République populaire démocratique de Corée"
 
-#: maps/models.py:109
+#: maps/models.py:110
 msgid "Democratic Republic of the Congo"
 msgstr "République démocratique du Congo"
 
-#: maps/models.py:110
+#: maps/models.py:111
 msgid "Denmark"
 msgstr "Danemark"
 
-#: maps/models.py:111
+#: maps/models.py:112
 msgid "Djibouti"
 msgstr "Djibouti"
 
-#: maps/models.py:112
+#: maps/models.py:113
 msgid "Dominica"
 msgstr "Dominique"
 
-#: maps/models.py:113
+#: maps/models.py:114
 msgid "Dominican Republic"
 msgstr "République Dominicaine"
 
-#: maps/models.py:114
+#: maps/models.py:115
 msgid "Ecuador"
 msgstr "Equateur"
 
-#: maps/models.py:115
+#: maps/models.py:116
 msgid "Egypt"
 msgstr "Egypte"
 
-#: maps/models.py:116
+#: maps/models.py:117
 msgid "El Salvador"
 msgstr "El Salvador"
 
-#: maps/models.py:117
+#: maps/models.py:118
 msgid "Equatorial Guinea"
 msgstr "La Guinée équatoriale"
 
-#: maps/models.py:118
+#: maps/models.py:119
 msgid "Eritrea"
 msgstr "L'Érythrée"
 
-#: maps/models.py:119
+#: maps/models.py:120
 msgid "Estonia"
 msgstr "L'Estonie"
 
-#: maps/models.py:120
+#: maps/models.py:121
 msgid "Ethiopia"
 msgstr "Ethiopie"
 
-#: maps/models.py:121
+#: maps/models.py:122
 msgid "Faeroe Islands"
 msgstr "Iles Féroé"
 
-#: maps/models.py:122
+#: maps/models.py:123
 msgid "Falkland Islands (Malvinas)"
 msgstr "Îles Falkland (Malvinas)"
 
-#: maps/models.py:123
+#: maps/models.py:124
 msgid "Fiji"
 msgstr "Fidji"
 
-#: maps/models.py:124
+#: maps/models.py:125
 msgid "Finland"
 msgstr "Finlande"
 
-#: maps/models.py:125
+#: maps/models.py:126
 msgid "France"
 msgstr "France"
 
-#: maps/models.py:126
+#: maps/models.py:127
 msgid "French Guiana"
 msgstr "Guyane française"
 
-#: maps/models.py:127
+#: maps/models.py:128
 msgid "French Polynesia"
 msgstr "Polynésie française"
 
-#: maps/models.py:128
+#: maps/models.py:129
 msgid "Gabon"
 msgstr "Gabon"
 
-#: maps/models.py:129
+#: maps/models.py:130
 msgid "Gambia"
 msgstr "Gambie"
 
-#: maps/models.py:130
+#: maps/models.py:131
 msgid "Georgia"
 msgstr "Géorgie"
 
-#: maps/models.py:131
+#: maps/models.py:132
 msgid "Germany"
 msgstr "Allemagne"
 
-#: maps/models.py:132
+#: maps/models.py:133
 msgid "Ghana"
 msgstr "Ghana"
 
-#: maps/models.py:133
+#: maps/models.py:134
 msgid "Gibraltar"
 msgstr "Gibraltar"
 
-#: maps/models.py:134
+#: maps/models.py:135
 msgid "Greece"
 msgstr "Grèce"
 
-#: maps/models.py:135
+#: maps/models.py:136
 msgid "Greenland"
 msgstr "Groenland"
 
-#: maps/models.py:136
+#: maps/models.py:137
 msgid "Grenada"
 msgstr "Grenade"
 
-#: maps/models.py:137
+#: maps/models.py:138
 msgid "Guadeloupe"
 msgstr "Guadeloupe"
 
-#: maps/models.py:138
+#: maps/models.py:139
 msgid "Guam"
 msgstr "Guam"
 
-#: maps/models.py:139
+#: maps/models.py:140
 msgid "Guatemala"
 msgstr "Guatemala"
 
-#: maps/models.py:140
+#: maps/models.py:141
 msgid "Guernsey"
 msgstr "Guernesey"
 
-#: maps/models.py:141
+#: maps/models.py:142
 msgid "Guinea"
 msgstr "Guinée"
 
-#: maps/models.py:142
+#: maps/models.py:143
 msgid "Guinea-Bissau"
 msgstr "Guinée-Bissau"
 
-#: maps/models.py:143
+#: maps/models.py:144
 msgid "Guyana"
 msgstr "Guyana"
 
-#: maps/models.py:144
+#: maps/models.py:145
 msgid "Haiti"
 msgstr "Haïti"
 
-#: maps/models.py:145
+#: maps/models.py:146
 msgid "Holy See (Vatican City)"
 msgstr "Saint-Siège (Cité du Vatican)"
 
-#: maps/models.py:146
+#: maps/models.py:147
 msgid "Honduras"
 msgstr "Honduras"
 
-#: maps/models.py:147
+#: maps/models.py:148
 msgid "Hungary"
 msgstr "Hongrie"
 
-#: maps/models.py:148
+#: maps/models.py:149
 msgid "Iceland"
 msgstr "L'Islande"
 
-#: maps/models.py:149
+#: maps/models.py:150
 msgid "India"
 msgstr "L'Inde"
 
-#: maps/models.py:150
+#: maps/models.py:151
 msgid "Indonesia"
 msgstr "Indonésie"
 
-#: maps/models.py:151
+#: maps/models.py:152
 msgid "Iran"
 msgstr "Iran"
 
-#: maps/models.py:152
+#: maps/models.py:153
 msgid "Iraq"
 msgstr "Irak"
 
-#: maps/models.py:153
+#: maps/models.py:154
 msgid "Ireland"
 msgstr "L'Irlande"
 
-#: maps/models.py:154
+#: maps/models.py:155
 msgid "Isle of Man"
 msgstr "Île de Man"
 
-#: maps/models.py:155
+#: maps/models.py:156
 msgid "Israel"
 msgstr "Israël"
 
-#: maps/models.py:156
+#: maps/models.py:157
 msgid "Italy"
 msgstr "Italie"
 
-#: maps/models.py:157
+#: maps/models.py:158
 msgid "Jamaica"
 msgstr "La Jamaïque"
 
-#: maps/models.py:158
+#: maps/models.py:159
 msgid "Japan"
 msgstr "Le Japon"
 
-#: maps/models.py:159
+#: maps/models.py:160
 msgid "Jersey"
 msgstr "Jersey"
 
-#: maps/models.py:160
+#: maps/models.py:161
 msgid "Jordan"
 msgstr "Jordan"
 
-#: maps/models.py:161
+#: maps/models.py:162
 msgid "Kazakhstan"
 msgstr "Kazakhstan"
 
-#: maps/models.py:162
+#: maps/models.py:163
 msgid "Kenya"
 msgstr "Kenya"
 
-#: maps/models.py:163
+#: maps/models.py:164
 msgid "Kiribati"
 msgstr "Kiribati"
 
-#: maps/models.py:164
+#: maps/models.py:165
 msgid "Kuwait"
 msgstr "Koweït"
 
-#: maps/models.py:165
+#: maps/models.py:166
 msgid "Kyrgyzstan"
 msgstr "Kirghizistan"
 
-#: maps/models.py:166
+#: maps/models.py:167
 msgid "Lao People's Democratic Republic"
 msgstr "Populaire lao République démocratique"
 
-#: maps/models.py:167
+#: maps/models.py:168
 msgid "Latvia"
 msgstr "La Lettonie"
 
-#: maps/models.py:168
+#: maps/models.py:169
 msgid "Lebanon"
 msgstr "Liban"
 
-#: maps/models.py:169
+#: maps/models.py:170
 msgid "Lesotho"
 msgstr "Lesotho"
 
-#: maps/models.py:170
+#: maps/models.py:171
 msgid "Liberia"
 msgstr "Liberia"
 
-#: maps/models.py:171
+#: maps/models.py:172
 msgid "Libyan Arab Jamahiriya"
 msgstr "Jamahiriya arabe libyenne"
 
-#: maps/models.py:172
+#: maps/models.py:173
 msgid "Liechtenstein"
 msgstr "Liechtenstein"
 
-#: maps/models.py:173
+#: maps/models.py:174
 msgid "Lithuania"
 msgstr "Lituanie"
 
-#: maps/models.py:174
+#: maps/models.py:175
 msgid "Luxembourg"
 msgstr "Luxembourg"
 
-#: maps/models.py:175
+#: maps/models.py:176
 msgid "Macedonia"
 msgstr "Macédoine"
 
-#: maps/models.py:176
+#: maps/models.py:177
 msgid "Madagascar"
 msgstr "Madagascar"
 
-#: maps/models.py:177
+#: maps/models.py:178
 msgid "Malawi"
 msgstr "Malawi"
 
-#: maps/models.py:178
+#: maps/models.py:179
 msgid "Malaysia"
 msgstr "Malaisie"
 
-#: maps/models.py:179
+#: maps/models.py:180
 msgid "Maldives"
 msgstr "Maldives"
 
-#: maps/models.py:180
+#: maps/models.py:181
 msgid "Mali"
 msgstr "Mali"
 
-#: maps/models.py:181
+#: maps/models.py:182
 msgid "Malta"
 msgstr "Malte"
 
-#: maps/models.py:182
+#: maps/models.py:183
 msgid "Marshall Islands"
 msgstr "Îles Marshall"
 
-#: maps/models.py:183
+#: maps/models.py:184
 msgid "Martinique"
 msgstr "Martinique"
 
-#: maps/models.py:184
+#: maps/models.py:185
 msgid "Mauritania"
 msgstr "Mauritanie"
 
-#: maps/models.py:185
+#: maps/models.py:186
 msgid "Mauritius"
 msgstr "Ile Maurice"
 
-#: maps/models.py:186
+#: maps/models.py:187
 msgid "Mayotte"
 msgstr "Mayotte"
 
-#: maps/models.py:187
+#: maps/models.py:188
 msgid "Mexico"
 msgstr "Mexique"
 
-#: maps/models.py:188
+#: maps/models.py:189
 msgid "Micronesia, Federated States of"
 msgstr "Micronésie, États fédérés de"
 
-#: maps/models.py:189
+#: maps/models.py:190
 msgid "Monaco"
 msgstr "Monaco"
 
-#: maps/models.py:190
+#: maps/models.py:191
 msgid "Mongolia"
 msgstr "Mongolie"
 
-#: maps/models.py:191
+#: maps/models.py:192
 msgid "Montenegro"
 msgstr "Monténégro"
 
-#: maps/models.py:192
+#: maps/models.py:193
 msgid "Montserrat"
 msgstr "Montserrat"
 
-#: maps/models.py:193
+#: maps/models.py:194
 msgid "Morocco"
 msgstr "Maroc"
 
-#: maps/models.py:194
+#: maps/models.py:195
 msgid "Mozambique"
 msgstr "Mozambique"
 
-#: maps/models.py:195
+#: maps/models.py:196
 msgid "Myanmar"
 msgstr "Myanmar"
 
-#: maps/models.py:196
+#: maps/models.py:197
 msgid "Namibia"
 msgstr "Namibie"
 
-#: maps/models.py:197
+#: maps/models.py:198
 msgid "Nauru"
 msgstr "Nauru"
 
-#: maps/models.py:198
+#: maps/models.py:199
 msgid "Nepal"
 msgstr "Népal"
 
-#: maps/models.py:199
+#: maps/models.py:200
 msgid "Netherlands"
 msgstr "Pays-Bas"
 
-#: maps/models.py:200
+#: maps/models.py:201
 msgid "Netherlands Antilles"
 msgstr "Antilles néerlandaises"
 
-#: maps/models.py:201
+#: maps/models.py:202
 msgid "New Caledonia"
 msgstr "Nouvelle-Calédonie"
 
-#: maps/models.py:202
+#: maps/models.py:203
 msgid "New Zealand"
 msgstr "Nouvelle-Zélande"
 
-#: maps/models.py:203
+#: maps/models.py:204
 msgid "Nicaragua"
 msgstr "Nicaragua"
 
-#: maps/models.py:204
+#: maps/models.py:205
 msgid "Niger"
 msgstr "Niger"
 
-#: maps/models.py:205
+#: maps/models.py:206
 msgid "Nigeria"
 msgstr "Nigeria"
 
-#: maps/models.py:206
+#: maps/models.py:207
 msgid "Niue"
 msgstr "Niue"
 
-#: maps/models.py:207
+#: maps/models.py:208
 msgid "Norfolk Island"
 msgstr "Norfolk Island"
 
-#: maps/models.py:208
+#: maps/models.py:209
 msgid "Northern Mariana Islands"
 msgstr "Îles Mariannes du Nord"
 
-#: maps/models.py:209
+#: maps/models.py:210
 msgid "Norway"
 msgstr "La Norvège"
 
-#: maps/models.py:210
+#: maps/models.py:211
 msgid "Occupied Palestinian Territory"
 msgstr "Territoire palestinien occupé"
 
-#: maps/models.py:211
+#: maps/models.py:212
 msgid "Oman"
 msgstr "Oman"
 
-#: maps/models.py:212
+#: maps/models.py:213
 msgid "Pakistan"
 msgstr "Pakistan"
 
-#: maps/models.py:213
+#: maps/models.py:214
 msgid "Palau"
 msgstr "Palau"
 
-#: maps/models.py:214
+#: maps/models.py:215
 msgid "Panama"
 msgstr "Panama"
 
-#: maps/models.py:215
+#: maps/models.py:216
 msgid "Papua New Guinea"
 msgstr "Papouasie-Nouvelle-Guinée"
 
-#: maps/models.py:216
+#: maps/models.py:217
 msgid "Paraguay"
 msgstr "Paraguay"
 
-#: maps/models.py:217
+#: maps/models.py:218
 msgid "Peru"
 msgstr "Pérou"
 
-#: maps/models.py:218
+#: maps/models.py:219
 msgid "Philippines"
 msgstr "Philippines"
 
-#: maps/models.py:219
+#: maps/models.py:220
 msgid "Pitcairn"
 msgstr "Pitcairn"
 
-#: maps/models.py:220
+#: maps/models.py:221
 msgid "Poland"
 msgstr "La Pologne"
 
-#: maps/models.py:221
+#: maps/models.py:222
 msgid "Portugal"
 msgstr "Portugal"
 
-#: maps/models.py:222
+#: maps/models.py:223
 msgid "Puerto Rico"
 msgstr "Puerto Rico"
 
-#: maps/models.py:223
+#: maps/models.py:224
 msgid "Qatar"
 msgstr "Qatar"
 
-#: maps/models.py:224
+#: maps/models.py:225
 msgid "Republic of Korea"
 msgstr "République de Corée"
 
-#: maps/models.py:225
+#: maps/models.py:226
 msgid "Republic of Moldova"
 msgstr "République de Moldova"
 
-#: maps/models.py:226
+#: maps/models.py:227
 msgid "Reunion"
 msgstr "Réunion"
 
-#: maps/models.py:227
+#: maps/models.py:228
 msgid "Romania"
 msgstr "La Roumanie"
 
-#: maps/models.py:228
+#: maps/models.py:229
 msgid "Russian Federation"
 msgstr "Fédération de Russie"
 
-#: maps/models.py:229
+#: maps/models.py:230
 msgid "Rwanda"
 msgstr "Rwanda"
 
-#: maps/models.py:230
+#: maps/models.py:231
 msgid "Saint-Barthelemy"
 msgstr "Saint-Barthélemy"
 
-#: maps/models.py:231
+#: maps/models.py:232
 msgid "Saint Helena"
 msgstr "Sainte-Hélène"
 
-#: maps/models.py:232
+#: maps/models.py:233
 msgid "Saint Kitts and Nevis"
 msgstr "Saint-Kitts-et-Nevis"
 
-#: maps/models.py:233
+#: maps/models.py:234
 msgid "Saint Lucia"
 msgstr "Sainte-Lucie"
 
-#: maps/models.py:234
+#: maps/models.py:235
 msgid "Saint-Martin (French part)"
 msgstr "Saint-Martin (partie française)"
 
-#: maps/models.py:235
+#: maps/models.py:236
 msgid "Saint Pierre and Miquelon"
 msgstr "Saint-Pierre-et-Miquelon"
 
-#: maps/models.py:236
+#: maps/models.py:237
 msgid "Saint Vincent and the Grenadines"
 msgstr "Saint-Vincent-et-les Grenadines"
 
-#: maps/models.py:237
+#: maps/models.py:238
 msgid "Samoa"
 msgstr "Samoa"
 
-#: maps/models.py:238
+#: maps/models.py:239
 msgid "San Marino"
 msgstr "Saint-Marin"
 
-#: maps/models.py:239
+#: maps/models.py:240
 msgid "Sao Tome and Principe"
 msgstr "Sao Tomé et Principe"
 
-#: maps/models.py:240
+#: maps/models.py:241
 msgid "Saudi Arabia"
 msgstr "Arabie saoudite"
 
-#: maps/models.py:241
+#: maps/models.py:242
 msgid "Senegal"
 msgstr "Sénégal"
 
-#: maps/models.py:242
+#: maps/models.py:243
 msgid "Serbia"
 msgstr "La Serbie"
 
-#: maps/models.py:243
+#: maps/models.py:244
 msgid "Seychelles"
 msgstr "Seychelles"
 
-#: maps/models.py:244
+#: maps/models.py:245
 msgid "Sierra Leone"
 msgstr "Sierra Leone"
 
-#: maps/models.py:245
+#: maps/models.py:246
 msgid "Singapore"
 msgstr "Singapour"
 
-#: maps/models.py:246
+#: maps/models.py:247
 msgid "Slovakia"
 msgstr "La Slovaquie"
 
-#: maps/models.py:247
+#: maps/models.py:248
 msgid "Slovenia"
 msgstr "La Slovénie"
 
-#: maps/models.py:248
+#: maps/models.py:249
 msgid "Solomon Islands"
 msgstr "Iles Salomon"
 
-#: maps/models.py:249
+#: maps/models.py:250
 msgid "Somalia"
 msgstr "Somalie"
 
-#: maps/models.py:250
+#: maps/models.py:251
 msgid "South Africa"
 msgstr "Afrique du Sud"
 
-#: maps/models.py:251
+#: maps/models.py:252
 msgid "Spain"
 msgstr "Espagne"
 
-#: maps/models.py:252
+#: maps/models.py:253
 msgid "Sri Lanka"
 msgstr "Sri Lanka"
 
-#: maps/models.py:253
+#: maps/models.py:254
 msgid "Sudan"
 msgstr "Soudan"
 
-#: maps/models.py:254
+#: maps/models.py:255
 msgid "Suriname"
 msgstr "Suriname"
 
-#: maps/models.py:255
+#: maps/models.py:256
 msgid "Svalbard and Jan Mayen Islands"
 msgstr "Les îles Svalbard et Jan Mayen"
 
-#: maps/models.py:256
+#: maps/models.py:257
 msgid "Swaziland"
 msgstr "Swaziland"
 
-#: maps/models.py:257
+#: maps/models.py:258
 msgid "Sweden"
 msgstr "La Suède"
 
-#: maps/models.py:258
+#: maps/models.py:259
 msgid "Switzerland"
 msgstr "Suisse"
 
-#: maps/models.py:259
+#: maps/models.py:260
 msgid "Syrian Arab Republic"
 msgstr "République arabe syrienne"
 
-#: maps/models.py:260
+#: maps/models.py:261
 msgid "Tajikistan"
 msgstr "Tadjikistan"
 
-#: maps/models.py:261
+#: maps/models.py:262
 msgid "Thailand"
 msgstr "Thaïlande"
 
-#: maps/models.py:262
+#: maps/models.py:263
 msgid "Timor-Leste"
 msgstr "Timor-Leste"
 
-#: maps/models.py:263
+#: maps/models.py:264
 msgid "Togo"
 msgstr "Togo"
 
-#: maps/models.py:264
+#: maps/models.py:265
 msgid "Tokelau"
 msgstr "Tokélaou"
 
-#: maps/models.py:265
+#: maps/models.py:266
 msgid "Tonga"
 msgstr "Tonga"
 
-#: maps/models.py:266
+#: maps/models.py:267
 msgid "Trinidad and Tobago"
 msgstr "Trinité-et-Tobago"
 
-#: maps/models.py:267
+#: maps/models.py:268
 msgid "Tunisia"
 msgstr "Tunisie"
 
-#: maps/models.py:268
+#: maps/models.py:269
 msgid "Turkey"
 msgstr "Turquie"
 
-#: maps/models.py:269
+#: maps/models.py:270
 msgid "Turkmenistan"
 msgstr "Le Turkménistan"
 
-#: maps/models.py:270
+#: maps/models.py:271
 msgid "Turks and Caicos Islands"
 msgstr "Les îles Turks et Caicos"
 
-#: maps/models.py:271
+#: maps/models.py:272
 msgid "Tuvalu"
 msgstr "Tuvalu"
 
-#: maps/models.py:272
+#: maps/models.py:273
 msgid "Uganda"
 msgstr "Ouganda"
 
-#: maps/models.py:273
+#: maps/models.py:274
 msgid "Ukraine"
 msgstr "Ukraine"
 
-#: maps/models.py:274
+#: maps/models.py:275
 msgid "United Arab Emirates"
 msgstr "Émirats arabes unis"
 
-#: maps/models.py:275
+#: maps/models.py:276
 msgid "United Kingdom"
 msgstr "Royaume-Uni"
 
-#: maps/models.py:276
+#: maps/models.py:277
 msgid "United Republic of Tanzania"
 msgstr "République-Unie de Tanzanie"
 
-#: maps/models.py:277
+#: maps/models.py:278
 msgid "United States of America"
 msgstr "États-Unis d'Amérique"
 
-#: maps/models.py:278
+#: maps/models.py:279
 msgid "United States Virgin Islands"
 msgstr "Îles Vierges américaines"
 
-#: maps/models.py:279
+#: maps/models.py:280
 msgid "Uruguay"
 msgstr "Uruguay"
 
-#: maps/models.py:280
+#: maps/models.py:281
 msgid "Uzbekistan"
 msgstr "Ouzbékistan"
 
-#: maps/models.py:281
+#: maps/models.py:282
 msgid "Vanuatu"
 msgstr "Vanuatu"
 
-#: maps/models.py:282
+#: maps/models.py:283
 msgid "Venezuela (Bolivarian Republic of)"
 msgstr "Venezuela (République bolivarienne du)"
 
-#: maps/models.py:283
+#: maps/models.py:284
 msgid "Viet Nam"
 msgstr "Viet Nam"
 
-#: maps/models.py:284
+#: maps/models.py:285
 msgid "Wallis and Futuna Islands"
 msgstr "Wallis et Futuna"
 
-#: maps/models.py:285
+#: maps/models.py:286
 msgid "Western Sahara"
 msgstr "Sahara occidental"
 
-#: maps/models.py:286
+#: maps/models.py:287
 msgid "Yemen"
 msgstr "Yémen"
 
-#: maps/models.py:287
+#: maps/models.py:288
 msgid "Zambia"
 msgstr "Zambie"
 
-#: maps/models.py:288
+#: maps/models.py:289
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
 
-#: maps/models.py:475
+#: maps/models.py:476
 msgid ""
 "You can customize the template to suit your needs. You can add and remove "
 "fields and fill out default information (e.g. contact details). Fields you "
@@ -1012,239 +1012,239 @@ msgstr ""
 "structures sur mesure, mais elles doivent être validées par le système, "
 "alors mieux vaut s'y connaître. "
 
-#: maps/models.py:490
+#: maps/models.py:491
 msgid "Individual Name"
 msgstr "Nom de la personne"
 
-#: maps/models.py:491
+#: maps/models.py:492
 msgid "Organization Name"
 msgstr "Nom de l'organisation"
 
-#: maps/models.py:492
+#: maps/models.py:493
 msgid "Position Name"
 msgstr "Poste"
 
-#: maps/models.py:493 templates/maps/layer.html:165
+#: maps/models.py:494 templates/maps/layer.html:165
 msgid "Voice"
 msgstr "Téléphone"
 
-#: maps/models.py:494
+#: maps/models.py:495
 msgid "Facsimile"
 msgstr "Télécopieur"
 
-#: maps/models.py:495
+#: maps/models.py:496
 msgid "Delivery Point"
 msgstr "Point de livraison"
 
-#: maps/models.py:496
+#: maps/models.py:497
 msgid "City"
 msgstr "Ville"
 
-#: maps/models.py:497
+#: maps/models.py:498
 msgid "Administrative Area"
 msgstr "Zone administrative"
 
-#: maps/models.py:498
+#: maps/models.py:499
 msgid "Postal Code"
 msgstr "Code postal"
 
-#: maps/models.py:658
+#: maps/models.py:678
 msgid "date"
 msgstr "date"
 
-#: maps/models.py:660
+#: maps/models.py:680
 msgid "date type"
 msgstr "catégorie de date"
 
-#: maps/models.py:662
+#: maps/models.py:682
 msgid "edition"
 msgstr "édition"
 
-#: maps/models.py:663
+#: maps/models.py:683
 msgid "abstract"
 msgstr "résumé"
 
-#: maps/models.py:664
+#: maps/models.py:684
 msgid "purpose"
 msgstr "but"
 
-#: maps/models.py:665
+#: maps/models.py:685
 msgid "maintenance frequency"
 msgstr "fréquence d'entretien"
 
-#: maps/models.py:671
+#: maps/models.py:691
 msgid "keywords"
 msgstr "mots-clés"
 
-#: maps/models.py:672
+#: maps/models.py:692
 msgid "keywords region"
 msgstr "mots-clés région"
 
-#: maps/models.py:673
+#: maps/models.py:693
 msgid "constraints use"
 msgstr "contraintes d'utilisation"
 
-#: maps/models.py:674
+#: maps/models.py:694
 msgid "constraints other"
 msgstr "autres contraintes"
 
-#: maps/models.py:675
+#: maps/models.py:695
 msgid "spatial representation type"
 msgstr "type de représentation spatiale"
 
-#: maps/models.py:678
+#: maps/models.py:698
 msgid "language"
 msgstr "langue"
 
-#: maps/models.py:679
+#: maps/models.py:699
 msgid "topic_category"
 msgstr "topic_category"
 
-#: maps/models.py:682
+#: maps/models.py:702
 msgid "temporal extent start"
 msgstr "début temporelle mesure"
 
-#: maps/models.py:683
+#: maps/models.py:703
 msgid "temporal extent end"
 msgstr "fin temporelle mesure"
 
-#: maps/models.py:684
+#: maps/models.py:704
 msgid "geographic bounding box"
 msgstr "aire de délimitation géographique"
 
-#: maps/models.py:685
+#: maps/models.py:705
 msgid "supplemental information"
 msgstr "informations supplémentaires"
 
-#: maps/models.py:688
+#: maps/models.py:708
 msgid "distribution URL"
 msgstr "URL de distribution"
 
-#: maps/models.py:689
+#: maps/models.py:709
 msgid "distribution description"
 msgstr "description de la distribution"
 
-#: maps/models.py:692
+#: maps/models.py:712
 msgid "data quality statement"
 msgstr "énoncé sur la qualité des données"
 
-#: maps/models.py:727
+#: maps/models.py:747
 msgid "Zipped Shapefile"
 msgstr "Fichier de formes compactée (.zip)"
 
-#: maps/models.py:728
+#: maps/models.py:748
 msgid "GML 2.0"
 msgstr "GML 2.0"
 
-#: maps/models.py:729
+#: maps/models.py:749
 msgid "GML 3.1.1"
 msgstr "GML 3.1.1"
 
-#: maps/models.py:730
+#: maps/models.py:750
 msgid "CSV"
 msgstr "CSV"
 
-#: maps/models.py:731
+#: maps/models.py:751
 msgid "Excel"
 msgstr "Excel"
 
-#: maps/models.py:732
+#: maps/models.py:752
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: maps/models.py:785
+#: maps/models.py:805
 msgid "JPEG"
 msgstr "JPEG"
 
-#: maps/models.py:786
+#: maps/models.py:806
 msgid "PDF"
 msgstr "PDF"
 
-#: maps/models.py:787
+#: maps/models.py:807
 msgid "PNG"
 msgstr "PNG"
 
-#: maps/models.py:802
+#: maps/models.py:822
 msgid "KML"
 msgstr "KML"
 
-#: maps/models.py:803
+#: maps/models.py:823
 msgid "View in Google Earth"
 msgstr "Afficher dans Google Earth"
 
-#: maps/models.py:1154
+#: maps/models.py:1179
 msgid "Title"
 msgstr "Titre"
 
-#: maps/models.py:1159 templates/maps/layer.html:134
+#: maps/models.py:1184 templates/maps/layer.html:134
 msgid "Abstract"
 msgstr "Résumé"
 
-#: maps/models.py:1165
+#: maps/models.py:1190
 msgid "zoom"
 msgstr "zoom"
 
-#: maps/models.py:1171
+#: maps/models.py:1196
 msgid "projection"
 msgstr "projection"
 
-#: maps/models.py:1177
+#: maps/models.py:1202
 msgid "center X"
 msgstr "centre X"
 
-#: maps/models.py:1183
+#: maps/models.py:1208
 msgid "center Y"
 msgstr "centre Y"
 
-#: maps/models.py:1189
+#: maps/models.py:1214
 msgid "owner"
 msgstr "propriétaire"
 
-#: maps/models.py:1445
+#: maps/models.py:1470
 msgid "stack order"
 msgstr "pile pour"
 
-#: maps/models.py:1451
+#: maps/models.py:1476
 msgid "format"
 msgstr "format"
 
-#: maps/models.py:1457
+#: maps/models.py:1482
 msgid "name"
 msgstr "nom"
 
-#: maps/models.py:1466
+#: maps/models.py:1491
 msgid "opacity"
 msgstr "opacité"
 
-#: maps/models.py:1471
+#: maps/models.py:1496
 msgid "styles"
 msgstr "styles"
 
-#: maps/models.py:1476
+#: maps/models.py:1501
 msgid "transparent"
 msgstr "transparent"
 
-#: maps/models.py:1481
+#: maps/models.py:1506
 msgid "fixed"
 msgstr "fixe"
 
-#: maps/models.py:1487
+#: maps/models.py:1512
 msgid "group"
 msgstr "groupe"
 
-#: maps/models.py:1493
+#: maps/models.py:1518
 msgid "visibility"
 msgstr "visibilité"
 
-#: maps/models.py:1498
+#: maps/models.py:1523
 msgid "ows URL"
 msgstr "URL ows"
 
-#: maps/models.py:1503
+#: maps/models.py:1528
 msgid "layer params"
 msgstr "paramètres couche"
 
-#: maps/models.py:1512
+#: maps/models.py:1537
 msgid "source params"
 msgstr "paramètres source"
 
@@ -1426,7 +1426,7 @@ msgstr ""
 msgid "Upload a new layer"
 msgstr "Télécharger vers le serveur une nouvelle couche"
 
-#: templates/data_base.html:65 templates/page_layout.html:78
+#: templates/data_base.html:65 templates/page_layout.html:84
 msgid "For Developers"
 msgstr "Pour les développeurs"
 
@@ -1482,11 +1482,11 @@ msgstr "Déconnectez"
 
 #: templates/fullscreen.html:22 templates/page_layout.html:23
 msgid "Sign in"
-msgstr ""
+msgstr "Se connecter"
 
 #: templates/fullscreen.html:23
 msgid "or"
-msgstr ""
+msgstr "ou"
 
 #: templates/fullscreen.html:23 templates/login.html:14
 #: templates/page_layout.html:24
@@ -1495,7 +1495,7 @@ msgstr "S'inscrire"
 
 #: templates/fullscreen.html:24 templates/page_layout.html:25
 msgid "for extra features"
-msgstr ""
+msgstr "pour des fonctionnalités supplémentaires"
 
 #: templates/help.html:3
 msgid "User Guide"
@@ -1651,22 +1651,22 @@ msgstr ""
 "  <h4 id=\\\"exporting-a-map\"> Export d'une carte </h4>\n"
 "  <p> Toute carte du GeoNode peut être intégrée pour utilisation dans un "
 "autre site ou blog. Pour exporter une carte: </p>\n"
-"  <ol><li> Sélectionnez la carte de la liste des cartes sur la page de "
-"la  communauté ou de la carte et appuyez sur le bouton \"Export de carte\"."
-"</li>\n"
+"  <ol><li> Sélectionnez la carte de la liste des cartes sur la page de la  "
+"communauté ou de la carte et appuyez sur le bouton \"Export de carte\".</"
+"li>\n"
 "  <li> Choisissez la hauteur et la largeur souhaitées pour  le widget de "
 "l'assistant (wizard). </li>\n"
 "  <li> Copiez le code HTML fourni dans l'assistant dans n'importe quelle "
 "page HTML ou article blog supportant iFrame.</li>\n"
 "  </ol>\n"
 "  <p> Ceci placera un widget interactif montrant la carte dans votre page "
-"Web ou blog. </p> \n "
-" <p> À noter qu'il est également possible "
-"d'utiliser un bouton d'export de carte dans le <a href=\"maps/new\"> "
-"Créateur de cartes </a>. S'assurer de bien enregistrer la carte avant de "
-"l'exporter si vous désirez que d'autres utilisateurs puissent visualiser les "
-"changements que vous auriez effectués. En effet, la dernière version "
-"enregistrée est exportée, et non la dernière version visualisée. </p>\n"
+"Web ou blog. </p> \n"
+"  <p> À noter qu'il est également possible d'utiliser un bouton d'export de "
+"carte dans le <a href=\"maps/new\"> Créateur de cartes </a>. S'assurer de "
+"bien enregistrer la carte avant de l'exporter si vous désirez que d'autres "
+"utilisateurs puissent visualiser les changements que vous auriez effectués. "
+"En effet, la dernière version enregistrée est exportée, et non la dernière "
+"version visualisée. </p>\n"
 " <h4 id=\\\"remixing-a-map\"> Remixer une carte </h4>\n"
 "  <p> Toute carte disponible peut servir de point de départ pour une "
 "nouvelle carte. </p>\n"
@@ -1840,8 +1840,9 @@ msgstr "Recherche de cartes"
 
 #: templates/maps_search_base.html:35
 msgid "Click the <b>+</b> on any row to show map abstract."
-msgstr "Cliquez sur le <b> + </b> sur n'importe quelle ligne pour "
-"afficher le résumé de la carte."
+msgstr ""
+"Cliquez sur le <b> + </b> sur n'importe quelle ligne pour afficher le résumé "
+"de la carte."
 
 #: templates/maps_search_base.html:36 templates/search_base.html:58
 msgid "To bookmark your current search use this"
@@ -1864,15 +1865,15 @@ msgstr "Profil"
 msgid "Admin"
 msgstr "Administration"
 
-#: templates/page_layout.html:75
+#: templates/page_layout.html:81
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/page_layout.html:76
+#: templates/page_layout.html:82
 msgid "Need Help?"
 msgstr "Besoin d'Aide?"
 
-#: templates/page_layout.html:77
+#: templates/page_layout.html:83
 msgid "Help"
 msgstr "Aide"
 
@@ -1885,8 +1886,8 @@ msgid ""
 "Click the <b>+</b> on any row to show layer metadata or download in PDF, "
 "KML, GeoTIFF, or SHP."
 msgstr ""
-"Cliquez sur le <strong> + </strong> sur n'importe quelle ligne pour voir "
-"les métadonnées couche ou télécharger en PDF, KML, GeoTIFF, ou SHP."
+"Cliquez sur le <strong> + </strong> sur n'importe quelle ligne pour voir les "
+"métadonnées couche ou télécharger en PDF, KML, GeoTIFF, ou SHP."
 
 #: templates/search_base.html:67
 msgid "Refine Search"
@@ -1905,7 +1906,7 @@ msgstr ""
 #: templates/search_base.html:77
 #, fuzzy
 msgid "Selected Data"
-msgstr "Recherche de Données"
+msgstr "Données Sélectionnées"
 
 #: templates/search_base.html:78
 msgid "Use the checkboxes in the search results to add data to your selection."
