@@ -19,11 +19,11 @@ msgstr ""
 
 #: maps/templates/lang.js:5 maps/templates/lang.js.py:8
 msgid "Add Layers"
-msgstr "Ajouter une couche"
+msgstr ""
 
 #: maps/templates/lang.js:6
 msgid "Area"
-msgstr "Zone"
+msgstr ""
 
 #: maps/templates/lang.js:7
 msgid "Background"
@@ -35,35 +35,35 @@ msgstr ""
 
 #: maps/templates/lang.js:10
 msgid "Available Layers"
-msgstr "Couches disponibles"
+msgstr ""
 
 #: maps/templates/lang.js:11
 msgid "Connection Error"
-msgstr "Erreur de connexion"
+msgstr ""
 
 #: maps/templates/lang.js:12
 msgid "The server returned an error"
-msgstr "Le serveur a renvoyé une erreur"
+msgstr ""
 
 #: maps/templates/lang.js:13
 msgid "Details..."
-msgstr "Détails..."
+msgstr ""
 
 #: maps/templates/lang.js:15 maps/templates/lang.js.py:107
 msgid "Height"
-msgstr "Hauteur"
+msgstr ""
 
 #: maps/templates/lang.js:16
 msgid "Get Feature Info"
-msgstr "Obtenir les informations"
+msgstr ""
 
 #: maps/templates/lang.js:17 maps/templates/lang.js.py:108
 msgid "Large"
-msgstr "Large"
+msgstr ""
 
 #: maps/templates/lang.js:18
 msgid "or add a new server."
-msgstr "ou ajouter un nouveau serveur."
+msgstr ""
 
 #: maps/templates/lang.js:19
 msgid "Map Layers"
@@ -71,75 +71,75 @@ msgstr ""
 
 #: maps/templates/lang.js:20
 msgid "View available data from:"
-msgstr "Visualiser les données disponibles de :"
+msgstr ""
 
 #: maps/templates/lang.js:21
 msgid "Data"
-msgstr "Données"
+msgstr ""
 
 #: maps/templates/lang.js:22
 msgid "Layers"
-msgstr "Couches"
+msgstr ""
 
 #: maps/templates/lang.js:23
 msgid "Legend"
-msgstr "Légende"
+msgstr ""
 
 #: maps/templates/lang.js:24
 msgid "Length"
-msgstr "Longueur"
+msgstr ""
 
 #: maps/templates/lang.js:25
 msgid "Loading Map..."
-msgstr "Chargement de la carte..."
+msgstr ""
 
 #: maps/templates/lang.js:26 maps/templates/lang.js.py:109
 msgid "Map Size"
-msgstr "Dimensions de la carte"
+msgstr ""
 
 #: maps/templates/lang.js:27
 msgid "Measure"
-msgstr "Mesurer"
+msgstr ""
 
 #: maps/templates/lang.js:28
 msgid "About this Map"
-msgstr "A propos de cette carte"
+msgstr ""
 
 #: maps/templates/lang.js:29 maps/templates/lang.js.py:82
 #: maps/templates/lang.js:151
 msgid "Abstract"
-msgstr "Résumé"
+msgstr ""
 
 #: maps/templates/lang.js:30 maps/templates/lang.js.py:83
 #: maps/templates/lang.js:149
 msgid "Contact"
-msgstr "Contact"
+msgstr ""
 
 #: maps/templates/lang.js:31 maps/templates/lang.js.py:41
 msgid "Permalink"
-msgstr "Lien permanent"
+msgstr ""
 
 #: maps/templates/lang.js:32 maps/templates/lang.js.py:222
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: maps/templates/lang.js:33
 msgid "Save as Copy"
-msgstr "Enregistrer en tant que copie"
+msgstr ""
 
 #: maps/templates/lang.js:34
 msgid "Save"
-msgstr "Enregistrer"
+msgstr ""
 
 #: maps/templates/lang.js:35 maps/templates/lang.js.py:86
 #: maps/templates/lang.js:95 maps/templates/lang.js.py:148
 #: maps/templates/lang.js:170 maps/templates/lang.js.py:205
 msgid "Title"
-msgstr "Titre"
+msgstr ""
 
 #: maps/templates/lang.js:36 maps/templates/lang.js.py:110
 msgid "Mini"
-msgstr "Mini"
+msgstr ""
 
 #: maps/templates/lang.js:37
 msgid "Pan Map"
@@ -147,15 +147,15 @@ msgstr ""
 
 #: maps/templates/lang.js:38
 msgid "Zoom to Next Extent"
-msgstr "Zoom suivant"
+msgstr ""
 
 #: maps/templates/lang.js:39
 msgid "Zoom to Previous Extent"
-msgstr "Zoom précédent"
+msgstr ""
 
 #: maps/templates/lang.js:40
 msgid "This map has not yet been saved."
-msgstr "Cette carte n'a pas encore été enregistrée."
+msgstr ""
 
 #: maps/templates/lang.js:42 maps/templates/lang.js.py:111
 msgid "Premium"
@@ -163,39 +163,39 @@ msgstr ""
 
 #: maps/templates/lang.js:43
 msgid "Print Map"
-msgstr "Imprimer la carte"
+msgstr ""
 
 #: maps/templates/lang.js:44
 msgid "Print Preview"
-msgstr "Afficher l'aperçu d'impression"
+msgstr ""
 
 #: maps/templates/lang.js:45
 msgid "Properties"
-msgstr "Propriétés"
+msgstr ""
 
 #: maps/templates/lang.js:46 maps/templates/lang.js.py:112
 msgid "Publish Map"
-msgstr "Publier la carte"
+msgstr ""
 
 #: maps/templates/lang.js:47 maps/templates/lang.js.py:48
 msgid "Remove Layer"
-msgstr "Supprimer la couche"
+msgstr ""
 
 #: maps/templates/lang.js:49
 msgid "Sorry, your map could not be saved."
-msgstr "Désolé, votre carte ne peut être enregistrée."
+msgstr ""
 
 #: maps/templates/lang.js:50
 msgid "Error While Saving"
-msgstr "Erreur durant l'enregistrement"
+msgstr ""
 
 #: maps/templates/lang.js:51
 msgid "Save Map"
-msgstr "Enregistrer la Carte"
+msgstr ""
 
 #: maps/templates/lang.js:52
 msgid "You must be logged in to save this map."
-msgstr "Vous devez être connecté pour enregistrer cette carte."
+msgstr ""
 
 #: maps/templates/lang.js:53 maps/templates/lang.js.py:114
 msgid "Small"
@@ -209,90 +209,90 @@ msgstr ""
 
 #: maps/templates/lang.js:55
 msgid "Layer Properties"
-msgstr "Propriétés de la couche"
+msgstr ""
 
 #: maps/templates/lang.js:56
 msgid "Change layer format and style"
-msgstr "Modifier le format et le style de la couche"
+msgstr ""
 
 #: maps/templates/lang.js:57
 msgid "Edit Styles"
-msgstr "Éditer les styles"
+msgstr ""
 
 #: maps/templates/lang.js:58
 msgid "Edit layer styles"
-msgstr "Éditer les styles de la couche"
+msgstr ""
 
 #: maps/templates/lang.js:59
 msgid "Switch to Google Earth 3D Viewer"
-msgstr "Basculer sur la vue Google Earth 3D"
+msgstr ""
 
 #: maps/templates/lang.js:60
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr "Cette carte que vous essayez de charger n'existe pas. Créez une nouvelle carte à la place."
+msgstr ""
 
 #: maps/templates/lang.js:61
 msgid "Unknown Map"
-msgstr "Carte Inconnue"
+msgstr ""
 
 #: maps/templates/lang.js:62 maps/templates/lang.js.py:115
 msgid "Width"
-msgstr "Largeur"
+msgstr ""
 
 #: maps/templates/lang.js:63
 msgid "Zoom In"
-msgstr "Zoom Avant"
+msgstr ""
 
 #: maps/templates/lang.js:64
 msgid "Zoom Out"
-msgstr "Zoom Arrière"
+msgstr ""
 
 #: maps/templates/lang.js:65
 msgid "Zoom level"
-msgstr "Niveau de zoom"
+msgstr ""
 
 #: maps/templates/lang.js:66
 msgid "Zoom Level"
-msgstr "Niveau de Soom"
+msgstr ""
 
 #: maps/templates/lang.js:67
 msgid "Zoom to Layer Extent"
-msgstr "Zoomer sur la Couche"
+msgstr ""
 
 #: maps/templates/lang.js:68
 msgid "Zoom to Visible Extent"
-msgstr "Zoomer sur la Zone Visible"
+msgstr ""
 
 #: maps/templates/lang.js:74
 #, perl-brace-format
 msgid "Zoom Level {zoom}"
-msgstr "Niveau de Zoom {zoom}"
+msgstr ""
 
 #: maps/templates/lang.js:80
 msgid "Create Map"
-msgstr "Créer une Carte"
+msgstr ""
 
 #: maps/templates/lang.js:81
 msgid "Export Map"
-msgstr "Exporter la Carte"
+msgstr ""
 
 #: maps/templates/lang.js:84
 msgid "Map"
-msgstr "Carte"
+msgstr ""
 
 #: maps/templates/lang.js:85 maps/templates/lang.js.py:152
 msgid "View this Map"
-msgstr "Voir cette Carte"
+msgstr ""
 
 #: maps/templates/lang.js:87
 msgid "Open Map"
-msgstr "Ouvrir une Carte"
+msgstr ""
 
 #: maps/templates/lang.js:93 maps/templates/lang.js.py:169
 msgid "Name"
-msgstr "Nom"
+msgstr ""
 
 #: maps/templates/lang.js:94
 msgid "Queryable"
@@ -300,179 +300,178 @@ msgstr ""
 
 #: maps/templates/lang.js:101
 msgid "No background"
-msgstr "Pas de fond"
+msgstr ""
 
 #: maps/templates/lang.js:113
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr "Votre carte est prête à être publiée sur internet ! "
-"Copiez simplement le code HTML suivant pour afficher la carte sur votre site :"
+msgstr ""
 
 #: maps/templates/lang.js:122 maps/templates/lang.js.py:188
 msgid "Abstract:"
-msgstr "Résumé :"
+msgstr ""
 
 #: maps/templates/lang.js:123 maps/templates/lang.js.py:190
 msgid "No attribution information is provided for this layer."
-msgstr "Aucune information n'est disponible pour cette couche."
+msgstr ""
 
 #: maps/templates/lang.js:124 maps/templates/lang.js.py:191
 msgid "Provided by:"
-msgstr "Généré par :"
+msgstr ""
 
 #: maps/templates/lang.js:125 maps/templates/lang.js.py:192
 msgid "Download:"
-msgstr "Télécharger :"
+msgstr ""
 
 #: maps/templates/lang.js:126 maps/templates/lang.js.py:194
 msgid "No keywords are listed for this layer."
-msgstr "Aucun mot-clé n'est disponible pour cette couche."
+msgstr ""
 
 #: maps/templates/lang.js:127 maps/templates/lang.js.py:195
 msgid "Keywords:"
-msgstr "Mots-clés :"
+msgstr ""
 
 #: maps/templates/lang.js:128 maps/templates/lang.js.py:196
 msgid "No metadata URLs are defined for this layer."
-msgstr "Aucune métadonnées n'est définie pour cette couche."
+msgstr ""
 
 #: maps/templates/lang.js:129 maps/templates/lang.js.py:197
 msgid "Metadata Links:"
-msgstr "Liens de métadonnées :"
+msgstr ""
 
 #: maps/templates/lang.js:135
 msgid "Paper size:"
-msgstr "Taille du papier :"
+msgstr ""
 
 #: maps/templates/lang.js:136
 msgid "Resolution:"
-msgstr "Résolution :"
+msgstr ""
 
 #: maps/templates/lang.js:137
 msgid "Print"
-msgstr "Imprimer"
+msgstr ""
 
 #: maps/templates/lang.js:138
 msgid "Enter map title here."
-msgstr "Entrez ici le titre de la carte."
+msgstr ""
 
 #: maps/templates/lang.js:139
 msgid "Include legend?"
-msgstr "Inclure la légende ?"
+msgstr ""
 
 #: maps/templates/lang.js:140
 msgid "Enter comments here."
-msgstr "Entrez ici vos commentaires."
+msgstr ""
 
 #: maps/templates/lang.js:141
 msgid "Creating PDF..."
-msgstr "PDF en cours de création..."
+msgstr ""
 
 #: maps/templates/lang.js:150
 msgid "Last Modified"
-msgstr "Date de Modification"
+msgstr ""
 
 #: maps/templates/lang.js:153 maps/templates/lang.js.py:174
 msgid "Prev"
-msgstr "Précédent"
+msgstr ""
 
 #: maps/templates/lang.js:154 maps/templates/lang.js.py:175
 msgid "Next"
-msgstr "Suivant"
+msgstr ""
 
 #: maps/templates/lang.js:155 maps/templates/lang.js.py:176
 msgid "of"
-msgstr "de"
+msgstr ""
 
 #: maps/templates/lang.js:156 maps/templates/lang.js.py:177
 msgid "Your search did not match any items."
-msgstr "Il n'y a pas de résultats à votre recherche"
+msgstr ""
 
 #: maps/templates/lang.js:157
 msgid "Search Maps"
-msgstr "Rechercher des Cartes"
+msgstr ""
 
 #: maps/templates/lang.js:158 maps/templates/lang.js.py:178
 msgid "Search"
-msgstr "Rechercher"
+msgstr ""
 
 #: maps/templates/lang.js:159 maps/templates/lang.js.py:179
 msgid "Showing"
-msgstr "Montrer"
+msgstr ""
 
 #: maps/templates/lang.js:160
 msgid "Loading"
-msgstr "Charger"
+msgstr ""
 
 #: maps/templates/lang.js:161 maps/templates/lang.js.py:181
 msgid "permalink"
-msgstr "lien permanent"
+msgstr ""
 
 #: maps/templates/lang.js:168
 msgid "Select"
-msgstr "Sélectionner"
+msgstr ""
 
 #: maps/templates/lang.js:171
 msgid "Select:"
-msgstr "Sélectionner :"
+msgstr ""
 
 #: maps/templates/lang.js:172
 msgid "All"
-msgstr "Tout"
+msgstr ""
 
 #: maps/templates/lang.js:173
 msgid "None"
-msgstr "Aucun"
+msgstr ""
 
 #: maps/templates/lang.js:180
 msgid "Loading..."
-msgstr "Chargement..."
+msgstr ""
 
 #: maps/templates/lang.js:182
 msgid "You do not have permission to view this data"
-msgstr "Vous n'avez pas les droits pour visualiser ces données"
+msgstr ""
 
 #: maps/templates/lang.js:183
 msgid "This data is stored on a remote server"
-msgstr "Ces données sont stockées sur un serveur distant"
+msgstr ""
 
 #: maps/templates/lang.js:189
 msgid "No abstract is provided for this layer."
-msgstr "Aucun résumé n'est disponible pour cette couche."
+msgstr ""
 
 #: maps/templates/lang.js:193
 msgid "No download URLs are definied for this layer."
-msgstr "Aucune URLs de téléchargement n'est définie pour cette couche."
+msgstr ""
 
 #: maps/templates/lang.js:203
 msgid "Selected Layers"
-msgstr "Couches Sélectionnées"
+msgstr ""
 
 #: maps/templates/lang.js:204
 msgid "No Layers Selected"
-msgstr "Aucune Couche Sélectionnée"
+msgstr ""
 
 #: maps/templates/lang.js:206
 msgid "Clear Selected"
-msgstr "Vider la Sélection"
+msgstr ""
 
 #: maps/templates/lang.js:207
 msgid "Clear All"
-msgstr "Tout Réinitialiser"
+msgstr ""
 
 #: maps/templates/lang.js:213
 msgid "Operation Failed"
-msgstr "Échec de l'Opération"
+msgstr ""
 
 #: maps/templates/lang.js:214
 msgid "No layers are currently selected."
-msgstr "Aucune couche n'est actuellement sélectionnée."
+msgstr ""
 
 #: maps/templates/lang.js:221
 msgid "Downloading..."
-msgstr "En cours de téléchargement..."
+msgstr ""
 
 #: maps/templates/lang.js:223
 msgid "Please wait"
-msgstr "Patientez s'il vous plaît"
+msgstr ""

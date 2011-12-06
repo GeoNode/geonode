@@ -8,11 +8,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-02 17:04+0100\n"
+"POT-Creation-Date: 2011-06-09 13:37-0500\n"
 "PO-Revision-Date: 2011-06-06 14:42\n"
 "Last-Translator: Matthew Ford <mford@worldbank.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,7 +22,7 @@ msgstr ""
 msgid "title"
 msgstr "titre"
 
-#: core/models.py:25 maps/models.py:1594
+#: core/models.py:25 maps/models.py:1592
 msgid "permissions"
 msgstr "autorisations"
 
@@ -37,12 +36,12 @@ msgstr ""
 "Détermine l'ordre dans lequel les rôles sont présentés dans l'interface-"
 "utilisateur."
 
-#: core/models.py:67 maps/views.py:1016
+#: core/models.py:67 maps/views.py:994
 #: templates/maps/layer_permissions.html:18
 msgid "Anonymous Users"
 msgstr "Utilisateurs anonymes"
 
-#: core/models.py:68 maps/views.py:1020
+#: core/models.py:68 maps/views.py:998
 #: templates/maps/layer_permissions.html:19
 msgid "Registered Users"
 msgstr "Utilisateurs enregistrés"
@@ -1024,9 +1023,9 @@ msgstr "Nom de l'organisation"
 msgid "Position Name"
 msgstr "Poste"
 
-#: maps/models.py:493 templates/maps/layer.html:165
+#: maps/models.py:493 templates/maps/layer.html:159
 msgid "Voice"
-msgstr "Téléphone"
+msgstr "Voix"
 
 #: maps/models.py:494
 msgid "Facsimile"
@@ -1152,99 +1151,99 @@ msgstr "Excel"
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: maps/models.py:785
+#: maps/models.py:784
 msgid "JPEG"
 msgstr "JPEG"
 
-#: maps/models.py:786
+#: maps/models.py:785
 msgid "PDF"
 msgstr "PDF"
 
-#: maps/models.py:787
+#: maps/models.py:786
 msgid "PNG"
 msgstr "PNG"
 
-#: maps/models.py:802
+#: maps/models.py:801
 msgid "KML"
 msgstr "KML"
 
-#: maps/models.py:803
+#: maps/models.py:802
 msgid "View in Google Earth"
 msgstr "Afficher dans Google Earth"
 
-#: maps/models.py:1154
+#: maps/models.py:1151
 msgid "Title"
 msgstr "Titre"
 
-#: maps/models.py:1159 templates/maps/layer.html:134
+#: maps/models.py:1156 templates/maps/layer.html:128
 msgid "Abstract"
 msgstr "Résumé"
 
-#: maps/models.py:1165
+#: maps/models.py:1162
 msgid "zoom"
 msgstr "zoom"
 
-#: maps/models.py:1171
+#: maps/models.py:1168
 msgid "projection"
 msgstr "projection"
 
-#: maps/models.py:1177
+#: maps/models.py:1174
 msgid "center X"
 msgstr "centre X"
 
-#: maps/models.py:1183
+#: maps/models.py:1180
 msgid "center Y"
 msgstr "centre Y"
 
-#: maps/models.py:1189
+#: maps/models.py:1186
 msgid "owner"
 msgstr "propriétaire"
 
-#: maps/models.py:1445
+#: maps/models.py:1443
 msgid "stack order"
 msgstr "pile pour"
 
-#: maps/models.py:1451
+#: maps/models.py:1449
 msgid "format"
 msgstr "format"
 
-#: maps/models.py:1457
+#: maps/models.py:1455
 msgid "name"
 msgstr "nom"
 
-#: maps/models.py:1466
+#: maps/models.py:1464
 msgid "opacity"
 msgstr "opacité"
 
-#: maps/models.py:1471
+#: maps/models.py:1469
 msgid "styles"
 msgstr "styles"
 
-#: maps/models.py:1476
+#: maps/models.py:1474
 msgid "transparent"
 msgstr "transparent"
 
-#: maps/models.py:1481
+#: maps/models.py:1479
 msgid "fixed"
 msgstr "fixe"
 
-#: maps/models.py:1487
+#: maps/models.py:1485
 msgid "group"
 msgstr "groupe"
 
-#: maps/models.py:1493
+#: maps/models.py:1491
 msgid "visibility"
 msgstr "visibilité"
 
-#: maps/models.py:1498
+#: maps/models.py:1496
 msgid "ows URL"
 msgstr "URL ows"
 
-#: maps/models.py:1503
+#: maps/models.py:1501
 msgid "layer params"
 msgstr "paramètres couche"
 
-#: maps/models.py:1512
+#: maps/models.py:1510
 msgid "source params"
 msgstr "paramètres source"
 
@@ -1258,7 +1257,7 @@ msgstr "Lecture seule"
 
 #: maps/views.py:125 maps/views.py:131
 msgid "Read/Write"
-msgstr "Lecture / écriture"
+msgstr "Lecture/ écriture"
 
 #: maps/views.py:126 maps/views.py:132
 msgid "Administrative"
@@ -1268,48 +1267,48 @@ msgstr "Administratif"
 msgid "You must be logged in to save this map"
 msgstr "Vous devez être connecté pour enregistrer cette carte."
 
-#: maps/views.py:211
+#: maps/views.py:212
 msgid "You are not permitted to view or copy this map."
 msgstr "Vous n'êtes pas autorisé à visualiser ou copier cette carte."
 
-#: maps/views.py:332 maps/views.py:677 maps/views.py:693 templates/401.html:10
+#: maps/views.py:310 maps/views.py:655 maps/views.py:671 templates/401.html:10
 msgid "Not Permitted"
 msgstr "Non Autorisé"
 
-#: maps/views.py:467
+#: maps/views.py:445
 msgid "You are not permitted to view this map's permissions"
 msgstr ""
 "Vous n'êtes pas autorisé à afficher les autorisations liées à cette carte."
 
-#: maps/views.py:575
+#: maps/views.py:553
 msgid "You are not permitted to delete this map."
 msgstr "Vous n'êtes pas autorisé à supprimer cette carte."
 
-#: maps/views.py:597 maps/views.py:661
+#: maps/views.py:575 maps/views.py:639
 msgid "You are not allowed to view this map."
 msgstr "Vous n'êtes pas autorisé à visualiser cette carte."
 
-#: maps/views.py:620
+#: maps/views.py:598
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette carte."
 
-#: maps/views.py:712
+#: maps/views.py:690
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette couche."
 
-#: maps/views.py:774
+#: maps/views.py:752
 msgid "You are not permitted to delete this layer"
 msgstr "Vous n'êtes pas autorisé à supprimer cette couche."
 
-#: maps/views.py:794 maps/views.py:905
+#: maps/views.py:772 maps/views.py:883
 msgid "You are not permitted to modify this layer"
 msgstr "Vous n'êtes pas autorisé à modifier cette couche."
 
-#: maps/views.py:838
+#: maps/views.py:816
 msgid "You are not permitted to view this layer"
 msgstr "Vous n'êtes pas autorisé à modifier cette couche."
 
-#: maps/views.py:856
+#: maps/views.py:834
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -1318,23 +1317,23 @@ msgstr ""
 "plaît essayer de nouveau, ou communiquez avec l'administrateur si le "
 "problème persiste."
 
-#: maps/views.py:955
+#: maps/views.py:933
 msgid "You are not permitted to view this layer's permissions"
 msgstr "Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
 
-#: maps/views.py:965
+#: maps/views.py:943
 msgid "???"
 msgstr "???"
 
-#: maps/views.py:1007
+#: maps/views.py:985
 msgid "Invalid permission level."
 msgstr "Niveau d'autorisation non valide."
 
-#: maps/views.py:1029 templates/maps/layer_permissions.html:15
+#: maps/views.py:1007 templates/maps/layer_permissions.html:15
 msgid "User"
 msgstr "Utilisateur"
 
-#: maps/views.py:1087
+#: maps/views.py:1065
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Mauvais authentifiant d'autorisation HTTP."
 
@@ -1426,7 +1425,7 @@ msgstr ""
 msgid "Upload a new layer"
 msgstr "Télécharger vers le serveur une nouvelle couche"
 
-#: templates/data_base.html:65 templates/page_layout.html:78
+#: templates/data_base.html:65 templates/page_layout.html:62
 msgid "For Developers"
 msgstr "Pour les développeurs"
 
@@ -1480,22 +1479,10 @@ msgstr "Changer mot de passe"
 msgid "Log out"
 msgstr "Déconnectez"
 
-#: templates/fullscreen.html:22 templates/page_layout.html:23
-msgid "Sign in"
-msgstr ""
-
-#: templates/fullscreen.html:23
-msgid "or"
-msgstr ""
-
 #: templates/fullscreen.html:23 templates/login.html:14
 #: templates/page_layout.html:24
 msgid "Register"
 msgstr "S'inscrire"
-
-#: templates/fullscreen.html:24 templates/page_layout.html:25
-msgid "for extra features"
-msgstr ""
 
 #: templates/help.html:3
 msgid "User Guide"
@@ -1592,96 +1579,82 @@ msgstr ""
 "\n"
 "<p> Le GeoNode donne accès à des ensembles de données et une application "
 "d'édition de cartes permet aux utilisateurs de parcourir les cartes "
-"existantes et d'apporter leurs propres contributions </p> \n"
+"existantes et d'apporter leurs propres contributions </ p> \n"
 "\n"
-"<h4 id=\"parcourez-data\"> les données de navigation </h4> \n"
-"<p> L'onglet <a href=\"data\">données</a> vous permet de consulter les "
-"données téléchargées vers ce GeoNode. </p> \n"
-" <p> Toutes les données peuvent être téléchargées dans un ensemble de "
-"formats, pour une utilisation dans d'autres applications. </p> \n"
-" <h4 id=\"dévelopeur-access\"> Accès Développeur </h4> <p>L'onglet <a href="
-"\"developer\">développeurs</a> est l'endroit où les développeurs peuvent "
-"initier la création d'applications au sein du GeoNode.Il comprend des "
-"instructions sur l'utilisation des services web, des liens vers le code "
-"source du GeoNode, et des informations sur les projets source ouverte "
-"utilisés pour le créer. </p>\n"
-"  <h4 id=\"navigation- cartes\"> navigation cartes </h4>\n"
-" <p> Le GeoNode permet aux utilisateurs de créer et partager des cartes avec "
-"d'autres utilisateurs. </p>\n"
-"<p> L'onglet <a href=\"cartes\"> Cartes</a> est une passerelle vers "
-"l'exploration de cartes GeoNode. De là, vous pouvez <strong> rechercher une "
-"carte </strong> ou <strong> créer une carte </strong> qui ouvrira le <a href="
-"\"maps/new\"> Créateur de cartes </a>. </p>\n"
-"  <h5> Mode Google Earth</h5>\n"
-"  <p> Toute carte visualisée dans l'éditeur de cartes interactif peut être "
-"vue en mode 3D avec le plugin Google Earth. Pour passer en mode 3D, "
-"sélectionnez le logo Google Earth (le bouton le plus à droite sur la barre "
-"d'outils supérieure). Si vous n'avez pas le plugin Google Earth d'installé, "
-"vous serez invité à l'installer. </p>\n"
-" \n"
-"  <h4 id=\\\"creating-a-map\"> Création d'une carte </h4>\n"
-"  <p> Pour créer une nouvelle carte, allez à l'onglet <a href=\"maps"
-"\">apport Maps</a> et cliquez sur le <a href=\"maps/new\">lien créer votre "
-"propre carte </a> . </p> \n"
-"  <p> Cela vous mènera à la <a href=\"maps/new\"> Carte Compositeur </a> "
-"avec une couche de base chargée. </p>\n"
-"  <p> Pour ajouter des couches de données à partir du Geonode, cliquez sur "
-"le bouton vert plus (+) situé sous l'onglet Données sur le côté gauche de "
-"l'écran. Ceci ouvrira une boîte de dialogue listant toutes les couches "
-"disponibles sur le GeoNode. </p>\n"
-"  <p> Pour ajouter des couches à votre carte, sélectionnez ces couches et "
-"appuyez sur <strong> Ajouter couche </strong>. Lorsque vous avez terminé, "
-"vous pouvez cliquez sur <STRONG> Terminé </strong> pour fermer la boîte de "
-"dialogue et revenir à la carte. </p> \n"
-"  <h5> Réorganisation et retrait de couches </h5> \n"
-" <p> Modifier l'ordre d'affichage des couches répertoriées dans l'onglet de "
+"<h4 id = \"parcourez-data\"> les données de navigation </ h4> \n"
+"<p> L'onglet <a href=\\\"data\\\"> données </ a> vous permet de consulter "
+"les données téléchargées vers ce GeoNode . </ p> \\ n \"\" <p> Toutes les "
+"données peuvent être téléchargées dans un ensemble de formats, pour une "
+"utilisation dans d'autres applications. </ p> \\ n \"\" \\ n \"\" <h4 id = "
+"\\ \"développeur d'accès \\ \"> Accès Développeur </ h4> \\ n\" \"L'onglet "
+"<p> <a href=\\\"developer\\\"> développeurs </ a> est l'endroit où les "
+"développeurs peuvent initier la création d'applications au sein du GeoNode. "
+"Il comprend des instructions sur l'utilisation des services web, des liens "
+"vers le code source du GeoNode, et des informations sur les projets source "
+"ouverte utilisés pour le créer. </ P> \\ n \"\" \\ n \"\" <h4 id = \\ "
+"\"navigation- cartes \\ \"> navigation cartes </ h4> \\ n\" \" <p> Le "
+"GeoNode permet aux utilisateurs de créer et partager des cartes avec d'autre "
+"utilisateurs. </ p> \\ n\" \"<p> L'onglet <a href = \\\" cartes \\ \"Cartes> "
+"</ a> est une passerelle vers l'exploration de cartes GeoNode. De là, vous "
+"pouvez <strong> rechercher une carte </ strong> ou <strong> créer une carte "
+"</ strong> qui ouvrira le <a href=\\\"maps/new\\\"> Créateur de cartes </ "
+"a>. </ p> \\ n \"\" <h5> Google Earth en mode </ h5> \\ n \"\" <p> Toute "
+"carte visualisée dans l'éditeur de cartes interactif peut être vue en mode "
+"3D avec le plugin Google Earth. Pour passer en mode 3D, sélectionnez le logo "
+"Google Earth (le bouton le plus à droite sur la barre d'outils supérieure). "
+"Si vous n'avez pas le plugin Google Earth d'installé, vous serez invité à "
+"l'installer. </ P> \\ n \"\" \\ n \"\" <h4 id=\\\"creating-a-map\\\"> "
+"Création d'une carte </ h4 > \\ n \"\" <p> Pour créer une nouvelle carte, "
+"allez à l'onglet <a href=\\\"maps\\\"> apport Maps </ a> et cliquez sur le "
+"href=\\\"maps/new\\\"> <a créer votre propre carte </ a> lien. </ p> \\ n "
+"\"\" <p> Cela vous mènera à la <a href=\\\"maps/new\\\"> Carte Compositeur "
+"</ a> avec une couche de base chargée. < / p> \\ n \"\" <p> Pour ajouter des "
+"couches de données à partir du Geonode, cliquez sur le bouton vert \"plus"
+"\" (+) situé sous l'onglet Données sur le côté gauche de l'écran. Ceci "
+"ouvrira une boîte de dialogue listant toutes les couches disponibles sur le "
+"GeoNode. </ P> \\ n \"\" <p> Pour ajouter des couches à votre carte, "
+"sélectionnez ces couches et appuyez sur <strong> Ajouter couche </ strong>. "
+"Lorsque vous avez terminé, vous pouvez cliquez sur <STRONG> Terminé </ "
+"strong> pour fermer la boîte de dialogue et revenir à la carte. </ P> \\ n "
+"\"\" \\ n \"\" <h5> Réorganisation et retrait de couches </ h5> \\ n \" "
+"\"<p> Modifier l'ordre d'affichage des couches répertoriées dans l'onglet de "
 "données en glisser-déposant leurs noms. L'ordre dans la carte sera mis à "
 "jour pour refléter ce changement. Pour désactiver la visibilité d'une "
 "couche, il suffit de la désélectionner, et pour la supprimer entièrement, il "
-"suffit de la sélectionner et appuyez sur le bouton rouge \"moins\" (-). </"
-"p>\n"
-" \n"
-"  <h5>Enregistrement de votre carte </h5>\n"
-" <p> Une fois qu'un ensemble approprié de couches et de niveau de zoom a été "
+"suffit de la sélectionner et appuyez sur le bouton rouge \"moins\" (-). </ "
+"P> \\ n \"\" \\ n \"\" Enregistrement de votre carte <h5> </ h5> \\ n \"\" "
+"<p> Une fois qu'un ensemble approprié de couches et de niveau de zoom a été "
 "trouvé, il est temps de le sauvergarder afin que d'autres puissent le "
 "visualiser. Cliquez sur le bouton Enregistrer - l'icône le plus à gauche sur "
 "la barre d'outils en haut, une image d'une carte avec un disque - dans le "
-"menu supérieur, et fournissez un titre et le résumé de la carte </p> \n"
-" \n"
-"  <h4 id=\\\"exporting-a-map\"> Export d'une carte </h4>\n"
-"  <p> Toute carte du GeoNode peut être intégrée pour utilisation dans un "
-"autre site ou blog. Pour exporter une carte: </p>\n"
-"  <ol><li> Sélectionnez la carte de la liste des cartes sur la page de "
-"la  communauté ou de la carte et appuyez sur le bouton \"Export de carte\"."
-"</li>\n"
-"  <li> Choisissez la hauteur et la largeur souhaitées pour  le widget de "
-"l'assistant (wizard). </li>\n"
-"  <li> Copiez le code HTML fourni dans l'assistant dans n'importe quelle "
-"page HTML ou article blog supportant iFrame.</li>\n"
-"  </ol>\n"
-"  <p> Ceci placera un widget interactif montrant la carte dans votre page "
-"Web ou blog. </p> \n "
-" <p> À noter qu'il est également possible "
-"d'utiliser un bouton d'export de carte dans le <a href=\"maps/new\"> "
-"Créateur de cartes </a>. S'assurer de bien enregistrer la carte avant de "
-"l'exporter si vous désirez que d'autres utilisateurs puissent visualiser les "
-"changements que vous auriez effectués. En effet, la dernière version "
-"enregistrée est exportée, et non la dernière version visualisée. </p>\n"
-" <h4 id=\\\"remixing-a-map\"> Remixer une carte </h4>\n"
-"  <p> Toute carte disponible peut servir de point de départ pour une "
-"nouvelle carte. </p>\n"
-"  <ol>\n"
-"  <li> Ouvrez la carte dans le Créateur de cartes. </li> \n"
-" <li> Ajoutez et supprimez des couches à votre guise. </li> <li> Panoramisez "
-"et faites un zoom pour mettre en évidence la zone d'intérêt </li>\n"
-"<li> <strong> IMPORTANT:. </strong> Mettez à jour le titre, le résumé, les "
-"coordonnées de contact et les tags afin de refléter la nouvelle carte. </"
-"li>\n"
-"  <li> Enregistrez la carte. </li>\n"
-"  </ol>\n"
-"  <p> Vous serez en mesure de voir votre nouvelle carte lorsque vous "
-"effectuez une recherche dans l'onglet <a href=\"maps\">Cartes</a>. </p> \n"
-"  "
+"menu supérieur, et fournissez un titre et le résumé de la carte </ p> \\ n "
+"\"\" \\ n \"\" <h4 id=\\\"exporting-a-map\\\"> Exportation d'une carte </ "
+"h4> \\ n \"\" <p> Toute carte du GeoNode peut être intégrée pour utilisation "
+"dans un autre site ou blog. Pour exporter une carte: </ p> \\ n \"\" <ol> \\ "
+"n \"\" <li> Sélectionnez la carte de la liste des cartes sur la page de la "
+"communauté ou de la carte et appuyez sur le bouton \"Exportation de carte\" "
+"</ li>. \\ n \"\" <li> Choisissez la hauteur et la largeur souhaitées pour "
+"le widget de l'assistant (wizard). </ li> \\ n \"\" <li> Copiez le code HTML "
+"fourni dans l'assistant dans n'importe quelle page HTML ou article blog "
+"supportant iFrame.</ li> \\ n \"\" </ ol> \\ n \"\" <p> Ceci placera un "
+"widget interactif montrant la carte dans votre page Web ou blog. </ p> \\ n "
+"\"\" <p> À noter qu'il est également possible d'utiliser un bouton "
+"d'exportation de carte dans le <a href=\\\"maps/new\\\"> Créateur de cartes "
+"</ a>. S'assurer de bien enregistrer la carte avant de l'exporter si vous "
+"désirez que d'autres utilisateurs puissent visualiser les changements que "
+"vous auriez effectués. En effet, la dernière version enregistrée est "
+"exportée, et non la dernière version visualisée. </ P> \\ n \"\" \\ n \"\" "
+"<h4 id=\\\"remixing-a-map\\\"> Remixer une carte </ h4> \\ n \"\" <p> Toute "
+"carte disponible peut servir de point de départ pour une nouvelle carte. </ "
+"p> \\ n \"\" <ol> \\ n \"\" <li> Ouvrez la carte dans le Créateur de cartes. "
+"</ li> \\ n \" \"<li> Ajoutez et supprimez des couches à votre guise </ li> "
+"\\ n\". \"<li> Panoramisez et faites un zoom pour mettre en évidence la zone "
+"d'intérêt </ li> \\ n\" \"<li> <strong> IMPORTANT:. < / strong> Mettez à "
+"jour le titre, le résumé, les coordonnées de contact et les tags afin de "
+"refléter la nouvelle carte. </ li> \\ n \"\" <li> Enregistrez la carte. </ "
+"li> \\ n \"\" </ ol> \\ n \"\" <p> Vous serez en mesure de voir votre "
+"nouvelle carte lorsque vous effectuez une recherche dans l'onglet <a href=\\"
+"\"maps\\\"> Cartes </ a> . </ p> "
 
 #: templates/help.html:61
 msgid "GeoNode Help"
@@ -1704,17 +1677,14 @@ msgid ""
 msgstr ""
 "<p> Cette page fournit des renseignements utiles sur la façon d'utiliser le "
 "GeoNode. Vous pouvez utiliser les liens ci-dessous pour accéder à ce que "
-"vous voulez savoir. </p>\n"
-"<ul>\n"
-"  <li> <a href=\"#browsing-data\">Explorer les données de navigation </a></"
-"li> \n"
-"  <li> <a href=\"#developer-access\">Accès Développeur </a> </li> \n"
-"  <li> <a href=\"#parcourez-cartes\">Explorer les cartes </a> </li> \n"
-"  <li> <a href=\"#creating-a-map\">Créer une Carte</a> </li> \n"
-"  <li> <a href=\"#exporting-a-map\">Exporter une carte </a> </li> \n"
-"  <li> <a href=\"#remixage-a-la carte\">Remixer à la Carte</a> </li> \n"
-"</ul> \n"
-"  "
+"vous voulez savoir. </ P> \\ n \"\" <ul> \\ n \"\" <li> <a href=\\"
+"\"#browsing-data\\\"> données de navigation </ a> </ li> \\ n \"\" <li> <a "
+"href=\\\"#developer-access\\\"> Accès-Développeur </ a> </ li> \\ n \"\" "
+"<li> <a href = \\ \"# parcourez-cartes \\ \"> navigation cartes </ a> </ li> "
+"\\ n\" \"href=\\\"#creating-a-map\\\"> <li> Création d'une <Carte/ a> </ li> "
+"\\ n \"\" <li> <a href=\\\"#exporting-a-map\\\"> Exportation d'une carte </ "
+"a> </ li> \\ n \"\" <li> <a href = \\ \"# remixage-a- la carte \\ \"> "
+"Remixer a <Carte / a> </ li> \\ n\" \"</ ul> \\ n\"\"\""
 
 #: templates/index.html:4
 msgid "Welcome!"
@@ -1722,7 +1692,7 @@ msgstr "Bienvenue!"
 
 #: templates/index.html:16
 msgid "Explore Maps"
-msgstr "Découvrez les artes"
+msgstr "Découvrez Maps"
 
 #: templates/index.html:22
 msgid "Create Map"
@@ -1743,11 +1713,11 @@ msgstr ""
 "\n"
 "GeoNode est une plateforme source ouverte de partage de données géospatiales "
 "et de cartes. Si vous avez des questions concernant le logiciel ou le "
-"service, abonnez-vous à notre liste de diffusion par courriel à <em> "
-"geonode@librelist.com </em>. "
+"service, joignez-vous à notre liste de diffusion par courriel à <em> "
+"geonode@librelist.com </ em>. "
 
-#: templates/index.html:52 templates/page_layout.html:36
-#: templates/maps/layer.html:215 templates/maps/view.html:91
+#: templates/index.html:52 templates/maps/layer.html:209
+#: templates/maps/view.html:88
 msgid "Maps"
 msgstr "Cartes"
 
@@ -1759,12 +1729,11 @@ msgid ""
 "      shared by others.\n"
 "    "
 msgstr ""
-"GeoNode vous permet de créer et de partager des cartes. <strong> Créer </"
-"strong>une carte avec notre outil de cartographie, ou <strong> explorer </"
-"strong> des cartes partagées par d'autres utilisateurs."
+"GeoNode vous permet de créer et de partager des cartes. <strong> Créer </ "
+"strong> \\ n \"\" une carte avec notre outil de cartographie, ou <strong> "
+"explorer </ strong> \\ n \"\" des cartes partagées par d'autres utilisateurs."
 
-#: templates/index.html:66 templates/page_layout.html:35
-#: templates/maps/layer.html:203
+#: templates/index.html:66 templates/maps/layer.html:197
 msgid "Data"
 msgstr "Données"
 
@@ -1777,8 +1746,9 @@ msgid ""
 "    "
 msgstr ""
 "GeoNode vous permet de télécharger vers le serveur, de gérer et de consulter "
-"les données. <strong> Recherchez </strong> les données qui vous seront "
-"utiles, ou <strong> télécharger </strong> vos propres données. "
+"les données. \\ N \"\" <strong> Recherchez </ strong> les données qui vous "
+"seront utiles, ou \\ n \"\" <strong> télécharger </ strong> vos propres "
+"données. "
 
 #: templates/index.html:94
 msgid "Upload data"
@@ -1840,8 +1810,9 @@ msgstr "Recherche de cartes"
 
 #: templates/maps_search_base.html:35
 msgid "Click the <b>+</b> on any row to show map abstract."
-msgstr "Cliquez sur le <b> + </b> sur n'importe quelle ligne pour "
-"afficher le résumé de la carte."
+msgstr ""
+"Cliquez sur le <b> + </ b> sur n'importe quelle ligne pour afficher le "
+"résumé de la carte."
 
 #: templates/maps_search_base.html:36 templates/search_base.html:58
 msgid "To bookmark your current search use this"
@@ -1851,28 +1822,15 @@ msgstr "Pour marquer d'un signet votre recherche actuelle, utilisez ceci."
 msgid "permalink"
 msgstr "Permalink"
 
-#: templates/page_layout.html:34 templates/maps/change_poc.html:5
-#: templates/registration/logged_out.html:4
-msgid "Home"
-msgstr "Accueil"
-
-#: templates/page_layout.html:38
-msgid "Profile"
-msgstr "Profil"
-
-#: templates/page_layout.html:40
-msgid "Admin"
-msgstr "Administration"
-
-#: templates/page_layout.html:75
+#: templates/page_layout.html:59
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/page_layout.html:76
+#: templates/page_layout.html:60
 msgid "Need Help?"
 msgstr "Besoin d'Aide?"
 
-#: templates/page_layout.html:77
+#: templates/page_layout.html:61
 msgid "Help"
 msgstr "Aide"
 
@@ -1885,8 +1843,8 @@ msgid ""
 "Click the <b>+</b> on any row to show layer metadata or download in PDF, "
 "KML, GeoTIFF, or SHP."
 msgstr ""
-"Cliquez sur le <strong> + </strong> sur n'importe quelle ligne pour voir "
-"les métadonnées couche ou télécharger en PDF, KML, GeoTIFF, ou SHP."
+"Cliquez sur le <b> + </ b> sur n'importe quelle ligne pour voir les "
+"métadonnées couche ou télécharger en PDF, KML, GeoTIFF, ou SHP."
 
 #: templates/search_base.html:67
 msgid "Refine Search"
@@ -1901,11 +1859,6 @@ msgid "Limit the search to data that includes features in the displayed area."
 msgstr ""
 "Limiter la recherche aux données qui incluent des fonctionnalités dans la "
 "zone affichée."
-
-#: templates/search_base.html:77
-#, fuzzy
-msgid "Selected Data"
-msgstr "Recherche de Données"
 
 #: templates/search_base.html:78
 msgid "Use the checkboxes in the search results to add data to your selection."
@@ -1934,6 +1887,10 @@ msgstr ""
 #: templates/avatar/add.html:12 templates/profiles/edit_profile.html:22
 msgid "Upload New Image"
 msgstr "Télécharger une nouvelle image vers le serveur"
+
+#: templates/maps/change_poc.html:5 templates/registration/logged_out.html:4
+msgid "Home"
+msgstr "Accueil"
 
 #: templates/maps/change_poc.html:5 templates/maps/change_poc.html.py:7
 msgid "Change point of contact"
@@ -1978,123 +1935,123 @@ msgstr ""
 msgid "Map Viewer"
 msgstr "Visualisation des cartes"
 
-#: templates/maps/layer.html:134
+#: templates/maps/layer.html:128
 msgid "No abstract for this layer."
 msgstr "Aucun résumé disponible pour cette couche."
 
-#: templates/maps/layer.html:138
+#: templates/maps/layer.html:132
 msgid "Type"
 msgstr "Type"
 
-#: templates/maps/layer.html:139
+#: templates/maps/layer.html:133
 msgid "Keywords"
 msgstr "Mots-clés"
 
-#: templates/maps/layer.html:140
+#: templates/maps/layer.html:134
 msgid "Edition"
 msgstr "Edition"
 
-#: templates/maps/layer.html:141
+#: templates/maps/layer.html:135
 msgid "Topic Category"
 msgstr "Sujet Catégorie"
 
-#: templates/maps/layer.html:144
+#: templates/maps/layer.html:138
 msgid "Citation"
 msgstr "Citation"
 
-#: templates/maps/layer.html:150
+#: templates/maps/layer.html:144
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: templates/maps/layer.html:156
+#: templates/maps/layer.html:150
 msgid "Point of Contact"
 msgstr "Point de Contact"
 
-#: templates/maps/layer.html:161
+#: templates/maps/layer.html:155
 msgid "Name"
 msgstr "Nom"
 
-#: templates/maps/layer.html:162
+#: templates/maps/layer.html:156
 msgid "Email"
 msgstr "Email"
 
-#: templates/maps/layer.html:163
+#: templates/maps/layer.html:157
 msgid "Organization"
 msgstr "Organisation"
 
-#: templates/maps/layer.html:164
+#: templates/maps/layer.html:158
 msgid "Position"
 msgstr "Position"
 
-#: templates/maps/layer.html:166
+#: templates/maps/layer.html:160
 msgid "Fax"
 msgstr "Fax"
 
-#: templates/maps/layer.html:167
+#: templates/maps/layer.html:161
 msgid "Delivery"
 msgstr "Livraison"
 
-#: templates/maps/layer.html:168
+#: templates/maps/layer.html:162
 msgid "Area"
 msgstr "Lieu"
 
-#: templates/maps/layer.html:169
+#: templates/maps/layer.html:163
 msgid "Zip Code"
 msgstr "Code postal"
 
-#: templates/maps/layer.html:170
+#: templates/maps/layer.html:164
 msgid "Country"
 msgstr "Pays"
 
-#: templates/maps/layer.html:177
+#: templates/maps/layer.html:171
 msgid "Attributes"
 msgstr "Attributs"
 
-#: templates/maps/layer.html:183
+#: templates/maps/layer.html:177
 msgid "Supplemental Information"
 msgstr "Renseignements supplémentaires"
 
-#: templates/maps/layer.html:189
+#: templates/maps/layer.html:183
 msgid "Data Quality Statement"
 msgstr "Énoncé sur la qualité des données"
 
-#: templates/maps/layer.html:194
+#: templates/maps/layer.html:188
 msgid "Bounding Box"
 msgstr "Zone de délimitation"
 
-#: templates/maps/layer.html:195
+#: templates/maps/layer.html:189
 msgid "Native SRS"
 msgstr "SRS d'origine"
 
-#: templates/maps/layer.html:195
+#: templates/maps/layer.html:189
 msgid "No SRS specified."
 msgstr "Aucun SRS spécifié."
 
-#: templates/maps/layer.html:202 templates/maps/mapinfo.html:63
+#: templates/maps/layer.html:196 templates/maps/mapinfo.html:63
 msgid "Download"
 msgstr "Télécharger"
 
-#: templates/maps/layer.html:208
+#: templates/maps/layer.html:202
 msgid "Metadata"
 msgstr "Métadonnées"
 
-#: templates/maps/layer.html:212
+#: templates/maps/layer.html:206
 msgid "No metadata links provided for this data."
 msgstr "Aucun lien métadonnées fourni pour ces données"
 
-#: templates/maps/layer.html:217
+#: templates/maps/layer.html:211
 msgid "The following maps use this data set"
 msgstr "Les cartes suivantes utilisent cet ensemble de données"
 
-#: templates/maps/layer.html:224
+#: templates/maps/layer.html:218
 msgid "This layer is not currently used in any maps."
 msgstr "Cette couche n'est actuellement utilisée par aucune carte."
 
-#: templates/maps/layer.html:231
+#: templates/maps/layer.html:222
 msgid "Styles"
 msgstr "Styles"
 
-#: templates/maps/layer.html:232
+#: templates/maps/layer.html:223
 msgid ""
 "The following styles are associated with this data set.  Choose a style to "
 "view it in the preview to the left.  Click on a style name to view or edit "
@@ -2104,31 +2061,31 @@ msgstr ""
 "style pour le prévisualiser à gauche. Cliquez sur un nom de style pour "
 "afficher ou modifier le style."
 
-#: templates/maps/layer.html:245
+#: templates/maps/layer.html:236
 msgid "Default style:"
 msgstr "Style par défaut:"
 
-#: templates/maps/layer.html:264 templates/maps/mapinfo.html:74
+#: templates/maps/layer.html:257 templates/maps/mapinfo.html:74
 msgid "Manage"
 msgstr "Gérer"
 
-#: templates/maps/layer.html:268
+#: templates/maps/layer.html:261
 msgid "Update the description of this data"
 msgstr "Mise à jour de la description de ces données"
 
-#: templates/maps/layer.html:269
+#: templates/maps/layer.html:262
 msgid "Upload a new version of this data"
 msgstr "Envoyer une nouvelle version de ces données"
 
-#: templates/maps/layer.html:272
+#: templates/maps/layer.html:265
 msgid "Edit Permissions"
 msgstr "Modifier les autorisations"
 
-#: templates/maps/layer.html:275
+#: templates/maps/layer.html:268
 msgid "Remove"
 msgstr "Supprimer"
 
-#: templates/maps/layer.html:284 templates/maps/layer_upload.html:228
+#: templates/maps/layer.html:277 templates/maps/layer_upload.html:228
 #: templates/maps/mapinfo.html:93
 msgid "Permissions"
 msgstr "Autorisations"
@@ -2199,7 +2156,7 @@ msgstr ""
 
 #: templates/maps/layer_replace.html:180
 msgid "Supported Formats"
-msgstr "Formats pris en charge"
+msgstr "Formats pris en charge "
 
 #: templates/maps/layer_upload.html:4
 msgid "Upload Layer"
@@ -2215,11 +2172,11 @@ msgstr "Oui, je suis certain que"
 
 #: templates/maps/mapinfo.html:54 templates/maps/search_result_snippet.html:4
 msgid "Abstract:"
-msgstr "Résumé :"
+msgstr "Résumé:"
 
 #: templates/maps/mapinfo.html:58
 msgid "Contact:"
-msgstr "Contact :"
+msgstr "Contact:"
 
 #: templates/maps/mapinfo.html:64
 msgid "Download all layers included in this map"
@@ -2263,7 +2220,7 @@ msgstr "Aucun résumé n'est fourni pour cette couche."
 
 #: templates/maps/search_result_snippet.html:12
 msgid "Provided by:"
-msgstr "Fourni par :"
+msgstr "Fourni par:"
 
 #: templates/maps/search_result_snippet.html:20
 msgid "No attribution information is provided for this layer."
@@ -2271,7 +2228,7 @@ msgstr "Aucune information d'attribution n'est fournie pour cette couche. "
 
 #: templates/maps/search_result_snippet.html:24
 msgid "Metadata Links:"
-msgstr "Liens pour les métadonnées :"
+msgstr "Liens pour les métadonnées:"
 
 #: templates/maps/search_result_snippet.html:28
 msgid "No metadata URLs are defined for this layer."
@@ -2279,7 +2236,7 @@ msgstr "Aucun URL métadonnées n'est défini pour cette couche."
 
 #: templates/maps/search_result_snippet.html:32
 msgid "Keywords:"
-msgstr "Mots-clés :"
+msgstr "Mots-clés:"
 
 #: templates/maps/search_result_snippet.html:36
 msgid "No keywords are listed for this layer."
@@ -2288,7 +2245,7 @@ msgstr "Aucun mot-clé n'est répertorié pour cette couche."
 #: templates/maps/search_result_snippet.html:41
 #: templates/maps/search_result_snippet.html:58
 msgid "Download:"
-msgstr "Télécharger :"
+msgstr "Télécharger:"
 
 #: templates/maps/search_result_snippet.html:45
 #: templates/maps/search_result_snippet.html:62
@@ -2305,12 +2262,11 @@ msgstr "Cliquez ici pour plus d'informations sur cette couche."
 
 #: templates/maps/search_result_snippet.html:72
 msgid "You do not have permission to view or download this layer"
-msgstr ""
-"Vous n'avez pas les droits pour visualiser ou télécharger cette couche."
+msgstr "Cliquez ici pour plus d'informations sur cette couche."
 
-#: templates/maps/view.html:90
+#: templates/maps/view.html:87
 msgid "View info"
-msgstr "Afficher les info"
+msgstr "Afficher des info"
 
 #: templates/profiles/edit_profile.html:16
 msgid "Choose new Default"
@@ -2346,7 +2302,7 @@ msgstr "L'activation du compte a échoué."
 
 #: templates/registration/logged_out.html:8
 msgid "Thanks for spending some quality time with the GeoNode today."
-msgstr "Merci d'avoir utilisé GeoNode."
+msgstr "Merci d'avoir passé du temps de qualité avec le GeoNode aujourd'hui."
 
 #: templates/registration/logged_out.html:10
 msgid "Log in again"
