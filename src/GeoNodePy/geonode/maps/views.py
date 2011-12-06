@@ -1608,7 +1608,7 @@ def batch_permissions(request):
 
     if request.method != "POST":
         return HttpResponse("Permissions API requires POST requests", status=405)
-
+    
     spec = json.loads(request.raw_post_data)
     
     if "layers" in spec:
@@ -1625,8 +1625,8 @@ def batch_permissions(request):
 
     anon_level = spec['permissions'].get("anonymous")
     auth_level = spec['permissions'].get("authenticated")
-    users = spec['permissions'].get('users', [])
-    user_names = [x for (x, y) in users]
+    users_and_groups = spec['permissions'].get('users', [])
+    users_and_groups_names = [x for (x, y) in users_and_groups]
 
     if "layers" in spec:
         lyrs = Layer.objects.filter(pk__in = spec['layers'])
@@ -1636,13 +1636,19 @@ def batch_permissions(request):
         if auth_level not in valid_perms:
             auth_level = "_none"
         for lyr in lyrs:
-            lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
+            lyr.get_user_levels().exclude(user__username__in = users_and_groups_names + [lyr.owner.username]).delete()
+            lyr.get_group_levels().exclude(group__name__in = users_and_groups_names).delete()
             lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
             lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
-            for user, user_level in users:
-                if user_level not in valid_perms:
-                    user_level = "_none"
-                lyr.set_user_level(user, user_level)
+            for name, level in users_and_groups:
+                if level not in valid_perms:
+                    level = "_none"
+                try:
+                    group = Group.objects.get(name=name)
+                    lyr.set_group_level(group, level)
+                except Group.DoesNotExist:
+                    user = User.objects.get(username=name)
+                    lyr.set_user_level(user, level)
 
     if "maps" in spec:
         maps = Map.objects.filter(pk__in = spec['maps'])
@@ -1655,14 +1661,26 @@ def batch_permissions(request):
         auth_level = auth_level.replace("layer", "map")
 
         for m in maps:
-            m.get_user_levels().exclude(user__username__in = user_names + [m.owner.username]).delete()
+            m.get_user_levels().exclude(user__username__in = users_and_groups_names + [m.owner.username]).delete()
+            m.get_group_levels().exclude(group__name__in = users_and_groups_names).delete()
             m.set_gen_level(ANONYMOUS_USERS, anon_level)
             m.set_gen_level(AUTHENTICATED_USERS, auth_level)
-            for user, user_level in spec['permissions'].get("users", []):
-                user_level = user_level.replace("layer", "map")
-                m.set_user_level(user, valid_perms.get(user_level, "_none"))
+            for name, level in spec['permissions'].get("users", []):
+                if level not in valid_perms:
+                    level = "_none"
+                level = level.replace("layer", "map")
+                try:
+                    group = Group.objects.get(name=name)
+                    m.set_group_level(group, level)
+                except Group.DoesNotExist:
+                    user = User.objects.get(username=name)
+                    m.set_user_level(user, level)
 
-    return HttpResponse("Not implemented yet")
+    return HttpResponse(
+        "Permissions updated",
+        status=200,
+        mimetype='text/plain'
+    )
 
 def batch_delete(request):
     if not request.user.is_authenticated:
