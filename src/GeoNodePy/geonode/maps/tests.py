@@ -462,7 +462,7 @@ community."
         # FIXME Test a comprehensive set of permisssions specifications 
 
         # Set the Permissions
-        geonode.maps.views.set_layer_permissions(layer, self.perm_spec)
+        geonode.maps.views.set_object_permissions(layer, self.perm_spec)
 
         # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
         self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
@@ -589,7 +589,7 @@ community."
         # belong to group2 which is mentioned as read_only, so robert should have
         # read_only access
         layer = Layer.objects.all()[0]
-        geonode.maps.views.set_layer_permissions(layer, self.perm_spec) 
+        geonode.maps.views.set_object_permissions(layer, self.perm_spec) 
         logged_in = c.login(username='robert', password='bob')
         response = c.get("/data/acls")
         response_json = json.loads(response.content)
