@@ -6,6 +6,7 @@ import urllib
 import simplejson
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
 import logging
 import urlparse
@@ -97,19 +98,21 @@ def picasa(request):
     return HttpResponse(feed_response, mimetype="text/xml")
 
 def hglpoints (request):
+    from xml.dom import minidom
     #url = "http://dixon.hul.harvard.edu:8080/HGL/HGLGeoRSS?UserQuery="
     url = "http://pynchon.hul.harvard.edu:8080/HGL/HGLGeoRSS?GeometryType=point"
     #bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
     query = request.GET['Q'] if request.method == 'GET' else request.POST['Q']
-#    coords = bbox.split(",")
-#    coords[0] = -180 if float(coords[0]) <= -180 else coords[0]
-#    coords[2] = 180 if float(coords[2])  >= 180 else coords[2]
-#    coords[1] = coords[1] if float(coords[1]) > -90 else -90
-#    coords[3] = coords[3] if float(coords[3])  < 90 else 90
-#    newbbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
-    url = url + "&UserQuery=" + query # + "&BBSearchOption=" + newbbox
-    feed_response = urllib.urlopen(url).read()
-    return HttpResponse(feed_response, mimetype="text/xml")
+    url = url + "&UserQuery=" + query
+    dom = minidom.parse(urllib.urlopen(url))
+    for node in dom.getElementsByTagName('item'):
+        description = node.getElementsByTagName('description')[0]
+        guid = node.getElementsByTagName('guid')[0]
+        title = node.getElementsByTagName('title')[0]
+        if guid.firstChild.data != 'OWNER.TABLE_NAME':
+            description.firstChild.data = description.firstChild.data + '<br/><br/><p><a href=\'javascript:app.addHGL("' \
+                + title.firstChild.data + '","' + guid.firstChild.data  + '");return false;\'>Add to Map</a></p>'
+    return HttpResponse(dom.toxml(), mimetype="text/xml")
 
 def youtube(request):
     url = "http://gdata.youtube.com/feeds/api/videos?v=2&prettyprint=true&"
