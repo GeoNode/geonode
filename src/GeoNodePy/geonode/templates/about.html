@@ -16,39 +16,94 @@
 
 {% block main %}
 <div class="onecol">
-<!-- TODO: i18n on the text here -->
+
+
   <div id="content">
 
       <div style="clear:both;padding-top:40px;width:800px;margin: 0 auto;">
-        {% blocktrans %}
-      <a name="about"></a>
-      <p>WorldMap is an experimental platform
-      designed for viewing and interpreting maps collaboratively. Today maps come from many sources and take
-      many forms, from paper atlases to digital satellite images to census files. WorldMap aims to
-      pull these and other hard-to-find maps together and make
-      them available to researchers to explore, share, annotate, and remix.</p>
 
-      <p>WorldMap combines modeling capabilities of Geographic
-      Information Systems (GIS) with current web technologies, and is made available
-      as <a href="http://en.wikipedia.org/wiki/Open-source_software">Open Source</a>
-      software. Use the hosted version of WorldMap here or <a
-      href="https://github.com/cga-harvard/cga-worldmap">download</a> and run the application on your own server. WorldMap stands on
-      the shoulders of other Open Source projects including AfricaMap, <a href="http://www.geonode.org" target="_blank">GeoNode</a>,
+      <a name="about"></a>
+      <p>ABOUT WORLDMAP</p>
+
+      <table border="0" cellpadding=10>
+
+      <tr>
+      <td valign="top" style="vertical-align:top">
+          <p><strong>WorldMap</strong> is a web-based mapping platform that enables you to easily: </p>
+          <ul><li><p><strong>Create</strong> new custom maps </p></li>
+          <li><p><strong>Upload, Organize, and Share</strong> mapping data online</p></li>
+          <li><p><strong>Discover</strong> new mapping data and <strong>visualize</strong> it in new ways </p></li>
+          <li><p><strong>Integrate </strong>and<strong> Overlay</strong> data with those of other researchers </p></li>
+          <li><p><strong>Collaborate</strong> by letting several trusted people edit the same map </p></li>
+          <li><p><strong>Publish</strong> custom maps to the world or to just a few collaborators </p></li>
+          </ul>
+      </td>
+      <td width="502">
+          <iframe width="501" height="376" src="http://www.youtube.com/embed/Ajctx6h1t5s" frameborder="0" allowfullscreen></iframe>
+      </td>
+      </tr>
+
+      <tr>
+      <td colspan=2><p>WorldMap is designed to enable people to easily explore, share, publish, and edit geographic information. Developed at the Harvard <a href="http://gis.harvard.edu/">Center for Geographic Analysis</a>, WorldMap is freely available for everyone to use.</p>
+      </td>
+      </tr>
+
+      <tr>
+      <td valign=top  style="vertical-align:top">
+          <p><br>The key to WorldMap is geographic information; use WorldMap to explore, analyze, and share: </p>
+          <ol>
+          <li><p><strong>Your own data</strong> layers, </p></li>
+          <li><p><strong>Existing data</strong> layers in WorldMap's vast geographic information library.</p></li>
+          <li><p><strong>Other data</strong> layers which reside on other servers using <a href="http://en.wikipedia.org/wiki/Web_Map_Service">web map services</a>.</p></li>
+          </ol>
+
+      </td>
+      <td valign=top><img src="/site_media/theme/img/OSM_harvardyard.png" width="502" height="282" /></td>
+<!--       <td><img src="LAYERS.jpg" width="251"  /></td>
+-->      </tr>
+
+      <tr>
+      <td colspan=2><p>WorldMap also provides <strong>excellent base maps</strong>; as a means to supply information thorough geographic context, you can overlay your map layers atop familiar base maps from Google or OpenStreetMaps.</p></td>
+      </tr>
+
+      <tr>
+      <td valign=top><p><strong>Open Access</strong></p>
+          <p>Developed at the Harvard Center for Geographic Analysis, WorldMap is freely available for everyone to use. Unlike many other mapping platforms, WorldMap is both free and runs right on your web browser. You don't need a license or any special software. WorldMap is hosted on Amazon's EC2 cloud infrastructure, which makes setting up new WorldMap instances for us and for collaborators relatively inexpensive.</p>
+      </td>
+
+      <td valign=top><p><strong>Open Source Software</strong>
+          <br />WorldMap is <a href="http://en.wikipedia.org/wiki/Open-source_software">Open Source software</a> and can be deployed on Linux or, (with a bit more effort), Windows environments.  This means the system can be examined, improved on, and extended by researchers and developers around the world.  This approach also allows the system to be vendor neutral and capable of working with virtually any mapping system through the use of open standards, formats, and web protocols.
+Use the hosted version of WorldMap here or <a href="https://github.com/cga-harvard/cga-worldmap">download the source code</a> and run the application on your own server.</p>
+<p>Because WorldMap is open source, powerful new functionality can often be added rapidly at relatively low cost. Sometimes another group in the world has built a tool we need so we just integrate it. Sometimes we need something that doesn't exist so we build it ourselves.  In other cases we build on a tool that has been started by someone else, contributing the resulting code back to the commons where it can be further improved.
+      WorldMap stands on the shoulders of other Open Source projects including AfricaMap,
+      <a href="http://www.geonode.org" target="_blank">GeoNode</a>,
       <a href="http://www.openlayers.org" target="_blank">OpenLayers</a>,
-      <a href="http://www.postgis.org" target="_blank">PostGIS</a>, and <a href="http://trac.osgeo.org/geos/" target="_blank">GEOS</a>.
-      WorldMap is licensed under Version 3 of the <a
-      href="http://www.gnu.org/licenses/gpl.html">GNU
-      General Public License (GPL)</a></p>
-      {% endblocktrans %}
+      <a href="http://www.postgis.org" target="_blank">PostGIS</a>, and
+      <a href="http://trac.osgeo.org/geos/" target="_blank">GEOS</a>.
+<!--      WorldMap is licensed under Version 3 of the <a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License (GPL)</a>    -->
+</p>
+</td>
+</tr>
+
+<tr>
+<td colspan=2>
+<p><strong>Beta</strong><br />WorldMap is in Beta and remains under rapid development.  We are working to improve it in areas of performance, functionality, and interface design. WorldMap runs well in most browsers, though at this point it is most tested on Firefox and Chrome.</p>
+</td>
+</tr>
+
+</table>
+
+
       </div>
 
-       <div style="padding: 20px">
-      <div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#sponsor_block").modal();return false;'>Sponsors</a></div>
-      <div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#webdevcontrib_block").modal();return false;'>Contributors</a></div>
-       <div style="width:100%;text-align:center;clear:both;font-size:12pt;"><a href="mailto:worldmap@harvard.edu">Contact Us</a></div>
-       </div>
+      <div style="padding: 20px">
+           <div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#sponsor_block").modal();return false;'>Sponsors</a></div>
+           <div style="width:50%;text-align:center;position:relative;float:left;font-size:12pt;"><a href="" onclick='$("#webdevcontrib_block").modal();return false;'>Contributors</a></div>
+           <div style="width:100%;text-align:center;clear:both;font-size:12pt;"><a href="mailto:worldmap@harvard.edu">Contact Us</a></div>
+      </div>
       <div id="sponsor_block" style="display:none">
-      <h2> {% trans "Sponsors" %} </h2>
+
+      <h2> Sponsors </h2>
 
       Center for Geographic Analysis
 
@@ -84,14 +139,16 @@
 
       <br />Amazon.com
       </div>
+
       <div id="webdevcontrib_block" style="display:none">
-      <h2> {% trans "Software Development Contributions" %} </h2>
-      <p><a href="http://www.opengeo.org"  target="_blank"><img src="{{STATIC_URL}}theme/img/opengeo-logo.png" width="150" /></a></p>
-      <p><a href="http://www.azavea.com" target="_blank"><img src="{{STATIC_URL}}theme/img/azavea.png" width="150" /></a></p>
+      <h2> Software Development Contributions </h2>
+      <p><a href="http://www.opengeo.org"  target="_blank"><img src="/site_media/theme/img/opengeo-logo.png" width="150" /></a></p>
+      <p><a href="http://www.azavea.com" target="_blank"><img src="/site_media/theme/img/azavea.png" width="150" /></a></p>
        <br/>
-      <p><a href="http://www.metacarta.com"  target="_blank"><img src="{{STATIC_URL}}theme/img/metacarta.png" width="150" /></a></p>
+      <p><a href="http://www.metacarta.com"  target="_blank"><img src="/site_media/theme/img/metacarta.png" width="150" /></a></p>
       <br/>
       <p>Hosting provided by <a href="http://www.telascience.org">TelaScience</a></p>
+
           <br/>
           <br/>
       </div>
