@@ -22,6 +22,7 @@ from string import lower
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 from gs_helpers import cascading_delete
+from idios.models import ProfileBase
 import logging
 import sys
 
@@ -486,8 +487,7 @@ class GeoNodeException(Exception):
     pass
 
 
-class Contact(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True)
+class Contact(ProfileBase):
     name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True)
     organization = models.CharField(_('Organization Name'), max_length=255, blank=True, null=True)
     position = models.CharField(_('Position Name'), max_length=255, blank=True, null=True)
