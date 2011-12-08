@@ -486,10 +486,18 @@ class GeoNodeException(Exception):
     pass
 
 
+PROFILE_TYPES = (
+    ('U', 'End User'),
+    ('S', 'Supplier'),
+    ('P', 'Provider'),
+)
+
 class Contact(models.Model):
+    type = models.CharField(_('User Type'), max_length=1, choices=PROFILE_TYPES, null=True, blank=True, default='U')
     user = models.ForeignKey(User, blank=True, null=True)
     name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True)
     organization = models.CharField(_('Organization Name'), max_length=255, blank=True, null=True)
+    profile = models.TextField(_('Profile'), null=True, blank=True)
     position = models.CharField(_('Position Name'), max_length=255, blank=True, null=True)
     voice = models.CharField(_('Voice'), max_length=255, blank=True, null=True)
     fax = models.CharField(_('Facsimile'),  max_length=255, blank=True, null=True)
