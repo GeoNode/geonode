@@ -99,6 +99,7 @@ def picasa(request):
 
 def hglpoints (request):
     from xml.dom import minidom
+    import re
     #url = "http://dixon.hul.harvard.edu:8080/HGL/HGLGeoRSS?UserQuery="
     url = "http://hgl.harvard.edu:8080/HGL/HGLGeoRSS?GeometryType=point"
     #bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
@@ -111,7 +112,7 @@ def hglpoints (request):
         title = node.getElementsByTagName('title')[0]
         if guid.firstChild.data != 'OWNER.TABLE_NAME':
             description.firstChild.data = description.firstChild.data + '<br/><br/><p><a href=\'javascript:app.addHGL("' \
-                + title.firstChild.data + '","' + guid.firstChild.data.replace("SDE2.","")  + '");return false;\'>Add to Map</a></p>'
+                + title.firstChild.data + '","' + re.sub("SDE\d?\.","", guid.firstChild.data)  + '");return false;\'>Add to Map</a></p>'
     return HttpResponse(dom.toxml(), mimetype="text/xml")
 
 def youtube(request):
