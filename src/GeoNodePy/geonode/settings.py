@@ -128,6 +128,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'cbv.middleware.DeferredRenderingMiddleware',
 )
 
 # This isn't required for running the geonode site, but it when running sites that inherit the geonode.settings module.
@@ -255,7 +256,7 @@ INSTALLED_APPS = (
     'staticfiles',
     'django_extensions',
     'registration',
-    'profiles',
+    'idios',
     'avatar',
     'geonode.core',
     'geonode.maps',
@@ -266,7 +267,7 @@ INSTALLED_APPS = (
 def get_user_url(u):
     from django.contrib.sites.models import Site
     s = Site.objects.get_current()
-    return "http://" + s.domain + "/profiles/" + u.username
+    return "http://" + s.domain + "/profiles/profile" + u.username
 
 
 ABSOLUTE_URL_OVERRIDES = {

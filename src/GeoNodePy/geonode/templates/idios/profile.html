@@ -1,4 +1,4 @@
-{% extends "profiles/base.html" %}
+{% extends "idios/base.html" %}
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
@@ -17,7 +17,7 @@
   </ul>
   <h3>{% trans "Settings" %}</h3>
   <ul>
-    <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
+    <li><a href="{% url profile_edit %}">{% trans "Edit profile information" %}</a></li>
   </ul>
   {% endif %}
 </div>
