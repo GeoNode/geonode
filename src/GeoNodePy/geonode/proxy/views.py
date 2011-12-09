@@ -112,8 +112,19 @@ def hglpoints (request):
         title = node.getElementsByTagName('title')[0]
         if guid.firstChild.data != 'OWNER.TABLE_NAME':
             description.firstChild.data = description.firstChild.data + '<br/><br/><p><a href=\'javascript:app.addHGL("' \
-                + title.firstChild.data + '","' + re.sub("SDE\d?\.","", guid.firstChild.data)  + '");return false;\'>Add to Map</a></p>'
+                + escape(title.firstChild.data) + '","' + re.sub("SDE\d?\.","", guid.firstChild.data)  + '");return false;\'>Add to Map</a></p>'
     return HttpResponse(dom.toxml(), mimetype="text/xml")
+
+
+def hglServiceStarter (request):
+    layer = request.GET['AddLayer'] if request.method == 'GET' else request.POST['AddLayer']
+    accessUrl = "http://hgl.harvard.edu:8080/HGL/ogpHglLayerInfo.jsp?ValidationKey=OPENGEOPORTALROCKS&layers=" + layer
+    accessJSON = simplejson.loads(urllib.urlopen(accessUrl).read())
+    if accessJSON[layer]['access'] == 'R':
+        return HttpResponse(status=403)
+
+    startUrl = "http://hgl.harvard.edu:8080/HGL/RemoteServiceStarter?ValidationKey=" + settings.HGL_VALIDATION_KEY + "&AddLayer=" + layer
+    return HttpResponse(urllib.urlopen(startUrl).read())
 
 def youtube(request):
     url = "http://gdata.youtube.com/feeds/api/videos?v=2&prettyprint=true&"

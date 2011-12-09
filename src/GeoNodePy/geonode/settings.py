@@ -353,7 +353,7 @@ DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
 
-
+HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
 
 try:
