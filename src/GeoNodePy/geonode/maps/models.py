@@ -22,7 +22,7 @@ from string import lower
 from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 from gs_helpers import cascading_delete
-from idios.models import ProfileBase
+from idios.models import ProfileBase, create_profile
 import logging
 import sys
 
@@ -1691,4 +1691,6 @@ def create_user_profile(instance, sender, created, **kwargs):
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
+# Remove the idios create_profile handler, which interferes with ours.
+signals.post_save.disconnect(create_profile, sender=User)
 signals.post_save.connect(create_user_profile, sender=User)
