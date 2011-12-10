@@ -113,14 +113,15 @@ can be used to create additional administrative user accounts.  The administrati
 linked from the main site, but can be accessed at http://localhost:8000/admin/
 
 
-.. note::
+.. Contact/Profile Notes::
 
     The GeoNode ``Contact`` model has been modified to use Idios in this branch.
     
-    In terms of user interface, there should be no difference.  However,
-    existing databases that used the column ``maps_contact.user`` for 
-    the foreign key to the User model should be migrated to use 
-    ``maps_contact.user_id`` instead.
+    In terms of end user interface, there should be no difference.  
+    However, the existing column ``maps_contact.user`` was modified
+    to no longer accept null values.  The admin interface currently
+    uses the class name ``Profiles`` for this model.
+
 
 Options
 =======
