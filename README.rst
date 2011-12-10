@@ -121,7 +121,9 @@ linked from the main site, but can be accessed at http://localhost:8000/admin/
     However, the existing column ``maps_contact.user`` was modified
     to no longer accept null values.  The admin interface currently
     uses the class name ``Profiles`` for this model.
-
+    
+    Also, a ``User Type`` field has been added.  This field does not
+    currently have an associated migration.
 
 Options
 =======
