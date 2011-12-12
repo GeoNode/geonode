@@ -119,7 +119,7 @@ def hglpoints (request):
 
 def hglServiceStarter (request):
     layer = request.GET['AddLayer'] if request.method == 'GET' else request.POST['AddLayer']
-    accessUrl = "http://hgl.harvard.edu:8080/HGL/ogpHglLayerInfo.jsp?ValidationKey=OPENGEOPORTALROCKS&layers=" + layer
+    accessUrl = "http://hgl.harvard.edu:8080/HGL/ogpHglLayerInfo.jsp?ValidationKey=" + settings.HGL_VALIDATION_KEY +"&layers=" + layer
     accessJSON = simplejson.loads(urllib.urlopen(accessUrl).read())
     if accessJSON[layer]['access'] == 'R':
         return HttpResponse(status=403)
