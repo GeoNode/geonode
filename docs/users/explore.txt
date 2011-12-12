@@ -1,8 +1,8 @@
 :orphan:
 
-============
-Viewing Maps
-============
+==============
+Exploring Maps
+==============
 
 
 Finding a map to view
@@ -163,3 +163,10 @@ GeoNode will contact the remote server and get a list of its Layers via its GetC
 When the GetCapabilities document has been fetched. The list of layers will be displayed and you can add them to the map as you would any other layer in GeoNode.
 
 .. image:: images/remote_server_layers.png
+
+Viewing a map in the embedded 3D Google Earth Viewer
+=====================================================
+
+GeoNode allows you to view a map in Google Earth with an embedded Google Earth Viewer. You will need to install the Google Earth plugin which is available from http://www.google.com/earth/explore/products/plugin.html. Once the plugin is installed, from the Map Composer, click the "Switch to Google Earth 3D Viewer" button in the toolbar to view the map with Google Earth.
+
+.. image:: images/map_composer_google_earth.png
