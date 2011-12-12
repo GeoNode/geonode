@@ -26,17 +26,8 @@ This module covers the tasks of registering a new account, activating it and usi
 
 .. note:: unregistered users can view all public content on the system and can make temporary changes to Maps created by others. Registered users can create their own Maps, upload materials, change symbolization, and save changes. In addition registered users can control access to layers they own and can access any private content that has been made accessible to them by others.  
 
-
-Filling in your profile
-=======================
-
-Profiles allow people to find out about other users of the system. A user’s profile name is associated with any layer or map they create. Once you are logged in you can go into your profile and add information about yourself. As you add materials to GeoNode, those materials will be listed here.
-
-.. note:: the user profile contains at a minimum the user’s name and email address.  Other optional items include organization, position, phone, fax, address, city, state, zip, country.  
-
-
-Logging in GeoNode
-==================
+Logging in to GeoNode
+=====================
 
 Next time you come back to the site, you can follow these instructions to log in:
 
@@ -53,3 +44,11 @@ Next time you come back to the site, you can follow these instructions to log in
 #. Verify you are logged in by looking for your username in the top bar:
 
    .. image:: images/logged_in.png
+
+
+Filling in your profile
+=======================
+
+Profiles allow people to find out about other users of the system. A user’s profile name is associated with any layer or map they create. Once you are logged in you can go into your profile and add information about yourself. As you add materials to GeoNode, those materials will be listed here.
+
+.. note:: the user profile contains at a minimum the user’s name and email address.  Other optional items include organization, position, phone, fax, address, city, state, zip, country.  
