@@ -5,25 +5,6 @@ Sharing data with GeoNode
 =========================
 
 
-Adding remote WMS layer
-=======================
-
-GeoNode supports the addition of a layer to a map via a *web map service* or WMS.  Given a WMS URL to remote server X, GeoNode will then request a list of all the Layers on that remote server and display the list in GeoNode to select from and add to the Map. Let’s look at how a remote WMS layer can be added.  
-
-Copy the `World Health Organization URL <http://Maps.who.int/tools/geoserver/wfs?request=GetCapabilities?SERVICE=WMS&REQUEST=GetCapabilities>`_.
-In the *Map Composer*, click the  *Add Layers* button and then click *Add New Server*.
-Paste the URL into the form and make sure there are no spaces at the end of the URL.  Click *Add Server*.
-After a moment, GeoNode should display a list of Layers from the WHO server.
-
-Click on *Title* list to sort.  Click on *Global Health Facilities* and at the bottom click *Add Layers*. Close the *Add Layers* window.
-
-Now add another `WMS server <http://GeoNode.harvard.edu/africamap/tilecache/tiles.py/1.0.0/>`_.
-Click on the *Title* list to sort.  Click on *Landscan* Layer and then *Add Layers*.
-Save your map.  
-
-Drag *Landscan* so that it is below *Ethnicity Felix* layer and displays underneath them.
-Save your map again.
-
 
 Bookmarking and embedding your map in another web page
 ======================================================
