@@ -10,11 +10,11 @@ This module covers the tasks of registering a new account, activating it and usi
 
    .. image:: images/login_register.png
 
-#. Click on :menuselection:`Register` and oyu will be taken to a page like the following:
+#. Click on :menuselection:`Register` and you will be taken to a page like the following:
 
    .. image:: images/register_form.png
 
-   Once you have filled in the details, you should see something like:
+   Once you have filled in the details and clicked Submit, you will see the following: 
 
    .. image:: images/activation_sent.png
 
