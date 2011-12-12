@@ -7,11 +7,22 @@ Viewing Maps
 
 Finding a map to view
 =====================
-To start searching existing maps, click the *Explore Maps* button on the front page. Here you will see a list of maps others have created, listed in the order in which they were created. Use the search box to find things you want. 
+
+.. note:: It is advisable to use the public demo site http://demo.geonode.org/ for this section
+
+To start searching existing maps, click the *Explore Maps* button on the front page. 
+
+.. image:: images/explore_maps_button.png
+
+Here you will see a list of maps others have created, listed in the order in which they were created. Use the search box to find things you want.
+
+.. image:: images/explore_maps.png
 
 Next to the map titles are the names of the people who created them so you can contact them. GeoNode is about encouraging collaborations between people with common interests.
 
 Click on the *Alyssa Wright* link in the Contact column: this will take you to `Alyssa’s user profile <http://demo.geonode.org/profiles/awright>`_. The profile displays all the maps and data that she's responsible for.
+
+.. image:: images/profile_page.png
 
 Let’s take a look at the `Haiti Damage Assessment Map <http://demo.geonode.org/maps/85>`_.
 
@@ -20,10 +31,21 @@ Map information page
 ====================
 Most links to maps in GeoNode go to that map’s information page, which displays metadata for that Map (Title, Abstract, contactable user) and provides other useful information and tools.
 
-To download all the layers in this map as a .zip file, click the *Download all layers included in this map* link.  This will prompt you to log in to the site. If you do not have a user login on the site already, don’t worry; you will make one soon.
+.. image:: images/haiti_map.png
+
+To download all the layers in this map as a .zip file, click the *Download all layers included in this map* link.  This will prompt you to log in to the site. If you do not have a user login on the site already, please follow the steps in the section *Registering a new Account in GeoNode* to register on the demo.geonode.org site. 
+
+.. image:: images/download_all_layers.png
+
+A page will be displayed listing the layers that cannot be download either due to security restrictions or because they are from another server.
+
+.. image:: images/download_map.png
 
 This page also links to other information pages about the data used in the map. Click the link to `HaitiHealthFacilityMaster_20100125 <http://demo.geonode.org/data/geonode:HaitiHealthFacilityMaster_20100125>`_.
+
 You should be directed to a new page with the metadata for this data set. Note that while the Map you were looking at was focused on Port-au-Prince, this page shows the entire data set of Haiti’s health facilities.
+
+.. image:: images/haiti_health_facilities.png
 
 From this page, you can download this data in various formats. For example, click the “JPEG” link in the upper left hand corner. This will give you a JPEG version of the data set via the open service WMS.
 
@@ -32,24 +54,30 @@ Look for the buttons in the Style section of this page.  Click around to switch 
 Go Back (in your browser) to the *Map Information Page*. Then click the link for *View or edit this map.*
 This will take you to the *Map Composer*, with a large map viewer and a side bar with a list of layers.
 
+.. image:: images/haiti_map_composer.png
 
 Note on permissions
 ===================
+
 You need to have a registered user account to have permission to save a map. But you can still make changes to a map even when unregistered.
 Without permissions you will be able to add layers from GeoNode as well as add remote web services just for the session, but you will not be able to save your additions.
 
-In next chapter you will create your own map, to which you will have full permissions.
+In previous chapter you created your own map, to which you have full permissions.
 
 Currently this map is set to be viewable by anyone in the world.
 
 
 Choice of basemaps
 ==================
+
 A number of preset basemap layers are available, including *Google Satellite*, the NASA *Blue Marble* satellite image, *Open Street Map*, and a *No Background* options.  Other commercial and non commercial base maps can be added to a custom GeoNode installation.
+
+.. image:: images/base_layers.png
 
 
 Ways to zoom
 ============
+
 There are several ways you can zoom (change scales) in GeoNode:
 
 * Map navigation tools include the standard zoom bar and map drag
@@ -60,46 +88,71 @@ There are several ways you can zoom (change scales) in GeoNode:
 
 The shift-drag box approach may be the most powerful once you get the hang of it.
 
+.. image:: images/ways_to_zoom.png
 
 Legend, Scale Bar
 =================
-GeoNode generates legends automatically based on the SLD (Styled Layer Descriptor) symbolization.  Legends for any layers being displayed are in the Legend tab next to the Data tab at the upper left.  The scale bar changes with zoom level and the exact scale ratio is displayed. 
 
+GeoNode generates legends automatically based on the SLD (Styled Layer Descriptor) symbolization.  Legends for any layers being displayed are in the Legend tab next to the Data tab at the upper left.  
+
+.. image:: images/legend.png
+
+The scale bar changes with zoom level and the exact scale ratio is displayed. 
+
+.. image:: images/scale_bar.png
 
 Layer on/off, Layer order, Transparency
 =======================================
-You can turn layers on and off, move them around to control what is displaying on top of what in the map.  You can also change transparency of any layer by right clicking and going to *Layer Properties* > *Display*.
 
+You can turn layers on and off. 
+
+.. image:: images/turn_layers_on_off.png
+
+Layers which are above others in the layer panel display on the map on top of those which are below.  Display order can be changed by dragging and dropping layers up or down and the names of folders and layers can be changed.
+  
+.. image:: images/reorder_layers.png
+
+You can also change transparency of any layer by right clicking and going to *Layer Properties* > *Display*.
+
+.. image:: images/layer_transparency.png
 
 Getting feature info
 ====================
-To see more information about a feature, click the *Get Feature Info* button at the far right of the toolbar.  Then click on a feature on the map.
 
-The popup window will display the attributes of all features in the clicked-on location.  GeoNode will return attributes for as many (vector) layers as you have turned on.  
+To see more information about a feature, click the *Get Feature Info* button at the far right of the toolbar.  
 
+.. image:: images/get_feature_info_button.png
+
+Then click on a feature on the map. The popup window will display the attributes of all features in the clicked-on location.  GeoNode will return attributes for as many (vector) layers as you have turned on.  
+
+.. image:: images/get_feature_info_window.png
 
 Adding a layer from GeoNode
 ===========================
-Click the *Add Layers* button, a green plus sign above the layer list.  There is a dropdown of available servers from which you can add data and the option to add your own WMS server.
 
-Scroll down on the layer list and select the *Haiti_Damage_Assessment_Points* layer, then add it to the map.
+Click the *Add Layers* button, a green plus sign above the layer list.  There is a dropdown of available servers from which you can add data and the option to add another WMS server (see below).
 
+.. image:: images/add_layer_button.png
 
-Layer Order
-===========
-Layers which are above others in the layer panel display on the map on top of those which are below.  Display order can be changed by dragging and dropping layers up or down and the names of folders and layers can be changed.
-  
+Scroll down on the layer list and select the *Haiti_Damage_Assessment_Points* layer. You can click the + icon to see more information about the layer. Then add it to the map.
 
-Exercises
-=========
+.. image:: images/haiti_layer_in_add_layer_window.png
 
-#. Explore the list of available maps (click *Explore maps*) on the main page
-#. Use the search box to refine your search
-#. Open a map of interest
-#. Try each of the 5 different methods for zooming
-#. Notice how the legend and scale bars change as you zoom
-#. Turn display for a layer on and off
-#. Right click on a layer to explore the options
-#. Drag a layer that is turned on but not visible to be above a layer that is turned on and visible
-#. Use transparency control to allow you to see a layer displayed even though it is below another layer
-#. Click on the map and return database information for the layer displayed. (Some image or raster layers will not return information: those which have a checkerboard pattern next to them are image layers and will not return information when you click on them.)
+Adding a layer from an external WMS Server 
+==========================================
+
+You can add a layer from an external WMS server by clicking the *Add New Server* button in the Add Layers Window.
+
+.. image:: images/add_new_server.png
+
+The following dialog will be displayed. You need to provide the URL to an external WMS. It is not necessary to provide the query string arguments (?service=wms&request=GetCapabilities) portion of the URL as these will be appended to what you enter in the input text box.
+
+.. image:: images/add_new_wms.png
+
+GeoNode will contact the remote server and get a list of its Layers via its GetCapabilities Document.
+
+.. image:: images/contacting_server.png
+
+When the GetCapabilities document has been fetched. The list of layers will be displayed and you can add them to the map as you would any other layer in GeoNode.
+
+.. image:: images/remote_server_layers.png
