@@ -2,7 +2,7 @@
 Registering a new account in GeoNode
 ====================================
 
-This module covers the tasks of registering a new account, activating it and using it to log in as a registered user.
+This module covers the tasks of registering a new account, activating it,  using it to log in as a registered user, and providing your profile information.
 
 .. rubric:: Tasks
 
