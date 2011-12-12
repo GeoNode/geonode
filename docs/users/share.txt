@@ -5,25 +5,39 @@ Sharing data with GeoNode
 =========================
 
 
-
 Bookmarking and embedding your map in another web page
 ======================================================
 
 In addition to being able to save changes to your map, it is also possible to embed your map in other web pages.  This will provide a live view of your map within a blog or any web page.
 
 Create a view that you like and want to show to someone else.  Then click the *Publish Map* button at the upper left.
+
+.. image:: images/publish_map.png
+
 Now you have an embed tag that you can paste into a blog or an HTML page.
 
+.. image:: images/publish_snippet.png
+
 Open a blog or page if you have one.  If you don’t have one and would like to try this, go to `blogspot.com <http://blogspot.com>`_ and create a blog.
-Open a blog entry then paste the snippet into the blog and save it.  Now view it.  See that panning and zooming is supported. 
+Open a blog entry then paste the snippet into the blog and save it.  
+
+.. image:: images/edit_blog.png
+
+.. note:: Make sure you are in HTML edit mode when you paste the snippet.
+
+
+Now view it.  See that panning and zooming is supported. 
+
+.. image:: images/blog_post.png
 
 You can change the size of the embedded map by using the pulldown to change the height and width of the embedded map (measured in pixels), or by editing the height and width parameters in the code snippet manually. 
 
+.. image:: images/change_embed_size.png
 
 Downloading data
 ================
 
-Layers may be downloaded from their information pages in a number of file formats including:
+Layers may be downloaded from their information pages in a number of file formats including: 
 
 * ESRI Shapefile
 * Google Earth KML
@@ -35,11 +49,19 @@ Layers may be downloaded from their information pages in a number of file format
 * JPEG (image) 
 * View in Google Earth
 
+You can select the download file format in the *Download* area in the upper right hand portion of the Layer Info page.
+
+.. image:: images/download_layer_links.png
 
 Printing
 ========
 
-Within the *Map Composer*, select the *Open Street Map* base layer and click on the *Print* button at the upper left.  Choose:
+Within the *Map Composer*, select the *Open Street Map* base layer and click on the *Print* button at the upper left.  
+
+.. image:: images/print_map_button.png
+
+
+Choose:
 
 * Portrait type
 * Resolution
@@ -47,10 +69,15 @@ Within the *Map Composer*, select the *Open Street Map* base layer and click on 
 * Pan your map in print view if necessary 
 * Provide a title for your printout.
 
-Click *Print* and generate a PDF which you can save, email, or print.
+.. image:: images/print_window.png
 
-.. note:: Printing is supported at up to 300dpi and creates an Adobe PDF view of your map at 8.5” x 11” (A4: 216mm x 279mm) and 8.5” x 11” (A3: 216mm x 356mm) sizes.
+Click *Print* and GeoNode will generate a PDF which you can save, email, or print.
 
+.. image:: images/creating_pdf.png
+
+Printing is supported at up to 300dpi and creates an Adobe PDF view of your map at 8.5” x 11” (A4: 216mm x 279mm) and 8.5” x 11” (A3: 216mm x 356mm) sizes.
+
+.. image:: images/print_map_pdf.png
 
 Exercises
 =========
