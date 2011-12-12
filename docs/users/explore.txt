@@ -138,14 +138,21 @@ Scroll down on the layer list and select the *Haiti_Damage_Assessment_Points* la
 
 .. image:: images/haiti_layer_in_add_layer_window.png
 
+
 Adding a layer from an external WMS Server 
 ==========================================
 
-You can add a layer from an external WMS server by clicking the *Add New Server* button in the Add Layers Window.
+GeoNode supports the addition of a layer to a map via a *web map service* or WMS.  Given a WMS URL to a remote server, GeoNode will request a list of all the Layers available on that remote server and display the list in GeoNode to select from and add to the Map. 
+
+Let’s look at how a remote WMS layer can be added.  
+
+Copy the `World Health Organization URL <http://Maps.who.int/tools/geoserver/wfs?request=GetCapabilities?SERVICE=WMS&REQUEST=GetCapabilities>`_.
+
+In the *Map Composer*, click the  *Add Layers* button and then click *Add New Server*.
 
 .. image:: images/add_new_server.png
 
-The following dialog will be displayed. You need to provide the URL to an external WMS. It is not necessary to provide the query string arguments (?service=wms&request=GetCapabilities) portion of the URL as these will be appended to what you enter in the input text box.
+The following dialog will be displayed. You need to provide the URL to an external WMS. It is not strictly necessary to provide the query string arguments (?service=wms&request=GetCapabilities) portion of the URL as these will be appended to what you enter in the input text box. Paste the URL into the form and make sure there are no spaces at the end of the URL.  Click *Add Server*.
 
 .. image:: images/add_new_wms.png
 
