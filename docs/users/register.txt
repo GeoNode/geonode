@@ -63,3 +63,14 @@ Profiles allow people to find out about other users of the system. A user’s pr
 
 #. Click Submit to save your changes:
 
+
+Changing your password
+======================
+
+You can change your password by clicking the :menuselection:`Change Password` link in the upper right hand side of the header.
+
+.. image:: images/change-password-link.png
+
+Use the following form to change your password, by supplying your existing password and providing a new one and verifying it by typing it in again.
+
+.. image:: images/change-password.png
