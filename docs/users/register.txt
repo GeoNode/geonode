@@ -51,4 +51,15 @@ Filling in your profile
 
 Profiles allow people to find out about other users of the system. A user’s profile name is associated with any layer or map they create. Once you are logged in you can go into your profile and add information about yourself. As you add materials to GeoNode, those materials will be listed here.
 
-.. note:: the user profile contains at a minimum the user’s name and email address.  Other optional items include organization, position, phone, fax, address, city, state, zip, country.  
+.. rubric:: Tasks
+
+#. Click on Profile in the menu bar:
+
+#. Fill out the profile form:
+
+  .. note:: the user profile contains at a minimum the user’s name and email address.  Other optional items include organization, position, phone, fax, address, city, state, zip, country. 
+
+  .. image:: images/profile.png 
+
+#. Click Submit to save your changes:
+
