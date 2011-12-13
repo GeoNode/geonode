@@ -1,7 +1,5 @@
-:orphan:
-
 =======================================
-Configuring GeoNode in development mode
+Configuring GeoNode in Development Mode
 =======================================
 
 

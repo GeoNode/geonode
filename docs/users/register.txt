@@ -1,10 +1,8 @@
-====================================
-Registering a new account in GeoNode
-====================================
+=========================
+Registering a New Account
+=========================
 
 This module covers the tasks of registering a new account, activating it,  using it to log in as a registered user, and providing your profile information and changing your password.
-
-.. rubric:: Tasks
 
 #. Navigate to GeoNode's homepage, you will find the following in the top right corner:
 
@@ -31,8 +29,6 @@ Logging in to GeoNode
 
 Next time you come back to the site, you can follow these instructions to log in:
 
-.. rubric:: Tasks
-
 #. Click on login:
 
    .. image:: images/login_register.png
@@ -50,8 +46,6 @@ Filling in your profile
 =======================
 
 Profiles allow people to find out about other users of the system. A user’s profile name is associated with any layer or map they create. Once you are logged in you can go into your profile and add information about yourself. As you add materials to GeoNode, those materials will be listed here.
-
-.. rubric:: Tasks
 
 #. Click on Profile in the menu bar:
 

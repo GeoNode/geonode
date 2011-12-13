@@ -1,14 +1,10 @@
-:orphan:
-
-=====================
-Creating Your Own Map
-=====================
+=============
+Creating Maps 
+=============
 
 
 Creating a map
 ==============
-
-.. rubric:: Tasks
 
 #. Repeat the steps in the previous section to upload the *medford_parks* and *medford_zoning* layers which are included in the zipfile you downloaded in the first section.
 
@@ -41,8 +37,6 @@ Saving your map
 ===============
 
 Now let’s save our map.  
-
-.. rubric:: Tasks
 
 #. Click save and here we have several items we can define as we save the map.
 

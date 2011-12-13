@@ -1,8 +1,6 @@
-:orphan:
-
-=========================
-Sharing data with GeoNode
-=========================
+====================
+Sharing and Printing 
+====================
 
 
 Bookmarking and embedding your map in another web page
@@ -78,36 +76,3 @@ Click *Print* and GeoNode will generate a PDF which you can save, email, or prin
 Printing is supported at up to 300dpi and creates an Adobe PDF view of your map at 8.5” x 11” (A4: 216mm x 279mm) and 8.5” x 11” (A3: 216mm x 356mm) sizes.
 
 .. image:: images/print_map_pdf.png
-
-Exercises
-=========
-
-#. Within your map add a web service layer.
-
-* Go to *Add Layers*
-
-* Add layers from a new server by clicking *Add WMS Server*
-
-* Paste a URL into the form with no spaces at the end.
-
-* If you don't know valid URLs to use, you can use the `WHO URL <http://apps.who.int/tools/geoserver/wfs?request=GetCapabilities?SERVICE=WMS&REQUEST=GetCapabilities>`_
-
-  #. A list will be returned. Sort it by clicking on the *Title* bar.  Select *Global Health Facilities*, then *Add Layers*. 
-  
-  #. Reorder layer display by dragging a layer above another layer so that it displays on top of the other layers.
-  
-  #. Change transparency of the layer on top. 
-  
-  #. Create an embed link and add it to a blog.  If you don’t have a blog, create one using Google’s Blogger.  Pan and zoom around your embedded map. Click *Link*.
-  
-  #. Print your map at 300 dpi with a title and legend.
-
-
-Optional challenge exercise - Creating an SLD using AtlasStyler
-===============================================================
-
-#. Install the 	`application <http://en.geopublishing.org/AtlasStyler>`_.
-#. Create a style for the *workshop_suitability.shp* shapefile in your packet.  Click *File* then *Import File* then choose the file from your desktop.  Click *Finish*.
-#. Right click on the Layer on the left and choose *Style*. For symbology choose *Colored Quantities*.  Choose for your Value, *Cassava S1*.  Choose 4 classes.  
-#. Save out your style by clicking *Export All Layers as SLD* and put name the file *Cassava_test.sld*, save it in your folder where you have your shapefile
-#. Upload the workshop suitability shape file along with the SLD you created. Give your file a new title following the convention <subject>_<initials>_temp.
