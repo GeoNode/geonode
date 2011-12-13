@@ -95,7 +95,6 @@ Would you like to Contribute to GeoNode's continued development? These pages wil
     developers/roadmap
     developers/reference/index
     developers/reference/django-apps
-    developers/reference/geoserver
     developers/reference/javascript
 
 Getting help
