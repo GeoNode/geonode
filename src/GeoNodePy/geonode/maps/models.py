@@ -7,6 +7,7 @@ from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, COUNTRIES, ALL_LANGUAGES
 from geonode.geonetwork import Catalog as GeoNetwork
+from geonode.people.models import Contact
 from django.db.models import signals
 from django.utils.html import escape
 import httplib2
@@ -103,70 +104,8 @@ TOPIC_CATEGORIES = [
     'utilitiesCommunication'
 ]
 
-CONTACT_FIELDS = [
-    "name",
-    "organization",
-    "position",
-    "voice",
-    "facsimile",
-    "delivery_point",
-    "city",
-    "administrative_area",
-    "postal_code",
-    "country",
-    "email",
-    "role"
-]
-
-DEFAULT_SUPPLEMENTAL_INFORMATION=_(
-'You can customize the template to suit your \
-needs. You can add and remove fields and fill out default \
-information (e.g. contact details). Fields you can not change in \
-the default view may be accessible in the more comprehensive (and \
-more complex) advanced view. You can even use the XML editor to \
-create custom structures, but they have to be validated by the \
-system, so know what you do :-)'
-)
-
 class GeoNodeException(Exception):
     pass
-
-
-PROFILE_TYPES = (
-    ('U', 'End User'),
-    ('S', 'Supplier'),
-    ('P', 'Provider'),
-)
-
-class Contact(ProfileBase):
-    type = models.CharField(_('User Type'), max_length=1, choices=PROFILE_TYPES, null=True, blank=True, default='U')
-    name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True)
-    organization = models.CharField(_('Organization Name'), max_length=255, blank=True, null=True)
-    profile = models.TextField(_('Profile'), null=True, blank=True)
-    position = models.CharField(_('Position Name'), max_length=255, blank=True, null=True)
-    voice = models.CharField(_('Voice'), max_length=255, blank=True, null=True)
-    fax = models.CharField(_('Facsimile'),  max_length=255, blank=True, null=True)
-    delivery = models.CharField(_('Delivery Point'), max_length=255, blank=True, null=True)
-    city = models.CharField(_('City'), max_length=255, blank=True, null=True)
-    area = models.CharField(_('Administrative Area'), max_length=255, blank=True, null=True)
-    zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
-    country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
-
-    def clean(self):
-        # the specification says that either name or organization should be provided
-        valid_name = (self.name != None and self.name != '')
-        valid_organization = (self.organization != None and self.organization !='')
-        if not (valid_name or valid_organization):
-            raise ValidationError('Either name or organization should be provided')
-
-    def get_absolute_url(self):
-        return ('profiles_profile_detail', (), { 'username': self.user.username })
-    get_absolute_url = models.permalink(get_absolute_url)
-
-    def __unicode__(self):
-        return u"%s (%s)" % (self.name, self.organization)
-
 
 _viewer_projection_lookup = {
     "EPSG:900913": {
