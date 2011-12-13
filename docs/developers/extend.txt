@@ -33,7 +33,7 @@ Setup Steps
 1. *Upgrade GeoNode:* First and foremost, you should upgrade GeoNode to the
    latest release. GeoNode releases can be found here 
    http://dev.geonode.org/release/ There are deployment scripts that make
-   this process much easier, they can be found here ??? 
+   this process much easier.
 
 2. *Activate GeoNode's virtualenv:* While your new project will be a Django
    project in it own right, it needs to have access to all the dependencies
