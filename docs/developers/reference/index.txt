@@ -8,5 +8,5 @@ This contains detailed information about the implementation of the different sof
    :maxdepth: 2
 
    django-apps
-   geoserver
    javascript
+   test
