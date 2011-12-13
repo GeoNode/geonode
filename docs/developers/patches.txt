@@ -10,7 +10,7 @@ For pragmatic reasons, some developers, referred to in this document as *core co
 
 Such changes are still subject to review, and may be reverted if they fail any of the Review Criteria.
 
-A related process is Improvement Proposals.
+A related process are :doc:`Improvement Proposals </developers/gnips>` 
 
 While patch review protects code quality in the GeoNode project at a small granularity, the Improvement Proposal process is intended to promote coordinated design and feedback for larger modifications such as new features or architectural changes.
 
