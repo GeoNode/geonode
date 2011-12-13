@@ -9,7 +9,7 @@ there are other ways to accomplish this, several key existing projects
 now agreed to be the *best* way to extend from GeoNode in order to add 
 functionality or to customize the site. 
 
-TODO: Some notes here about the goal of easily upgrading to new GeoNode Releases
+.. TODO: Some notes here about the goal of easily upgrading to new GeoNode Releases
 
 Existing Projects using this Methodology
 ========================================
@@ -35,10 +35,10 @@ Setup Steps
    http://dev.geonode.org/release/ There are deployment scripts that make
    this process much easier, they can be found here ??? 
 
-2. *Source GeoNode's virtualenv:* While your new project will be a Django
+2. *Activate GeoNode's virtualenv:* While your new project will be a Django
    project in it own right, it needs to have access to all the dependencies
-   you already installed as part of GeoNode into a virtual environment 
-   (link to venv docs). You can *activate* that virtual environment and make 
+   you already installed as part of GeoNode into a virtual environment. 
+   You can *activate* that virtual environment and make 
    those dependencies available with the following command::
 
      $ source /var/www/geonode/wsgi/geonode/bin/activate
@@ -84,7 +84,7 @@ Setup Steps
      PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
      GEONODE_ROOT = os.path.dirname(geonode.__file__) 
 
-   Media settings (ingenieroariel, looking for input here)::
+   Media settings:: 
 
      MEDIA_ROOT = os.path.join(PROJECT_ROOT, "uploads")
      MEDIA_URL = "/uploads/"
@@ -200,11 +200,10 @@ Types of Customization/Extension
 Branding
 --------
 
+The section :doc:`/deploy/customize` describes how to change the Logo, Colors and other branding elements in a GeoNode site.
+
 Adding Additional Django Pluggable Apps
 ---------------------------------------
 
 Adding your own Django Apps
 ---------------------------
-
-???
----
