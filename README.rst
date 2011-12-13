@@ -115,7 +115,9 @@ linked from the main site, but can be accessed at http://localhost:8000/admin/
 
 .. Contact/Profile Notes::
 
-    The GeoNode ``Contact`` model has been modified to use Idios in this branch.
+    The GeoNode ``Contact`` model has been modified to use Idios
+    in this branch. It has also been moved from the ``geonode.maps``
+    module to ``geonode.people``.
     
     In terms of end user interface, there should be no difference.  
     However, the existing column ``maps_contact.user`` was modified
