@@ -1,7 +1,5 @@
-:orphan:
-
 ===============================
-Debugging GeoNode installations
+Debugging GeoNode Installations
 ===============================
 
 There are several mechanisms to debug GeoNode installations, the most common ones are discussed in the following sections.

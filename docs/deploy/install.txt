@@ -1,6 +1,6 @@
-==========================
-General installation guide
-==========================
+===========================
+Complete Installation Guide
+===========================
 
 .. note:: The quick installation guide contains instructions to set it up in most common platforms. It can be found :doc:`here </intro/install>`.
 

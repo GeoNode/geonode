@@ -168,19 +168,3 @@ You can create styles using desktop tools such as `AtlasStyler <http://en.geopub
 There is also a tool which runs in ArcGIS 9.3 called `ArcMap2SLD <http://wald.intevation.org/projects/arcmap2sld/>`_. This approach allows you to take advantage of much of the symbolization power of ArcGIS and apply it to GeoNode. The adaptation of this tool to ArcGIS 10 is a work in progress.
 
 We will not use AtlasStyler or ArcMap2SLD now but an optional challenge exercise for this is included at the end of the tutorial.
-
-
-Exercises
-=========
-
-.. rubric:: Tasks
-
-#. Go to the *Upload Data* page from the GeoNode home page.
-#. Upload a shapefile *workshop_suitability.shp* with SLD *suitability_atlas.sld*. Please use the name formatting for the title ``<subject>_<initials>_temp``.
-#. Add the minimum metadata – *Title, Abstract*.
-#. Upload GeoTIFF *elevation.tif*. Use the name formatting ``<geography>_<subject>_<date>_<version>_temp``.
-#. Add the minimum metadata.
-#. Create a new map from the suitability data layer.
-#. Add the elevation data layer.
-#. Put the *elevation* layer under the *suitability* layer, then style the suitability layer to make it more transparent.
-#. Save your map.

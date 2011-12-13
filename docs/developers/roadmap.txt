@@ -1,13 +1,11 @@
-:orphan:
-
-=======
-Roadmap 
-=======
+=========================
+GeoNode's Roadmap Process
+=========================
 
 Roadmap Process
 ---------------
 
-The GeoNode Roadmap Process is designed to complement the more technical GeoNode [[Improvement Proposals]] and strives to make it easier for the various organizations invested in GeoNode to collaborate on features of common interest.
+The GeoNode Roadmap Process is designed to complement the more technical GeoNode Improvement Proposals and strives to make it easier for the various organizations invested in GeoNode to collaborate on features of common interest.
 
 It is based on the `roadmap items <https://spreadsheets.google.com/a/opengeo.org/spreadsheet/ccc?key=0AklXlBUnMqOrdDNackdvX3ZRS0Fha0xCeGhjSjZ1dEE>`_ developed at the `GeoNode Roadmapping Summit <http://geonode.org/2011/05/roadmapping-summit/>`_ held in May 2011.
 
@@ -16,7 +14,7 @@ Overall, the process for adding items to the collective roadmap is as follows:
 #. Organizational partner has an intent to add a feature to the roadmap
 #. Organizational partner communicates with the `organizational partners list <https://groups.google.com/a/opengeo.org/group/geonode-org/>`_ about the change to gauge interest and determine who else is committed to making it happen
 #. Organizational partner creates a feature specification on the wiki to further flesh out the idea
-#. Organizational partner finds a committer on the `developer list <https://groups.google.com/a/opengeo.org/group/geonode-dev/>`_ to shepherd the roadmap item through the GeoNode [[Improvements Process | Improvement Proposals]]
+#. Organizational partner finds a committer on the `developer list <https://groups.google.com/a/opengeo.org/group/geonode-dev/>`_ to shepherd the roadmap item through the GeoNode Improvements Process.s
 
 Each roadmap item will go through four stages:
 
@@ -27,23 +25,23 @@ Each roadmap item will go through four stages:
 
 After communicating on the `organizational partners list <https://groups.google.com/a/opengeo.org/group/geonode-org/>`_ the roadmap items enters the *Descriptive Stage* and must have a wiki page that lays out the description, user stories, and other interested parties. Optionally, the roadmap item will also include an idea of the difficulty and goals as well as any wireframes, technical diagrams, or prior art.
 
-A roadmap item enters the *Technical Stage* once a committer has been found to shepherd the roadmap item through the [[GNIP | Improvement Proposals]] process, then the wiki page must contain a clear sense of the technical assumptions, requirements or dependencies, and suggested implementation. Some roadmap items may need to be divided into multiple independent GNIP proposals.
+A roadmap item enters the *Technical Stage* once a committer has been found to shepherd the roadmap item through the Improvement Proposals process, then the wiki page must contain a clear sense of the technical assumptions, requirements or dependencies, and suggested implementation. Some roadmap items may need to be divided into multiple independent GNIP proposals.
 
-Once it passes through the [[GNIP | Improvement Proposals]] process, a roadmap item enters the *Development Stage* on its way to *Release*.
+Once it passes through the GNIP  process, a roadmap item enters the *Development Stage* on its way to *Release*.
 
 Roadmap Items
 -------------
 
-[["Rock Solid" 1.1 Release]] (Development Stage)
+"Rock Solid" 1.1 Release (Development Stage)
 
-[[Public API's and Interfaces]] (Under discussion)
+Public API's and Interfaces (Under discussion)
 
-[[Add Remote WMS Service to Search]] (Under discussion)
+Add Remote WMS Service to Search (Development Stage)
 
-[[Time Controls on Map]]
+Time Controls on Map (Development Stage)
 
-[[Improved Layer Search]]
+Improved Layer Search (Under discussion)
 
-[[LDAP Authentication]] (Under discussion)
+LDAP Authentication (Under discussion)
 
-[[Groups]] (Under discussion)
+Groups (Development Stage)
