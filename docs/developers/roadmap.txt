@@ -14,7 +14,7 @@ Overall, the process for adding items to the collective roadmap is as follows:
 #. Organizational partner has an intent to add a feature to the roadmap
 #. Organizational partner communicates with the `organizational partners list <https://groups.google.com/a/opengeo.org/group/geonode-org/>`_ about the change to gauge interest and determine who else is committed to making it happen
 #. Organizational partner creates a feature specification on the wiki to further flesh out the idea
-#. Organizational partner finds a committer on the `developer list <https://groups.google.com/a/opengeo.org/group/geonode-dev/>`_ to shepherd the roadmap item through the GeoNode Improvements Process.s
+#. Organizational partner finds a committer on the `developer list <https://groups.google.com/a/opengeo.org/group/geonode-dev/>`_ to shepherd the roadmap item through the GeoNode Improvements Process.
 
 Each roadmap item will go through four stages:
 
