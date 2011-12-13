@@ -2,12 +2,16 @@
 GeoNode Patch Review Process
 ============================
 
-This document outlines the code review process for GeoNode code.
+This section outlines the code review process for GeoNode code.
+
 Each commit proposed for inclusion in GeoNode should be reviewed by at least one developer other than the author.
+
 For pragmatic reasons, some developers, referred to in this document as *core committers*, may commit directly to the GeoNode repository without waiting for review.
+
 Such changes are still subject to review, and may be reverted if they fail any of the Review Criteria.
 
 A related process is Improvement Proposals.
+
 While patch review protects code quality in the GeoNode project at a small granularity, the Improvement Proposal process is intended to promote coordinated design and feedback for larger modifications such as new features or architectural changes.
 
 Goals
@@ -27,21 +31,24 @@ Process
 
 For contributors who do not have commit access to the GeoNode repository, the review process is as follows:
 
-0. Find or create a ticket describing the feature or bug to be resolved.
-1. Create changes to GeoNode code addressing the ticket.
-2. Publish those changes and request a review from the GeoNode committers.
-   The recommended format is a GitHub [pull request](http://help.github.com/pull-requests/).
+#. Find or create a ticket describing the feature or bug to be resolved.
+#. Create changes to GeoNode code addressing the ticket.
+#. Publish those changes and request a review from the GeoNode committers.
+   The recommended format is a GitHub pull request (http://help.github.com/pull-requests/).
    If you are unable or unwilling to provide a change as a branch on GitHub, please consult the developer's list for advice.
-3. At least one GeoNode committer should review the submitted changes.
+#. At least one GeoNode committer should review the submitted changes.
    If he finds the patch acceptable, the changes will be pulled into GeoNode.
-   If problems are found, then he should list them clearly in order to allow the original author to update the submission (at which point we return to point 2 in this process.)
+   If problems are found, then he should describe them clearly in order to allow the original author to update the submission (at which point we return to point 2 in this process.)
+   The preferred method of reviewing patches is by adding comments to a pull request in GitHub.
    In the case of a feature idea which is simply not suitable for inclusion as core GeoNode functionality, the patch may be rejected outright.
 
-![Code Review Flow](http://geonode.org/wp-content/uploads/2011/05/code-review-flow.png)
+Code Review Flow 
+
+   .. image:: images/code-review-flow.png 
 
    The general workflow for code patches coming into GeoNode.
 
-_Note: If after a few days your patch has not been reviewed by any GeoNode committer, please feel free to bring it up either in the mailing list or the IRC channel. The GeoNode community (and it's committers) try to respond quickly and give adequate feedback to maintain the interest of new potential members. However, sometimes other responsibilities prevent us from responding quickly._
+.. note:: If after a few days your patch has not been reviewed by any GeoNode committer, please feel free to bring it up either in the mailing list or the IRC channel. The GeoNode community (and it's committers) try to respond quickly and give adequate feedback to maintain the interest of new potential members. However, sometimes other responsibilities prevent us from responding quickly._
 
 Core Committers
 ---------------
