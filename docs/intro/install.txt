@@ -1,5 +1,5 @@
 ========================
-Quick installation guide
+Quick Installation Guide
 ========================
 
 The following is a quick guide to get GeoNode up and running in most common operating systems.

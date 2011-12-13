@@ -1,14 +1,13 @@
-:orphan:
-
+============================
 GeoNode Patch Review Process
 ============================
 
 This document outlines the code review process for GeoNode code.
 Each commit proposed for inclusion in GeoNode should be reviewed by at least one developer other than the author.
 For pragmatic reasons, some developers, referred to in this document as *core committers*, may commit directly to the GeoNode repository without waiting for review.
-Such changes are still subject to review, and may be reverted if they fail any of the [[Review Criteria]].
+Such changes are still subject to review, and may be reverted if they fail any of the Review Criteria.
 
-A related process is [[Improvement Proposals]].
+A related process is Improvement Proposals.
 While patch review protects code quality in the GeoNode project at a small granularity, the Improvement Proposal process is intended to promote coordinated design and feedback for larger modifications such as new features or architectural changes.
 
 Goals
@@ -20,7 +19,7 @@ By requiring a review of code coming into GeoNode, we aim to maintain code quali
 Review Criteria
 ---------------
 
-Patch reviews should adhere to the standards set in the [[Review Criteria]], a [[Project Steering Committee]] approved set of criteria for the inclusion of new code.
+Patch reviews should adhere to the standards set in the Review Criteria, a Project Steering Committee approved set of criteria for the inclusion of new code.
 
 
 Process
@@ -55,5 +54,5 @@ Becoming a Core Committer
 -------------------------
 
 In order for a developer to become a core committer, he must demonstrate familiarity with the quality guidelines for the GeoNode project by producing at least two patches which successfully pass review and are merged without requiring modification.
-A candidate for core committer-ship must be nominated by a member of the [[Project Steering Committee]], and approved via Apache consensus voting among PSC members.
+A candidate for core committer-ship must be nominated by a member of the Project Steering Committee, and approved via Apache consensus voting among PSC members.
 

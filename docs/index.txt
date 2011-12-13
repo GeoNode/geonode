@@ -1,19 +1,23 @@
-.. GeoNode documentation master file, created by
-   sphinx-quickstart on Mon Oct  3 16:20:38 2011.
-
-========================
-GeoNode's documentation!
-========================
+=======================
+GeoNode's documentation
+=======================
 
 First Steps
 ===========
 
 The following documents give an overview to GeoNode, the overview document is targeted at non-technical audiences and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
 
- * :doc:`Overview <intro/overview>`
- * :doc:`Installation <intro/install>`
+ * :doc:`About GeoNode <intro/overview>`
+ * :doc:`Quick Installation Guide <intro/install>`
 
-.. _the geonode demo site: http://demo.geonode.org
+.. _the GeoNode demo site: http://demo.geonode.org
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    intro/overview
+    intro/install
 
 
 For users
@@ -23,43 +27,83 @@ Users are not required to have experience with GIS systems but most power GeoNod
 
 The end user documentation is formatted in form of tutorials, this material has mostly been developed for Workshops during FOSS4g and similar conferences.
 
- * :doc:`Tutorials overview <users/index>`
- * :doc:`Registering a new account <users/register>`
- * :doc:`Uploading data <users/upload>`
- * :doc:`Creating maps <users/create>`
- * :doc:`Exploring maps <users/explore>`
- * :doc:`Sharing and printing <users/share>`
+ * :doc:`Tutorials Overview <users/index>`
+ * :doc:`Registering a New Account <users/register>`
+ * :doc:`Adding New Data <users/upload>`
+ * :doc:`Creating Maps <users/create>`
+ * :doc:`Exploring Maps <users/explore>`
+ * :doc:`Sharing and Printing <users/share>`
 
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    users/index
+    users/register
+    users/upload
+    users/create
+    users/explore
+    users/share
 
 For Administrators
 ==================
 
 Administrators are expected to have some experience with Linux systems but they are not required to be software developers.
 
- * :doc:`Complete installation guide <deploy/install>`
- * :doc:`Post installation instructions <deploy/production>`
- * :doc:`Customizing look and feel of geonode <deploy/customize>`
- * :doc:`Debugging problems <deploy/debug>`
+ * :doc:`Complete Installation Guide <deploy/install>`
+ * :doc:`Configuring GeoNode for Production <deploy/production>`
+ * :doc:`Customizing the Look and Feel of GeoNode <deploy/customize>`
+ * :doc:`Debugging GeoNode Installations <deploy/debug>`
 
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    deploy/install
+    deploy/production
+    deploy/customize
+    deploy/debug
 
 For Developers
 ==============
 
+Would you like to Contribute to GeoNode's continued development? These pages will guide you through the process of setting up your development environment through to submitting patches for inclusion in GeoNode.
+
  * :doc:`Configuring GeoNode in development mode <developers/setup>`
- * :doc:`Testing <developers/tests>`
+ * :doc:`Testing in GeoNode <developers/tests>`
  * :doc:`Architecture Overview <developers/architecture>`
  * :doc:`Extending GeoNode <developers/extend>`
  * :doc:`Contributing to GeoNode <developers/contribute>`
- * :doc:`Submitting patches <developers/patches>`
+ * :doc:`GeoNode Patch Review Process <developers/patches>`
  * :doc:`GeoNode Improvement Proposals - GNIP <developers/gnips>`
- * :doc:`Reference documents <developers/reference/index>`
+ * :doc:`GeoNode's Roadmap Process <developers/roadmap>`
+ * :doc:`Developers Reference Documentation <developers/reference/index>`
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    developers/setup
+    developers/tests
+    developers/architecture
+    developers/extend
+    developers/contribute
+    developers/patches
+    developers/gnips
+    developers/roadmap
+    developers/reference/index
+    developers/reference/django-apps
+    developers/reference/geoserver
+    developers/reference/javascript
 
 Getting help
 ============
 
 Having trouble? We'd like to help!
 
- * Search for information in the `archives of the geonode mailing list`_, or
+ * Search for information in the `archives of the GeoNode  mailing list`_, or
    `post a question`_.
 
  * Ask a question in the `#geonode IRC channel`_ using
@@ -67,19 +111,8 @@ Having trouble? We'd like to help!
 
  * Report bugs with GeoNode in our `ticket tracker`_.
 
-.. _archives of the geonode mailing list: http://librelist.com/browser/geonode/
+.. _archives of the GeoNode mailing list: http://librelist.com/browser/geonode/
 .. _post a question: mailto:geonode@librelist.com
 .. _#geonode IRC channel: irc://irc.freenode.net/geonode
 .. _Freenode's web based client: http://webchat.freenode.net
 .. _ticket tracker: http://dev.geonode.org/trac
-
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    intro/overview
-    intro/install
-    users/register
-    users/upload
-    deploy/install
-

@@ -148,4 +148,3 @@ That is, a top-level object with two keys:
 
 All layers not named in this response will be presumed fully restricted, that
 is, neither modifiable nor visible to the user in question.
-
