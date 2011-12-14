@@ -9,5 +9,5 @@ urlpatterns = patterns('geonode.proxy.views',
     (r'^picasa/','picasa'),
     (r'^youtube/','youtube'),
     (r'^hglpoint/','hglpoints'),
-    (r'^hglServiceStarter/','hglServiceStarter'),
+    (r'^hglServiceStarter/(?P<layer>[^/]*)/?','hglServiceStarter'),
 )

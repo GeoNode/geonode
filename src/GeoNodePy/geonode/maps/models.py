@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import threading
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
@@ -2078,6 +2079,7 @@ class MapLayer(models.Model):
 
 
         if self.source_params.find( "gxp_gnsource") > -1:
+            #Get parameters from GeoNode instead of WMS GetCapabilities
             try:
                 gnLayer = Layer.objects.get(typename=self.name)
                 if gnLayer.srs: cfg['srs'] = gnLayer.srs
@@ -2100,6 +2102,13 @@ class MapLayer(models.Model):
                 cfg['abstract'] = ''
                 cfg['styles'] =''
                 logger.error("Could not retrieve Layer with typename of %s : %s", self.name, str(e))
+        elif self.source_params.find( "gxp_hglsource") > -1:
+            # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
+            from geonode.proxy.views import hglServiceStarter
+            import threading
+            t = threading.Thread(target=hglServiceStarter,
+                args=[None, self.name])
+            t.start()
 
         #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)
         if self.id is not None:

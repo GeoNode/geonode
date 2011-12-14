@@ -15,6 +15,8 @@ import re
 
 logger = logging.getLogger("geonode.proxy.views")
 
+HGL_URL = 'http://hgl.harvard.edu:8080/HGL'
+
 @csrf_exempt
 def proxy(request):
     if 'url' not in request.GET:
@@ -100,8 +102,7 @@ def picasa(request):
 def hglpoints (request):
     from xml.dom import minidom
     import re
-    #url = "http://dixon.hul.harvard.edu:8080/HGL/HGLGeoRSS?UserQuery="
-    url = "http://hgl.harvard.edu:8080/HGL/HGLGeoRSS?GeometryType=point"
+    url = HGL_URL + "/HGLGeoRSS?GeometryType=point"
     #bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
     query = request.GET['Q'] if request.method == 'GET' else request.POST['Q']
     url = url + "&UserQuery=" + query
@@ -113,19 +114,22 @@ def hglpoints (request):
         if guid.firstChild.data != 'OWNER.TABLE_NAME':
             description.firstChild.data = description.firstChild.data + '<br/><br/><p><a href=\'javascript:void(0);\' onClick=\'app.addHGL("' \
                 + escape(title.firstChild.data) + '","' + re.sub("SDE\d?\.","", guid.firstChild.data)  + '");\'>Add to Map</a></p>'
-    newxml = dom.toxml();
     return HttpResponse(dom.toxml(), mimetype="text/xml")
 
 
-def hglServiceStarter (request):
-    layer = request.GET['AddLayer'] if request.method == 'GET' else request.POST['AddLayer']
-    accessUrl = "http://hgl.harvard.edu:8080/HGL/ogpHglLayerInfo.jsp?ValidationKey=" + settings.HGL_VALIDATION_KEY +"&layers=" + layer
+def hglServiceStarter (request, layer):
+    #Check if the layer is accessible to public, if not return 403
+    accessUrl = HGL_URL + "/ogpHglLayerInfo.jsp?ValidationKey=" + settings.HGL_VALIDATION_KEY +"&layers=" + layer
     accessJSON = simplejson.loads(urllib.urlopen(accessUrl).read())
     if accessJSON[layer]['access'] == 'R':
         return HttpResponse(status=403)
 
-    startUrl = "http://hgl.harvard.edu:8080/HGL/RemoteServiceStarter?ValidationKey=" + settings.HGL_VALIDATION_KEY + "&AddLayer=" + layer
+    #Call the RemoteServiceStarter to load the layer into HGL's Geoserver in case it's not already there
+    startUrl = HGL_URL + "/RemoteServiceStarter?ValidationKey=" + settings.HGL_VALIDATION_KEY + "&AddLayer=" + layer
     return HttpResponse(urllib.urlopen(startUrl).read())
+
+
+
 
 def youtube(request):
     url = "http://gdata.youtube.com/feeds/api/videos?v=2&prettyprint=true&"

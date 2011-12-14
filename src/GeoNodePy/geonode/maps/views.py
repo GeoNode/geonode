@@ -1,3 +1,4 @@
+from copy import deepcopy
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, MapStats, LayerStats, CHARSETS
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis, get_sld_for
@@ -283,6 +284,7 @@ def newmap_config(request):
         map.urlsuffix = DEFAULT_URL
         if request.user.is_authenticated(): map.owner = request.user
         config = map.viewer_json(request.user)
+        config['edit_map'] = True
         del config['id']
     else:
         if request.method == 'GET':
@@ -379,7 +381,8 @@ def newmap(request):
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
         'maptitle': settings.SITENAME
     }))
-    
+
+
 @csrf_exempt
 def newmapJSON(request):
     config = newmap_config(request);
@@ -2562,6 +2565,3 @@ def create_pg_layer(request):
         else:
             #The form has errors, what are they?
             return HttpResponse(layer_form.errors, status='500')
-
-
-
