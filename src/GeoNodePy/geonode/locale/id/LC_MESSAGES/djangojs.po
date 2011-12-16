@@ -2,15 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-#, fuzzy
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-24 07:43-0600\n"
-"PO-Revision-Date: 2010-12-07 15:34\n"
-"Last-Translator: <>\n"
+"PO-Revision-Date: 2011-12-16 09:43+0700\n"
+"Last-Translator: Firnas Nadirman <firnas.agrisoft.co.id>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,9 +17,10 @@ msgstr ""
 "X-Translated-Using: django-rosetta 0.5.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: maps/templates/lang.js:5 maps/templates/lang.js.py:8
+#: maps/templates/lang.js:5
+#: maps/templates/lang.js.py:8
 msgid "Add Layers"
-msgstr "Añadir capas"
+msgstr "Tambah Layer"
 
 #: maps/templates/lang.js:6
 msgid "Area"
@@ -28,449 +28,483 @@ msgstr "Area"
 
 #: maps/templates/lang.js:7
 msgid "Background"
-msgstr "Antecedentes"
+msgstr "Latar"
 
 #: maps/templates/lang.js:9
 msgid "Done"
-msgstr "Hecho"
+msgstr "Selesai"
 
 #: maps/templates/lang.js:10
 msgid "Available Layers"
-msgstr "Capas disponibles"
+msgstr "Layer yang tersedia"
 
 #: maps/templates/lang.js:11
 msgid "Connection Error"
-msgstr "Error de conexión"
+msgstr "Koneksi tidak berhasil"
 
 #: maps/templates/lang.js:12
 msgid "The server returned an error"
-msgstr "El servidor ha devuelto un error"
+msgstr "Server menghasilkan error"
 
 #: maps/templates/lang.js:13
 msgid "Details..."
-msgstr "Detalles..."
+msgstr "Detail"
 
-#: maps/templates/lang.js:15 maps/templates/lang.js.py:107
+#: maps/templates/lang.js:15
+#: maps/templates/lang.js.py:107
 msgid "Height"
-msgstr "Altura"
+msgstr "Tinggi"
 
 #: maps/templates/lang.js:16
 msgid "Get Feature Info"
-msgstr "Información del Get Feature"
+msgstr "Informasi Feature"
 
-#: maps/templates/lang.js:17 maps/templates/lang.js.py:108
+#: maps/templates/lang.js:17
+#: maps/templates/lang.js.py:108
 msgid "Large"
-msgstr "Grande"
+msgstr "Besar"
 
 #: maps/templates/lang.js:18
 msgid "or add a new server."
-msgstr "o añadir un nuevo servidor."
+msgstr "atau menambah server baru"
 
 #: maps/templates/lang.js:19
 msgid "Map Layers"
-msgstr "Capas del mapa"
+msgstr "Layer peta"
 
 #: maps/templates/lang.js:20
 msgid "View available data from:"
-msgstr "Ver datos disponibles en:"
+msgstr "Lihat data yang tersedia dari:"
 
 #: maps/templates/lang.js:21
 msgid "Data"
-msgstr "Datos"
+msgstr "Data"
 
 #: maps/templates/lang.js:22
 msgid "Layers"
-msgstr "Capas"
+msgstr "Layer"
 
 #: maps/templates/lang.js:23
 msgid "Legend"
-msgstr "Leyenda"
+msgstr "Legenda"
 
 #: maps/templates/lang.js:24
 msgid "Length"
-msgstr "Longitud"
+msgstr "Panjang"
 
 #: maps/templates/lang.js:25
 msgid "Loading Map..."
-msgstr "Cargando Mapa ..."
+msgstr "Mengambil Peta...."
 
-#: maps/templates/lang.js:26 maps/templates/lang.js.py:109
+#: maps/templates/lang.js:26
+#: maps/templates/lang.js.py:109
 msgid "Map Size"
-msgstr "Tamaño del mapa"
+msgstr "Ukuran Peta"
 
 #: maps/templates/lang.js:27
 msgid "Measure"
-msgstr "Medida"
+msgstr "Ukuran"
 
 #: maps/templates/lang.js:28
 msgid "About this Map"
-msgstr "Acerca de este Mapa"
+msgstr "Tentang Peta ini"
 
-#: maps/templates/lang.js:29 maps/templates/lang.js.py:82
+#: maps/templates/lang.js:29
+#: maps/templates/lang.js.py:82
 #: maps/templates/lang.js:151
 msgid "Abstract"
-msgstr "Resumen"
+msgstr "Abstrak"
 
-#: maps/templates/lang.js:30 maps/templates/lang.js.py:83
+#: maps/templates/lang.js:30
+#: maps/templates/lang.js.py:83
 #: maps/templates/lang.js:149
 msgid "Contact"
-msgstr "Contacto"
+msgstr "Kontak"
 
-#: maps/templates/lang.js:31 maps/templates/lang.js.py:41
+#: maps/templates/lang.js:31
+#: maps/templates/lang.js.py:41
 msgid "Permalink"
-msgstr "Enlace permanente"
+msgstr "Permalink"
 
-#: maps/templates/lang.js:32 maps/templates/lang.js.py:222
+#: maps/templates/lang.js:32
+#: maps/templates/lang.js.py:222
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr "Batal"
 
 #: maps/templates/lang.js:33
 msgid "Save as Copy"
-msgstr "Guardar como copia"
+msgstr "Simpan sebagai salinan"
 
 #: maps/templates/lang.js:34
 msgid "Save"
-msgstr "Guardar"
+msgstr "Simpan"
 
-#: maps/templates/lang.js:35 maps/templates/lang.js.py:86
-#: maps/templates/lang.js:95 maps/templates/lang.js.py:148
-#: maps/templates/lang.js:170 maps/templates/lang.js.py:205
+#: maps/templates/lang.js:35
+#: maps/templates/lang.js.py:86
+#: maps/templates/lang.js:95
+#: maps/templates/lang.js.py:148
+#: maps/templates/lang.js:170
+#: maps/templates/lang.js.py:205
 msgid "Title"
-msgstr "Título"
+msgstr "Judul"
 
-#: maps/templates/lang.js:36 maps/templates/lang.js.py:110
+#: maps/templates/lang.js:36
+#: maps/templates/lang.js.py:110
 msgid "Mini"
 msgstr "Mini"
 
 #: maps/templates/lang.js:37
 msgid "Pan Map"
-msgstr "Paneo del Mapa"
+msgstr "Geser Peta"
 
 #: maps/templates/lang.js:38
 msgid "Zoom to Next Extent"
-msgstr "Zoom a la Extensión Siguiente"
+msgstr "Zoom ke Extent berikutnya"
 
 #: maps/templates/lang.js:39
 msgid "Zoom to Previous Extent"
-msgstr "Zoom a la Extensión Anterior"
+msgstr "Zoom ke Extent sebelumnya"
 
 #: maps/templates/lang.js:40
 msgid "This map has not yet been saved."
-msgstr "Este mapa no se ha guardado todavía."
+msgstr "Peta ini belum disimpan"
 
-#: maps/templates/lang.js:42 maps/templates/lang.js.py:111
+#: maps/templates/lang.js:42
+#: maps/templates/lang.js.py:111
 msgid "Premium"
 msgstr "Premium"
 
 #: maps/templates/lang.js:43
 msgid "Print Map"
-msgstr "Imprimir Mapa"
+msgstr "Cetak Peta"
 
 #: maps/templates/lang.js:44
 msgid "Print Preview"
-msgstr "Vista previa de Impresión"
+msgstr "Tampilan Cetak"
 
 #: maps/templates/lang.js:45
 msgid "Properties"
 msgstr "Propiedades"
 
-#: maps/templates/lang.js:46 maps/templates/lang.js.py:112
+#: maps/templates/lang.js:46
+#: maps/templates/lang.js.py:112
 msgid "Publish Map"
-msgstr "Publicar Mapa"
+msgstr "Publish Peta"
 
-#: maps/templates/lang.js:47 maps/templates/lang.js.py:48
+#: maps/templates/lang.js:47
+#: maps/templates/lang.js.py:48
 msgid "Remove Layer"
-msgstr "Remover la capa"
+msgstr "Hapus Layer"
 
 #: maps/templates/lang.js:49
 msgid "Sorry, your map could not be saved."
-msgstr "Lo sentimos, el mapa no se pudo guardar."
+msgstr "Maaf peta anda tidak dapat disimpan"
 
 #: maps/templates/lang.js:50
 msgid "Error While Saving"
-msgstr "Error al guardar"
+msgstr "Terdapat kesalahan pada saat menyimpan"
 
 #: maps/templates/lang.js:51
 msgid "Save Map"
-msgstr "Guardar Mapa"
+msgstr "Simpan Peta"
 
 #: maps/templates/lang.js:52
 msgid "You must be logged in to save this map."
-msgstr "Debe estar registrado para salvar a este mapa."
+msgstr "Anda diharuskan login terlebih dahulu untuk menyimpan peta ini."
 
-#: maps/templates/lang.js:53 maps/templates/lang.js.py:114
+#: maps/templates/lang.js:53
+#: maps/templates/lang.js.py:114
 msgid "Small"
-msgstr "Pequeñas"
+msgstr "Kecil"
 
 #: maps/templates/lang.js:54
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
 msgstr ""
-"Error al conectarse con el servidor.\n"
-"Por favor, compruebe la URL y vuelva a intentarlo."
+"Error pada saat berkomunikasi dengan server.\n"
+"Silahkan cek URL yang dimasukkan dan coba lagi."
 
 #: maps/templates/lang.js:55
 msgid "Layer Properties"
-msgstr "Propiedades de las capas"
+msgstr "Data Layer"
 
 #: maps/templates/lang.js:56
 msgid "Change layer format and style"
-msgstr "Cambiar el formato de la capa y el estilo"
+msgstr "Ubah tampilan dan format layer"
 
 #: maps/templates/lang.js:57
 msgid "Edit Styles"
-msgstr "Editar Estilos"
+msgstr "Ubah Tampilan"
 
 #: maps/templates/lang.js:58
 msgid "Edit layer styles"
-msgstr "Edición de estilos de capa"
+msgstr "Ubah tamplan layer"
 
 #: maps/templates/lang.js:59
 msgid "Switch to Google Earth 3D Viewer"
-msgstr "Cambiar a Google Earth Viewer 3D"
+msgstr "Beralih ke tampilan Google Earth 3D"
 
 #: maps/templates/lang.js:60
 msgid "The map that you are trying to load does not exist.  Creating a new map instead."
-msgstr "El mapa que está intentando cargar no existe. Cargar un mapa nuevo en su lugar."
+msgstr "Peta yang anda coba muat tidak tersedia. Buatlah peta baru. "
 
 #: maps/templates/lang.js:61
 msgid "Unknown Map"
-msgstr "Mapa Desconocido"
+msgstr "Map tidak diketahui"
 
-#: maps/templates/lang.js:62 maps/templates/lang.js.py:115
+#: maps/templates/lang.js:62
+#: maps/templates/lang.js.py:115
 msgid "Width"
-msgstr "Ancho"
+msgstr "Lebar"
 
 #: maps/templates/lang.js:63
 msgid "Zoom In"
-msgstr "Acercar"
+msgstr "Zoom In"
 
 #: maps/templates/lang.js:64
 msgid "Zoom Out"
-msgstr "Alejar"
+msgstr "Zoom Out"
 
 #: maps/templates/lang.js:65
 msgid "Zoom level"
-msgstr "Nivel de acercamiento"
+msgstr "Zoom level"
 
 #: maps/templates/lang.js:66
 msgid "Zoom Level"
-msgstr "Nivel de Acercamiento"
+msgstr "Zoom Level"
 
 #: maps/templates/lang.js:67
 msgid "Zoom to Layer Extent"
-msgstr "Zoom a la Extensión de la Capa"
+msgstr "Zoom to Layer Extent"
 
 #: maps/templates/lang.js:68
 msgid "Zoom to Visible Extent"
-msgstr "Zoom a la extensión visible"
+msgstr "Zoom to Visible Extent"
 
 #: maps/templates/lang.js:74
 #, perl-brace-format
 msgid "Zoom Level {zoom}"
-msgstr "Nivel de zoom {zoom}"
+msgstr "Zoom Level {zoom}"
 
 #: maps/templates/lang.js:80
 msgid "Create Map"
-msgstr "Crear Mapa"
+msgstr "Buat Peta"
 
 #: maps/templates/lang.js:81
 msgid "Export Map"
-msgstr "Exportar Mapa "
+msgstr "Kirim Peta"
 
 #: maps/templates/lang.js:84
 msgid "Map"
-msgstr "Mapa"
+msgstr "Peta"
 
-#: maps/templates/lang.js:85 maps/templates/lang.js.py:152
+#: maps/templates/lang.js:85
+#: maps/templates/lang.js.py:152
 msgid "View this Map"
-msgstr "Ver este Mapa"
+msgstr "Lihat Peta ini"
 
 #: maps/templates/lang.js:87
 msgid "Open Map"
-msgstr "Abrir Mapa"
+msgstr "Buka Peta"
 
-#: maps/templates/lang.js:93 maps/templates/lang.js.py:169
+#: maps/templates/lang.js:93
+#: maps/templates/lang.js.py:169
 msgid "Name"
-msgstr "Nombre"
+msgstr "Nama"
 
 #: maps/templates/lang.js:94
 msgid "Queryable"
-msgstr "Consultable"
+msgstr "Dapat di query"
 
 #: maps/templates/lang.js:101
 msgid "No background"
-msgstr "Sin fondo"
+msgstr "Tidak ada latar"
 
 #: maps/templates/lang.js:113
 msgid "Your map is ready to be published to the web!  Simply copy the following HTML to embed the map in your website:"
-msgstr "El mapa está listo para ser publicado en la web! Basta con copiar el siguiente código HTML para incrustar el mapa en su página web:"
+msgstr "Peta anda sudah siap untuk di publikasikan ke web! Untuk menyisipkan pada website silahkan salin kode HTML dibawah ini: "
 
-#: maps/templates/lang.js:122 maps/templates/lang.js.py:188
+#: maps/templates/lang.js:122
+#: maps/templates/lang.js.py:188
 msgid "Abstract:"
-msgstr "Resumen:"
+msgstr "Abstrak:"
 
-#: maps/templates/lang.js:123 maps/templates/lang.js.py:190
+#: maps/templates/lang.js:123
+#: maps/templates/lang.js.py:190
 msgid "No attribution information is provided for this layer."
-msgstr "No hay información de atributos para esta capa."
+msgstr "Tidak ada informasi atribut yang disediakan untuk layer ini"
 
-#: maps/templates/lang.js:124 maps/templates/lang.js.py:191
+#: maps/templates/lang.js:124
+#: maps/templates/lang.js.py:191
 msgid "Provided by:"
-msgstr "Proporcionado por:"
+msgstr "Disediakan oleh:"
 
-#: maps/templates/lang.js:125 maps/templates/lang.js.py:192
+#: maps/templates/lang.js:125
+#: maps/templates/lang.js.py:192
 msgid "Download:"
-msgstr "Descargar:"
+msgstr "Unduh:"
 
-#: maps/templates/lang.js:126 maps/templates/lang.js.py:194
+#: maps/templates/lang.js:126
+#: maps/templates/lang.js.py:194
 msgid "No keywords are listed for this layer."
-msgstr "No hay palabras clave se incluyen en esta capa."
+msgstr "Tidak ada kata kunci yang disedikan untuk layer ini."
 
-#: maps/templates/lang.js:127 maps/templates/lang.js.py:195
+#: maps/templates/lang.js:127
+#: maps/templates/lang.js.py:195
 msgid "Keywords:"
-msgstr "Palabras clave:"
+msgstr "Kata Kunci:"
 
-#: maps/templates/lang.js:128 maps/templates/lang.js.py:196
+#: maps/templates/lang.js:128
+#: maps/templates/lang.js.py:196
 msgid "No metadata URLs are defined for this layer."
-msgstr "No hay URL de metadato definido para esta capa."
+msgstr "Tidak ada URL metadata yang didefinisikan untuk layer ini."
 
-#: maps/templates/lang.js:129 maps/templates/lang.js.py:197
+#: maps/templates/lang.js:129
+#: maps/templates/lang.js.py:197
 msgid "Metadata Links:"
-msgstr "Links de Metadatos:"
+msgstr "Link Metadata:"
 
 #: maps/templates/lang.js:135
 msgid "Paper size:"
-msgstr "Tamaño de papel:"
+msgstr "Ukuran Kertas:"
 
 #: maps/templates/lang.js:136
 msgid "Resolution:"
-msgstr "Resolución:"
+msgstr "Resolusi"
 
 #: maps/templates/lang.js:137
 msgid "Print"
-msgstr "Imprimir"
+msgstr "Cetak"
 
 #: maps/templates/lang.js:138
 msgid "Enter map title here."
-msgstr "Introduzca el título del mapa aquí."
+msgstr "Masukkan judul peta disini"
 
 #: maps/templates/lang.js:139
 msgid "Include legend?"
-msgstr "Incluir la leyenda?"
+msgstr "termasuk legenda?"
 
 #: maps/templates/lang.js:140
 msgid "Enter comments here."
-msgstr "Escriba aquí sus comentarios."
+msgstr "Tambahkan komentar disini."
 
 #: maps/templates/lang.js:141
 msgid "Creating PDF..."
-msgstr "Creación de PDF ..."
+msgstr "Membuat PDF..."
 
 #: maps/templates/lang.js:150
 msgid "Last Modified"
-msgstr "Última Modificación"
+msgstr "Modifikasi Terakhir"
 
-#: maps/templates/lang.js:153 maps/templates/lang.js.py:174
+#: maps/templates/lang.js:153
+#: maps/templates/lang.js.py:174
 msgid "Prev"
-msgstr "Anterior"
+msgstr "Sebelumnya"
 
-#: maps/templates/lang.js:154 maps/templates/lang.js.py:175
+#: maps/templates/lang.js:154
+#: maps/templates/lang.js.py:175
 msgid "Next"
-msgstr "Siguiente"
+msgstr "Selanjutnya"
 
-#: maps/templates/lang.js:155 maps/templates/lang.js.py:176
+#: maps/templates/lang.js:155
+#: maps/templates/lang.js.py:176
 msgid "of"
-msgstr "de"
+msgstr "dari"
 
-#: maps/templates/lang.js:156 maps/templates/lang.js.py:177
+#: maps/templates/lang.js:156
+#: maps/templates/lang.js.py:177
 msgid "Your search did not match any items."
-msgstr "Su búsqueda no produjo ningún artículo."
+msgstr "Pencarian anda tidak ditemukan"
 
 #: maps/templates/lang.js:157
 msgid "Search Maps"
-msgstr "Mapa de Búsqueda"
+msgstr "Mencari Peta"
 
-#: maps/templates/lang.js:158 maps/templates/lang.js.py:178
+#: maps/templates/lang.js:158
+#: maps/templates/lang.js.py:178
 msgid "Search"
-msgstr "Búsqueda"
+msgstr "Cari"
 
-#: maps/templates/lang.js:159 maps/templates/lang.js.py:179
+#: maps/templates/lang.js:159
+#: maps/templates/lang.js.py:179
 msgid "Showing"
-msgstr "Listado"
+msgstr "Menampilkan"
 
 #: maps/templates/lang.js:160
 msgid "Loading"
-msgstr "Cargando"
+msgstr "Memuat"
 
-#: maps/templates/lang.js:161 maps/templates/lang.js.py:181
+#: maps/templates/lang.js:161
+#: maps/templates/lang.js.py:181
 msgid "permalink"
-msgstr "Enlace permanente"
+msgstr "permalink"
 
 #: maps/templates/lang.js:168
 msgid "Select"
-msgstr "Seleccione"
+msgstr "Pilih"
 
 #: maps/templates/lang.js:171
 msgid "Select:"
-msgstr "Seleccione:"
+msgstr "Pilih:"
 
 #: maps/templates/lang.js:172
 msgid "All"
-msgstr "Todos los"
+msgstr "Seluruhnya"
 
 #: maps/templates/lang.js:173
 msgid "None"
-msgstr "Ninguno"
+msgstr "Kosong"
 
 #: maps/templates/lang.js:180
 msgid "Loading..."
-msgstr "Cargando ..."
+msgstr "Memuat ..."
 
 #: maps/templates/lang.js:182
 msgid "You do not have permission to view this data"
-msgstr "Usted no tiene permiso para ver esta información"
+msgstr "Anda tidak memiliki izin untuk melihat data ini"
 
 #: maps/templates/lang.js:183
 msgid "This data is stored on a remote server"
-msgstr "Estos datos se almacenan en un servidor remoto"
+msgstr "Data ini disimpan pada server"
 
 #: maps/templates/lang.js:189
 msgid "No abstract is provided for this layer."
-msgstr "No hay resumen para esta capa."
+msgstr "Tidak ada abstrak untuk layer ini"
 
 #: maps/templates/lang.js:193
 msgid "No download URLs are definied for this layer."
-msgstr "No hay URL de descarga para esta capa."
+msgstr "Tidak ada URL yang didefinisikan untuk mengunduh layer ini"
 
 #: maps/templates/lang.js:203
 msgid "Selected Layers"
-msgstr "Capas seleccionadas"
+msgstr "Layer terpilih"
 
 #: maps/templates/lang.js:204
 msgid "No Layers Selected"
-msgstr "No hay capas seleccionadas"
+msgstr "Tidak ada layer yang terpilih"
 
 #: maps/templates/lang.js:206
 msgid "Clear Selected"
-msgstr "Borrar seleccionados"
+msgstr "Hapus Pilihan"
 
 #: maps/templates/lang.js:207
 msgid "Clear All"
-msgstr "Borrar todos"
+msgstr "Hapus semua"
 
 #: maps/templates/lang.js:213
 msgid "Operation Failed"
-msgstr "Error en la operación"
+msgstr "Operasi Gagal"
 
 #: maps/templates/lang.js:214
 msgid "No layers are currently selected."
-msgstr "Actualmente no hay capas seleccionadas ."
+msgstr "Tidak ada layer yang dipilih"
 
 #: maps/templates/lang.js:221
 msgid "Downloading..."
-msgstr "Descarga de ..."
+msgstr "Mengunduh..."
 
 #: maps/templates/lang.js:223
 msgid "Please wait"
-msgstr "Por favor, espere"
+msgstr "Silakan menunggu"
+
