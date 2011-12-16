@@ -1,3 +1,5 @@
+:orphan:
+
 GeoNode Patch Review Process
 ============================
 
