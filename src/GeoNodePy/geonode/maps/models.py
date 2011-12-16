@@ -35,6 +35,15 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
 
 
+DEFAULT_SUPPLEMENTAL_INFORMATION=_(
+'You can customize the template to suit your \
+needs. You can add and remove fields and fill out default \
+information (e.g. contact details). Fields you can not change in \
+the default view may be accessible in the more comprehensive (and \
+more complex) advanced view. You can even use the XML editor to \
+create custom structures, but they have to be validated by the \
+system, so know what you do :-)'
+)
 
 
 ROLE_VALUES = [
