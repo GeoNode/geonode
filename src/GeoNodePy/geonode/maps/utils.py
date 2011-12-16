@@ -464,7 +464,7 @@ def create_django_record(user, title, keywords, abstract, resource, permissions)
                     keywords=' '.join(keywords),
                     abstract=abstract or resource.abstract or '',
                     owner=user)
-    logger.info("About to save django record for %s", resource.store.name)
+    logger.info("User % about to save django record for %s", user.username, resource.store.name)
     saved_layer, created = Layer.objects.get_or_create(name=name,
                                                        defaults=defaults)
     logger.info("Created django record for %s", resource.store.name)

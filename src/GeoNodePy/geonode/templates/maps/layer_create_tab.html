@@ -43,7 +43,8 @@
       maskRe: /[A-Za-z0-9]+/,
       regex: /[A-Za-z0-9]+/,
       regexText: gettext('Only letters and numbers are allowed'),
-      validateOnBlur: true
+      validateOnBlur: true,
+      allowBlank: false
     });
 
     var map_id = new Ext.form.Hidden({
@@ -89,7 +90,7 @@
         id: 'create_abstract',
         fieldLabel: gettext('Abstract'),
         name: 'abstract',
-        allowBlank: false
+        allowBlank: false,
     });
 
     var keywordsField = new Ext.form.TextArea({
@@ -97,7 +98,8 @@
         fieldLabel: gettext('Keywords'),
         name: 'keywords',
         emptyText: 'Use spaces to separate keywords',
-        allowBlank: false
+        allowBlank: false,
+        vtype: 'keyword'
     });
 
     var permissionsField = new Ext.form.Hidden({
@@ -225,6 +227,18 @@
         TOCWindow.show();
 
     };
+
+    Ext.apply(Ext.form.VTypes, {
+         'keyword': function(value, field) {
+            trimValue = value.trim();
+            if (trimValue.length == 0) {
+                field.markInvalid("You must enter a keyword");
+                return false;
+            }
+            return true;
+        },
+        'keywordText' : 'You must enter at least one keyword'
+    });
 
 
 

@@ -9,13 +9,30 @@ from django.contrib.auth.decorators import login_required
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
 import logging
-import urlparse
+from urlparse import urlparse
 from geonode.maps.models import LayerStats
 import re
 
 logger = logging.getLogger("geonode.proxy.views")
 
 HGL_URL = 'http://hgl.harvard.edu:8080/HGL'
+
+
+_user, _password = settings.GEOSERVER_CREDENTIALS
+h = httplib2.Http()
+h.add_credentials(_user, _password)
+_netloc = urlparse(settings.GEOSERVER_BASE_URL).netloc
+h.authorizations.append(
+    httplib2.BasicAuthentication(
+        (_user, _password),
+        _netloc,
+        settings.GEOSERVER_BASE_URL,
+            {},
+        None,
+        None,
+        h
+    )
+)
 
 @csrf_exempt
 def proxy(request):
@@ -166,13 +183,18 @@ def download(request, service, layer):
 
     service=service.replace("_","/")
     url = settings.GEOSERVER_BASE_URL + service + "?" + params.urlencode()
-    download_response = urllib.urlopen(url)
-    headers = download_response.info()
-    content_disposition = headers.get('Content-Disposition')
-    mimetype = headers.get('Content-Type')
-    content = download_response.read()
-    response = HttpResponse(content, mimetype = mimetype)
-    if content_disposition is not None:
-        response['Content-Disposition'] = content_disposition
 
-    return response
+    if request.user.has_perm('maps.view_layer', obj=layer):
+        download_response, content = h.request(
+            url, request.method,
+            body=None,
+            headers=dict())
+        content_disposition = download_response['content-disposition']
+        mimetype = download_response['content-type']
+        response = HttpResponse(content, mimetype = mimetype)
+        if content_disposition is not None:
+            response['Content-Disposition'] = content_disposition
+        return response
+    else:
+        return HttpResponse(status=403)
+

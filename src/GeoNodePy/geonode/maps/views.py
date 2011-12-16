@@ -1332,10 +1332,6 @@ Please try again, or contact and administrator if the problem continues.")
 @csrf_exempt
 def upload_layer(request):
     if request.method == 'GET':
-
-        mapid = ''
-        map = None
-        if request.method == 'GET':
             if 'map' in request.GET:
                 mapid = request.GET['map']
                 map = get_object_or_404(Map,pk=mapid)
@@ -2545,7 +2541,7 @@ def create_pg_layer(request):
                 check_projection(name, layer)
                 
                 logger.info("Create django record")
-                geonodeLayer = create_django_record(request.user, layer_form.cleaned_data['title'], layer_form.cleaned_data['keywords'].split(" "), layer_form.cleaned_data['abstract'], layer, permissions)
+                geonodeLayer = create_django_record(request.user, layer_form.cleaned_data['title'], layer_form.cleaned_data['keywords'].strip().split(" "), layer_form.cleaned_data['abstract'], layer, permissions)
 
 
                 redirect_to  = reverse('geonode.maps.views.layerController', args=(geonodeLayer.typename,)) + '?describe'

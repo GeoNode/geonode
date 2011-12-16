@@ -94,7 +94,8 @@ Ext.onReady(function(){
         fieldLabel: gettext('Keywords'),
         name: 'keywords',
         emptyText: 'Use spaces to separate keywords',
-        allowBlank: false
+        allowBlank: false,
+        vtype: 'keyword'
     });
 
     var permissionsField = new Ext.form.Hidden({
@@ -216,7 +217,17 @@ Ext.onReady(function(){
 
     };
 
-
+    Ext.apply(Ext.form.VTypes, {
+        'keyword': function(value, field) {
+            trimValue = value.trim();
+            if (trimValue.length == 0) {
+                field.markInvalid("You must enter a keyword");
+                return false;
+            }
+            return true;
+        },
+        'keywordText' : 'You must enter at least one keyword'
+    });
 
 {% endautoescape %}
 </script>
