@@ -43,7 +43,7 @@ Setup Steps
    (link to venv docs). You can *activate* that virtual environment and make 
    those dependencies available with the following command::
 
-     $ source /var/www/geonode/wsgi/geonode/bin/activate
+     $ source /var/lib/geonode/bin/activate
 
    This may need to be modified if you installed in a non-standard location.
 
