@@ -72,6 +72,8 @@ Django's documenation on this topic can be found here https://docs.djangoproject
 
 Thats it! You can begin using your new translations, by selecting the appropriate language in the Language dropdown bar in the upper right section of the interface.
 
+.. image:: images/language_choice.png
+
 Translating Documentation
 =========================
 
