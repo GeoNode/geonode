@@ -79,6 +79,7 @@ Would you like to Contribute to GeoNode's continued development? These pages wil
  * :doc:`GeoNode Patch Review Process <developers/patches>`
  * :doc:`GeoNode Improvement Proposals - GNIP <developers/gnips>`
  * :doc:`GeoNode's Roadmap Process <developers/roadmap>`
+ * :doc:`Translating GeoNode <developers/translation>`
  * :doc:`Developers Reference Documentation <developers/reference/index>`
 
 .. toctree::
@@ -93,6 +94,7 @@ Would you like to Contribute to GeoNode's continued development? These pages wil
     developers/patches
     developers/gnips
     developers/roadmap
+    developers/translation
     developers/reference/index
     developers/reference/django-apps
     developers/reference/javascript
