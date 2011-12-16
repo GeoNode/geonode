@@ -632,7 +632,7 @@ class LayerManager(models.Manager):
                     exception_type, error, traceback = sys.exc_info()
                 else:
                     if verbosity > 0:
-                        msg = "Stopping process because --strict=True and an error was found."
+                        msg = "Stopping process because --ignore-errors was not set and an error was found."
                         print >> sys.stderr, msg
                     raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
             else:
@@ -1126,7 +1126,7 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.keywords is None:
             return []
         else:
-            return self.keywords.split(" ")
+            return self.keywords.split()
 
     def set_bbox(self, box, srs=None):
         """
