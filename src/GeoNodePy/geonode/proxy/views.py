@@ -10,7 +10,7 @@ from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
 import logging
 from urlparse import urlparse
-from geonode.maps.models import LayerStats
+from geonode.maps.models import LayerStats, Layer
 import re
 
 logger = logging.getLogger("geonode.proxy.views")
@@ -184,7 +184,9 @@ def download(request, service, layer):
     service=service.replace("_","/")
     url = settings.GEOSERVER_BASE_URL + service + "?" + params.urlencode()
 
-    if request.user.has_perm('maps.view_layer', obj=layer):
+    layerObj = Layer.objects.get(pk=layer)
+
+    if request.user.has_perm('maps.view_layer', obj=layerObj):
         download_response, content = h.request(
             url, request.method,
             body=None,
