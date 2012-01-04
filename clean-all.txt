@@ -1,0 +1,3 @@
+export DJANGO_SETTINGS_MODULE=geonode.settings
+django-admin.py flush" or just "rm development.db && django-admin.py syncdb"
+paver clean=true setup_gs_data
