@@ -1,0 +1,5 @@
+jeff's upload patch https://github.com/jj0hns0n/geonode/tree/metadata_upload
+
+ariel's no-gn patch https://github.com/GFDRR/geonode/commit/4e8bc00202e5fd4dcc427156564ee46da87a9588
+
+jeff's git workflow http://dpaste.de/47RmC/
