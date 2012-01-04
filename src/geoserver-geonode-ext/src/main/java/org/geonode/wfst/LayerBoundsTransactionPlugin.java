@@ -7,14 +7,8 @@
  */
 package org.geonode.wfst;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
 
 import net.opengis.wfs.DeleteElementType;
@@ -23,27 +17,17 @@ import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 
-import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CatalogFacade;
-import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.config.GeoServer;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.TransactionPlugin;
 import org.geoserver.wfs.WFSException;
-import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
-import org.springframework.util.Assert;
+
 
 /**
  * Listens to transactions (so far only issued by WFS) and updates bounds for layers involved in the transaction.
@@ -101,18 +85,23 @@ public class LayerBoundsTransactionPlugin implements TransactionPlugin {
 
     
     /**
-     * Update layer bounds if transaction type = UPDATE or INSERT
+     * Update layer bounds if transaction source type = UPDATE or INSERT or DELETE
      * 
      * @see org.geoserver.wfs.TransactionListener#dataStoreChange(org.geoserver.wfs.TransactionEvent)
      */
     public void dataStoreChange(final TransactionEvent event) throws WFSException {
         log.info("DataStoreChange: " + event.getLayerName() + " " + event.getType());
+        final Object source = event.getSource();
+        log.info("DataStoreChange class is " + source.getClass().toString());
         TransactionEventType eventType = event.getType();
-        if (eventType == TransactionEventType.POST_UPDATE || eventType == TransactionEventType.POST_INSERT )
+        if (!(eventType == TransactionEventType.POST_UPDATE || eventType == TransactionEventType.PRE_INSERT )) {
+            log.info("Incorrect type, do nothing");
+        	return;
+        }
         try {
             dataStoreChangeInternal(event);
         } catch (RuntimeException e) {
-            // Do never make the transaction fail due to a GWC error. Yell on the logs though
+            // Never make the transaction fail due to an error. Yell on the logs though
             log.log(Level.WARNING, "Error pre computing the transaction's affected area", e);
         }
     }
@@ -132,20 +121,20 @@ public class LayerBoundsTransactionPlugin implements TransactionPlugin {
                 log.info("Original bounding box:" + resource.getNativeBoundingBox());
                 
                 
-                /* Calculate new bounds using Catalog Builder */
-                final CatalogBuilder cb = new CatalogBuilder(this.catalog);
-                ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);  
-                ReferencedEnvelope latlonBounds = cb.getLatLonBounds(nativeBounds, resource.getCRS());
-                log.info("New bounding box:" + nativeBounds);
+                /* Calculate new bounds */
+                ReferencedEnvelope nativeBounds = event.getAffectedFeatures().getBounds(); 
+                ReferencedEnvelope newBounds = resource.getNativeBoundingBox();
+                newBounds.expandToInclude(nativeBounds);
+                log.info("New bounding box:" + newBounds);
 
-                /* Save new bounds */
-                resource.setNativeBoundingBox(nativeBounds);
-                resource.setLatLonBoundingBox(latlonBounds);
+                /* Save new bounds */                
+                resource.setNativeBoundingBox(newBounds);
+                resource.setLatLonBoundingBox(newBounds.transform(CRS.decode("EPSG:4326"), true));
                 this.catalog.save(resource);
                 log.info("Layer bounds updated");
-        } catch (Exception ef)
+        } catch (Exception e)
         {
-        	log.info("Exception occurred" + ef.toString());
+        	log.log(Level.WARNING, "Exception occurred" + e);
         }
     }
 
