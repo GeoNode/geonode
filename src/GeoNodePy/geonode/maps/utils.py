@@ -379,13 +379,11 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
         logger.warn(msg)
         raise GeoNodeException(msg)
 
-    # Step 6. Make sure our data always has a valid projection
-    logger.info('>>> Step 6. Making sure [%s] has a valid projection' % name)
-    check_projection(name, gs_resource)
 
-    # Step 7. Create the style and assign it to the created resource
+
+    # Step 6. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
-    logger.info('>>> Step 7. Creating style for [%s]' % name)
+    logger.info('>>> Step 6. Creating style for [%s]' % name)
     publishing = cat.get_layer(name)
 
     if 'sld' in files:
@@ -414,7 +412,11 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
         publishing.default_style = cat.get_style(name)
         cat.save(publishing)
 
-    # Step 10. Create the Django record for the layer
+    # Step 7. Make sure our data always has a valid projection
+    logger.info('>>> Step 7. Making sure [%s] has a valid projection' % name)
+    check_projection(name, gs_resource)
+
+    # Step 8. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
     # FIXME: Do this inside the layer object
     saved_layer = create_django_record(user, title, keywords, abstract, gs_resource, permissions)
@@ -446,7 +448,7 @@ def check_projection(name, resource):
                 cascading_delete(cat, resource)
                 raise GeoNodeException(msg % name)
     except:
-                msg = ('GeoServer failed to read the layer projection, so backing out '
+                msg = ('GeoServer failed to read the layer projection for [%s], so backing out '
                    'the layer.')
                 cascading_delete(cat, resource)
                 raise GeoNodeException(msg % name)
@@ -472,7 +474,8 @@ def create_django_record(user, title, keywords, abstract, resource, permissions)
         saved_layer.set_default_permissions()
 
     try:
-        #Delete layer attributes if they no longer exist in an updated layer
+        # Step 9. Delete layer attributes if they no longer exist in an updated layer
+        logger.info('>>> Step 11. Delete layer attributes if they no longer exist in an updated layer [%s]', name)
         attributes = LayerAttribute.objects.filter(layer=saved_layer)
         for la in attributes:
             lafound = False
@@ -484,7 +487,9 @@ def create_django_record(user, title, keywords, abstract, resource, permissions)
                 logger.debug("Going to delete [%s] for [%s]", la.attribute, saved_layer.name)
                 la.delete()
 
-        #Add new layer attributes if they dont already exist
+        #
+        # Step 10. Add new layer attributes if they dont already exist
+        logger.info('>>> Step 10. Add new layer attributes if they dont already exist in an updated layer [%s]', name)
         if saved_layer.attribute_names is not None:
             logger.debug("Attributes are not None")
             iter = 1
