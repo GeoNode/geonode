@@ -57,11 +57,11 @@ SECRET_KEY = 'THE_SECRET_KEY'
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
 GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
 
-# The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = SITEURL + 'geonetwork/'
+# The FULLY QUALIFIED url to the CSW instance for this GeoNode
+CSW_URL = SITEURL + 'geonetwork/srv/en/csw'
 
 # The username and password for a user with write access to GeoNetwork
-GEONETWORK_CREDENTIALS = 'admin', 'admin'
+CSW_CREDENTIALS = 'admin', 'admin'
 GEOSERVER_CREDENTIALS = 'geoserver', 'THE_GEOSERVER_PASSWORD'
 
 # A Google Maps API key is needed for the 3D Google Earth view of maps

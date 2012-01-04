@@ -168,14 +168,14 @@ def cleanup(name, uuid):
        except:
            logger.exception("Couldn't delete GeoServer store during cleanup()")
 
-   gn = Layer.objects.geonetwork
-   csw_record = gn.get_by_uuid(uuid)
+   cat = Layer.objects.catalogue
+   csw_record = cat.get_by_uuid(uuid)
    if csw_record is not None:
        logger.warning("Deleting dangling GeoNetwork record for [%s] (no Django record to match)", name)
        try:
            # this is a bit hacky, delete_layer expects an instance of the layer
            # model but it just passes it to a Django template so a dict works too.
-           gn.delete_layer({ "uuid": uuid }) 
+           cat.delete_layer({ "uuid": uuid }) 
        except:
            logger.exception("Couldn't delete GeoNetwork record during cleanup()")
 
@@ -388,7 +388,8 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     saved_layer.poc = poc_contact
     saved_layer.metadata_author = author_contact
 
-    saved_layer.save_to_geonetwork()
+    # add to CSW catalogue
+    saved_layer.save_to_catalogue()
 
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
@@ -473,11 +474,11 @@ def check_geonode_is_up():
         raise GeoNodeException(msg)
 
     try:
-        Layer.objects.gn_catalog.login()
+        Layer.objects.csw_catalogue.login()
     except:
         from django.conf import settings
         msg = ("Cannot connect to the GeoNetwork at %s\n"
-                "Please make sure you have started GeoNetwork." % settings.GEONETWORK_BASE_URL)
+                "Please make sure you have started the CSW." % settings.CSW_URL)
         raise GeoNodeException(msg)
 
 def file_upload(filename, user=None, title=None, overwrite=True, keywords = []):

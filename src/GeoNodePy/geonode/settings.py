@@ -7,7 +7,7 @@ _ = lambda x: x
 
 DEBUG = True
 SITENAME = "GeoNode"
-SITEURL = "http://localhost:8000/"
+SITEURL = "http://kralidis.ca:8000/"
 TEMPLATE_DEBUG = DEBUG
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -153,11 +153,17 @@ GEOSERVER_TOKEN = open(os.path.join(PROJECT_ROOT,"..","..", "..","geoserver_toke
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", GEOSERVER_TOKEN
 
-# The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
+# Catalogue settings
+# The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+#CSW_URL = "http://localhost:8001/geonetwork/srv/en/csw"
+# The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
+#CSW_TYPE = "geonetwork"
+
+CSW_URL = "http://kralidis.ca/pycsw/trunk/csw.py"
+CSW_TYPE = "pycsw"
 
 # The username and password for a user with write access to GeoNetwork
-GEONETWORK_CREDENTIALS = "admin", "admin"
+CSW_CREDENTIALS = "admin", "admin"
 
 AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
 

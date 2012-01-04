@@ -1,7 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
-from geonode import geonetwork
+from geonode import catalogue
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import base64
@@ -1249,7 +1249,8 @@ def _metadata_search(query, start, limit, **kw):
 
     keywords = _split_query(query)
     
-    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
+    csw.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), outputschema='http://www.opengis.net/cat/csw/2.0.2', esn='summary')
+    #csw.getrecords(typenames='csw:Record',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
     
     
     # build results 
@@ -1258,7 +1259,7 @@ def _metadata_search(query, start, limit, **kw):
     # than owslib currently parses.  This could be improved by
     # improving owslib.
     results = [_build_search_result(doc) for doc in 
-               csw._exml.findall('//'+nspath('Record', namespaces['csw']))]
+               csw._exml.findall('//'+nspath('SummaryRecord', namespaces['csw']))]
 
     result = {'rows': results, 
               'total': csw.results['matches']}
@@ -1368,7 +1369,7 @@ def _build_search_result(doc):
             result['name'] = urlparse(rec.uri).path.split('/')[-1]
         except: 
             pass
-    # fallback: use geonetwork uuid
+    # fallback: use uuid
     if not result.get('name', ''):
         result['name'] = rec.identifier
 
@@ -1398,15 +1399,15 @@ def _build_search_result(doc):
             except: 
                 pass
 
-    # construct the link to the geonetwork metadata record (not self-indexed)
-    md_link = settings.GEONETWORK_BASE_URL + "srv/en/csw?" + urlencode({
-            "request": "GetRecordById",
+    # construct the link to the CSW metadata record (not self-indexed)
+    md_link = '%s?%s' % (settings.CSW_URL, urlencode({
+            "request": "GetRecordById2",
             "service": "CSW",
             "version": "2.0.2",
             "OutputSchema": "http://www.isotc211.org/2005/gmd",
             "ElementSetName": "full",
             "id": rec.identifier
-        })
+        }))
     result['metadata_links'] = [("text/xml", "TC211", md_link)]
 
     return result

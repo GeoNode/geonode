@@ -6,7 +6,7 @@ from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.geonetwork import Catalog as GeoNetwork
+from geonode.catalogue import Catalogue
 from django.db.models import signals
 from django.utils.html import escape
 import httplib2
@@ -558,8 +558,7 @@ def get_wms():
 
 def get_csw():
     global _csw
-    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    _csw = CatalogueServiceWeb(csw_url)
+    _csw = CatalogueServiceWeb(settings.CSW_URL)
     return _csw
 
 class LayerManager(models.Manager):
@@ -569,15 +568,15 @@ class LayerManager(models.Manager):
         url = "%srest" % settings.GEOSERVER_BASE_URL
         user, password = settings.GEOSERVER_CREDENTIALS
         self.gs_catalog = Catalog(url, _user, _password)
-        self.geonetwork = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
+        self.catalogue = Catalogue(settings.CSW_TYPE, settings.CSW_URL, settings.CSW_CREDENTIALS[0], settings.CSW_CREDENTIALS[1])
 
     @property
-    def gn_catalog(self):
-        # check if geonetwork is logged in
-        if not self.geonetwork.connected:
-            self.geonetwork.login()
+    def csw_catalogue(self):
+        # check if CSW is geonetwork and is logged in
+        if (self.catalogue.type == 'geonetwork' and not self.catalogue.connected):
+            self.catalogue.login()
         # Make sure to logout after you have finished using it.
-        return self.geonetwork
+        return self.catalogue
 
     def admin_contact(self):
         # this assumes there is at least one superuser
@@ -857,11 +856,15 @@ class Layer(models.Model, PermissionLevelMixin):
         if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
             get_csw()
         try:
-            _csw.getrecordbyid([self.uuid])
+            _csw.getrecordbyid([self.uuid], esn='summary')
             csw_layer = _csw.records.get(self.uuid)
         except:
             msg = "CSW Record Missing for layer [%s]" % self.typename
             raise GeoNodeException(msg)
+
+        f=open('/tmp/f.txt','w')
+        f.write('CSW_LAYER.URI = ' + str(self.get_absolute_url())+'\n\n\n')
+        f.write('SELF.GET_ABSOLUTE_URL = ' + str(csw_layer.uri))
 
         if(csw_layer.uri != self.get_absolute_url()):
             msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
@@ -960,20 +963,20 @@ class Layer(models.Model, PermissionLevelMixin):
     def delete_from_geoserver(self):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
 
-    def delete_from_geonetwork(self):
-        gn = Layer.objects.gn_catalog
-        gn.delete_layer(self)
-        gn.logout()
+    def delete_from_catalogue(self):
+        cat = Layer.objects.csw_catalogue
+        cat.delete_layer(self)
+        cat.logout()
 
-    def save_to_geonetwork(self):
-        gn = Layer.objects.gn_catalog
-        record = gn.get_by_uuid(self.uuid)
+    def save_to_catalogue(self):
+        cat = Layer.objects.csw_catalogue
+        record = cat.get_by_uuid(self.uuid)
         if record is None:
-            md_link = gn.create_from_layer(self)
+            md_link = cat.create_from_layer(self)
             self.metadata_links = [("text/xml", "TC211", md_link)]
         else:
-            gn.update_layer(self)
-        gn.logout()
+            cat.update_layer(self)
+        cat.logout()
 
     @property
     def resource(self):
@@ -1072,14 +1075,14 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.resource is None:
             return
         if hasattr(self, "_resource_cache"):
-            gn = Layer.objects.gn_catalog
+            cat = Layer.objects.csw_catalogue
             self.resource.title = self.title
             self.resource.abstract = self.abstract
             self.resource.name= self.name
-            self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
+            self.resource.metadata_links = [('text/xml', 'TC211', cat.url_for_uuid(self.uuid))]
             self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
-            gn.logout()
+            cat.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
             profile = Contact.objects.get(user=self.poc.user)
@@ -1104,7 +1107,7 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.title == '' or self.title is None:
             self.title = self.name
 
-    def _populate_from_gn(self):
+    def _populate_from_catalogue(self):
         meta = self.metadata_csw()
         if meta is None:
             return
@@ -1658,7 +1661,7 @@ def delete_layer(instance, sender, **kwargs):
     Removes the layer from GeoServer and GeoNetwork
     """
     instance.delete_from_geoserver()
-    instance.delete_from_geonetwork()
+    instance.delete_from_catalogue()
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
@@ -1667,10 +1670,10 @@ def post_save_layer(instance, sender, **kwargs):
     if kwargs['created']:
         instance._populate_from_gs()
 
-    instance.save_to_geonetwork()
+    instance.save_to_catalogue()
 
     if kwargs['created']:
-        instance._populate_from_gn()
+        instance._populate_from_catalogue()
         instance.save(force_update=True)
 
 signals.pre_delete.connect(delete_layer, sender=Layer)

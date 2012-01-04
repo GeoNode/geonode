@@ -59,6 +59,7 @@ class LayerUploadForm(forms.Form):
 
 class NewLayerUploadForm(LayerUploadForm):
     sld_file = forms.FileField(required=False)
+    xml_file = forms.FileField(required=False)
 
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)

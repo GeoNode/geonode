@@ -8,7 +8,7 @@
 
   <h4>GeoNode Software</h4>
 
-  <p>All the code that runs the GeoNode is open source. The code is available at <a href="http://github.com/geonode/geonode">http://github.com/geonode/geonode/</a>. The issue tracker for the project is at <a href="http://projects.opengeo.org/CAPRA">http://projects.opengeo.org/CAPRA</a>.</p>
+  <p>All the code that runs the GeoNode is open source. The code is available at <a href="http://github.com/geonode/geonode">http://github.com/geonode/geonode/</a>. The issue tracker for the project is at <a href="http://dev.geonode.org/trac">http://dev.geonode.org/trac</a>.</p>
 
   <p>The GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the  projects on which it is built:</p>
   <ul>
@@ -20,6 +20,9 @@
 
   <h4>What are OGC Services?</h4>
   <p>The data in this application is served using open standards endorsed by the <a href="http://opengeospatial.org/">Open Geospatial Consortium</a>; in particular, WMS (Web Mapping Service) is used for accessing maps and WFS (the Web Feature Service) is used for accessing data. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).</p>
+
+  <h4>OGC Catalogue Services</h4>
+  <p>The GeoNode supports the <a href="http://geonetwork-opensource.org/">GeoNetwork Opensource</a> or <a href="http://pycsw.org/">pycsw</a> OGC CSW server implementations (this GeoNode is using {{CSW_TYPE}}).</p>
 
   <h4>What is GeoWebCache?</h4>
   <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by the GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and returning it much more quickly.</p>
@@ -50,7 +53,7 @@
   <ul>
     <li><strong>{% trans "Dynamic tiles via WMS:" %}</strong> <a href="{{GEOSERVER_BASE_URL}}wms?request=GetCapabilities&version=1.1.1&service=WMS">WMS 1.1.1</a></li>
     <li><strong>{% trans "Vector data via WFS:" %}</strong> <a href="{{GEOSERVER_BASE_URL}}wfs?request=GetCapabilities&version=1.1.0&service=WFS">WFS 1.1.0</a></li>
-    <li><strong>{% trans "Metadata search via CSW:" %}</strong> <a href="{{GEONETWORK_BASE_URL}}srv/en/csw?request=GetCapabilities&version=2.0.2&service=CSW">CSW 2.0.2</a></li>
+    <li><strong>{% trans "Metadata search via CSW:" %}</strong> <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetCapabilities">CSW 2.0.2</a></li>
     <li><strong>{% trans "Cached tiles via WMTS:" %}</strong> <a href="{{GEOSERVER_BASE_URL}}gwc/service/wmts?service=WMTS&request=GetCapabilities&version=1.0.0">WMTS 1.0.0</a></li>
   </ul>
 </div>
