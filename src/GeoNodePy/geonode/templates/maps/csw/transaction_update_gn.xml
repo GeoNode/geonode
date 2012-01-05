@@ -13,5 +13,14 @@
  xmlns:ogc="http://www.opengis.net/ogc"> 
  <csw:Update> 
   {% include "maps/csw/full_metadata.xml" %}
+  <csw:Constraint version="1.1.0"> 
+   <ogc:Filter> 
+    <ogc:PropertyIsEqualTo> 
+     <ogc:PropertyName>dc:identifier</ogc:PropertyName> 
+     <ogc:Literal>{{ layer.uuid }}</ogc:Literal> 
+    </ogc:PropertyIsEqualTo> 
+   </ogc:Filter> 
+  </csw:Constraint> 
+
  </csw:Update> 
 </csw:Transaction>

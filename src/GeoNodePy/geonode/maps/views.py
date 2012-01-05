@@ -849,9 +849,10 @@ def layerController(request, layername):
             "metadata": metadata,
             "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
             "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
-            "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
+            "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
+            "CSW_URL": settings.CSW_URL,
+            "CSW_TYPE": settings.CSW_TYPE
 	    }))
-
 
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
@@ -1401,11 +1402,11 @@ def _build_search_result(doc):
 
     # construct the link to the CSW metadata record (not self-indexed)
     md_link = '%s?%s' % (settings.CSW_URL, urlencode({
-            "request": "GetRecordById2",
+            "request": "GetRecordById",
             "service": "CSW",
             "version": "2.0.2",
-            "OutputSchema": "http://www.isotc211.org/2005/gmd",
-            "ElementSetName": "full",
+            "outputschema": "http://www.isotc211.org/2005/gmd",
+            "elementsetname": "full",
             "id": rec.identifier
         }))
     result['metadata_links'] = [("text/xml", "TC211", md_link)]

@@ -1,5 +1,4 @@
 import urllib, urllib2, cookielib
-from datetime import date
 from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
@@ -63,7 +62,7 @@ class Catalogue(object):
             "service": "CSW",
             "version": "2.0.2",
             "id": uuid,
-            "outputschema": "http://www.isotc211.org/2005/gmd",
+            "outputschema": namespaces["gmd"],
             "elementsetname": "full"
         }))
 
@@ -100,12 +99,12 @@ class Catalogue(object):
         if self.type == 'geonetwork':
             self.set_metadata_privs(layer.uuid, {"all":  {"view": True}})
         
-        return "%sgeonetwork/srv/en/csw?%s" % (self.base, urllib.urlencode({
+        return "%s?%s" % (self.url, urllib.urlencode({
             "request": "GetRecordById",
             "service": "CSW",
             "version": "2.0.2",
-            "OutputSchema": "http://www.isotc211.org/2005/gmd",
-            "ElementSetName": "full",
+            "outputschema": "http://www.isotc211.org/2005/gmd",
+            "elementsetname": "full",
             "id": layer.uuid
         }))
 
@@ -114,7 +113,13 @@ class Catalogue(object):
         # TODO: Parse response, check for error report
 
     def update_layer(self, layer):
-        response = self.csw_request(layer, "maps/csw/transaction_update.xml")
+        tmpl = 'maps/csw/transaction_update.xml'
+
+        if self.type == 'geonetwork':
+            tmpl = 'maps/csw/transaction_update_gn.xml'
+
+        response = self.csw_request(layer, tmpl)
+
         # TODO: Parse response, check for error report
 
     def set_metadata_privs(self, uuid, privileges):
