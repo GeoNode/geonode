@@ -851,8 +851,8 @@ class Layer(models.Model, PermissionLevelMixin):
         if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
             get_csw()
         try:
-            _csw.csw.getrecordbyid([self.uuid], esn='summary')
-            csw_layer = _csw.csw.records.get(self.uuid)
+            _csw.getrecordbyid([self.uuid], esn='summary')
+            csw_layer = _csw.records.get(self.uuid)
         except:
             msg = "CSW Record Missing for layer [%s]" % self.typename
             raise GeoNodeException(msg)
@@ -908,8 +908,8 @@ class Layer(models.Model, PermissionLevelMixin):
         global _csw
         if(_csw is None):
             _csw = get_csw()
-        _csw.csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
-        return _csw.csw.records.get(self.uuid)
+        _csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
+        return _csw.records.get(self.uuid)
 
     @property
     def attribute_names(self):
