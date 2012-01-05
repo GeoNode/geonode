@@ -1,40 +1,38 @@
 {% load i18n %}
 {% load geonode_auth %}
- 
+
 <p><b>{% trans "Abstract:" %}</b>
 {% if rec.identification.abstract %}
-  {{rec.identification.abstract}}
+  {{rec.identification.abstract|slice:":80"}}
 {% else %}
 <em>{% trans "No abstract is provided for this layer." %}</em>
 {% endif %}
 </p>
 
 <p><b>{% trans "Provided by:" %}</b>
-{% if rec.contact.name %} {# and rec.attribution.href %} #}
-  {% if rec.contact.onlineresource %}
-    <a href="{{ rec.contact.onlineresource.url }}">{{ rec.contact.name }}</a>
+{% if rec.contact.0 %}
+  {% if rec.contact.0.onlineresource %}
+    <a href="{{ rec.contact.0.onlineresource.url }}">{{ rec.contact.0.name }}</a>
   {% else %}
-    {{ rec.contact.name }}
+    {{ rec.contact.0.name }}
   {% endif %}
 {% else %}
 <em>{% trans "No attribution information is provided for this layer." %}</em>
 {% endif %}
 </p>
 
-<p><b>{% trans "Metadata Links:" %}</b>
-{% for link in rec.metadata_links %}
-    <a href="{{link.2}}">{{link.1}}</a>
-{% empty %}
-    <em>{% trans "No metadata URLs are defined for this layer." %}</em>
-{% endfor %}
+<p><b>{% trans "Metadata:" %}</b>
+{% if md_link %}
+  <a href="{{md_link}}">TC211</a>
+{% endif %}
 </p>
 
 <p><b>{% trans "Keywords:" %}</b>
-{% for kw in rec.identification.keywords.list %}
-  {{kw}}{% if not forloop.last %}, {% endif %}
-{% empty %}
+{% if keywords %}
+  {{keywords}}
+{% else %}
 <em>{% trans "No keywords are listed for this layer." %}</em>
-{% endfor %}
+{% endif %}
 </p>
 
 {% if layer_is_remote %}

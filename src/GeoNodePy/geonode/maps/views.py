@@ -1266,7 +1266,7 @@ def search_result_detail(request):
     csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
     rec = csw.records.values()[0]
     extra_links = dict(download=_extract_links(rec))
-    
+
     try:
         layer = Layer.objects.get(uuid=uuid)
         layer_is_remote = False
@@ -1274,9 +1274,15 @@ def search_result_detail(request):
         layer = None
         layer_is_remote = True
 
+    keywords = []
+    for kw in rec.identification.keywords:
+        keywords.extend(kw['keywords'])
+
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
+        'md_link': csw.url_for_uuid(uuid),
+        'keywords': ','.join(keywords),
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))
