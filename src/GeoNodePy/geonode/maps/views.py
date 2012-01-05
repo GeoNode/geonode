@@ -1235,13 +1235,13 @@ def _metadata_search(query, start, limit, **kw):
 
     keywords = _split_query(query)
     
-    csw.csw.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), outputschema='http://www.isotc211.org/2005/gmd', esn='full')
+    csw.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), outputschema='http://www.isotc211.org/2005/gmd', esn='full')
 
     # build results into JSON for API
-    results = [_build_search_result(doc, csw) for v, doc in csw.csw.records.iteritems()]
+    results = [_build_search_result(doc, csw) for v, doc in csw.records.iteritems()]
 
     result = {'rows': results, 
-              'total': csw.csw.results['matches']}
+              'total': csw.results['matches']}
 
     result['query_info'] = {
         'start': start,
@@ -1253,7 +1253,7 @@ def _metadata_search(query, start, limit, **kw):
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
         result['prev'] = reverse('geonode.maps.views.metadata_search') + '?' + params
 
-    next = csw.csw.results.get('nextrecord', 0) 
+    next = csw.results.get('nextrecord', 0) 
     if next > 0:
         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
@@ -1263,8 +1263,8 @@ def _metadata_search(query, start, limit, **kw):
 def search_result_detail(request):
     uuid = request.GET.get("uuid")
     csw = get_csw()
-    csw.csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.csw.records.values()[0]
+    csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
+    rec = csw.records.values()[0]
     extra_links = dict(download=_extract_links(rec))
     
     try:

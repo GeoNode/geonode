@@ -8,10 +8,10 @@ from xml.dom import minidom
 from xml.etree.ElementTree import XML
 from urlparse import urlparse
 
-class Catalogue(object):
+class Catalogue(CatalogueServiceWeb):
     def __init__(self, cattype, url, user=None, password=None):
+        CatalogueServiceWeb.__init__(self, url=url, skip_caps=True)
         self.type = cattype
-        self.url = url
         self.user = user
         self.password = password
         self._group_ids = {}
@@ -21,8 +21,6 @@ class Catalogue(object):
         upurl = urlparse(self.url)
 
         self.base = '%s://%s/' % (upurl.scheme, upurl.netloc)
-
-        self.csw = CatalogueServiceWeb(self.url, skip_caps=True)
 
     def login(self):
         if self.type == 'geonetwork':
@@ -52,7 +50,7 @@ class Catalogue(object):
             self.connected = False
 
     def get_by_uuid(self, uuid):
-        self.csw.getrecordbyid([uuid], outputschema=namespaces["gmd"])
+        self.getrecordbyid([uuid], outputschema=namespaces["gmd"])
         recs = self.csw.records
         return recs.values()[0] if len(recs) > 0 else None
 
