@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
 import json
 import math
 import httplib2 
-from owslib.csw import CswRecord, namespaces
+from owslib.csw import namespaces
 from owslib.util import nspath
 import re
 from urllib import urlencode
@@ -71,10 +71,9 @@ def default_map_config():
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
-
-
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
+
 class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
@@ -108,7 +107,6 @@ class PocForm(forms.Form):
     contact = forms.ModelChoiceField(label = "New point of contact",
                                      queryset = Contact.objects.exclude(user=None))
 
-
 class MapForm(forms.ModelForm):
     class Meta:
         model = Map
@@ -116,8 +114,6 @@ class MapForm(forms.ModelForm):
         widgets = {
             'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
         }
-
-
 
 MAP_LEV_NAMES = {
     Map.LEVEL_NONE  : _('No Permissions'),
@@ -319,7 +315,6 @@ h.authorizations.append(
     )
 )
 
-
 @login_required
 def map_download(request, mapid):
     """ 
@@ -455,8 +450,6 @@ Contents:
         url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL, download_id)
         resp,content = h.request(url,'GET')
         return HttpResponse(content, status=resp.status)
-
-
 
 def view_map_permissions(request, mapid):
     map = get_object_or_404(Map,pk=mapid) 
@@ -680,7 +673,6 @@ def embed(request, mapid=None):
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))
-
 
 def data(request):
     return render_to_response('data.html', RequestContext(request, {
@@ -945,7 +937,6 @@ def _updateLayer(request, layer):
                 errors.extend([escape(v) for v in e])
             return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
-
 @login_required
 def view_layer_permissions(request, layername):
     layer = get_object_or_404(Layer,typename=layername) 
@@ -985,7 +976,6 @@ def _perms_info(obj, level_names):
     if hasattr(obj, 'owner') and obj.owner is not None:
         info['owner'] = obj.owner.username
     return info
-       
 
 def _perms_info_json(obj, level_names):
     return json.dumps(_perms_info(obj, level_names))
@@ -1040,7 +1030,6 @@ def _handle_perms_edit(request, obj):
             obj.set_user_level(user, level)
 
     return errors
-
 
 def _get_basic_auth_info(request):
     """
@@ -1116,7 +1105,6 @@ def layer_acls(request):
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
-
 def _split_query(query):
     """
     split and strip keywords, preserve space 
@@ -1141,15 +1129,12 @@ def _split_query(query):
         keywords.append(accum)
     return [kw.strip() for kw in keywords if kw.strip()]
 
-
-
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
 @csrf_exempt
 def metadata_search(request):
     """
-    handles a basic search for data using the 
-    GeoNetwork catalog.
+    handles a basic search for data using CSW.
 
     the search accepts: 
     q - general query for keywords across all fields
@@ -1250,20 +1235,13 @@ def _metadata_search(query, start, limit, **kw):
 
     keywords = _split_query(query)
     
-    csw.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), outputschema='http://www.opengis.net/cat/csw/2.0.2', esn='summary')
-    #csw.getrecords(typenames='csw:Record',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
-    
-    
-    # build results 
-    # XXX this goes directly to the result xml doc to obtain 
-    # correct ordering and a fuller view of the result record
-    # than owslib currently parses.  This could be improved by
-    # improving owslib.
-    results = [_build_search_result(doc) for doc in 
-               csw._exml.findall('//'+nspath('SummaryRecord', namespaces['csw']))]
+    csw.csw.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), outputschema='http://www.isotc211.org/2005/gmd', esn='full')
+
+    # build results into JSON for API
+    results = [_build_search_result(doc, csw) for v, doc in csw.csw.records.iteritems()]
 
     result = {'rows': results, 
-              'total': csw.results['matches']}
+              'total': csw.csw.results['matches']}
 
     result['query_info'] = {
         'start': start,
@@ -1275,7 +1253,7 @@ def _metadata_search(query, start, limit, **kw):
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
         result['prev'] = reverse('geonode.maps.views.metadata_search') + '?' + params
 
-    next = csw.results.get('nextrecord', 0) 
+    next = csw.csw.results.get('nextrecord', 0) 
     if next > 0:
         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
@@ -1285,10 +1263,9 @@ def _metadata_search(query, start, limit, **kw):
 def search_result_detail(request):
     uuid = request.GET.get("uuid")
     csw = get_csw()
-    csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.records.values()[0]
-    raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
-    extra_links = _extract_links(rec, raw_xml)
+    csw.csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
+    rec = csw.csw.records.values()[0]
+    extra_links = dict(download=_extract_links(rec))
     
     try:
         layer = Layer.objects.get(uuid=uuid)
@@ -1304,112 +1281,61 @@ def search_result_detail(request):
         'layer_is_remote': layer_is_remote
     }))
 
-def _extract_links(rec, xml):
-    download_links = []
-    dl_type_path = "/".join([
-        nspath("CI_OnlineResource", namespaces["gmd"]),
-        nspath("protocol", namespaces["gmd"]),
-        nspath("CharacterString", namespaces["gco"])
-        ])
+def _extract_links(rec):
+    # fetch all distribution links
 
-    dl_name_path = "/".join([
-        nspath("CI_OnlineResource", namespaces["gmd"]),
-        nspath("name", namespaces["gmd"]),
-        nspath("CharacterString", namespaces["gco"])
-        ])
-
-    dl_description_path = "/".join([
-        nspath("CI_OnlineResource", namespaces["gmd"]),
-        nspath("description", namespaces["gmd"]),
-        nspath("CharacterString", namespaces["gco"])
-        ])
-
-    dl_link_path = "/".join([
-        nspath("CI_OnlineResource", namespaces["gmd"]),
-        nspath("linkage", namespaces["gmd"]),
-        nspath("URL", namespaces["gmd"])
-        ])
-
+    links = []
+    # extract subset of description value for user-friendly display
     format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
 
-    for link in xml.findall("*//" + nspath("onLine", namespaces['gmd'])):
-        if link.find(dl_type_path).text == "WWW:DOWNLOAD-1.0-http--download":
-            extension = link.find(dl_name_path).text.split('.')[-1]
-            format = format_re.match(link.find(dl_description_path).text).groups()[0]
-            url = link.find(dl_link_path).text
-            download_links.append((extension, format, url))
-    return dict(
-            download=download_links
-        )
+    for link_el in rec.distribution.online:
+        if link_el.protocol == 'WWW:DOWNLOAD-1.0-http--download':
+            try:
+                extension = link_el.name.split('.')[-1]
+                format = format_re.match(link_el.description).groups()[0]
+                href = link_el.url
+                links.append((extension, format, href))
+            except:
+                pass
+    return links
 
-
-def _build_search_result(doc):
+def _build_search_result(rec, csw):
     """
     accepts a node representing a csw result 
     record and builds a POD structure representing 
     the search result.
     """
-    if doc is None:
+    if rec is None:
         return None
     # Let owslib do some parsing for us...
-    rec = CswRecord(doc)
     result = {}
-    result['title'] = rec.title
     result['uuid'] = rec.identifier
-    result['abstract'] = rec.abstract
-    result['keywords'] = [x for x in rec.subjects if x]
-    result['detail'] = rec.uri or ''
+    result['title'] = rec.identification.title
+    result['abstract'] = rec.identification.abstract
+
+    keywords = []
+    for kw in rec.identification.keywords:
+        keywords.extend(kw['keywords'])
+
+    result['keywords'] = keywords
 
     # XXX needs indexing ? how
     result['attribution'] = {'title': '', 'href': ''}
 
-    # XXX !_! pull out geonode 'typename' if there is one
-    # index this directly... 
-    if rec.uri:
-        try:
-            result['name'] = urlparse(rec.uri).path.split('/')[-1]
-        except: 
-            pass
-    # fallback: use uuid
-    if not result.get('name', ''):
-        result['name'] = rec.identifier
+    result['name'] = result['uuid']
 
-    # Take BBOX from GeoNetwork Result...
-    # XXX this assumes all our bboxes are in this 
-    # improperly specified SRS.
-    if rec.bbox is not None and rec.bbox.crs == 'urn:ogc:def:crs:::WGS 1984':
-        # slight workaround for ticket 530
-        result['bbox'] = {
-            'minx': min(rec.bbox.minx, rec.bbox.maxx),
-            'maxx': max(rec.bbox.minx, rec.bbox.maxx),
-            'miny': min(rec.bbox.miny, rec.bbox.maxy),
-            'maxy': max(rec.bbox.miny, rec.bbox.maxy)
+    result['bbox'] = {
+        'minx': rec.identification.bbox.minx,
+        'maxx': rec.identification.bbox.maxx,
+        'miny': rec.identification.bbox.miny,
+        'maxy': rec.identification.bbox.maxy
         }
     
-    # XXX these could be exposed in owslib record...
-    # locate all download links
-    format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
-    result['download_links'] = []
-    for link_el in doc.findall(nspath('URI', namespaces['dc'])):
-        if link_el.get('protocol', '') == 'WWW:DOWNLOAD-1.0-http--download':
-            try:
-                extension = link_el.get('name', '').split('.')[-1]
-                format = format_re.match(link_el.get('description')).groups()[0]
-                href = link_el.text
-                result['download_links'].append((extension, format, href))
-            except: 
-                pass
+    # locate all distribution links
+    result['download_links'] = _extract_links(rec)
 
     # construct the link to the CSW metadata record (not self-indexed)
-    md_link = '%s?%s' % (settings.CSW_URL, urlencode({
-            "request": "GetRecordById",
-            "service": "CSW",
-            "version": "2.0.2",
-            "outputschema": "http://www.isotc211.org/2005/gmd",
-            "elementsetname": "full",
-            "id": rec.identifier
-        }))
-    result['metadata_links'] = [("text/xml", "TC211", md_link)]
+    result['metadata_links'] = [("text/xml", "TC211", csw.url_for_uuid(rec.identifier))]
 
     return result
 

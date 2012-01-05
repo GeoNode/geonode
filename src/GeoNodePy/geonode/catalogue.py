@@ -9,7 +9,7 @@ from xml.etree.ElementTree import XML
 from urlparse import urlparse
 
 class Catalogue(object):
-    def __init__(self, cattype, url, user, password):
+    def __init__(self, cattype, url, user=None, password=None):
         self.type = cattype
         self.url = url
         self.user = user
@@ -22,7 +22,7 @@ class Catalogue(object):
 
         self.base = '%s://%s/' % (upurl.scheme, upurl.netloc)
 
-        self.csw = CatalogueServiceWeb(self.url)
+        self.csw = CatalogueServiceWeb(self.url, skip_caps=True)
 
     def login(self):
         if self.type == 'geonetwork':

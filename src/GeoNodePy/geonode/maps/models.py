@@ -2,7 +2,6 @@
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
-from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -27,13 +26,9 @@ import sys
 
 logger = logging.getLogger("geonode.maps.models")
 
-
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
-
-
-
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -558,7 +553,7 @@ def get_wms():
 
 def get_csw():
     global _csw
-    _csw = CatalogueServiceWeb(settings.CSW_URL)
+    _csw = Catalogue(settings.CSW_TYPE, settings.CSW_URL, settings.CSW_CREDENTIALS[0], settings.CSW_CREDENTIALS[1])
     return _csw
 
 class LayerManager(models.Manager):
@@ -856,8 +851,8 @@ class Layer(models.Model, PermissionLevelMixin):
         if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
             get_csw()
         try:
-            _csw.getrecordbyid([self.uuid], esn='summary')
-            csw_layer = _csw.records.get(self.uuid)
+            _csw.csw.getrecordbyid([self.uuid], esn='summary')
+            csw_layer = _csw.csw.records.get(self.uuid)
         except:
             msg = "CSW Record Missing for layer [%s]" % self.typename
             raise GeoNodeException(msg)
@@ -913,8 +908,8 @@ class Layer(models.Model, PermissionLevelMixin):
         global _csw
         if(_csw is None):
             _csw = get_csw()
-        _csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
-        return _csw.records.get(self.uuid)
+        _csw.csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
+        return _csw.csw.records.get(self.uuid)
 
     @property
     def attribute_names(self):
