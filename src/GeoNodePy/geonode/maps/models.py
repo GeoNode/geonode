@@ -847,7 +847,7 @@ class Layer(models.Model, PermissionLevelMixin):
         #    msg = "API Record missing for layer [%s]" % self.typename
         #    raise GeoNodeException(msg)
  
-        # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
+        # Check the layer is in the catalogue and points back to get_absolute_url
         if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
             get_csw()
         try:
@@ -857,12 +857,13 @@ class Layer(models.Model, PermissionLevelMixin):
             msg = "CSW Record Missing for layer [%s]" % self.typename
             raise GeoNodeException(msg)
 
-        f=open('/tmp/f.txt','w')
-        f.write('CSW_LAYER.URI = ' + str(self.get_absolute_url())+'\n\n\n')
-        f.write('SELF.GET_ABSOLUTE_URL = ' + str(csw_layer.uri))
-
-        if(csw_layer.uri != self.get_absolute_url()):
-            msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
+        if hasattr(csw_layer, 'distribution') and hasattr(csw_layer.distribution, 'online'):
+            for link in csw_layer.distribution.online:
+                if link.protocol == 'WWW:LINK-1.0-http--link':
+                    if(link.url != self.get_absolute_url()):
+                        msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
+        else:        
+            msg = "CSW Layer URL not found layer [%s]" % self.typename
             
         # Visit get_absolute_url and make sure it does not give a 404
         #logger.info(self.get_absolute_url())
