@@ -1,7 +1,7 @@
 from copy import deepcopy
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, MapStats, LayerStats, CHARSETS
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis, get_sld_for
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis, get_sld_for, get_postgis_bbox
 from geonode.maps.encode import num_encode, num_decode
 import geoserver
 from geoserver.resource import FeatureType, Coverage
@@ -644,8 +644,25 @@ def ajax_layer_edit_check(request, layername):
 
 def ajax_layer_update_bounds(request, layername):
     layer = get_object_or_404(Layer, typename=layername);
-    layer._populate_from_gs();
-    layer.save();
+
+    #Get extent for layer from PostGIS
+    bboxes = get_postgis_bbox(layer.name)
+    if len(bboxes) != 1 and len(bboxes[0]) != 2:
+        return
+
+    bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
+    llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
+
+    layer.bbox = [float(l) for l in bbox]
+    layer.llbbox = [float(l) for l in llbbox]
+    layer.set_bbox(bbox, srs=layer.srs)
+
+    # Use update to avoid unnecessary post_save signal
+    Layer.objects.filter(id=layer.id).update(bbox=layer.bbox,llbbox=layer.llbbox,geographic_bounding_box=layer.geographic_bounding_box )
+
+    #Update geonetwork record with latest extent
+    layer.save_to_geonetwork()
+
     return HttpResponse(
             "Bounds updated",
             status=200,
@@ -915,7 +932,7 @@ def official_site_controller(request, site):
     main view for map resources, dispatches to correct
     view based on method and query args.
     '''
-    map = Map.objects.get(officialurl=site)
+    map = get_object_or_404(Map,officialurl=site)
     return map_controller(request, str(map.id))
 
 
@@ -994,7 +1011,7 @@ def official_site(request, site):
     The view that returns the map composer opened to
     the map with the given official site url.
     """
-    map = Map.objects.get(officialurl=site)
+    map = get_object_or_404(Map,officialurl=site)
     return view(request, str(map.id))
 
 def embed(request, mapid=None, snapshot=None):

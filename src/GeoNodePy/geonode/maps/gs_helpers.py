@@ -160,3 +160,21 @@ def delete_from_postgis(resource_name):
         logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))
     finally:
             conn.close()
+
+
+def get_postgis_bbox(resource_name):
+    """
+    Update the native and latlong bounding box for a layer via PostGIS.
+    Doing it via Geoserver is too resource-intensive
+    """
+    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    try:
+        cur = conn.cursor()
+        cur.execute("select EXTENT(the_geom) as bbox, EXTENT(ST_Transform(the_geom,4326)) as llbbox from \"%s\"" %  resource_name)
+        rows = cur.fetchall()
+        return rows
+    except Exception, e:
+        logger.error("Error retrieving bbox for PostGIS table %s:%s", resource_name, str(e))
+    finally:
+        conn.close()
+

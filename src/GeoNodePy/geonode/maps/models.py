@@ -736,17 +736,19 @@ class LayerManager(models.Manager):
             if created:
                 layer.set_default_permissions()
                 #Create layer attributes if they don't already exist
-                try:
-                    if layer.attribute_names is not None:
-                        for field, ftype in layer.attribute_names.iteritems():
-                            if field is not None:
-                                la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
-                                if created:
-                                    logger.debug("Created [%s] attribute for [%s]", field, layer.name)
-                except Exception, e:
-                    logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
-                finally:
-                    pass
+            try:
+                if layer.attribute_names is not None:
+                    for field, ftype in layer.attribute_names.iteritems():
+                        if field is not None:
+                            la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
+                            if created:
+                                logger.debug("Created [%s] attribute for [%s]", field, layer.name)
+                                la.attribute_label = field
+                                la.searchable = (ftype == "xsd:string")
+            except Exception, e:
+                logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
+            finally:
+                pass
         # Doing a logout since we know we don't need this object anymore.
         gn.logout()
 
@@ -944,14 +946,17 @@ class Layer(models.Model, PermissionLevelMixin):
     # Section 9
     # see metadata_author property definition below
 
+    def llbbox_coords(self):
+        return eval(self.llbbox)
+
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
 
-        bbox = self.resource.latlon_bbox
+        bbox = self.llbbox_coords
 
-        dx = float(bbox[1]) - float(bbox[0])
-        dy = float(bbox[3]) - float(bbox[2])
+        dx = float(min(180,bbox[1])) - float(max(-180,(bbox[0])))
+        dy = float(min(90,bbox[3])) - float(max(-90,bbox[2]))
 
         dataAspect = 1 if dy == 0 else dx / dy
 
@@ -1371,8 +1376,13 @@ class Layer(models.Model, PermissionLevelMixin):
         if gs_resource is None:
             return
         self.srs = gs_resource.projection
-        self.bbox = str([ float(gs_resource.native_bbox[0]),float(gs_resource.native_bbox[2]),float(gs_resource.native_bbox[1]),float(gs_resource.native_bbox[3])])
-        self.llbbox = str([ float(gs_resource.latlon_bbox[0]),float(gs_resource.latlon_bbox[2]),float(gs_resource.latlon_bbox[1]),float(gs_resource.latlon_bbox[3])])
+        self.llbbox = str([ max(-180,float(gs_resource.latlon_bbox[0])),max(-90,float(gs_resource.latlon_bbox[2])),min(180,float(gs_resource.latlon_bbox[1])),min(90,float(gs_resource.latlon_bbox[3]))])
+
+        if self.srs == 'EPSG:4326':
+            self.bbox = self.llbbox
+        else:
+            self.bbox = str([ float(gs_resource.native_bbox[0]),float(gs_resource.native_bbox[2]),float(gs_resource.native_bbox[1]),float(gs_resource.native_bbox[3])])
+
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
             self.set_bbox(gs_resource.native_bbox, srs=self.srs)
 
