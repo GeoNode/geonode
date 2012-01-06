@@ -51,7 +51,7 @@ class Catalogue(CatalogueServiceWeb):
 
     def get_by_uuid(self, uuid):
         self.getrecordbyid([uuid], outputschema=namespaces["gmd"])
-        recs = self.csw.records
+        recs = self.records
         return recs.values()[0] if len(recs) > 0 else None
 
     def url_for_uuid(self, uuid):
