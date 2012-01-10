@@ -1234,8 +1234,19 @@ def _metadata_search(query, start, limit, **kw):
     csw = get_csw()
 
     keywords = _split_query(query)
-    
-    csw.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), outputschema='http://www.isotc211.org/2005/gmd', esn='full')
+   
+    # fix bbox axis order
+    # GeoNetwork accepts x/y
+    # pycsw accepts y/x
+    if kw.has_key('bbox'):
+        if csw.type == 'pycsw':  # swap coords per standard
+            bbox = [kw['bbox'][1], kw['bbox'][0], kw['bbox'][3], kw['bbox'][2]]
+        else:
+            bbox = kw['bbox']
+    else:
+        bbox = None
+
+    csw.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
 
     # build results into JSON for API
     results = [_build_search_result(doc, csw) for v, doc in csw.records.iteritems()]

@@ -51,8 +51,11 @@ class Catalogue(CatalogueServiceWeb):
 
     def get_by_uuid(self, uuid):
         self.getrecordbyid([uuid], outputschema=namespaces["gmd"])
-        recs = self.records
-        return recs.values()[0] if len(recs) > 0 else None
+        if hasattr(self, 'records'):
+            recs = self.records
+            return recs.values()[0] if len(recs) > 0 else None
+        else:
+            return None
 
     def url_for_uuid(self, uuid):
         return "%s?%s" % (self.url, urllib.urlencode({
