@@ -206,7 +206,7 @@
         {% endfor %}
     </p>
     <p> <strong>{% trans "Metadata" %}: </strong>
-            <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=http://www.isotc211.org/2005/gmd">TC211</a>
+            <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=http://www.isotc211.org/2005/gmd&elementsetname=full">TC211</a>
         {% if CSW_TYPE == 'pycsw' %}
             <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=http://www.opengis.net/cat/csw/2.0.2">Dublin Core</a>
             <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=http://www.opengis.net/cat/csw/csdgm">FGDC</a>
