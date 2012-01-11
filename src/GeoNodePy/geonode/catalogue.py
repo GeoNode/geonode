@@ -9,8 +9,8 @@ from xml.etree.ElementTree import XML
 from urlparse import urlparse
 
 class Catalogue(CatalogueServiceWeb):
-    def __init__(self, cattype, url, user=None, password=None):
-        CatalogueServiceWeb.__init__(self, url=url, skip_caps=True)
+    def __init__(self, cattype, url, user=None, password=None, skip_caps=True):
+        CatalogueServiceWeb.__init__(self, url=url, skip_caps=skip_caps)
         self.type = cattype
         self.user = user
         self.password = password
