@@ -661,6 +661,8 @@ def ajax_layer_update_bounds(request, layername):
     Layer.objects.filter(id=layer.id).update(bbox=layer.bbox,llbbox=layer.llbbox,geographic_bounding_box=layer.geographic_bounding_box )
 
     #Update geonetwork record with latest extent
+    logger.info("Save new bounds to geonetwork")
+    layer = get_object_or_404(Layer, typename=layername);
     layer.save_to_geonetwork()
 
     return HttpResponse(

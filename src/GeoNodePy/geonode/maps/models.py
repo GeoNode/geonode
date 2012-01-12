@@ -947,7 +947,7 @@ class Layer(models.Model, PermissionLevelMixin):
     # see metadata_author property definition below
 
     def llbbox_coords(self):
-        return eval(self.llbbox)
+        return [float(n) for n in re.findall('[0-9\.\-]+', self.llbbox)]
 
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
