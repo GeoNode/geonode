@@ -953,7 +953,7 @@ class Layer(models.Model, PermissionLevelMixin):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
 
-        bbox = self.llbbox_coords
+        bbox = self.llbbox_coords()
 
         dx = float(min(180,bbox[1])) - float(max(-180,(bbox[0])))
         dy = float(min(90,bbox[3])) - float(max(-90,bbox[2]))
@@ -966,7 +966,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # bbox: this.adjustBounds(widthAdjust, heightAdjust, values.llbbox).toString(),
 
         srs = 'EPSG:4326' # bbox[4] might be None
-        bbox_string = ",".join([bbox[0], bbox[2], bbox[1], bbox[3]])
+        bbox_string = ",".join([str(bbox[0]), str(bbox[2]), str(bbox[1]), str(bbox[3])])
 
         links = []
 
@@ -1758,7 +1758,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
-        logger.info("CONFIG: %s", config)
+        logger.debug("CONFIG: %s", config)
 
         return config
 
