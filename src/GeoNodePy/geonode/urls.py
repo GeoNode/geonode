@@ -29,9 +29,19 @@ urlpatterns = patterns('',
 
     (r'^(?P<page>help)/?$', 'geonode.views.static'),
 
-    (r'^developer/?$', 'geonode.views.developer'),
+    url(r'^developer/?$',
+        direct_to_template,
+        {'template': 'developer.html',
+         'extra_context': {
+                'GEOSERVER_BASE_URL': settings.GEOSERVER_BASE_URL,
+                'GEONETWORK_BASE_URL': settings.GEONETWORK_BASE_URL,
+                'site': settings.SITEURL
+                }},
+        name='geonode_views_developer'),
+
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
                {'template': 'lang.js', 'mimetype': 'text/javascript'}, 'lang'),
+
     (r'^maps/', include('geonode.maps.urls')),
 
     url(r'^data/$', 'geonode.maps.views.browse_data', name='data'),
@@ -69,7 +79,8 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
-    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    (r'^sitemap\.xml$',
+     'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     )
 
 urlpatterns += proxy_urlpatterns
