@@ -9,9 +9,6 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-def index(request): 
-    return render_to_response('index.html', RequestContext(request))
-
 def static(request, page):
     return render_to_response(page + '.html', RequestContext(request, {
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
