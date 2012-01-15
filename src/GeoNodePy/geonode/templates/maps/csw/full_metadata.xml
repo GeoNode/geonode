@@ -92,8 +92,11 @@
        <gmd:referenceSystemIdentifier>
          <gmd:RS_Identifier>
            <gmd:code>
-             <gco:CharacterString>WGS 1984</gco:CharacterString>
+             <gco:CharacterString>4326</gco:CharacterString>
            </gmd:code>
+           <gmd:codeSpace>
+             <gco:CharacterString>EPSG</gco:CharacterString>
+           </gmd:codeSpace>
          </gmd:RS_Identifier>
        </gmd:referenceSystemIdentifier>
      </gmd:MD_ReferenceSystem>
