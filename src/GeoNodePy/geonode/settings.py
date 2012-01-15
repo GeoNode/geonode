@@ -252,11 +252,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.sitemaps',
+    
     'staticfiles',
     'django_extensions',
     'registration',
     'profiles',
     'avatar',
+    'haystack',
+    
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
@@ -291,6 +294,13 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+    },
+}
 
 try:
     from local_settings import *
