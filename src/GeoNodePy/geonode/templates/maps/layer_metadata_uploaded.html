@@ -1,0 +1,18 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {{ layer.typename }} - {{ block.super }} {% endblock %}
+
+{% block main %}
+
+<h3>Data and Metadata Uploaded!</h3>
+
+ <a title="Metadata Record" href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{ uuid }}&elementsetname=full">Layer Metadata</a>
+
+<p>
+This layer's metadata has been generated from a XML document upload and cannot be edited.
+
+Only To update this layer's metadata, please re-upload the XML document.
+</p>
+
+{% endblock %}
