@@ -667,6 +667,9 @@ class Layer(models.Model, PermissionLevelMixin):
 
     contacts = models.ManyToManyField(Contact, through='ContactRole')
 
+    metadata_uploaded = models.BooleanField(default=False)
+    metadata_xml = models.TextField(null=True)
+
     # section 1
     title = models.CharField(_('title'), max_length=255)
     date = models.DateTimeField(_('date'), default = datetime.now) # passing the method itself, not the result
