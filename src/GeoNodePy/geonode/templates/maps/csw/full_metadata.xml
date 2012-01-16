@@ -96,6 +96,9 @@
            <gmd:codeSpace>
              <gco:CharacterString>EPSG</gco:CharacterString>
            </gmd:codeSpace>
+           <gmd:version>
+             <gco:CharacterString>6.11</gco:CharacterString>
+           </gmd:version>
          </gmd:RS_Identifier>
        </gmd:referenceSystemIdentifier>
      </gmd:MD_ReferenceSystem>
@@ -229,7 +232,7 @@
                <gmd:protocol>
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
                </gmd:protocol>
-               <gmd:name gco:nilReason="missing"/>
+               <gmd:name gco:nilReason="missing">
                  <gco:CharacterString />
                </gmd:name>
                <gmd:description>
