@@ -702,7 +702,13 @@ def _describe_layer(request, layer):
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {'error_message': 
                     _("You are not permitted to modify this layer's metadata")})), status=401)
-        
+     
+        if layer.metadata_uploaded:  # return a page that gives UUID and URL to metadata record
+            return render_to_response("maps/layer_metadata_uploaded.html", RequestContext(request, {
+                "uuid": layer.uuid,
+                "CSW_URL": settings.CSW_URL
+        }))
+   
         poc = layer.poc
         metadata_author = layer.metadata_author
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)

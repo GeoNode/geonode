@@ -20,6 +20,7 @@ import traceback
 import inspect
 import string
 import urllib2
+from xml.etree import ElementTree as etree
 
 logger = logging.getLogger("geonode.maps.utils")
 
@@ -79,6 +80,15 @@ def get_files(filename):
         files['sld'] = matches[0]
     elif len(matches) > 1:
         msg = ('Multiple style files for %s exist; they need to be '
+               'distinct by spelling and not just case.') % filename
+        raise GeoNodeException(msg)
+
+    matches = glob.glob(base_name + ".[xX][mM][lL]")
+
+    if len(matches) == 1:
+        files['xml'] = matches[0]
+    elif len(matches) > 1:
+        msg = ('Multiple XML files for %s exist; they need to be '
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
 
@@ -369,6 +379,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
                                  keywords=' '.join(keywords),
                                  abstract=abstract or gs_resource.abstract or '',
                                  owner=user,
+                                 metadata_uploaded = 'xml' in files
                                  )
     )
 
@@ -388,6 +399,72 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     saved_layer.poc = poc_contact
     saved_layer.metadata_author = author_contact
 
+    logger.info('>>> Step XML. If an XML metadata document was passed, process it')
+    # Step XML.  If an XML metadata document is uploaded,
+    # parse the XML metadata and update uuid and URLs as per the content model
+    if 'xml' in files:
+        f = open(files['xml'], 'r')
+        xml = f.read()
+        f.close()
+        # check if document is XML
+        try:
+            exml = etree.fromstring(xml)
+        except:
+            raise GeoNodeException('Uploaded XML document is not XML')
+
+        # check if document is an accepted XML metadata format
+        try:
+            tagname = exml.tag.split('}')[1]
+        except:
+            tagname = exml.tag
+
+        if tagname == 'Record':
+            dc_ns = '{http://purl.org/dc/elements/1.1/}'
+            dct_ns ='{http://purl.org/dc/terms/}'
+
+            children = exml.getchildren()
+
+            # set/update identifier
+            xname = exml.find('%sidentifier' % dc_ns)
+            if xname is None:  # doesn't exist, insert it
+                value = etree.Element('%sidentifier' % dc_ns)
+                value.text = layer_uuid
+                children.insert(0, value)
+            else:  # exists, update it
+                xname.text = layer_uuid
+
+            xname = exml.find('%smodified' % dct_ns)
+            if xname is None:  # doesn't exist, insert it
+                value = etree.Element('%smodified' % dct_ns)
+                value.text = saved_layer.date.strftime('%Y-%m-%dT%H:%M:%SZ')
+                children.insert(3, value)
+            else:  # exists, update it
+                xname.text = saved_layer.date.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+            # set/update URLs
+            http_link = etree.Element('%sreferences' % dct_ns, scheme='WWW:LINK-1.0-http--link')
+            http_link.text = '%s%s' % (settings.SITEURL, saved_layer.get_absolute_url())
+            children.insert(-2, http_link)
+
+            for extension, dformat, link in saved_layer.download_links():
+                http_link = etree.Element('%sreferences' % dct_ns, scheme='WWW:DOWNLOAD-1.0-http--download')
+                http_link.text = link
+                children.insert(-2, http_link)
+
+            Layer.objects.filter(uuid=layer_uuid).update(metadata_xml=etree.tostring(exml))
+            saved_layer.metadata_xml = etree.tostring(exml)
+
+        elif tagname == 'MD_Metadata':
+            pass
+        elif tagname == 'metadata':
+            pass
+        else:
+            raise GeoNodeException('Unsupported metadata format')
+
+        # insert the newly updated metadata record to the CSW
+        # set a boolean in maps.models.py:Layer on whether the data upload includes an uploaded metadata document (this will require an addition to the model)
+        # carry on
+
     # add to CSW catalogue
     saved_layer.save_to_catalogue()
 
@@ -405,22 +482,22 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     try:
         Layer.objects.get(name=name)
     except Layer.DoesNotExist, e:
-        msg = ('There was a problem saving the layer %s to GeoNetwork/Django. Error is: %s' % (layer, str(e)))
+        msg = ('There was a problem saving the layer %s to %s/Django. Error is: %s' % (settings.CSW_TYPE, layer, str(e)))
         logger.exception(msg)
         logger.debug('Attempting to clean up after failed save for layer [%s]', name)
         # Since the layer creation was not successful, we need to clean up
         cleanup(name, layer_uuid)
         raise GeoNodeException(msg)
 
-    # Verify it is correctly linked to GeoServer and GeoNetwork
+    # Verify it is correctly linked to GeoServer and the catalogue
     try:
-        #FIXME: Implement a verify method that makes sure it was saved in both GeoNetwork and GeoServer
+        #FIXME: Implement a verify method that makes sure it was saved in both the catalogue and GeoServer
         saved_layer.verify()
     except NotImplementedError, e:
         logger.exception('>>> FIXME: Please, if you can write python code, implement "verify()"'
                          'method in geonode.maps.models.Layer')
     except GeoNodeException, e:
-        msg = ('The layer [%s] was not correctly saved to GeoNetwork/GeoServer. Error is: %s' % (layer, str(e)))
+        msg = ('The layer [%s] was not correctly saved to %s/GeoServer. Error is: %s' % (settings.CSW_TYPE, layer, str(e)))
         logger.exception(msg)
         e.args = (msg,)
         # Deleting the layer
