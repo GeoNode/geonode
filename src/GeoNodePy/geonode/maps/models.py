@@ -1774,8 +1774,8 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
-        self.urlsuffix = conf['about']['urlsuffix']
-        self.content = conf['about']['introtext']
+        self.urlsuffix = escape(conf['about']['urlsuffix'])
+        self.content = re.sub(r'<script.*(<\/script>|\/>)|javascript:|\$\(|jQuery|Ext\.', r'', conf['about']['introtext']) #Remove any scripts
         self.keywords = conf['about']['keywords']
         self.zoom = conf['map']['zoom']
 
