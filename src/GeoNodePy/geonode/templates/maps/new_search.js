@@ -58,7 +58,7 @@ Ext.onReady(function() {
     }
 
     function updateDisplaying() {
-        var cnt = store.getCount(), 
+        var cnt = store.getCount(),
             displaying = Ext.get('displaying'),
             note = Ext.get('displayNote');
         if (cnt == 0) {
@@ -163,7 +163,7 @@ Ext.onReady(function() {
             },queryItems);
         Ext.Ajax.request({
             // @todo URL
-            url: '/data/newsearch/api',
+            url: '/search/api',
             method: 'GET',
             success: appendResults,
             params: params
