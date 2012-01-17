@@ -1,1 +1,9 @@
 {{ object.name }}
+
+{{ object.title }}
+
+{{ object.typename }}
+
+{{ object.keywords }}
+
+{{ object.get_keywords_region_display }}
