@@ -35,7 +35,6 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
                 title: ""
             },
             iid: 0,
-            last_modified: "2012-01-10T22:01:27.556976",
             bbox: {
                 minx: "-82.744",
                 miny: "10.706",
@@ -51,6 +50,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
             "id": obj.id,
             "uuid": obj.uuid,
+            "last_modified": obj.date.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "title": obj.title,
             "abstract": obj.abstract,
             "name": obj.name,
@@ -87,7 +87,6 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         """
         {
             iid: 3,
-            last_modified: "2011-12-20T17:28:05.584942",
         }
         """
 
@@ -96,6 +95,7 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "_display_type": obj.display_type,
 
             "id": obj.id,
+            "last_modified": obj.last_modified.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "title": obj.title,
             "abstract": obj.abstract,
             "owner": obj.metadata_author.name,
