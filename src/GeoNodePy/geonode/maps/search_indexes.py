@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 
 from haystack import indexes
 
-from geonode.maps.models import Layer, Thumbnail
+from geonode.maps.models import Layer, Map, Thumbnail
 
 
 class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
@@ -68,3 +68,44 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             data.update({"owner_detail": reverse("profiles.views.profile_detail", args=(obj.owner.username,))})
 
         return json.dumps(data)
+
+
+class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
+    text = indexes.CharField(document=True, use_template=True)
+
+    int_type = indexes.CharField()
+    json = indexes.CharField(indexed=False)
+
+    def get_model(self):
+        return Map
+
+    def prepare_int_type(self, obj):
+        return "map"
+
+    def prepare_json(self, obj):
+        # Still need to figure out how to get the follow data:
+        """
+        {
+            iid: 3,
+            last_modified: "2011-12-20T17:28:05.584942",
+        }
+        """
+
+        data = {
+            "_type": self.prepare_int_type(obj),
+            "_display_type": obj.display_type,
+
+            "id": obj.id,
+            "title": obj.title,
+            "abstract": obj.abstract,
+            "owner": obj.metadata_author.name,
+            "keywords": obj.keywords.split() if obj.keywords else [],
+            "thumb": Thumbnail.objects.get_thumbnail(obj),
+
+            "detail": obj.get_absolute_url(),
+        }
+
+        if obj.owner:
+            data.update({"owner_detail": reverse("profiles.views.profile_detail", args=(obj.owner.username,))})
+
+        return data
