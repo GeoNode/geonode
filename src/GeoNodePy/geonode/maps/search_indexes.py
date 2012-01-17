@@ -34,7 +34,6 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
                 href: "",
                 title: ""
             },
-            iid: 0,
             bbox: {
                 minx: "-82.744",
                 miny: "10.706",
@@ -83,13 +82,6 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         return "map"
 
     def prepare_json(self, obj):
-        # Still need to figure out how to get the follow data:
-        """
-        {
-            iid: 3,
-        }
-        """
-
         data = {
             "_type": self.prepare_int_type(obj),
             "_display_type": obj.display_type,
