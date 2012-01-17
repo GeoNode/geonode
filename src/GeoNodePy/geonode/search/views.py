@@ -17,10 +17,17 @@ def search_api(request):
     if query:
         sqs = sqs.filter(content=AutoQuery(query))
 
+    results = []
+
+    for i, result in enumerate(sqs[start:start + limit]):
+        data = json.loads(result.json)
+        data.update({"iid": i + start})
+        results.append(data)
+
     data = {
         "success": True,
         "total": sqs.count(),
-        "rows": [json.loads(x.json) for x in sqs[start:start + limit]],
+        "rows": results,
     }
 
     return HttpResponse(json.dumps(data), mimetype="application/json")
