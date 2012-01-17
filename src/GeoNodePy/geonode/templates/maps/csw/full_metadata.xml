@@ -1,9 +1,9 @@
-<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xmlns:gco="http://www.isotc211.org/2005/gco" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
    <gmd:fileIdentifier>
      <gco:CharacterString>{{layer.uuid}}</gco:CharacterString>
    </gmd:fileIdentifier>
    <gmd:language>
-     <gco:CharacterString>eng</gco:CharacterString>
+     <gco:CharacterString>{{layer.language}}</gco:CharacterString>
    </gmd:language>
    <gmd:characterSet>
      <gmd:MD_CharacterSetCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
@@ -77,7 +77,7 @@
      </gmd:CI_ResponsibleParty>
    </gmd:contact> {% endwith %}
    <gmd:dateStamp>
-     <gco:DateTime>{{layer.date|date:"Y-m-d"}}</gco:DateTime>
+     <gco:DateTime>{{layer.date|date:"Y-m-d\TH:i:s\Z"}}</gco:DateTime>
    </gmd:dateStamp>
    <gmd:metadataStandardName>
      <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>
@@ -113,15 +113,15 @@
            <gmd:date>
              <gmd:CI_Date>
                <gmd:date>
-                 <gco:DateTime>{{layer.date|date:"Y-m-d"}}</gco:DateTime>
+                 <gco:DateTime>{{layer.date|date:"Y-m-d\TH:i:s\Z"}}</gco:DateTime>
                </gmd:date>
                <gmd:dateType>
                  <gmd:CI_DateTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="{{layer.date_type}}">{{layer.date_type}}</gmd:CI_DateTypeCode>
                </gmd:dateType>
              </gmd:CI_Date>
            </gmd:date>
-           <gmd:edition>
-             <gco:CharacterString>First</gco:CharacterString>
+           <gmd:edition {% if not layer.edition %}gco:nilReason="missing"{% endif %}>
+                 {% if layer.edition %}<gco:CharacterString>{{layer.edition}}</gco:CharacterString>{% endif %}
            </gmd:edition>
            <gmd:presentationForm>
              <gmd:CI_PresentationFormCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode" codeListValue="mapDigital">mapDigital</gmd:CI_PresentationFormCode>
@@ -131,17 +131,22 @@
        <gmd:abstract>
          <gco:CharacterString>{{layer.abstract}}</gco:CharacterString>
        </gmd:abstract>
-       <gmd:purpose nilReason="missing"></gmd:purpose>
+       <gmd:purpose {% if not layer.purpose %}gco:nilReason="missing"{% endif %}>
+             {% if layer.purpose %}<gco:CharacterString>{{layer.purpose}}</gco:CharacterString>{% endif %}
+       </gmd:purpose>
        <gmd:status>
          <gmd:MD_ProgressCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed">completed</gmd:MD_ProgressCode>
        </gmd:status>
+       {% if layer.maintenance_frequency %}
        <gmd:resourceMaintenance>
          <gmd:MD_MaintenanceInformation>
            <gmd:maintenanceAndUpdateFrequency>
-             <gmd:MD_MaintenanceFrequencyCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="asNeeded">asNeeded</gmd:MD_MaintenanceFrequencyCode>
+             <gmd:MD_MaintenanceFrequencyCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="{{layer.maintenance_frequency}}">{{layer.maintenance_frequency}}</gmd:MD_MaintenanceFrequencyCode>
            </gmd:maintenanceAndUpdateFrequency>
          </gmd:MD_MaintenanceInformation>
        </gmd:resourceMaintenance>
+       {% endif %}
+       {% if layer.keyword_list %}
        <gmd:descriptiveKeywords>
          <gmd:MD_Keywords>
            {% for kw in layer.keyword_list %}
@@ -154,6 +159,19 @@
             </gmd:type>
          </gmd:MD_Keywords>
        </gmd:descriptiveKeywords>
+       {% endif %}
+       {% if layer.keywords_region %}
+       <gmd:descriptiveKeywords>
+         <gmd:MD_Keywords>
+           <gmd:keyword>
+             <gco:CharacterString>{{layer.keywords_region}}</gco:CharacterString>
+           </gmd:keyword>
+           <gmd:type>
+              <gmd:MD_KeywordTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place">place</gmd:MD_KeywordTypeCode>
+            </gmd:type>
+         </gmd:MD_Keywords>
+       </gmd:descriptiveKeywords>
+       {% endif %}
        <gmd:resourceConstraints>
          <gmd:MD_Constraints>
            <gmd:useLimitation gco:nilReason="missing">
@@ -161,10 +179,11 @@
            </gmd:useLimitation>
          </gmd:MD_Constraints>
        </gmd:resourceConstraints>
+       {% if layer.spatial_representation_type %} 
        <gmd:spatialRepresentationType>
-         <!-- TODO: figure out if grid or vector -->
-         <gmd:MD_SpatialRepresentationTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="vector">vector</gmd:MD_SpatialRepresentationTypeCode>
+         <gmd:MD_SpatialRepresentationTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="{{layer.spatial_representation_type}}">{{layer.spatial_representation_type}}</gmd:MD_SpatialRepresentationTypeCode>
        </gmd:spatialRepresentationType>
+       {% endif %}
        <gmd:spatialResolution>
          <gmd:MD_Resolution>
            <gmd:equivalentScale>
@@ -177,12 +196,12 @@
          </gmd:MD_Resolution>
        </gmd:spatialResolution>
        <gmd:language>
-         <gco:CharacterString>eng</gco:CharacterString>
+         <gco:CharacterString>{{layer.language}}</gco:CharacterString>
        </gmd:language>
        <gmd:characterSet>
          <gmd:MD_CharacterSetCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
        </gmd:characterSet>
-       <gmd:topicCategory nilReason="missing"/>
+       <gmd:topicCategory {% if not layer.topic_category %}gco:nilReason="missing"{% endif %}>{% if layer.topic_category %}{{layer.topic_category}}{% endif %}</gmd:topicCategory>
        <gmd:extent>
          <gmd:EX_Extent>
            <gmd:geographicElement>
@@ -203,6 +222,22 @@
            </gmd:geographicElement>
          </gmd:EX_Extent>
        </gmd:extent>
+       {% if layer.temporal_extent_start and layer.temporal_extent_end %}
+       <gmd:extent>
+         <gmd:EX_Extent>
+           <gmd:temporalElement>
+             <gmd:EX_TemporalExtent>
+               <gmd:extent>
+                 <gml:TimePeriod gml:id="T_01">
+                   <gml:beginPosition>{{layer.temporal_extent_start|date:"Y-m-d\TH:i:s\Z"}}</gml:beginPosition>
+                   <gml:endPosition>{{layer.temporal_extent_end|date:"Y-m-d\TH:i:s\Z"}}</gml:endPosition>
+                 </gml:TimePeriod>
+               </gmd:extent>
+             </gmd:EX_TemporalExtent>
+           </gmd:temporalElement>
+         </gmd:EX_Extent>
+       </gmd:extent>
+       {% endif %}
        <gmd:supplementalInformation>
          <gco:CharacterString>
             {{ layer.supplemental_information }}
@@ -273,7 +308,7 @@
        </gmd:scope>
        <gmd:lineage>
          <gmd:LI_Lineage>
-           <gmd:statement nilReason="missing"/>
+           <gmd:statement {% if not layer.data_quality_statement %}gco:nilReason="missing"/>{% else%}>{{layer.data_quality_statement}}</gmd:statment>{% endif %}
          </gmd:LI_Lineage>
        </gmd:lineage>
      </gmd:DQ_DataQuality>
