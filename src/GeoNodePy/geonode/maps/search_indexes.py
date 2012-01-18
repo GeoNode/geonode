@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 
 from haystack import indexes
 
-from geonode.maps.models import Layer, Map, Thumbnail
+from geonode.maps.models import Contact, Layer, Map, Thumbnail
 
 
 class LayerIndex(indexes.SearchIndex, indexes.Indexable):
@@ -104,4 +104,42 @@ class MapIndex(indexes.SearchIndex, indexes.Indexable):
         if obj.owner:
             data.update({"owner_detail": reverse("profiles.views.profile_detail", args=(obj.owner.username,))})
 
-        return data
+        return json.dumps(data)
+
+
+class ContactIndex(indexes.SearchIndex, indexes.Indexable):
+    text = indexes.CharField(document=True, use_template=True)
+    title = indexes.CharField()
+
+    type = indexes.CharField(faceted=True)
+    json = indexes.CharField(indexed=False)
+
+    def get_model(self):
+        return Contact
+
+    def prepare_title(self, obj):
+        return str(obj)
+
+    def prepare_type(self, obj):
+        return "contact"
+
+    def prepare_json(self, obj):
+        data = {
+            "_type": self.prepare_type(obj),
+
+            "username": obj.user.username if obj.user else None,
+
+            "name": obj.name,
+            "organization": obj.organization,
+            "position": obj.position,
+            "voice": obj.voice,
+            "fax": obj.fax,
+            "delivery": obj.delivery,
+            "city": obj.city,
+            "area": obj.area,
+            "zipcode": obj.zipcode,
+            "country": obj.country,
+            "email": obj.email,
+        }
+
+        return json.dumps(data)
