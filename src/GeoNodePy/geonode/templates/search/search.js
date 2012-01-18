@@ -3,11 +3,11 @@ Ext.onReady(function() {
     limit = 5,
     loadnotify = Ext.get('loading'),
     itemTemplate = "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
-    "<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
-    "<div class='itemTitle'><a href='{detail}'>{title}</a></div>" +
-    "<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
-    "<div class='itemAbstract>{abstract}</div>"+
-    "</li>",
+                    "<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
+                    "<div class='itemTitle'><a href='{detail}'>{title}</a></div>" +
+                    "<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
+                    "<div class='itemAbstract>{abstract}</div>"+
+                    "</li>",
     filterTemplate = "<div class='{typeclass}'><img height='8' src='/static/theme/img/silk/delete.png' class='removeFilter' href='#removeFilter'> </a><strong>{type}</strong> {value}</div>",
     fetching = false,
     list = Ext.get(Ext.query('#search_results ul')[0]),
@@ -61,7 +61,7 @@ Ext.onReady(function() {
         var cnt = store.getCount(),
             displaying = Ext.get('displaying'),
             note = Ext.get('displayNote');
-        if (cnt == 0) {
+        if (cnt === 0) {
             displaying.hide();
         } else {
             if (cnt == totalQueryCount) {
@@ -80,8 +80,8 @@ Ext.onReady(function() {
         results = Ext.util.JSON.decode(results.responseText);
         totalQueryCount = results.total;
         var read = store.reader.readRecords(results);
-        if (read.records.length == 0) {
-            if (start == 0) {
+        if (read.records.length === 0) {
+            if (start === 0) {
                 Ext.DomHelper.append(list,'<li><h4 class="center">No Results</h4></li>');
             }
             start = -1;
@@ -96,7 +96,7 @@ Ext.onReady(function() {
             click: handleSave
         };
         Ext.each(results.rows,function(r,i) {
-            if (r.thumb == null) {
+            if (r.thumb === null) {
                 r.thumb = "{{ STATIC_URL }}theme/img/silk/map.png";
                 r.thumbclass = "missing";
             } else {
@@ -227,7 +227,7 @@ Ext.onReady(function() {
         },
         constructor : function(config) {
             Ext.apply(this, config);
-            this.addEvents('rowselect','rowdeselect')
+            this.addEvents('rowselect','rowdeselect');
         },
         getButton : function(el) {
             // maybe a better way to do this?
@@ -254,7 +254,7 @@ Ext.onReady(function() {
            el.remove();
            if (multiple) {
                queryItems[querykey].remove(queryValue);
-               if (queryItems[querykey].length == 0) {
+               if (queryItems[querykey].length === 0) {
                    delete queryItems[querykey];
                }
            } else {
@@ -307,7 +307,7 @@ Ext.onReady(function() {
     selModel = new SelectionModel();
     dataCartStore = new GeoNode.DataCartStore({
         selModel : selModel
-    })
+    });
     var bbox = new GeoNode.BoundingBoxWidget({
         proxy: "/proxy/?url=",
         viewerConfig: viewer_config,
