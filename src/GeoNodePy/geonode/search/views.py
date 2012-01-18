@@ -39,8 +39,17 @@ def search_api(request):
     start = int(request.REQUEST.get("start", 0))
     limit = int(request.REQUEST.get("limit", getattr(settings, "HAYSTACK_SEARCH_RESULTS_PER_PAGE", 20)))
     sort = request.REQUEST.get("sort", "relevance")
+    type = request.REQUEST.get("bytype")
 
     sqs = SearchQuerySet()
+
+    if type is not None:
+        if type in ["map", "layer", "contact"]:
+            # Type is one of our Major Types (not a sub type)
+            sqs = sqs.narrow("type:%s" % type)
+        elif type in ["vector", "raster"]:
+            # Type is one of our sub types
+            sqs = sqs.narrow("subtype:%s" % type)
 
     if query:
         sqs = sqs.filter(content=AutoQuery(query))
