@@ -33,7 +33,7 @@ def search(request):
         "users": Contact.objects.count()
     }
 
-    return render_to_response("maps/new_search.html", RequestContext(request, {
+    return render_to_response("search/search.html", RequestContext(request, {
         "init_search": json.dumps(params or {}),
         #'viewer_config': json.dumps(map.viewer_json(added_layers=DEFAULT_BASE_LAYERS, authenticated=request.user.is_authenticated())),
         "viewer_config": json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)),
