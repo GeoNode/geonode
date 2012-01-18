@@ -50,6 +50,8 @@ def search_api(request):
     if query:
         sqs = sqs.filter(content=AutoQuery(query))
 
+    sqs = sqs.facet("type").facet("subtype")
+
     if sort.lower() == "newest":
         sqs = sqs.order_by("-date")
     elif sort.lower() == "oldest":
@@ -66,10 +68,20 @@ def search_api(request):
         data.update({"iid": i + start})
         results.append(data)
 
+    facets = sqs.facet_counts()
+    counts = {"map": 0, "layer": 0, "vector": 0, "raster": 0, "user": 0}
+
+    for t, c in facets.get("fields", {}).get("type", []):
+        counts[t] = c
+
+    for t, c in facets.get("fields", {}).get("subtype", []):
+        counts[t] = c
+
     data = {
         "success": True,
         "total": sqs.count(),
         "rows": results,
+        "counts": counts,
     }
 
     return HttpResponse(json.dumps(data), mimetype="application/json")
