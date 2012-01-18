@@ -12,14 +12,21 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr="title")
     date = indexes.DateTimeField(model_attr="date")
 
-    int_type = indexes.CharField()
+    type = indexes.CharField(faceted=True)
+    subtype = indexes.CharField(faceted=True)
     json = indexes.CharField(indexed=False)
 
     def get_model(self):
         return Layer
 
-    def prepare_int_type(self, obj):
+    def prepare_type(self, obj):
         return "layer"
+
+    def prepare_subtype(self, obj):
+        if obj.storeType == "dataStore":
+            return "vector"
+        elif obj.storeType == "coverageStore":
+            return "raster"
 
     def prepare_json(self, obj):
         # Still need to figure out how to get the follow data:
@@ -39,7 +46,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         """
 
         data = {
-            "_type": self.prepare_int_type(obj),
+            "_type": self.prepare_type(obj),
             "_display_type": obj.display_type,
 
             "id": obj.id,
@@ -69,18 +76,18 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr="title")
     date = indexes.DateTimeField(model_attr="last_modified")
 
-    int_type = indexes.CharField()
+    type = indexes.CharField(faceted=True)
     json = indexes.CharField(indexed=False)
 
     def get_model(self):
         return Map
 
-    def prepare_int_type(self, obj):
+    def prepare_type(self, obj):
         return "map"
 
     def prepare_json(self, obj):
         data = {
-            "_type": self.prepare_int_type(obj),
+            "_type": self.prepare_type(obj),
             "_display_type": obj.display_type,
 
             "id": obj.id,
