@@ -9,13 +9,8 @@ from geonode.maps.models import Layer, Map, Thumbnail
 
 class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-
-    name = indexes.CharField(model_attr="name")
-
-    spatial_representation_type = indexes.CharField(model_attr="spatial_representation_type", null=True)
-
-    temporal_extent_start = indexes.DateField(model_attr="temporal_extent_start", null=True)
-    temporal_extent_end = indexes.DateField(model_attr="temporal_extent_end", null=True)
+    title = indexes.CharField(model_attr="title")
+    date = indexes.DateTimeField(model_attr="date")
 
     int_type = indexes.CharField()
     json = indexes.CharField(indexed=False)
@@ -71,6 +66,8 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
 class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
+    title = indexes.CharField(model_attr="title")
+    date = indexes.DateTimeField(model_attr="last_modified")
 
     int_type = indexes.CharField()
     json = indexes.CharField(indexed=False)
