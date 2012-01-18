@@ -7,7 +7,7 @@ from haystack import indexes
 from geonode.maps.models import Layer, Map, Thumbnail
 
 
-class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
+class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr="title")
     date = indexes.DateTimeField(model_attr="date")
@@ -71,7 +71,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         return json.dumps(data)
 
 
-class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
+class MapIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr="title")
     date = indexes.DateTimeField(model_attr="last_modified")
