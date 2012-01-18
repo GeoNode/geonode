@@ -79,6 +79,14 @@ Ext.onReady(function() {
         loadnotify.hide();
         results = Ext.util.JSON.decode(results.responseText);
         totalQueryCount = results.total;
+
+        /* Replace the Counts */
+        Ext.fly('map-count').update("(" + results.counts.map + ")");
+        Ext.fly('layer-count').update("(" + results.counts.layer + ")");
+        Ext.fly('vector-count').update("(" + results.counts.vector + ")");
+        Ext.fly('raster-count').update("(" + results.counts.raster + ")");
+        Ext.fly('user-count').update("(" + results.counts.user + ")");
+
         var read = store.reader.readRecords(results);
         if (read.records.length === 0) {
             if (start === 0) {

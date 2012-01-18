@@ -210,14 +210,14 @@
             <h5>By type</h5>
 
             <ul id="bytype" class="searchLinks refineControls">
-                <li><a href="#map">Maps</a><span>({{ counts.map }})</span></li>
-                <li><a href="#layer">Layers</a><span>({{ counts.layer }})</span>
+                <li><a href="#map">Maps</a><span id="map-count">({{ counts.map }})</span></li>
+                <li><a href="#layer">Layers</a><span id="layer-count">({{ counts.layer }})</span>
                     <ul style="margin-left:.5em">
-                        <li><a href="#dataStore">Vector</a><span>({{ counts.vector }})</span></li>
-                        <li><a href="#coverageStore">Raster</a><span>({{ counts.raster }})</span></li>
+                        <li><a href="#dataStore">Vector</a><span id="vector-count">({{ counts.vector }})</span></li>
+                        <li><a href="#coverageStore">Raster</a><span id="raster-count">({{ counts.raster }})</span></li>
                     </ul>
                 </li>
-                <li><a href="#contact">Users</a><span>({{ counts.user }})</span></li>
+                <li><a href="#contact">Users</a><span id="user-count">({{ counts.user }})</span></li>
             </ul>
         </div>
 
