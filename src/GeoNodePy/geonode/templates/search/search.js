@@ -171,7 +171,7 @@ Ext.onReady(function() {
             },queryItems);
         Ext.Ajax.request({
             // @todo URL
-            url: '/search/api',
+            url: '{% url search_api %}',
             method: 'GET',
             success: appendResults,
             params: params
