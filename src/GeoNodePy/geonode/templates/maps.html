@@ -20,7 +20,7 @@ Ext.onReady(function(){
 {% endautoescape %}
 
 });
-</script> 
+</script>
 {% endblock %}
 
 {% block main %}
@@ -29,7 +29,7 @@ Ext.onReady(function(){
   <div id="search_form" class="block">
     <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
 
-    <form action="{% url maps_search %}" method="POST">
+    <form action="{% url search %}" method="POST">
       {% csrf_token %}
       <table>
         <tr>
@@ -42,12 +42,12 @@ Ext.onReady(function(){
         </tr>
       </table>
       <p>
-        <a href="{% url maps_search %}">{% trans "All Maps" %}</a> |
-        <a href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "New Maps" %}</a>
+        <a href="{% url search %}">{% trans "All Maps" %}</a> |
+        <a href="{% url search %}?sort=newest">{% trans "New Maps" %}</a>
       </p>
     </form>
   </div>
-  
+
   <div id="create" class="block">
     <h2>{% trans "Create Maps" %}</h2>
     <p>{% trans "Use GeoNode's Map Composer application to create your own maps.  Add layers from this GeoNode or remote services, and style them." %}

@@ -4,7 +4,7 @@
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 {% block indexclass %} class="here" {% endblock %}
 
-{% block head %} 
+{% block head %}
 {% include "geonode/ext_header.html" %}
 {{ block.super }}
 <script type="text/javascript">
@@ -12,13 +12,13 @@ Ext.onReady(function(){
 {% autoescape off %}
 
   var exploreMapButton = new Ext.Button({
-     renderTo: 'explore_map', 
+     renderTo: 'explore_map',
      text: '{% trans "Explore Maps" %}',
-     handler: function(){ window.location = "{% url geonode.maps.views.maps_search_page %}"; }
+     handler: function(){ window.location = "{% url search %}"; }
   });
 
   var createMapButton = new Ext.Button({
-     renderTo: 'create_map', 
+     renderTo: 'create_map',
      text: '{% trans "Create Map" %}',
      handler: function(){ window.location = "{% url geonode.maps.views.newmap %}"; }
   });
@@ -37,7 +37,7 @@ Ext.onReady(function(){
 </script>
 {% endblock %}
 
-{% block main %} 
+{% block main %}
 <div class="twocol">
 <!-- TODO: i18n on the text here -->
   <div class="block">
@@ -45,17 +45,17 @@ Ext.onReady(function(){
     <p>
     {% blocktrans %}
   GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our mailing list by emailing <em>geonode@librelist.com</em>.
-    {% endblocktrans %} 
+    {% endblocktrans %}
   </p>
   </div>
   <div class="block">
     <h2> {% trans "Maps" %} </h2>
     <p>
-    {% blocktrans %} 
+    {% blocktrans %}
   GeoNode lets you compose and share maps.  <strong>Create</strong>
       a map with our cartography tool, or <strong>explore</strong> maps
       shared by others.
-    {% endblocktrans %} 
+    {% endblocktrans %}
   </p>
     <div class="selfclear">
       <div id="explore_map" class="content-button"></div>
@@ -65,11 +65,11 @@ Ext.onReady(function(){
   <div id="data_block" class="block">
     <h2> {% trans "Data" %} </h2>
     <p>
-    {% blocktrans %} 
-  GeoNode lets you upload, manage, and browse data.  
-      <strong>Search</strong> for data that is valuable to you, or 
+    {% blocktrans %}
+  GeoNode lets you upload, manage, and browse data.
+      <strong>Search</strong> for data that is valuable to you, or
       <strong>upload</strong> your own data.
-    {% endblocktrans %} 
+    {% endblocktrans %}
     </p>
 
     <!-- Data search text box and button -->
@@ -88,7 +88,7 @@ Ext.onReady(function(){
         </table>
         <a href="{% url search %}">{% trans "Advanced Search" %}</a>
     </form>
-  
+
     <!-- Links to specialized views of data -->
     <!-- Upload data button (link?) -->
     <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload data"  %}</a>
