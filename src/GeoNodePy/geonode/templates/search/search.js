@@ -8,6 +8,10 @@ Ext.onReady(function() {
                     "<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
                     "<div class='itemAbstract>{abstract}</div>"+
                     "</li>",
+    contactTemplate = "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
+                        "<div class='itemTitle'><a href='{detail}'>{name}</a></div>" +
+                        "<div class='itemInfo'>User</div>" +
+                        "</li>",
     filterTemplate = "<div class='{typeclass}'><img height='8' src='/static/theme/img/silk/delete.png' class='removeFilter' href='#removeFilter'> </a><strong>{type}</strong> {value}</div>",
     fetching = false,
     list = Ext.get(Ext.query('#search_results ul')[0]),
@@ -26,6 +30,8 @@ Ext.onReady(function() {
 
     itemTemplate = new Ext.DomHelper.createTemplate(itemTemplate);
     itemTemplate.compile();
+    contactTemplate = new Ext.DomHelper.createTemplate(contactTemplate);
+    contactTemplate.compile();
     filterTemplate = new Ext.DomHelper.createTemplate(filterTemplate);
     filterTemplate.compile();
 
@@ -110,44 +116,49 @@ Ext.onReady(function() {
             } else {
                 r.thumbclass = "";
             }
-            var item = itemTemplate.append(list,r,true);
-            var img = item.child('.thumb');
-            if (!img.hasClass('missing')) {
-                enableThumbHover(img);
+            if (r._type == "contact") {
+                contactTemplate.append(list, r, true);
             }
-            if (r.download_links) {
-                var items = [];
-                Ext.each(r.download_links,function(dl,i) {
-                    items.push({
-                        iconCls: dl[0],
-                        text: dl[1],
-                        link: dl[2],
-                        listeners: saveListeners
+            else {
+                var item = itemTemplate.append(list,r,true);
+                var img = item.child('.thumb');
+                if (!img.hasClass('missing')) {
+                    enableThumbHover(img);
+                }
+                if (r.download_links) {
+                    var items = [];
+                    Ext.each(r.download_links,function(dl,i) {
+                        items.push({
+                            iconCls: dl[0],
+                            text: dl[1],
+                            link: dl[2],
+                            listeners: saveListeners
+                        });
                     });
-                });
-                new Ext.Button({
-                    enableToggle: false,
-                    renderTo: 'save' + r.iid,
-                    iconCls: "saveButton",
-                    menu: {
-                        items: items
-                    },
-                    tooltip : "Save Layer As ..."
-                });
-            }
-            if (r._type == 'layer') {
-                var button = new Ext.Button({
-                    renderTo: 'toggle' + r.iid,
-                    iconCls: 'cartAddButton',
-                    tooltip : "Add to selected data"
-                });
-                button.on('click',handleSelect,r);
-                button = new Ext.Button({
-                    renderTo: 'map' + r.iid,
-                    iconCls: 'addToMapButton',
-                    tooltip : "Add data to new map"
-                });
-                button.on('click',handleAddToMap,r,{'choad':'bar'});
+                    new Ext.Button({
+                        enableToggle: false,
+                        renderTo: 'save' + r.iid,
+                        iconCls: "saveButton",
+                        menu: {
+                            items: items
+                        },
+                        tooltip : "Save Layer As ..."
+                    });
+                }
+                if (r._type == 'layer') {
+                    var button = new Ext.Button({
+                        renderTo: 'toggle' + r.iid,
+                        iconCls: 'cartAddButton',
+                        tooltip : "Add to selected data"
+                    });
+                    button.on('click',handleSelect,r);
+                    button = new Ext.Button({
+                        renderTo: 'map' + r.iid,
+                        iconCls: 'addToMapButton',
+                        tooltip : "Add data to new map"
+                    });
+                    button.on('click',handleAddToMap,r,{'choad':'bar'});
+                }
             }
         });
 

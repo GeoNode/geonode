@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from haystack import indexes
@@ -140,6 +141,9 @@ class ContactIndex(indexes.SearchIndex, indexes.Indexable):
             "zipcode": obj.zipcode,
             "country": obj.country,
             "email": obj.email,
+
+            "thumb": settings.STATIC_URL + "static/img/contact.png",
+            "detail": None,
         }
 
         return json.dumps(data)
