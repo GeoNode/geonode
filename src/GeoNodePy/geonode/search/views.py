@@ -2,9 +2,46 @@ import json
 
 from django.conf import settings
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 from haystack.inputs import AutoQuery
 from haystack.query import SearchQuerySet
+
+from geonode.maps.views import default_map_config, Map, Layer, Contact
+
+
+def search(request):
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+    #DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
+    # for non-ajax requests, render a generic search page
+
+    if request.method == "GET":
+        params = request.GET
+    elif request.method == "POST":
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
+    map = Map(projection="EPSG:900913", zoom=1, center_x=0, center_y=0)
+
+    counts = {
+        "maps": Map.objects.count(),
+        "layers": Layer.objects.count(),
+        "vector": Layer.objects.filter(storeType="dataStore").count(),
+        "raster": Layer.objects.filter(storeType="coverageStore").count(),
+        "users": Contact.objects.count()
+    }
+
+    return render_to_response("maps/new_search.html", RequestContext(request, {
+        "init_search": json.dumps(params or {}),
+        #'viewer_config': json.dumps(map.viewer_json(added_layers=DEFAULT_BASE_LAYERS, authenticated=request.user.is_authenticated())),
+        "viewer_config": json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)),
+        "GOOGLE_API_KEY": settings.GOOGLE_API_KEY,
+        "site": settings.SITEURL,
+        "counts": counts,
+        "keywords": Layer.objects.gn_catalog.get_all_keywords()
+    }))
 
 
 def search_api(request):
