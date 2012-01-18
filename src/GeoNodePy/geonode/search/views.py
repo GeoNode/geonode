@@ -48,11 +48,21 @@ def search_api(request):
     query = request.REQUEST.get("q", "")
     start = int(request.REQUEST.get("start", 0))
     limit = int(request.REQUEST.get("limit", getattr(settings, "HAYSTACK_SEARCH_RESULTS_PER_PAGE", 20)))
+    sort = request.REQUEST.get("sort", "relevance")
 
     sqs = SearchQuerySet()
 
     if query:
         sqs = sqs.filter(content=AutoQuery(query))
+
+    if sort.lower() == "newest":
+        sqs = sqs.order_by("-date")
+    elif sort.lower() == "oldest":
+        sqs = sqs.order_by("date")
+    elif sort.lower() == "alphaaz":
+        sqs = sqs.order_by("title")
+    elif sort.lower() == "alphaza":
+        sqs = sqs.order_by("-title")
 
     results = []
 
