@@ -1072,8 +1072,8 @@ msgid "maintenance frequency"
 msgstr "frequenza di revisione"
 
 #: maps/models.py:671
-msgid "keywords"
-msgstr "keywords"
+msgid "keywords (comma-separated)"
+msgstr "parole chiave (separati da virgola)"
 
 #: maps/models.py:672
 msgid "keywords region"

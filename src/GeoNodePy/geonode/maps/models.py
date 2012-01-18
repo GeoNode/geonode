@@ -685,7 +685,7 @@ class Layer(models.Model, PermissionLevelMixin):
     # see poc property definition below
 
     # section 3
-    keywords = models.TextField(_('keywords'), blank=True, null=True)
+    keywords = models.TextField(_('keywords (comma-separated)'), blank=True, null=True)
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
     constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
@@ -1135,7 +1135,7 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.keywords is None:
             return []
         else:
-            return self.keywords.split()
+            return self.keywords.split(',')
 
     def set_bbox(self, box, srs=None):
         """

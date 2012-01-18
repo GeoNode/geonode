@@ -1311,6 +1311,9 @@ def _extract_links(rec):
     # extract subset of description value for user-friendly display
     format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
 
+    if not all([hasattr(rec, 'distribution'), hasattr(rec.distribution, 'online')]):
+        return None
+
     for link_el in rec.distribution.online:
         if link_el.protocol == 'WWW:DOWNLOAD-1.0-http--download':
             try:
