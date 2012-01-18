@@ -8,7 +8,7 @@ from django.template import RequestContext
 from haystack.inputs import AutoQuery
 from haystack.query import SearchQuerySet
 
-from geonode.maps.views import default_map_config, Map, Layer, Contact
+from geonode.maps.views import default_map_config, Map, Layer
 
 
 def search(request):
