@@ -42,7 +42,9 @@
                <gmd:city {% if not poc.city %}gco:nilReason="missing"{% endif %}>
                  {% if poc.city %}<gco:CharacterString>{{ poc.city }}</gco:CharacterString>{% endif %}
                </gmd:city>
-               <gmd:administrativeArea gco:nilReason="missing"/>
+               <gmd:administrativeArea {%if not poc.area %}gco:nilReason="missing"{% endif %}>
+                 {% if poc.area %}<gco:CharacterString>{{ poc.area }}</gco:CharacterString>{% endif %}
+               </gmd:administrativeArea>
                <gmd:postalCode {%if not poc.zipcode %}gco:nilReason="missing"{% endif %}>
                  {% if poc.zipcode %}<gco:CharacterString>{{ poc.zipcode }}</gco:CharacterString>{% endif %}
                </gmd:postalCode>
@@ -164,7 +166,7 @@
        <gmd:descriptiveKeywords>
          <gmd:MD_Keywords>
            <gmd:keyword>
-             <gco:CharacterString>{{layer.keywords_region}}</gco:CharacterString>
+             <gco:CharacterString>{{layer.eval_keywords_region}}</gco:CharacterString>
            </gmd:keyword>
            <gmd:type>
               <gmd:MD_KeywordTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place">place</gmd:MD_KeywordTypeCode>
@@ -174,27 +176,14 @@
        {% endif %}
        <gmd:resourceConstraints>
          <gmd:MD_Constraints>
-           <gmd:useLimitation gco:nilReason="missing">
-             <gco:CharacterString />
+           <gmd:useLimitation>
+             <gco:CharacterString>{{layer.constraints_use}}</gco:CharacterString>
            </gmd:useLimitation>
          </gmd:MD_Constraints>
        </gmd:resourceConstraints>
-       {% if layer.spatial_representation_type %} 
        <gmd:spatialRepresentationType>
          <gmd:MD_SpatialRepresentationTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="{{layer.spatial_representation_type}}">{{layer.spatial_representation_type}}</gmd:MD_SpatialRepresentationTypeCode>
        </gmd:spatialRepresentationType>
-       {% endif %}
-       <gmd:spatialResolution>
-         <gmd:MD_Resolution>
-           <gmd:equivalentScale>
-             <gmd:MD_RepresentativeFraction>
-               <gmd:denominator>
-                 <gco:Integer>5000000</gco:Integer>
-               </gmd:denominator>
-             </gmd:MD_RepresentativeFraction>
-           </gmd:equivalentScale>
-         </gmd:MD_Resolution>
-       </gmd:spatialResolution>
        <gmd:language>
          <gco:CharacterString>{{layer.language}}</gco:CharacterString>
        </gmd:language>
@@ -233,8 +222,8 @@
              <gmd:EX_TemporalExtent>
                <gmd:extent>
                  <gml:TimePeriod gml:id="T_01">
-                   <gml:beginPosition>{{layer.temporal_extent_start|date:"Y-m-d\TH:i:s\Z"}}</gml:beginPosition>
-                   <gml:endPosition>{{layer.temporal_extent_end|date:"Y-m-d\TH:i:s\Z"}}</gml:endPosition>
+                   <gml:beginPosition>{{layer.temporal_extent_start}}</gml:beginPosition>
+                   <gml:endPosition>{{layer.temporal_extent_end}}</gml:endPosition>
                  </gml:TimePeriod>
                </gmd:extent>
              </gmd:EX_TemporalExtent>
@@ -243,9 +232,7 @@
        </gmd:extent>
        {% endif %}
        <gmd:supplementalInformation>
-         <gco:CharacterString>
-            {{ layer.supplemental_information }}
-         </gco:CharacterString>
+         <gco:CharacterString>{{ layer.supplemental_information }}</gco:CharacterString>
        </gmd:supplementalInformation>
      </gmd:MD_DataIdentification>
    </gmd:identificationInfo>
@@ -254,11 +241,12 @@
        <gmd:distributionFormat>
          <gmd:MD_Format>
            <gmd:name>
+             {% if layer.resource.dom.tag == 'coverage' %} 
+             <gco:CharacterString>GeoTIFF</gco:CharacterString>
+             {% else %}
              <gco:CharacterString>ShapeFile</gco:CharacterString>
+             {% endif %}
            </gmd:name>
-           <gmd:version>
-             <gco:CharacterString>Grass Version 6.1</gco:CharacterString>
-           </gmd:version>
          </gmd:MD_Format>
        </gmd:distributionFormat>
        <gmd:transferOptions>
@@ -266,16 +254,13 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                   <gmd:URL>{{ SITEURL }}{{layer.get_absolute_url}}</gmd:URL>
+                   <gmd:URL>{{ layer.distribution_url }}</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
                </gmd:protocol>
-               <gmd:name gco:nilReason="missing">
-                 <gco:CharacterString />
-               </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>Online link to the '{{layer.resource.title}}' description on GeoNode</gco:CharacterString>
+                 <gco:CharacterString>{{ layer.distribution_description }}</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -312,7 +297,7 @@
        </gmd:scope>
        <gmd:lineage>
          <gmd:LI_Lineage>
-           <gmd:statement {% if not layer.data_quality_statement %}gco:nilReason="missing"/>{% else%}>{{layer.data_quality_statement}}</gmd:statment>{% endif %}
+           <gmd:statement {% if not layer.data_quality_statement %}gco:nilReason="missing"/>{% else %}>{{layer.data_quality_statement}}</gmd:statement>{% endif %}
          </gmd:LI_Lineage>
        </gmd:lineage>
      </gmd:DQ_DataQuality>
