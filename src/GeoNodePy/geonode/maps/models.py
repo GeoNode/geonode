@@ -668,7 +668,7 @@ class Layer(models.Model, PermissionLevelMixin):
     contacts = models.ManyToManyField(Contact, through='ContactRole')
 
     metadata_uploaded = models.BooleanField(default=False)
-    metadata_xml = models.TextField(null=True)
+    metadata_xml = models.TextField(null=True, default=None, blank=True)
 
     # section 1
     title = models.CharField(_('title'), max_length=255)
@@ -710,6 +710,14 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # Section 9
     # see metadata_author property definition below
+
+    def eval_keywords_region(self):
+        """Returns expanded keywords_region tuple'd value"""
+        index = next((i for i,(k,v) in enumerate(COUNTRIES) if k==self.keywords_region),None)
+        if index is not None:
+            return COUNTRIES[index][1]
+        else:
+            return self.keywords_region
 
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
