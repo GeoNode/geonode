@@ -16,12 +16,7 @@ def search(request):
     #DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
     # for non-ajax requests, render a generic search page
 
-    if request.method == "GET":
-        params = request.GET
-    elif request.method == "POST":
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
+    params = dict(request.REQUEST)
 
     map = Map(projection="EPSG:900913", zoom=1, center_x=0, center_y=0)
 
@@ -34,7 +29,7 @@ def search(request):
     }
 
     return render_to_response("search/search.html", RequestContext(request, {
-        "init_search": json.dumps(params or {}),
+        "init_search": json.dumps(params),
         #'viewer_config': json.dumps(map.viewer_json(added_layers=DEFAULT_BASE_LAYERS, authenticated=request.user.is_authenticated())),
         "viewer_config": json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)),
         "GOOGLE_API_KEY": settings.GOOGLE_API_KEY,
