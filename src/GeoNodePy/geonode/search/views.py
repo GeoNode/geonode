@@ -20,13 +20,8 @@ def search(request):
 
     map = Map(projection="EPSG:900913", zoom=1, center_x=0, center_y=0)
 
-    counts = {
-        "maps": Map.objects.count(),
-        "layers": Layer.objects.count(),
-        "vector": Layer.objects.filter(storeType="dataStore").count(),
-        "raster": Layer.objects.filter(storeType="coverageStore").count(),
-        "users": Contact.objects.count()
-    }
+    # Default Counts to 0, JS will Load the Correct Counts
+    counts = {"map": 0, "layer": 0, "vector": 0, "raster": 0, "user": 0}
 
     return render_to_response("search/search.html", RequestContext(request, {
         "init_search": json.dumps(params),
