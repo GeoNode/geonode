@@ -346,6 +346,7 @@ CUSTOM_AUTH_URL = ''
 DB_DATASTORE=False
 
 #Database datastore connection settings
+DB_DATASTORE_DATABASE = ''
 DB_DATASTORE_NAME = ''
 DB_DATASTORE_USER = ''
 DB_DATASTORE_PASSWORD = ''
