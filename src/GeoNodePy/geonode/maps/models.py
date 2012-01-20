@@ -1385,6 +1385,9 @@ class Layer(models.Model, PermissionLevelMixin):
 
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
             self.set_bbox(gs_resource.native_bbox, srs=self.srs)
+        ## Save using filter/update to avoid triggering post_save_layer
+        Layer.objects.filter(id=self.id).update(srs = self.srs, llbbox = self.llbbox, bbox=self.bbox, geographic_bounding_box = self.geographic_bounding_box)
+
 
     def _autopopulate(self):
         if self.poc is None:
@@ -1406,12 +1409,16 @@ class Layer(models.Model, PermissionLevelMixin):
                 [])
         kw_list = filter(lambda x: x is not None, kw_list)
         self.keywords = ' '.join(kw_list)
+
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:
                 res = onlineresources[0]
                 self.distribution_url = res.url
                 self.distribution_description = res.description
+        ## Save using filter/update to avoid triggering post_save_layer
+        Layer.objects.filter(id=self.id).update(keywords = self.keywords, distribution_url = self.distribution_url, distribution_description=self.distribution_description )
+
 
     def keyword_list(self):
         if self.keywords is None:
@@ -2205,22 +2212,19 @@ def post_save_layer(instance, sender, **kwargs):
     if (re.search("coverageStore|dataStore", instance.storeType)):
         logger.info("Call save_to_geoserver for %s", instance.name)
         instance.save_to_geoserver()
+        logger.info("Call save_to_geonetwork for %s", instance.name)
+        instance.save_to_geonetwork()
 
         if kwargs['created']:
             logger.info("Call populate_from_geoserver for %s", instance.name)
             instance._populate_from_gs()
-
-    instance.save_to_geonetwork()
-
-    if kwargs['created']:
-        logger.debug("populate from geonetwork")
-        try:
-            instance._populate_from_gn()
-            instance.save(force_update=True)
-        except:
-            logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
-            raise
-        logger.debug("save instance")
+            logger.debug("populate from geonetwork")
+            try:
+                instance._populate_from_gn()
+            except:
+                logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
+                raise
+            logger.debug("save instance")
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)

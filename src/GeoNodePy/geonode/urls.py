@@ -62,6 +62,7 @@ urlpatterns = patterns('',
     (r'^profiles/', include('profiles.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/?$','geonode.proxy.views.download'),
+    (r'^bostonhoods/?', include('geonode.hoods.urls')),
     )
 
 urlpatterns += proxy_urlpatterns
