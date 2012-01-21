@@ -1,3 +1,5 @@
+:orphan:
+
 =================
 Extending GeoNode
 =================
@@ -41,7 +43,7 @@ Setup Steps
    (link to venv docs). You can *activate* that virtual environment and make 
    those dependencies available with the following command::
 
-     $ source /var/www/geonode/wsgi/geonode/bin/activate
+     $ source /var/lib/geonode/bin/activate
 
    This may need to be modified if you installed in a non-standard location.
 
@@ -66,9 +68,9 @@ Setup Steps
    created by the startproject management command and issue the following
    commands::
 
-     $ cp /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/settings.py . 
-     $ cp /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/local_settings.py . 
-     $ cp /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/urls.py . 
+     $ cp /var/lib/geonode/src/GeoNodePy/geonode/settings.py . 
+     $ cp /var/lib/geonode/src/GeoNodePy/geonode/local_settings.py . 
+     $ cp /var/lib/geonode/src/GeoNodePy/geonode/urls.py . 
 
    You will be modifying these files as part of the process of extending
    GeoNode or customizing it for your own purposes.
@@ -153,26 +155,20 @@ Setup Steps
    a database, you need to execute the syncdb management command to create the
    tables in the database. This can be done with the following command::
 
-     $ django-admin.py syncdb
+     $ python manage.py syncdb
 
 8. *Copy GeoNodes wsgi script and modify it for your project:* The GeoNode application
    is executed and served apache using a wsgi launcher script. You will need to make
    a copy of this launcher script and modify it to execute your newly created project.
-   It is generally a good idea to place this wsgi launcher script in a directory under
-   the main directory of your new project. This can be done with the following commands::
+   This can be done with the following commands::
 
-     $ mkdir wsgi
-     $ cp /var/www/geonode/wsgi/geonode.wsgi wsgi/<new_project_name>.wsgi
+     $ cd /var/www/geonode/wsgi
+     $ cp geonode.wsgi <new_project_name>.wsgi
 
    Replacing <new_project_name> with the name of your newly created project.
 
    Once this file is in place, it needs to be modified to execute your new project when
-   being run via apache. The following line should be added replacing /var/www with the
-   path to where your new project is located::
-
-     site.addsitedir('/var/www')
-
-   The existing line that specifies which settings module to use should be modified
+   being run via apache. The existing line that specifies which settings module to use should be modified
    to point at your settings. <new_project_name> should be replaced by the name of your
    new project::
 
@@ -184,10 +180,9 @@ Setup Steps
    directive will vary. Please consult the :doc:`/intro/install` documentation. This directive
    should be modified to point at your newly created wsgi script::
 
-     WSGIScriptAlias / "/var/www/<new_project_dir>/wsgi/<new_project_name>.wsgi"
+     WSGIScriptAlias / "/var/www/geonode/wsgi/<new_project_name>.wsgi"
 
-   Replacing <new_project_dir> with the path to your newly created project, and
-   <new_project_name> with the name of your project.
+   Replacing <new_project_name> with the name of your project.
 
 9. *Begin Customizing/Extending:* You are now ready to begin modifying GeoNode to extend
    or customize it. You may need to redo some of the steps above if you need to add new
@@ -206,5 +201,3 @@ Adding Additional Django Pluggable Apps
 Adding your own Django Apps
 ---------------------------
 
-???
----
