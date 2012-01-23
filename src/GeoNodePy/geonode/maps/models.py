@@ -719,6 +719,26 @@ class Layer(models.Model, PermissionLevelMixin):
         else:
             return self.keywords_region
 
+    def thumbnail(self):
+        """ Generate a URL representing thumbnail of the resource """
+
+        width = 20
+        height = 20
+
+        bbox = self.resource.latlon_bbox
+        bbox_string = ",".join([bbox[0], bbox[2], bbox[1], bbox[3]])
+
+        return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
+            'service': 'WMS',
+            'version': '1.1.1',
+            'request': 'GetMap',
+            'layers': self.typename,
+            'format': 'image/png',
+            'height': height,
+            'width': width,
+            'srs': 'EPSG:4326',
+            'bbox': bbox_string})
+
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""

@@ -148,6 +148,33 @@
          </gmd:MD_MaintenanceInformation>
        </gmd:resourceMaintenance>
        {% endif %}
+       <gmd:graphicOverview>
+         <gmd:MD_BrowseGraphic>
+           <gmd:fileName>
+             <gco:CharacterString>{{ layer.thumbnail }}</gco:CharacterString>
+           </gmd:fileName>
+           <gmd:fileDescription>
+             <gco:CharacterString>Thumbnail for '{{layer.resource.title}}'</gco:CharacterString>
+           </gmd:fileDescription>
+           <gmd:fileType>
+             <gco:CharacterString>image/png</gco:CharacterString>
+           </gmd:fileType>
+         </gmd:MD_BrowseGraphic>
+       </gmd:graphicOverview>
+       <gmd:resourceFormat>
+         <gmd:MD_Format>
+           <gmd:name>
+             {% if layer.resource.dom.tag == 'coverage' %}
+             <gco:CharacterString>GeoTIFF</gco:CharacterString>
+             {% else %}
+             <gco:CharacterString>ShapeFile</gco:CharacterString>
+             {% endif %}
+           </gmd:name>
+           <gmd:version>
+             <gco:CharacterString>1.0</gco:CharacterString>
+           </gmd:version>
+         </gmd:MD_Format>
+       </gmd:resourceFormat>
        {% if layer.keyword_list %}
        <gmd:descriptiveKeywords>
          <gmd:MD_Keywords>
@@ -238,29 +265,18 @@
    </gmd:identificationInfo>
    <gmd:distributionInfo>
      <gmd:MD_Distribution>
-       <gmd:distributionFormat>
-         <gmd:MD_Format>
-           <gmd:name>
-             {% if layer.resource.dom.tag == 'coverage' %} 
-             <gco:CharacterString>GeoTIFF</gco:CharacterString>
-             {% else %}
-             <gco:CharacterString>ShapeFile</gco:CharacterString>
-             {% endif %}
-           </gmd:name>
-         </gmd:MD_Format>
-       </gmd:distributionFormat>
        <gmd:transferOptions>
          <gmd:MD_DigitalTransferOptions>
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                   <gmd:URL>{{ layer.distribution_url }}</gmd:URL>
+                   <gmd:URL>{{ SITEURL }}{{ layer.get_absolute_url }}</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
                </gmd:protocol>
                <gmd:description>
-                 <gco:CharacterString>{{ layer.distribution_description }}</gco:CharacterString>
+                 <gco:CharacterString>Online link to the '{{layer.resource.title}}' description on GeoNode</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>

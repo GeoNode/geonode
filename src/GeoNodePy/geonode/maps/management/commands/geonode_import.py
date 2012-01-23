@@ -5,7 +5,7 @@ from geonode.maps.utils import upload
 class Command(BaseCommand):
     help = ("Brings a data file or a directory full of data files into a"
             "GeoNode site.  Layers are added to the Django database, the"
-            "GeoServer configuration, and the GeoNetwork metadata index.")
+            "GeoServer configuration, and the Catalogue metadata repository.")
             
     args = 'path [path...]'
 
