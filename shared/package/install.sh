@@ -31,8 +31,8 @@ function preinstall() {
 	#
 	mkdir -p $TOMCAT_WEBAPPS/geoserver
 	mkdir -p $TOMCAT_WEBAPPS/geonetwork
-	unzip $INSTALL_DIR/geoserver.war -d $TOMCAT_WEBAPPS/geoserver
-	unzip $INSTALL_DIR/geonetwork.war -d $TOMCAT_WEBAPPS/geonetwork
+	unzip -qq $INSTALL_DIR/geoserver.war -d $TOMCAT_WEBAPPS/geoserver
+	unzip -qq $INSTALL_DIR/geonetwork.war -d $TOMCAT_WEBAPPS/geonetwork
 	# GeoServer data is better placed outside tomcat to survive reinstalls
 	mkdir -p $GEOSERVER_DATA_DIR
 	cp -rp $TOMCAT_WEBAPPS/geoserver/data/* $GEOSERVER_DATA_DIR
