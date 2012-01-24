@@ -167,7 +167,7 @@
              {% if layer.resource.dom.tag == 'coverage' %}
              <gco:CharacterString>GeoTIFF</gco:CharacterString>
              {% else %}
-             <gco:CharacterString>ShapeFile</gco:CharacterString>
+             <gco:CharacterString>ESRI Shapefile</gco:CharacterString>
              {% endif %}
            </gmd:name>
            <gmd:version>
