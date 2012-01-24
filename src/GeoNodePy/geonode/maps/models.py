@@ -955,8 +955,8 @@ class Layer(models.Model, PermissionLevelMixin):
 
         bbox = self.llbbox_coords()
 
-        dx = float(min(180,bbox[1])) - float(max(-180,(bbox[0])))
-        dy = float(min(90,bbox[3])) - float(max(-90,bbox[2]))
+        dx = float(min(180,bbox[2])) - float(max(-180,(bbox[0])))
+        dy = float(min(90,bbox[3])) - float(max(-90,bbox[1]))
 
         dataAspect = 1 if dy == 0 else dx / dy
 
@@ -966,7 +966,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # bbox: this.adjustBounds(widthAdjust, heightAdjust, values.llbbox).toString(),
 
         srs = 'EPSG:4326' # bbox[4] might be None
-        bbox_string = ",".join([str(bbox[0]), str(bbox[2]), str(bbox[1]), str(bbox[3])])
+        bbox_string = ",".join([str(bbox[0]), str(bbox[1]), str(bbox[2]), str(bbox[3])])
 
         links = []
 
