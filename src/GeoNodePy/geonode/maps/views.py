@@ -310,15 +310,9 @@ def newmap_config(request):
                     # invisible layer, skip inclusion
                     continue
 
-                layer_bbox = layer.resource.latlon_bbox
+                #layer_bbox = layer.resource.latlon_bbox
                 # assert False, str(layer_bbox)
-                if bbox is None:
-                    bbox = list(layer_bbox[0:4])
-                else:
-                    bbox[0] = min(bbox[0], layer_bbox[0])
-                    bbox[1] = max(bbox[1], layer_bbox[1])
-                    bbox[2] = min(bbox[2], layer_bbox[2])
-                    bbox[3] = max(bbox[3], layer_bbox[3])
+                bbox = layer.llbbox_coords()
 
                 logger.info("GROUP: %s" , layer.topic_category.title)
                 layers.append(MapLayer(
@@ -335,7 +329,7 @@ def newmap_config(request):
 
             logger.info("BBOX: %s", str(bbox))
             if bbox is not None:
-                minx, maxx, miny, maxy = [float(c) for c in bbox]
+                minx, miny, maxx, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
                 wkt = "POINT(" + str(x) + " " + str(y) + ")"

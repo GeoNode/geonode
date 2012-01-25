@@ -165,7 +165,7 @@ def cleanup(name, uuid):
    """Deletes GeoServer and GeoNetwork records for a given name.
 
       Useful to clean the mess when something goes terribly wrong.
-      It also verifies if the Django record existed, in which case 
+      It also verifies if the Django record existed, in which case
       it performs no action.
    """
    try:
@@ -737,3 +737,4 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         else:
             cat.delete(ds, purge=True)
         raise
+
