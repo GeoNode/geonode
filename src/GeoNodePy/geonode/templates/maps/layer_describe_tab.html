@@ -20,9 +20,11 @@
 
 
 <div id="tab" style="padding:20px">
-<h1>Panel {{ tab }}</h1>
-<h3> {% trans "Editing details for " %} {{ layer.title|default:layer.typename }} </h3>
-  <p style="font-weight:bold">{%  trans "Fields marked with an asterisk(*) are required." %}</p>
+<h3> {% trans "Upload Layer, Step 2: Edit details for " %} {{ layer.title|default:layer.typename }} </h3>
+
+  <p style="font-weight:bold">{%  trans "Please complete and submit this form, after which your layer will be added to the map." %}</p>
+
+  <p style="font-weight:bold;color:Red;">{%  trans "Fields marked with an asterisk(*) are required." %}</p>
 
   <form action="/data/{{layer.typename}}?describe" method="POST" id="worldmap_describe_form">
 	  {% csrf_token %}
