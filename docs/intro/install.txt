@@ -25,6 +25,10 @@ Ubuntu
 
 The easiest way to get the .deb is to install it using APT, the standard installation management tool for Ubuntu and other Debian-based systems.
 
+0. First, make sure you have the ``add-apt-repository`` binary available::
+
+    sudo apt-get install python-software-properties
+
 1. Set up the GeoNode PPA repository (you only need to do this once; the repository will still be available for upgrades later)::
 
     sudo add-apt-repository ppa:geonode/release
