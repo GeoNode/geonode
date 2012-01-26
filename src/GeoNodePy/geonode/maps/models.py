@@ -1125,7 +1125,7 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.keywords is None:
             return []
         else:
-            return self.keywords.split(" ")
+            return self.keywords.split()
 
     def set_bbox(self, box, srs=None):
         """
