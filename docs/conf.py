@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'GeoNode'
-copyright = u'2011, GeoNode development team'
+copyright = u'2011, GeoNode Development Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -179,7 +179,7 @@ htmlhelp_basename = 'GeoNodedoc'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'GeoNode.tex', u'GeoNode Documentation',
-   u'GeoNode development team', 'manual'),
+   u'GeoNode Development Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -212,7 +212,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'geonode', u'GeoNode Documentation',
-     [u'GeoNode development team'], 1)
+     [u'GeoNode Development Team'], 1)
 ]
 
 
@@ -220,9 +220,9 @@ man_pages = [
 
 # Bibliographic Dublin Core info.
 epub_title = u'GeoNode'
-epub_author = u'GeoNode development team'
-epub_publisher = u'GeoNode development team'
-epub_copyright = u'2011, GeoNode development team'
+epub_author = u'GeoNode Development Team'
+epub_publisher = u'GeoNode Development Team'
+epub_copyright = u'2011, GeoNode Development Team'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
