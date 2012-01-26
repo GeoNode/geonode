@@ -1,0 +1,80 @@
+=========================================
+Translating GeoNode into Another Language
+=========================================
+
+We would like GeoNode available in as many languages as possible, just as we want spatial data to be available to all. The two areas of GeoNode to translate are the text for the Web Application Interface and this documentation. Eventually we would even like to set up GeoNode community sites in different languages. If you are interested in this please let us know.
+
+Background information on translation with Django can be found here https://docs.djangoproject.com/en/dev/topics/i18n/translation/ 
+
+.. note:: While every effort has been made to make the entire interface translatable, after completing a translation, you may find that some strings have been overlooked. If this is the case, do let us know via the mailing list, and we will rectify the situation. Alternatively, you can make the changes yourself following the Django docs linked above and send a pull request.
+
+Requirements
+============
+
+You will need to have a copy of GNU gettext in order to compile the message files. You can get a copy of this software for your platform here http://www.gnu.org/software/gettext/
+
+Locale Message Files
+====================
+
+In order to translate the Web Application Interface, you will need to create locale files for the language you would like to add. This can be accomplished by completing the following steps.
+
+Django's documenation on this topic can be found here https://docs.djangoproject.com/en/dev/topics/i18n/translation/#localization-how-to-create-language-files
+
+#. Copy one of the existing sets of message files to a new directory named for the language you are working with.
+
+    .. note:: We will use the Indonesian language (locale name id) for these steps.
+
+    From the GeoNode source directory::
+
+     $ cd src/GeoNodePy/geonode
+     $ cp -R es id
+
+#. Edit the 2 .po files (``django.po`` and ``djangojs.po``) which are found in the new locale directory you created. This can be done in a normal text editor, or there are specialized tools like po edit http://www.poedit.net/ for this purpose.
+
+    These files contain a long set of sections that look like the following snippet::
+
+     #: core/models.py:24 maps/models.py:657
+     msgid "title"
+     msgstr "titulo "
+
+     #: core/models.py:25 maps/models.py:1592
+     msgid "permissions"
+     msgstr "permisos"
+
+     #: core/models.py:26
+     msgid "codename"
+     msgstr "código"
+
+   You need to replace the content in the ``msgstr`` strings with your translation.
+
+#. Next, you need to compile these message files for use in the Web Application.
+
+   From the GeoNode source directory, and with the virtualenv activated::
+
+     $ cd src/GeoNodePy/geonode/
+     $ django-admin.py compilemessages
+
+   That's it. Your translations are ready for use.
+
+#. You must then tell the Django application that this new set of message files is ready for use in your application. This is done by editing the ``LANGUAGE_CHOICES`` entry in your settings.py file, and adding an entry for the newly created language message files::
+
+    LANGUAGES = (
+        ('en', 'English'),
+        ('es', 'Español'),
+        ('it', 'Italiano'),
+        ('fr', 'Français'),
+        ('id', 'Indonesian'),
+    ) 
+
+   You can set this new language as the default language for your installation by editing the ``LANGUAGE_CODE`` setting in settings.py to set it to this new language::
+
+    LANGUAGE_CODE = 'id'
+
+Thats it! You can begin using your new translations, by selecting the appropriate language in the Language dropdown bar in the upper right section of the interface.
+
+.. image:: images/language_choice.png
+
+Translating Documentation
+=========================
+
+Currently this documentation is only available in English. If you would like to contribute a documentation translation, please let us know so we can assist. 
