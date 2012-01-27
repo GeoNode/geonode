@@ -1,18 +1,125 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block title %} {{ layer.typename }} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Update Layer Metadata"  %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{{ block.super }}
+{% endblock %}
 
 {% block main %}
 
-<h3>Data and Metadata Uploaded!</h3>
+  {% if errors %}
+    <div id="errors">
+      {% for error in errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
- <a title="Metadata Record" href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{ uuid }}&elementsetname=full">Layer Metadata</a>
 
-<p>
+<div id="upload_form">
+</div>
+
+<script type="text/javascript">
+Ext.onReady(function(){
+{% autoescape off %}
+  var form_target = "{% url geonode.maps.views.layerController layer.typename %}?update";
+  var layer_name = "{{ layer.name|escapejs }}";
+  
+  var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
+
+  var layer_name = new Ext.form.TextField({
+    id: 'layer_name',
+    name: 'layer_name',
+    emptyText: layer_name,
+    fieldLabel: gettext('Name'),
+    allowBlank: true,
+    disabled: true,
+  });
+
+  var form_fields = [];
+
+  var listeners = {
+      "fileselected": function(cmp, value) {
+          // remove the path from the filename - avoids C:/fakepath etc.
+          cmp.setValue(value.split(/[/\\]/).pop());
+      }
+  };
+
+  var xml_file = new Ext.ux.form.FileUploadField({
+      id: 'xml_file',
+      emptyText: gettext('Select a .xml metadata file (ISO, Dublin Core, FGDC [optional])'),
+      fieldLabel: gettext('XML'),
+      name: 'xml_file',
+      allowBlank: true,
+      listeners: listeners
+  });
+
+  form_fields = [xml_file];
+
+  var fp = new Ext.FormPanel({
+    renderTo: 'upload_form',
+    fileUpload: true,
+    width: 500,
+    frame: true,
+    title: gettext('Update Layer Metadata'),
+    autoHeight: true,
+    bodyStyle: 'padding: 10px 10px 0 10px;',
+    labelWidth: 50,
+    defaults: {
+        anchor: '95%',
+        msgTarget: 'side'
+    },
+    items: form_fields, 
+    buttons: [{
+        text: gettext('Upload'),
+        handler: function(){
+            if(fp.getForm().isValid()) {
+              fp.getForm().submit({
+                  url: form_target,
+                  waitMsg: gettext('Uploading your metadata...'),
+                  success: function(fp, o) {
+                      document.location = o.result.redirect_to;
+                  },
+                  failure: function(fp, o) {
+                      error_message = '<ul>';
+                      for (var i = 0; i < o.result.errors.length; i++) {
+                          error_message += '<li>' + o.result.errors[i] + '</li>'
+                      }
+                      error_message += '</ul>'
+                      
+                      Ext.Msg.show({
+                          title: gettext("Error"),
+                          msg: error_message,
+                          minWidth: 200,
+                          modal: true,
+                          icon: Ext.Msg.ERROR,
+                          buttons: Ext.Msg.OK
+                      });
+                  }
+                  
+              });
+            }
+          }
+      }]
+    });
+  });
+{% endautoescape %}
+</script>
+
+{% endblock %}
+
+{% block sidebar %}
+<h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
+<p><a title="Metadata Record" href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{ layer.uuid }}&elementsetname=full">Layer Metadata</a></p>
+<p>{% blocktrans %}
 This layer's metadata has been generated from a XML document upload and cannot be edited.
-
-Only To update this layer's metadata, please re-upload the XML document.
+To update this layer's metadata, please re-upload the XML document.
+{% endblocktrans %}
 </p>
+<p>{% trans "Select a metadata file and submit the form to begin the transfer."  %}</p>
 
 {% endblock %}
