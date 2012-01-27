@@ -27,9 +27,14 @@ import logging
 from geonode.maps.encode import num_encode
 from django.core.cache import cache
 import sys
+from geonode.maps.encode import despam, xssescape, XssCleaner
+
 
 logger = logging.getLogger("geonode.maps.models")
 from gs_helpers import cascading_delete
+
+
+
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
@@ -955,8 +960,8 @@ class Layer(models.Model, PermissionLevelMixin):
 
         bbox = self.llbbox_coords()
 
-        dx = float(min(180,bbox[1])) - float(max(-180,(bbox[0])))
-        dy = float(min(90,bbox[3])) - float(max(-90,bbox[2]))
+        dx = float(min(180,bbox[2])) - float(max(-180,(bbox[0])))
+        dy = float(min(90,bbox[3])) - float(max(-90,bbox[1]))
 
         dataAspect = 1 if dy == 0 else dx / dy
 
@@ -966,7 +971,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # bbox: this.adjustBounds(widthAdjust, heightAdjust, values.llbbox).toString(),
 
         srs = 'EPSG:4326' # bbox[4] might be None
-        bbox_string = ",".join([str(bbox[0]), str(bbox[2]), str(bbox[1]), str(bbox[3])])
+        bbox_string = ",".join([str(bbox[0]), str(bbox[1]), str(bbox[2]), str(bbox[3])])
 
         links = []
 
@@ -1688,10 +1693,10 @@ class Map(models.Model, PermissionLevelMixin):
         logger.debug("++++++++++++++++++CALLING viewer_json+++++++++++++++++++++")
 
         logger.info("ADDED Layers: %s", added_layers)
-        
+
 
         layers = list(self.maplayers) + list(added_layers) #implicitly sorted by stack_order
-        
+
         sejumps = self.jump_set.all()
         server_lookup = {}
         sources = dict()
@@ -1779,11 +1784,15 @@ class Map(models.Model, PermissionLevelMixin):
         if isinstance(conf, basestring):
             conf = simplejson.loads(conf)
 
-        self.title = conf['about']['title']
-        self.abstract = conf['about']['abstract']
+        self.title = despam(conf['about']['title'])
+        self.abstract = despam(conf['about']['abstract'])
         self.urlsuffix = escape(conf['about']['urlsuffix'])
-        self.content = re.sub(r'<script.*(<\/script>|\/>)|javascript:|\$\(|jQuery|Ext\.', r'', conf['about']['introtext']) #Remove any scripts
-        self.keywords = conf['about']['keywords']
+
+        x = XssCleaner()
+        self.content = despam(x.strip(conf['about']['introtext']))
+
+        #self.content = re.sub(r'<script.*(<\/script>|\/>)|javascript:|\$\(|jQuery|Ext\.', r'', conf['about']['introtext']) #Remove any scripts
+        self.keywords = despam(conf['about']['keywords'])
         self.zoom = conf['map']['zoom']
 
         self.center_x = conf['map']['center'][0]
