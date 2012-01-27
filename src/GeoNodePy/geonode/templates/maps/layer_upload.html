@@ -205,10 +205,22 @@ Ext.onReady(function(){
         }
     };
 
+    var disable_title_and_abstract_inputs = function() {
+        layer_title.setValue('DISABLED: Will be derived from metadata XML.');
+        abstractField.setValue('DISABLED: Will be derived from metadata XML.');
+        layer_title.disable();
+        abstractField.disable();
+    }
+
     base_file.addListener('fileselected', function(cmp, value) {
         check_shapefile();
     });
+
     disable_shapefile_inputs();
+
+    xml_file.addListener('fileselected', function() {
+        disable_title_and_abstract_inputs();
+    });
 
     var permissionsEditor = new GeoNode.PermissionsEditor({
         renderTo: "permissions_form",
