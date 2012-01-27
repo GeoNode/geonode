@@ -705,7 +705,7 @@ def _describe_layer(request, layer):
      
         if layer.metadata_uploaded:  # return a page that gives UUID and URL to metadata record
             return render_to_response("maps/layer_metadata_uploaded.html", RequestContext(request, {
-                "uuid": layer.uuid,
+                "layer": layer,
                 "CSW_URL": settings.CSW_URL
         }))
    
