@@ -38,9 +38,26 @@ def xssescape(text):
     return escape(text, quote=True).replace(':','&#58;')
 
 def despam(text):
-    return re.sub(r'c[i1][a@][l1][i1][s$]|v[Ii1][a@]gr[a@]' + '(?i)', r'', text)
+    """
+    Rudimentary bad word filter, to be replaced soon by something more solid
+    """
+    return re.sub(r'c.?[i1].?[a@].?[l1].?[i1].?[s$]|v.?[Ii1].?[a@].?gr.?[a@]|[l1].?[e3].?v.?[i!1].?t.?r.?[a@]|\
+    -online|4u|adipex|advicer|baccarrat|blackjack|bllogspot|booker|byob|car-rental-e-site|car-rentals-e-site|\
+    carisoprodol|c.?[a@].?[s$].?[i!1].?n.?[o0]|chatroom|coolhu|coolhu|credit-card-debt|credit-report|cwas|cyclen|\
+    benzaprine|dating-e-site|day-trading|debt-consolidation|debt-consolidation|discreetordering|\
+    duty-free|dutyfree|equityloans|fioricet|flowers-leading-site|freenet-shopping|freenet|gambling-|hair-loss|\
+    health-insurancedeals-4u|homeequityloans|homefinance|holdem|\
+    hotel-dealse-site|hotele-site|hotelse-site|incest|insurance-quotesdeals-4u|insurancedeals-4u|jrcreations|\
+    macinstruct|mortgage-4-u|mortgagequotes|online-gambling|onlinegambling-4u|ottawavalleyag|ownsthis|palm-texas-holdem-game \
+    |p.?[a@].?x.?[i1!].?[l!1]|penis|pharmacy|phentermine|poker-chip|poze|pussy|rental-car-e-site|ringtones|roulette |shemale|shoes|slot-machine|\
+    shit|fuck|damn|cunt|ass.?hole|ass.?wipe|jackass|bitch|twat|whore|cock.?sucker|faggot| \
+    texas-holdem|thorcarlson|top-site|top-e-site|tramadol|trim-spa|ultram|v.?[i1!].?[o0].?x|x.?[a@].?n.?[a@].?x|zolus'
+    + '(?i)', r'', text)
 
 class XssCleaner(HTMLParser):
+    """
+    Cross-site scripting protection, from http://code.activestate.com/recipes/496942-cross-site-scripting-xss-defense/
+    """
     def __init__(self, fmt = AbstractFormatter):
         HTMLParser.__init__(self, fmt)
         self.result = ""
@@ -48,8 +65,9 @@ class XssCleaner(HTMLParser):
         # A list of the only tags allowed.  Be careful adding to this.  Adding
         # "script," for example, would not be smart.  'img' is out by default
         # because of the danger of IMG embedded commands, and/or web bugs.
-        self.permitted_tags = ['a', 'b', 'blockquote', 'br', 'i', 'sup', 'sub', 'strike', 'hr',
-                               'li', 'ol', 'ul', 'p', 'cite', 'img', 'style', 'font', 'h1', 'h2', 'h3', 'div']
+        self.permitted_tags = ['a', 'b', 'blockquote', 'br', 'i', 'sup', 'sub', 'strike', 'hr', 'u',
+                               'li', 'ol', 'ul', 'p', 'cite', 'img', 'style', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'div']
+
 
         # A list of tags that require no closing tag.
         self.requires_no_close = ['img', 'br']
