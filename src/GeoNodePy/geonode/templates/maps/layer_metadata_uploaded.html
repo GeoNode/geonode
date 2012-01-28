@@ -19,6 +19,7 @@
     </div>
   {% endif %}
 
+<h3>{%trans "Update Layer Metadata"  %} "{{layer.name}}"</h3>
 
 <div id="upload_form">
 </div>
@@ -27,20 +28,6 @@
 Ext.onReady(function(){
 {% autoescape off %}
   var form_target = "{% url geonode.maps.views.layerController layer.typename %}?update";
-  var layer_name = "{{ layer.name|escapejs }}";
-  
-  var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
-
-  var layer_name = new Ext.form.TextField({
-    id: 'layer_name',
-    name: 'layer_name',
-    emptyText: layer_name,
-    fieldLabel: gettext('Name'),
-    allowBlank: true,
-    disabled: true,
-  });
-
-  var form_fields = [];
 
   var listeners = {
       "fileselected": function(cmp, value) {
@@ -51,10 +38,10 @@ Ext.onReady(function(){
 
   var xml_file = new Ext.ux.form.FileUploadField({
       id: 'xml_file',
-      emptyText: gettext('Select a .xml metadata file (ISO, Dublin Core, FGDC [optional])'),
+      emptyText: gettext('Select a .xml metadata file (ISO, Dublin Core, FGDC)'),
       fieldLabel: gettext('XML'),
       name: 'xml_file',
-      allowBlank: true,
+      allowBlank: false,
       listeners: listeners
   });
 
@@ -113,12 +100,9 @@ Ext.onReady(function(){
 {% endblock %}
 
 {% block sidebar %}
-<h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
-<p><a title="Metadata Record" href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{ layer.uuid }}&elementsetname=full">Layer Metadata</a></p>
-<p>{% blocktrans %}
-This layer's metadata has been generated from a XML document upload and cannot be edited.
+<p>
+This layer's <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&elementsetname=full&id={{layer.uuid}}">metadata</a> has been generated from a XML document upload and cannot be edited manually.
 To update this layer's metadata, please re-upload the XML document.
-{% endblocktrans %}
 </p>
 <p>{% trans "Select a metadata file and submit the form to begin the transfer."  %}</p>
 

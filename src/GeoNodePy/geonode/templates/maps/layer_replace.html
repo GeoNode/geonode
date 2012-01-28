@@ -163,7 +163,7 @@ Ext.onReady(function(){
 
 
 {% block sidebar %}
-<h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
+<h3>{%trans "Update Layer"  %} "{{ layer.resource.title|default:layer.typename }}"</h3>
 <p>{% trans "This form allows you to update the data for this layer."  %}</p>
 <p>{% blocktrans %}
 If the new dataset omits attributes that were included in the previous version,

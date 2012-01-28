@@ -96,7 +96,7 @@ class LayerForm(forms.ModelForm):
 
     class Meta:
         model = Layer
-        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'metadata_uploaded', 'metadata_xml')
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -703,12 +703,12 @@ def _describe_layer(request, layer):
                 RequestContext(request, {'error_message': 
                     _("You are not permitted to modify this layer's metadata")})), status=401)
      
-        if layer.metadata_uploaded:  # return a page that gives UUID and URL to metadata record
+        if layer.metadata_uploaded and request.method == 'GET':  # show upload just metadata XML page
             return render_to_response("maps/layer_metadata_uploaded.html", RequestContext(request, {
                 "layer": layer,
                 "CSW_URL": settings.CSW_URL
         }))
-   
+
         poc = layer.poc
         metadata_author = layer.metadata_author
         poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
@@ -878,9 +878,14 @@ def upload_layer(request):
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"]
                         )
-                return HttpResponse(json.dumps({
-                    "success": True,
-                    "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
+                if saved_layer.metadata_uploaded:
+                    return HttpResponse(json.dumps({
+                        "success": True,
+                        "redirect_to": saved_layer.get_absolute_url()}))
+                else:
+                    return HttpResponse(json.dumps({
+                        "success": True,
+                        "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
@@ -912,10 +917,44 @@ def _updateLayer(request, layer):
                                   RequestContext(request, {'layer': layer,
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
-        from geonode.maps.forms import LayerUploadForm
+        from geonode.maps.forms import LayerUploadForm, LayerMetadataUploadForm
         from geonode.maps.utils import save
         from django.template import escape
         import os, shutil
+
+        form = LayerMetadataUploadForm(request.POST, request.FILES)
+
+        if layer.metadata_uploaded:  # it's an XML upload update
+            # save the XML file to django and catalogue
+
+            from geonode.maps.utils import update_metadata
+
+            if form.is_valid():
+                try:
+                    layer_to_update = Layer.objects.get_or_create(typename=layer.typename)[0]
+
+                    md_xml, md_title, md_abstract = update_metadata(layer.uuid, form.cleaned_data['xml_file'], layer_to_update)
+
+                    Layer.objects.filter(typename=layer.typename).update(
+                        metadata_xml=md_xml,
+                        title=md_title,
+                        abstract=md_abstract
+                    )
+
+                    layer_to_update.metadata_xml = md_xml
+                    layer_to_update.title = md_title
+                    layer_to_update.abstract = md_abstract
+                    layer_to_update.save_to_catalogue()
+
+                    return HttpResponse(json.dumps({
+                        "success": True,
+                        "redirect_to": "/data/" + layer.typename}))
+
+                except Exception, e:
+                    logger.exception("Unexpected error during metadata upload.")
+                    return HttpResponse(json.dumps({
+                        "success": False,
+                        "errors": ["Unexpected error during metadata upload: " + escape(str(e))]}))
 
         form = LayerUploadForm(request.POST, request.FILES)
         tempdir = None
