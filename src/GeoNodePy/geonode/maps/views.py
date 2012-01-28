@@ -922,12 +922,12 @@ def _updateLayer(request, layer):
         from django.template import escape
         import os, shutil
 
-        form = LayerMetadataUploadForm(request.POST, request.FILES)
-
-        if layer.metadata_uploaded:  # it's an XML upload update
+        if layer.metadata_uploaded:  # it's an XML metadata upload update
             # save the XML file to django and catalogue
 
             from geonode.maps.utils import update_metadata
+
+            form = LayerMetadataUploadForm(request.POST, request.FILES)
 
             if form.is_valid():
                 try:
