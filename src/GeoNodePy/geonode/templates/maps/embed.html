@@ -30,6 +30,7 @@ Ext.onReady(function() {
     };
 
     Ext.apply(config, {{ config }});
+    config.tools = [];
     app = new GeoExplorer.Viewer(config);
 {% endautoescape %}
 });
