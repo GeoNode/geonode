@@ -977,7 +977,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
         if self.resource.resource_type == "featureType":
             def wfs_link(mime):
-                return "/download/wfs/" + str(self.id) + "?" + urllib.urlencode({
+                return settings.SITEURL + "download/wfs/" + str(self.id) + "?" + urllib.urlencode({
                     'service': 'WFS',
                     'version':'1.0.0',
                     'request': 'GetFeature',
@@ -997,7 +997,7 @@ class Layer(models.Model, PermissionLevelMixin):
         elif self.resource.resource_type == "coverage":
             try:
                 client = httplib2.Http()
-                description_url = "/download/wcs/" + str(self.id) + "?" + urllib.urlencode({
+                description_url = settings.SITEURL + "download/wcs/" + str(self.id) + "?" + urllib.urlencode({
                         "service": "WCS",
                         "version": "1.0.0",
                         "request": "DescribeCoverage",
@@ -1011,7 +1011,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 w, h = [int(h) - int(l) for (h, l) in zip(high, low)]
 
                 def wcs_link(mime):
-                    return "/download/wcs/" + str(self.id) + "?" + urllib.urlencode({
+                    return settings.SITEURL + "download/wcs/" + str(self.id) + "?" + urllib.urlencode({
                         "service": "WCS",
                         "version": "1.0.0",
                         "request": "GetCoverage",
@@ -1032,7 +1032,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 pass
 
         def wms_link(mime):
-            return "/download/wms/" + str(self.id) + "?"  + urllib.urlencode({
+            return settings.SITEURL + "download/wms/" + str(self.id) + "?"  + urllib.urlencode({
                 'service': 'WMS',
                 'request': 'GetMap',
                 'layers': self.typename,
@@ -1052,12 +1052,12 @@ class Layer(models.Model, PermissionLevelMixin):
 
         links.extend((ext, name, wms_link(mime)) for ext, name, mime in types)
 
-        kml_reflector_link_download ="/download/wms_kml/" + str(self.id) + "?"  + urllib.urlencode({
+        kml_reflector_link_download = settings.SITEURL + "download/wms_kml/" + str(self.id) + "?"  + urllib.urlencode({
             'layers': self.typename,
             'mode': "download"
         })
 
-        kml_reflector_link_view = "/download/wms_kml/" + str(self.id) + "?" + urllib.urlencode({
+        kml_reflector_link_view = settings.SITEURL + "download/wms_kml/" + str(self.id) + "?" + urllib.urlencode({
             'layers': self.typename,
             'mode': "refresh"
         })
@@ -1390,6 +1390,8 @@ class Layer(models.Model, PermissionLevelMixin):
 
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
             self.set_bbox(gs_resource.native_bbox, srs=self.srs)
+        ## Save using filter/update to avoid triggering post_save_layer
+        Layer.objects.filter(id=self.id).update(srs = self.srs, llbbox = self.llbbox, bbox=self.bbox, geographic_bounding_box = self.geographic_bounding_box)
 
     def _autopopulate(self):
         if self.poc is None:
@@ -1417,6 +1419,8 @@ class Layer(models.Model, PermissionLevelMixin):
                 res = onlineresources[0]
                 self.distribution_url = res.url
                 self.distribution_description = res.description
+        ## Save using filter/update to avoid triggering post_save_layer
+        Layer.objects.filter(id=self.id).update(keywords = self.keywords, distribution_url = self.distribution_url, distribution_description=self.distribution_description )
 
     def keyword_list(self):
         if self.keywords is None:

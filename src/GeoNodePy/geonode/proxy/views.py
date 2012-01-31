@@ -191,7 +191,9 @@ def download(request, service, layer):
             url, request.method,
             body=None,
             headers=dict())
-        content_disposition = download_response['content-disposition']
+        content_disposition = None
+        if 'content_disposition' in download_response:
+            content_disposition = download_response['content-disposition']
         mimetype = download_response['content-type']
         response = HttpResponse(content, mimetype = mimetype)
         if content_disposition is not None:
