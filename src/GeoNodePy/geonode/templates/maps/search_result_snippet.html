@@ -19,27 +19,19 @@
 </p>
 
 <p><b>{% trans "Provided by:" %}</b>
-{% if rec.contact.name %} {# and rec.attribution.href %} #}
-  {% if rec.contact.onlineresource %}
-    <a href="{{ rec.contact.onlineresource.url }}">{{ rec.contact.name }}</a>
+{% if rec.contact.0.name and rec.contact.0.name %}
+  {% if rec.contact.0.onlineresource %}
+    <a href="{{ rec.contact.0.onlineresource.url }}">{{ rec.contact.0.name }}</a>
   {% else %}
-    {{ rec.contact.name }}
+    {{ rec.contact.0.name }}
   {% endif %}
 {% else %}
 <em>{% trans "No attribution information is provided for this layer." %}</em>
 {% endif %}
 </p>
 
-<p><b>{% trans "Metadata Links:" %}</b>
-{% for link in rec.metadata_links %}
-    <a href="{{link.2}}">{{link.1}}</a>
-{% empty %}
-    <em>{% trans "No metadata URLs are defined for this layer." %}</em>
-{% endfor %}
-</p>
-
 <p><b>{% trans "Keywords:" %}</b>
-{% for kw in rec.identification.keywords.list %}
+{% for kw in rec.identification.keywords.0.keywords %}
   {{kw}}{% if not forloop.last %}, {% endif %}
 {% empty %}
 <em>{% trans "No keywords are listed for this layer." %}</em>
@@ -62,7 +54,7 @@
   {% endif %}
 
 {% else %}
-  {% has_obj_perm user layer "maps.edit_layer" as can_edit %}
+  {% has_obj_perm user layer "maps.view_layer" as can_view %}
   {% if can_edit %}
     <p><b>{% trans "Download:" %}</b>
     {% for link in extra_links.download %}
@@ -71,12 +63,10 @@
     <em>{% trans "No download URLs are defined for this layer." %}</em>
     {% endfor %}
     </p>
-  {% else %}
-    <p>{% trans "You do not have permission to download this layer" %}</p>
   {% endif %}
 
     {% if rec.distribution.online.0.url %}
-    <p><a href="{{ rec.distribution.online.0.url }}">
+    <p><a target="_blank" href="{{ rec.distribution.online.0.url }}">
         {% trans "Click here for more information about this layer." %}
     </a></p>
     {% endif %}

@@ -25,12 +25,14 @@ Layer.objects.gs_catalog = Mock()
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
 geonode.maps.models.get_csw = Mock()
-geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = { 'list': [] }
+geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = []
 
 _csw_resource = Mock()
 _csw_resource.protocol = "WWW:LINK-1.0-http--link"
 _csw_resource.url = "http://example.com/"
 _csw_resource.description = "example link"
+
+
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
 
 class MapTest(TestCase):
@@ -389,7 +391,6 @@ community."
             return cfg['sources'][x['source']]['ptype'] == 'gxp_gnsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
         self.assertEquals(layernames, ['base:CA',])
-
 
     def test_newmap_to_json(self):
         """ Make some assertions about the data structure produced for serialization
@@ -1200,8 +1201,8 @@ class UtilsTest(TestCase):
         self.assertEquals(get_valid_name("blug")[:4], "blug")
         self.assertEquals(get_valid_name("<-->")[:1], "_")
         self.assertEquals(get_valid_name("<ab>")[:4], "_ab_")
-        self.assertEquals(get_valid_name("CA")[:3], "CA_")
-        self.assertEquals(get_valid_name("CA")[:3], "CA_")
+        self.assertEquals(get_valid_name("CA")[:3], "ca_")
+        self.assertEquals(get_valid_name("CA")[:3], "ca_")
 
     def test_get_valid_layer_name(self):
         from geonode.maps.utils import get_valid_layer_name
@@ -1214,13 +1215,11 @@ class UtilsTest(TestCase):
         self.assertEquals(get_valid_layer_name("<-->", False)[:1], "_")
         self.assertEquals(get_valid_layer_name("<-->", True), "<-->")
 
-        self.assertEquals(get_valid_layer_name("CA", False)[:3], "CA_")
-        self.assertEquals(get_valid_layer_name("CA", False)[:3], "CA_")
-        self.assertEquals(get_valid_layer_name("CA", True), "CA")
+        self.assertEquals(get_valid_layer_name("CA", False)[:3], "ca_")
         self.assertEquals(get_valid_layer_name("CA", True), "CA")
 
         layer = Layer.objects.get(name="CA")
-        self.assertEquals(get_valid_layer_name(layer, False)[:3], "CA_")
+        self.assertEquals(get_valid_layer_name(layer, False)[:3], "ca_")
         self.assertEquals(get_valid_layer_name(layer, True), "CA")
 
         self.assertRaises(GeoNodeException, get_valid_layer_name, 12, False)
