@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from haystack import indexes
 
-from geonode.maps.models import Contact, Layer, Map, Thumbnail
+from geonode.maps.models import Layer, Map, Thumbnail
 
 
 class LayerIndex(indexes.SearchIndex, indexes.Indexable):
@@ -60,14 +60,13 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
             "download_links": obj.download_links(),
             "owner": obj.metadata_author.name,
             "metadata_links": obj.metadata_links,
-            "keywords": obj.keywords.split() if obj.keywords else [],
+            "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [],
             "thumb": Thumbnail.objects.get_thumbnail(obj),
-
             "detail": obj.get_absolute_url(),  # @@@ Use Sites Framework?
         }
 
         if obj.owner:
-            data.update({"owner_detail": reverse("profiles.views.profile_detail", args=(obj.owner.username,))})
+            data.update({"owner_detail": reverse('profile_detail', kwargs=({'username': obj.owner.username}))})
 
         return json.dumps(data)
 
@@ -89,61 +88,19 @@ class MapIndex(indexes.SearchIndex, indexes.Indexable):
     def prepare_json(self, obj):
         data = {
             "_type": self.prepare_type(obj),
-            "_display_type": obj.display_type,
+            #"_display_type": obj.display_type,
 
             "id": obj.id,
-            "last_modified": obj.last_modified.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            #"last_modified": obj.last_modified.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "title": obj.title,
             "abstract": obj.abstract,
-            "owner": obj.metadata_author.name,
-            "keywords": obj.keywords.split() if obj.keywords else [],
+            "owner": obj.owner.username,
+            "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [], 
             "thumb": Thumbnail.objects.get_thumbnail(obj),
-
             "detail": obj.get_absolute_url(),
         }
 
         if obj.owner:
-            data.update({"owner_detail": reverse("profiles.views.profile_detail", args=(obj.owner.username,))})
-
-        return json.dumps(data)
-
-
-class ContactIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
-    title = indexes.CharField()
-
-    type = indexes.CharField(faceted=True)
-    json = indexes.CharField(indexed=False)
-
-    def get_model(self):
-        return Contact
-
-    def prepare_title(self, obj):
-        return str(obj)
-
-    def prepare_type(self, obj):
-        return "contact"
-
-    def prepare_json(self, obj):
-        data = {
-            "_type": self.prepare_type(obj),
-
-            "username": obj.user.username if obj.user else None,
-
-            "name": obj.name,
-            "organization": obj.organization,
-            "position": obj.position,
-            "voice": obj.voice,
-            "fax": obj.fax,
-            "delivery": obj.delivery,
-            "city": obj.city,
-            "area": obj.area,
-            "zipcode": obj.zipcode,
-            "country": obj.country,
-            "email": obj.email,
-
-            "thumb": settings.STATIC_URL + "static/img/contact.png",
-            "detail": None,
-        }
+            data.update({"owner_detail": reverse('profile_detail', kwargs=({'username': obj.owner.username}))})
 
         return json.dumps(data)
