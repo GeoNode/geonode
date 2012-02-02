@@ -586,25 +586,26 @@ def deletemap(request, mapid):
 
         return HttpResponseRedirect(reverse("geonode.maps.views.maps"))
 
-def mapdetail(request,mapid): 
+
+def mapdetail(request, mapid):
     '''
     The view that show details of each map
     '''
-    map = get_object_or_404(Map,pk=mapid)
+    map = get_object_or_404(Map, pk=mapid)
     if not request.user.has_perm('maps.view_map', obj=map):
-        return HttpResponse(loader.render_to_string('401.html', 
-            RequestContext(request, {'error_message': 
+        return HttpResponse(loader.render_to_string('401.html',
+            RequestContext(request, {'error_message':
                 _("You are not allowed to view this map.")})), status=401)
-     
     config = map.viewer_json()
     config = json.dumps(config)
-    layers = MapLayer.objects.filter(map=map.id) 
+    layers = MapLayer.objects.filter(map=map.id)
     return render_to_response("maps/mapinfo.html", RequestContext(request, {
-        'config': config, 
+        'config': config,
         'map': map,
         'layers': layers,
         'permissions_json': json.dumps(_perms_info(map, MAP_LEV_NAMES))
     }))
+
 
 @csrf_exempt
 @login_required

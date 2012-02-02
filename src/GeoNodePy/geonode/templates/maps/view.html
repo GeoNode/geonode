@@ -41,7 +41,7 @@ Ext.onReady(function() {
          * maps on the server for sharing and editing.
          */
         rest: "/maps/",
-        homeUrl: "{% url geonode.views.index %}",
+        homeUrl: "{% url geonode_views_index %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         csrfToken: "{{ csrf_token }}",
         authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"

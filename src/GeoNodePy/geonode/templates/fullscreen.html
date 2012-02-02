@@ -14,7 +14,7 @@
     {% block body %} 
     <div id="header">
       <div class="wrap selfclear">
-        <a id="logo" href="{% url geonode.views.index %}">GeoNode</a>
+        <a id="logo" href="{% url geonode_views_index %}">GeoNode</a>
         <div id="login-area">
           {% if user.is_authenticated %}
           <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
