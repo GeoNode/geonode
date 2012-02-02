@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 (function(){
 
@@ -784,7 +784,27 @@ Ext.DomHelper = function(){
         return node;
     }
 
-
+    /**
+     * @ignore
+     * Fix for IE9 createContextualFragment missing method
+     */   
+    function createContextualFragment(html){
+        var div = document.createElement("div"),
+            fragment = document.createDocumentFragment(),
+            i = 0,
+            length, childNodes;
+        
+        div.innerHTML = html;
+        childNodes = div.childNodes;
+        length = childNodes.length;
+        
+        for (; i < length; i++) {
+            fragment.appendChild(childNodes[i].cloneNode(true));
+        }
+        
+        return fragment;
+    }
+    
     pub = {
         /**
          * Returns the markup for the passed Element(s) config.
@@ -825,7 +845,6 @@ Ext.DomHelper = function(){
                 }
             }
         },
-
         /**
          * Inserts an HTML fragment into the DOM.
          * @param {String} where Where to insert the html in relation to el - beforeBegin, afterBegin, beforeEnd, afterEnd.
@@ -836,10 +855,10 @@ Ext.DomHelper = function(){
         insertHtml : function(where, el, html){
             var hash = {},
                 hashVal,
-                setStart,
                 range,
-                frag,
                 rangeEl,
+                setStart,
+                frag,
                 rs;
 
             where = where.toLowerCase();
@@ -863,14 +882,24 @@ Ext.DomHelper = function(){
                 setStart = 'setStart' + (endRe.test(where) ? 'After' : 'Before');
                 if (hash[where]) {
                     range[setStart](el);
-                    frag = range.createContextualFragment(html);
+                    if (!range.createContextualFragment) {
+                        frag = createContextualFragment(html);
+                    }
+                    else {
+                        frag = range.createContextualFragment(html);
+                    }
                     el.parentNode.insertBefore(frag, where == beforebegin ? el : el.nextSibling);
                     return el[(where == beforebegin ? 'previous' : 'next') + 'Sibling'];
                 } else {
                     rangeEl = (where == afterbegin ? 'first' : 'last') + 'Child';
                     if (el.firstChild) {
                         range[setStart](el[rangeEl]);
-                        frag = range.createContextualFragment(html);
+                        if (!range.createContextualFragment) {
+                            frag = createContextualFragment(html);
+                        }
+                        else {
+                            frag = range.createContextualFragment(html);
+                        }
                         if(where == afterbegin){
                             el.insertBefore(frag, el.firstChild);
                         }else{
@@ -1036,11 +1065,11 @@ Ext.Template.prototype = {
     /**
      * @cfg {RegExp} re The regular expression used to match template variables.
      * Defaults to:<pre><code>
-     * re : /\{([\w-]+)\}/g                                     // for Ext Core
-     * re : /\{([\w-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g      // for Ext JS
+     * re : /\{([\w\-]+)\}/g                                     // for Ext Core
+     * re : /\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g      // for Ext JS
      * </code></pre>
      */
-    re : /\{([\w-]+)\}/g,
+    re : /\{([\w\-]+)\}/g,
     /**
      * See <code>{@link #re}</code>.
      * @type RegExp
@@ -1260,7 +1289,7 @@ Ext.DomQuery = function(){
     	trimRe = /^\s+|\s+$/g,
     	tplRe = /\{(\d+)\}/g,
     	modeRe = /^(\s?[\/>+~]\s?|\s|$)/,
-    	tagTokenRe = /^(#)?([\w-\*]+)/,
+    	tagTokenRe = /^(#)?([\w\-\*]+)/,
     	nthRe = /(\d*)n\+?(\d*)/, 
     	nthRe2 = /\D/,
     	// This is for IE MSXML which does not support expandos.
@@ -1846,19 +1875,19 @@ Ext.DomQuery = function(){
          * statement as specified by their index.
          */
         matchers : [{
-                re: /^\.([\w-]+)/,
+                re: /^\.([\w\-]+)/,
                 select: 'n = byClassName(n, " {1} ");'
             }, {
-                re: /^\:([\w-]+)(?:\(((?:[^\s>\/]*|.*?))\))?/,
+                re: /^\:([\w\-]+)(?:\(((?:[^\s>\/]*|.*?))\))?/,
                 select: 'n = byPseudo(n, "{1}", "{2}");'
             },{
-                re: /^(?:([\[\{])(?:@)?([\w-]+)\s?(?:(=|.=)\s?['"]?(.*?)["']?)?[\]\}])/,
-                select: 'n = byAttribute(n, "{2}", "{4}", "{3}", "{1}");'
+                re: /^(?:([\[\{])(?:@)?([\w\-]+)\s?(?:(=|.=)\s?(["']?)(.*?)\4)?[\]\}])/,
+                select: 'n = byAttribute(n, "{2}", "{5}", "{3}", "{1}");'
             }, {
-                re: /^#([\w-]+)/,
+                re: /^#([\w\-]+)/,
                 select: 'n = byId(n, "{1}");'
             },{
-                re: /^@([\w-]+)/,
+                re: /^@([\w\-]+)/,
                 select: 'return {firstChild:{nodeValue:attrValue(n, "{1}")}};'
             }
         ],
@@ -2860,19 +2889,63 @@ el.un('click', this.handlerFn);
      * @param {String} namespace (optional) The namespace in which to look for the attribute
      * @return {String} The attribute value
      */
-    getAttribute : Ext.isIE ? function(name, ns){
-        var d = this.dom,
-            type = typeof d[ns + ":" + name];
-
-        if(['undefined', 'unknown'].indexOf(type) == -1){
-            return d[ns + ":" + name];
+    getAttribute: (function(){
+        var test = document.createElement('table'),
+            isBrokenOnTable = false,
+            hasGetAttribute = 'getAttribute' in test,
+            unknownRe = /undefined|unknown/;
+            
+        if (hasGetAttribute) {
+            
+            try {
+                test.getAttribute('ext:qtip');
+            } catch (e) {
+                isBrokenOnTable = true;
+            }
+            
+            return function(name, ns) {
+                var el = this.dom,
+                    value;
+                
+                if (el.getAttributeNS) {
+                    value  = el.getAttributeNS(ns, name) || null;
+                }
+            
+                if (value == null) {
+                    if (ns) {
+                        if (isBrokenOnTable && el.tagName.toUpperCase() == 'TABLE') {
+                            try {
+                                value = el.getAttribute(ns + ':' + name);
+                            } catch (e) {
+                                value = '';
+                            }
+                        } else {
+                            value = el.getAttribute(ns + ':' + name);
+                        }
+                    } else {
+                        value = el.getAttribute(name) || el[name];
+                    }
+                }
+                return value || '';
+            };
+        } else {
+            return function(name, ns) {
+                var el = this.om,
+                    value,
+                    attribute;
+                
+                if (ns) {
+                    attribute = el[ns + ':' + name];
+                    value = unknownRe.test(typeof attribute) ? undefined : attribute;
+                } else {
+                    value = el[name];
+                }
+                return value || '';
+            };
         }
-        return d[name];
-    } : function(name, ns){
-        var d = this.dom;
-        return d.getAttributeNS(ns, name) || d.getAttribute(ns + ":" + name) || d.getAttribute(name) || d[name];
-    },
-
+        test = null;
+    })(),
+        
     /**
     * Update the innerHTML of this element
     * @param {String} html The new HTML
@@ -6410,7 +6483,7 @@ Ext.Ajax.request({
                     url = Ext.urlAppend(url, dcp + '=' + (new Date().getTime()));
                 }
 
-                o.headers = Ext.apply(o.headers || {}, me.defaultHeaders || {});
+                o.headers = Ext.applyIf(o.headers || {}, me.defaultHeaders || {});
 
                 if(o.autoAbort === true || me.autoAbort) {
                     me.abort();
@@ -6739,7 +6812,7 @@ Ext.util.JSON = new (function(){
             return n < 10 ? "0" + n : n;
         },
         doDecode = function(json){
-            return eval("(" + json + ")");    
+            return json ? eval("(" + json + ")") : "";    
         },
         doEncode = function(o){
             if(!Ext.isDefined(o) || o === null){
@@ -7495,9 +7568,9 @@ Ext.onReady = Ext.EventManager.onDocumentReady;
         if (!bd) {
             return false;
         }
-        
+
         var cls = [' ',
-                Ext.isIE ? "ext-ie " + (Ext.isIE6 ? 'ext-ie6' : (Ext.isIE7 ? 'ext-ie7' : 'ext-ie8'))
+                Ext.isIE ? "ext-ie " + (Ext.isIE6 ? 'ext-ie6' : (Ext.isIE7 ? 'ext-ie7' : (Ext.isIE8 ? 'ext-ie8' : 'ext-ie9')))
                 : Ext.isGecko ? "ext-gecko " + (Ext.isGecko2 ? 'ext-gecko2' : 'ext-gecko3')
                 : Ext.isOpera ? "ext-opera"
                 : Ext.isWebKit ? "ext-webkit" : ""];
@@ -7519,6 +7592,12 @@ Ext.onReady = Ext.EventManager.onDocumentReady;
         if (Ext.isStrict || Ext.isBorderBox) {
             var p = bd.parentNode;
             if (p) {
+                if (!Ext.isStrict) {
+                    Ext.fly(p, '_internal').addClass('x-quirks');
+                    if (Ext.isIE && !Ext.isStrict) {
+                        Ext.isIEQuirks = true;
+                    }
+                }
                 Ext.fly(p, '_internal').addClass(((Ext.isStrict && Ext.isIE ) || (!Ext.enableForcedBoxModel && !Ext.isIE)) ? ' ext-strict' : ' ext-border-box');
             }
         }
@@ -7532,14 +7611,8 @@ Ext.onReady = Ext.EventManager.onDocumentReady;
         Ext.fly(bd, '_internal').addClass(cls);
         return true;
     };
-
-    /*
-     * Assert Ext.isReady here. If Ext is loaded after the document is ready, none of the native 
-     * DOM onReady events will fire, because they have already passed.
-     */
-    Ext.isReady = initExtCss();
     
-    if (!Ext.isReady) {
+    if (!initExtCss()) {
         Ext.onReady(initExtCss);
     }
 })();
@@ -7831,13 +7904,102 @@ Ext.EventObject = function(){
      };
 
     return new Ext.EventObjectImpl();
-}();
+}();/**
+ * @class Ext.Loader
+ * @singleton
+ * Simple class to help load JavaScript files on demand
+ */
+Ext.Loader = Ext.apply({}, {
+    /**
+     * Loads a given set of .js files. Calls the callback function when all files have been loaded
+     * Set preserveOrder to true to ensure non-parallel loading of files if load order is important
+     * @param {Array} fileList Array of all files to load
+     * @param {Function} callback Callback to call after all files have been loaded
+     * @param {Object} scope The scope to call the callback in
+     * @param {Boolean} preserveOrder True to make files load in serial, one after the other (defaults to false)
+     */
+    load: function(fileList, callback, scope, preserveOrder) {
+        var scope       = scope || this,
+            head        = document.getElementsByTagName("head")[0],
+            fragment    = document.createDocumentFragment(),
+            numFiles    = fileList.length,
+            loadedFiles = 0,
+            me          = this;
+        
+        /**
+         * Loads a particular file from the fileList by index. This is used when preserving order
+         */
+        var loadFileIndex = function(index) {
+            head.appendChild(
+                me.buildScriptTag(fileList[index], onFileLoaded)
+            );
+        };
+        
+        /**
+         * Callback function which is called after each file has been loaded. This calls the callback
+         * passed to load once the final file in the fileList has been loaded
+         */
+        var onFileLoaded = function() {
+            loadedFiles ++;
+            
+            //if this was the last file, call the callback, otherwise load the next file
+            if (numFiles == loadedFiles && typeof callback == 'function') {
+                callback.call(scope);
+            } else {
+                if (preserveOrder === true) {
+                    loadFileIndex(loadedFiles);
+                }
+            }
+        };
+        
+        if (preserveOrder === true) {
+            loadFileIndex.call(this, 0);
+        } else {
+            //load each file (most browsers will do this in parallel)
+            Ext.each(fileList, function(file, index) {
+                fragment.appendChild(
+                    this.buildScriptTag(file, onFileLoaded)
+                );  
+            }, this);
+            
+            head.appendChild(fragment);
+        }
+    },
+    
+    /**
+     * @private
+     * Creates and returns a script tag, but does not place it into the document. If a callback function
+     * is passed, this is called when the script has been loaded
+     * @param {String} filename The name of the file to create a script tag for
+     * @param {Function} callback Optional callback, which is called when the script has been loaded
+     * @return {Element} The new script ta
+     */
+    buildScriptTag: function(filename, callback) {
+        var script  = document.createElement('script');
+        script.type = "text/javascript";
+        script.src  = filename;
+        
+        //IE has a different way of handling &lt;script&gt; loads, so we need to check for it here
+        if (script.readyState) {
+            script.onreadystatechange = function() {
+                if (script.readyState == "loaded" || script.readyState == "complete") {
+                    script.onreadystatechange = null;
+                    callback();
+                }
+            };
+        } else {
+            script.onload = callback;
+        }    
+        
+        return script;
+    }
+});
 /**
  * @class Ext
  */
 
 Ext.ns("Ext.grid", "Ext.list", "Ext.dd", "Ext.tree", "Ext.form", "Ext.menu",
-       "Ext.state", "Ext.layout", "Ext.app", "Ext.ux", "Ext.chart", "Ext.direct");
+       "Ext.state", "Ext.layout.boxOverflow", "Ext.app", "Ext.ux", "Ext.chart", "Ext.direct", "Ext.slider");
     /**
      * Namespace alloted for extensions to the framework.
      * @property ux
@@ -8784,7 +8946,7 @@ var t = new Ext.Template(
      * @property
      * @hide repeat doc
      */
-    re : /\{([\w-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g,
+    re : /\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g,
     argsRe : /^\s*['"](.*)["']\s*$/,
     compileARe : /\\/g,
     compileBRe : /(\r\n|\n)/g,
@@ -9344,6 +9506,7 @@ Ext.apply(Ext.EventManager, function(){
        textSize,
        D = Ext.lib.Dom,
        propRe = /^(?:scope|delay|buffer|single|stopEvent|preventDefault|stopPropagation|normalized|args|delegate)$/,
+       unload = Ext.EventManager._unload,
        curWidth = 0,
        curHeight = 0,
        // note 1: IE fires ONLY the keydown event on specialkey autorepeat
@@ -9354,6 +9517,11 @@ Ext.apply(Ext.EventManager, function(){
                    !((Ext.isGecko && !Ext.isWindows) || Ext.isOpera);
 
    return {
+       _unload: function(){
+           Ext.EventManager.un(window, "resize", this.fireWindowResize, this);
+           unload.call(Ext.EventManager);    
+       },
+       
        // private
        doResizeEvent: function(){
            var h = D.getViewHeight(),
@@ -11038,7 +11206,7 @@ Ext.Element.addMethods(
                     el,
                     mask;
 
-                if (!(/^body/i.test(dom.tagName) && me.getStyle('position') == 'static')) {
+                if (!/^body/i.test(dom.tagName) && me.getStyle('position') == 'static') {
                     me.addClass(XMASKEDRELATIVE);
                 }
                 if (el = data(dom, 'maskMsg')) {
@@ -12282,6 +12450,20 @@ Date.monthNumbers = {
         // handle camel casing for english month names (since the keys for the Date.monthNumbers hash are case sensitive)
         return Date.monthNumbers[name.substring(0, 1).toUpperCase() + name.substring(1, 3).toLowerCase()];
     },
+    
+    /**
+     * Checks if the specified format contains hour information
+     * @param {Object} format The format to check
+     * @return {Boolean} True if the format contains hour information
+     * @static
+     */
+    formatContainsHourInfo : (function(){
+        var stripEscapeRe = /(\\.)/g,
+            hourInfoRe = /([gGhHisucUOPZ]|M\$)/;
+        return function(format){
+            return hourInfoRe.test(format.replace(stripEscapeRe, ''));
+        };
+    })(),
 
     /**
      * The base format-code to formatting-function hashmap used by the {@link #format} method.
@@ -12528,9 +12710,12 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
                 calc = [],
                 regex = [],
                 special = false,
-                ch = "";
+                ch = "",
+                i = 0,
+                obj,
+                last;
 
-            for (var i = 0; i < format.length; ++i) {
+            for (; i < format.length; ++i) {
                 ch = format.charAt(i);
                 if (!special && ch == "\\") {
                     special = true;
@@ -12538,13 +12723,21 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
                     special = false;
                     regex.push(String.escape(ch));
                 } else {
-                    var obj = $f(ch, currentGroup);
+                    obj = $f(ch, currentGroup);
                     currentGroup += obj.g;
                     regex.push(obj.s);
                     if (obj.g && obj.c) {
-                        calc.push(obj.c);
+                        if (obj.calcLast) {
+                            last = obj.c;
+                        } else {
+                            calc.push(obj.c);
+                        }
                     }
                 }
+            }
+            
+            if (last) {
+                calc.push(last);
             }
 
             Date.parseRegexes[regexNum] = new RegExp("^" + regex.join('') + "$", 'i');
@@ -12662,14 +12855,12 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
          * even though it doesn't exactly match the spec. It gives much more flexibility
          * in being able to specify case insensitive regexes.
          */
-        a: {
-            g:1,
-            c:"if (/(am)/i.test(results[{0}])) {\n"
-                + "if (!h || h == 12) { h = 0; }\n"
-                + "} else { if (!h || h < 12) { h = (h || 0) + 12; }}",
-            s:"(am|pm|AM|PM)"
+        a: function(){
+            return $f("A");
         },
         A: {
+            // We need to calculate the hour before we apply AM/PM when parsing
+            calcLast: true,
             g:1,
             c:"if (/(am)/i.test(results[{0}])) {\n"
                 + "if (!h || h == 12) { h = 0; }\n"
@@ -14654,7 +14845,7 @@ Ext.XTemplate = function(){
 };
 Ext.extend(Ext.XTemplate, Ext.Template, {
     // private
-    re : /\{([\w-\.\#]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?(\s?[\+\-\*\\]\s?[\d\.\+\-\*\\\(\)]+)?\}/g,
+    re : /\{([\w\-\.\#]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?(\s?[\+\-\*\\]\s?[\d\.\+\-\*\\\(\)]+)?\}/g,
     // private
     codeRe : /\{\[((?:\\\]|.|\n)*?)\]\}/g,
 
@@ -15233,6 +15424,7 @@ Ext.KeyNav.prototype = {
     del : false,
     home : false,
     end : false,
+    space : false,
 
     // quick lookup hash
     keyToHandler : {
@@ -15247,7 +15439,8 @@ Ext.KeyNav.prototype = {
         35 : "end",
         13 : "enter",
         27 : "esc",
-        9  : "tab"
+        9  : "tab",
+        32 : "space"
     },
     
     stopKeyUp: function(e) {
@@ -18183,8 +18376,10 @@ Ext.extend(Ext.Layer, Ext.Element, {
     enableShadow : function(show){
         if(this.shadow){
             this.shadowDisabled = false;
-            this.shadowOffset = this.lastShadowOffset;
-            delete this.lastShadowOffset;
+            if(Ext.isDefined(this.lastShadowOffset)) {
+                this.shadowOffset = this.lastShadowOffset;
+                delete this.lastShadowOffset;
+            }
             if(show){
                 this.sync(true);
             }
@@ -20389,7 +20584,7 @@ tb.{@link #doLayout}();             // refresh the layout
                 c = Ext.ComponentMgr.get(c);
                 Ext.apply(c, d);
             }else if(!c.events){
-                Ext.applyIf(c, d);
+                Ext.applyIf(c.isAction ? c.initialConfig : c, d);
             }else{
                 Ext.apply(c, d);
             }
@@ -21028,6 +21223,9 @@ Ext.layout.ContainerLayout = Ext.extend(Object, {
         // Stop any buffered layout tasks
         if(this.resizeTask && this.resizeTask.cancel){
             this.resizeTask.cancel();
+        }
+        if(this.container) {
+            this.container.un(this.container.resizeEvent, this.onResize, this);
         }
         if(!Ext.isEmpty(this.targetCls)){
             var target = this.container.getLayoutTarget();
@@ -23142,12 +23340,18 @@ new Ext.Template(
      * @return {Object} An object hash containing the properties required to render the Field.
      */
     getTemplateArgs: function(field) {
-        var noLabelSep = !field.fieldLabel || field.hideLabel;
+        var noLabelSep = !field.fieldLabel || field.hideLabel,
+            itemCls = (field.itemCls || this.container.itemCls || '') + (field.hideLabel ? ' x-hide-label' : '');
+
+        // IE9 quirks needs an extra, identifying class on wrappers of TextFields
+        if (Ext.isIE9 && Ext.isIEQuirks && field instanceof Ext.form.TextField) {
+            itemCls += ' x-input-wrapper';
+        }
 
         return {
             id            : field.id,
             label         : field.fieldLabel,
-            itemCls       : (field.itemCls || this.container.itemCls || '') + (field.hideLabel ? ' x-hide-label' : ''),
+            itemCls       : itemCls,
             clearCls      : field.clearCls || 'x-form-clear-left',
             labelStyle    : this.getLabelStyle(field.labelStyle),
             elementStyle  : this.elementStyle || '',
@@ -23969,10 +24173,6 @@ Ext.layout.BoxLayout = Ext.extend(Ext.layout.ContainerLayout, {
         Ext.layout.BoxLayout.superclass.destroy.apply(this, arguments);
     }
 });
-
-
-
-Ext.ns('Ext.layout.boxOverflow');
 
 /**
  * @class Ext.layout.boxOverflow.None
@@ -25209,8 +25409,8 @@ Ext.layout.VBoxLayout = Ext.extend(Ext.layout.BoxLayout, {
             boxes        = [],
             
             //used in the for loops below, just declared here for brevity
-            child, childWidth, childHeight, childSize, childMargins, canLayout, i, calcs, flexedWidth, 
-            horizMargins, vertMargins, stretchWidth;
+            child, childWidth, childHeight, childSize, childMargins, canLayout, i, calcs, flexedHeight, 
+            horizMargins, vertMargins, stretchWidth, length;
 
         //gather the total flex of all flexed items and the width taken up by fixed width items
         for (i = 0; i < visibleCount; i++) {
@@ -25932,7 +26132,7 @@ Ext.Container.LAYOUTS.toolbar = Ext.layout.ToolbarLayout;
             if(w){
                 ct.setWidth(w);
             }else if(Ext.isIE){
-                ct.setWidth(Ext.isStrict && (Ext.isIE7 || Ext.isIE8) ? 'auto' : ct.minWidth);
+                ct.setWidth(Ext.isStrict && (Ext.isIE7 || Ext.isIE8 || Ext.isIE9) ? 'auto' : ct.minWidth);
                 var el = ct.getEl(), t = el.dom.offsetWidth; // force recalc
                 ct.setWidth(ct.getLayoutTarget().getWidth() + el.getFrameWidth('lr'));
             }
@@ -29323,9 +29523,7 @@ Ext.LoadMask.prototype = {
             um.un('failure', this.onLoad, this);
         }
     }
-};Ext.ns('Ext.slider');
-
-/**
+};/**
  * @class Ext.slider.Thumb
  * @extends Object
  * Represents a single thumb element on a Slider. This would not usually be created manually and would instead
@@ -32676,7 +32874,7 @@ Ext.dd.DragDropMgr = function() {
                 return null;
             }
 
-            var el = oDD.getEl(), pos, x1, x2, y1, y2, t, r, b, l;
+            var el = oDD.getEl(), pos, x1, x2, y1, y2, t, r, b, l, region;
 
             try {
                 pos= Ext.lib.Dom.getXY(el);
@@ -32696,7 +32894,22 @@ Ext.dd.DragDropMgr = function() {
             b = y2 + oDD.padding[2];
             l = x1 - oDD.padding[3];
 
-            return new Ext.lib.Region( t, r, b, l );
+            region = new Ext.lib.Region( t, r, b, l );
+            /*
+             * The code below is to ensure that large scrolling elements will
+             * only have their visible area recognized as a drop target, otherwise it 
+             * can potentially erronously register as a target when the element scrolls
+             * over the top of something below it.
+             */
+            el = Ext.get(el.parentNode);
+            while (el && region) {
+	            if (el.isScrollable()) {
+	                // check whether our element is visible in the view port:
+	                region = region.intersect(el.getRegion());
+	            }
+	            el = el.parent();
+            }
+            return region;
         },
 
         /**
@@ -32765,6 +32978,9 @@ Ext.dd.DragDropMgr = function() {
          * @static
          */
         _onUnload: function(e, me) {
+            Event.removeListener(document, "mouseup",   this.handleMouseUp, this);
+            Event.removeListener(document, "mousemove", this.handleMouseMove, this);
+            Event.removeListener(window,   "resize",    this._onResize, this);
             Ext.dd.DragDropMgr.unregAll();
         },
 
@@ -36837,7 +37053,7 @@ sortInfo: {
      * to add to the cache. See {@link #recordType}.
      */
     add : function(records) {
-        var i, record, index;
+        var i, len, record, index;
         
         records = [].concat(records);
         if (records.length < 1) {
@@ -36878,11 +37094,16 @@ sortInfo: {
      * @private
      * Update a record within the store with a new reference
      */
-    doUpdate : function(rec){
-        this.data.replace(rec.id, rec);
-        if(this.snapshot){
-            this.snapshot.replace(rec.id, rec);
+    doUpdate: function(rec){
+        var id = rec.id;
+        // unjoin the old record
+        this.getById(id).join(null);
+        
+        this.data.replace(id, rec);
+        if (this.snapshot) {
+            this.snapshot.replace(id, rec);
         }
+        rec.join(this);
         this.fireEvent('update', this, rec, Ext.data.Record.COMMIT);
     },
 
@@ -36956,7 +37177,7 @@ sortInfo: {
      * @param {Ext.data.Record[]} records An Array of Ext.data.Record objects to add to the cache.
      */
     insert : function(index, records) {
-        var i, record;
+        var i, len, record;
         
         records = [].concat(records);
         for (i = 0, len = records.length; i < len; i++) {
@@ -37390,7 +37611,6 @@ sortInfo: {
         if (success === true) {
             try {
                 this.reader.realize(rs, data);
-                this.reMap(rs);
             }
             catch (e) {
                 this.handleException(e);
@@ -37464,7 +37684,7 @@ myStore.reload(lastOptions);
     // private
     // Called as a callback by the Reader during a load operation.
     loadRecords : function(o, options, success){
-        var i;
+        var i, len;
         
         if (this.isDestroyed === true) {
             return;
@@ -38491,6 +38711,7 @@ Ext.data.DataReader.prototype = {
             rs.data = data;
 
             rs.commit();
+            rs.store.reMap(rs);
         }
     },
 
@@ -40441,8 +40662,9 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
             throw new Ext.data.JsonReader.Error('response');
         }
 
-        var root = this.getRoot(o);
-        if (action === Ext.data.Api.actions.create) {
+        var root = this.getRoot(o),
+            success = this.getSuccess(o);
+        if (success && action === Ext.data.Api.actions.create) {
             var def = Ext.isDefined(root);
             if (def && Ext.isEmpty(root)) {
                 throw new Ext.data.JsonReader.Error('root-empty', this.meta.root);
@@ -40455,7 +40677,7 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
         // instantiate response object
         var res = new Ext.data.Response({
             action: action,
-            success: this.getSuccess(o),
+            success: success,
             data: (root) ? this.extractData(root, false) : [],
             message: this.getMessage(o),
             raw: o
@@ -41179,6 +41401,9 @@ Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
     createAccessor : function(){
         var q = Ext.DomQuery;
         return function(key) {
+            if (Ext.isFunction(key)) {
+                return key;
+            }
             switch(key) {
                 case this.meta.totalProperty:
                     return function(root, def){
@@ -41367,6 +41592,10 @@ Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
      */
     groupOnSort:false,
 
+    /**
+     * @cfg {String} groupDir
+     * The direction to sort the groups. Defaults to <tt>'ASC'</tt>.
+     */
     groupDir : 'ASC',
 
     /**
@@ -43811,6 +44040,9 @@ Ext.Window = Ext.extend(Ext.Panel, {
 
    // private
     onEsc : function(k, e){
+        if (this.activeGhost) {
+            this.unghost();
+        }
         e.stopEvent();
         this[this.closeAction]();
     },
@@ -44151,7 +44383,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
                 var s = this.getSize();
                 offsets = {
                     right:-(s.width - 100),
-                    bottom:-(s.height - 25)
+                    bottom:-(s.height - 25 + this.el.getConstrainOffset())
                 };
             }
 
@@ -48620,6 +48852,23 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
      */
 
     initComponent : function(){
+        if(this.menu){
+            // If array of items, turn it into an object config so we
+            // can set the ownerCt property in the config
+            if (Ext.isArray(this.menu)){
+                this.menu = { items: this.menu };
+            }
+            
+            // An object config will work here, but an instance of a menu
+            // will have already setup its ref's and have no effect
+            if (Ext.isObject(this.menu)){
+                this.menu.ownerCt = this;
+            }
+            
+            this.menu = Ext.menu.MenuMgr.get(this.menu);
+            this.menu.ownerCt = undefined;
+        }
+        
         Ext.Button.superclass.initComponent.call(this);
 
         this.addEvents(
@@ -48682,9 +48931,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
              */
             'menutriggerout'
         );
-        if(this.menu){
-            this.menu = Ext.menu.MenuMgr.get(this.menu);
-        }
+        
         if(Ext.isString(this.toggleGroup)){
             this.enableToggle = true;
         }
@@ -49470,7 +49717,7 @@ Ext.CycleButton = Ext.extend(Ext.SplitButton, {
             }
             this.activeItem = item;
             if(!item.checked){
-                item.setChecked(true, false);
+                item.setChecked(true, suppressEvent);
             }
             if(this.forceIcon){
                 this.setIconClass(this.forceIcon);
@@ -50787,8 +51034,13 @@ Ext.History = (function () {
     var currentToken;
 
     function getHash() {
-        var href = location.href, i = href.indexOf("#");
-        return i >= 0 ? href.substr(i + 1) : null;
+        var href = location.href, i = href.indexOf("#"),
+            hash = i >= 0 ? href.substr(i + 1) : null;
+             
+        if (Ext.isGecko) {
+            hash = decodeURIComponent(hash);
+        }
+        return hash;
     }
 
     function doSave() {
@@ -50837,7 +51089,7 @@ Ext.History = (function () {
             if (newtoken !== token) {
                 token = newtoken;
                 handleStateChange(token);
-                top.location.hash = token;
+                location.hash = token;
                 hash = token;
                 doSave();
             } else if (newHash !== hash) {
@@ -50953,7 +51205,7 @@ tabPanel.on('tabchange', function(tabPanel, tab){
             if (Ext.isIE) {
                 return updateIFrame(token);
             } else {
-                top.location.hash = token;
+                location.hash = token;
                 return true;
             }
         },
@@ -51641,7 +51893,7 @@ myGrid.on('render', function(grid) {
 
     // private
     adjustPosition : function(x, y){
-        if(this.contstrainPosition){
+        if(this.constrainPosition){
             var ay = this.targetXY[1], h = this.getSize().height;
             if(y <= ay && (y+h) >= ay){
                 y = ay-h-5;
@@ -56339,10 +56591,10 @@ Ext.tree.TreeSorter = Ext.extend(Object, {
     });
 
     var desc = this.dir && this.dir.toLowerCase() == 'desc',
-        prop = this.property || 'text';
-        sortType = this.sortType;
-        folderSort = this.folderSort;
-        caseSensitive = this.caseSensitive === true;
+        prop = this.property || 'text',
+        sortType = this.sortType,
+        folderSort = this.folderSort,
+        caseSensitive = this.caseSensitive === true,
         leafAttr = this.leafAttr || 'leaf';
 
     if(Ext.isString(sortType)){
@@ -56362,7 +56614,7 @@ Ext.tree.TreeSorter = Ext.extend(Object, {
         }
         var prop1 = attr1[prop],
             prop2 = attr2[prop],
-            v1 = sortType ? sortType(prop1) : (caseSensitive ? prop1 : prop1.toUpperCase());
+            v1 = sortType ? sortType(prop1) : (caseSensitive ? prop1 : prop1.toUpperCase()),
             v2 = sortType ? sortType(prop2) : (caseSensitive ? prop2 : prop2.toUpperCase());
             
         if(v1 < v2){
@@ -56390,7 +56642,8 @@ Ext.tree.TreeSorter = Ext.extend(Object, {
             this.doSort.defer(1, this, [p]);
         }
     }    
-});/**
+});
+/**
  * @class Ext.tree.TreeDropZone
  * @extends Ext.dd.DropZone
  * @constructor
@@ -57571,6 +57824,7 @@ var swfobject = function() {
                     swfobject[l] = null;
                 }
                 swfobject = null;
+                window.detachEvent('onunload', arguments.callee);
             });
         }
     }();
@@ -58276,7 +58530,7 @@ Ext.chart.Chart.proxyFunction = {};
  * @static
  * @type String
  */
-Ext.chart.Chart.CHART_URL = 'http:/' + '/yui.yahooapis.com/2.8.0/build/charts/assets/charts.swf';
+Ext.chart.Chart.CHART_URL = 'http:/' + '/yui.yahooapis.com/2.8.2/build/charts/assets/charts.swf';
 
 /**
  * @class Ext.chart.PieChart
@@ -59432,6 +59686,8 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
 
     // private
     getMenuItem : function(config) {
+        config.ownerCt = this;
+        
         if (!config.isXType) {
             if (!config.xtype && Ext.isBoolean(config.checked)) {
                 return new Ext.menu.CheckItem(config);
@@ -59587,17 +59843,20 @@ Ext.menu.MenuNav = Ext.extend(Ext.KeyNav, function(){
  * @singleton
  */
 Ext.menu.MenuMgr = function(){
-   var menus, active, groups = {}, attached = false, lastShow = new Date();
+   var menus, 
+       active, 
+       map,
+       groups = {}, 
+       attached = false, 
+       lastShow = new Date();
+   
 
    // private - called when first menu is created
    function init(){
        menus = {};
        active = new Ext.util.MixedCollection();
-       Ext.getDoc().addKeyListener(27, function(){
-           if(active.length > 0){
-               hideAll();
-           }
-       });
+       map = Ext.getDoc().addKeyListener(27, hideAll);
+       map.disable();
    }
 
    // private
@@ -59616,6 +59875,7 @@ Ext.menu.MenuMgr = function(){
    function onHide(m){
        active.remove(m);
        if(active.length < 1){
+           map.disable();
            Ext.getDoc().un("mousedown", onMouseDown);
            attached = false;
        }
@@ -59627,6 +59887,7 @@ Ext.menu.MenuMgr = function(){
        lastShow = new Date();
        active.add(m);
        if(!attached){
+           map.enable();
            Ext.getDoc().on("mousedown", onMouseDown);
            attached = true;
        }
@@ -59927,11 +60188,16 @@ Ext.menu.BaseItem = Ext.extend(Ext.Component, {
         var pm = this.parentMenu;
         if(this.hideOnClick){
             if(pm.floating){
-                pm.hide.defer(this.clickHideDelay, pm, [true]);
+                this.clickHideDelayTimer = pm.hide.defer(this.clickHideDelay, pm, [true]);
             }else{
                 pm.deactivateActive();
             }
         }
+    },
+    
+    beforeDestroy: function(){
+        clearTimeout(this.clickHideDelayTimer);
+        Ext.menu.BaseItem.superclass.beforeDestroy.call(this);    
     },
 
     // private. Do nothing
@@ -60081,8 +60347,20 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
     initComponent : function(){
         Ext.menu.Item.superclass.initComponent.call(this);
         if(this.menu){
+            // If array of items, turn it into an object config so we
+            // can set the ownerCt property in the config
+            if (Ext.isArray(this.menu)){
+                this.menu = { items: this.menu };
+            }
+            
+            // An object config will work here, but an instance of a menu
+            // will have already setup its ref's and have no effect
+            if (Ext.isObject(this.menu)){
+                this.menu.ownerCt = this;
+            }
+            
             this.menu = Ext.menu.MenuMgr.get(this.menu);
-            this.menu.ownerCt = this;
+            this.menu.ownerCt = undefined;
         }
     },
 
@@ -60149,6 +60427,8 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
 
     //private
     beforeDestroy: function(){
+        clearTimeout(this.showTimer);
+        clearTimeout(this.hideTimer);
         if (this.menu){
             delete this.menu.ownerCt;
             this.menu.destroy();
@@ -60954,7 +61234,7 @@ var form = new Ext.form.FormPanel({
         }
         var restore = this.preventMark;
         this.preventMark = preventMark === true;
-        var v = this.validateValue(this.processValue(this.getRawValue()));
+        var v = this.validateValue(this.processValue(this.getRawValue()), preventMark);
         this.preventMark = restore;
         return v;
     },
@@ -61366,7 +61646,7 @@ Ext.form.TextField = Ext.extend(Ext.form.Field,  {
     vtype : null,
     /**
      * @cfg {RegExp} maskRe An input mask regular expression that will be used to filter keystrokes that do
-     * not match (defaults to <tt>null</tt>)
+     * not match (defaults to <tt>null</tt>). The maskRe will not operate on any paste events.
      */
     maskRe : null,
     /**
@@ -62500,8 +62780,8 @@ Ext.form.NumberField = Ext.extend(Ext.form.TextField,  {
     },
 
     setValue : function(v) {
-        v = this.fixPrecision(v);
     	v = Ext.isNumber(v) ? v : parseFloat(String(v).replace(this.decimalSeparator, "."));
+        v = this.fixPrecision(v);
         v = isNaN(v) ? '' : String(v).replace(".", this.decimalSeparator);
         return Ext.form.NumberField.superclass.setValue.call(this, v);
     },
@@ -62680,13 +62960,13 @@ disabledDates: ["^03"]
 
     // PUBLIC -- to be documented
     safeParse : function(value, format) {
-        if (/[gGhH]/.test(format.replace(/(\\.)/g, ''))) {
+        if (Date.formatContainsHourInfo(format)) {
             // if parse format contains hour information, no DST adjustment is necessary
             return Date.parseDate(value, format);
         } else {
             // set time to 12 noon, then clear the time
             var parsedDate = Date.parseDate(value + ' ' + this.initTime, format + ' ' + this.initTimeFormat);
-
+ 
             if (parsedDate) {
                 return parsedDate.clearTime();
             }
@@ -64015,10 +64295,16 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
     },
 
     // private
-    assertValue  : function(){
+    assertValue : function(){
         var val = this.getRawValue(),
-            rec = this.findRecord(this.displayField, val);
+            rec;
 
+        if(this.valueField && Ext.isDefined(this.value)){
+            rec = this.findRecord(this.valueField, this.value);
+        }
+        if(!rec || rec.get(this.displayField) != val){
+            rec = this.findRecord(this.displayField, val);
+        }
         if(!rec && this.forceSelection){
             if(val.length > 0 && val != this.emptyText){
                 this.el.dom.value = Ext.value(this.lastSelectionText, '');
@@ -64027,11 +64313,11 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
                 this.clearValue();
             }
         }else{
-            if(rec){
+            if(rec && this.valueField){
                 // onSelect may have already set the value and by doing so
                 // set the display field properly.  Let's not wipe out the
                 // valueField here by just sending the displayField.
-                if (val == rec.get(this.displayField) && this.value == rec.get(this.valueField)){
+                if (this.value == val){
                     return;
                 }
                 val = rec.get(this.valueField || this.displayField);
@@ -64462,9 +64748,6 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
      */
     defaultAutoCreate : { tag: 'input', type: 'checkbox', autocomplete: 'off'},
     /**
-     * @cfg {String} boxLabel The text that appears beside the checkbox
-     */
-    /**
      * @cfg {String} inputValue The value that should go into the generated input element's value attribute
      */
     /**
@@ -64590,7 +64873,12 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
         var checked = this.checked,
             inputVal = this.inputValue;
             
-        this.checked = (v === true || v === 'true' || v == '1' || (inputVal ? v == inputVal : String(v).toLowerCase() == 'on'));
+        if (v === false) {
+            this.checked = false;
+        } else {
+            this.checked = (v === true || v === 'true' || v == '1' || (inputVal ? v == inputVal : String(v).toLowerCase() == 'on'));
+        }
+        
         if(this.rendered){
             this.el.dom.checked = this.checked;
             this.el.dom.defaultChecked = this.checked;
@@ -65182,6 +65470,10 @@ Ext.form.CompositeField = Ext.extend(Ext.form.Field, {
 
         for (var i=0, j = items.length; i < j; i++) {
             item = items[i];
+            
+            if (!Ext.isEmpty(item.ref)){
+                item.ref = '../' + item.ref;
+            }
 
             labels.push(item.fieldLabel);
 
@@ -65220,8 +65512,10 @@ Ext.form.CompositeField = Ext.extend(Ext.form.Field, {
             layout  : 'hbox',
             items   : this.items,
             cls     : 'x-form-composite',
-            defaultMargins: '0 3 0 0'
+            defaultMargins: '0 3 0 0',
+            ownerCt: this
         });
+        this.innerCt.ownerCt = undefined;
         
         var fields = this.innerCt.findBy(function(c) {
             return c.isFormField;
@@ -65290,7 +65584,9 @@ Ext.form.CompositeField = Ext.extend(Ext.form.Field, {
 
         this.fieldErrors.replace(name, error);
 
-        field.el.addClass(field.invalidClass);
+        if (!field.preventMark) {
+            field.el.addClass(field.invalidClass);
+        }
     },
 
     /**
@@ -65337,11 +65633,13 @@ Ext.form.CompositeField = Ext.extend(Ext.form.Field, {
      * Performs validation checks on each subfield and returns false if any of them fail validation.
      * @return {Boolean} False if any subfield failed validation
      */
-    validateValue: function() {
+    validateValue: function(value, preventMark) {
         var valid = true;
 
         this.eachItem(function(field) {
-            if (!field.isValid()) valid = false;
+            if (!field.isValid(preventMark)) {
+                valid = false;
+            }
         });
 
         return valid;
@@ -65557,7 +65855,7 @@ Ext.form.Radio = Ext.extend(Ext.form.Checkbox, {
      */
     getGroupValue : function(){
     	var p = this.el.up('form') || Ext.getBody();
-        var c = p.child('input[name='+this.el.dom.name+']:checked', true);
+        var c = p.child('input[name="'+this.el.dom.name+'"]:checked', true);
         return c ? c.value : null;
     },
 
@@ -65575,14 +65873,14 @@ Ext.form.Radio = Ext.extend(Ext.form.Checkbox, {
             Ext.form.Radio.superclass.setValue.call(this, v);
         } else if (this.rendered) {
             checkEl = this.getCheckEl();
-            radio = checkEl.child('input[name=' + this.el.dom.name + '][value=' + v + ']', true);
+            radio = checkEl.child('input[name="' + this.el.dom.name + '"][value="' + v + '"]', true);
             if(radio){
                 Ext.getCmp(radio.id).setValue(true);
             }
         }
         if(this.rendered && this.checked){
             checkEl = checkEl || this.getCheckEl();
-            els = this.getCheckEl().select('input[name=' + this.el.dom.name + ']');
+            els = this.getCheckEl().select('input[name="' + this.el.dom.name + '"]');
 			els.each(function(el){
 				if(el.dom.id != this.id){
 					Ext.getCmp(el.dom.id).setValue(false);
@@ -66222,12 +66520,14 @@ myFormPanel.getForm().submit({
      */
     updateRecord : function(record){
         record.beginEdit();
-        var fs = record.fields;
+        var fs = record.fields,
+            field,
+            value;
         fs.each(function(f){
-            var field = this.findField(f.name);
+            field = this.findField(f.name);
             if(field){
-                var value = field.getValue();
-                if ( value.getGroupValue ) {
+                value = field.getValue();
+                if (Ext.type(value) !== false && value.getGroupValue) {
                     value = value.getGroupValue();
                 } else if ( field.eachItem ) {
                     value = [];
@@ -69073,6 +69373,14 @@ buttons: [{
         this.result = this.handleResponse(response);
         return this.result;
     },
+    
+    decodeResponse: function(response) {
+        try {
+            return Ext.decode(response.responseText);
+        } catch(e) {
+            return false;
+        } 
+    },
 
     // utility functions used internally
     getUrl : function(appendParams){
@@ -69271,7 +69579,7 @@ Ext.extend(Ext.form.Action.Submit, Ext.form.Action, {
                 errors : errors
             };
         }
-        return Ext.decode(response.responseText);
+        return this.decodeResponse(response);
     }
 });
 
@@ -69377,7 +69685,7 @@ Ext.extend(Ext.form.Action.Load, Ext.form.Action, {
                 data : data
             };
         }
-        return Ext.decode(response.responseText);
+        return this.decodeResponse(response);
     }
 });
 
@@ -69676,7 +69984,7 @@ Ext.form.VTypes = function(){
     // closure these in so they are only created once.
     var alpha = /^[a-zA-Z_]+$/,
         alphanum = /^[a-zA-Z0-9_]+$/,
-        email = /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/,
+        email = /^(\w+)([\-+.\'][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/,
         url = /(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
 
     // All these messages and functions are configurable
@@ -69704,10 +70012,10 @@ Ext.form.VTypes = function(){
         /**
          * The keystroke filter mask to be applied on email input.  See the {@link #email} method for
          * information about more complex email validation. Defaults to:
-         * <tt>/[a-z0-9_\.\-@]/i</tt>
+         * <tt>/[a-z0-9_\.\-\+\'@]/i</tt>
          * @type RegExp
          */
-        'emailMask' : /[a-z0-9_\.\-@\+]/i,
+        'emailMask' : /[a-z0-9_\.\-\+\'@]/i,
 
         /**
          * The function used to validate URLs
@@ -69805,7 +70113,7 @@ var grid = new Ext.grid.GridPanel({
                 header: 'Last Updated', width: 135, dataIndex: 'lastChange',
                 xtype: 'datecolumn', format: 'M d, Y'
             }
-        ],
+        ]
     }),
     {@link #viewConfig}: {
         {@link Ext.grid.GridView#forceFit forceFit}: true,
@@ -70428,20 +70736,21 @@ function(grid, rowIndex, columnIndex, e) {
             store = this.store,
             s,
             c,
-            oldIndex;
+            colIndex;
 
         if(cs){
             for(var i = 0, len = cs.length; i < len; i++){
                 s = cs[i];
                 c = cm.getColumnById(s.id);
                 if(c){
-                    cm.setState(s.id, {
+                    colIndex = cm.getIndexById(s.id);
+                    cm.setState(colIndex, {
                         hidden: s.hidden,
-                        width: s.width    
+                        width: s.width,
+                        sortable: s.sortable
                     });
-                    oldIndex = cm.getIndexById(s.id);
-                    if(oldIndex != i){
-                        cm.moveColumn(oldIndex, i);
+                    if(colIndex != i){
+                        cm.moveColumn(colIndex, i);
                     }
                 }
             }
@@ -70480,6 +70789,9 @@ function(grid, rowIndex, columnIndex, e) {
             };
             if(c.hidden){
                 o.columns[i].hidden = true;
+            }
+            if(c.sortable){
+                o.columns[i].sortable = true;
             }
         }
         if(store){
@@ -71372,11 +71684,14 @@ viewConfig: {
 
     /**
      * @cfg {Boolean} forceFit
-     * Defaults to <tt>false</tt>.  Specify <tt>true</tt> to have the column widths re-proportioned
-     * at <b>all times</b>.  The {@link Ext.grid.Column#width initially configured width}</tt> of each
+     * <p>Defaults to <tt>false</tt>.  Specify <tt>true</tt> to have the column widths re-proportioned
+     * at <b>all times</b>.</p>
+     * <p>The {@link Ext.grid.Column#width initially configured width}</tt> of each
      * column will be adjusted to fit the grid width and prevent horizontal scrolling. If columns are
      * later resized (manually or programmatically), the other columns in the grid <b>will</b> be resized
-     * to fit the grid width. See <tt>{@link #autoFill}</tt> also.
+     * to fit the grid width.</p>
+     * <p>Columns which are configured with <code>fixed: true</code> are omitted from being resized.</p>
+     * <p>See <tt>{@link #autoFill}</tt>.</p>
      */
     forceFit : false,
 
@@ -72673,8 +72988,8 @@ viewConfig: {
                 Ext.DomHelper.insertHtml('beforeEnd', this.mainBody.dom, html);
             }
             if (!isUpdate) {
-                this.fireEvent('rowsinserted', this, firstRow, lastRow);
                 this.processRows(firstRow);
+                this.fireEvent('rowsinserted', this, firstRow, lastRow);
             } else if (firstRow === 0 || firstRow >= last) {
                 //ensure first/last row is kept after an update.
                 Ext.fly(this.getRow(firstRow)).addClass(firstRow === 0 ? this.firstRowCls : this.lastRowCls);
@@ -73890,7 +74205,7 @@ Ext.grid.PivotGridView = Ext.extend(Ext.grid.GridView, {
             rowBuffer     = [],
             meta          = {},
             tstyle        = 'width:' + this.getGridInnerWidth() + 'px;',
-            colBuffer, column, i;
+            colBuffer, colCount, column, i, row;
         
         startRow = startRow || 0;
         endRow   = Ext.isDefined(endRow) ? endRow : rowCount - 1;
@@ -73900,15 +74215,13 @@ Ext.grid.PivotGridView = Ext.extend(Ext.grid.GridView, {
             colCount  = row.length;
             colBuffer = [];
             
-            rowIndex = startRow + i;
-
             //build up each column's HTML
-            for (j = 0; j < colCount; j++) {
-                cell = row[j];
-
+            for (var j = 0; j < colCount; j++) {
+                
+                meta.id    = i + '-' + j;
                 meta.css   = j === 0 ? 'x-grid3-cell-first ' : (j == (colCount - 1) ? 'x-grid3-cell-last ' : '');
                 meta.attr  = meta.cellAttr = '';
-                meta.value = cell;
+                meta.value = row[j];
 
                 if (Ext.isEmpty(meta.value)) {
                     meta.value = '&#160;';
@@ -74041,6 +74354,24 @@ Ext.grid.PivotGridView = Ext.extend(Ext.grid.GridView, {
     getTotalColumnHeaderHeight: function() {
         return this.getColumnHeaders().length * 21;
     },
+    
+    /**
+     * Inherit docs
+     * @private
+     * @param {HTMLElement} el
+     */
+    getCellIndex : function(el) {
+        if (el) {
+            var match = el.className.match(this.colRe),
+                data;
+ 
+            if (match && (data = match[1])) {
+                return parseInt(data.split('-')[1], 10);
+            }
+        }
+        return false;
+    },
+    
     
     /**
      * @private
@@ -74447,6 +74778,7 @@ Ext.grid.PivotAxis = Ext.extend(Ext.Component, {
         var tuples     = this.getTuples(),
             rowCount   = tuples.length,
             dimensions = this.dimensions,
+            dimension,
             colCount   = dimensions.length,
             headers    = [],
             tuple, rows, currentHeader, previousHeader, span, start, isLast, changed, i, j;
@@ -75709,7 +76041,7 @@ Ext.grid.RowSelectionModel = Ext.extend(Ext.grid.AbstractSelectionModel,  {
             s = this.getSelections(),
             i = 0,
             len = s.length, 
-            index;
+            index, r;
             
         this.silent = true;
         this.clearSelections(true);
@@ -76104,9 +76436,7 @@ Ext.grid.RowSelectionModel = Ext.extend(Ext.grid.AbstractSelectionModel,  {
             r = newCell[0];
             c = newCell[1];
 
-            if(last.row != r){
-                this.selectRow(r); // *** highlight newly-selected cell and update selection
-            }
+            this.onEditorSelect(r, last.row);
 
             if(g.isEditor && g.editing){ // *** handle tabbing while editorgrid is in edit mode
                 ae = g.activeEditor;
@@ -76119,12 +76449,19 @@ Ext.grid.RowSelectionModel = Ext.extend(Ext.grid.AbstractSelectionModel,  {
         }
     },
     
+    onEditorSelect: function(row, lastRow){
+        if(lastRow != row){
+            this.selectRow(row); // *** highlight newly-selected cell and update selection
+        }
+    },
+    
     destroy : function(){
         Ext.destroy(this.rowNav);
         this.rowNav = null;
         Ext.grid.RowSelectionModel.superclass.destroy.call(this);
     }
-});/**
+});
+/**
  * @class Ext.grid.Column
  * <p>This class encapsulates column configuration data to be used in the initialization of a
  * {@link Ext.grid.ColumnModel ColumnModel}.</p>
@@ -76666,7 +77003,7 @@ Ext.grid.ActionColumn = Ext.extend(Ext.grid.Column, {
      */
     /**
      * @cfg {Function} getClass A function which returns the CSS class to apply to the icon image.
-     * The function is passed the following parameters:<ul>
+     * The function is passed the following parameters:<div class="mdetail-params"><ul>
      *     <li><b>v</b> : Object<p class="sub-desc">The value of the column's configured field (if any).</p></li>
      *     <li><b>metadata</b> : Object<p class="sub-desc">An object in which you may set the following attributes:<ul>
      *         <li><b>css</b> : String<p class="sub-desc">A CSS class name to add to the cell's TD element.</p></li>
@@ -76677,7 +77014,7 @@ Ext.grid.ActionColumn = Ext.extend(Ext.grid.Column, {
      *     <li><b>rowIndex</b> : Number<p class="sub-desc">The row index..</p></li>
      *     <li><b>colIndex</b> : Number<p class="sub-desc">The column index.</p></li>
      *     <li><b>store</b> : Ext.data.Store<p class="sub-desc">The Store which is providing the data Model.</p></li>
-     * </ul>
+     * </ul></div>
      */
     /**
      * @cfg {Array} items An Array which may contain multiple icon definitions, each element of which may contain:
@@ -76734,7 +77071,7 @@ Ext.grid.ActionColumn = Ext.extend(Ext.grid.Column, {
             meta.css += ' x-action-col-cell';
             for (i = 0; i < l; i++) {
                 item = items[i];
-                v += '<img alt="' + me.altText + '" src="' + (item.icon || Ext.BLANK_IMAGE_URL) +
+                v += '<img alt="' + (item.altText || me.altText) + '" src="' + (item.icon || Ext.BLANK_IMAGE_URL) +
                     '" class="x-action-col-icon x-action-col-' + String(i) + ' ' + (item.iconCls || '') +
                     ' ' + (Ext.isFunction(item.getClass) ? item.getClass.apply(item.scope||this.scope||this, arguments) : '') + '"' +
                     ((item.tooltip) ? ' ext:qtip="' + item.tooltip + '"' : '') + ' />';
@@ -76953,6 +77290,12 @@ Ext.grid.CheckboxSelectionModel = Ext.extend(Ext.grid.RowSelectionModel, {
     // private
     renderer : function(v, p, record){
         return '<div class="x-grid3-row-checker">&#160;</div>';
+    },
+    
+    onEditorSelect: function(row, lastRow){
+        if(lastRow != row && !this.checkOnly){
+            this.selectRow(row); // *** highlight newly-selected cell and update selection
+        }
     }
 });/**
  * @class Ext.grid.CellSelectionModel
@@ -78313,9 +78656,10 @@ var grid = new Ext.grid.GridPanel({
 
     // private
     onGroupByClick : function(){
+        var grid = this.grid;
         this.enableGrouping = true;
-        this.grid.store.groupBy(this.cm.getDataIndex(this.hdCtxIndex));
-        this.grid.fireEvent('groupchange', this, this.grid.store.getGroupState());
+        grid.store.groupBy(this.cm.getDataIndex(this.hdCtxIndex));
+        grid.fireEvent('groupchange', grid, grid.store.getGroupState());
         this.beforeMenuShow(); // Make sure the checkboxes get properly set when changing groups
         this.refresh();
     },
@@ -78352,13 +78696,15 @@ var grid = new Ext.grid.GridPanel({
      * @param {Boolean} expanded (optional)
      */
     toggleGroup : function(group, expanded){
-        var gel = Ext.get(group);
+        var gel = Ext.get(group),
+            id = Ext.util.Format.htmlEncode(gel.id);
+ 
         expanded = Ext.isDefined(expanded) ? expanded : gel.hasClass('x-grid-group-collapsed');
-        if(this.state[gel.id] !== expanded){
+        if(this.state[id] !== expanded){
             if (this.cancelEditOnToggle !== false) {
                 this.grid.stopEditing(true);
             }
-            this.state[gel.id] = expanded;
+            this.state[id] = expanded;
             gel[expanded ? 'removeClass' : 'addClass']('x-grid-group-collapsed');
         }
     },
