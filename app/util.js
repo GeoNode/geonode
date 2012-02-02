@@ -1,11 +1,12 @@
-// TODO: push for something equivalent in Ringo
-
-var {Response} = require("ringo/webapp/response");
 
 exports.responseForStatus = function(status, msg) {
-    var response = new Response(msg || codes[status]);
-    response.status = status;
-    return response;
+    return {
+        status: status,
+        headers: {
+            "Content-Type": "text/plain"
+        },
+        body: [msg || codes[status]]
+    };
 };
 
 var codes = {

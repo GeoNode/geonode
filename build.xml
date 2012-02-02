@@ -2,60 +2,42 @@
 <project name="geonode-client" default="dist" basedir=".">
 
     <description>
-        Ready GXP Build File
+        GeoNode Client Build File
     </description>
 
     <property name="build" location="build"/>
+    <property name="app.proxy.geoserver" value=""/>
+    <property name="app.port" value="8080"/>
+    <condition property="git" value="git.cmd" else="git">
+        <os family="windows"/>
+    </condition>
 
     <target name="init">
 
         <mkdir dir="${build}"/>
-        
-        <echo message="pulling in submoudles"/>
-        <exec executable="git">
-            <arg line="submodule update --init"/>
-        </exec>
 
-        <echo message="pulling in ringo (ignore fatal warning)"/>
-        <mkdir dir="${build}/ringo"/>
-        <exec executable="git" dir="${build}/ringo" failonerror="false">
-            <arg line="clone -nq git://github.com/ringo/ringojs.git ."/>
+        <echo message="pulling in submodules"/>
+        <exec executable="${git}" failonerror="true">
+            <arg line="submodule init"/>
         </exec>
-        <exec executable="git" dir="${build}/ringo" failonerror="true">
-            <arg line="pull origin master"/>
+        <exec executable="${git}" failonerror="true">
+            <arg line="submodule sync"/>
         </exec>
-        <exec executable="git" dir="${build}/ringo" failonerror="true">
-            <arg line="checkout e0dce2be640fc6fb43a1239d252948d10687ba9c"/>
+        <exec executable="${git}" failonerror="true">
+            <arg line="submodule update"/>
         </exec>
 
         <echo message="building ringo jars"/>
-        <ant dir="${build}/ringo" target="jar"/>
-        <!-- uncomment this if you have additional jars in a lib dir
-        <copy todir="${build}/ringo/lib" flatten="true" includeEmptyDirs="false">
-            <fileset dir="lib"/>
-        </copy>
-        -->
-
-        <echo message="pulling in buildkit (ignore fatal warning)"/>
-        <mkdir dir="${build}/buildkit"/>
-        <exec executable="git" dir="${build}/buildkit" failonerror="false">
-            <arg line="clone -nq git://github.com/tschaub/buildkit.git ."/>
-        </exec>
-        <exec executable="git" dir="${build}/buildkit" failonerror="true">
-            <arg line="pull origin master"/>
-        </exec>
-        <exec executable="git" dir="${build}/buildkit" failonerror="true">
-            <arg line="checkout 86eacbd7b3bf62b8e99f46911dd5a633464b8570"/>
-        </exec>
+        <ant dir="externals/ringo" target="jar"/>
 
     </target>
     
     <target name="buildjs">
 
         <mkdir dir="${build}/${ant.project.name}/WEB-INF/app/static/script"/>
-        <java jar="${build}/ringo/run.jar" fork="true" failonerror="true">
-            <sysproperty key="ringo.classpath" path="${build}/ringo/lib/**"/>
-            <arg path="${build}/buildkit/lib/buildkit/build.js"/>
+        <java jar="externals/ringo/run.jar" fork="true" failonerror="true">
+            <sysproperty key="ringo.home" path="externals/ringo"/>
+            <arg path="externals/buildkit/lib/buildkit/build.js"/>
             <arg line="-o ${build}/${ant.project.name}/WEB-INF/app/static/script buildjs.cfg"/>
         </java>
 
@@ -72,18 +54,34 @@
             </fileset>
         </copy>
         <copy todir="${build}/${ant.project.name}/WEB-INF/lib" flatten="true" includeEmptyDirs="false">
-            <fileset dir="${build}/ringo/lib"/>
+            <fileset dir="externals/ringo/lib"/>
         </copy>
         <copy todir="${build}/${ant.project.name}/WEB-INF/app">
             <fileset dir="app">
                 <exclude name="**/externals/**"/>
                 <exclude name="**/script/**"/>
             </fileset>
-            <fileset dir="${build}/buildkit/lib"/>
         </copy>
-        <copy todir="${build}/${ant.project.name}/WEB-INF">
-            <fileset file="buildjs.cfg"/>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/timeline/timeline_ajax/styles">
+            <fileset dir="app/static/externals/timeline/timeline_ajax/styles"/>
         </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/timeline/timeline_ajax/images">
+            <fileset dir="app/static/externals/timeline/timeline_ajax/images"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/timeline/timeline_js/images">
+            <fileset dir="app/static/externals/timeline/timeline_js/images"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/timeline/timeline_js">
+            <fileset file="app/static/externals/timeline/timeline_js/timeline-bundle.css"/>
+        </copy>
+        <!-- copy stick -->
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/stick">
+            <fileset dir="externals/stick">
+                <include name="**/lib/**"/>
+                <include name="package.json"/>
+            </fileset>
+        </copy>
+        <!-- copy Ext resources -->
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/ext">
             <fileset dir="app/static/externals/ext"/>
         </copy>
@@ -96,6 +94,7 @@
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/PrintPreview/resources">
             <fileset dir="app/static/externals/PrintPreview/resources"/>
         </copy>
+        <!-- copy OpenLayers resources -->
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/openlayers/theme">
             <fileset dir="app/static/externals/openlayers/theme"/>
         </copy>
@@ -108,29 +107,24 @@
             <fileset file="app/static/script/ux/colorpicker/side_slider.jpg"/>
             <fileset file="app/static/script/ux/colorpicker/mask.png"/>
         </copy>
+        <!-- copy GeoExt resources -->
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/geoext/resources">
+            <fileset dir="app/static/externals/geoext/resources"/>
+        </copy>
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/theme/ux/fileuploadfield">
             <fileset dir="app/static/script/ux/fileuploadfield/css"/>
         </copy>
-        
+        <!-- copy gxp resources -->
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/gxp/src/theme">
+            <fileset dir="app/static/externals/gxp/src/theme"/>
+        </copy>
     </target>
 
-    <target name="war" depends="dist" description="create web archive">
-        <echo>Creating WAR file.</echo>
-        <war destfile="build/${ant.project.name}.war" needxmlfile="false">
+    <target name="war" depends="dist">
+        <war destfile="${build}/${ant.project.name}.war" needxmlfile="false">
             <fileset dir="${build}/${ant.project.name}/WEB-INF/app/static"/>
         </war>
     </target>
-    
-<!-- war with ringo
-    <target name="war" depends="dist" description="create web archive">
-        <echo>Creating WAR file.</echo>
-        <war destfile="build/${ant.project.name}.war" webxml="src/main/webapp/WEB-INF/web.xml">
-            <fileset dir="${build}/${ant.project.name}">
-                <exclude name="**/web*.xml"/>
-            </fileset>
-        </war>
-    </target>
--->
 
     <target name="zip" depends="dist" description="create zip with static files">
         <echo>Creating ZIP file of static files</echo>
@@ -140,9 +134,33 @@
     </target>
 
     <target name="debug">
-        <java jar="${build}/ringo/run.jar" fork="true">
-            <sysproperty key="ringo.classpath" path="${build}/ringo/lib/**"/>
+        <java jar="externals/ringo/run.jar" fork="true">
+            <sysproperty key="app.proxy.geoserver" value="${app.proxy.geoserver}"/>
+            <sysproperty key="app.debug" value="1"/>
+            <sysproperty key="ringo.home" path="externals/ringo"/>
+            <sysproperty key="ringo.modulepath" path="externals"/>
             <arg path="app/main.js"/>
+            <arg line="-p ${app.port}"/>
+        </java>
+    </target>
+
+    <target name="debugall">
+        <java jar="externals/ringo/run.jar" fork="true">
+            <sysproperty key="app.proxy.geoserver" value="${app.proxy.geoserver}"/>
+            <sysproperty key="app.debug" value="1"/>
+            <sysproperty key="ringo.home" path="externals/ringo"/>
+            <sysproperty key="ringo.modulepath" path="externals"/>
+            <arg value="-d"/>
+            <arg path="app/main.js"/>
+            <arg line="-p ${app.port}"/>
+        </java>
+    </target>
+
+    <target name="test">
+        <java jar="externals/ringo/run.jar" fork="true" failonerror="yes">
+            <sysproperty key="ringo.home" path="externals/ringo"/>
+            <sysproperty key="ringo.modulepath" path="externals"/>
+            <arg path="tests/all.js"/>
         </java>
     </target>
 

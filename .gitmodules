@@ -10,3 +10,12 @@
 [submodule "app/static/externals/PrintPreview"]
 	path = app/static/externals/PrintPreview
 	url = git://github.com/GeoNode/PrintPreview.git
+[submodule "externals/stick"]
+	path = externals/stick
+	url = git://github.com/hns/stick.git
+[submodule "externals/ringo"]
+	path = externals/ringo
+	url = git://github.com/ringo/ringojs.git
+[submodule "externals/buildkit"]
+	path = externals/buildkit
+	url = git://github.com/tschaub/buildkit.git
