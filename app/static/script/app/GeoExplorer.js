@@ -2,6 +2,31 @@
  * Copyright (c) 2009 The Open Planning Project
  */
 
+// http://www.sencha.com/forum/showthread.php?141254-Ext.Slider-not-working-properly-in-IE9
+// TODO re-evaluate once we move to Ext 4
+Ext.override(Ext.dd.DragTracker, {
+    onMouseMove: function (e, target) {
+        if (this.active && Ext.isIE && !Ext.isIE9 && !e.browserEvent.button) {
+            e.preventDefault();
+            this.onMouseUp(e);
+            return;
+        }
+        e.preventDefault();
+        var xy = e.getXY(), s = this.startXY;
+        this.lastXY = xy;
+        if (!this.active) {
+            if (Math.abs(s[0] - xy[0]) > this.tolerance || Math.abs(s[1] - xy[1]) > this.tolerance) {
+                this.triggerStart(e);
+            } else {
+                return;
+            }
+        }
+        this.fireEvent('mousemove', this, e);
+        this.onDrag(e);
+        this.fireEvent('drag', this, e);
+    }
+});
+
 /**
  * Constructor: GeoExplorer
  * Create a new GeoExplorer application.
@@ -211,7 +236,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 },
                                 scope: this
                             });
-                        }.bind(this);
+                        }.createDelegate(this);
                         var win = new Ext.Window({
                             title: "GeoNode Login",
                             modal: true,
@@ -290,7 +315,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (this.fireEvent("beforeunload") === false) {
                 return "If you leave this page, unsaved changes will be lost.";
             }
-        }).bind(this);
+        }).createDelegate(this);
         
         // limit combo boxes to the window they belong to - fixes issues with
         // list shadow covering list items
