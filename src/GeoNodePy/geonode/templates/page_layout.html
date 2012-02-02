@@ -28,20 +28,6 @@
     </div><!-- /.wrap -->
   </div><!-- /#header -->
   <div id="crossbar">
-    <div class="wrap selfclear">             
-      {% block nav %}
-    <ul id="sitenav" class="selfclear">
-        <li class="home"><a href="{% url geonode.views.index %}">{% trans "Home" %}</a></li> 
-        <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a></li>
-        <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a></li>
-    {% if user.is_authenticated %}
-        <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">{% trans "Profile" %}</a></li>
-    {% if user.is_staff %}
-        <li class=""><a class="" id="adminLink" href="/admin/">{% trans "Admin" %}</a></li>
-    {% endif %}
-
-    {% endif %}
-
    <!-- Only show the language form if the csrf_token is present -->
    {% if csrf_token != "NOTPROVIDED" %}
 
@@ -61,6 +47,20 @@
      </form>
 
    {% endif %}
+    <div class="wrap selfclear">             
+      {% block nav %}
+    <ul id="sitenav" class="selfclear">
+        <li class="home"><a href="{% url geonode.views.index %}">{% trans "Home" %}</a></li> 
+        <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a></li>
+        <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a></li>
+    {% if user.is_authenticated %}
+        <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">{% trans "Profile" %}</a></li>
+    {% if user.is_staff %}
+        <li class=""><a class="" id="adminLink" href="/admin/">{% trans "Admin" %}</a></li>
+    {% endif %}
+
+    {% endif %}
+
     </ul>
    {% endblock %}
 
