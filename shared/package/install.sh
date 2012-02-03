@@ -101,15 +101,6 @@ ln -sf $GEOSERVER_DATA_DIR/logs/geoserver.log $GEONODE_LOG/geoserver.log
 chown -R tomcat6. $GEOSERVER_DATA_DIR $TOMCAT_WEBAPPS/geonetwork $TOMCAT_WEBAPPS/geoserver
 }
 
-function configuretomcat() {
-	if ! grep -q saxon /etc/default/tomcat6
-	then
-            setup_tomcat_once
-	fi
-        setup_tomcat_every_time
-	$TOMCAT_SERVICE restart
-}
-
 function setup_postgres_once() {
     su - postgres <<EOF
 createdb -E UTF8 geonode
@@ -132,20 +123,7 @@ function setup_postgres_every_time() {
     true # nothing to do. when we setup DB migrations they'll probably go here.
 }
 
-function configurepostgres() {
-	# configure postgres user and database
-	psqlpass=$(randpass 8 0)
-        if ! su - postgres -c 'psql -l | grep -q geonode'
-        then
-            setup_postgres_once
-        fi
-        setup_postgres_every_time
-}
-
 function setup_django_once() {
-    secretkey=$(randpass 18 0)
-    geoserverpass=$(randpass 8 0)
-
     sed -i "s/THE_SECRET_KEY/$secretkey/g" $GEONODE_ETC/local_settings.py
     sed -i "s/THE_GEOSERVER_PASSWORD/$geoserverpass/g" $GEONODE_ETC/local_settings.py
     sed -i "s/THE_DATABASE_PASSWORD/$psqlpass/g" $GEONODE_ETC/local_settings.py
@@ -183,11 +161,6 @@ function setup_django_every_time() {
     popd
 }
 
-function configuredjango() {
-    grep -q THE_SECRET_KEY $GEONODE_ETC/local_settings.py && setup_django_once
-    setup_django_every_time
-}
-
 function setup_apache_once() {
 	chown www-data -R $GEONODE_WWW
 	a2dissite default
@@ -198,24 +171,32 @@ function setup_apache_once() {
 	sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2 python-path=$sitedir" $APACHE_SITES/geonode
 
 	a2ensite geonode
-        touch $GEONODE_ETC/configured_apache
+        $APACHE_SERVICE restart
 }
 
 function setup_apache_every_time() {
     true
 }
 
-function configureapache() {
-        test -e $GEONODE_ETC/configured_apache || setup_apache_once
-        setup_apache_every_time
-	$APACHE_SERVICE restart
+function one_time_setup() {
+    psqlpass=$(randpass 8 0)
+    secretkey=$(randpass 18 0)
+    geoserverpass=$(randpass 8 0)
+
+    setup_postgres_once
+    setup_tomcat_once
+    setup_django_once
+    # setup_apache_once # apache setup needs the every_time django setup since
+    # it uses that to get the sitedir location
 }
 
-function postinstall {
-	configurepostgres
-	configuretomcat
-	configuredjango
-	configureapache
+function postinstall() {
+    setup_postgres_every_time
+    setup_tomcat_every_time
+    setup_django_every_time
+    setup_apache_every_time
+    $TOMCAT_SERVICE restart
+    $APACHE_SERVICE restart
 }
 
 function once() {
@@ -247,16 +228,22 @@ case $stepval in
 		;;
         once)
                 echo "Running GeoNode initial configuration ..."
-                once
+                one_time_setup
                 ;;
 	post)
 		echo "Running GeoNode postinstall ..."
 		postinstall
 		;;
+        setup_apache_once)
+                echo "Configuring Apache ..."
+                setup_apache_once
+        ;;
 	all)
 		echo "Running GeoNode installation ..."
 		preinstall
+                one_time_setup
 		postinstall
+                setup_apache_once
 		;;
 	*)
 	        printf "\tValid values for step parameter are: 'pre', 'post','all'\n"
