@@ -588,7 +588,7 @@ def update_metadata(layer_uuid, xml_file, saved_layer):
 
     # check if document is XML
     try:
-        exml = etree.fromstring(xml_file.read())
+        exml = etree.fromstring(open(xml_file).read())
     except Exception, err:
         raise GeoNodeException('Uploaded XML document is not XML: %s' % str(err))
 
