@@ -153,7 +153,8 @@ function setup_django_once() {
 
 function setup_django_every_time() {
     pushd $GEONODE_LIB
-    which pip virtualenv || easy_install -U pip virtualenv
+    easy_install -U virtualenv
+    easy_install -U pip
     virtualenv .
 
     if [ ! -f bin/activate ]
@@ -197,6 +198,7 @@ function setup_apache_once() {
 	sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2 python-path=$sitedir" $APACHE_SITES/geonode
 
 	a2ensite geonode
+        touch $GEONODE_ETC/configured_apache
 }
 
 function setup_apache_every_time() {
@@ -204,7 +206,7 @@ function setup_apache_every_time() {
 }
 
 function configureapache() {
-        test -e $APACHE_SITES/geonode || setup_apache_once
+        test -e $GEONODE_ETC/configured_apache || setup_apache_once
         setup_apache_every_time
 	$APACHE_SERVICE restart
 }
@@ -214,6 +216,11 @@ function postinstall {
 	configuretomcat
 	configuredjango
 	configureapache
+}
+
+function once() {
+    echo "Still need to implement the onetime setup."
+    exit 1
 }
 
 if [ $# -eq 1 ]
@@ -238,6 +245,10 @@ case $stepval in
 		echo "Running GeoNode preinstall ..."
 		preinstall
 		;;
+        once)
+                echo "Running GeoNode initial configuration ..."
+                once
+                ;;
 	post)
 		echo "Running GeoNode postinstall ..."
 		postinstall
