@@ -739,6 +739,7 @@ class Layer(models.Model, PermissionLevelMixin):
             def wfs_link(mime):
                 return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
                     'service': 'WFS',
+                    'version': '1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
                     'outputFormat': mime
