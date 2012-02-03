@@ -22,67 +22,48 @@ do
 done
 shift $(($OPTIND - 1))
 
-
-function preinstall() {
-	# Places the geonode files in the right location in the file system
-
-	#
-	# First step is to unpack the wars in the tomcat webapps dir
-	#
+function setup_directories() {
 	mkdir -p $TOMCAT_WEBAPPS/geoserver
 	mkdir -p $TOMCAT_WEBAPPS/geonetwork
-	unzip -qq $INSTALL_DIR/geoserver.war -d $TOMCAT_WEBAPPS/geoserver
-	unzip -qq $INSTALL_DIR/geonetwork.war -d $TOMCAT_WEBAPPS/geonetwork
-	# GeoServer data is better placed outside tomcat to survive reinstalls
 	mkdir -p $GEOSERVER_DATA_DIR
-	cp -rp $TOMCAT_WEBAPPS/geoserver/data/* $GEOSERVER_DATA_DIR
-	#
-	# Second step is to put the apache wsgi and conf files in the right places
-	#
 	mkdir -p $GEONODE_WWW/static
 	mkdir -p $GEONODE_WWW/uploaded
-	# The wsgi directory is where the Python / Django application is configured
 	mkdir -p $GEONODE_WWW/wsgi
-	cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
-	# The robots.txt file tells google and other crawlers not to harvest /geoserver
-	# or /geonetwork, asking for all the layers at the same time is too taxing.
-	cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
-	# The apache configuration has a placeholder for the final location of the
-	# geonode virtualenv, it should be the site-packages directory of the venv.
 	mkdir -p $APACHE_SITES
-	cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode
-	#
-	# Third step is to unpack the pybundle and put the virtualenv in the right place
-	#
 	mkdir -p $GEONODE_LIB
-	cp -rp $INSTALL_DIR/geonode-webapp.pybundle $GEONODE_LIB
-	# Fourth step is to install the binary
 	mkdir -p $GEONODE_BIN
-	cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
-	# Fifth step is to copy the scripts and patches that would be used in postinst	
 	mkdir -p $GEONODE_ETC
 	mkdir -p $GEONODE_ETC/geonetwork
 	mkdir -p $GEONODE_ETC/geoserver
-	# A copy of web.xml and config.xml are put with the config files
-	# they will be patched during the post-install and need to survive upgrades.
-	cp -rp $TOMCAT_WEBAPPS/geoserver/WEB-INF/web.xml $GEONODE_ETC/geoserver/
-	cp -rp $TOMCAT_WEBAPPS/geonetwork/WEB-INF/config.xml $GEONODE_ETC/geonetwork/
+	mkdir -p $GEONODE_ETC/media
+	mkdir -p $GEONODE_ETC/templates
 	mkdir -p $GEONODE_SHARE
-	# This Django fixture contains a superuser called geonode that does not have
-	# a working password. It is used as the default superuser.
+}
+
+function unpack_archives() {
+	unzip -qq $INSTALL_DIR/geoserver.war -d $TOMCAT_WEBAPPS/geoserver
+	unzip -qq $INSTALL_DIR/geonetwork.war -d $TOMCAT_WEBAPPS/geonetwork
+}
+
+function reorganize_configuration() {
+	mv $TOMCAT_WEBAPPS/geoserver/data/* $GEOSERVER_DATA_DIR
+	cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode
+	cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
+	cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
+	cp -rp $INSTALL_DIR/geonode-webapp.pybundle $GEONODE_LIB
+	cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
 	cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
 	cp -rp $INSTALL_DIR/support/geoserver.patch $GEONODE_SHARE
 	cp -rp $INSTALL_DIR/support/geonetwork.patch $GEONODE_SHARE
-	#
-	# Sixth step is to configure /etc/geonode/ with folders for custom media and templates
-	#
+	cp -rp $TOMCAT_WEBAPPS/geoserver/WEB-INF/web.xml $GEONODE_ETC/geoserver/
+	cp -rp $TOMCAT_WEBAPPS/geonetwork/WEB-INF/config.xml $GEONODE_ETC/geonetwork/
 	cp -rp $INSTALL_DIR/support/geonode.local_settings $GEONODE_ETC/local_settings.py
-	# Extra media put in the following directory will be collected in /var/www/geonode/static
-	# when 'geonode collectstatic -v0' is run.
-	mkdir -p $GEONODE_ETC/media
-	# The recommended way to change a template is to copy it from the original location into
-	# this directory, this one has precedence over all the other template locations.
-	mkdir -p $GEONODE_ETC/templates
+}
+
+function preinstall() {
+    setup_directories
+    unpack_archives
+    reorganize_configuration
 }
 
 function randpass() {
