@@ -404,7 +404,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     # parse the XML metadata and update uuid and URLs as per the content model
 
     if 'xml' in files:
-        md_xml, md_title, md_abstract = update_metadata(layer_uuid, files['xml'], saved_layer)
+        md_xml, md_title, md_abstract = update_metadata(layer_uuid, open(files['xml']).read(), saved_layer)
         Layer.objects.filter(uuid=layer_uuid).update(
             metadata_xml=md_xml,
             title=md_title,
@@ -581,14 +581,14 @@ def upload(incoming, user=None, overwrite=True, keywords = []):
                         results.append({'file': filename, 'name': layer.name})
         return results
 
-def update_metadata(layer_uuid, xml_file, saved_layer):
+def update_metadata(layer_uuid, xml, saved_layer):
     logger.info('>>> Step XML. If an XML metadata document was passed, process it')
     # Step XML.  If an XML metadata document is uploaded,
     # parse the XML metadata and update uuid and URLs as per the content model
 
     # check if document is XML
     try:
-        exml = etree.fromstring(open(xml_file).read())
+        exml = etree.fromstring(xml)
     except Exception, err:
         raise GeoNodeException('Uploaded XML document is not XML: %s' % str(err))
 

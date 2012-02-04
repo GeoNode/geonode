@@ -933,7 +933,7 @@ def _updateLayer(request, layer):
                 try:
                     layer_to_update = Layer.objects.get_or_create(typename=layer.typename)[0]
 
-                    md_xml, md_title, md_abstract = update_metadata(layer.uuid, form.cleaned_data['xml_file'], layer_to_update)
+                    md_xml, md_title, md_abstract = update_metadata(layer.uuid, form.cleaned_data['xml_file'].read(), layer_to_update)
 
                     Layer.objects.filter(typename=layer.typename).update(
                         metadata_xml=md_xml,
