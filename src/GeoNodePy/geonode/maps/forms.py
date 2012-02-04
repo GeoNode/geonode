@@ -43,6 +43,12 @@ class LayerUploadForm(forms.Form):
                     raise forms.ValidationError("It looks like you're "
                         "uploading components from different Shapefiles. "
                         "Please double-check your file selections.")
+            if cleaned["xml_file"] is not None:
+                xml_file = cleaned["xml_file"].name
+                if os.path.splitext(xml_file)[0] != base_name:
+                    if xml_file.find('.shp') != -1:
+                        # force rename of file so that file.shp.xml doesn't overwrite as file.shp
+                        cleaned["xml_file"].name = '%s.xml' % base_name
         return cleaned
 
     def write_files(self):
