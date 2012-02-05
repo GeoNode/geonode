@@ -739,6 +739,7 @@ class Layer(models.Model, PermissionLevelMixin):
             def wfs_link(mime):
                 return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
                     'service': 'WFS',
+                    'version': '1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
                     'outputFormat': mime,
@@ -1177,7 +1178,7 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=1000)
+    title = models.TextField(_('Title'))
     """
     A display name suitable for search results and page headers
     """
@@ -1474,13 +1475,13 @@ class MapLayer(models.Model):
     be drawn on top of others.
     """
 
-    format = models.CharField(_('format'), null=True,max_length=200)
+    format = models.CharField(_('format'), null=True, max_length=200)
     """
     The mimetype of the image format to use for tiles (image/png, image/jpeg,
     image/gif...)
     """
 
-    name = models.CharField(_('name'), null=True,max_length=200)
+    name = models.CharField(_('name'), null=True, max_length=200)
     """
     The name of the layer to load.
 
@@ -1526,7 +1527,7 @@ class MapLayer(models.Model):
     The URL of the OWS service providing this layer, if any exists.
     """
 
-    layer_params = models.CharField(_('layer params'), max_length=1024)
+    layer_params = models.TextField(_('layer params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     passed to the GXP viewer.
@@ -1535,7 +1536,7 @@ class MapLayer(models.Model):
     (such as format, styles, etc.) then the fields override.
     """
 
-    source_params = models.CharField(_('source params'), max_length=1024)
+    source_params = models.TextField(_('source params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
     configuration for this layer.
