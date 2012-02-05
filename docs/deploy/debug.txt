@@ -46,3 +46,21 @@ This is enabled by setting ``DEBUG=True`` in :file:`/etc/geonode/local_settings.
 After enabling DEBUG, the Apache server has to be restarted for the changes to be picked up. In Ubuntu::
 
     sudo service apache2 restart
+
+
+Other tips and tricks
+=====================
+
+Modifying GeoServer's output strategy
+-------------------------------------
+
+Up to version 1.1, GeoNode used by default the ``SPEED`` output strategy of GeoServer, this meant that proper error messages were being sacrificed for performance. Unfortunately, this caused many errors to be masked as XML parsing errors when layers were not properly configured.
+
+It is recommended to verify the output strategy is set to ``PARTIAL_BUFFER2`` (or a safer one, e.g. ``FILE``) with a high value for the buffer size. More information about the different strategies and the performance vs correctness tradeoff is available at GeoServer's web.xml file.
+
+The typical location of the file that needs to be modified is ``/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml`` as shown below::
+
+  <context-param>
+    <param-name>serviceStrategy</param-name>
+    <param-value>PARTIAL_BUFFER2</param-value>
+  </context-param>

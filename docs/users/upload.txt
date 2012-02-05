@@ -15,7 +15,16 @@ When you come to the *Upload Layer* page you will see the following form (* item
 
 ***Title:**  Give your layer a title.
 
-***Data:**  Choose a Shapefile (.shp parts) or GeoTIFF as your data to load.  
+***Data:**  Choose a Shapefile or GeoTIFF as your data to load.
+
+If you select a GeoTIFF file for the Data item above, the view will remain the same.  If you choose a shapefile, (the part of the shapefile with the “.shp” ending), the view will change to handle the additional parts of the shapefile as shown below as well as an optional encoding selection:  
+
+.. image:: images/shapefile_upload.png
+
+* **Data:**  Choose the .shp portion of the shapefile
+* **DBF:**  Choose the .dbf portion of the shapefile
+* **SHX:**  Choose the .shx portion of the shapefile
+* **PRJ:**  Choose the .prj portion of the shapefile
 
 .. note:: You will increase your chances of a successful upload by having your shapefile or GeoTIFF file be in the “plain vanilla” projection, Geographic WGS 84, also known as EPSG:4326.  To know whether your shapefile is in this projection, the contents of your .prj file will look like this in a text editor: ``GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984", SPHEROID["WGS_1984",6378137.0, 298.257223563]], PRIMEM["Greenwich",0.0], UNIT["Degree",0.0174532925199433]]``
 
@@ -30,15 +39,6 @@ If your .prj file does not look like this, the upload may still work fine.  If i
 **Permissions:**  Default permissions are set such that the world can view it but only you can change it.  Add individual users to define who can edit (modify the style), or manage (delete layer, change permission settings).  
 
 .. image:: images/layer_permissions.png
-
-If you select a GeoTIFF file for the Data item above, the view will remain the same.  If you choose a shapefile, (the part of the shapefile with the “.shp” ending), the view will change to handle the additional parts of the shapefile as shown below as well as an optional encoding selection:  
-
-.. image:: images/shapefile_upload.png
-
-* **Data:**  Choose the .shp portion of the shapefile
-* **DBF:**  Choose the .dbf portion of the shapefile
-* **SHX:**  Choose the .shx portion of the shapefile
-* **PRJ:**  Choose the .prj portion of the shapefile
 
 Click *Upload* and once uploaded you will be presented with a metadata form (see below).
 
