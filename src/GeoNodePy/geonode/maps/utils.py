@@ -266,7 +266,7 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
 
     # Check if the store exists in geoserver
     try:
-        store = cat.get_store(name)
+        store = cat.get_store(layer.store)
     except geoserver.catalog.FailedRequestError, e:
         # There is no store, ergo the road is clear
         pass
