@@ -306,7 +306,6 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
                 'gathering extra files', name)
     if the_layer_type == FeatureType.resource_type:
         logger.debug('Uploading vector layer: [%s]', base_file)
-
         if settings.DB_DATASTORE:
             create_store_and_resource = _create_db_featurestore
         else:
@@ -737,4 +736,5 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         else:
             cat.delete(ds, purge=True)
         raise
+
 

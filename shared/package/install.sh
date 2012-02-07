@@ -154,7 +154,22 @@ function configuredjango() {
 	# set up django
 	#
 	cd $GEONODE_LIB
+
+	# Install the latest version of pip and virtualenv from PyPi to avoid having
+        # problems in Ubuntu 10.04
+	# FIXME: It is less than ideal that this command access the network. Ideas?
+	easy_install -U virtualenv
+	easy_install -U pip
+
 	virtualenv .
+
+	# Verify if the virtualenv has been created and abort if bin/activate does not exist
+	if [ ! -f bin/activate ]
+	then
+	    echo "Creation of virtualenv failed, aborting installation"
+	    exit -1
+	fi
+
 	source bin/activate
 	touch geoserver_token
 	pip install geonode-webapp.pybundle
@@ -174,7 +189,7 @@ function configuredjango() {
 	    sed -i "s/THE_DATABASE_PASSWORD/$psqlpass/g" $GEONODE_ETC/local_settings.py
 	fi
 
-	ln -s $GEONODE_ETC/local_settings.py $GEONODE_LIB/src/GeoNodePy/geonode/local_settings.py
+	ln -sf $GEONODE_ETC/local_settings.py $GEONODE_LIB/src/GeoNodePy/geonode/local_settings.py
 	# Set up logging symlink
 	ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
