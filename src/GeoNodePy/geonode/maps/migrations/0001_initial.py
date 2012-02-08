@@ -63,8 +63,8 @@ class Migration(SchemaMigration):
         # Adding model 'Map'
         db.create_table('maps_map', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=1000)),
-            ('abstract', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('title', self.gf('django.db.models.fields.TextField')()),
+            ('abstract', self.gf('django.db.models.fields.TextField')()),
             ('zoom', self.gf('django.db.models.fields.IntegerField')()),
             ('projection', self.gf('django.db.models.fields.CharField')(max_length=32)),
             ('center_x', self.gf('django.db.models.fields.FloatField')()),
@@ -88,8 +88,8 @@ class Migration(SchemaMigration):
             ('group', self.gf('django.db.models.fields.CharField')(max_length=200, null=True)),
             ('visibility', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('ows_url', self.gf('django.db.models.fields.URLField')(max_length=200, null=True)),
-            ('layer_params', self.gf('django.db.models.fields.CharField')(max_length=1024)),
-            ('source_params', self.gf('django.db.models.fields.CharField')(max_length=1024)),
+            ('layer_params', self.gf('django.db.models.fields.TextField')()),
+            ('source_params', self.gf('django.db.models.fields.TextField')()),
         ))
         db.send_create_signal('maps', ['MapLayer'])
 
@@ -243,14 +243,14 @@ class Migration(SchemaMigration):
         },
         'maps.map': {
             'Meta': {'object_name': 'Map'},
-            'abstract': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'abstract': ('django.db.models.fields.TextField', [], {}),
             'center_x': ('django.db.models.fields.FloatField', [], {}),
             'center_y': ('django.db.models.fields.FloatField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'projection': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '1000'}),
+            'title': ('django.db.models.fields.TextField', [], {}),
             'zoom': ('django.db.models.fields.IntegerField', [], {})
         },
         'maps.maplayer': {
@@ -259,12 +259,12 @@ class Migration(SchemaMigration):
             'format': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
             'group': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'layer_params': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
+            'layer_params': ('django.db.models.fields.TextField', [], {}),
             'map': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'layer_set'", 'to': "orm['maps.Map']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
             'opacity': ('django.db.models.fields.FloatField', [], {'default': '1.0'}),
             'ows_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True'}),
-            'source_params': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
+            'source_params': ('django.db.models.fields.TextField', [], {}),
             'stack_order': ('django.db.models.fields.IntegerField', [], {}),
             'styles': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
             'transparent': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
