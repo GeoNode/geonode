@@ -265,7 +265,6 @@ DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
 
 SOUTH_MIGRATION_MODULES = {
-    'auth': 'geonode.migrations.auth',
     'registration': 'geonode.migrations.registration',
     'avatar': 'geonode.migrations.avatar',
 }
