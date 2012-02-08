@@ -736,24 +736,26 @@ class Layer(models.Model, PermissionLevelMixin):
         links = []        
 
         if self.resource.resource_type == "featureType":
-            def wfs_link(mime):
-                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
+            def wfs_link(mime, extra_params):
+                params = {
                     'service': 'WFS',
                     'version': '1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
-                    'outputFormat': mime,
-                    'format_options': 'charset:UTF-8'
-                })
+                    'outputFormat': mime
+                }
+                params.extend(extra_params)
+                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode(params)
+
             types = [
-                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
-                ("gml", _("GML 2.0"), "gml2"),
-                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1"),
-                ("csv", _("CSV"), "csv"),
-                ("excel", _("Excel"), "excel"),
-                ("json", _("GeoJSON"), "json")
+                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
+                ("gml", _("GML 2.0"), "gml2", {}),
+                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
+                ("csv", _("CSV"), "csv", {}),
+                ("excel", _("Excel"), "excel", {}),
+                ("json", _("GeoJSON"), "json", {})
             ]
-            links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
+            links.extend((ext, name, wfs_link(mime, extra_params)) for ext, name, mime, extra_params in types)
         elif self.resource.resource_type == "coverage":
             try:
                 client = httplib2.Http()
