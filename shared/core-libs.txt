@@ -1,3 +1,5 @@
+--extra-index-url=http://dist.pinaxproject.com/dev
+
 PIL
 OWSLib==0.4.0
 -r py-base-libs.txt
@@ -17,3 +19,4 @@ coverage==3.4
 -e git+https://github.com/cmheisel/nose-xcover.git#egg=nosexcover
 mock
 django-staticfiles
+dialogos==0.1.dev4
