@@ -195,7 +195,6 @@ def setup_geonetwork(options):
     dst_url = webapps / war_zip_file
     dst_war = webapps / "geonetwork.war"
     deployed_url = webapps / "geonetwork"
-    schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
@@ -204,11 +203,6 @@ def setup_geonetwork(options):
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
         zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
-
-    # Update the ISO 19139 profile to the latest version
-    path(schema_url).rmtree()
-    info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
-    path("gn_schema").copytree(schema_url)
 
     src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
     dst_url = webapps / "intermap.war"
