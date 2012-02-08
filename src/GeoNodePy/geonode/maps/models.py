@@ -405,6 +405,44 @@ ALL_LANGUAGES = (
     ('zul', 'Zulu'),
 )
 
+
+CHARSETS = [
+        ['', 'None/Unknown'],
+        ['UTF-8', 'UTF-8/Unicode'],
+        ['ISO-8859-1', 'Latin1/ISO-8859-1'],
+        ['ISO-8859-2', 'Latin2/ISO-8859-2'],
+        ['ISO-8859-3', 'Latin3/ISO-8859-3'],
+        ['ISO-8859-4', 'Latin4/ISO-8859-4'],
+        ['ISO-8859-5', 'Latin5/ISO-8859-5'],
+        ['ISO-8859-6', 'Latin6/ISO-8859-6'],
+        ['ISO-8859-7', 'Latin7/ISO-8859-7'],
+        ['ISO-8859-8', 'Latin8/ISO-8859-8'],
+        ['ISO-8859-9', 'Latin9/ISO-8859-9'],
+        ['ISO-8859-10','Latin10/ISO-8859-10'],
+        ['ISO-8859-13','Latin13/ISO-8859-13'],
+        ['ISO-8859-14','Latin14/ISO-8859-14'],
+        ['ISO8859-15','Latin15/ISO-8859-15'],
+        ['Big5', 'BIG5'],
+        ['EUC-JP','EUC-JP'],
+        ['EUC-KR','EUC-KR'],
+        ['GBK','GBK'],
+        ['GB18030','GB18030'],
+        ['Shift_JIS','Shift_JIS'],
+        ['KOI8-R','KOI8-R'],
+        ['KOI8-U','KOI8-U'],
+        ['windows-874', 'Windows CP874'],
+        ['windows-1250', 'Windows CP1250'],
+        ['windows-1251', 'Windows CP1251'],
+        ['windows-1252', 'Windows CP1252'],
+        ['windows-1253', 'Windows CP1253'],
+        ['windows-1254', 'Windows CP1254'],
+        ['windows-1255', 'Windows CP1255'],
+        ['windows-1256', 'Windows CP1256'],
+        ['windows-1257', 'Windows CP1257'],
+        ['windows-1258', 'Windows CP1258']
+]
+
+
 UPDATE_FREQUENCIES = [
     'annually',
     'asNeeded',

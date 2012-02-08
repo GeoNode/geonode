@@ -83,9 +83,20 @@ Ext.onReady(function(){
         name: 'prj_file',
         allowBlank: true,
         listeners: listeners
-
     });
-    form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file];
+
+
+    var encoding = new Ext.form.TextField({
+        id: 'charset',
+        name: ' charset',
+        emptyText: gettext('Select a character encoding (optional)'),
+        fieldLabel: gettext('Encoding'),
+        value: 'UTF-8',
+        width: '50',
+        allowBlank: true,
+        listeners: listeners
+    });
+    form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file, encoding];
   }
   else {
     var base_file = new Ext.ux.form.FileUploadField({

@@ -1,5 +1,5 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
+from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw, CHARSETS
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
 from geonode import geonetwork
 import geoserver
@@ -861,7 +861,7 @@ Please try again, or contact and administrator if the problem continues.")
 def upload_layer(request):
     if request.method == 'GET':
         return render_to_response('maps/layer_upload.html',
-                                  RequestContext(request, {}))
+                                  RequestContext(request, {'charsets': CHARSETS}))
     elif request.method == 'POST':
         from geonode.maps.forms import NewLayerUploadForm
         from geonode.maps.utils import save
@@ -877,7 +877,8 @@ def upload_layer(request):
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
-                        permissions = form.cleaned_data["permissions"]
+                        permissions = form.cleaned_data["permissions"],
+                        charset = request.POST.get('charset')
                         )
                 return HttpResponse(json.dumps({
                     "success": True,
@@ -925,7 +926,7 @@ def _updateLayer(request, layer):
             try:
                 tempdir, base_file = form.write_files()
                 name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
-                saved_layer = save(layer, base_file, request.user, overwrite=True)
+                saved_layer = save(layer, base_file, request.user, charset = request.POST.get('charset'), overwrite=True)
                 return HttpResponse(json.dumps({
                     "success": True,
                     "redirect_to": saved_layer.get_absolute_url() + "?describe"}))

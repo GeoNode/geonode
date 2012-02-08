@@ -106,6 +106,25 @@ Ext.onReady(function(){
         }
     });
 
+
+    var encoding = new Ext.form.ComboBox({
+        id: 'charset_cb',
+        name: ' charset_cb',
+        fieldLabel: gettext('Encoding'),
+        hiddenName: 'charset',
+        displayField:'description',
+        emptyText: gettext('Select a character encoding (optional)'),
+        valueField: 'charset',
+        store : new Ext.data.SimpleStore({
+            fields: ['charset', 'description'],
+            data: {{ charsets }}
+        }),
+        mode: 'local',
+        triggerAction: 'all',
+        allowBlank: true,
+        listeners: listeners
+    });
+
     var sld_file = new Ext.ux.form.FileUploadField({
         id: 'sld_file',
         emptyText: gettext('Select a .sld style file (optional)'),
@@ -138,7 +157,7 @@ Ext.onReady(function(){
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, abstractField, permissionsField, {
+        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, encoding, abstractField, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"
@@ -179,14 +198,17 @@ Ext.onReady(function(){
         dbf_file.hide();
         shx_file.hide();
         prj_file.hide();
+        encoding.hide();
     };
 
     var enable_shapefile_inputs = function() {
         dbf_file.show();
         shx_file.show();
         prj_file.show();
+        encoding.show();
     };
-  
+
+
     var check_shapefile = function() {
         var main_filename = base_file.getValue();
         if ((/\.shp$/i).test(base_file.getValue())) {
