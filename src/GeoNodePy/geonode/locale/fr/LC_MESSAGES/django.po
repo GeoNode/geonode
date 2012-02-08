@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-05 04:15-0600\n"
+"POT-Creation-Date: 2012-02-08 09:46-0600\n"
 "PO-Revision-Date: 2011-06-06 14:42\n"
 "Last-Translator: Matthew Ford <mford@worldbank.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "title"
 msgstr "titre"
 
-#: core/models.py:25 maps/models.py:1619
+#: core/models.py:25 maps/models.py:1621
 msgid "permissions"
 msgstr "autorisations"
 
@@ -37,12 +37,12 @@ msgstr ""
 "Détermine l'ordre dans lequel les rôles sont présentés dans l'interface-"
 "utilisateur."
 
-#: core/models.py:67 maps/views.py:1016
+#: core/models.py:67 maps/views.py:1008
 #: templates/maps/layer_permissions.html:18
 msgid "Anonymous Users"
 msgstr "Utilisateurs anonymes"
 
-#: core/models.py:68 maps/views.py:1020
+#: core/models.py:68 maps/views.py:1012
 #: templates/maps/layer_permissions.html:19
 msgid "Registered Users"
 msgstr "Utilisateurs enregistrés"
@@ -1128,188 +1128,188 @@ msgstr "description de la distribution"
 msgid "data quality statement"
 msgstr "énoncé sur la qualité des données"
 
-#: maps/models.py:747
+#: maps/models.py:749
 msgid "Zipped Shapefile"
 msgstr "Fichier de formes compactée (.zip)"
 
-#: maps/models.py:748
+#: maps/models.py:750
 msgid "GML 2.0"
 msgstr "GML 2.0"
 
-#: maps/models.py:749
+#: maps/models.py:751
 msgid "GML 3.1.1"
 msgstr "GML 3.1.1"
 
-#: maps/models.py:750
+#: maps/models.py:752
 msgid "CSV"
 msgstr "CSV"
 
-#: maps/models.py:751
+#: maps/models.py:753
 msgid "Excel"
 msgstr "Excel"
 
-#: maps/models.py:752
+#: maps/models.py:754
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: maps/models.py:805
+#: maps/models.py:807
 msgid "JPEG"
 msgstr "JPEG"
 
-#: maps/models.py:806
+#: maps/models.py:808
 msgid "PDF"
 msgstr "PDF"
 
-#: maps/models.py:807
+#: maps/models.py:809
 msgid "PNG"
 msgstr "PNG"
 
-#: maps/models.py:822
+#: maps/models.py:824
 msgid "KML"
 msgstr "KML"
 
-#: maps/models.py:823
+#: maps/models.py:825
 msgid "View in Google Earth"
 msgstr "Afficher dans Google Earth"
 
-#: maps/models.py:1179
+#: maps/models.py:1181
 msgid "Title"
 msgstr "Titre"
 
-#: maps/models.py:1184 templates/maps/layer.html:134
+#: maps/models.py:1186 templates/maps/layer.html:134
 msgid "Abstract"
 msgstr "Résumé"
 
-#: maps/models.py:1190
+#: maps/models.py:1192
 msgid "zoom"
 msgstr "zoom"
 
-#: maps/models.py:1196
+#: maps/models.py:1198
 msgid "projection"
 msgstr "projection"
 
-#: maps/models.py:1202
+#: maps/models.py:1204
 msgid "center X"
 msgstr "centre X"
 
-#: maps/models.py:1208
+#: maps/models.py:1210
 msgid "center Y"
 msgstr "centre Y"
 
-#: maps/models.py:1214
+#: maps/models.py:1216
 msgid "owner"
 msgstr "propriétaire"
 
-#: maps/models.py:1470
+#: maps/models.py:1472
 msgid "stack order"
 msgstr "pile pour"
 
-#: maps/models.py:1476
+#: maps/models.py:1478
 msgid "format"
 msgstr "format"
 
-#: maps/models.py:1482
+#: maps/models.py:1484
 msgid "name"
 msgstr "nom"
 
-#: maps/models.py:1491
+#: maps/models.py:1493
 msgid "opacity"
 msgstr "opacité"
 
-#: maps/models.py:1496
+#: maps/models.py:1498
 msgid "styles"
 msgstr "styles"
 
-#: maps/models.py:1501
+#: maps/models.py:1503
 msgid "transparent"
 msgstr "transparent"
 
-#: maps/models.py:1506
+#: maps/models.py:1508
 msgid "fixed"
 msgstr "fixe"
 
-#: maps/models.py:1512
+#: maps/models.py:1514
 msgid "group"
 msgstr "groupe"
 
-#: maps/models.py:1518
+#: maps/models.py:1520
 msgid "visibility"
 msgstr "visibilité"
 
-#: maps/models.py:1523
+#: maps/models.py:1525
 msgid "ows URL"
 msgstr "URL ows"
 
-#: maps/models.py:1528
+#: maps/models.py:1530
 msgid "layer params"
 msgstr "paramètres couche"
 
-#: maps/models.py:1537
+#: maps/models.py:1539
 msgid "source params"
 msgstr "paramètres source"
 
-#: maps/views.py:123 maps/views.py:129
+#: maps/views.py:116 maps/views.py:122
 msgid "No Permissions"
 msgstr "aucune autorisation"
 
-#: maps/views.py:124 maps/views.py:130
+#: maps/views.py:117 maps/views.py:123
 msgid "Read Only"
 msgstr "Lecture seule"
 
-#: maps/views.py:125 maps/views.py:131
+#: maps/views.py:118 maps/views.py:124
 msgid "Read/Write"
 msgstr "Lecture / écriture"
 
-#: maps/views.py:126 maps/views.py:132
+#: maps/views.py:119 maps/views.py:125
 msgid "Administrative"
 msgstr "Administratif"
 
-#: maps/views.py:173
+#: maps/views.py:166
 msgid "You must be logged in to save this map"
 msgstr "Vous devez être connecté pour enregistrer cette carte."
 
-#: maps/views.py:211
+#: maps/views.py:204
 msgid "You are not permitted to view or copy this map."
 msgstr "Vous n'êtes pas autorisé à visualiser ou copier cette carte."
 
-#: maps/views.py:332 maps/views.py:677 maps/views.py:693 templates/401.html:10
+#: maps/views.py:324 maps/views.py:669 maps/views.py:685 templates/401.html:10
 msgid "Not Permitted"
 msgstr "Non Autorisé"
 
-#: maps/views.py:467
+#: maps/views.py:459
 msgid "You are not permitted to view this map's permissions"
 msgstr ""
 "Vous n'êtes pas autorisé à afficher les autorisations liées à cette carte."
 
-#: maps/views.py:575
+#: maps/views.py:567
 msgid "You are not permitted to delete this map."
 msgstr "Vous n'êtes pas autorisé à supprimer cette carte."
 
-#: maps/views.py:597 maps/views.py:661
+#: maps/views.py:589 maps/views.py:653
 msgid "You are not allowed to view this map."
 msgstr "Vous n'êtes pas autorisé à visualiser cette carte."
 
-#: maps/views.py:620
+#: maps/views.py:612
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette carte."
 
-#: maps/views.py:712
+#: maps/views.py:704
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette couche."
 
-#: maps/views.py:774
+#: maps/views.py:766
 msgid "You are not permitted to delete this layer"
 msgstr "Vous n'êtes pas autorisé à supprimer cette couche."
 
-#: maps/views.py:794 maps/views.py:905
+#: maps/views.py:786 maps/views.py:897
 msgid "You are not permitted to modify this layer"
 msgstr "Vous n'êtes pas autorisé à modifier cette couche."
 
-#: maps/views.py:838
+#: maps/views.py:830
 msgid "You are not permitted to view this layer"
 msgstr "Vous n'êtes pas autorisé à modifier cette couche."
 
-#: maps/views.py:856
+#: maps/views.py:848
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -1318,23 +1318,23 @@ msgstr ""
 "plaît essayer de nouveau, ou communiquez avec l'administrateur si le "
 "problème persiste."
 
-#: maps/views.py:955
+#: maps/views.py:947
 msgid "You are not permitted to view this layer's permissions"
 msgstr "Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
 
-#: maps/views.py:965
+#: maps/views.py:957
 msgid "???"
 msgstr "???"
 
-#: maps/views.py:1007
+#: maps/views.py:999
 msgid "Invalid permission level."
 msgstr "Niveau d'autorisation non valide."
 
-#: maps/views.py:1029 templates/maps/layer_permissions.html:15
+#: maps/views.py:1021 templates/maps/layer_permissions.html:15
 msgid "User"
 msgstr "Utilisateur"
 
-#: maps/views.py:1087
+#: maps/views.py:1079
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Mauvais authentifiant d'autorisation HTTP."
 
@@ -1746,7 +1746,7 @@ msgstr ""
 "service, abonnez-vous à notre liste de diffusion par courriel à <em> "
 "geonode@librelist.com </em>. "
 
-#: templates/index.html:52 templates/page_layout.html:36
+#: templates/index.html:52 templates/page_layout.html:55
 #: templates/maps/layer.html:215 templates/maps/view.html:91
 msgid "Maps"
 msgstr "Cartes"
@@ -1763,7 +1763,7 @@ msgstr ""
 "strong>une carte avec notre outil de cartographie, ou <strong> explorer </"
 "strong> des cartes partagées par d'autres utilisateurs."
 
-#: templates/index.html:66 templates/page_layout.html:35
+#: templates/index.html:66 templates/page_layout.html:54
 #: templates/maps/layer.html:203
 msgid "Data"
 msgstr "Données"
@@ -1852,16 +1852,16 @@ msgstr "Pour marquer d'un signet votre recherche actuelle, utilisez ceci."
 msgid "permalink"
 msgstr "Permalink"
 
-#: templates/page_layout.html:34 templates/maps/change_poc.html:5
+#: templates/page_layout.html:53 templates/maps/change_poc.html:5
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/page_layout.html:38
+#: templates/page_layout.html:57
 msgid "Profile"
 msgstr "Profil"
 
-#: templates/page_layout.html:40
+#: templates/page_layout.html:59
 msgid "Admin"
 msgstr "Administration"
 
