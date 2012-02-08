@@ -20,6 +20,9 @@
     {% for username, level in users %}
     <tr><td>User {{ username }}</td><td>{{ level }}</td></tr>
     {% endfor %}
+    {% for name, level in groups %}
+    <tr><td>Group {{ name }}</td><td>{{ level }}</td></tr>
+    {% endfor %}
   </tbody>
 </table>
 <a href="{% url edit_layer_permissions layer.typename %}">Edit Permissions</a>

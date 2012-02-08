@@ -8,7 +8,7 @@ import base64
 from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -24,6 +24,7 @@ import httplib2
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
 import re
+from urllib2 import HTTPError
 from urllib import urlencode
 from urlparse import urlparse
 import uuid
@@ -470,27 +471,22 @@ def view_map_permissions(request, mapid):
     ctx['map'] = map
     return render_to_response("maps/permissions.html", RequestContext(request, ctx))
 
-def set_layer_permissions(layer, perm_spec):
+def set_object_permissions(obj, perm_spec):
     if "authenticated" in perm_spec:
-        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+        obj.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
     if "anonymous" in perm_spec:
-        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n for (n, p) in perm_spec['users']]
-    layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        layer.set_user_level(user, level)
-
-def set_map_permissions(m, perm_spec):
-    if "authenticated" in perm_spec:
-        m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-    if "anonymous" in perm_spec:
-        m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n for (n, p) in perm_spec['users']]
-    m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        m.set_user_level(user, level)
+        obj.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    users_and_groups = [n for (n, p) in perm_spec['users']]
+    obj.get_user_levels().exclude(user__username__in = users_and_groups + [obj.owner]).delete()
+    obj.get_group_levels().exclude(group__name__in = users_and_groups).delete()
+    
+    for name, level in perm_spec['users']:
+        try:
+            group = Group.objects.get(name=name)
+            obj.set_group_level(group, level)
+        except Group.DoesNotExist:
+            user = User.objects.get(username=name)
+            obj.set_user_level(user, level)
 
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -510,7 +506,7 @@ def ajax_layer_permissions(request, layername):
         )
 
     permission_spec = json.loads(request.raw_post_data)
-    set_layer_permissions(layer, permission_spec)
+    set_object_permissions(layer, permission_spec)
 
     return HttpResponse(
         "Permissions updated",
@@ -536,7 +532,7 @@ def ajax_map_permissions(request, mapid):
         )
 
     spec = json.loads(request.raw_post_data)
-    set_map_permissions(map, spec)
+    set_object_permissions(map, spec)
 
     # _perms = {
     #     Layer.LEVEL_READ: Map.LEVEL_READ,
@@ -831,13 +827,16 @@ def layerController(request, layername):
         return _updateLayer(request,layer)
     if (request.META['QUERY_STRING'] == "style"):
         return _changeLayerDefaultStyle(request,layer)
-    else: 
+    else:
         if not request.user.has_perm('maps.view_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {'error_message': 
                     _("You are not permitted to view this layer")})), status=401)
         
-        metadata = layer.metadata_csw()
+        try:
+            metadata = layer.metadata_csw()
+        except HTTPError:
+            metadata = None
 
         maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
@@ -972,6 +971,12 @@ def _view_perms_context(obj, level_names):
     ulevs.sort()
     ctx['users'] = ulevs
 
+    glevs = []
+    for g, l in ctx['groups'].items():
+        glevs.append([g, lname(l)])
+    glevs.sort()
+    ctx['groups'] = glevs
+    
     return ctx
 
 def _perms_info(obj, level_names):
@@ -979,7 +984,7 @@ def _perms_info(obj, level_names):
     # these are always specified even if none
     info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
     info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
-    info['users'] = sorted(info['users'].items())
+    info['users'] = sorted(info['users'].items() + info['groups'].items())
     info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
     if hasattr(obj, 'owner') and obj.owner is not None:
         info['owner'] = obj.owner.username
@@ -1091,14 +1096,19 @@ def layer_acls(request):
             
     all_readable = set()
     all_writable = set()
+    acl_objects = [acl_user] + [g for g in acl_user.groups.all()]
+
     for bck in get_auth_backends():
         if hasattr(bck, 'objects_with_perm'):
-            all_readable.update(bck.objects_with_perm(acl_user,
+            for acl_object in acl_objects:
+                all_readable.update(bck.objects_with_perm(acl_object,
                                                       'maps.view_layer',
                                                       Layer))
-            all_writable.update(bck.objects_with_perm(acl_user,
+            for acl_object in acl_objects:
+                all_writable.update(bck.objects_with_perm(acl_object,
                                                       'maps.change_layer', 
                                                       Layer))
+
     read_only = [x for x in all_readable if x not in all_writable]
     read_write = [x for x in all_writable if x in all_readable]
 
@@ -1599,7 +1609,7 @@ def batch_permissions(request):
 
     if request.method != "POST":
         return HttpResponse("Permissions API requires POST requests", status=405)
-
+    
     spec = json.loads(request.raw_post_data)
     
     if "layers" in spec:
@@ -1616,8 +1626,8 @@ def batch_permissions(request):
 
     anon_level = spec['permissions'].get("anonymous")
     auth_level = spec['permissions'].get("authenticated")
-    users = spec['permissions'].get('users', [])
-    user_names = [x for (x, y) in users]
+    users_and_groups = spec['permissions'].get('users', [])
+    users_and_groups_names = [x for (x, y) in users_and_groups]
 
     if "layers" in spec:
         lyrs = Layer.objects.filter(pk__in = spec['layers'])
@@ -1627,13 +1637,19 @@ def batch_permissions(request):
         if auth_level not in valid_perms:
             auth_level = "_none"
         for lyr in lyrs:
-            lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
+            lyr.get_user_levels().exclude(user__username__in = users_and_groups_names + [lyr.owner.username]).delete()
+            lyr.get_group_levels().exclude(group__name__in = users_and_groups_names).delete()
             lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
             lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
-            for user, user_level in users:
-                if user_level not in valid_perms:
-                    user_level = "_none"
-                lyr.set_user_level(user, user_level)
+            for name, level in users_and_groups:
+                if level not in valid_perms:
+                    level = "_none"
+                try:
+                    group = Group.objects.get(name=name)
+                    lyr.set_group_level(group, level)
+                except Group.DoesNotExist:
+                    user = User.objects.get(username=name)
+                    lyr.set_user_level(user, level)
 
     if "maps" in spec:
         maps = Map.objects.filter(pk__in = spec['maps'])
@@ -1646,14 +1662,26 @@ def batch_permissions(request):
         auth_level = auth_level.replace("layer", "map")
 
         for m in maps:
-            m.get_user_levels().exclude(user__username__in = user_names + [m.owner.username]).delete()
+            m.get_user_levels().exclude(user__username__in = users_and_groups_names + [m.owner.username]).delete()
+            m.get_group_levels().exclude(group__name__in = users_and_groups_names).delete()
             m.set_gen_level(ANONYMOUS_USERS, anon_level)
             m.set_gen_level(AUTHENTICATED_USERS, auth_level)
-            for user, user_level in spec['permissions'].get("users", []):
-                user_level = user_level.replace("layer", "map")
-                m.set_user_level(user, valid_perms.get(user_level, "_none"))
+            for name, level in spec['permissions'].get("users", []):
+                if level not in valid_perms:
+                    level = "_none"
+                level = level.replace("layer", "map")
+                try:
+                    group = Group.objects.get(name=name)
+                    m.set_group_level(group, level)
+                except Group.DoesNotExist:
+                    user = User.objects.get(username=name)
+                    m.set_user_level(user, level)
 
-    return HttpResponse("Not implemented yet")
+    return HttpResponse(
+        "Permissions updated",
+        status=200,
+        mimetype='text/plain'
+    )
 
 def batch_delete(request):
     if not request.user.is_authenticated:

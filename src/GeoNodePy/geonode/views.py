@@ -2,7 +2,7 @@ from django.conf import settings
 from geonode.maps.models import Map
 from django import forms
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -74,13 +74,14 @@ def ajax_lookup(request):
         )
     elif 'query' not in request.POST:
         return HttpResponse(
-            content='use a field named "query" to specify a prefix to filter usernames',
+            content='use a field named "query" to specify a prefix to filter usernames and groups',
             mimetype='text/plain'
         )
     users = User.objects.filter(username__startswith=request.POST['query'])
+    groups = Group.objects.filter(name__startswith=request.POST['query'])
     json_dict = {
-        'users': [({'username': u.username}) for u in users],
-        'count': users.count(),
+        'users': [({'username': u.username}) for u in users] + [({'username': g.name}) for g in groups],
+        'count': users.count() + groups.count(),
     }
     return HttpResponse(
         content=json.dumps(json_dict),
