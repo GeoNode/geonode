@@ -105,7 +105,7 @@ class PocForm(forms.Form):
 class MapForm(forms.ModelForm):
     class Meta:
         model = Map
-        exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner')
+        exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner', 'urlsuffix')
         widgets = {
             'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
         }
@@ -636,19 +636,27 @@ def map_controller(request, mapid):
     main view for map resources, dispatches to correct 
     view based on method and query args. 
     '''
-    if 'remove' in request.GET: 
-        return deletemap(request, mapid)
-    if 'describe' in request.GET:
-        return describemap(request, mapid)
+    if mapid.isdigit():
+        map = Map.objects.get(pk=mapid)
     else:
-        return mapdetail(request, mapid)
+        map = Map.objects.get(urlsuffix=mapid)
+
+    if 'remove' in request.GET: 
+        return deletemap(request, map.id)
+    if 'describe' in request.GET:
+        return describemap(request, map.id)
+    else:
+        return mapdetail(request, map.id)
 
 def view(request, mapid):
     """  
     The view that returns the map composer opened to
     the map with the given map ID.
     """
-    map = Map.objects.get(pk=mapid)
+    if mapid.isdigit():
+        map = get_object_or_404(Map,pk=mapid)
+    else:
+        map = get_object_or_404(Map,urlsuffix=mapid)
     if not request.user.has_perm('maps.view_map', obj=map):
         return HttpResponse(loader.render_to_string('401.html', 
             RequestContext(request, {'error_message': 
@@ -666,7 +674,10 @@ def embed(request, mapid=None):
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
         config = DEFAULT_MAP_CONFIG
     else:
-        map = Map.objects.get(pk=mapid)
+        if mapid.isdigit():
+            map = get_object_or_404(Map,pk=mapid)
+        else:
+            map = get_object_or_404(Map,urlsuffix=mapid)
         if not request.user.has_perm('maps.view_map', obj=map):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
         
@@ -1544,6 +1555,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             'id' : map.id,
             'title' : map.title,
             'abstract' : map.abstract,
+            'urlsuffix' : map.urlsuffix,
             'detail' : reverse('geonode.maps.views.map_controller', args=(map.id,)),
             'owner' : owner_name,
             'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,)),
@@ -1586,6 +1598,40 @@ def maps_search_page(request):
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))
+
+@csrf_exempt
+def ajax_url_lookup(request):
+    # return a list of existing URL's that match the input query parameter;
+    # used to prevent dupe custom URL's for maps
+    if request.method != 'POST':
+        return HttpResponse(
+            content='ajax user lookup requires HTTP POST',
+            status=405,
+            mimetype='text/plain'
+        )
+    elif 'query' not in request.POST:
+        return HttpResponse(
+            content='use a field named "query" to specify a prefix to filter urls',
+            mimetype='text/plain'
+        )
+    if request.POST['query'] != '':
+        forbiddenUrls = ['new','view',]
+        maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
+        if request.POST['mapid'] != '':
+            maps = maps.exclude(id=request.POST['mapid'])
+        json_dict = {
+            'urls': [({'url': m.urlsuffix}) for m in maps],
+            'count': maps.count(),
+            }
+    else:
+        json_dict = {
+            'urls' : [],
+            'count' : 0,
+            }
+    return HttpResponse(
+        content=json.dumps(json_dict),
+        mimetype='text/plain'
+    )
 
 def batch_permissions(request):
     if not request.user.is_authenticated:
