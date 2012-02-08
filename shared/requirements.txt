@@ -19,7 +19,7 @@ django-nose
 nose
 nose-cover3
 coverage==3.4
--e git+https://github.com/cmheisel/nose-xcover.git#egg=nosexcover
+nosexcover
 mock
 django-staticfiles
 South==0.7.3
