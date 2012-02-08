@@ -417,13 +417,13 @@ def save(layer, base_file, user, overwrite = True, title=None,
     defaults = dict(store=gs_resource.store.name,
                     storeType=gs_resource.store.resource_type,
                     typename=typename,
-                    workspace=gs_resource.store.workspace.name,
                     title=title or gs_resource.title,
                     uuid=layer_uuid,
                     keywords=' '.join(keywords),
                     abstract=abstract or gs_resource.abstract or '',
                     owner=user)
     saved_layer, created = Layer.objects.get_or_create(name=gs_resource.name,
+                                                       workspace=gs_resource.store.workspace.name,
                                                        defaults=defaults)
 
     if created:
