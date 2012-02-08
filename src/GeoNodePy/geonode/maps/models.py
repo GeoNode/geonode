@@ -654,6 +654,20 @@ class LayerManager(models.Manager):
         return output
 
 
+    def update_stores(self):
+        cat = self.gs_catalog
+        for layer in Layer.objects.all():
+            logger.debug('Process %s', layer.name)
+            resource = cat.get_resource(layer.name)
+            if resource:
+                store = resource.store
+                if layer.store != store.name:
+                    logger.debug('Change store name of %s from %s to %s', layer.name, layer.store, store.name)
+                    layer.store = store.name
+                    layer.save()
+
+
+
 class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
