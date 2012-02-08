@@ -31,6 +31,7 @@ if (window.GeoExplorer) {
         measureSplitText: gettext("Measure"),
         metaDataHeader: gettext("About this Map"),
         metaDataMapAbstract: gettext("Abstract"),
+        metaDataMapURL: gettext("Custom URL suffix"),
         metaDataMapContact: gettext("Contact"),
         metaDataMapId: gettext("Permalink"),
         metadataFormCancelText : gettext("Cancel"),
