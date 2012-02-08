@@ -41,6 +41,8 @@ LANGUAGES = (
     ('es', 'Español'),
     ('it', 'Italiano'),
     ('fr', 'Français'),
+    ('el', 'Ελληνικά'),
+    ('id', 'Bahasa Indonesia'),
 )
 
 SITE_ID = 1
@@ -214,37 +216,6 @@ MAP_BASELAYERS = [{
 
 }]
 
-# NAVBAR expects a dict of dicts or a path to an ini file
-NAVBAR = \
-{'maps': {'id': '%sLink',
-               'item_class': '',
-               'link_class': '',
-               'text': 'Maps',
-               'url': 'geonode.maps.views.maps'},
- 'data': {'id': '%sLink',
-          'item_class': '',
-          'link_class': '',
-          'text': 'Data',
-          'url': "geonode.maps.views.browse_data"},
-#  'index': {'id': '%sLink',
-#            'item_class': '',
-#            'link_class': '',
-#            'text': 'Featured Map',
-#            'url': 'geonode.views.index'},
- 'master': {'id': '%sLink',
-            'item_class': '',
-            'link_class': '',
-            'text': 'This page has no tab for this navigation'},
- 'meta': {'active_class': 'here',
-          'default_id': '%sLink',
-          'default_item_class': '',
-          'default_link_class': '',
-          'end_class': 'last',
-          'id': '%sLink',
-          'item_class': '',
-          'link_class': '',
-          'visible': 'data\nmaps'}}
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -257,6 +228,7 @@ INSTALLED_APPS = (
     'registration',
     'profiles',
     'avatar',
+    'south',
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
@@ -291,6 +263,11 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
+
+SOUTH_MIGRATION_MODULES = {
+    'registration': 'geonode.migrations.registration',
+    'avatar': 'geonode.migrations.avatar',
+}
 
 try:
     from local_settings import *

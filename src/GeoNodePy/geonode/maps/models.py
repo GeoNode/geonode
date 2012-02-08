@@ -23,6 +23,7 @@ from StringIO import StringIO
 from xml.etree.ElementTree import parse, XML
 from gs_helpers import cascading_delete
 import logging
+import sys
 
 logger = logging.getLogger("geonode.maps.models")
 
@@ -594,15 +595,27 @@ class LayerManager(models.Manager):
     def default_metadata_author(self):
         return self.admin_contact()
 
-    def slurp(self):
-        cat = self.gs_catalog
-        gn = self.gn_catalog
-        for resource in cat.get_resources():
-            try:
-                store = resource.store
-                workspace = store.workspace
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout):
+        """Configure the layers available in GeoServer in GeoNode.
 
-                layer, created = self.get_or_create(name=resource.name, defaults = {
+           It returns a list of dictionaries with the name of the layer,
+           the result of the operation and the errors and traceback if it failed.
+        """
+        if verbosity > 1:
+            print >> console, "Inspecting the available layers in GeoServer ..."
+        cat = self.gs_catalog
+        resources = cat.get_resources()
+        number = len(resources)
+        if verbosity > 1:
+            msg =  "Found %d layers, starting processing" % number
+            print >> console, msg
+        output = []
+        for i, resource in enumerate(resources):
+            name = resource.name
+            store = resource.store
+            workspace = store.workspace
+            try:
+                layer, created = Layer.objects.get_or_create(name=name, defaults = {
                     "workspace": workspace.name,
                     "store": store.name,
                     "storeType": store.resource_type,
@@ -612,27 +625,34 @@ class LayerManager(models.Manager):
                     "uuid": str(uuid.uuid4())
                 })
 
-                ## Due to a bug in GeoNode versions prior to 1.0RC2, the data
-                ## in the database may not have a valid date_type set.  The
-                ## invalid values are expected to differ from the acceptable
-                ## values only by case, so try to convert, then fallback to a
-                ## default.
-                ##
-                ## We should probably drop this adjustment in 1.1. --David Winslow
-                if layer.date_type not in Layer.VALID_DATE_TYPES:
-                    candidate = lower(layer.date_type)
-                    if candidate in Layer.VALID_DATE_TYPES:
-                        layer.date_type = candidate
-                    else:
-                        layer.date_type = Layer.VALID_DATE_TYPES[0]
-
                 layer.save()
-                if created: 
+            except Exception, e:
+                if ignore_errors:
+                    status = 'failed'
+                    exception_type, error, traceback = sys.exc_info()
+                else:
+                    if verbosity > 0:
+                        msg = "Stopping process because --ignore-errors was not set and an error was found."
+                        print >> sys.stderr, msg
+                    raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
+            else:
+                if created:
                     layer.set_default_permissions()
-            finally:
-                pass
-        # Doing a logout since we know we don't need this object anymore.
-        gn.logout()
+                    status = 'created'
+                else:
+                    status = 'updated'
+
+            msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
+            info = {'name': name, 'status': status}
+            if status == 'failed':
+                info['traceback'] = traceback
+                info['exception_type'] = exception_type
+                info['error'] = error
+            output.append(info)
+            if verbosity > 0:
+                print >> console, msg
+        return output
+
 
 class Layer(models.Model, PermissionLevelMixin):
     """
@@ -716,22 +736,26 @@ class Layer(models.Model, PermissionLevelMixin):
         links = []        
 
         if self.resource.resource_type == "featureType":
-            def wfs_link(mime):
-                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
+            def wfs_link(mime, extra_params):
+                params = {
                     'service': 'WFS',
+                    'version': '1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
                     'outputFormat': mime
-                })
+                }
+                params.extend(extra_params)
+                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode(params)
+
             types = [
-                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
-                ("gml", _("GML 2.0"), "gml2"),
-                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1"),
-                ("csv", _("CSV"), "csv"),
-                ("excel", _("Excel"), "excel"),
-                ("json", _("GeoJSON"), "json")
+                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
+                ("gml", _("GML 2.0"), "gml2", {}),
+                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
+                ("csv", _("CSV"), "csv", {}),
+                ("excel", _("Excel"), "excel", {}),
+                ("json", _("GeoJSON"), "json", {})
             ]
-            links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
+            links.extend((ext, name, wfs_link(mime, extra_params)) for ext, name, mime, extra_params in types)
         elif self.resource.resource_type == "coverage":
             try:
                 client = httplib2.Http()
@@ -1102,10 +1126,10 @@ class Layer(models.Model, PermissionLevelMixin):
                 self.distribution_description = res.description
 
     def keyword_list(self):
-        if self.keywords is None:
+        if self.keywords is None or len(self.keywords) == 0:
             return []
         else:
-            return self.keywords.split(" ")
+            return self.keywords.split()
 
     def set_bbox(self, box, srs=None):
         """
@@ -1156,12 +1180,12 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=1000)
+    title = models.TextField(_('Title'))
     """
     A display name suitable for search results and page headers
     """
 
-    abstract = models.CharField(_('Abstract'),max_length=200)
+    abstract = models.TextField(_('Abstract'))
     """
     A longer description of the themes in the map.
     """
@@ -1453,13 +1477,13 @@ class MapLayer(models.Model):
     be drawn on top of others.
     """
 
-    format = models.CharField(_('format'), null=True,max_length=200)
+    format = models.CharField(_('format'), null=True, max_length=200)
     """
     The mimetype of the image format to use for tiles (image/png, image/jpeg,
     image/gif...)
     """
 
-    name = models.CharField(_('name'), null=True,max_length=200)
+    name = models.CharField(_('name'), null=True, max_length=200)
     """
     The name of the layer to load.
 
@@ -1505,7 +1529,7 @@ class MapLayer(models.Model):
     The URL of the OWS service providing this layer, if any exists.
     """
 
-    layer_params = models.CharField(_('layer params'), max_length=1024)
+    layer_params = models.TextField(_('layer params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     passed to the GXP viewer.
@@ -1514,7 +1538,7 @@ class MapLayer(models.Model):
     (such as format, styles, etc.) then the fields override.
     """
 
-    source_params = models.CharField(_('source params'), max_length=1024)
+    source_params = models.TextField(_('source params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
     configuration for this layer.
