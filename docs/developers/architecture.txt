@@ -60,6 +60,7 @@ Below is an list of the projects GeoNode relies on:
  * owslib
  * django-registration
  * django-avatar
+ * South
 
 And for building it makes use of:
 
