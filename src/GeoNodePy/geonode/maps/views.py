@@ -1331,7 +1331,8 @@ def _extract_links(rec, xml):
     format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
 
     for link in xml.findall("*//" + nspath("onLine", namespaces['gmd'])):
-        if link.find(dl_type_path).text == "WWW:DOWNLOAD-1.0-http--download":
+        dl_type_path = link.find(dl_type_path)
+        if dl_type_path and dl_type_path.text == "WWW:DOWNLOAD-1.0-http--download":
             extension = link.find(dl_name_path).text.split('.')[-1]
             format = format_re.match(link.find(dl_description_path).text).groups()[0]
             url = link.find(dl_link_path).text
