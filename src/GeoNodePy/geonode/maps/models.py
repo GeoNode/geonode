@@ -1225,6 +1225,11 @@ class Map(models.Model, PermissionLevelMixin):
     The last time the map was modified.
     """
 
+    urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True, null=True)
+    """
+    Alphanumeric alternative to referencing maps by id, appended to end of URL instead of id, ie http://domain/maps/someview
+    """
+
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
@@ -1330,7 +1335,8 @@ class Map(models.Model, PermissionLevelMixin):
             'id': self.id,
             'about': {
                 'title':    self.title,
-                'abstract': self.abstract
+                'abstract': self.abstract,
+                'urlsuffix': self.urlsuffix,
             },
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
@@ -1362,7 +1368,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
-
+        self.urlsuffix = conf['about']['urlsuffix']
         self.zoom = conf['map']['zoom']
 
         self.center_x = conf['map']['center'][0]
