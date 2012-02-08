@@ -50,7 +50,11 @@ class Catalogue(CatalogueServiceWeb):
             self.connected = False
 
     def get_by_uuid(self, uuid):
-        self.getrecordbyid([uuid], outputschema=namespaces["gmd"])
+        try:
+            self.getrecordbyid([uuid], outputschema=namespaces["gmd"])
+        except:
+            return None
+    
         if hasattr(self, 'records'):
             recs = self.records
             return recs.values()[0] if len(recs) > 0 else None
