@@ -18,7 +18,7 @@
       <a id="logo" href="{% url geonode.views.index %}">GeoNode</a>
       <div id="login-area">
         {% if user.is_authenticated %}
-          <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
+          <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>
         {% else %}
           <!-- this should be updated to a url var --><a href="/accounts/login">{% trans "Sign in" %}</a>
           {% if REGISTRATION_OPEN %} or <a href="{% url registration_register %}">{% trans "Register" %}</a>{% endif %}
@@ -28,22 +28,10 @@
     </div><!-- /.wrap -->
   </div><!-- /#header -->
   <div id="crossbar">
+   <!-- Only show the language form if the csrf_token is present -->
+   {% if csrf_token != "NOTPROVIDED" %}
+
     <div class="wrap selfclear">             
-      {% block nav %}
-    <ul id="sitenav" class="selfclear">
-        <li class="home"><a href="{% url geonode.views.index %}">{% trans "Home" %}</a></li> 
-        <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a></li>
-        <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a></li>
-    {% if user.is_authenticated %}
-        <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">{% trans "Profile" %}</a></li>
-    {% if user.is_staff %}
-        <li class=""><a class="" id="adminLink" href="/admin/">{% trans "Admin" %}</a></li>
-    {% endif %}
-
-    {% endif %}
-    </ul>
-      {% endblock %}
-
    {% get_current_language as LANGUAGE %}
     <form class="langbar" id="target" action="/i18n/setlang/" method="post">
       {% csrf_token %}
@@ -58,6 +46,24 @@
          </select>
        </div>
      </form>
+   {% endif %}
+
+      {% block nav %}
+    <ul id="sitenav" class="selfclear">
+        <li class="home"><a href="{% url geonode.views.index %}">{% trans "Home" %}</a></li> 
+        <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a></li>
+        <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a></li>
+    {% if user.is_authenticated %}
+        <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">{% trans "Profile" %}</a></li>
+    {% if user.is_staff %}
+        <li class=""><a class="" id="adminLink" href="/admin/">{% trans "Admin" %}</a></li>
+    {% endif %}
+
+    {% endif %}
+
+    </ul>
+   {% endblock %}
+
 
     </div><!-- /.wrap -->
   </div><!-- /#crossbar -->
