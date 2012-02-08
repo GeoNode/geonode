@@ -49,7 +49,7 @@ options(
     ),
     deploy=Bunch(
 #        pavement=path('shared/package/pavement.py'),
-        req_file=path('shared/package/deploy-libs.txt'),
+        req_file=path('shared/package/requirements.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
 #        install_paver=True,
@@ -72,7 +72,7 @@ geonode_client_target_war = path('webapps/geonode-client.war')
 
 deploy_req_txt = """
 # NOTE... this file is generated
--r %(venv)s/shared/core-libs.txt
+-r %(venv)s/shared/requirements.txt
 -e %(venv)s/src/GeoNodePy
 """ % locals()
 
@@ -109,7 +109,7 @@ def bundle_deps(options):
     Create a pybundle of all python dependencies.  If created, this
     will be the default for installing python deps.
     """
-    pip_bundle("-r shared/core-libs.txt %s" % bundle)
+    pip_bundle("-r shared/requirements.txt %s" % bundle)
 
 
 @task
@@ -609,10 +609,9 @@ def platform_options(options):
     # defaults:
     pip_flags = ""
     scripts = "bin"
-    corelibs = "core-libs.txt"
+    corelibs = "requirements.txt"
 
     if sys.platform == "win32":
-        corelibs = "py-base-libs.txt"
         scripts = "Scripts"
     elif sys.platform == "darwin":
         pip_flags = "ARCHFLAGS='-arch i386'"
