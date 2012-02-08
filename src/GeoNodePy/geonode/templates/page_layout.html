@@ -31,6 +31,7 @@
    <!-- Only show the language form if the csrf_token is present -->
    {% if csrf_token != "NOTPROVIDED" %}
 
+    <div class="wrap selfclear">             
    {% get_current_language as LANGUAGE %}
     <form class="langbar" id="target" action="/i18n/setlang/" method="post">
       {% csrf_token %}
@@ -45,9 +46,8 @@
          </select>
        </div>
      </form>
-
    {% endif %}
-    <div class="wrap selfclear">             
+
       {% block nav %}
     <ul id="sitenav" class="selfclear">
         <li class="home"><a href="{% url geonode.views.index %}">{% trans "Home" %}</a></li> 
