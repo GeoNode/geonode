@@ -1,51 +1,65 @@
-:orphan:
-
-============
-Architecture
-============
+=====================
+Architecture Overview
+=====================
 
 This section provides insight about the components of GeoNode and the way they are used to create the final product.
 
+
+.. image:: images/geonode_architecture.png
+
+.. TODO:: Replace this image
 
 Components
 ==========
 
 The main components are:
 
-#. **The data manager: GeoServer**
+#. **The GeoSpatial Data Manager: GeoServer**
+
     GeoServer provides an *OGC* compatible data store that can speak *WMS*, *WFS*, *WCS* and others in common formats like *GML*, *GeoJSON*, *KML* and *GeoTiff*.
 
     It can be connected to different spatial backends including *PostGIS*, *Oracle Spatial*, *ArcSDE* and others.
 
+#. **The Catalog: GeoNetwork**
 
-#. **The catalog: GeoNetwork**
-    GeoNetwork provides a standar catalog and search interface based on *OGC* standars.
+    GeoNetwork provides a standard catalog and search interface based on *OGC* standards.
+
     It is used via the *CSW* interface to create and update records when they are accessed in GeoNode..
 
-#. **The website: GeoNode Django site**
+#. **The Website: GeoNode Django Site**
+
     This is a Django based project that allows the user to easily tweak the content and look and feel and to extend GeoNode to build Geospatial.
+
     It includes tools to handle user registration and accounts, avatars, and helper libraries to interact with GeoServer and GeoNetwork in a programatic and integrated way.
+
     There is a wide range of third party apps that can be plugged into a GeoNode based site including tools to connect to different social networks, to build content management systems and more.
 
 
-#. **The map composer: GeoNode client**
-    The main interface for GeoNode is the Map Composer / Editor. It is built on top of *GeoExt* and uses OPenLayers, GXP
+#. **The Map Composer: GeoNode Client**
+
+    The main map interface for GeoNode is the Map Composer / Editor. It is built on top of *GeoExt* and uses OPenLayers, GXP
+
     It talks to the other components via *HTTP* and *JSON* as well as standard *OGC* services.
 
 
 Dependencies
 ------------
 
-Here is an indicative list of the projects GeoNode relies on:
+Below is an list of the projects GeoNode relies on:
 
  * PostgreSQL
+ * PostGIS (optional)
+ * GeoTools
+ * GeoServer
+ * GeoWebCache
  * Mapfish printing module
- * OpenGeo's GXP
+ * OpenLayers
+ * GeoExt
+ * GXP
  * gsconfig.py
  * owslib
  * django-registration
  * django-avatar
- * GeoTools
 
 And for building it makes use of:
 
@@ -54,12 +68,89 @@ And for building it makes use of:
  * Git
  * Bash
 
+.. TODO: Link all of the above projects
+
+GeoNode and GeoServer
+=====================
+
+GeoNode uses GeoServer to convert geographic data between various file formats,
+as well as render styled map tiles.  While standard GeoServer components,
+including its OGC-compliant web services and REST configuration API, provide
+the bulk of the GeoServer functionality used in a GeoNode site, there are some
+extensions to help GeoServer and the Django application interoperate more
+better.
+
+Authentication/Authorization
+----------------------------
+
+GeoNode provides an extension to GeoServer to have it respect GeoNode's
+user database and permissions instead of its own independent system 
+(essentially delegating its security handling to GeoNode).  This
+extension allows GeoServer to authenticate users by HTTP Basic auth (good for
+general desktop GIS applications) or Django session cookies (good for users
+accessing GeoServer from the Django site.)  The basic strategy is for GeoServer
+to forward either type of credential to a Django web service which provides
+GeoServer with up-to-date information about the user's permissions.  Consider a
+request coming into some GeoServer service::
+
+    GET /geoserver/ows?request=GetFeature&typename=top_secret:data
+
+GeoServer will first inspect the request to identify whether it contains an
+``Authorization:`` header or a cookie from the Django session system.
+GeoServer then issues a request to Django::
+
+    GET /data/acls
+   
+Including the credentials it found on the initial request.  If the
+``Authorization:`` header contains the username and password for a valid user,
+or the session cookie corresponds to an active session for a logged-in user,
+then Django responds with a document describing the permissions associated with
+that user.  If the ``Authorization:`` header or cookie is found and determined
+to be invalid, then Django sets a 401 status on the HTTP response.  Otherwise,
+Django assumes an anonymous user and returns a document describing the
+permissions associated with anonymous users.  The permissions document is a
+JSON object that looks like this::
+
+    {
+        "is_superuser": false,
+        "rw": [],
+        "ro": [
+            "geonode:medford_parks",
+            "geonode:medford_zoning"
+        ],
+        "is_anonymous": false,
+        "name": "foo"
+    }
+
+That is, a top-level object with five keys:
+
+``is_superuser``
+  Specifies whether the user has superuser status (as specified in the Django Database). Superusers have full permissions to **all** layers and maps.
+
+``rw``
+    an array of prefixed layer names of layers which should be fully available
+    (both read and write) to this user
+
+``ro``
+    an array of prefixed layer names of layers which should be displayed to this
+    user, but which he/she should not be able to modify
+
+``is_anonymous``
+  Specifies whether the user is an anonymous (un-authenticated user).
+
+``name``
+  Specifies the username for an authenticated user. 
+
+All layers not named in this response will be presumed fully restricted, that
+is, neither modifiable nor visible to the user in question.
 
 
 GeoNode and GeoNetwork
 ======================
 
-customizing the schema used in GeoNetwork
+.. TODO: Complete this section
+
+Customizing the schema used in GeoNetwork
 
   * adapt Layer metadata in Django, analogous to Django's usual User models
 
@@ -82,215 +173,23 @@ GeoNode provides a number of facilities for interactivity in the web browser bui
 The following concepts are particularly important for developing on top of the
 GeoNode's JavaScript framework.
 
-* Components - Ext components handle most interactive functionality in
+* **Components** - Ext components handle most interactive functionality in
   "regular" web pages.  For example, the scrollable/sortable/filterable table
   on the default Search page is a Grid component.  While GeoNode does use some
   custom components, familiarity with the idea of Components used by ExtJS is
   applicable in GeoNode development.
 
-* Viewers - Viewers display interactive maps in web pages, optionally decorated
+* **Viewers** - Viewers display interactive maps in web pages, optionally decorated
   with Ext controls for toolbars, layer selection, etc.  Viewers in GeoNode use
   the GeoExplorer base class, which builds on top of GXP's Viewer to provide
   some common functionality such as respecting site-wide settings for
   background layers. Viewers can be used as components embedded in pages, or
   they can be full-page JavaScript applications.
 
-* Controls - Controls are tools for use in OpenLayers maps (such as a freehand
+* **Controls** - Controls are tools for use in OpenLayers maps (such as a freehand
   control for drawing new geometries onto a map, or an identify control for
   getting information about individual features on a map.)  GeoExt provides
   tools for using these controls as ExtJS "Actions" - operations that can be
   invoked as buttons or menu options or associated with other events.
-
-GeoNode and GeoServer
-=====================
-
-GeoNode uses GeoServer to convert geographic data between various file formats,
-as well as render styled map tiles.  While standard GeoServer components,
-including its OGC-compliant web services and REST configuration API, provide
-the bulk of the GeoServer functionality used in a GeoNode site, there are some
-extensions to help GeoServer and the Django application interoperate more
-better.
-
-Geoprocessing with the GeoServer Process Extension
---------------------------------------------------
-
-The Process extension to GeoServer helps to define custom geoprocessing
-operations against data managed by GeoServer.  The operations are exposed via a GeoServer RESTlet endpoint.
-
-Some processes are included with the Process extension.  Defining your own
-processes is possible too, but first let's look at how to use the processes
-that are already present.
-
-There are two 'modes' of accessing these processes: *interactive* and *batch*.
-The *interactive* mode is appropriate for fast-running processes and returns
-the result of the operation as the HTTP response to the request that launches
-the process.  The *batch* mode starts a thread on the server and supports
-polling to find out information about progress until the process is completed.
-
-Interactive Mode Processing
-...........................
-
-To use interactive-mode processing: 
-
-  * send an HTTP POST request with the process parameters to
-    /geoserver/rest/process/{process}/ .  The parameters must be formatted as a
-    JSON document.
-
-  * The result of the process will be returned, or an error will be reported
-    via the HTTP status code (500 for a general error, 400 for a badly
-    formatted request, etc.)  While the format of this response varies with the
-    process, JSON should be preferred for structured, machine-accessible
-    responses.
-
-Batch Mode Processing
-.....................
-
-To use batch-mode processing:
-
-  * send an HTTP POST with the process parameters to
-    /geoserver/rest/process/{process}/launch .  The parameters must be
-    formatted as a JSON document as described in the section on interactive
-    mode.  The reponse will contain a document describing the process's
-    progress, including an {id} string that identifies the process for future
-    reference.
-
-  * The process will initially be in a queue.  You can check on its progress by
-    sending an HTTP GET request to /geoserver/rest/processes/{id}/status .
-    When the status is DONE, you can send an HTTP GET request to
-    /geoserver/rest/processes/{id}/result.
-
-  * If you find a reason to cancel (for example, the user closes the JS widget
-    that launched the process request), you can cancel by sending a DELETE
-    request to /geoserver/rest/processes/{id} .  This will free up resources
-    sooner, but in either case GeoServer will automatically delete cached
-    process results after a set period, so you should ensure that you present
-    the results to the user in a prompt fashion via some means or other.
-
-Custom Processes
-................
-
-To create a custom process:
-
-#. Write a Java class that extends the Process interface.  It can use GeoTools,
-   and has access to the GeoServer catalog.  Let's call it
-   ``com.example.custom.Process``.  Aditionally, subclass ``ProcessRestlet`` to
-   create a Restlet that invokes your Process.
-
-#. Include a Spring context XML file called ``applicationContext.xml`` that
-   defines a bean using your process class, and a restlet mapping that attaches
-   your process to a specific URL pattern.  An example would be:
-
-   .. code-block:: xml
-
-       <beans>
-         <bean class="com.example.custom.ProcessRestlet" id="exampleRestlet"/>
-         <bean class="org.geoserver.rest.RESTMapping" id="exampleMapping">
-           <property name="routes">
-             <map>
-               <entry>
-                 <key><value>/process/example</value></key>
-                 <value>exampleRestlet</value>
-               </entry>
-             </map>
-         </bean>
-       </beans>
-
-#. Make sure that the JAR containing your process is on the Java classpath when
-   your application is running by including it in the ``WEB-INF/lib`` directory 
-   of your GeoServer WAR file.
-
-Authentication/Authorization
-----------------------------
-
-.. warning:: 
-
-    This section describes features which have not yet been implemented.
-
-GeoNode also provides an extension to GeoServer to have it respect GeoNode's
-user database and permissions instead of its own independent system.  This
-extension allows GeoServer to authenticate users by HTTP Basic auth (good for
-general desktop GIS applications) or Django session cookies (good for users
-accessing GeoServer from the Django site.)  The basic strategy is for GeoServer
-to forward either type of credential to a Django web service which provides
-GeoServer with up-to-date information about the user's permissions.  Consider a
-request coming into some GeoServer service::
-
-    GET /geoserver/ows?request=GetFeature&typename=top_secret:data
-
-GeoServer will first inspect the request to identify whether it contains an
-``Authorization:`` header or a cookie from the Django session system.
-GeoServer then issues a request to Django::
-
-    GET /user/permissions
-   
-Including the credentials it found on the initial request.  If the
-``Authorization:`` header contains the username and password for a valid user,
-or the session cookie corresponds to an active session for a logged-in user,
-then Django responds with a document describing the permissions associated with
-that user.  If the ``Authorization:`` header or cookie is found and determined
-to be invalid, then Django sets a 401 status on the HTTP response.  Otherwise,
-Django assumes an anonymous user and returns a document describing the
-permissions associated with anonymous users.  The permissions document is a
-JSON object that looks like this::
-
-    {
-        "rw": ["prefix:name", "prefix:name"],
-        "ro": ["prefix:name", "prefix:name"]
-    }
-
-That is, a top-level object with two keys:
-
-``rw``
-    an array of prefixed layer names of layers which should be fully available
-    (both read and write) to this user
-
-``ro``
-    an array of prefixed layer names of layers which should be displayed to this
-    user, but which he/she should not be able to modify
-
-All layers not named in this response will be presumed fully restricted, that
-is, neither modifiable nor visible to the user in question.
-
-Printing with the Mapfish Print Service
----------------------------------------
-
-The GeoNode map composer can "print" maps to PDF documents using the `Mapfish
-print service <http://www.mapfish.org/doc/print>`_.  The recommended way to run
-this service is by using the printing extension to GeoServer (if you are using
-the pre-built GeoNode package, this extension is already installed for you).
-However, the print service includes restrictions on the servers that can
-provide map tiles for printed maps.  These restrictions have a fairly strict
-default, so you may want to loosen these constraints.
-
-Adding servers by hostname
-..........................
-
-.. highlight:: yaml
-
-The Mapfish printing module is configured through a `YAML <yaml>`_
-configuration file, usually named :file:`print.yaml`.  If you are using the
-GeoServer plugin to run the printing module, this configuration file can be
-found at :file:`{GEOSERVER_DATA_DIR}/printing/config.yaml`.  The default
-configuration should contain an entry like so::
-
-    hosts:
-      - !dnsMatch
-        host: labs.metacarta.com
-        port: 80
-      - !dnsMatch
-        host: terraservice.net
-        port: 80
-
-You can add host/port entries to this list to allow other servers.
-
-.. seealso:: 
-  
-   The `Mapfish documentation
-   <http://www.mapfish.org/doc/print/configuration.html>`_ on configuring the
-   print module.
-
-   The `GeoServer documentation
-   <http://docs.geoserver.org/stable/en/user/community/printing/>`_ on
-   configuring the print module.
 
 

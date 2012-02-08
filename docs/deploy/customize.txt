@@ -1,7 +1,5 @@
-:orphan:
-
 ========================================
-Customizing the look and feel of GeoNode
+Customizing the Look and Feel of GeoNode
 ========================================
 
 This section will explain how to change GeoNode's main logo, the index page and the colors.
