@@ -98,12 +98,12 @@ Ext.onReady(function() {
                     if (rec.get("type") === "map") {
                         link += "/view";
                     } else {
-                        link += "?describe";
+                        link += "/metadata";
                     }
                     window.location = link;
                 });
                 var delete_ = doToRecord(function(rec) {
-                    var link = rec.get("href") + "?remove";
+                    var link = rec.get("href") + "/remove";
                     window.location = link;
                 });
                 grid.getEl().on("click", view, this, { delegate: 'a' });

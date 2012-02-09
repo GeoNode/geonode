@@ -10,7 +10,7 @@
 {% block main %}
 <div class="twocol">
   <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
-  <form action="/data/{{layer.typename}}?describe" method="POST">
+  <form action="{% url layer_metadata layer.typename %}" method="POST">
 	  {% csrf_token %}
       <ul class="form">
 	      {{ layer_form.as_ul }}

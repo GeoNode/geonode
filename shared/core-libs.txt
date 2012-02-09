@@ -18,3 +18,4 @@ coverage==3.4
 mock
 django-staticfiles
 django-taggit==0.9.3
+South==0.7.3
