@@ -744,7 +744,7 @@ class Layer(models.Model, PermissionLevelMixin):
                     'typename': self.typename,
                     'outputFormat': mime
                 }
-                params.extend(extra_params)
+                params.update(extra_params)
                 return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode(params)
 
             types = [
