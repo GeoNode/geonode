@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 from django import forms
-from django.utils.translation import ugettext_lazy as _
 import json
 import os
 import tempfile
@@ -11,7 +10,7 @@ class JSONField(forms.CharField):
         try:
             return json.loads(text)
         except ValueError:
-            raise forms.ValidationError(_("this field must be valid JSON"))
+            raise forms.ValidationError("this field must be valid JSON")
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
@@ -25,24 +24,24 @@ class LayerUploadForm(forms.Form):
         cleaned = super(LayerUploadForm, self).clean()
         base_name, base_ext = os.path.splitext(cleaned["base_file"].name)
         if base_ext.lower() not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff"):
-            raise forms.ValidationError(_("Only Shapefiles and GeoTiffs are supported. You uploaded a %s file" % base_ext))
+            raise forms.ValidationError("Only Shapefiles and GeoTiffs are supported. You uploaded a %s file" % base_ext)
         if base_ext.lower() == ".shp":
             dbf_file = cleaned["dbf_file"]
             shx_file = cleaned["shx_file"]
             if dbf_file is None or shx_file is None:
-                raise forms.ValidationError(_("When uploading Shapefiles, .SHX and .DBF files are also required."))
+                raise forms.ValidationError("When uploading Shapefiles, .SHX and .DBF files are also required.")
             dbf_name, __ = os.path.splitext(dbf_file.name)
             shx_name, __ = os.path.splitext(shx_file.name)
             if dbf_name != base_name or shx_name != base_name:
-                raise forms.ValidationError(_("It looks like you're uploading "
+                raise forms.ValidationError("It looks like you're uploading "
                     "components from different Shapefiles. Please "
-                    "double-check your file selections."))
+                    "double-check your file selections.")
             if cleaned["prj_file"] is not None:
                 prj_file = cleaned["prj_file"].name
                 if os.path.splitext(prj_file)[0] != base_name:
-                    raise forms.ValidationError(_("It looks like you're "
+                    raise forms.ValidationError("It looks like you're "
                         "uploading components from different Shapefiles. "
-                        "Please double-check your file selections."))
+                        "Please double-check your file selections.")
         return cleaned
 
     def write_files(self):
