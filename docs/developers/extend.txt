@@ -148,12 +148,14 @@ Setup Steps
         'modeltranslation',
      )
 
-7. *Syncdb:* If the additional dependencies you have installed in the steps above
-   are django apps that will use the Django ORM to store and retrieve data in
-   a database, you need to execute the syncdb management command to create the
-   tables in the database. This can be done with the following command::
+7. *Syncdb and migrations:* If the additional dependencies you have installed in the
+   steps above are django apps that will use the Django ORM to store and retrieve data
+   in a database, you need to execute the syncdb management command to create the
+   tables in the database. Additionally, you may need to run the migrate command to
+   execute any migration scripts if the app is being managed by South (a Django
+   tool for migrations). This can be done with the following commands::
 
-     $ python manage.py syncdb
+     $ python manage.py syncdb && python manage.py migrate
 
 8. *Copy GeoNodes wsgi script and modify it for your project:* The GeoNode application
    is executed and served apache using a wsgi launcher script. You will need to make
