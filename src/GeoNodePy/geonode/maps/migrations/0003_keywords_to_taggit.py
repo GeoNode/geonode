@@ -23,8 +23,9 @@ class Migration(DataMigration):
         from geonode.maps.models import Layer
         for layer in orm.Layer.objects.all():
             l = Layer.objects.get(id=layer.id)
+            layer.keywords_temp = ""
             for keyword in l.keywords.all():
-                layer.keywords_temp += keyword + " "
+                layer.keywords_temp += "%s " % keyword
             layer.save()
 
 
