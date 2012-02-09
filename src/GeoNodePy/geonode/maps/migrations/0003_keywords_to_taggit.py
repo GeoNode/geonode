@@ -4,18 +4,26 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
+
 class Migration(DataMigration):
 
     def forwards(self, orm):
+        # Because South has issues with fake fields, it includes exclusion
+        # rules for django-taggit. To work around this for a data migration
+        # we just get at the original object to migrate the keywords.
+        from geonode.maps.models import Layer
         for layer in orm.Layer.objects.all():
-            if layer.keywords is not None or len(layer.keywords) > 0:
-                for keyword in layer.keywords.split():
-                    layer.keywords.add(keyword)
+            l = Layer.objects.get(id=layer.id)
+            if layer.keywords_temp is not None or len(layer.keywords_temp) > 0:
+                for keyword in layer.keywords_temp.split():
+                    l.keywords.add(keyword)
 
 
     def backwards(self, orm):
+        from geonode.maps.models import Layer
         for layer in orm.Layer.objects.all():
-            for keyword in layer.keywords.all():
+            l = Layer.objects.get(id=layer.id)
+            for keyword in l.keywords.all():
                 layer.keywords_temp += keyword + " "
             layer.save()
 
