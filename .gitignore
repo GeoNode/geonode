@@ -38,7 +38,6 @@ pip-log.txt
 
 #Temporary files
 *~
-*.swp
 
 #Testing output
 .coverage
