@@ -1614,15 +1614,22 @@ def ajax_url_lookup(request):
             content='use a field named "query" to specify a prefix to filter urls',
             mimetype='text/plain'
         )
-    if request.POST['query'] != '':
-        forbiddenUrls = ['new','view',]
-        maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
-        if request.POST['mapid'] != '':
-            maps = maps.exclude(id=request.POST['mapid'])
-        json_dict = {
-            'urls': [({'url': m.urlsuffix}) for m in maps],
-            'count': maps.count(),
-            }
+    urlSuffix = request.POST['query']
+    forbiddenUrls = ['new','view']
+    if urlSuffix != '':
+        if urlSuffix in forbiddenUrls: #forbidden urls
+            json_dict = {
+                'urls' : [({'url': f}) for f in forbiddenUrls],
+                'count' : len(forbiddenUrls)
+                }
+        else:
+            maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
+            if request.POST['mapid'] != '':
+                maps = maps.exclude(id=request.POST['mapid'])
+            json_dict = {
+                'urls': [({'url': m.urlsuffix}) for m in maps],
+                'count': maps.count(),
+                }
     else:
         json_dict = {
             'urls' : [],

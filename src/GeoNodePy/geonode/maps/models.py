@@ -1356,6 +1356,19 @@ class Map(models.Model, PermissionLevelMixin):
 
         return config
 
+    def validUrl(self, url):
+        if len(url) == 0:
+            self.urlsuffix = url
+            return
+        forbiddenUrls = ['new','view',]
+        maps = Map.objects.filter(urlsuffix__startswith=url)
+        if self.id:
+            maps = maps.exclude(id=self.id)
+        if url in forbiddenUrls or maps.count() > 0:
+            raise Exception("The custom URL is unavailable")
+        else:
+            self.urlsuffix = url
+
     def update_from_viewer(self, conf):
         """
         Update this Map's details by parsing a JSON object as produced by
@@ -1368,7 +1381,10 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
-        self.urlsuffix = conf['about']['urlsuffix']
+
+        self.urlsuffix = self.validUrl(conf['about']['urlsuffix'])
+
+
         self.zoom = conf['map']['zoom']
 
         self.center_x = conf['map']['center'][0]
