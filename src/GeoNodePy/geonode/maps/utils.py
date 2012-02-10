@@ -634,6 +634,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     If the import into the database fails then delete the store
     (and delete the PostGIS table for it).
     """
+    cat = Layer.objects.gs_catalog
     try:
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
     except FailedRequestError, e:
