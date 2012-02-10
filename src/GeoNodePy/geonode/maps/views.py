@@ -512,6 +512,14 @@ def ajax_layer_permissions(request, layername):
         mimetype='text/plain'
     )
 
+def ajax_layer_edit_check(request, layername):
+    layer = get_object_or_404(Layer, typename=layername);
+    return HttpResponse(
+            str(request.user.has_perm("maps.change_layer", obj=layer)),
+            status=200,
+            mimetype='text/plain'
+        )
+
 def ajax_map_permissions(request, mapid):
     map = get_object_or_404(Map, pk=mapid)
 
