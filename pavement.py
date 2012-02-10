@@ -99,6 +99,7 @@ def install_deps(options):
         info('Installing from requirements file. '\
              'Use "paver bundle_deps" to create an install bundle')
         pip_install("-r shared/%s" % options.config.corelibs)
+        pip_install("-r shared/%s" % options.config.devlibs)
         if options.config.platform == "win32":
             info("You will need to install 'PIL' and 'ReportLab' "\
                  "separately to do PDF generation")
@@ -603,7 +604,8 @@ def platform_options(options):
     # defaults:
     pip_flags = ""
     scripts = "bin"
-    corelibs = "dev-requirements.txt"
+    corelibs = "requirements.txt"
+    devlibs = "dev-requirements.txt"
 
     if sys.platform == "win32":
         scripts = "Scripts"
@@ -612,6 +614,7 @@ def platform_options(options):
         
     options.config.bin = path(scripts)
     options.config.corelibs = corelibs
+    options.config.devlibs = devlibs
     options.config.pip_flags = pip_flags
 
 # include patched versions of zipfile code
