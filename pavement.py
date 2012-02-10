@@ -603,7 +603,7 @@ def platform_options(options):
     # defaults:
     pip_flags = ""
     scripts = "bin"
-    corelibs = "requirements.txt"
+    corelibs = "dev-requirements.txt"
 
     if sys.platform == "win32":
         scripts = "Scripts"
