@@ -43,6 +43,7 @@ LANGUAGES = (
     ('fr', 'Français'),
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
+    ('zn_CH', '中國的'),
 )
 
 SITE_ID = 1
