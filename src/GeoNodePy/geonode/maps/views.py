@@ -706,7 +706,7 @@ def _describe_layer(request, layer):
         if layer.metadata_uploaded and request.method == 'GET':  # show upload just metadata XML page
             return render_to_response("maps/layer_metadata_uploaded.html", RequestContext(request, {
                 "layer": layer,
-                "CSW_URL": settings.CSW_URL
+                "CSW_URL": settings.CSW['url']
         }))
 
         poc = layer.poc
@@ -848,8 +848,8 @@ def layerController(request, layername):
             "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
             "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
             "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
-            "CSW_URL": settings.CSW_URL,
-            "CSW_TYPE": settings.CSW_TYPE
+            "CSW_URL": settings.CSW['url'],
+            "CSW_TYPE": settings.CSW['type']
 	    }))
 
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \

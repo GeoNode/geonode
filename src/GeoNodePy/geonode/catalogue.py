@@ -9,14 +9,16 @@ from xml.etree.ElementTree import XML
 from urlparse import urlparse
 
 class Catalogue(CatalogueServiceWeb):
-    def __init__(self, cattype, url, user=None, password=None, skip_caps=True):
-        CatalogueServiceWeb.__init__(self, url=url, skip_caps=skip_caps)
-        self.type = cattype
-        self.user = user
-        self.password = password
+    def __init__(self, skip_caps=True):
+        self.type = settings.CSW['type']
+        self.url = settings.CSW['url']
+        self.user = settings.CSW['username']
+        self.password = settings.CSW['password']
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
+
+        CatalogueServiceWeb.__init__(self, url=self.url, skip_caps=skip_caps)
 
         upurl = urlparse(self.url)
 

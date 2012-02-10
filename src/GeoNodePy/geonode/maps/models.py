@@ -553,7 +553,7 @@ def get_wms():
 
 def get_csw():
     global _csw
-    _csw = Catalogue(settings.CSW_TYPE, settings.CSW_URL, settings.CSW_CREDENTIALS[0], settings.CSW_CREDENTIALS[1])
+    _csw = Catalogue()
     return _csw
 
 class LayerManager(models.Manager):
@@ -563,7 +563,7 @@ class LayerManager(models.Manager):
         url = "%srest" % settings.GEOSERVER_BASE_URL
         user, password = settings.GEOSERVER_CREDENTIALS
         self.gs_catalog = Catalog(url, _user, _password)
-        self.catalogue = Catalogue(settings.CSW_TYPE, settings.CSW_URL, settings.CSW_CREDENTIALS[0], settings.CSW_CREDENTIALS[1])
+        self.catalogue = Catalogue()
 
     @property
     def csw_catalogue(self):

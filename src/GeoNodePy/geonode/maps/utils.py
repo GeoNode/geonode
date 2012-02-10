@@ -431,7 +431,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
     try:
         Layer.objects.get(name=name)
     except Layer.DoesNotExist, e:
-        msg = ('There was a problem saving the layer %s to %s/Django. Error is: %s' % (settings.CSW_TYPE, layer, str(e)))
+        msg = ('There was a problem saving the layer %s to %s/Django. Error is: %s' % (settings.CSW['type'], layer, str(e)))
         logger.exception(msg)
         logger.debug('Attempting to clean up after failed save for layer [%s]', name)
         # Since the layer creation was not successful, we need to clean up
@@ -446,7 +446,7 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
         logger.exception('>>> FIXME: Please, if you can write python code, implement "verify()"'
                          'method in geonode.maps.models.Layer')
     except GeoNodeException, e:
-        msg = ('The layer [%s] was not correctly saved to %s/GeoServer. Error is: %s' % (settings.CSW_TYPE, layer, str(e)))
+        msg = ('The layer [%s] was not correctly saved to %s/GeoServer. Error is: %s' % (settings.CSW['type'], layer, str(e)))
         logger.exception(msg)
         e.args = (msg,)
         # Deleting the layer
@@ -503,8 +503,8 @@ def check_geonode_is_up():
         Layer.objects.csw_catalogue.login()
     except:
         from django.conf import settings
-        msg = ("Cannot connect to the GeoNetwork at %s\n"
-                "Please make sure you have started the CSW." % settings.CSW_URL)
+        msg = ("Cannot connect to the Catalogue at %s\n"
+                "Please make sure you have started the CSW." % settings.CSW['url'])
         raise GeoNodeException(msg)
 
 def file_upload(filename, user=None, title=None, overwrite=True, keywords = []):
@@ -600,6 +600,9 @@ def update_metadata(layer_uuid, xml, saved_layer):
 
     # update relevant XML
     layer_updated = saved_layer.date.strftime('%Y-%m-%dT%H:%M:%SZ') 
+
+    if tagname != 'MD_Metadata' and settings.CSW['type'] != 'pycsw':
+        raise GeoNodeException('Only ISO XML is supported')
 
     if tagname == 'Record':  # Dublin Core
         dc_ns = '{http://purl.org/dc/elements/1.1/}'

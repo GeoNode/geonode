@@ -21,8 +21,8 @@ def static(request, page):
 def developer(request):
     return render_to_response("developer.html", RequestContext(request, {
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
-        "CSW_URL": settings.CSW_URL,
-        "CSW_TYPE": settings.CSW_TYPE,
+        "CSW_URL": settings.CSW['url'],
+        "CSW_TYPE": settings.CSW['type'],
         "site": settings.SITEURL
     }))
 
