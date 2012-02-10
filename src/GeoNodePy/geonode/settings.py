@@ -157,13 +157,17 @@ GEOSERVER_CREDENTIALS = "geoserver_admin", GEOSERVER_TOKEN
 CSW = {
     # The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
     'type': 'pycsw',
+    #'type': 'geonetwork',
+    #'type': 'deegree',
+
     # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
     'url': 'http://localhost/pycsw/trunk/csw.py',
     #'url': 'http://localhost:8001/geonetwork/srv/en/csw',
     #'url': 'http://localhost:8001/deegree-csw-demo-3.0.4/services',
+
     # login credentials (for GeoNetwork)
-    'username': 'scott',
-    'password': 'tiger'
+    'username': 'admin',
+    'password': 'admin'
 }
 
 AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
