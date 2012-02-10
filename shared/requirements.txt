@@ -2,7 +2,6 @@ PIL
 OWSLib==0.4.0
 Django==1.2
 simplejson # needed for python2.5
-werkzeug
 django-extensions
 httplib2
 psycopg2
@@ -10,16 +9,6 @@ psycopg2
 #django-registration
 https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
 django-profiles
-Paste
-PasteDeploy
-PasteScript
-dj.paste
 -e git+https://github.com/ericflo/django-avatar.git#egg=avatar
-django-nose
-nose
-nose-cover3
-coverage==3.4
-nosexcover
-mock
 django-staticfiles
 South==0.7.3
