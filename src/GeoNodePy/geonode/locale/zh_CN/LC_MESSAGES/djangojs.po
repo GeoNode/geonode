@@ -1,0 +1,480 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-09 13:28-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1\n"
+
+#: maps/templates/lang.js:5 maps/templates/lang.js.py:8
+msgid "Add Layers"
+msgstr "添加层"
+
+#: maps/templates/lang.js:6
+msgid "Area"
+msgstr "区域"
+
+#: maps/templates/lang.js:7
+msgid "Background"
+msgstr "背景"
+
+#: maps/templates/lang.js:9
+msgid "Done"
+msgstr "完成"
+
+#: maps/templates/lang.js:10
+msgid "Available Layers"
+msgstr "可用层"
+
+#: maps/templates/lang.js:11
+msgid "Connection Error"
+msgstr "连接错误"
+
+#: maps/templates/lang.js:12
+msgid "The server returned an error"
+msgstr "服务器返回一个错误"
+
+#: maps/templates/lang.js:13
+msgid "Details..."
+msgstr "详情..."
+
+#: maps/templates/lang.js:15 maps/templates/lang.js.py:107
+msgid "Height"
+msgstr "高度"
+
+#: maps/templates/lang.js:16
+msgid "Get Feature Info"
+msgstr "获取图形信息"
+
+#: maps/templates/lang.js:17 maps/templates/lang.js.py:108
+msgid "Large"
+msgstr "大量"
+
+#: maps/templates/lang.js:18
+msgid "or add a new server."
+msgstr "或添加新的服务器。"
+
+#: maps/templates/lang.js:19
+msgid "Map Layers"
+msgstr "地图图层"
+
+#: maps/templates/lang.js:20
+msgid "View available data from:"
+msgstr "查看可用的数据："
+
+#: maps/templates/lang.js:21
+msgid "Data"
+msgstr "数据"
+
+#: maps/templates/lang.js:22
+msgid "Layers"
+msgstr "图层"
+
+#: maps/templates/lang.js:23
+msgid "Legend"
+msgstr "图例"
+
+#: maps/templates/lang.js:24
+msgid "Length"
+msgstr "长度"
+
+#: maps/templates/lang.js:25
+msgid "Loading Map..."
+msgstr "载入地图..."
+
+#: maps/templates/lang.js:26 maps/templates/lang.js.py:109
+msgid "Map Size"
+msgstr "地图大小"
+
+#: maps/templates/lang.js:27
+msgid "Measure"
+msgstr "测量"
+
+#: maps/templates/lang.js:28
+msgid "About this Map"
+msgstr "关于此地图"
+
+#: maps/templates/lang.js:29 maps/templates/lang.js.py:82
+#: maps/templates/lang.js:151
+msgid "Abstract"
+msgstr "摘要"
+
+#: maps/templates/lang.js:30 maps/templates/lang.js.py:83
+#: maps/templates/lang.js:149
+msgid "Contact"
+msgstr "联系"
+
+#: maps/templates/lang.js:31 maps/templates/lang.js.py:41
+msgid "Permalink"
+msgstr "固定"
+
+#: maps/templates/lang.js:32 maps/templates/lang.js.py:222
+msgid "Cancel"
+msgstr "取消"
+
+#: maps/templates/lang.js:33
+msgid "Save as Copy"
+msgstr "另存为"
+
+#: maps/templates/lang.js:34
+msgid "Save"
+msgstr "保存"
+
+#: maps/templates/lang.js:35 maps/templates/lang.js.py:86
+#: maps/templates/lang.js:95 maps/templates/lang.js.py:148
+#: maps/templates/lang.js:170 maps/templates/lang.js.py:205
+msgid "Title"
+msgstr "标题"
+
+#: maps/templates/lang.js:36 maps/templates/lang.js.py:110
+msgid "Mini"
+msgstr "迷你"
+
+#: maps/templates/lang.js:37
+msgid "Pan Map"
+msgstr "平移地图"
+
+#: maps/templates/lang.js:38
+msgid "Zoom to Next Extent"
+msgstr "缩放到下一个区域"
+
+#: maps/templates/lang.js:39
+msgid "Zoom to Previous Extent"
+msgstr "缩放到下一个区域"
+
+#: maps/templates/lang.js:40
+msgid "This map has not yet been saved."
+msgstr "地图还没保存"
+
+#: maps/templates/lang.js:42 maps/templates/lang.js.py:111
+msgid "Premium"
+msgstr "高级"
+
+#: maps/templates/lang.js:43
+msgid "Print Map"
+msgstr "打印地图"
+
+#: maps/templates/lang.js:44
+msgid "Print Preview"
+msgstr "打印预览"
+
+#: maps/templates/lang.js:45
+msgid "Properties"
+msgstr "属性"
+
+#: maps/templates/lang.js:46 maps/templates/lang.js.py:112
+msgid "Publish Map"
+msgstr "发布地图"
+
+#: maps/templates/lang.js:47 maps/templates/lang.js.py:48
+msgid "Remove Layer"
+msgstr "删除图层"
+
+#: maps/templates/lang.js:49
+msgid "Sorry, your map could not be saved."
+msgstr "对不起，您的地图不能保存"
+
+#: maps/templates/lang.js:50
+msgid "Error While Saving"
+msgstr "保存错误"
+
+#: maps/templates/lang.js:51
+msgid "Save Map"
+msgstr "保存地图"
+
+#: maps/templates/lang.js:52
+msgid "You must be logged in to save this map."
+msgstr "您必须登录才能保存地图。"
+
+#: maps/templates/lang.js:53 maps/templates/lang.js.py:114
+msgid "Small"
+msgstr "小"
+
+#: maps/templates/lang.js:54
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr ""
+"连接服务时出错。\n"
+"请检查网址再重试。"
+
+#: maps/templates/lang.js:55
+msgid "Layer Properties"
+msgstr "图层属性"
+
+#: maps/templates/lang.js:56
+msgid "Change layer format and style"
+msgstr "更改图层格式和样式"
+
+#: maps/templates/lang.js:57
+msgid "Edit Styles"
+msgstr "编辑样式"
+
+#: maps/templates/lang.js:58
+msgid "Edit layer styles"
+msgstr "编辑图层样式"
+
+#: maps/templates/lang.js:59
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "切换到谷歌地球3D查看器"
+
+
+#: maps/templates/lang.js:60
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr "您加载的地图不存在。请创建一个新的地图"
+
+#: maps/templates/lang.js:61
+msgid "Unknown Map"
+msgstr "未知地图"
+
+#: maps/templates/lang.js:62 maps/templates/lang.js.py:115
+msgid "Width"
+msgstr "宽度"
+
+#: maps/templates/lang.js:63
+msgid "Zoom In"
+msgstr "放大"
+
+#: maps/templates/lang.js:64
+msgid "Zoom Out"
+msgstr "缩小"
+
+#: maps/templates/lang.js:65
+msgid "Zoom level"
+msgstr "缩放级别"
+
+#: maps/templates/lang.js:66
+msgid "Zoom Level"
+msgstr "缩放级别"
+
+#: maps/templates/lang.js:67
+msgid "Zoom to Layer Extent"
+msgstr "缩放范围"
+
+#: maps/templates/lang.js:68
+msgid "Zoom to Visible Extent"
+msgstr "缩放到可见范围"
+
+#: maps/templates/lang.js:74
+msgid "Zoom Level {zoom}"
+msgstr "缩放级别{缩放}"
+
+#: maps/templates/lang.js:80
+msgid "Create Map"
+msgstr "创建地图"
+
+#: maps/templates/lang.js:81
+msgid "Export Map"
+msgstr "导出地图"
+
+#: maps/templates/lang.js:84
+msgid "Map"
+msgstr "地图"
+
+#: maps/templates/lang.js:85 maps/templates/lang.js.py:152
+msgid "View this Map"
+msgstr "查看地图"
+
+#: maps/templates/lang.js:87
+msgid "Open Map"
+msgstr "打开地图"
+
+#: maps/templates/lang.js:93 maps/templates/lang.js.py:169
+msgid "Name"
+msgstr "名称"
+
+#: maps/templates/lang.js:94
+msgid "Queryable"
+msgstr "查询"
+
+#: maps/templates/lang.js:101
+msgid "No background"
+msgstr "没有背景"
+
+#: maps/templates/lang.js:113
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr "您可以随时发布地图到网上！"
+"只需复制下面的HTML地图代码嵌入到您的网页："
+
+#: maps/templates/lang.js:122 maps/templates/lang.js.py:188
+msgid "Abstract:"
+msgstr "摘要："
+
+#: maps/templates/lang.js:123 maps/templates/lang.js.py:190
+msgid "No attribution information is provided for this layer."
+msgstr "此图层提供无属性信息。"
+
+#: maps/templates/lang.js:124 maps/templates/lang.js.py:191
+msgid "Provided by:"
+msgstr "提供："
+
+#: maps/templates/lang.js:125 maps/templates/lang.js.py:192
+msgid "Download:"
+msgstr "下载："
+
+#: maps/templates/lang.js:126 maps/templates/lang.js.py:194
+msgid "No keywords are listed for this layer."
+msgstr "无关键字列出此图层。"
+
+#: maps/templates/lang.js:127 maps/templates/lang.js.py:195
+msgid "Keywords:"
+msgstr "关键词："
+
+#: maps/templates/lang.js:128 maps/templates/lang.js.py:196
+msgid "No metadata URLs are defined for this layer."
+msgstr "此图层没有指定元数据链接。"
+
+#: maps/templates/lang.js:129 maps/templates/lang.js.py:197
+msgid "Metadata Links:"
+msgstr "元数据链接："
+
+#: maps/templates/lang.js:135
+msgid "Paper size:"
+msgstr "纸张尺寸："
+
+#: maps/templates/lang.js:136
+msgid "Resolution:"
+msgstr "分辨率："
+
+#: maps/templates/lang.js:137
+msgid "Print"
+msgstr "打印"
+
+#: maps/templates/lang.js:138
+msgid "Enter map title here."
+msgstr "在此处输入地图标题。"
+
+#: maps/templates/lang.js:139
+msgid "Include legend?"
+msgstr "包含图例吗？"
+
+#: maps/templates/lang.js:140
+msgid "Enter comments here."
+msgstr "在这里输入评论。"
+
+#: maps/templates/lang.js:141
+msgid "Creating PDF..."
+msgstr "生成PDF..."
+
+#: maps/templates/lang.js:150
+msgid "Last Modified"
+msgstr "最后修改"
+
+#: maps/templates/lang.js:153 maps/templates/lang.js.py:174
+msgid "Prev"
+msgstr "上一页"
+
+#: maps/templates/lang.js:154 maps/templates/lang.js.py:175
+msgid "Next"
+msgstr "下一页"
+
+#: maps/templates/lang.js:155 maps/templates/lang.js.py:176
+msgid "of"
+msgstr "对于"
+
+#: maps/templates/lang.js:156 maps/templates/lang.js.py:177
+msgid "Your search did not match any items."
+msgstr "没有搜索到您要的结果。"
+
+#: maps/templates/lang.js:157
+msgid "Search Maps"
+msgstr "查询地图"
+
+#: maps/templates/lang.js:158 maps/templates/lang.js.py:178
+msgid "Search"
+msgstr "查询"
+
+#: maps/templates/lang.js:159 maps/templates/lang.js.py:179
+msgid "Showing"
+msgstr "显示"
+
+#: maps/templates/lang.js:160
+msgid "Loading"
+msgstr "加载"
+
+#: maps/templates/lang.js:161 maps/templates/lang.js.py:181
+msgid "permalink"
+msgstr "永久"
+
+#: maps/templates/lang.js:168
+msgid "Select"
+msgstr "选择"
+
+#: maps/templates/lang.js:171
+msgid "Select:"
+msgstr "选择："
+
+#: maps/templates/lang.js:172
+msgid "All"
+msgstr "全部"
+
+#: maps/templates/lang.js:173
+msgid "None"
+msgstr "没有"
+
+#: maps/templates/lang.js:180
+msgid "Loading..."
+msgstr "载入中..."
+
+#: maps/templates/lang.js:182
+msgid "You do not have permission to view this data"
+msgstr "您没有权限查看此数据"
+
+#: maps/templates/lang.js:183
+msgid "This data is stored on a remote server"
+msgstr "此数据存储在远程服务器上"
+
+#: maps/templates/lang.js:189
+msgid "No abstract is provided for this layer."
+msgstr "此图层没有抽象摘要。"
+
+#: maps/templates/lang.js:193
+msgid "No download URLs are definied for this layer."
+msgstr "此图层没有下载的网址。"
+
+#: maps/templates/lang.js:203
+msgid "Selected Layers"
+msgstr "选定图层"
+
+#: maps/templates/lang.js:204
+msgid "No Layers Selected"
+msgstr "没有选择任何图层"
+
+#: maps/templates/lang.js:206
+msgid "Clear Selected"
+msgstr "清除选定"
+
+#: maps/templates/lang.js:207
+msgid "Clear All"
+msgstr "全部清除"
+
+#: maps/templates/lang.js:213
+msgid "Operation Failed"
+msgstr "操作失败"
+
+#: maps/templates/lang.js:214
+msgid "No layers are currently selected."
+msgstr "当前没有选择任何图层。"
+
+#: maps/templates/lang.js:221
+msgid "Downloading..."
+msgstr "下载..."
+
+#: maps/templates/lang.js:223
+msgid "Please wait"
+msgstr "请稍候"
