@@ -29,9 +29,9 @@
   </div><!-- /#header -->
   <div id="crossbar">
    <!-- Only show the language form if the csrf_token is present -->
-   {% if csrf_token != "NOTPROVIDED" %}
 
-    <div class="wrap selfclear">             
+    <div class="wrap selfclear"> 
+   {% if csrf_token != "NOTPROVIDED" %}            
    {% get_current_language as LANGUAGE %}
     <form class="langbar" id="target" action="/i18n/setlang/" method="post">
       {% csrf_token %}
