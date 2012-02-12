@@ -376,10 +376,9 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
                                  workspace=gs_resource.store.workspace.name,
                                  title=title or gs_resource.title,
                                  uuid=layer_uuid,
-                                 keywords=' '.join(keywords),
+                                 keywords=','.join(keywords),
                                  abstract=abstract or gs_resource.abstract or '',
                                  owner=user,
-                                 metadata_uploaded='xml' in files
                                  )
     )
 
@@ -407,12 +406,14 @@ def save(layer, base_file, user, overwrite = True, title=None, abstract=None, pe
         md_xml, md_title, md_abstract = update_metadata(layer_uuid, open(files['xml']).read(), saved_layer)
         Layer.objects.filter(uuid=layer_uuid).update(
             metadata_xml=md_xml,
+            metadata_uploaded=True,
             title=md_title,
             abstract=md_abstract,
         )
         saved_layer.metadata_xml = md_xml
         saved_layer.title = md_title
         saved_layer.abstract = md_abstract
+        saved_layer.metadata_uploaded = True
 
     # add to CSW catalogue
     saved_layer.save_to_catalogue()

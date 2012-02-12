@@ -6,6 +6,7 @@ from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.util import http_post, nspath
 from xml.dom import minidom
 from xml.etree.ElementTree import XML
+from xml.etree import ElementTree as etree
 from urlparse import urlparse
 
 class Catalogue(CatalogueServiceWeb):
@@ -97,13 +98,20 @@ class Catalogue(CatalogueServiceWeb):
         response = self.csw_request(layer, "maps/csw/transaction_insert.xml")
         # TODO: Parse response, check for error report
 
-        # Turn on the "view" permission (aka publish) for
-        # the "all" group in GeoNetwork so that the layer
-        # will be searchable via CSW without admin login.
-        # all other privileges are set to False for all 
-        # groups.
-
         if self.type == 'geonetwork':
+
+            # set layer.uuid based on what GeoNetwork returns
+            # this is needed for inserting FGDC metadata in GN
+
+            exml = etree.fromstring(response.read())
+            identifier = exml.find('{%s}InsertResult/{%s}BriefRecord/identifier' % (namespaces['csw'], namespaces['csw'])).text
+            layer.uuid = identifier
+
+            # Turn on the "view" permission (aka publish) for
+            # the "all" group in GeoNetwork so that the layer
+            # will be searchable via CSW without admin login.
+            # all other privileges are set to False for all 
+            # groups.
             self.set_metadata_privs(layer.uuid, {"all":  {"view": True}})
         
         return "%s?%s" % (self.url, urllib.urlencode({
