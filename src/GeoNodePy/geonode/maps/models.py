@@ -1143,7 +1143,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 meta.identification.keywords,
                 [])
         kw_list = filter(lambda x: x is not None, kw_list)
-        self.keywords = ' '.join(kw_list)
+        self.keywords = ','.join(kw_list)
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:
