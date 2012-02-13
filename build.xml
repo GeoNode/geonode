@@ -62,18 +62,6 @@
                 <exclude name="**/script/**"/>
             </fileset>
         </copy>
-        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/timeline/timeline_ajax/styles">
-            <fileset dir="app/static/externals/timeline/timeline_ajax/styles"/>
-        </copy>
-        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/timeline/timeline_ajax/images">
-            <fileset dir="app/static/externals/timeline/timeline_ajax/images"/>
-        </copy>
-        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/timeline/timeline_js/images">
-            <fileset dir="app/static/externals/timeline/timeline_js/images"/>
-        </copy>
-        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/timeline/timeline_js">
-            <fileset file="app/static/externals/timeline/timeline_js/timeline-bundle.css"/>
-        </copy>
         <!-- copy stick -->
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/stick">
             <fileset dir="externals/stick">
