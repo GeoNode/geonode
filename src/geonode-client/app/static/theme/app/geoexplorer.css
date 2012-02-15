@@ -1,0 +1,379 @@
+/* don't wrap lines on any tooltips */
+.x-tip {
+    white-space: nowrap;
+}
+
+/* get images on buttons with text to line up with those with no text */
+.x-btn-text-icon .x-btn-center .x-btn-text {
+    background-position: 0 3px;
+}
+
+/* apply some margin when using the row expander */
+.x-grid3-row-body p {
+    margin: 5px !important;
+}
+
+/* workaround for semi-alpha pixels in IE7: background needs to be the same
+ * as the toolbar's background color */
+.ext-ie .x-item-disabled .x-btn-text {
+    background-color: #EAEAEA;
+}
+
+.x-tree-node-leaf  .gx-tree-layer-icon {
+    background-image: url(img/geosilk/vector.png);
+}
+
+.x-tree-node-leaf  .gx-tree-rasterlayer-icon {
+    background-image: url(img/geosilk/raster.png);
+}
+
+.x-menu-group-item .x-menu-item-icon {
+    background: transparent url(../../externals/ext/resources/images/default/form/radio.gif) no-repeat 0 0;
+    height: 13px;
+    width: 13px;
+    margin: 2px;
+}
+
+.x-menu-item-checked .x-menu-group-item .x-menu-item-icon {
+    background: transparent url(../../externals/ext/resources/images/default/form/radio.gif) no-repeat -13px -13px;
+    height: 13px;
+    width: 13px;
+    margin: 2px;
+}
+
+.x-btn .icon-geoexplorer {
+    background-image: url(img/geoexplorer.png);
+}
+
+.x-btn .icon-addlayers {
+    background-image: url(img/silk/add.png);
+}
+
+.x-btn .icon-removelayers, .x-menu-item .icon-removelayers {
+    background-image: url(img/silk/delete.png);
+}
+
+.x-btn .icon-layerproperties, .x-menu-item .icon-layerproperties {
+    background-image: url(img/silk/wrench.png);
+}
+
+.x-btn .icon-layerstyles, .x-menu-item .icon-layerstyles {
+    background-image: url(img/silk/palette.png);
+}
+
+.x-btn .icon-getfeatureinfo {
+    background-image: url(img/silk/information.png);
+}
+
+.x-btn .icon-3D {
+    background-image: url(img/geosilk/google_earth.png);
+}
+
+.x-btn .icon-save {
+    background-image: url(img/geosilk/map_save.png);
+}
+
+/* Really for CAPRA, watch out! */
+
+.x-menu-group-item .icon-point,
+.x-btn .icon-point {
+    background: transparent url(img/geosilk/bullet_orange.png) no-repeat center center !important;
+    margin: 0px;
+    height: 16px;
+    width: 16px;
+}
+
+.x-menu-group-item .icon-line,
+.x-btn .icon-line {
+    background: transparent url(img/geosilk/line_orange.png) no-repeat center center !important;
+    margin: 0px;
+    height: 16px;
+    width: 16px;
+}
+
+.x-menu-group-item .icon-polygon,
+.x-btn .icon-polygon {
+    background: transparent url(img/geosilk/shape_square_orange.png) center center !important;
+    margin: 0px;
+    height: 16px;
+    width: 16px;
+}
+
+.x-btn .icon-visibility {
+    background-image: url(img/silk/eye.png);
+}
+
+.x-btn .icon-pdf {
+    background-image: url(img/silk/page_white_acrobat.png);
+}
+
+div.report { 
+    background-color: white;
+    height: 100%;
+}
+
+div.report table, div.report td, div.report th { 
+padding: .4em;
+}
+
+div.report th { 
+background-color: #CCC;
+}
+
+div.report tr.odd { 
+background-color: #EEF;
+}
+
+.report td.corner{ 
+background-color:white;
+}
+
+
+/* ------------ */
+
+.x-btn .icon-export {
+    background-image: url(img/silk/map_go.png);
+}
+.x-btn .icon-measure {
+    background-image: url(img/geosilk/measure.png);
+}
+
+.icon-measure-length {
+    background-image: url(img/geosilk/ruler.png) !important;
+}
+
+.icon-measure-area {
+    background: url(img/geosilk/ruler_square.png) no-repeat 0 0 !important;
+    margin: 0 !important;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.x-btn .icon-layer-switcher {
+   background-image: url(img/silk/layers.png);
+}
+
+.x-btn .icon-zoom-in { 
+    background-image: url(img/silk/magnifier_zoom_in.png);
+}
+
+.x-btn .icon-zoom-out { 
+    background-image: url(img/silk/magnifier_zoom_out.png);
+}
+
+.x-btn .icon-zoom-previous { 
+    background-image: url(img/silk/arrow_left.png);
+}
+
+.x-btn .icon-zoom-next { 
+    background-image: url(img/silk/arrow_right.png);
+}
+
+.x-btn .icon-zoom-visible, .x-menu-item .icon-zoom-visible { 
+    background-image: url(img/silk/arrow_out.png);
+}
+
+.x-btn .icon-zoom-to, .x-menu-item .icon-zoom-to { 
+    background-image: url(img/silk/magnifier.png);
+}
+
+.x-btn .icon-pan { 
+    background-image: url(img/geosilk/pan.png);
+}
+
+.legend-item {
+    margin: 0.5em 10px;
+}
+
+div.map-overlay {
+    z-index: 1000; 
+    position: absolute; 
+    right: 10px; 
+    bottom: 10px;
+}
+
+div.map-overlay div.overlay-element {
+    display:inline;
+    float: left;
+    margin: 5px;
+}
+
+div.overlay-scaleline {
+    bottom: 0px;
+    left: 0px;
+    margin-top: 0px;
+}
+
+.olControlAttribution{ 
+    color: gray;
+    bottom: .1em;
+    left: .4em;
+    right: 220px;
+    font-size: smaller;
+}
+
+.olControlScaleLineTop,
+.olControlScaleLineBottom {
+    font-size:10px;
+}
+
+/* Pan- and Zoom- Panel Styles*/
+
+.olControlPanPanel div {
+    background-image:url(../../externals/ext/resources/images/gray/panel/tool-sprites.gif);
+    height:15px;
+    width:15px;
+    /* workaround for button height in IE */
+    font-size:0px;
+}
+
+.olControlPanPanel .olControlPanNorthItemInactive {
+    background-position:15px -60px;
+    left:16px
+}
+.olControlPanPanel .olControlPanEastItemInactive {
+    background-position:15px -120px;
+    left: 30px;
+    top: 16px;
+}
+.olControlPanPanel .olControlPanSouthItemInactive {
+    background-position:15px -75px;
+    left: 16px;
+    top: 32px;
+}
+.olControlPanPanel .olControlPanWestItemInactive {
+    background-position:15px -105px;
+    left: 2px;
+    top: 16px;
+}
+
+.olControlZoomPanel { 
+    left:21px;
+}
+
+.olControlZoomPanel div {
+    background-image:url(../../externals/ext/resources/images/gray/panel/tool-sprites.gif);
+    height:15px;
+    width:15px;
+    /* workaround for button height in IE */
+    font-size:0px;
+}
+
+.olControlZoomPanel .olControlZoomInItemInactive {
+    background-position:15px -240px;
+}
+
+.olControlZoomPanel .olControlZoomToMaxExtentItemInactive {
+    display: none;
+}
+
+.olControlZoomPanel .olControlZoomOutItemInactive {
+    background-position:15px -255px;
+    top: 123px;
+}
+
+.olControlScaleLine {
+    line-height: 10px;
+    display: block;
+    position: relative;
+    font-family: tahoma,arial,helvetica,sans-serif;
+}
+
+/* position the zoom slider within map panel */
+.gx-zoomslider {
+    top: 90px;
+    left: 17px
+}
+
+
+.gx-layer-menu {
+    background: #F0F0F0;
+}
+
+.gx-field-label {
+    font-weight: bold;
+    margin: 4px;
+    vertical-align: baseline;
+}
+
+.gx-snippet-area textarea {
+    color: black; 
+    opacity: 1;
+}
+
+.gx-info-panel {
+    margin: 1em;
+}
+
+.gx-info-panel h2 {
+    margin-top: 1em;
+}
+
+.gx-wizard-description p {
+    margin: 4px auto;
+    background: none;
+}
+
+.gx-wizard-pane {
+    padding: 4px;
+}
+
+.gx-grid-true {
+    background: red;
+}
+
+.gx-grid-false {
+    background: blue;
+}
+
+.gx-wizard-active button {
+    font-weight: bold;
+}
+
+.gx-wizard-pane .x-panel-body {
+    background: none;
+}
+
+.gx-wizard-pane .x-grid3-dirty-cell {
+    background-image: none;
+}
+
+.gx-layer-visibility {
+    background-image: url(img/silk/eye.png);
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.error-details {
+    font: 8pt courier,courier new,monospace;
+    padding: 5px;
+}
+
+.user_item button {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+}
+
+#more-info{ 
+float:right;
+}
+
+/* gxp overrides for different folder structure */
+.olControlZoomPanel div {
+    background-image:url(../../externals/ext/resources/images/gray/panel/tool-sprites.gif);
+}
+.x-tree-node img.gxp-folder, .x-tree-node-collapsed img.gxp-folder{
+    background: url(../../externals/ext/resources/images/default/tree/folder.gif);
+}
+.x-tree-node-expanded img.gxp-folder {
+    background: url(../../externals/ext/resources/images/default/tree/folder-open.gif);
+}
+
+.olLayerGoogleV3.olLayerGoogleCopyright {
+    bottom: 1em !important;
+}
+.olLayerGoogleV3.olLayerGooglePoweredBy {
+    bottom: 2em !important;
+}
