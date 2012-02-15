@@ -343,7 +343,7 @@ if (options.form) {
     {
                             Ext.Msg.show({
                                 title: gettext("Error"),
-                                msg: response.responseText.contains("413") ? gettext("Upload is too large") : response.responseText,
+                                msg: response.responseText.indexOf("413") > -1 ? gettext("Upload is too large") : response.responseText,
                                 minWidth: 200,
                                 modal: true,
                                 icon: Ext.Msg.ERROR,
