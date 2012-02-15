@@ -282,7 +282,7 @@
     disable_shapefile_inputs();
     disable_encoding_input();
 
-    var permissionsEditor = new GeoNode.WorldMapPermissionsEditor({
+    var permissionsEditorUpload = new GeoNode.WorldMapPermissionsEditor({
         renderTo: "permissions_form",
         userLookup: "{% url geonode.views.ajax_lookup_email %}",
         customGroup: "{{ CUSTOM_GROUP_NAME }}",
@@ -297,7 +297,7 @@
             users:[]
         }
     });
-    permissionsEditor.fireEvent("updated", permissionsEditor);
+    permissionsEditorUpload.fireEvent("updated", permissionsEditorUpload);
 
     var showTOC = function() {
         var TOCPanel = new Ext.Panel({
@@ -337,7 +337,7 @@ if (options.form) {
     {
                             Ext.Msg.show({
                                 title: gettext("Error"),
-                                msg: response.responseText.contains("413") ? gettext("Upload is too large") : response.responseText,
+                                msg: response.responseText.indexOf("413") > -1 ? gettext("Upload is too large") : response.responseText,
                                 minWidth: 200,
                                 modal: true,
                                 icon: Ext.Msg.ERROR,
