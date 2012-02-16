@@ -49,7 +49,7 @@ options(
     ),
     deploy=Bunch(
 #        pavement=path('shared/package/pavement.py'),
-        req_file=path('shared/package/deploy-libs.txt'),
+        req_file=path('shared/package/requirements.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
 #        install_paver=True,
@@ -72,7 +72,7 @@ geonode_client_target_war = path('webapps/geonode-client.war')
 
 deploy_req_txt = """
 # NOTE... this file is generated
--r %(venv)s/shared/core-libs.txt
+-r %(venv)s/shared/requirements.txt
 -e %(venv)s/src/GeoNodePy
 """ % locals()
 
@@ -99,6 +99,7 @@ def install_deps(options):
         info('Installing from requirements file. '\
              'Use "paver bundle_deps" to create an install bundle')
         pip_install("-r shared/%s" % options.config.corelibs)
+        pip_install("-r shared/%s" % options.config.devlibs)
         if options.config.platform == "win32":
             info("You will need to install 'PIL' and 'ReportLab' "\
                  "separately to do PDF generation")
@@ -109,7 +110,7 @@ def bundle_deps(options):
     Create a pybundle of all python dependencies.  If created, this
     will be the default for installing python deps.
     """
-    pip_bundle("-r shared/core-libs.txt %s" % bundle)
+    pip_bundle("-r shared/requirements.txt %s" % bundle)
 
 
 @task
@@ -195,7 +196,6 @@ def setup_geonetwork(options):
     dst_url = webapps / war_zip_file
     dst_war = webapps / "geonetwork.war"
     deployed_url = webapps / "geonetwork"
-    schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
@@ -204,11 +204,6 @@ def setup_geonetwork(options):
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
         zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
-
-    # Update the ISO 19139 profile to the latest version
-    path(schema_url).rmtree()
-    info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
-    path("gn_schema").copytree(schema_url)
 
     src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
     dst_url = webapps / "intermap.war"
@@ -441,7 +436,7 @@ def make_release(options):
         tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
         for file in out_pkg.walkfiles():
             tar.add(file)
-        tar.add('../README.release.rst', arcname=('%s/README.rst' % out_pkg))
+        tar.add('README.release.rst', arcname=('%s/README.rst' % out_pkg))
         tar.close()
 
         out_pkg.rmtree()
@@ -609,16 +604,17 @@ def platform_options(options):
     # defaults:
     pip_flags = ""
     scripts = "bin"
-    corelibs = "core-libs.txt"
+    corelibs = "requirements.txt"
+    devlibs = "dev-requirements.txt"
 
     if sys.platform == "win32":
-        corelibs = "py-base-libs.txt"
         scripts = "Scripts"
     elif sys.platform == "darwin":
         pip_flags = "ARCHFLAGS='-arch i386'"
         
     options.config.bin = path(scripts)
     options.config.corelibs = corelibs
+    options.config.devlibs = devlibs
     options.config.pip_flags = pip_flags
 
 # include patched versions of zipfile code
