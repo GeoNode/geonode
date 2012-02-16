@@ -54,7 +54,7 @@
   {% endif %}
 
 {% else %}
-  {% has_obj_perm user layer "maps.view_layer" as can_view %}
+  {% has_obj_perm user layer "maps.edit_layer" as can_edit %}
   {% if can_edit %}
     <p><b>{% trans "Download:" %}</b>
     {% for link in extra_links.download %}

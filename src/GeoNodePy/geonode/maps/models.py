@@ -958,6 +958,9 @@ class Layer(models.Model, PermissionLevelMixin):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
 
+        if self.name.find('nc_community_survey') > -1:
+            return None
+
         bbox = self.llbbox_coords()
 
         dx = float(min(180,bbox[2])) - float(max(-180,(bbox[0])))
