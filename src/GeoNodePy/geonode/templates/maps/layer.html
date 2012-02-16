@@ -136,7 +136,7 @@
 <div id="preview_map"></div>
 
 {% if layer.display_type %}<p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>{% endif %}
-{% if layer.keywords %}<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>{% endif %}
+{% if layer.keywords %}<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords.all|join:", " }}</p>{% endif %}
 {% if layer.edition %}<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>{% endif %}
 {% if layer.topic_category %}<p> <strong>{% trans "Topic Category" %}:</strong> {{ layer.topic_category }}</p>{% endif %}
 
