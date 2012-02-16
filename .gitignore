@@ -41,4 +41,6 @@ pip-log.txt
 
 #Testing output
 .coverage
+.noseids
+geonode_test_data/
 nosetests.xml
