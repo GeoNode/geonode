@@ -233,11 +233,23 @@
     <br/>
     <span class="styles-list">
         <input type="radio" name="style" id="{{layer.publishing.default_style.name}}" value="{{layer.publishing.default_style.name}}" checked="checked"/>
-        <label for="{{layer.publishing.default_style.name}}" class="style-title"> {{ layer.default_style.name|title }} </label>
+        <label for="{{layer.publishing.default_style.name}}" class="style-title">
+         {% if layer.default_style.sld_title %}
+            {{ layer.default_style.sld_title }}
+         {% else %}
+            {{ layer.default_style.name|title }}
+         {% endif %}
+        </label>
         <a href="{{ layer.default_style.body_href }}">SLD</a><br/>
     {% for style in layer.styles %} 
         <input type="radio" name="style" id="{{style.name}}" value="{{style.name}}"/>
-        <label for="{{style.name}}" class="style-title"> {{ style.name|title }} </label>
+        <label for="{{style.name}}" class="style-title">
+         {% if style.sld_title %}
+            {{ style.sld_title }}
+         {% else %}
+            {{ style.name|title }}
+         {% endif %}
+        </label>
         <a href="{{ style.body_href }}">SLD</a><br/>
     {% endfor %}
     </span>
