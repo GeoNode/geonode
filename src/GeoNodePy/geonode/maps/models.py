@@ -5,7 +5,7 @@ from owslib.wms import WebMapService
 from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.catalogue import Catalogue
+from geonode.catalogue.catalogue import Catalogue
 from django.db.models import signals
 from django.utils.html import escape
 import httplib2
