@@ -1,12 +1,13 @@
-=========
- WorldMap
-=========
+=======================================
+Configuring GeoNode in development mode
+=======================================
+
 
 Build Requirements
 ==================
 
-Before starting work on WorldMap, you will need to have the following
-software installed and in your PATH:
+Before starting work on the GeoNode, you will need to have the following
+software installed and in your ``PATH``:
 
 * The git command-line client, version 1.5.3 or higher:
   - To verify that it is available, run ``git --version`` and verify the
@@ -40,7 +41,7 @@ software installed and in your PATH:
     ``Python 2.6``
   - If not, download from http://python.org/download/
   - Python must be compiled w/ SSL support and sqlite support to
-    support the WorldMap development setup.  Installing the sqlite and
+    support the geonode development setup.  Installing the sqlite and
     openssl development headers before building Python will suffice.
 
 * Apache Maven 2.0.10 or Later:
@@ -53,10 +54,8 @@ software installed and in your PATH:
 
   - If not, download from http://maven.apache.org/download.html
 
-* Apache Tomcat 6.x or Jetty
-
-Additionally, WorldMap uses a number of native-code libraries in Python.  You
-can install these libraries manually, or allow the WorldMap setup script to
+Additionally, GeoNode uses a number of native-code libraries in Python.  You
+can install these libraries manually, or allow the GeoNode setup script to
 compile them for you.   In the latter case, you will need to install a C
 compiler such as GCC, as well as any requisite development libraries.  GCC
 packages are available for Mac OSX and all Linux distributions; consult your
@@ -72,40 +71,42 @@ For GCC, packages are available for Mac OSX and all Linux distributions;
 consult your operating system provider for installation instructions.  When
 build PIL from source, ensure that you have development libraries available for
 libpng, libjpeg, and libgif if you want to be able to use those formats in your
-WorldMap site.
+GeoNode site.
+
+
+Ubuntu
+------
+
+If you are using Ubuntu Linux, you can configure all the above dependencies by running the following comman::
+
+    sudo apt-get install -y --force-yes openjdk-6-jre-headless
+    sudo apt-get install -y vim zip unzip subversion git-core binutils build-essential python-dev python-setuptools python-imaging gdal-bin libproj-dev libgeos-dev python-urlgrabber python-scipy python-nose pep8 python-virtualenv python-gdal python-pastescript postgresql-contrib libpq-dev gettext python-psycopg2
+    sudo apt-get install -y --force-yes ant --no-install-recommends
+
+
 
 Install
 =======
 
 The following steps should prepare a Python virtual environment for you::
 
-  git clone git://github.com/cga-harvard/cga-worldmap.git cga-worldmap
-  cd cga-worldmap
+  git clone git://github.com/GeoNode/geonode.git geonode
+  cd geonode
   git submodule update --init
   python bootstrap.py --no-site-packages # see note below
   source bin/activate
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
+  paver host 
 
-
-Copy these war files to the webapps directory of your Java container
-(Tomcat/Jetty) and deploy them:
-    webapps/geoserver-geonode-dev.war
-    webapps/geonetwork.war
-
-
-Start the server:
-  paver host
-
-
-Once fully started, you should see a message indicating the address of your WorldMap::
+Once fully started, you should see a message indicating the address of your geonode::
   
   Development GeoNode is running at http://localhost:8000/
   The GeoNode is an unstoppable machine
   Press CTRL-C to shut down
 
 
-.. note::
+.. note:: 
 
   When running ``python bootstrap.py`` the ``--no-site-packages`` option is
   not required.  If enabled, the bootstrap script will sandbox your virtual
@@ -147,7 +148,6 @@ JavaScript Developers can switch to using unminified scripts and CSS:
 Note that this requires ant (http://ant.apache.org/) in addition to the above
 build requirements.
 
-
 VirtualBox Setup
 ................
 
@@ -162,11 +162,11 @@ following needs to be done before running ``paver host``:
 
 * Edit :file:`src/GeoNodePy/geonode/settings.py` and change the line::
 
-    GEOSERVER_BASE_URL="http://localhost:8080/geoserver-geonode-dev/"
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
   to use the IP address you have written down above::
 
-    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver-geonode-dev/"
+    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver/"
 
 * Make sure to change other http://localhost urls in
   :file:`src/GeoNodePy/geonode/settings.py` accordingly as well
@@ -175,13 +175,13 @@ following needs to be done before running ``paver host``:
 
     $ paver host -b 192.168.56.1
 
-* Now WorldMap is available in your browser at http://192.168.56.1:8000/
+* Now GeoNode is available in your browser at http://192.168.56.1:8000/
 
 
 For Java Developers
 -------------------
 
-How WorldMap Finds GeoServer
+How GeoNode Finds GeoServer
 ...........................
 
 Java Developers can point the application at a particular GeoServer instance by
@@ -190,8 +190,6 @@ GeoServer instance.  This should include the trailing slash.  For example, the
 GeoServer used for http://geonode.capra.opengeo.org/ is::
 
     http://geonode.capra.opengeo.org/geoserver/
-
-
 
 The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
 in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
@@ -205,23 +203,18 @@ instance at that port with the following commands::
     shell script to add some extra parameters to the JVM command-line used to
     run Jetty in order to workaround a JVM bug that affects GeoNetwork.
 
-
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
   
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver-geonode-dev/"
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
 to indicate the GeoServer URL that you want to use. 
-
-
 
 To run the Django app when Jetty is started independently, use::
 
     paster serve --reload shared/dev-paste.ini
 
 in the base of your working directory.
-
-
 
 Alternative GeoServer Data Directories
 ......................................
@@ -231,111 +224,3 @@ If you need you need to use an alternative data directory, you can specify it
 by editing ``startup.sh`` to specify a different data directory::
  
     -DGEOSERVER_DATA_DIR=/home/me/mydata/ 
-
-For Deployment
---------------
-
-Email
-.....
-
-Adding an email gateway to WorldMap can be very useful, the two main reasons are
-the ``ADMINS`` and ``REGISTRATION_OPEN`` settings explained below.
-
-Here is a sample configuration to setup a Gmail account as the email gateway::
-
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_USER = 'foo@gmail.com'
-    EMAIL_HOST_PASSWORD = 'bar'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-
-More informacion can be found in the django docs::
-
-    http://docs.djangoproject.com/en/dev/ref/settings/?from=olddocs#email-backend
-
-ADMINS
-......
-
-When ``DEBUG=False`` django will not display the usual error page, but will
-email the people in the ADMINS tuple with the error traceback::
-
-    ADMINS = (
-        ('Carlos Valderrama', 'carlos.valderrama@gmail.com'),
-        ('Diego Maradona', 'diego.maradona@gmail.com'),
-    )
-
-REGISTRATION_OPEN
-.................
-
-In order to let people autoregister to the WorldMap, set::
-
-    REGISTRATION_OPEN=True
-
-This needs email to be configured and your website's domain name properly set in
-the Sites application (the default is example.com)::
-
-    http://localhost:8000/admin/sites/site/1
-
-
-POSTGIS INTEGRATION
-.................
-To automatically import uploaded shapefiles to a PostGIS database, open the settings.py file and set  'DB_DATASTORE' to 'True'.
-Then assign the appropriate connection values to the other DB_DATASTORE_* settings below it:
-
-DB_DATASTORE_NAME = '<Name of your PostGIS database>'
-DB_DATASTORE_USER = '<Database user name>'
-DB_DATASTORE_PASSWORD = '<Database user password>'
-DB_DATASTORE_HOST = '<Database hostname (typically localhost)'
-DB_DATASTORE_PORT = '<Database port (typically 5432)>'
-DB_DATASTORE_TYPE='postgis'
-
-
-
-TILE CACHING
-.............
-Create or edit the 'gwc-gs.xml' file under the gwc directory within your GeoServer data directory:
-<GeoServerGWCConfig>
-   <directWMSIntegrationEnabled>true</directWMSIntegrationEnabled>
-   <WMSCEnabled>true</WMSCEnabled>
-   <WMTSEnabled>true</WMTSEnabled>
-   <TMSEnabled>true</TMSEnabled>
-   <cacheLayersByDefault>true</cacheLayersByDefault>
-   <cacheNonDefaultStyles>true</cacheNonDefaultStyles>
-   <metaTilingX>4</metaTilingX>
-   <metaTilingY>4</metaTilingY>
-   <defaultCachingGridSetIds>
-     <string>EPSG:900913</string>
-   </defaultCachingGridSetIds>
-   <defaultCoverageCacheFormats>
-     <string>image/jpeg</string>
-   </defaultCoverageCacheFormats>
-   <defaultVectorCacheFormats>
-     <string>image/png</string>
-   </defaultVectorCacheFormats>
-   <defaultOtherCacheFormats>
-     <string>image/png</string>
-   </defaultOtherCacheFormats>
-</GeoServerGWCConfig>
-
-
-
-GPL License
-=======
-
-WorldMap is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-WorldMap is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with WorldMap.  If not, see <http://www.gnu.org/licenses/>.
-
-WorldMap is Copyright 2011 President and Fellows of Harvard College
-
-GeoNode is Copyright 2010 OpenPlans.

@@ -77,23 +77,31 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         final boolean authenticationRequired;
         if (existingAuth == null || !existingAuth.isAuthenticated()
                 || (existingAuth instanceof AnonymousAuthenticationToken)) {
+            LOGGER.info("authentication required");
             authenticationRequired = true;
         } else if (existingAuth instanceof GeoNodeSessionAuthToken) {
             Object credentials = existingAuth.getCredentials();
+            LOGGER.info("got existing credentials");
             boolean stillValid = gnCookie != null && gnCookie.equals(credentials);
+            LOGGER.info("still Valid? " + stillValid);
             existingAuth.setAuthenticated(stillValid);
+            LOGGER.info("set Authenticated to " stillValid);
             authenticationRequired = !stillValid;
         } else {
+            LOGGER.info("no authentication required");
             authenticationRequired = false;
         }
 
         if (authenticationRequired && gnCookie != null) {
             try {
                 final Authentication authResult;
+                LOGGER.info("Try to authenticate against cookie");
                 authResult = client.authenticateCookie(gnCookie);
+                LOGGER.info("Authenticated, set security conext to result");
                 securityContext.setAuthentication(authResult);
 
             } catch (AuthenticationException e) {
+                LOGGER.info("Authentication exception: " + e.getMessage());
                 // we just go ahead and fall back on basic authentication
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING,
@@ -111,6 +119,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
                 if (GEONODE_COOKIE_NAME.equals(c.getName())) {
+                    LOGGER.info("Value of cookie is " + c.getValue());
                     return c.getValue();
                 }
             }

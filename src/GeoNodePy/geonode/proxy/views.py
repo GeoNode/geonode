@@ -186,7 +186,7 @@ def download(request, service, layer):
 
     layerObj = Layer.objects.get(pk=layer)
 
-    if request.user.has_perm('maps.view_layer', obj=layerObj):
+    if layerObj.name.find('nc_community_survey') == -1 and request.user.has_perm('maps.view_layer', obj=layerObj):
         download_response, content = h.request(
             url, request.method,
             body=None,
