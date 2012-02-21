@@ -1,0 +1,210 @@
+=================
+Extending GeoNode
+=================
+
+This page provides a high-level description of what have emerged as "Best
+Practices" for extending or building on top of the GeoNode platform. While 
+there are other ways to accomplish this, several key existing projects 
+(see below) now follow this methodology after much trial-and-error, and it's 
+now agreed to be the *best* way to extend from GeoNode in order to add 
+functionality or to customize the site. 
+
+TODO: Some notes here about the goal of easily upgrading to new GeoNode Releases
+
+Existing Projects using this Methodology
+========================================
+* Risiko (https://github.com/AIFDR/riab)
+* TsuDAT (https://github.com/aifdr/tsudat2)
+* HaitiData (https://github.com/GFDRR/haitidata)
+* OpenRDI (https://github.com/GFDRR/openrdi)
+* OpenSanDiego Maps (https://github.com/ortelius/mapsosd)
+
+Pre-requisites
+==============
+
+* Working GeoNode installation see :doc:`/intro/install`. 
+* Familiarity with Django and its project layout scheme 
+  https://docs.djangoproject.com/en/dev/intro/tutorial01/ 
+
+
+Setup Steps
+===========
+
+1. *Upgrade GeoNode:* First and foremost, you should upgrade GeoNode to the
+   latest release. GeoNode releases can be found here 
+   http://dev.geonode.org/release/ There are deployment scripts that make
+   this process much easier, they can be found here ??? 
+
+2. *Source GeoNode's virtualenv:* While your new project will be a Django
+   project in it own right, it needs to have access to all the dependencies
+   you already installed as part of GeoNode into a virtual environment 
+   (link to venv docs). You can *activate* that virtual environment and make 
+   those dependencies available with the following command::
+
+     $ source /var/www/geonode/wsgi/geonode/bin/activate
+
+   This may need to be modified if you installed in a non-standard location.
+
+3. *Setup Your Project Directory:* Your new project needs to follow Django's
+   conventions for a project, and this is most easily accomplished by using
+   Django's management commands specifically setup for this purpose. To use
+   these commands, change directories into the place where you want your
+   project to live and issue the following command, replacing 
+   <your_project_name> with the name for your new project:: 
+   
+     $ django-admin.py startproject <your_project_name>
+   
+   It is recommended that you immediately place your project under revision
+   control, and it's further recommended that you use Git and GitHub. Once
+   your project is created with the startproject management command, you can
+   setup your project in github by following the instructions here. 
+   http://help.github.com/create-a-repo/ 
+
+4. *Copy key files from GeoNode into your project dir:* Once your new Django
+   project is setup, you need to copy some key files from GeoNode into your
+   projects top level directory. Change directories into the new directory
+   created by the startproject management command and issue the following
+   commands::
+
+     $ cp /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/settings.py . 
+     $ cp /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/local_settings.py . 
+     $ cp /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/urls.py . 
+
+   You will be modifying these files as part of the process of extending
+   GeoNode or customizing it for your own purposes.
+   
+5. *Modify settings.py file:* The first file that needs to be modified is the
+   main settings file. You need to add a few lines to it in order to make
+   it suitable for use in your project.
+
+   Basic Settings::
+
+     import geonode
+   
+     PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+     GEONODE_ROOT = os.path.dirname(geonode.__file__) 
+
+   Media settings (ingenieroariel, looking for input here)::
+
+     MEDIA_ROOT = os.path.join(PROJECT_ROOT, "uploads")
+     MEDIA_URL = "/uploads/"
+     GEONODE_UPLOAD_PATH = os.path.join(MEDIA_ROOT, "geonode")
+     STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
+     STATIC_URL = "/static/"
+     GEONODE_CLIENT_LOCATION = STATIC_URL + "geonode/"
+     ADMIN_MEDIA_PREFIX = os.path.join(STATIC_URL, "admin/")
+     STATICFILES_DIRS = [
+        os.path.join(PROJECT_ROOT, "media"),
+        os.path.join(GEONODE_ROOT, "media"),
+     ]
+
+   Template Directories:: 
+   
+     TEMPLATE_DIRS = (
+       os.path.join(PROJECT_ROOT,"templates"),
+       os.path.join(GEONODE_ROOT,"templates"),
+     )
+
+   GEOSERVER_TOKEN
+
+6. *Install dependencies for your project:* If your project requires additional
+   dependencies that are not installed as part of GeoNode, you should create a
+   requirements.txt file and include them inside. A requirements.txt file is
+   simply a text file that includes the name of a library or app that can be
+   installed with easy_install or pip. Documentation on the requirements file
+   format can be found here http://www.pip-installer.org/en/latest/#requirements-files 
+   An example is below::
+
+     django-rosetta
+     django-flatblocks
+     django-modeltranslation
+
+   When the requirements file is in place, and the virtualenv is activated
+   (see step 2 above), you can install the additional dependencies with the
+   following command::
+
+     $ pip install -e requirements.txt 
+
+   If any of these requirements are django apps (as in the above example),
+   they need to be added to the INSTALLED_APPS section of your settings.py
+   file::
+
+      INSTALLED_APPS = (
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.sites',
+        'django.contrib.admin',
+        'django.contrib.staticfiles',
+        'django_extensions',
+        'registration',
+        'profiles',
+        'avatar',
+        'geonode.core',
+        'geonode.maps',
+        'geonode.proxy',
+        'rosetta',
+        'flatblocks',
+        'modeltranslation',
+     )
+
+7. *Syncdb:* If the additional dependencies you have installed in the steps above
+   are django apps that will use the Django ORM to store and retrieve data in
+   a database, you need to execute the syncdb management command to create the
+   tables in the database. This can be done with the following command::
+
+     $ django-admin.py syncdb
+
+8. *Copy GeoNodes wsgi script and modify it for your project:* The GeoNode application
+   is executed and served apache using a wsgi launcher script. You will need to make
+   a copy of this launcher script and modify it to execute your newly created project.
+   It is generally a good idea to place this wsgi launcher script in a directory under
+   the main directory of your new project. This can be done with the following commands::
+
+     $ mkdir wsgi
+     $ cp /var/www/geonode/wsgi/geonode.wsgi wsgi/<new_project_name>.wsgi
+
+   Replacing <new_project_name> with the name of your newly created project.
+
+   Once this file is in place, it needs to be modified to execute your new project when
+   being run via apache. The following line should be added replacing /var/www with the
+   path to where your new project is located::
+
+     site.addsitedir('/var/www')
+
+   The existing line that specifies which settings module to use should be modified
+   to point at your settings. <new_project_name> should be replaced by the name of your
+   new project::
+
+     os.environ['DJANGO_SETTINGS_MODULE'] = '<new_project_name>.settings'
+   
+8. *Configure apache to use your own wsgi script:* Once your new wsgi launcher script is
+   modified and ready for use, you need to setup apache to use this script instead of the
+   original geonode one. Depending on your platform, the file containing the WSGIScriptAlias
+   directive will vary. Please consult the :doc:`/intro/install` documentation. This directive
+   should be modified to point at your newly created wsgi script::
+
+     WSGIScriptAlias / "/var/www/<new_project_dir>/wsgi/<new_project_name>.wsgi"
+
+   Replacing <new_project_dir> with the path to your newly created project, and
+   <new_project_name> with the name of your project.
+
+9. *Begin Customizing/Extending:* You are now ready to begin modifying GeoNode to extend
+   or customize it. You may need to redo some of the steps above if you need to add new
+   dependencies or change directives in the settings.py file.
+
+
+Types of Customization/Extension
+================================
+
+Branding
+--------
+
+Adding Additional Django Pluggable Apps
+---------------------------------------
+
+Adding your own Django Apps
+---------------------------
+
+???
+---

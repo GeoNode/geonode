@@ -1,0 +1,89 @@
+=====================
+Creating Your Own Map
+=====================
+
+
+Creating a map
+==============
+
+Go back to the home page and click the *Create Map* button. 
+
+You will be prompted to add layers to your new map.  Click the *Title* column header to sort the layers, then add *medford_firestations* and *medford_bikelanes*.  (Use Ctrl-click to select multiple layers.)
+
+Note that the layers are added in the layer list in the sidebar, but are not visible yet.  Right click on one of the layers and click *Zoom to Layer Extent* on the menu.
+
+Behold beautiful Medford, Oregon!
+
+**Changing Base Map** Let’s change our base map from OpenStreetMap to Google Satellite.
+
+
+Saving your map
+===============
+
+Now let’s save our map.  Click save and here we have several items we can define as we save the map.    
+
+**Title -** This is the name as it will show up in the map search tool.  The name is also displayed on the header at the top of the page.
+
+**Abstract –** A short description of the Map.  This and the title are used by map search.
+
+**Permissions, Map Name, Profile -** Once you have created and saved a map, you can control who else in the world can see it. 
+
+Click on the *View Info* link at the upper right.  This will take you to the map’s information page.  This is like the one you saw at the beginning of this workshop.  But because you are the owner of this map, you have additional controls. 
+
+Using the widgets at the bottom right, you can make your map private or share with just a couple people or open it to the world.  If you want, you can choose to only allow certain people to make changes to your map.
+
+.. note:: You can also control permissions on layers in your Map.  If you want, you can create a map which is public and includes some public and some private layers.
+
+Once you have created a Map or loaded new data to GeoNode, a link to that material shows up in your profile where others can see what you have created.  If a map or layer is not public for viewing, the name of it will still show up here.
+
+
+Changing Styles
+===============
+
+.. note:: Users can modify the way a vector (point, line, or area) map is displayed, and control the color of lines or area fills as well as labels.  Users can also use rules to support complex symbolization schemes based on database and scale conditions. GeoNode uses an open format for symbolization called SLD (Styled Layer Descriptor).  SLDs created can be uploaded to GeoNode and used to symbolize a given layer.
+
+In addition to controlled data sharing, one of the key benefits of GeoNode is cartographic expressiveness.  The *Style* tool allows you to create SLDs or Styled Layer Descriptors which are XML documents that define the way a layer looks.
+
+It is possible to edit map styles and create new styles in GeoNode.  In addition you can use desktop tools such as ArcGIS to more easily create complex styles: this is discussed later in the tutorial.  Styles are created using one or more rules.  Each rule can have several parts, including a label, coloring, scale dependency, and one or more database conditions.
+
+To get to the styling tool from the *Map Composer*, right click on the layer you wish to style in the layer list, and select *Edit Styles* from the menu.
+
+At the top of the tool you can choose between existing styles for a given layer, copy an existing style, or edit an existing style, or create a new style from scratch.
+
+Let’s start by looking at a rule from the currently chosen style.  Select the rule and click *Edit*.  There are three tabs containing options for defining the rule you are editing. Aspects of a rule that you set in the various tabs are cumulative for a rule so for example you create a rule by setting the color in the *Basic* tab and then a database condition to control when that color is displayed in the *Advanced* tab.
+
+
+More Styling details
+--------------------
+
+In the *Basic* tab it is possible to:
+
+* Change the name of the style
+* Change its fill and outline color (if it is a polygon)
+* Control opacity of line or fill
+* Control line width and line style
+
+In the *Labels* tab it is possible to:
+
+* Select a field to use as content for your labels
+* Choose a font type and size and style for the Label
+* Choose the color for the Label as well as the opacity
+* Choose a halo (background color) for the *Label*, including its color, size, and opacity
+
+In the *Advanced* tab it is possible to:
+
+* Limit the display of whatever you have defined in *Basic* and *Label* tabs in terms of maximum display scale and minimum display scale.
+* Limit the display of whatever you have defined in *Basic* and *Label* in terms of one or more database conditions. It is also possible to set multiple groups of conditions.
+
+
+Exercises
+=========
+
+#. Register on GeoNode and Sign in
+#. View and update your profile as needed
+#. Create a new map with data stored in GeoNode.
+#. Zoom to an area of interest
+#. Change the base map
+#. Save your map with a name you will remember. 
+
+.. note:: Please use the name formatting <subject>_<initials>_temp.

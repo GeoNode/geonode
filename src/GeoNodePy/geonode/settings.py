@@ -204,17 +204,10 @@ DEFAULT_MAP_CENTER = (0,0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 2
 
-MAP_BASELAYERSOURCES = {
-    "any": {
-        "ptype":"gx_olsource"
-    },
-    "capra": {
-        "url":"/geoserver/wms"
-    },
-    "google":{
-        "ptype":"gx_googlesource",
-        "apiKey": GOOGLE_API_KEY
-    }
+DEFAULT_LAYER_SOURCE = {
+    "ptype":"gxp_gnsource",
+    "url":"/geoserver/wms",
+    "restUrl": "/gs/rest"
 }
 
 MAP_BASELAYERS = [
@@ -234,10 +227,10 @@ MAP_BASELAYERS = [
     "fixed": True,
 },{
     "source": {"ptype": "gx_googlesource"},
-    "group":"background",
     "name":"TERRAIN",
     "visibility": True,
     "fixed": True,
+    "group":"background"
 },            {
     "source": {"ptype": "gx_googlesource"},
     "group":"background",

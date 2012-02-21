@@ -30,6 +30,7 @@ import sys
 from geonode.maps.encode import despam, xssescape, XssCleaner
 
 
+
 logger = logging.getLogger("geonode.maps.models")
 from gs_helpers import cascading_delete
 
@@ -758,6 +759,7 @@ class LayerManager(models.Manager):
         gn.logout()
 
 
+
     def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout):
         """Configure the layers available in GeoServer in GeoNode.
 
@@ -774,10 +776,10 @@ class LayerManager(models.Manager):
             print >> console, msg
         output = []
         for i, resource in enumerate(resources):
+            name = resource.name
+            store = resource.store
+            workspace = store.workspace
             try:
-                name = resource.name
-                store = resource.store
-                workspace = store.workspace
                 layer, created = Layer.objects.get_or_create(name=name, defaults = {
                     "workspace": workspace.name,
                     "store": store.name,
@@ -836,7 +838,6 @@ class LayerManager(models.Manager):
         return output
 
 
-
     def update_bboxes(self):
         for layer in Layer.objects.all():
             logger.debug('Process %s', layer.name)
@@ -874,7 +875,6 @@ class LayerCategory(models.Model):
 
     def __str__(self):
         return "%s" % self.name
-
 
 
 class Layer(models.Model, PermissionLevelMixin):
@@ -1699,7 +1699,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         sejumps = self.jump_set.all()
         server_lookup = {}
-        sources = dict()
+        sources = {'local': settings.DEFAULT_LAYER_SOURCE }
 
         def uniqify(seq):
             """
@@ -1715,7 +1715,6 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-
         configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms"})
 
         i = 0

@@ -36,6 +36,7 @@
                 }],
                 proxy: "/proxy/?url=",
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+                authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
                 /* The URL to a REST map configuration service.  This service
                  * provides listing and, with an authenticated user, saving of

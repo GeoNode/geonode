@@ -16,7 +16,8 @@ DATABASE_HOST = 'localhost'
 DATABASE_PORT = '5432'
 
 # Make geonode upload vector layers directly to postgis
-DB_DATASTORE_NAME = DATABASE_NAME
+DB_DATASTORE_NAME = 'postgres_imports'
+DB_DATASTORE_DATABASE = DATABASE_NAME
 DB_DATASTORE_USER = DATABASE_USER
 DB_DATASTORE_PASSWORD = DATABASE_PASSWORD
 DB_DATASTORE_HOST = DATABASE_HOST
@@ -40,11 +41,12 @@ DB_DATASTORE=True
 LANGUAGE_CODE = 'en'
 
 MEDIA_ROOT = '/var/www/geonode/uploaded'
-MEDIA_URL = SITEURL + 'uploaded/'
+MEDIA_URL = '/uploaded/'
 STATIC_ROOT = '/var/www/geonode/static/'
 STATIC_URL = '/static/'
 GEONODE_UPLOAD_PATH = MEDIA_ROOT + 'geonode'
 GEONODE_CLIENT_LOCATION = STATIC_URL + 'geonode/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATICFILES_STORAGE = 'staticfiles.storage.StaticFilesStorage'
 
