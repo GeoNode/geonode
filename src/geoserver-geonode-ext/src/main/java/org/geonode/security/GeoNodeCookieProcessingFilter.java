@@ -85,7 +85,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
             boolean stillValid = gnCookie != null && gnCookie.equals(credentials);
             LOGGER.info("still Valid? " + stillValid);
             existingAuth.setAuthenticated(stillValid);
-            LOGGER.info("set Authenticated to " stillValid);
+            LOGGER.info("set Authenticated to " + stillValid);
             authenticationRequired = !stillValid;
         } else {
             LOGGER.info("no authentication required");
