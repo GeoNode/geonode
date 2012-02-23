@@ -37,8 +37,7 @@ updated data must be the same format as the data already in place, e.g.
 <script type="text/javascript">
 Ext.onReady(function(){
 {% autoescape off %}
-  var form_target = "{% url geonode.maps.views.layerController layer.typename %}?update";
-  var layer_title = "{{ layer.title|escapejs }}";
+  var form_target = "{% url layer_replace layer.typename %}";
   var layer_name = "{{ layer.name|escapejs }}";
 
   var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};

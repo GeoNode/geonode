@@ -35,10 +35,6 @@
   </div>
 
   {% if user == profile.user %}
-  <h3>{% trans "Actions" %}</h3>
-  <ul>
-    <li><a href="{% url map_new %}">{% trans "Create a new map" %}</a></li>
-  </ul>
   <h3>{% trans "Settings" %}</h3>
   <ul>
     <li><a href="{% url auth_password_change %}">{% trans "Change password" %}</a></li>
@@ -128,6 +124,7 @@ Ext.onReady(function() {
                         link += "/edit/";
                     }
                     link += "?remove&next=" + window.location;
+                    var link = rec.get("href") + "/remove";
                     window.location = link;
                 });
                 grid.getEl().on("click", view, this, { delegate: 'a' });

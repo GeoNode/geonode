@@ -23,7 +23,7 @@
          FILE
          - outputs to the local filesystem first, before sending it off to the user
       -->
-    <param-value>SPEED</param-value>
+    <param-value>PARTIAL-BUFFER2</param-value>
   </context-param>
   
   <!-- If true, enable versioning datastore as well -->
@@ -35,9 +35,9 @@
   <context-param>
     <!-- see comments on the PARTIAL-BUFFER strategy -->
     <!-- this sets the size of the buffer.  default is "50" = 50kb -->
-
+    <!-- For GeoNode this has been changed to 5Mb to avoid invalid GetCapabilities responses -->
     <param-name>PARTIAL_BUFFER_STRATEGY_SIZE</param-name>
-    <param-value>50</param-value>
+    <param-value>5000</param-value>
   </context-param>
   
     <!-- 

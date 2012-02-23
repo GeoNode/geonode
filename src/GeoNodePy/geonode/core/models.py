@@ -4,10 +4,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 import logging
 
 logger = logging.getLogger("geonode.core.models")
+
 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
@@ -147,7 +149,7 @@ class PermissionLevelMixin(object):
             # lookup new role...
             try:
                 role = ObjectRole.objects.get(codename=level, content_type=my_ct)
-            except ObjectRole.NotFound: 
+            except ObjectDoesNotExist: 
                 raise PermissionLevelError("Invalid Permission Level (%s)" % level)
             # remove any existing mapping              
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()

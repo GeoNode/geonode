@@ -102,8 +102,9 @@
         vtype: 'keyword'
     });
 
-    var permissionsField = new Ext.form.Hidden({
-        name: "permissions"
+    var permissionsFieldCreate = new Ext.form.Hidden({
+        name: "permissions",
+        id: "permissions_create"
     });
 
     var termsAgreeCheck = new Ext.form.Checkbox({
@@ -137,7 +138,7 @@
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [map_id, layer_name, layer_title, layer_type, srs, abstract_Field, keywordsField, termsAgreeCheck, permissionsField, {
+        items: [map_id, layer_name, layer_title, layer_type, srs, abstract_Field, keywordsField, termsAgreeCheck, permissionsFieldCreate, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"
@@ -178,14 +179,14 @@
     });
 
 
-    var permissionsEditor = new GeoNode.WorldMapPermissionsEditor({
+    var permissionsEditorCreate = new GeoNode.WorldMapPermissionsEditor({
         id: "create_permissions_editor",
         renderTo: "create_permissions_form",
         userLookup: "{% url geonode.views.ajax_lookup_email %}",
         customGroup: "{{ CUSTOM_GROUP_NAME }}",
         listeners: {
-            updated: function(pe) {
-                permissionsField.setValue(Ext.util.JSON.encode(pe.writePermissions()));
+            updatedCreate: function(pe) {
+                permissionsFieldCreate.setValue(Ext.util.JSON.encode(pe.writePermissions()));
             }
         },
         permissions: {
@@ -194,7 +195,7 @@
             users:[]
         }
     });
-    permissionsEditor.fireEvent("updated", permissionsEditor);
+    permissionsEditorCreate.fireEvent("updatedCreate", permissionsEditorCreate);
 
 
     var showTOC = function() {

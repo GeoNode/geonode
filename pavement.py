@@ -253,6 +253,7 @@ def setup_geonode_client(options):
 @task
 def sync_django_db(options):
     sh("django-admin.py syncdb --settings=geonode.settings --noinput")
+    sh("django-admin.py schemamigration --settings=geonode.settings --noinput")
 
 @task
 def generate_geoserver_token(options):

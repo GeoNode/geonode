@@ -1,38 +1,67 @@
-=====================
-Creating Your Own Map
-=====================
+=============
+Creating Maps 
+=============
 
 
 Creating a map
 ==============
 
-Go back to the home page and click the *Create Map* button. 
+#. Repeat the steps in the previous section to upload the *medford_parks* and *medford_zoning* layers which are included in the zipfile you downloaded in the first section.
 
-You will be prompted to add layers to your new map.  Click the *Title* column header to sort the layers, then add *medford_firestations* and *medford_bikelanes*.  (Use Ctrl-click to select multiple layers.)
+#. Go back to the home page and click the *Create Map* button.
 
-Note that the layers are added in the layer list in the sidebar, but are not visible yet.  Right click on one of the layers and click *Zoom to Layer Extent* on the menu.
+   .. image:: images/create_map_link.png
 
-Behold beautiful Medford, Oregon!
+#. You will be prompted to add layers to your new map.  Click the *Title* column header to sort the layers, then add *medford_parks* and *medford_zoning*.  (Use Ctrl-click to select multiple layers.)
 
-**Changing Base Map** Let’s change our base map from OpenStreetMap to Google Satellite.
+   .. image:: images/create_medford_map.png
+
+   .. note:: Note that the layers are added in the layer list in the sidebar, but are not visible yet because the extent of the map does not include Medford.  
+
+#. Right click on one of the layers and click *Zoom to Layer Extent* on the menu.
+
+   .. image:: images/zoom_to_layer_extent.png
+
+#. Behold beautiful Medford, Oregon!
+
+   .. image:: images/medford_map.png
+
+#. Change Base Map. 
+
+   Let’s change our base map from OpenStreetMap to Google Satellite
+
+   TODO: Insert Image here. Default configuration doesnt include Google Satellite..
 
 
 Saving your map
 ===============
 
-Now let’s save our map.  Click save and here we have several items we can define as we save the map.    
+Now let’s save our map.  
 
-**Title -** This is the name as it will show up in the map search tool.  The name is also displayed on the header at the top of the page.
+#. Click save and here we have several items we can define as we save the map.
 
-**Abstract –** A short description of the Map.  This and the title are used by map search.
+   .. image:: images/save_map.png
 
-**Permissions, Map Name, Profile -** Once you have created and saved a map, you can control who else in the world can see it. 
+   .. image:: images/save_map_dialog.png
 
-Click on the *View Info* link at the upper right.  This will take you to the map’s information page.  This is like the one you saw at the beginning of this workshop.  But because you are the owner of this map, you have additional controls. 
+   **Title -** This is the name as it will show up in the map search tool.  The name is also displayed on the header at the top of the page.
 
-Using the widgets at the bottom right, you can make your map private or share with just a couple people or open it to the world.  If you want, you can choose to only allow certain people to make changes to your map.
+   **Abstract –** A short description of the Map.  This and the title are used by map search.
 
-.. note:: You can also control permissions on layers in your Map.  If you want, you can create a map which is public and includes some public and some private layers.
+
+#. Click on the *View Info* link at the upper right.  
+
+   This will take you to the map’s information page.  This is like the one you saw at the beginning of this workshop.  But because you are the owner of this map, you have additional controls.
+
+   .. image:: images/map_view_info.png
+   
+#. Set Map Permissions 
+
+   Using the widgets at the bottom right, you can make your map private or share with just a couple people or open it to the world.  If you want, you can choose to only allow certain people to make changes to your map
+
+   .. image:: images/set_map_permissions.png
+
+   .. note:: You can also control permissions on layers in your Map.  If you want, you can create a map which is public and includes some public and some private layers.
 
 Once you have created a Map or loaded new data to GeoNode, a link to that material shows up in your profile where others can see what you have created.  If a map or layer is not public for viewing, the name of it will still show up here.
 
@@ -48,9 +77,21 @@ It is possible to edit map styles and create new styles in GeoNode.  In addition
 
 To get to the styling tool from the *Map Composer*, right click on the layer you wish to style in the layer list, and select *Edit Styles* from the menu.
 
+.. image:: images/edit_styles.png
+
 At the top of the tool you can choose between existing styles for a given layer, copy an existing style, or edit an existing style, or create a new style from scratch.
 
-Let’s start by looking at a rule from the currently chosen style.  Select the rule and click *Edit*.  There are three tabs containing options for defining the rule you are editing. Aspects of a rule that you set in the various tabs are cumulative for a rule so for example you create a rule by setting the color in the *Basic* tab and then a database condition to control when that color is displayed in the *Advanced* tab.
+.. image:: images/edit_styles_dialog.png
+
+Let’s start by looking at a rule from the currently chosen style.  Select the rule and click *Edit*.  
+
+.. image:: images/edit_style_rule.png
+
+There are three tabs containing options for defining the rule you are editing. 
+
+.. image:: images/style_rule_dialog.png
+
+Aspects of a rule that you set in the various tabs are cumulative for a rule so for example you create a rule by setting the color in the *Basic* tab and then a database condition to control when that color is displayed in the *Advanced* tab.
 
 
 More Styling details
@@ -63,6 +104,8 @@ In the *Basic* tab it is possible to:
 * Control opacity of line or fill
 * Control line width and line style
 
+.. image:: images/style_rule_dialog_basic.png
+
 In the *Labels* tab it is possible to:
 
 * Select a field to use as content for your labels
@@ -70,20 +113,35 @@ In the *Labels* tab it is possible to:
 * Choose the color for the Label as well as the opacity
 * Choose a halo (background color) for the *Label*, including its color, size, and opacity
 
+.. image:: images/style_rule_dialog_labels.png
+
 In the *Advanced* tab it is possible to:
 
 * Limit the display of whatever you have defined in *Basic* and *Label* tabs in terms of maximum display scale and minimum display scale.
 * Limit the display of whatever you have defined in *Basic* and *Label* in terms of one or more database conditions. It is also possible to set multiple groups of conditions.
 
+.. image:: images/style_rule_dialog_advanced.png
 
-Exercises
-=========
+Editing Layer Properties in the Map Composer
+============================================
 
-#. Register on GeoNode and Sign in
-#. View and update your profile as needed
-#. Create a new map with data stored in GeoNode.
-#. Zoom to an area of interest
-#. Change the base map
-#. Save your map with a name you will remember. 
+You can edit various details of the layer from within the Map Composer by right-clicking on the layer you wish to edit and selecting *Layer Properties*
 
-.. note:: Please use the name formatting <subject>_<initials>_temp.
+.. image:: images/edit_layer_properties.png
+
+In the About tab, you can edit the layers title, name and abstract
+
+.. image:: images/layer_properties_about.png
+
+In the Display tab, you can edit the layers opacity, format and transparency setting.
+
+.. image:: images/layer_properties_display.png
+
+In the Cache tab, you can choose whether the layer is cached or rendered directly from the data source.
+
+.. image:: images/layer_properties_cache.png
+
+The style tab is equivalent to selecting the *Edit Styles* option on the right-click menu.
+
+.. image:: images/layer_properties_style.png
+

@@ -10,7 +10,6 @@ from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -44,6 +43,8 @@ from django.contrib.sites.models import Site
 from datetime import datetime, timedelta
 from django.core.cache import cache
 from geonode.maps.forms import LayerCreateForm, LAYER_SCHEMA_TEMPLATE, GEOMETRY_CHOICES
+from geonode.maps.utils import forward_mercator
+
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -53,15 +54,8 @@ DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 DEFAULT_URL = ""
 
-def _project_center(llcenter):
-    wkt = "POINT({x} {y})".format(x=llcenter[0],y=llcenter[1])
-    center = GEOSGeometry(wkt, srid=4326)
-    center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
-    return center.x, center.y
-
 def default_map_config():
-
-    _DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
+    _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = Map(
         title=DEFAULT_TITLE,
@@ -238,11 +232,7 @@ def mapJSON(request, mapid):
             )
         map = get_object_or_404(Map, pk=mapid)
         if not request.user.has_perm('maps.change_map', obj=map):
-            return HttpResponse(
-                "You do not have permission to save changes to this map.  Save a copy of the map instead.",
-                mimetype="text/plain",
-                status=403
-            )
+            return HttpResponse("You are not allowed to modify this map.", status=403)
         try:
             map.update_from_viewer(request.raw_post_data)
             MapSnapshot.objects.create(config=request.raw_post_data,map=Map.objects.get(id=map.id),user=request.user)
@@ -332,9 +322,8 @@ def newmap_config(request):
                 minx, miny, maxx, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
-                wkt = "POINT(" + str(x) + " " + str(y) + ")"
-                center = GEOSGeometry(wkt, srid=4326)
-                center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+
+                center = forward_mercator((x, y))
 
                 logger.info("%s:%s", str(center.x), str(center.y))
 
@@ -347,8 +336,8 @@ def newmap_config(request):
                 else:
                     height_zoom = math.log(360 / (maxy - miny), 2)
 
-                map.center_x = center.x
-                map.center_y = center.y
+                map.center_x = center[0]
+                map.center_y = center[1]
                 map.zoom = math.ceil(min(width_zoom, height_zoom))
 
             config = map.viewer_json(request.user, *(DEFAULT_BASE_LAYERS + layers))
@@ -566,7 +555,7 @@ def set_layer_permissions(layer, perm_spec, use_email = False):
             try:
                 user = User.objects.get(email=useremail)
             except User.DoesNotExist:
-                 user = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layerController', args=(layer.typename,)), layer.owner_id)
+                 user = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layer_detail', args=(layer.typename,)), layer.owner_id)
             layer.set_user_level(user, level)
     else:
         layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
@@ -1077,7 +1066,8 @@ class LayerDescriptionForm(forms.Form):
 
 @csrf_exempt
 @login_required
-def _describe_layer(request, layer):
+def layer_metadata(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.change_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html',
@@ -1243,7 +1233,8 @@ def _describe_layer(request, layer):
         return HttpResponse("Not allowed", status=403)
 
 @csrf_exempt
-def _removeLayer(request,layer):
+def layer_remove(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.delete_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html',
@@ -1265,7 +1256,8 @@ def _removeLayer(request,layer):
         return HttpResponse("Not allowed",status=403)
 
 @csrf_exempt
-def _changeLayerDefaultStyle(request,layer):
+def layer_style(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.change_layer', obj=layer):
             return HttpResponse(loader.render_to_string('401.html',
@@ -1299,33 +1291,24 @@ def _changeLayerDefaultStyle(request,layer):
         return HttpResponse("Not allowed",status=403)
 
 @csrf_exempt
-def layerController(request, layername):
-    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+def layer_detail(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
-    if ( "describe" in request.META['QUERY_STRING'] ):
-        return _describe_layer(request,layer)
-    if ("remove" in request.META['QUERY_STRING']):
-        return _removeLayer(request,layer)
-    if (request.META['QUERY_STRING'] == "update"):
-        return _updateLayer(request,layer)
-    if (request.META['QUERY_STRING'] == "style"):
-        return _changeLayerDefaultStyle(request,layer)
-    else:
-        if not request.user.has_perm('maps.view_layer', obj=layer):
-            return HttpResponse(loader.render_to_string('401.html',
-                RequestContext(request, {'error_message':
-                    _("You are not permitted to view this layer")})), status=401)
+    if not request.user.has_perm('maps.view_layer', obj=layer):
+        return HttpResponse(loader.render_to_string('401.html', 
+            RequestContext(request, {'error_message': 
+                _("You are not permitted to view this layer")})), status=401)
+    
+    metadata = layer.metadata_csw()
 
-        metadata = layer.metadata_csw()
+    maplayer = MapLayer(name = layer.typename, styles=[layer.default_style.name], source_params = '{"ptype": "gxp_gnsource"}', ows_url = settings.GEOSERVER_BASE_URL + "wms",  layer_params= '{"tiled":true, "title":" '+ layer.title + '"}')
 
-        maplayer = MapLayer(name = layer.typename, styles=[layer.default_style.name], source_params = '{"ptype": "gxp_gnsource"}', ows_url = settings.GEOSERVER_BASE_URL + "wms",  layer_params= '{"tiled":true, "title":" '+ layer.title + '"}')
+    # center/zoom don't matter; the viewer will center on the layer bounds
+    map = Map(projection="EPSG:900913")
+    DEFAULT_BASE_LAYERS = default_map_config()[1]
 
-        # center/zoom don't matter; the viewer will center on the layer bounds
-        map = Map(projection="EPSG:900913")
+    layerstats,created = LayerStats.objects.get_or_create(layer=layer)
 
-        layerstats,created = LayerStats.objects.get_or_create(layer=layer)
-
-        return render_to_response('maps/layer.html', RequestContext(request, {
+    return render_to_response('maps/layer.html', RequestContext(request, {
             "layer": layer,
             "metadata": metadata,
             "layerstats": layerstats,
@@ -1336,6 +1319,8 @@ def layerController(request, layername):
             "lastmap" : request.session.get("lastmap"),
             "lastmapTitle" : request.session.get("lastmapTitle")
         }))
+
+
 
 
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
@@ -1374,14 +1359,15 @@ def upload_layer(request):
                         sldfile = sld_file
                         )
 
-                redirect_to  = reverse('geonode.maps.views.layerController', args=(saved_layer.typename,)) + '?describe'
+                redirect_to  = reverse('geonode.maps.views.layer_metadata', args=(saved_layer.typename,))
                 if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
-                    redirect_to+= "&tab=worldmap_update_panel"
+                    redirect_to+= "?tab=worldmap_update_panel"
                 elif 'mapid' in request.POST and request.POST['mapid'] != '':
-                    redirect_to += "&map=" + request.POST['mapid']
+                    redirect_to += "?map=" + request.POST['mapid']
                 return HttpResponse(json.dumps({
                     "success": True,
                     "redirect_to": redirect_to}))
+
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
@@ -1398,7 +1384,8 @@ def upload_layer(request):
 
 @login_required
 @csrf_exempt
-def _updateLayer(request, layer):
+def layer_replace(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.change_layer', obj=layer):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
@@ -1465,7 +1452,7 @@ def _updateLayer(request, layer):
 
                 return HttpResponse(json.dumps({
                     "success": True,
-                    "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
+                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
@@ -1910,7 +1897,8 @@ def _extract_links(rec, xml):
     format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
 
     for link in xml.findall("*//" + nspath("onLine", namespaces['gmd'])):
-        if link.find(dl_type_path).text == "WWW:DOWNLOAD-1.0-http--download":
+        dl_type = link.find(dl_type_path)
+        if dl_type is not None and dl_type.text == "WWW:DOWNLOAD-1.0-http--download":
             extension = link.find(dl_name_path).text.split('.')[-1]
             format = format_re.match(link.find(dl_description_path).text).groups()[0]
             url = link.find(dl_link_path).text
@@ -2341,7 +2329,7 @@ def batch_permissions(request, use_email=False):
                     try:
                         userObject = User.objects.get(email=user)
                     except User.DoesNotExist:
-                        userObject = _create_new_user(user, lyr.title, reverse('geonode.maps.views.layerController', args=(lyr.typename,)), lyr.owner_id)
+                        userObject = _create_new_user(user, lyr.title, reverse('geonode.maps.views.layer_detail', args=(lyr.typename,)), lyr.owner_id)
                     if user_level not in valid_perms:
                         user_level = "_none"
                     lyr.set_user_level(userObject, user_level)
@@ -2557,11 +2545,11 @@ def create_pg_layer(request):
                 geonodeLayer = create_django_record(request.user, layer_form.cleaned_data['title'], layer_form.cleaned_data['keywords'].strip().split(" "), layer_form.cleaned_data['abstract'], layer, permissions)
 
 
-                redirect_to  = reverse('geonode.maps.views.layerController', args=(geonodeLayer.typename,)) + '?describe'
+                redirect_to  = reverse('geonode.maps.views.layer_metadata', args=(geonodeLayer.typename,))
                 if 'mapid' in request.POST and request.POST['mapid'] == 'tab': #if mapid = tab then open metadata form in tabbed panel
-                    redirect_to+= "&tab=worldmap_create_panel"
+                    redirect_to+= "?tab=worldmap_create_panel"
                 elif 'mapid' in request.POST and request.POST['mapid'] != '': #if mapid = number then add to parameters and open in full page
-                    redirect_to += "&map=" + request.POST['mapid']
+                    redirect_to += "?map=" + request.POST['mapid']
                 return HttpResponse(json.dumps({
                     "success": True,
                     "redirect_to": redirect_to}))
