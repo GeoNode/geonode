@@ -41,8 +41,7 @@
         	{% endblock logos %}
       <div id="login-area">
         {% if user.is_authenticated %}
-          Welcome <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><span style="font-weight:bold">{{user.username}}</span></a>
-                 | <a href="{% url auth_logout %}">{% trans "Sign out" %}</a>
+          <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>
         {% else %}
           <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">{% trans "Sign in" %}</a>
       {% endif %}
@@ -52,7 +51,6 @@
       </div>
     </div><!-- /.wrap -->
   </div><!-- /#header -->
-
   <div id="main">
     <div class="wrap selfclear">
       {% block main %}{% endblock %}

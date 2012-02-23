@@ -5,7 +5,8 @@ About GeoNode
 GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data.
 The project aims to surpass existing spatial data infrastructure solutions by integrating robust social and cartographic tools.
 
-At its core, GeoNode has a stack based on GeoServer, Django, and GeoExt that provides a platform for sophisticated web browser spatial visualization and analysis.
+At its core, GeoNode is built on a stack based on GeoServer, Django, and GeoExt that provides a platform for sophisticated web browser spatial visualization and analysis.
+
 Atop this stack, the project has built a map composer and viewer, tools for analysis, and reporting tools.
 
 
@@ -27,7 +28,7 @@ Geospatial data storage
 GeoNode allows the upload vector and raster data in their original projections using a web form.
 Vector data is uploaded in ESRI Shapefile format and satellite imagery and other kinds of raster data are uploaded as Geotiffs.
 
-Especiall importance is given to standard metadata formats like TC211, after the upload is finished, the user is presented with a form to fill in the metadata and it is made available using a `CSW`_ interface.
+Special importance is given to standard metadata formats like TC211. After the upload is finished, the user is presented with a form to fill in the metadata and it is made available using a `CSW`_ interface.
 
 Similarly, GeoNode provides a web based styler, that lets the user change how the data looks and preview the changes in real time.
 
@@ -37,9 +38,9 @@ Similarly, GeoNode provides a web based styler, that lets the user change how th
 Data mixing, maps creation
 ==========================
 
-Once the data has been uploaded, GeoNode let's the user search for it geographically or via keywords and create maps.
+Once the data has been uploaded, GeoNode lets the user search for it geographically or via keywords and create maps.
 
-All the layers are automatically reprojected to mercator for the maps, making it possible to use different popular base layers, like Open Street Map, Google Satellite or Bing layers.
+All the layers are automatically reprojected to web mercator for maps display, making it possible to use different popular base layers, like Open Street Map, Google Satellite or Bing layers.
 
 Once maps are saved, it is possible to embed them in any webpage or get a PDF version for printing.
 
@@ -55,7 +56,7 @@ The development community is very supportive of new projects and contributes ide
 Convinced! Where do I sign?
 ===========================
 
-The next obvious steps are to :doc:`install GeoNode </intro/install>`, :doc:`read the tutorials </users/uploading>` and `join the community`_. Thanks for your interest!
+The next obvious steps are to :doc:`install GeoNode </intro/install>`, :doc:`read the tutorials </users/index>` and `join the community`_. Thanks for your interest!
 
 .. _Risk in a Box: http://riskinabox.org
 .. _join the community: mailto:geonode@librelist.com

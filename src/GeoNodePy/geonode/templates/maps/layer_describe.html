@@ -54,13 +54,8 @@
 {% endblock %}
 {% block main %}
 <div class="twocol">
-
-
-  <h2> {% trans "Editing details for " %} {{ layer.title|default:layer.typename }} </h2>
-
-  <p style="font-weight:bold">{%  trans "Fields marked with an asterisk(*) are required." %}</p>
-
-  <form action="/data/{{layer.typename}}?describe" method="POST">
+  <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
+  <form action="{% url layer_metadata layer.typename %}" method="POST">
 	  {% csrf_token %}
       <ul class="form">
 	      {{ layer_form.as_ul }}

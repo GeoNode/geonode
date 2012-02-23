@@ -11,7 +11,7 @@ logger = logging.getLogger("geonode.maps.gs_helpers")
 _punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
 _foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"]
 _backgrounds = ["#880000", "#008800", "#000088", "#888800", "#008888", "#880088"]
-_marks = ["square", "circle", "star", "cross", "x", "triangle"]
+_marks = ["square", "circle", "cross", "x", "triangle"]
 _style_contexts = izip(cycle(_foregrounds), cycle(_backgrounds), cycle(_marks))
 
 def _add_sld_boilerplate(symbolizer):
@@ -51,6 +51,7 @@ _polygon_template = """
   </Fill>
   <Stroke>
     <CssParameter name="stroke">%(fg)s</CssParameter>
+    <CssParameter name="stroke-width">0.7</CssParameter>
   </Stroke>
 </PolygonSymbolizer>
 """
@@ -59,6 +60,7 @@ _line_template = """
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">%(bg)s</CssParameter>
+    <CssParameter name="stroke-width">3</CssParameter>
   </Stroke>
 </LineSymbolizer>
 """
