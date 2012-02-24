@@ -121,10 +121,10 @@ Ext.onReady(function() {
                 var delete_ = doToRecord(function(rec) {
                     var link = rec.get("href");
                     if (rec.get("type") == "map") {
-                        link += "/edit/";
+                        link += "/edit/?remove&next=" + window.location;
+                    } else {
+                        link += "/remove";
                     }
-                    link += "?remove&next=" + window.location;
-                    var link = rec.get("href") + "/remove";
                     window.location = link;
                 });
                 grid.getEl().on("click", view, this, { delegate: 'a' });
