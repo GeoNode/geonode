@@ -1,4 +1,5 @@
 from django.conf import settings
+from geonode import __version__
 from geonode.maps.models import Map
 from django import forms
 from django.contrib.auth import authenticate, login
@@ -10,7 +11,9 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 def index(request): 
-    return render_to_response('index.html', RequestContext(request))
+    return render_to_response('index.html', RequestContext(request, {
+        "VERSION": __version__
+    }))
 
 def static(request, page):
     return render_to_response(page + '.html', RequestContext(request, {
