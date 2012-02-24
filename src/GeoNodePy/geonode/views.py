@@ -11,9 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 def index(request): 
-    return render_to_response('index.html', RequestContext(request, {
-        "VERSION": __version__
-    }))
+    return render_to_response('index.html', RequestContext(request))
 
 def static(request, page):
     return render_to_response(page + '.html', RequestContext(request, {
