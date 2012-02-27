@@ -97,6 +97,7 @@ STATIC_URL = "/media/"
 # Additional directories which hold static files
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, "media"),
+    os.path.join(PROJECT_ROOT, "media_bootstrap"),
 ]
 
 GEONODE_UPLOAD_PATH = os.path.join(STATIC_URL, "upload/")
@@ -144,6 +145,7 @@ ROOT_URLCONF = 'geonode.urls'
 # Note that Django automatically includes the "templates" dir in all the
 # INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
 TEMPLATE_DIRS = (
+    os.path.join(PROJECT_ROOT, "templates_bootstrap"),
     os.path.join(PROJECT_ROOT,"templates"),    
 )
 
