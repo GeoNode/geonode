@@ -1,0 +1,100 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
+
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+      footer {
+        margin-top: 30px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+      }
+    </style>
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="{% url geonode.views.index %}">GeoNode</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              
+              <li>
+                <a href="{% url geonode.views.index %}">Home</a>
+              </li>
+              <li>
+                <a href="{% url geonode.maps.views.browse_data %}">Data</a>
+              </li>
+              <li>
+                <a href="{% url geonode.maps.views.maps %}">Maps</a>
+              </li>
+            </ul>
+            <ul class="nav pull-right">
+              {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                  <li><a href="{% url admin:index %}">{% trans "Admin" %}</a></li>
+                  <li class="divider-vertical"></li>
+                {% endif %}
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    {{ user.username }}
+                    <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{% url auth_logout %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
+                  </ul>
+                </li>
+              {% else %}
+                  <li><a href="/accounts/login/">{% trans "Sign in" %}</a></li>
+                  {% if REGISTRATION_OPEN %}
+                    <li class="navbar-text">or</li>
+                    <li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
+                  {% endif %}
+                {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      {% block main %}{% endblock %}
+      {% block content %}{% endblock %}
+      {% block sidebar %}{% endblock %}
+    </div>
+
+    <div class="container">
+      <footer class="footer">
+        {% block footer %}
+          <p>
+            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> |
+            <strong>{% trans "Need Help?" %}</strong>
+            <a href="{% url geonode.views.static "help" %}">{% trans "Help" %}</a> |
+            <a href="{% url geonode.views.developer %}">{% trans "For Developers" %}</a>
+          </p>
+        {% endblock %}
+      </footer>
+    </div>
+
+    <script src="{{ STATIC_URL }}bootstrap/js/jquery-1.7.1.min.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
