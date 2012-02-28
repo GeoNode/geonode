@@ -10,6 +10,7 @@ from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 from django.utils.html import escape
+from taggit.managers import TaggableManager
 import httplib2
 import simplejson
 import urllib
@@ -1225,6 +1226,8 @@ class Map(models.Model, PermissionLevelMixin):
     """
     The last time the map was modified.
     """
+    
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
 
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
