@@ -38,7 +38,7 @@ urlpatterns = patterns('',
     (r'^accounts/logout', 'django.contrib.auth.views.logout'),
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('registration.urls')),
-    (r'^profiles/', include('profiles.urls')),
+    (r'^profiles/', include('idios.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'search/', include('geonode.search.urls')),
     )
