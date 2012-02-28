@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from haystack import indexes
 
-from geonode.maps.models import Layer, Map, Thumbnail
+from geonode.maps.models import Layer, Map, Thumbnail, Contact
 
 
 class LayerIndex(indexes.SearchIndex, indexes.Indexable):
@@ -66,7 +66,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
         }
 
         if obj.owner:
-            data.update({"owner_detail": reverse('profile_detail', kwargs=({'username': obj.owner.username}))})
+            data.update({"owner_detail": obj.owner.get_absolute_url()})
 
         return json.dumps(data)
 
@@ -101,6 +101,6 @@ class MapIndex(indexes.SearchIndex, indexes.Indexable):
         }
 
         if obj.owner:
-            data.update({"owner_detail": reverse('profile_detail', kwargs=({'username': obj.owner.username}))})
+            data.update({"owner_detail": Contact.objects.get(user=obj.owner).get_absolute_url()})
 
         return json.dumps(data)
