@@ -256,7 +256,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
         # If we get a store, we do the following:
         resources = store.get_resources()
         # Is it empty?
-        if len(resources) == 0:
+        if not settings.DB_DATASTORE and len(resources) == 0:
             # What should we do about that empty store?
             if overwrite:
                 # We can just delete it and recreate it later.
