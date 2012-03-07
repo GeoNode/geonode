@@ -1,0 +1,12 @@
+werkzeug
+django-extensions
+Paste
+PasteDeploy
+PasteScript
+dj.paste
+django-nose
+nose
+nose-cover3
+coverage==3.4
+nosexcover
+mock

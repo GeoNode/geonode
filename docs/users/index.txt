@@ -1,6 +1,6 @@
-==========================
-GeoNode Tutorials Overview
-==========================
+==================
+Tutorials Overview
+==================
 
 
 Downloading material
