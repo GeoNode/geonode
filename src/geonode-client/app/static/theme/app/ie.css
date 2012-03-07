@@ -1,0 +1,12 @@
+div.map-overlay {
+    width: 240px;
+}
+
+.overlay-scalechooser {
+    width: 110px;
+}
+
+.overlay-scaleline {
+    width: 100px;
+    padding-bottom: 5px;
+}
