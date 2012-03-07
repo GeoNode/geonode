@@ -277,6 +277,8 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     "maps.Layer": {
         "layer": "How good is this layer?"
     },
+}
+
 SOUTH_MIGRATION_MODULES = {
     'registration': 'geonode.migrations.registration',
     'avatar': 'geonode.migrations.avatar',
