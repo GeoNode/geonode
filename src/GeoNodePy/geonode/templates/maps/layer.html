@@ -78,7 +78,7 @@
             Ext.get(Ext.DomQuery.select("select[@name='default-style']")).on("change", function(evt, elem) {
                 Ext.Ajax.request({
                     method: "post",
-                    url: "?style",
+                    url: "{% url layer_style layer.typename %}",
                     params: {"defaultStyle" : elem.value}
                 });
             });
@@ -193,7 +193,7 @@
 {% endif %}
 
 {% if layer.geographic_bounding_box %}<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>{% endif %}
-{% if layer.metadata.crsOptions %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.metadata.crsOptions.0|default:_("No SRS specified.") }} </p>{% endif %}
+{% if layer.resource.projection %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.resource.projection|default:_("No SRS specified.") }} </p>{% endif %}
 
 <h3>Comments</h3>
 <div class="comments_container">
@@ -254,7 +254,7 @@
     {% else %}
         <p> {% trans "This layer is not currently used in any maps." %} </p>
     {% endif %}
-    <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.typename}}">Create new map</a></p> 
+    <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.typename}}">{% trans "Create new map" %}</a></p> 
 
     {% has_obj_perm user layer "maps.change_layer" as can_change %}
     {% has_obj_perm user layer "maps.delete_layer" as can_delete %}
@@ -264,11 +264,23 @@
     <br/>
     <span class="styles-list">
         <input type="radio" name="style" id="{{layer.publishing.default_style.name}}" value="{{layer.publishing.default_style.name}}" checked="checked"/>
-        <label for="{{layer.publishing.default_style.name}}" class="style-title"> {{ layer.default_style.name|title }} </label>
+        <label for="{{layer.publishing.default_style.name}}" class="style-title">
+         {% if layer.default_style.sld_title %}
+            {{ layer.default_style.sld_title }}
+         {% else %}
+            {{ layer.default_style.name|title }}
+         {% endif %}
+        </label>
         <a href="{{ layer.default_style.body_href }}">SLD</a><br/>
     {% for style in layer.styles %} 
         <input type="radio" name="style" id="{{style.name}}" value="{{style.name}}"/>
-        <label for="{{style.name}}" class="style-title"> {{ style.name|title }} </label>
+        <label for="{{style.name}}" class="style-title">
+         {% if style.sld_title %}
+            {{ style.sld_title }}
+         {% else %}
+            {{ style.name|title }}
+         {% endif %}
+        </label>
         <a href="{{ style.body_href }}">SLD</a><br/>
     {% endfor %}
     </span>
@@ -282,7 +294,7 @@
         <option value="{{style.name}}"> {{ style.name|title }} </option>
     {% endfor %}
     </select><br/>
-    <a href="javascript:showStyle()">Create new style</a>
+    <a href="javascript:showStyle()">{% trans "Create new style" %}</a>
     {% endif %}
 
     </p>
@@ -296,17 +308,25 @@
         <ul>
 			{% if user.is_authenticated %}
         {% if can_change %}
-                <li><a href="?describe">{% trans "Update the description of this data" %}</a></li>
-            	<li><a href="?update">{% trans "Upload a new version of this data" %}</a></li>
+        <li> <a href="{% url layer_metadata layer.typename %}">
+            {% trans "Update the description of this data" %}
+        </a> </li>
+        <li> <a href="{% url layer_replace layer.typename %}">
+            {% trans "Upload a new version of this data" %}
+        </a></li>
         {% endif %}
         {% if can_change_permissions %}
-        <li><a href="{% url edit_layer_permissions layer.typename %}">{% trans "Edit Permissions" %}</a></li>
+        <li><a href="{% url edit_layer_permissions layer.typename %}">
+            {% trans "Edit Permissions" %}
+        </a></li>
         {% endif %}
             {% if can_delete %}
-				<li><a href="?remove">{% trans "Remove" %}</a></li>
+            <li><a href="{% url layer_remove layer.typename %}">
+                {% trans "Remove" %}
+            </a></li>
 			{% endif %}
 			{% else %}
-				<li>Please authenticate to update or remove layers</li>
+            <li>{% trans "Please authenticate to update or remove layers" %}</li>
 			{% endif %}
         </ul>
     {% endif %}

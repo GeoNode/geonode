@@ -124,7 +124,6 @@ padding: 4px;
 
 ul.x-tab-strip {
 margin: 0;
-list-style-type: inherit;
 }
 
 label {
@@ -748,10 +747,8 @@ cursor: pointer;
 .x-list-body dl { margin: 0; }
 
 .langbar {
-     margin-right: 150px;
-     right: 0;
-     position: absolute;
-     padding-top: 5px;
+     float: right;
+     padding-top: 3px;
 }
 
 /*-----------------------
