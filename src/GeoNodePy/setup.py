@@ -3,7 +3,7 @@ import pkg_resources
 import sys, os
 
 name='GeoNodePy'
-version = "1.1"
+version = "1.2"
 req = pkg_resources.Requirement.parse(name)
 
 setup(name=name,
