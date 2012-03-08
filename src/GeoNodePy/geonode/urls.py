@@ -52,8 +52,8 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 
 
 official_site_url_patterns = patterns('',
-    (r'^(?P<site>\w+)/$', 'geonode.maps.views.official_site'),
-    (r'^(?P<site>\w+)/edit$', 'geonode.maps.views.official_site_controller'),
+    (r'^(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.official_site'),
+    (r'^(?P<site>[A-Za-z0-9_\-]+)/edit$', 'geonode.maps.views.official_site_controller'),
 )
 
 urlpatterns += official_site_url_patterns

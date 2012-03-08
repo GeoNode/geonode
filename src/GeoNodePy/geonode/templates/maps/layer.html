@@ -35,6 +35,7 @@
                     outputConfig: {width: 400, height: 200, panIn: false}
                 }],
                 proxy: "/proxy/?url=",
+                siteUrl: "{{ SITE_URL }}",
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
                 authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
