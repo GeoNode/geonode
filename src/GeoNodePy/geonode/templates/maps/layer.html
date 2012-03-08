@@ -195,34 +195,39 @@
 {% if layer.geographic_bounding_box %}<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>{% endif %}
 {% if layer.resource.projection %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.resource.projection|default:_("No SRS specified.") }} </p>{% endif %}
 
-<h3>Comments</h3>
+<h3>{% trans "Comments" %}</h3>
 <div class="comments_container">
-	{% comments layer as comments %}
-	{% for comment in comments %}
-		<div class="comment">
-			<p class="comment_author">{{ comment.author.get_full_name|default:comment.author|capfirst }}</p>
-			<div class="comment_content">
-				{{ comment.comment|escape|urlize|safe }} &mdash; <span class="comment_ago">{{ comment.submit_date|timesince }} ago</span>
-			</div>
-		</div>
-	{% endfor %}
+    {% comments layer as comments %}
+    {% for comment in comments %}
+        <div class="comment">
+            <p class="comment_author">{{ comment.author.get_full_name|default:comment.author|capfirst }}</p>
+            <div class="comment_content">
+                {{ comment.comment|escape|urlize|safe }} &mdash; 
+                <span class="comment_ago">
+                {% blocktrans with comment.submit_date|timesince as age %}
+                {{ age }} ago
+                {% endblocktrans %}
+                </span>
+            </div>
+        </div>
+    {% endfor %}
 
-	{% if request.user.is_authenticated %}
-		<h3>Post a comment</h3>
-		{% comment_form layer as comment_form %}
-		<form method="POST" action="{% comment_target layer %}">
-			{% csrf_token %}
-			<div class="comment_box">
-				{{ comment_form.comment }}
-			</div>
-			<div class="comment_post">
-				<input type="submit" value="Submit" />
-			</div>
-			<input type="hidden" name="next" value="{{ request.path }}" />
-		</form>
-	{% else %}
-		<p><a href="{% url auth_login %}">Login</a> to add a comment</p>
-	{% endif %}
+    {% if request.user.is_authenticated %}
+        <h3>{% trans "Post a comment" %}</h3>
+        {% comment_form layer as comment_form %}
+        <form method="POST" action="{% comment_target layer %}">
+            {% csrf_token %}
+            <div class="comment_box">
+                {{ comment_form.comment }}
+            </div>
+            <div class="comment_post">
+                <input type="submit" value="{% trans "Submit" %}" />
+            </div>
+            <input type="hidden" name="next" value="{{ request.path }}" />
+        </form>
+    {% else %}
+        <p><a href="{% url auth_login %}">{% trans "Login to add a comment" %}</a></p>
+    {% endif %}
 </div>
 
 </div>
@@ -306,7 +311,7 @@
 
         <h3> {% trans "Manage" %} </h3>
         <ul>
-			{% if user.is_authenticated %}
+                        {% if user.is_authenticated %}
         {% if can_change %}
         <li> <a href="{% url layer_metadata layer.typename %}">
             {% trans "Update the description of this data" %}
@@ -324,10 +329,10 @@
             <li><a href="{% url layer_remove layer.typename %}">
                 {% trans "Remove" %}
             </a></li>
-			{% endif %}
-			{% else %}
+                        {% endif %}
+                        {% else %}
             <li>{% trans "Please authenticate to update or remove layers" %}</li>
-			{% endif %}
+                        {% endif %}
         </ul>
     {% endif %}
     {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
