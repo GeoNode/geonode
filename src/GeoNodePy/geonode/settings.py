@@ -65,7 +65,7 @@ LANGUAGES = (
     ('fr', 'Français'),
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
-    ('zn_CH', '中國的'),
+    ('zh', '中國的'),
 )
 
 SITE_ID = 1
@@ -327,8 +327,6 @@ DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
 
 SOUTH_MIGRATION_MODULES = {
-    'registration': 'geonode.migrations.registration',
-    'avatar': 'geonode.migrations.avatar',
     }
 
 DEFAULT_WORKSPACE = 'geonode'

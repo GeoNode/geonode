@@ -1,0 +1,19 @@
+PIL
+OWSLib==0.4.0
+Django==1.2
+simplejson # needed for python2.5
+django-extensions
+httplib2
+psycopg2
+-e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
+#django-registration
+https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
+django-profiles
+-e git+https://github.com/ericflo/django-avatar.git#egg=avatar
+django-staticfiles
+South==0.7.3
+#for using memcached
+python-memcached
+ordereddict
+#Uncomment the following to use the django debug toolbar
+#-e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
