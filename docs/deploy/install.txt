@@ -101,7 +101,8 @@ Ubuntu
         gdal-bin libgeos-dev python-urlgrabber \
         python-pastescript gettext postgresql-contrib \
         postgresql-8.4-postgis,libpq-dev unzip libjpeg-dev libpng-dev
-        python-gdal \ libproj-dev python-psycopg2 apache2 libapache2-mod-wsgi
+        python-gdal \ libproj-dev python-psycopg2 apache2 libapache2-mod-wsgi\
+        libxml2-dev libxslt1-dev
 
 
 Installation
