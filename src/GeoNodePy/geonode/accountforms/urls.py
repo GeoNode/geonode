@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 
 from registration.views import activate
 from registration.views import register
-from geonode.accountforms.views import registerOrganizationUser, registercompleteOrganizationUser
+from geonode.accountforms.views import registerOrganizationUser, registercompleteOrganizationUser, forgotUsername
 from geonode.accountforms.forms import UserRegistrationForm
 
 urlpatterns = patterns('',
@@ -15,5 +15,7 @@ urlpatterns = patterns('',
                        url(r'^registercomplete/$',
                            registercompleteOrganizationUser,
                            name='registration_complete'),
+                       url(r'^forgotname/$',
+                           forgotUsername, name='forgotname'),
                        (r'', include('registration.urls')),
                        )

@@ -21,10 +21,10 @@
 		  {{ form.as_ul }}
 		<li><input type="hidden" name="next" value="{{next}}" /></li>
 	    <li><input type="submit" value="Login"/></li>
-        <li><a href="{% url django.contrib.auth.views.password_reset %}">Forgot password?</a></li>
+        <li><a href="{% url django.contrib.auth.views.password_reset %}">{% trans "Forgot password" %}? </a></li>
+        <li></li><a href="{% url geonode.accountforms.views.forgotUsername %}">{% trans "Forgot username" %}? </a></li>
 	</ul>
   </form>
-  <p>{% trans "Forgot your password?"%} <a href="{% url django.contrib.auth.views.password_reset %}">{% trans "Click here" %}</a></p>
 
 </div>
 {% endblock %}

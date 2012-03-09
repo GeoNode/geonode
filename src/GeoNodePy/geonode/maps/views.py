@@ -190,7 +190,7 @@ LAYER_LEV_NAMES = {
 @transaction.commit_manually
 def maps(request, mapid=None):
     if request.method == 'GET':
-        return render_to_response('maps.html', RequestContext(request))
+        return render_to_response('wtf.html', RequestContext(request))
     elif request.method == 'POST':
         if not request.user.is_authenticated():
             return HttpResponse(
