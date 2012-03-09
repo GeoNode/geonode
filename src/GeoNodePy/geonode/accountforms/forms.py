@@ -10,6 +10,12 @@ from registration.models import RegistrationProfile
 
 attrs_dict = { 'class': 'required' }
 
+class ForgotUsernameForm(forms.Form):
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
+        maxlength=75)),
+        label=_(u'Email Address'))
+
+
 class UserRegistrationForm(RegistrationFormUniqueEmail):
     if (settings.USE_CUSTOM_ORG_AUTHORIZATION):
         is_org_member = forms.TypedChoiceField(coerce=lambda x: bool(int(x)),

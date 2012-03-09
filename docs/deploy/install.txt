@@ -68,7 +68,7 @@ You can unpack it like::
    GeoNode-1.1/geonode-webapp.pybundle
    GeoNode-1.1/geoserver.war
    GeoNode-1.1/bootstrap.py
-   GeoNode-1.1/deploy-libs.txt
+   GeoNode-1.1/requirements.txt
    GeoNode-1.1/install.sh
    GeoNode-1.1/support/
 
