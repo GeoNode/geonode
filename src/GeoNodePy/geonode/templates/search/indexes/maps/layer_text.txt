@@ -1,9 +1,11 @@
 {{ object.name }}
 
-{{ object.title }}
-
 {{ object.typename }}
 
-{{ object.keywords }}
+{{ object.title }}
+
+{{ object.abstract }}
+
+{{ object.keywords.all|join:" " }}
 
 {{ object.get_keywords_region_display }}
