@@ -1,5 +1,5 @@
 ========================
-Quick installation guide
+Quick Installation Guide
 ========================
 
 The following is a quick guide to get GeoNode up and running in most common operating systems.
@@ -7,7 +7,7 @@ The following is a quick guide to get GeoNode up and running in most common oper
 Recommended Minimum System Requirements
 =======================================
 
-For deployment of GeoNode on a single server, the following are the bare minimum system requirements:
+For deployment of GeoNode on a single server, the following are the *bare minimum* system requirements:
 
 * 6GB of RAM, including swap space.
 * 2.2GHz processor.  (Additional processing power may be required for multiple concurrent styling renderings)
@@ -25,17 +25,21 @@ Ubuntu
 
 The easiest way to get the .deb is to install it using APT, the standard installation management tool for Ubuntu and other Debian-based systems.
 
+0. First, make sure you have the ``add-apt-repository`` binary available::
+
+    sudo apt-get install python-software-properties
+
 1. Set up the GeoNode PPA repository (you only need to do this once; the repository will still be available for upgrades later)::
 
     sudo add-apt-repository ppa:geonode/release
 
 2. Install the package.
-   This step will also automatically download any needed dependencies::
+   This step will also automatically download all necessary dependencies::
 
     sudo apt-get update
     sudo apt-get install geonode
 
-Once the package is installed, please consult the :doc:`/deploy/production` to learn how to create the admin user and tweak the settings to get more performance.
+Once the package is installed, please consult the :doc:`/deploy/production` to learn how to create an account for the admin user and tweak the settings to get more performance.
 
 CentOS/RHEL  and other *nix distros
 -----------------------------------
