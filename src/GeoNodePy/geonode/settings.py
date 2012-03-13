@@ -273,8 +273,8 @@ INSTALLED_APPS = (
     'geonode.maps',
     'geonode.proxy',
     'geonode',
-    'geonode.accountforms',
-    'geonode.profileforms',
+    'geonode.registration',
+    'geonode.profiles',
     #'debug_toolbar',
 )
 

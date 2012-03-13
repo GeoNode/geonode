@@ -24,7 +24,7 @@ redirect. If you don't use that name, remember to explicitly pass
 
 from django.conf.urls.defaults import *
 
-from geonode.profileforms import views
+from geonode.profiles import views
 
 urlpatterns = patterns('',
                        url(r'^edit/$',

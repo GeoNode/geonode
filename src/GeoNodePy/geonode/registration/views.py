@@ -5,12 +5,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.models import User
-from geonode.accountforms.forms import UserRegistrationForm, ForgotUsernameForm
+from geonode.registration.forms import UserRegistrationForm, ForgotUsernameForm
 from django.core.mail import send_mail
 from django.utils.translation import ugettext as _
 import logging
 
-logger = logging.getLogger("geonode.accountforms.views")
+logger = logging.getLogger("geonode.registration.views")
 
 def forgotUsername(request,template_name='registration/username_form.html'):
 

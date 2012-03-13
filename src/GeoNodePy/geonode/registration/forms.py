@@ -50,5 +50,5 @@ class UserRegistrationForm(RegistrationFormUniqueEmail):
         if (settings.USE_CUSTOM_ORG_AUTHORIZATION):
             new_profile.is_org_member=self.cleaned_data['is_org_member']
         new_profile.save()
-        
+
         return new_user
