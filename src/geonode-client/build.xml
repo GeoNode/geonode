@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="geonode-client" default="dist" basedir=".">
+
+    <description>
+        GeoNode Client Build File
+    </description>
+
+    <property name="build" location="build"/>
+    <property name="app.proxy.geoserver" value=""/>
+    <property name="app.port" value="8080"/>
+
+    <target name="init">
+        <mkdir dir="${build}"/>
+        <echo message="pulling in submodules"/>
+        <echo message="building ringo jars"/>
+        <ant dir="externals/ringo" target="jar"/>
+    </target>
+    
+    <target name="buildjs">
+
+        <mkdir dir="${build}/${ant.project.name}/WEB-INF/app/static/script"/>
+        <java jar="externals/ringo/run.jar" fork="true" failonerror="true">
+            <sysproperty key="ringo.home" path="externals/ringo"/>
+            <arg path="externals/buildkit/lib/buildkit/build.js"/>
+            <arg line="-o ${build}/${ant.project.name}/WEB-INF/app/static/script buildjs.cfg"/>
+        </java>
+
+    </target>
+    
+    <target name="dist" depends="init, buildjs, redist"/>
+    
+    <target name="redist">
+
+        <mkdir dir="${build}/${ant.project.name}"/>
+        
+        <copy todir="${build}/${ant.project.name}">
+            <fileset dir="src/main/webapp/">
+            </fileset>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/lib" flatten="true" includeEmptyDirs="false">
+            <fileset dir="externals/ringo/lib"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app">
+            <fileset dir="app">
+                <exclude name="**/externals/**"/>
+                <exclude name="**/script/**"/>
+            </fileset>
+        </copy>
+        <!-- copy stick -->
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/stick">
+            <fileset dir="externals/stick">
+                <include name="**/lib/**"/>
+                <include name="package.json"/>
+            </fileset>
+        </copy>
+        <!-- copy Ext resources -->
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/ext">
+            <fileset dir="app/static/externals/ext"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/gxp/theme">
+            <fileset dir="app/static/externals/gxp/src/theme"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/geoext/resources">
+            <fileset dir="app/static/externals/geoext/resources"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/PrintPreview/resources">
+            <fileset dir="app/static/externals/PrintPreview/resources"/>
+        </copy>
+        <!-- copy OpenLayers resources -->
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/openlayers/theme">
+            <fileset dir="app/static/externals/openlayers/theme"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/openlayers/img">
+            <fileset dir="app/static/externals/openlayers/img"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/theme/ux/colorpicker">
+            <fileset file="app/static/script/ux/colorpicker/color-picker.ux.css"/>
+            <fileset file="app/static/script/ux/colorpicker/picker.gif"/>
+            <fileset file="app/static/script/ux/colorpicker/side_slider.jpg"/>
+            <fileset file="app/static/script/ux/colorpicker/mask.png"/>
+        </copy>
+        <!-- copy GeoExt resources -->
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/geoext/resources">
+            <fileset dir="app/static/externals/geoext/resources"/>
+        </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/theme/ux/fileuploadfield">
+            <fileset dir="app/static/script/ux/fileuploadfield/css"/>
+        </copy>
+        <!-- copy gxp resources -->
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/gxp/src/theme">
+            <fileset dir="app/static/externals/gxp/src/theme"/>
+        </copy>
+    </target>
+
+    <target name="war" depends="dist">
+        <war destfile="${build}/${ant.project.name}.war" needxmlfile="false">
+            <fileset dir="${build}/${ant.project.name}/WEB-INF/app/static"/>
+        </war>
+    </target>
+
+    <target name="zip" depends="dist" description="create zip with static files">
+        <echo>Creating ZIP file of static files</echo>
+        <zip destfile="build/${ant.project.name}.zip">
+            <fileset dir="${build}/${ant.project.name}/WEB-INF/app/static"/>
+        </zip>
+    </target>
+
+    <target name="debug">
+        <java jar="externals/ringo/run.jar" fork="true">
+            <sysproperty key="app.proxy.geoserver" value="${app.proxy.geoserver}"/>
+            <sysproperty key="app.debug" value="1"/>
+            <sysproperty key="ringo.home" path="externals/ringo"/>
+            <sysproperty key="ringo.modulepath" path="externals"/>
+            <arg path="app/main.js"/>
+            <arg line="-p ${app.port}"/>
+        </java>
+    </target>
+
+    <target name="debugall">
+        <java jar="externals/ringo/run.jar" fork="true">
+            <sysproperty key="app.proxy.geoserver" value="${app.proxy.geoserver}"/>
+            <sysproperty key="app.debug" value="1"/>
+            <sysproperty key="ringo.home" path="externals/ringo"/>
+            <sysproperty key="ringo.modulepath" path="externals"/>
+            <arg value="-d"/>
+            <arg path="app/main.js"/>
+            <arg line="-p ${app.port}"/>
+        </java>
+    </target>
+
+    <target name="test">
+        <java jar="externals/ringo/run.jar" fork="true" failonerror="yes">
+            <sysproperty key="ringo.home" path="externals/ringo"/>
+            <sysproperty key="ringo.modulepath" path="externals"/>
+            <arg path="tests/all.js"/>
+        </java>
+    </target>
+
+    <target name="clean" description="remove previous build and all dependencies">
+        <delete dir="${build}"/>
+    </target>
+
+</project>

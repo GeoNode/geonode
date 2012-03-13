@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
@@ -736,22 +736,26 @@ class Layer(models.Model, PermissionLevelMixin):
         links = []        
 
         if self.resource.resource_type == "featureType":
-            def wfs_link(mime):
-                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
+            def wfs_link(mime, extra_params):
+                params = {
                     'service': 'WFS',
+                    'version': '1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
                     'outputFormat': mime
-                })
+                }
+                params.update(extra_params)
+                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode(params)
+
             types = [
-                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
-                ("gml", _("GML 2.0"), "gml2"),
-                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1"),
-                ("csv", _("CSV"), "csv"),
-                ("excel", _("Excel"), "excel"),
-                ("json", _("GeoJSON"), "json")
+                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
+                ("gml", _("GML 2.0"), "gml2", {}),
+                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
+                ("csv", _("CSV"), "csv", {}),
+                ("excel", _("Excel"), "excel", {}),
+                ("json", _("GeoJSON"), "json", {})
             ]
-            links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
+            links.extend((ext, name, wfs_link(mime, extra_params)) for ext, name, mime, extra_params in types)
         elif self.resource.resource_type == "coverage":
             try:
                 client = httplib2.Http()
@@ -1123,7 +1127,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 self.distribution_description = res.description
 
     def keyword_list(self):
-        if self.keywords is None:
+        if self.keywords is None or len(self.keywords) == 0:
             return []
         else:
             return self.keywords.split()
@@ -1177,12 +1181,12 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=1000)
+    title = models.TextField(_('Title'))
     """
     A display name suitable for search results and page headers
     """
 
-    abstract = models.CharField(_('Abstract'),max_length=200)
+    abstract = models.TextField(_('Abstract'))
     """
     A longer description of the themes in the map.
     """
@@ -1474,13 +1478,13 @@ class MapLayer(models.Model):
     be drawn on top of others.
     """
 
-    format = models.CharField(_('format'), null=True,max_length=200)
+    format = models.CharField(_('format'), null=True, max_length=200)
     """
     The mimetype of the image format to use for tiles (image/png, image/jpeg,
     image/gif...)
     """
 
-    name = models.CharField(_('name'), null=True,max_length=200)
+    name = models.CharField(_('name'), null=True, max_length=200)
     """
     The name of the layer to load.
 
@@ -1526,7 +1530,7 @@ class MapLayer(models.Model):
     The URL of the OWS service providing this layer, if any exists.
     """
 
-    layer_params = models.CharField(_('layer params'), max_length=1024)
+    layer_params = models.TextField(_('layer params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     passed to the GXP viewer.
@@ -1535,7 +1539,7 @@ class MapLayer(models.Model):
     (such as format, styles, etc.) then the fields override.
     """
 
-    source_params = models.CharField(_('source params'), max_length=1024)
+    source_params = models.TextField(_('source params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
     configuration for this layer.

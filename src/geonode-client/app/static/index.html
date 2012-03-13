@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>GeoNode Map Composer</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="shortcut icon" href="theme/app/img/favicon.ico">
+        
+        <!-- Google Earth resources-->
+        <!--
+            Note: Replace the key below with your own key before deploying. 
+            See http://code.google.com/apis/maps/signup.html for information.
+        <script src="http://www.google.com/jsapi?key=ABQIAAAAeDjUod8ItM9dBg5_lz0esxTnme5EwnLVtEDGnh-lFVzRJhbdQhQBX5VH8Rb3adNACjSR5kaCLQuBmw"></script>
+        <script type="text/javascript">google&&google.load("earth", "1");</script>
+        -->
+
+        <!-- Ext resources -->
+        <link rel="stylesheet" type="text/css" href="externals/ext/resources/css/ext-all.css" />
+        <script type="text/javascript" src="externals/ext/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="externals/ext/ext-all-debug.js"></script>
+
+        <!-- OpenLayers resources -->
+        <link rel="stylesheet" type="text/css" href="externals/openlayers/theme/default/style.css" />
+        <script type="text/javascript" src="script/OpenLayers.js"></script>
+
+        <!-- GeoExt resources -->
+        <link rel="stylesheet" type="text/css" href="externals/geoext/resources/css/popup.css" />
+        <link rel="stylesheet" type="text/css" href="externals/geoext/resources/css/layerlegend.css" />
+        <script type="text/javascript" src="script/GeoExt.js"></script> 
+
+        <!-- gxp resources -->
+        <link rel="stylesheet" type="text/css" href="externals/gxp/theme/all.css" />
+        <script type="text/javascript" src="script/gxp.js"></script> 
+        
+        <!-- proj4js resources -->
+        <!--
+        <script type="text/javascript" src="externals/proj4js/lib/proj4js-compressed.js"></script>
+        -->
+
+        <!-- app resources -->
+        <link rel="stylesheet" type="text/css" href="theme/app/geoexplorer.css" />
+        <!--[if IE]><link rel="stylesheet" type="text/css" href="theme/app/ie.css"/><![endif]-->        
+        <script type="text/javascript" src="script/ux.js"></script>
+        <script type="text/javascript" src="script/GeoNode.js"></script>
+        <script type="text/javascript" src="script/GeoExplorer.js"></script>
+        <script type="text/javascript">
+        var app = new GeoExplorer({
+            "proxy": "proxy/?url=",
+            "localGeoServerBaseUrl": "/geoserver",
+            "about": {
+                "title": "GeoNode Demo Map",
+                "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the 'Save Map' button above to contribute your map to the GeoNode community.",
+                "contact": "For more information, contact <a href='http://opengeo.org'>OpenGeo</a>."
+            },
+            "defaultSourceType": "gxp_wmscsource",
+            "sources": {
+                "demo": {url: "http://demo.geonode.org/geoserver/wms/"},
+                "un": {url: "http://preview.grid.unep.ch:8080/geoserver/ows/"}
+            },
+            "map": {
+                "projection": "EPSG:900913",
+                "maxResolution": 156543.0339,
+                "maxExtent": [
+                    -20037508.34, -20037508.34,
+                    20037508.34, 20037508.34
+                ],
+                "units": "m",
+                "layers": [ {
+                    "name": "geonode:CA",
+                    "source": "demo",
+                    "group": "background",
+                    "fixed": true
+                } ],
+                "center": [-9431265.5574205, 1449637.0555531],
+                "zoom": 5
+            }
+        });
+        </script>
+
+    </head>
+    <body>
+        <div id="header-wrapper">
+          <div id="topPanel">
+            <div id="more-info"></div>
+            <span id="map-title-header"></span>
+          </div>
+        </div>
+    </body>
+</html>

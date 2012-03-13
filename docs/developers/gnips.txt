@@ -1,7 +1,6 @@
-:orphan:
-
-GeoNode Improvement Proposals
-=============================
+====================================
+GeoNode Improvement Proposals - GNIP
+====================================
 
 GeoNode Improvement Proposals (GNIP) are the formal mechanism used to manage any sort of major change to GeoNode.
 While the definition of "major" is subject to interpretation, examples of changes which are managed by the GNIP process include:
@@ -17,10 +16,9 @@ If there is ever a question as to whether a proposal should be written, please a
 Unlike the patch review process, the Improvement Proposal process has no special treatment for committers or even for Project Steering Committee members.
 The reason for this is that improvement proposal review serves another purpose besides ensuring changes made are acceptable to the community: it also gives GeoNode stakeholders time to consider and plan for large changes before they happen.
 
-The [[Patch Review Process]] is related.
-    While the Improvement Proposal process is intended to promote coordinated design and feedback for far-reaching modification such as core architectural changes, the code review process protects code quality in the GeoNode project at a fine granularity.
+The :doc:`Patch Review Process </developers/patches>` is related.
 
-
+While the Improvement Proposal process is intended to promote coordinated design and feedback for far-reaching modification such as core architectural changes, the code review process protects code quality in the GeoNode project at a fine granularity.
 
 How a GNIP works
 ----------------
@@ -67,15 +65,15 @@ Implementing a GNIP
 In order to maintain records of design discussions, proposals must be submitted as pages on the GeoNode wiki.
 To make a proposal:
 
-2. Log in to the wiki and create a new page.
+2. Log in to the wiki (http://github.com/geonode/geonode/wiki)and create a new page.
 
-4. Name the new page "GSIP ## - <TITLE>" where:
+4. Name the new page "GNIP ## - <TITLE>" where:
  
-   * ## is the number of the GSIP, determined simply by adding 1 to the highest-numbered existing proposal.
+   * ## is the number of the GNIP, determined simply by adding 1 to the highest-numbered existing proposal.
 
-   * <TITLE> is the title of the GSIP
+   * <TITLE> is the title of the GNIP
 
 5. Fill in the information in the page template, and click ``Save`` when complete.
 
-3. Link to the new page from the [[Proposals Under Discussion]] page.
+3. Link to the new page from the Proposals Under Discussion (https://github.com/GeoNode/geonode/wiki/Proposals-under-discussion) page.
 
