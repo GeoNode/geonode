@@ -335,6 +335,13 @@ HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation
 CACHE_BACKEND = 'dummy://'
 
 
+### Boston neighborhood settings  ###
+### These need to be set to the correct values for the worldmap instance ###
+HOODS_TEMPLATE_LAYER = 'boston_census_block_neighborhoods' # layer name in geoserver
+HOODS_TEMPLATE_ID = 188  #Map id to be used as template
+HOODS_TEMPLATE_ATTRIBUTE = 'GEOID10'  #Attribute to be used for block id
+
+
 try:
     from local_settings import *
 except ImportError:

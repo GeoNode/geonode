@@ -1784,7 +1784,6 @@ class Map(models.Model, PermissionLevelMixin):
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
-        logger.debug("CONFIG: %s", config)
 
         return config
 
