@@ -57,6 +57,9 @@
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/ext">
             <fileset dir="app/static/externals/ext"/>
         </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/misc">
+            <fileset dir="app/static/externals/misc"/>
+        </copy>
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/gxp/theme">
             <fileset dir="app/static/externals/gxp/src/theme"/>
         </copy>
