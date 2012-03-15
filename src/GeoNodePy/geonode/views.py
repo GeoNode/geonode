@@ -12,7 +12,8 @@ import json
 
 def index(request): 
     return render_to_response('index.html', RequestContext(request, {
-        "title": _("Explore, Visualize, and Publish Geographic Information")
+        "title": _("Explore, Visualize, and Publish Geographic Information"),
+        "content": settings.HOME_PAGE_CONTENT
     }))
 
 def about(request): 

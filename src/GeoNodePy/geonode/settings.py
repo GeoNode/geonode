@@ -334,6 +334,50 @@ DEFAULT_WORKSPACE = 'geonode'
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
 
+HOME_PAGE_CONTENT = """
+<div id="buttonsDiv" style="clear:both;margin: 0 auto;height:10px;width:550px" align="center">
+    <div  style="float:left;padding-right:10px;"><a class="wmButton"  href="/maps/new">Create a Map</a></div>
+    <div  style="float:left;padding-right:10px;"><a  class="wmButton" href="/maps/search?sort=last_modified&dir=DESC">View a Map</a></div>
+    <div style="float:left;"><a  class="wmButton" href="/about">About</a></div>
+</div>
+
+<div id="slider-wrapper">
+<div id="slider" class="nivoSlider">
+<a href="/japanmap/"><img src="{{STATIC_URL}}theme/img/slide-japan.jpg" alt="Japan Map" title="#japan_caption"></a>
+<a href="/boston/"><img src="{{STATIC_URL}}theme/img/slide-boston.jpg" alt="Boston Research Map" title="#boston_caption"></a>
+<a href="/chinamap/"><img src="{{STATIC_URL}}theme/img/slide-china.jpg" alt="ChinaMap" title="#chinamap_caption"></a>
+<a href="/maps/giza/"><img src="{{STATIC_URL}}theme/img/slide-giza.jpg" alt="Giza Map" title="#giza_caption"></a>
+<a href="/africamap/"><img src="{{STATIC_URL}}theme/img/slide-africa.jpg" alt="AfricaMap" title="#africamap_caption"></a>
+<a href="/maps/494/"><img src="{{STATIC_URL}}theme/img/slide-philly.jpg" alt="Philadelphia Map" title="#philly_caption"></a>
+</div>
+</div>
+<div id="africamap_caption" class="nivo-html-caption"><a href="/africamap/">AfricaMap</a></div>
+<div id="chinamap_caption" class="nivo-html-caption"><a href="/chinamap/">ChinaMap</a></div>
+<div id="boston_caption" class="nivo-html-caption"><a href="/boston/">Boston Research Map</a></div>
+<div id="philly_caption" class="nivo-html-caption"><a href="/boston/">Philadelphia Map</a></div>
+<div id="giza_caption" class="nivo-html-caption"><a href="/boston/">Giza Map</a></div>
+<div id="japan_caption" class="nivo-html-caption"><a href="/boston/">Japan's 2011 Disasters</a></div>
+
+<div style="clear:both;padding: 20px;width:800px;margin: 0 auto;">
+            <div style="position:relative;float:left;font-size: 14pt;font-weight:bold;height:220px;width:460px;top:40px;">
+                 Build your own mapping portal and publish it to the world or to just a few collaborators. WorldMap is open source software.
+            </div>
+             <div style="position:relative;float:right;font-size: 10pt;font-weight:bold;height:250px;width:340px;text-align:center;">
+                 <a href='' onclick='$("#tutorial_block").modal();startVideoOnOpen();return false;'>
+                     <img src="{{STATIC_URL}}theme/img/youtube_tutorial.png" border="0" /><br/>Watch the WorldMap Quick Start video
+                 </a>
+             </div>
+
+<div style="margin: 0 auto;clear:both;">WorldMap is being developed by the <a href="http://gis.harvard.edu/">Center for Geographic Analysis</a> at <a href="http://www.harvard.edu">Harvard University</a>.</div>
+
+</div>
+
+
+ <div id="tutorial_block" style="display:none;width:640px;height:400px">
+     <iframe id="youtube_video" class="youtube-player" type="text/html"  width="640" height="400" src="http://www.youtube.com/embed/Ajctx6h1t5s" frameborder="0"></iframe>
+ </div>
+""".replace("{{STATIC_URL}}", STATIC_URL)
+
 
 try:
     from local_settings import *
