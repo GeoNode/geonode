@@ -20,7 +20,8 @@ import traceback
 import inspect
 import string
 import urllib2
-from xml.etree import ElementTree as etree
+from lxml import etree
+#from xml.etree import ElementTree as etree
 
 logger = logging.getLogger("geonode.maps.utils")
 
@@ -747,6 +748,11 @@ def update_metadata(layer_uuid, xml, saved_layer):
             citeinfo.append(http_link)
 
         from owslib.fgdc import Metadata as FGDC_Metadata
+
+
+        with open('/tmp/fff.txt','w') as ff:
+            ff.write(str(etree.tostring(exml)))
+
         fgdc_exml = FGDC_Metadata(exml)
         md_title = fgdc_exml.idinfo.citation.citeinfo['title'] 
         md_abstract = fgdc_exml.idinfo.descript.abstract
