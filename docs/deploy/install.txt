@@ -104,8 +104,8 @@ Ubuntu
         openjdk-6-jre tomcat6 postgresql-8.4 gcc patch zip python-imaging \
         gdal-bin libgeos-dev python-urlgrabber \
         python-pastescript gettext postgresql-contrib \
-        postgresql-8.4-postgis,libpq-dev unzip libjpeg-dev libpng-dev
-        python-gdal \ libproj-dev python-psycopg2 apache2 libapache2-mod-wsgi\
+        postgresql-8.4-postgis,libpq-dev unzip libjpeg-dev libpng-dev \
+        python-gdal libproj-dev python-psycopg2 apache2 libapache2-mod-wsgi\ 
         libxml2-dev libxslt1-dev
 
 RHEL/CentOS
