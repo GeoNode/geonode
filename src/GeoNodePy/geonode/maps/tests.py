@@ -1315,10 +1315,6 @@ class UtilsTest(TestCase):
 
         self.assertEqual(round(sw[0]), -20037508, "SW lon is correct")
         self.assertTrue(math.isinf(sw[1]), "SW lat is correct")
-        
-        # verify behavior for invalid y values
-        self.assertEqual(float('-inf'), forward_mercator(0, 1e100)[1])
-        self.assertEqual(float('-inf'), forward_mercator(0, -1e100)[1])
 
     def test_inverse_mercator(self):
         arctic = inverse_mercator(forward_mercator((0, 85)))
