@@ -930,7 +930,6 @@ class Layer(models.Model, PermissionLevelMixin):
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
                 response, body = http.request(dft_url)
-                doc = XML(body)
                 doc = etree.fromstring(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
                 atts = [n.attrib["name"] for n in doc.findall(path)]
