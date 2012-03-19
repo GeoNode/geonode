@@ -40,6 +40,7 @@ Administrators are expected to have some experience with Linux systems but they 
  * :doc:`Post installation instructions <deploy/production>`
  * :doc:`Customizing look and feel of geonode <deploy/customize>`
  * :doc:`Debugging problems <deploy/debug>`
+ * :doc:`Configuring Alternate CSW Backends <deploy/csw>`
 
 
 For Developers

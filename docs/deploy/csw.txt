@@ -1,0 +1,72 @@
+==================================
+Configuring Alternate CSW Backends
+==================================
+
+By default, GeoNetwork OpenSource is the CSW server implementation which is provided with GeoNode. This section will explain how to configure GeoNode to operate against alternate CSW server implementations.
+
+Supported CSW server implementations
+------------------------------------
+
+GeoNode additionally supports the following CSW server implementations:
+
+ * `pycsw <http://pycsw.org/>`_
+ * `deegree <http://deegree.org/>`_
+
+Since GeoNode communicates with CSW via HTTP, the CSW server can be installed and deployed independent of GeoNode if desired.
+
+Installing the CSW
+------------------
+
+pycsw Installation
+^^^^^^^^^^^^^^^^^^
+
+pycsw is a CSW server implemented in Python. pycsw can be installed anywhere on your system. Steps:
+
+ * Install pycsw dependencies (see http://pycsw.org/docs/installation.html#system-requirements)
+ * `Download and install <http://pycsw.org/download.html>`_ pycsw
+ * copy ``default-sample.cfg`` to ``default.cfg``, and edit the configuration as per your installation (see http://pycsw.org/docs/configuration.html)
+  * Ensure that transactions are enabled (``manager.transactions=true``) and only 127.0.0.1 is in the ``manager.allowed_ips`` option to allow only local modifications to the metadata repository
+ * Create a repository (see http://pycsw.org/docs/administration.html#setting-up-the-database for more information)
+ * If the repository is an SQLite3 database, make sure the repository is writeable (see http://pycsw.org/docs/transactions.html#transactions)
+ * test the server with a GetCapabilities request::
+
+  http://localhost/pycsw/csw.py?service=CSW&version=2.0.2&request=GetCapabilities
+
+See http://pycsw.org/docs/documentation.html for full pycsw documentation
+
+deegree Installation
+^^^^^^^^^^^^^^^^^^^^^
+
+ * Deploy deegree by downloading the deegree3 cswDemo .war (see http://wiki.deegree.org/deegreeWiki/DownloadPage) and deploying into your servlet container
+ * Create a PostGIS-enabled PostgreSQL database
+ * Follow the instructions at http://wiki.deegree.org/deegreeWiki/deegree3/CatalogueService#Run_your_own_installation to complete the installation
+ * test the server with a GetCapabilities request::
+
+  http://localhost:8080/deegree-csw-demo-3.0.4/services?service=CSW&version=2.0.2&request=GetCapabilities
+
+See http://wiki.deegree.org/deegreeWiki/deegree3/CatalogueService for full deegree documentation
+
+Customizing GeoNode CSW configuration
+-------------------------------------
+
+At this point, the CSW server implementation is ready for GeoNode integration. GeoNode's CSW configuration (in ``src/GeoNodePy/geonode/settings.py``) must be updated to point to the correct CSW as follows:
+
+.. code-block:: python
+
+  CSW = {
+      # The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
+      'type': 'pycsw',
+      #'type': 'geonetwork',
+      #'type': 'deegree',
+
+      # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+      'url': 'http://$HOST/pycsw/csw.py',
+      #'url': 'http://$HOST:8080/geonetwork/srv/en/csw',
+      #'url': 'http://$HOST:8080/deegree-csw-demo-3.0.4/services',
+
+      # login credentials (for GeoNetwork)
+      'username': 'admin',
+      'password': 'admin'
+}
+
+where ``$HOST`` is the hostname of the CSW server. Setting this to ``localhost`` will cause some links to fail (i.e. metadata URLs)
