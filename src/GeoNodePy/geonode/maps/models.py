@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from string import lower
 from StringIO import StringIO
-from xml.etree.ElementTree import parse, XML
+from lxml import etree
 from gs_helpers import cascading_delete
 import logging
 import sys
@@ -766,7 +766,7 @@ class Layer(models.Model, PermissionLevelMixin):
                         "coverage": self.typename
                     })
                 response, content = client.request(description_url)
-                doc = parse(StringIO(content))
+                doc = etree.fromstring(content)
                 extent = doc.find("//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
                 low = extent.find("{http://www.opengis.net/gml}low").text.split()
                 high = extent.find("{http://www.opengis.net/gml}high").text.split()
@@ -930,7 +930,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
                 response, body = http.request(dft_url)
-                doc = XML(body)
+                doc = etree.fromstring(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
                 atts = [n.attrib["name"] for n in doc.findall(path)]
             except Exception, e:
@@ -947,7 +947,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
                 response, body = http.request(dc_url)
-                doc = XML(body)
+                doc = etree.fromstring(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
                 atts = [n.text for n in doc.findall(path)]
             except Exception, e:

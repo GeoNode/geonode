@@ -12,3 +12,4 @@ django-profiles
 -e git+https://github.com/ericflo/django-avatar.git#egg=avatar
 django-staticfiles
 South==0.7.3
+lxml
