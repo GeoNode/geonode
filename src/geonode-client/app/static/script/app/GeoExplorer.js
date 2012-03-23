@@ -68,12 +68,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     mapPanel: null,
 
     /**
-     * Property: legendPanel
-     * {GeoExt.LegendPanel} the legend for the main viewport's map
-     */
-    legendPanel: null,
-    
-    /**
      * Property: toolbar
      * {Ext.Toolbar} the toolbar for the main viewport
      */
@@ -119,7 +113,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     layerSelectionLabel: "UT:View available data from:",
     layersContainerText: "UT:Data",
     layersPanelText: "UT:Layers",
-    legendPanelText: "UT:Legend",
     loadingMapMessage: "UT:Loading Map...",
     mapSizeLabel: 'UT: Map Size', 
     metadataFormCancelText : "UT:Cancel",
@@ -378,9 +371,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ptype: "gxp_zoomtoextent",
             actionTarget: {target: "paneltbar", index: 8}
         }, {
-            ptype: "gxp_layertree",
-            outputConfig: {id: "treecontent"},
-            outputTarget: "layertree"
+            ptype: "gxp_layermanager",
+            outputConfig: {
+                id: "treecontent",
+                autoScroll: true,
+                tbar: {id: 'treetbar'}
+            },
+            outputTarget: "westpanel"
         }, {
             ptype: "gxp_zoomtolayerextent",
             actionTarget: "treecontent.contextMenu"
@@ -479,27 +476,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
         });
 
-       var layersContainer = new Ext.Panel({
-            id: "layertree",
-            autoScroll: true,
-            border: false,
-            title: this.layersContainerText,
-            tbar: {
-                id: 'treetbar'
-            }
-        });
-
-        this.legendPanel = new GeoExt.LegendPanel({
-            title: this.legendPanelText,
-            border: false,
-            hideMode: "offsets",
-            split: true,
-            autoScroll: true,
-            ascending: false,
-            map: this.mapPanel.map,
-            defaults: {cls: 'legend-item'}
-        });
-
         var layerTree;
         this.on("ready", function(){
             var startSourceId = null;
@@ -525,24 +501,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
 
-            // add custom tree contextmenu items
             layerTree = Ext.getCmp("treecontent");
-        }, this);
 
-        var layersTabPanel = new Ext.TabPanel({
-            border: false,
-            deferredRender: false,
-            items: [layersContainer, this.legendPanel],
-            activeTab: 0
-        });
+        }, this);
 
         //needed for Safari
         var westPanel = new Ext.Panel({
             layout: "fit",
+            id: "westpanel",
+            border: false,
             collapseMode: "mini",
             header: false,
             split: true,
-            items: [layersTabPanel],
             region: "west",
             width: 250
         });
@@ -803,8 +773,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             }
                         },
                         includeLegend: true,
-                        sourceMap: this.mapPanel,
-                        legend: this.legendPanel
+                        sourceMap: this.mapPanel/*,
+                        TODO restore legend in print
+                        legend: this.legendPanel*/
                     }]
                 }).show();                
                 printWindow.center();
