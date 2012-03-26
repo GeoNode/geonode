@@ -1,0 +1,188 @@
+{% extends "maps/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Update Layer"  %} — {{ block.super }}{% endblock %}
+
+{% block head %}
+  {% include "geonode/ext_header.html" %}
+  {% include "geonode/app_header.html" %}
+  {{ block.super }}
+{% endblock %}
+
+{% block main %}
+
+  {% if errors %}
+    <div id="errors">
+      {% for error in errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div id="upload_form">
+  </div>
+
+  <script type="text/javascript">
+    Ext.onReady(function(){
+    {% autoescape off %}
+      var form_target = "{% url layer_replace layer.typename %}";
+      var layer_name = "{{ layer.name|escapejs }}";
+      
+      var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
+
+      var layer_name = new Ext.form.TextField({
+        id: 'layer_name',
+        name: 'layer_name',
+        emptyText: layer_name,
+        fieldLabel: gettext('Name'),
+        allowBlank: true,
+        disabled: true,
+      });
+
+      var form_fields = [];
+
+      var listeners = {
+          "fileselected": function(cmp, value) {
+              // remove the path from the filename - avoids C:/fakepath etc.
+              cmp.setValue(value.split(/[/\\]/).pop());
+          }
+      };
+
+      if (is_featuretype) {
+        var base_file = new Ext.ux.form.FileUploadField({
+            id: 'base_file',
+            emptyText: gettext('Select a .shp file'),
+            fieldLabel: gettext('SHP'),
+            name: 'base_file',
+            allowBlank: false,
+            listeners: listeners
+        });
+
+        var dbf_file = new Ext.ux.form.FileUploadField({
+            id: 'dbf_file',
+            emptyText: gettext('Select a .dbf data file'),
+            fieldLabel: gettext('DBF'),
+            name: 'dbf_file',
+            allowBlank: false,
+            listeners: listeners
+        });
+
+        var shx_file = new Ext.ux.form.FileUploadField({
+            id: 'shx_file',
+            emptyText: gettext('Select a .shx data file'),
+            fieldLabel: gettext('SHX'),
+            name: 'shx_file',
+            allowBlank: false,
+            listeners: listeners
+        });
+
+        var prj_file = new Ext.ux.form.FileUploadField({
+            id: 'prj_file',
+            emptyText: gettext('Select a .prj data file (optional)'),
+            fieldLabel: gettext('PRJ'),
+            name: 'prj_file',
+            allowBlank: true,
+            listeners: listeners
+
+        });
+        form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file];
+      }
+      else {
+        var base_file = new Ext.ux.form.FileUploadField({
+            id: 'base_file',
+            emptyText: gettext('Select a layer data file'),
+            fieldLabel: gettext('File'),
+            name: 'base_file',
+            allowBlank: false,
+            listeners: listeners
+        });
+        form_fields = [layer_name, base_file];
+      }
+
+      var fp = new Ext.FormPanel({
+        renderTo: 'upload_form',
+        fileUpload: true,
+        width: 500,
+        frame: true,
+        title: gettext('Update Layer Data'),
+        autoHeight: true,
+        bodyStyle: 'padding: 10px 10px 0 10px;',
+        labelWidth: 50,
+        defaults: {
+            anchor: '95%',
+            msgTarget: 'side'
+        },
+        items: form_fields, 
+        buttons: [{
+            text: gettext('Upload'),
+            handler: function(){
+                if(fp.getForm().isValid()) {
+                  fp.getForm().submit({
+                      url: form_target,
+                      waitMsg: gettext('Uploading your data...'),
+                      success: function(fp, o) {
+                          document.location = o.result.redirect_to;
+                      },
+                      failure: function(fp, o) {
+                          error_message = '<ul>';
+                          for (var i = 0; i < o.result.errors.length; i++) {
+                              error_message += '<li>' + o.result.errors[i] + '</li>'
+                          }
+                          error_message += '</ul>'
+                          
+                          Ext.Msg.show({
+                              title: gettext("Error"),
+                              msg: error_message,
+                              minWidth: 200,
+                              modal: true,
+                              icon: Ext.Msg.ERROR,
+                              buttons: Ext.Msg.OK
+                          });
+                      }
+                      
+                  });
+                }
+              }
+          }]
+        });
+      });
+    {% endautoescape %}
+  </script>
+{% endblock %}
+
+
+{% block sidebar %}
+<h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
+<p>{% trans "This form allows you to update the data for this layer."  %}</p>
+<p>{% blocktrans %}
+If the new dataset omits attributes that were included in the previous version,
+or changes their types, then existing styles for the layer may not work.
+Please check your maps if the new data includes such changes.  Additionally,
+updated data must be the same format as the data already in place, e.g.
+{% endblocktrans %}
+{% if is_featuretype %} a Shapefile. {% else %} a GeoTIFF.  {% endif %}
+</p>
+<p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
+
+<h3>{% trans "This action affects the following maps:"  %}</h3>
+<p>
+<ul>
+	{% for map in layer.maps %}
+	<li>{{map.title}}</li>
+    {% empty %}
+    <li> {% trans "No maps are using this layer." %} </li>
+	{% endfor %}
+<ul>
+</p>
+<p></p>
+
+<h3>{% trans "Supported Formats"  %}</h3>
+
+<ul>
+  {% if is_featuretype %}
+  <li>Shapefile</li>
+  {% else %}
+  <li>GeoTIFF</li>
+  {% endif %}
+<ul>
+{% endblock %}
