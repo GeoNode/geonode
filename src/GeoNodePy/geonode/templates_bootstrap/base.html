@@ -193,7 +193,7 @@
                     </ul>
                   </li>
                 {% else %}
-                    <li><a href="/accounts/login/">{% trans "Sign in" %}</a></li>
+                    <li><a href="{% url auth_login %}">{% trans "Sign in" %}</a></li>
                     {% if REGISTRATION_OPEN %}
                       <li class="navbar-text">or</li>
                       <li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
