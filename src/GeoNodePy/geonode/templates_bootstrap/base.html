@@ -186,7 +186,7 @@
                     <ul class="dropdown-menu">
                       <li><a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
                       {% if user.is_staff %}
-                        <li><a href="{% url admin:index %}"><i class="icon-cog"></i>{% trans "Admin" %}</a></li>
+                        <li><a href="{% url admin:index %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
                       {% endif %}
                       <li class="divider"></li>
                       <li><a href="{% url auth_logout %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
@@ -195,7 +195,7 @@
                 {% else %}
                     <li><a href="{% url auth_login %}">{% trans "Sign in" %}</a></li>
                     {% if REGISTRATION_OPEN %}
-                      <li class="navbar-text">or</li>
+                      <li class="navbar-text">{% trans "or" %}</li>
                       <li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
                     {% endif %}
                 {% endif %}
