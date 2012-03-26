@@ -1,0 +1,8 @@
+{% extends "registration/base.html" %}
+{% load i18n %}
+
+{% block main %}
+<p>{% trans "Thanks for spending some quality time with the GeoNode today." %}</p>
+
+<p><a href="{% url auth_login %}">{% trans "Log in again" %}</a></p>
+{% endblock %}

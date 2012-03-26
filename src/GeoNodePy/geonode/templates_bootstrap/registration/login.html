@@ -1,0 +1,21 @@
+{% extends "registration/base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title %} {% trans "Log in" %} — {{ block.super }}{% endblock %}
+
+{% block main %}
+  <form method="post" action="{% url django.contrib.auth.views.login %}">
+    <legend>{{ SITENAME }} {% trans "Log in" %}</legend>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}" />
+    <div class="form-controls">
+      {{ form|as_bootstrap }}
+    </div>
+    <div class="form-actions">
+      <input type="submit" class="btn btn-primary" value="Log in"/>
+    </div>
+    <a href="{% url django.contrib.auth.views.password_reset %}">{% trans "Forgot password?" %}</a>
+  </form>
+{% endblock %}
