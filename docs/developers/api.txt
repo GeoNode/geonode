@@ -1,0 +1,513 @@
+================
+GeoNode API Docs
+================
+
+Authentication
+==============
+
+ * HTTP Basic
+ * oAuth
+
+Response Codes
+==============
+
+ * 200
+ * 400
+ * 500
+
+Base
+====
+
+Endpoints
+---------
+ * sitemap.xml
+ * feeds/data/latest
+ * feeds/maps/latest
+ * wms GetCapabilities
+ * wfs GetCapabilities
+ * wcs GetCapabilities
+ * csw GetCapabilities
+ * tms GetCapabilities
+
+
+Data
+====
+
+Endpoints
+---------
+
+api/data/
++++++++++
+
+GET - Returns a pageable list of **all** data layers in the system.
+
+
+api/data/search
++++++++++++++++
+
+GET - Equivalent to api/search?type=data Type query string argument is ignored.
+
+api/data/upload
++++++++++++++++
+
+POST
+
+ * files
+ * base_file
+ * abstract
+ * layer_title 
+ * permissions
+ * overwrite
+
+api/data/acls
++++++++++++++
+
+Returns json-encoded lists of layer identifiers that 
+represent the sets of read-write and read-only layers
+for the currently authenticated user. 
+
+HTTP_AUTHORIZATION headers
+
+GET - The permissions document is a JSON object that looks like this::
+
+    {
+        "is_superuser": false,
+        "rw": [],
+        "ro": [
+            "geonode:medford_parks",
+            "geonode:medford_zoning"
+        ],
+        "is_anonymous": false,
+        "name": "foo"
+    }
+
+That is, a top-level object with five keys:
+
+``is_superuser``
+  Specifies whether the user has superuser status (as specified in the Django Database). Superusers have full permissions to **all** layers and maps.
+
+``rw``
+    an array of prefixed layer names of layers which should be fully available
+    (both read and write) to this user
+
+``ro``
+    an array of prefixed layer names of layers which should be displayed to this
+    user, but which he/she should not be able to modify
+
+``is_anonymous``
+  Specifies whether the user is an anonymous (un-authenticated user).
+
+``name``
+  Specifies the username for an authenticated user. 
+
+All layers not named in this response will be presumed fully restricted, that
+is, neither modifiable nor visible to the user in question.
+
+
+api/data/permissions
+++++++++++++++++++++
+
+Batch set permissions on multiple objects. The user must have permission to
+change permissions on all objects specified, or the endpoint with return
+HTTP 403. and leave all existing permissions unchanged.
+
+``layer_readwrite``
+
+``layer_readonly``
+
+``_none``
+
+POST - Accepts a dictionary of permissions to be set on multiple objects::
+
+    {
+        'anonymous': '_none',
+        'authenticated': 'layer_readonly',
+        'users', [],
+        'layers', [
+            "geonode:medford_parks",
+            "geonode:medford_zoning"
+        ]
+    }
+
+``anonymous``
+
+``authenticated``
+
+``users``
+
+``layers``
+
+
+api/data/delete
++++++++++++++++
+
+Batch delete multiple layers.
+
+POST::
+
+    {
+        'layers', [
+            "geonode:medford_parks",
+            "geonode:medford_zoning"
+        ]
+    }
+
+``layers``
+
+
+Returns json encoded dictionary indicating the number of layers deleted::
+
+    {
+        'success': true, 
+        'layers': 2
+    }
+
+api/data/<layer_id>
++++++++++++++++++++
+
+GET - Returns specification of layer in json/xml/html
+
+PUT - Replaces the existing layer
+
+DELETE - Deletes the layer
+
+
+api/data/<layer_id>/metadata
+++++++++++++++++++++++++++++
+
+GET - Returns the layers metadata in xml/json as either the default type or as specified by the outputschema (From CSW Backend)
+
+POST - Overwrites the existing metadata with either an XML document of the
+metadata, or formvalues.
+
+PUT - 
+
+
+api/data/<layer_id>/style
++++++++++++++++++++++++++
+
+GET
+
+POST
+
+PUT
+
+DELETE
+
+api/data/<layer_id>/embed
++++++++++++++++++++++++++
+
+GET
+
+api/data/<layer_id>/print
++++++++++++++++++++++++++
+
+GET
+
+POST
+
+PUT
+
+DELETE
+
+api/data/<layer_id>/permissions
++++++++++++++++++++++++++++++++
+
+GET
+
+POST
+
+PUT
+
+DELETE
+
+Maps
+====
+
+Endpoints
+---------
+api/maps/
++++++++++
+
+api/maps/search
++++++++++++++++
+
+api/maps/new
+++++++++++++
+
+api/maps/acls
++++++++++++++
+
+api/maps/check
+++++++++++++++
+
+api/maps/perissions
++++++++++++++++++++
+
+api/maps/change_pocs
+++++++++++++++++++++
+
+api/maps/<map_id>
++++++++++++++++++
+
+api/maps/<map_id>/download
+++++++++++++++++++++++++++
+
+api/maps/<map_id>/metadata
+++++++++++++++++++++++++++
+
+api/maps/<map_id>/remove
+++++++++++++++++++++++++
+
+api/maps/<map_id>/embed
++++++++++++++++++++++++
+
+api/maps/<map_id>/data
+++++++++++++++++++++++
+
+api/maps/<map_id>/print
++++++++++++++++++++++++
+
+api/maps/<map_id>/permissions
++++++++++++++++++++++++++++++
+
+
+Search
+======
+
+Endpoints
+---------
+
+api/search
+++++++++++
+
+References
+----------
+
+ * http://www.opensearch.org/Home
+ * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Geo/1.0/Draft_2
+ * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Time/1.0/Draft_1
+ * http://geocommons.com/api/search.html
+ * http://www.weogeo.com/developer_doc/Search_API.html
+ * http://developer.nytimes.com/docs/article_search_api
+
+HTTP Method
+-----------
+
+GET - Only HTTP GET requests are supported.
+
+Response Formats
+----------------
+
+ * json (default)
+ * atom
+ * rss
+ * kml
+
+Query Parameters
+----------------
+
+ * id (uuid)
+ * q (searchTerms, query, keyword or keywords)
+ * limit  (limit results per page)
+ * startIndex
+ * startPage
+ * sort (sort order, see Sorting section below)
+ * order (ascending or descending)
+ * type (data [vector, raster], map, user, group)
+ * facets (list of facets to return, see Facets section below)
+ * fields (list of fields to include in the search results, see Fields section below)
+ * fieldsets (similar to CSW ElementSetName), i.e. logical grouping of fields in shorthand (brief, summary, full)
+ * format (json is default)
+ * groups (only search data within the specified group(s))
+ * callback (for jsonp)
+ * Geospatial Elements
+  * name (placename which will be parsed and geocoded to a lat/lon pair)
+  * lat
+  * lon
+  * radius
+  * bbox (west, south, east, north)
+  * geometry (wkt of POINT, LINESTRING, POLYGON or multiXXX)
+ * Temporal Elements (YYYY-MM-DDTHH:mm:ssZ)
+  * start (begin_date)
+  * end (end_date)
+
+Sorting
+-------
+
+ * Relevance (default)
+ * Alphabetically
+ * Rating
+ * Created
+ * Updated
+ * Popularity (based on number of views?)
+
+Faceting
+--------
+
+TODO: Explain Fields vs Facets (see NYT API docs)
+
+Use the facets query parameter to specify a list of facets to return counts for.
+
+The NYT API docs have lots of information about faceted searching that can be used as an example here.
+
+Facets Available
+category
+type
+    map
+    layer
+        raster
+        vector
+    user
+    group
+keywords
+organization
+language
+
+
+Fields
+------
+
+Use the fields query parameter to specify which fields to return as part of the search results. 
+
+The following field are always returned (id, type, name, description, detail_url, keywords, thumb_url)
+
+To return only the array of facet values (no search results), set fields to a blank space (encoded: fields=+) and include the facets parameter.
+
+Complete List of Fields
+.......................
+ * id (uuid)
+ * type (format) (varies by data type, TODO, list possible values)
+ * name (title, Full Name)
+ * description (abstract or profile)
+ * owner (creator) (username for profiles)
+ * organization (publisher)
+ * created (publication)
+ * modified (revision)
+ * start (temporal)
+ * end (temporal)
+ * category (subject)
+ * keywords
+ * language
+ * edition
+ * purpose
+ * constraints (accessRights)
+ * license
+ * supplemental
+ * distribution
+ * dqs (data_quality_statement)
+ * rating (average rating)
+ * comments (number of comments)
+ * views (number of views)
+ * detail_url (url to the resource detail page)
+
+Search Results
+--------------
+
+JSON encoded results::
+
+    {
+        "success": true,
+        "total": 222,
+        "query_info": {
+            "q": "",
+            "startIndex": 0,
+            "limit": 10
+        },
+        "facets": {
+            "map": 19,
+            "layer": 0,
+            "vector": 0,
+            "raster": 0,
+            "user": 0,
+            "group": 6,
+            "null": 25
+        },
+        "results": [
+            {
+                "iid": 0,
+                "_type": "group",
+                "name": "DSE Victoria",
+                "description": "For use by internal DSE staff",
+                "detail_url": "/groups/group/dse-victoria/",
+                "keywords": [],
+                "thumb_url": "/uploaded/people_peoplegroup/128px_x_128px_2.png"
+            },
+            ….
+        ]
+    }
+
+``success`` - will always be true if results returned
+
+``total`` - total number of results for this query definition
+
+``query_info`` - list of query params specified
+
+``facets`` - list of facets specified by facets param (or defaults) and their respective counts
+
+``results`` - list of results with minimum fields and additional ones as specified by fields param::
+
+Search Term Highlighting
+------------------------
+
+
+
+Terms and Phrases
+-----------------
+
+Term Modifiers
+--------------
+
+ * Wildcards ? *
+ * Fuzzy Searches ~
+ * Proximity Searches
+ * Range Searches (inclusive and exclusive)
+ * Term Boosting ^
+
+Boolean Operators
+-----------------
+
+ * or
+ * and
+ * +
+ * not
+ * -
+
+Accounts
+========
+
+Endpoints
+---------
+ * api/accounts/new
+ * api/accounts/login
+ * api/accounts/logout
+
+ * feeds/<username>/latest
+ * feeds/<username>/activity
+
+
+Profiles
+========
+
+Endpoints
+---------
+ * api/profiles
+ * api/profiles/<username>
+
+Avatar
+======
+
+Endpoints
+---------
+ * api/avatar/<username>
+
+GeoServer
+=========
+
+
+GeoNetwork
+==========
+
+
+pycsw
+=====
