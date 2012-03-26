@@ -74,6 +74,7 @@ Would you like to Contribute to GeoNode's continued development? These pages wil
  * :doc:`Configuring GeoNode in development mode <developers/setup>`
  * :doc:`Testing in GeoNode <developers/tests>`
  * :doc:`Architecture Overview <developers/architecture>`
+ * :doc:`GeoNode API <developers/api>`
  * :doc:`Extending GeoNode <developers/extend>`
  * :doc:`Contributing to GeoNode <developers/contribute>`
  * :doc:`GeoNode Patch Review Process <developers/patches>`
