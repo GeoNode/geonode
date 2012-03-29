@@ -744,6 +744,7 @@ class LayerManager(models.Manager):
                 #Create layer attributes if they don't already exist
             try:
                 if layer.attribute_names is not None:
+                    iter = 1
                     for field, ftype in layer.attribute_names.iteritems():
                         if field is not None:
                             la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
@@ -751,6 +752,10 @@ class LayerManager(models.Manager):
                                 logger.debug("Created [%s] attribute for [%s]", field, layer.name)
                                 la.attribute_label = field
                                 la.searchable = (ftype == "xsd:string")
+                                la.display_order = iter
+                                la.save()
+                                msg = ("Created [%s] attribute for [%s]", field, layer.name)
+                                iter += 1
             except Exception, e:
                 logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
             finally:
@@ -807,13 +812,18 @@ class LayerManager(models.Manager):
 
                     #Create layer attributes if they don't already exist
                     try:
-                        if False:
-                            for field, ftype in layer.attribute_names.iteritems():
-                                if field is not None:
-                                    la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
-                                    if created:
-                                        msg = ("Created [%s] attribute for [%s]", field, layer.name)
-                                        print >> console, msg
+                        iter = 1
+                        for field, ftype in layer.attribute_names.iteritems():
+                            if field is not None:
+                                la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
+                                if created:
+                                    logger.debug("Created [%s] attribute for [%s]", field, layer.name)
+                                    la.attribute_label = field
+                                    la.searchable = (ftype == "xsd:string")
+                                    la.display_order = iter
+                                    la.save()
+                                    msg = ("Created [%s] attribute for [%s]", field, layer.name)
+                                    iter += 1
                     except Exception, e:
                         msg = ("Could not create attributes for [%s] : [%s]", layer.name, str(e))
                         print >> console, msg
