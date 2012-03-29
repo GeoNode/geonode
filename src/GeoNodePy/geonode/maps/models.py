@@ -794,7 +794,49 @@ class LayerManager(models.Manager):
                     "uuid": str(uuid.uuid4())
                 })
 
-                layer.save()
+
+                if created:
+                    layer.set_default_permissions()
+                    status = 'created'
+                else:
+                    status = 'updated'
+
+                #Create layer attributes if they don't already exist
+                try:
+                    if layer.attribute_names is not None:
+                        iter = 1
+                        for field, ftype in layer.attribute_names.iteritems():
+                            if field is not None:
+                                la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
+                                if created:
+                                    la.attribute_label = field
+                                    la.searchable = (ftype == "xsd:string")
+                                    la.display_order = iter
+                                    la.save()
+                                    msg = ("Created [%s] attribute for [%s]", field, layer.name)
+                                    iter += 1
+                                    print >> console, msg
+                except Exception, e:
+                    msg = ("Could not create attributes for [%s] : [%s]", layer.name, str(e))
+                    print >> console, msg
+                finally:
+                    pass
+
+
+                if layer is not None and layer.bbox is None:
+                    layer._populate_from_gs()
+                    layer.save()
+
+                msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
+                info = {'name': name, 'status': status}
+                if status == 'failed':
+                    info['traceback'] = traceback
+                    info['exception_type'] = exception_type
+                    info['error'] = error
+                output.append(info)
+                if verbosity > 0:
+                    print >> console, msg
+
             except Exception, e:
                 if ignore_errors:
                     status = 'failed'
@@ -804,47 +846,6 @@ class LayerManager(models.Manager):
                         msg = "Stopping process because --ignore-errors was not set and an error was found."
                         print >> sys.stderr, msg
                     raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
-            else:
-                if True:
-                    layer.set_default_permissions()
-                    status = 'created'
-
-                    #Create layer attributes if they don't already exist
-                    try:
-                        if layer.attribute_names is not None:
-                            iter = 1
-                            for field, ftype in layer.attribute_names.iteritems():
-                                if field is not None:
-                                    la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
-                                    if created:
-                                        la.attribute_label = field
-                                        la.searchable = (ftype == "xsd:string")
-                                        la.display_order = iter
-                                        la.save()
-                                        msg = ("Created [%s] attribute for [%s]", field, layer.name)
-                                        iter += 1
-                                        print >> console, msg
-                    except Exception, e:
-                        msg = ("Could not create attributes for [%s] : [%s]", layer.name, str(e))
-                        print >> console, msg
-                    finally:
-                        pass
-                else:
-                    status = 'updated'
-
-                if layer is not None and layer.bbox is None:
-                    layer._populate_from_gs()
-                    layer.save()
-
-            msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
-            info = {'name': name, 'status': status}
-            if status == 'failed':
-                info['traceback'] = traceback
-                info['exception_type'] = exception_type
-                info['error'] = error
-            output.append(info)
-            if verbosity > 0:
-                print >> console, msg
         return output
 
 
@@ -868,7 +869,7 @@ class LayerManager(models.Manager):
                     layer.store = store.name
                     layer.save()
 
-                
+
 class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
     title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
