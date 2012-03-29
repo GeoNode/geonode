@@ -209,7 +209,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
 
                                         }  //end if(featureInfo)
                                     } catch (err) {
-                                        Ext.Msg.alert("Error", err)
+                                        //Ext.Msg.alert("Error", err)
                                     }
                                 }  //end if (resp.responseText)
 

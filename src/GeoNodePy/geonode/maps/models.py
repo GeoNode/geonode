@@ -807,7 +807,7 @@ class LayerManager(models.Manager):
 
                     #Create layer attributes if they don't already exist
                     try:
-                        if layer.attribute_names is not None:
+                        if False:
                             for field, ftype in layer.attribute_names.iteritems():
                                 if field is not None:
                                     la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })

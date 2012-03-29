@@ -40,7 +40,16 @@ var init = function() {
                     featurePanel: 'queryPanel',
                     attributePanel: 'gridWinPanel',
                     toggleGroup: 'featureGroup'
-                }],
+                },
+            {
+                ptype: "gxp_coordinatetool",
+                actionTarget:  {target: "paneltbar", index: 7},
+                toolText: '<span class="x-btn-text">Position</span>',
+                iconCls: null,
+                toggleGroup: 'featureGroup',
+                pressed: false
+            }
+        ],
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service

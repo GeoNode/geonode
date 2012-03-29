@@ -1419,22 +1419,23 @@ def layer_replace(request, layername):
                 try:
                     #Delete layer attributes if they no longer exist in an updated layer
                     attributes = LayerAttribute.objects.filter(layer=saved_layer)
-                    for la in attributes:
-                        lafound = False
-                        if layer.attribute_names is not None:
-                            for field, ftype in saved_layer.attribute_names.iteritems():
+                    attrNames = layer.attribute_names
+                    if attrNames is not None:
+                        for la in attributes:
+                            lafound = False
+                            for field, ftype in attrNames.iteritems():
                                 if field == la.attribute:
                                     lafound = True
-                        if not lafound:
-                            logger.debug("Going to delete [%s] for [%s]", la.attribute, saved_layer.name)
-                            la.delete()
+                            if not lafound:
+                                logger.debug("Going to delete [%s] for [%s]", la.attribute, saved_layer.name)
+                                la.delete()
 
                     #Add new layer attributes if they dont already exist
-                    if saved_layer.attribute_names is not None:
+                    if attrNames is not None:
                         logger.debug("Attributes are not None")
                         iter = 1
                         mark_searchable = True
-                        for field, ftype in saved_layer.attribute_names.iteritems():
+                        for field, ftype in attrNames.iteritems():
                             if re.search('geom|oid|objectid|gid', field, flags=re.I) is None:
                                 logger.debug("Field is [%s]", field)
                                 las = LayerAttribute.objects.filter(layer=saved_layer, attribute=field)

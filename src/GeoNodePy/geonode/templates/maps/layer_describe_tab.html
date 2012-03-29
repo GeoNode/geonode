@@ -130,7 +130,7 @@
     var ajaxSubmit = function() {
                Ext.MessageBox.wait('Saving ...');
      		   Ext.Ajax.request({
-                    url: "/data/{{layer.typename}}?describe",
+                    url: "/data/{{layer.typename}}/metadata",
                     method: 'POST',
                     params : Ext.Ajax.serializeForm(Ext.get("worldmap_describe_form")),
                     success: function(response, options) {
