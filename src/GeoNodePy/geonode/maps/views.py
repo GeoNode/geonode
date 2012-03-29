@@ -26,7 +26,6 @@ from urllib import urlencode
 from urlparse import urlparse
 import uuid
 import unicodedata
-from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
@@ -269,11 +268,10 @@ def newmap_config(request):
             config = DEFAULT_MAP_CONFIG
     return json.dumps(config)
 
-@csrf_exempt            
 def newmap(request):
-    config = newmap_config(request);
+    config = newmap_config(request)
     if isinstance(config, HttpResponse):
-        return config;
+        return config
     else:
         return render_to_response('maps/view.html', RequestContext(request, {
             'config': config, 
@@ -281,9 +279,8 @@ def newmap(request):
             'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
         }))
 
-@csrf_exempt
 def newmapJSON(request):
-    config = newmap_config(request);
+    config = newmap_config(request)
     if isinstance(config, HttpResponse):
         return config
     else:
@@ -387,7 +384,6 @@ def check_download(request):
     return HttpResponse(content=content,status=status)
 
 
-@csrf_exempt
 def batch_layer_download(request):
     """
     batch download a set of layers
@@ -592,7 +588,6 @@ def mapdetail(request,mapid):
         'permissions_json': json.dumps(_perms_info(map, MAP_LEV_NAMES))
     }))
 
-@csrf_exempt
 @login_required
 def describemap(request, mapid):
     '''
@@ -688,7 +683,6 @@ class LayerDescriptionForm(forms.Form):
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
 
-@csrf_exempt
 @login_required
 def layer_metadata(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -752,7 +746,6 @@ def layer_metadata(request, layername):
     else: 
         return HttpResponse("Not allowed", status=403)
 
-@csrf_exempt
 def layer_remove(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
@@ -773,7 +766,6 @@ def layer_remove(request, layername):
     else:  
         return HttpResponse("Not allowed",status=403)
 
-@csrf_exempt
 def layer_style(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
@@ -808,7 +800,6 @@ def layer_style(request, layername):
     else:  
         return HttpResponse("Not allowed",status=403)
 
-@csrf_exempt
 def layer_detail(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.view_layer', obj=layer):
@@ -837,7 +828,6 @@ GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your dat
 Please try again, or contact and administrator if the problem continues.")
 
 @login_required
-@csrf_exempt
 def upload_layer(request):
     if request.method == 'GET':
         return render_to_response('maps/layer_upload.html',
@@ -877,7 +867,6 @@ def upload_layer(request):
             return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
 @login_required
-@csrf_exempt
 def layer_replace(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.change_layer', obj=layer):
@@ -895,7 +884,7 @@ def layer_replace(request, layername):
     elif request.method == 'POST':
         from geonode.maps.forms import LayerUploadForm
         from geonode.maps.utils import save
-        from django.template import escape
+        from django.utils.html import escape
         import os, shutil
 
         form = LayerUploadForm(request.POST, request.FILES)
@@ -1124,7 +1113,6 @@ def _split_query(query):
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
-@csrf_exempt
 def metadata_search(request):
     """
     handles a basic search for data using the 
@@ -1395,7 +1383,6 @@ def _build_search_result(doc):
 def browse_data(request):
     return render_to_response('data.html', RequestContext(request, {}))
 
-@csrf_exempt    
 def search_page(request):
     DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
     # for non-ajax requests, render a generic search page
@@ -1438,7 +1425,6 @@ def change_poc(request, ids, template = 'maps/change_poc.html'):
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
-@csrf_exempt
 def maps_search(request):
     """
     handles a basic search for maps using the 
@@ -1557,7 +1543,6 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     
     return result
 
-@csrf_exempt    
 def maps_search_page(request):
     # for non-ajax requests, render a generic search page
 
