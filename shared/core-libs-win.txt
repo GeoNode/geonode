@@ -1,3 +1,0 @@
-Django
-simplejson # needed for python2.5
-httplib2

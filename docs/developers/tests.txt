@@ -1,18 +1,16 @@
-:orphan:
-
 ==================
 Testing in GeoNode
 ==================
 
-GeoNode has two suites of tests, the unit tests and the integration tests.
+GeoNode has two suites of tests, unit tests and integration tests. The unit tests are designed to test small blocks of code within the GeoNode Python code, while the Integration tests are designed to test the interaction between various components of the system. For a more complete explanation of the difference between these two types of tests, the following article is informative. http://www.typemock.com/unit-tests-integration-tests 
 
 
 Unit tests
 ==========
 
-The unit tests come with the GeoNode source code and can be run once it has been installed in development or production mode using the following command::
+The unit tests come with the GeoNode source code and can be run once it has been installed in development or production mode using the following command once the virtualenv is activated::
 
-    django-admin.py test geonode --settings=geonode.settings
+    $ django-admin.py test geonode --settings=geonode.settings
 
 
 Integration tests
@@ -22,9 +20,9 @@ GeoNode's integration testing suite requires a full deployment with live data fo
 This means that running the integration tests requires deploying GeoServer, GeoNetwork and the Django application, although it is possible to run the tests against those servers running in "development" mode.
 To ensure repeatability of the tests, GeoNode should be **fully reset** between runs of the suite.
 
-The integration test suite itself is maintained in a separate source repository from the main GeoNode code; it is available at http://github.com/GeoNode/geonode-integration.git/ .  The command below assume that you have cloned this repository into your working directory.::
+The integration test suite itself is maintained in a separate source repository from the main GeoNode code; it is available at http://github.com/GeoNode/geonode-integration.git .  The commands below assume that you have cloned this repository into your working directory like so.::
 
-    git clone http://github.com/GeoNode/geonode-integration.git/ geonode-integration
+    $ git clone http://github.com/GeoNode/geonode-integration.git/ geonode-integration
 
 
 Running against Paster and Tomcat Standalone
@@ -35,7 +33,7 @@ Running against Paster and Tomcat Standalone
     This configuration is good for Python developers who can afford to trade away ease of WAR redeployment for faster startup time.
 
 Setup
-~~~~~
++++++
 
 #. Fetch a standalone archive of Tomcat from http://tomcat.apache.org/ and unpack it::
 
@@ -44,8 +42,8 @@ Setup
 
 #. Deploy GeoServer and GeoNetwork into the Tomcat ``webapps`` directory by copying the unpacked ZIP archives into the Tomcat ``webapps`` directory::
 
-    unzip geonode/webapps/geonetwork.war -d webapps/geonetwork/
-    unzip geonode/src/geoserver-geonode-ext/target/geoserver-geonode-ext.zip -d webapps/geoserver/
+     $ unzip geonode/webapps/geonetwork.war -d webapps/geonetwork/
+     $ unzip geonode/src/geoserver-geonode-ext/target/geoserver-geonode-ext.zip -d webapps/geoserver/
 
 
 .. note:: Renaming the GeoNode webapp from ``geoserver-geonode-ext`` to ``geoserver`` matches more closely with the default configuration; if you choose a different name you should modify your ``local_settings.py`` to reflect that.
@@ -55,46 +53,46 @@ Setup
 
 
 Resetting Before Test Runs
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++
 
 GeoNetwork, GeoServer, and the Django application should all be reset between runs of the integration testing suite.
 
 **Reset Django** by issuing the following command::
 
-    geonode flush --noinput
-    geonode loaddata geonode-integration/admin.fixture.json
+    $ geonode flush --noinput
+    $ geonode loaddata geonode-integration/admin.fixture.json
 
 **Reset GeoServer** by deleting the data/ directory and replacing it with a clean copy::
 
-    rm -rf apache-tomcat-6.0.32/webapps/geoserver/data/
-    cp -R geonode/gs-data/ apache-tomcat-6.0.32/webapps/geoserver/data/
+    $ rm -rf apache-tomcat-6.0.32/webapps/geoserver/data/
+    $ cp -R geonode/gs-data/ apache-tomcat-6.0.32/webapps/geoserver/data/
 
 **Reset GeoNetwork** by erasing the builtin database's storage directory::
 
-    rm -rf apache-tomcat-6.0.32/webapps/geonetwork/WEB-INF/db/data/
+    $ rm -rf apache-tomcat-6.0.32/webapps/geonetwork/WEB-INF/db/data/
 
 After resetting, start Tomcat with::
 
-    apache-tomcat-6.0.32/bin/catalina.sh run
+    $ apache-tomcat-6.0.32/bin/catalina.sh run
 
 and paster with::
 
-    paster serve --reload shared/dev-paste.ini
+    $ paster serve --reload shared/dev-paste.ini
 
 For subsequent test runs, it is safe to leave paster running, but Tomcat should be **shutdown before each reset** and not started until the data has been fully refreshed.
 
 
 Run Tests
-~~~~~~~~~
++++++++++
 
 The integration suite assumes that the ``updatelayers`` command has already been run, so do that::
 
-   geonode updatelayers
+   $ geonode updatelayers
 
 Then the test suite can be run using the included ``runtests.sh`` script::
 
-   cd geonode-integration
-   GEONODE_HOME=../geonode bash runtests.sh
+   $ cd geonode-integration
+   $ GEONODE_HOME=../geonode bash runtests.sh
 
 
 Running against Paster and Jetty
@@ -106,52 +104,52 @@ Running against Paster and Jetty
 
 
 Setup
-~~~~~
++++++
 
 1. Make a local backup of the sample ``gs-data`` which is downloaded during the ``paver build`` process::
 
-    cp gs-data/ -R gs-data.bk/
+    $ cp gs-data/ -R gs-data.bk/
 
 
 Resetting Before Test Runs
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++
 
 GeoNetwork, GeoServer, and the Django application should all be reset between runs of the integration testing suite.
 
 **Reset Django** by issuing the following command::
    
-    geonode flush --noinput
-    geonode loaddata geonode-integration/admin.fixture.json
+    $ geonode flush --noinput
+    $ geonode loaddata geonode-integration/admin.fixture.json
 
 **Reset GeoServer** by deleting the data/ directory and replacing it with a clean copy::
 
-    rm -rf gs-data/ && cp -R gs-data.bk/ gs-data/
+    $ rm -rf gs-data/ && cp -R gs-data.bk/ gs-data/
 
 **Reset GeoNetwork** by deleting the deployed web application and redeploying it::
 
-    rm -rf webapps/geonetwork
-    unzip webapps/geonetwork.war -d webapps/geonetwork
+    $ rm -rf webapps/geonetwork
+    $ unzip webapps/geonetwork.war -d webapps/geonetwork
 
 After resetting, start Tomcat with::
 
-    cd src/geoserver-geonode-ext/
-    sh startup.sh
+    $ cd src/geoserver-geonode-ext/
+    $ sh startup.sh
 
 and paster with::
 
-    paster serve --reload shared/dev-paste.ini
+    $ paster serve --reload shared/dev-paste.ini
 
 For subsequent test-runs, it is safe to leave paster running, but Tomcat should be **shutdown before each reset** and not started until the data has been fully refreshed.
 
 
 Run Tests
-~~~~~~~~~
++++++++++
 
 The integration suite assumes that the ``updatelayers`` command has already been run, so do that::
 
-    django-admin.py updatelayers --settings=geonode.settings
+    $ django-admin.py updatelayers --settings=geonode.settings
 
 Then, the test suite can be run using the included ``runtests.sh`` script::
 
-    cd geonode-integration
-    GEONODE_HOME=../geonode bash runtests.sh
+    $ cd geonode-integration
+    $ GEONODE_HOME=../geonode bash runtests.sh

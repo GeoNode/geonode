@@ -1,5 +1,5 @@
-import os.path
 # -*- coding: UTF-8 -*-
+import os.path
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
@@ -22,7 +22,7 @@ from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from string import lower
 from StringIO import StringIO
-from xml.etree.ElementTree import parse, XML
+from lxml import etree
 from gs_helpers import cascading_delete
 import logging
 import sys
@@ -638,7 +638,7 @@ class LayerManager(models.Manager):
                     exception_type, error, traceback = sys.exc_info()
                 else:
                     if verbosity > 0:
-                        msg = "Stopping process because --strict=True and an error was found."
+                        msg = "Stopping process because --ignore-errors was not set and an error was found."
                         print >> sys.stderr, msg
                     raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
             else:
@@ -742,22 +742,26 @@ class Layer(models.Model, PermissionLevelMixin):
         links = []        
 
         if self.resource.resource_type == "featureType":
-            def wfs_link(mime):
-                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
+            def wfs_link(mime, extra_params):
+                params = {
                     'service': 'WFS',
+                    'version': '1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
                     'outputFormat': mime
-                })
+                }
+                params.update(extra_params)
+                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode(params)
+
             types = [
-                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
-                ("gml", _("GML 2.0"), "gml2"),
-                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1"),
-                ("csv", _("CSV"), "csv"),
-                ("excel", _("Excel"), "excel"),
-                ("json", _("GeoJSON"), "json")
+                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
+                ("gml", _("GML 2.0"), "gml2", {}),
+                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
+                ("csv", _("CSV"), "csv", {}),
+                ("excel", _("Excel"), "excel", {}),
+                ("json", _("GeoJSON"), "json", {})
             ]
-            links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
+            links.extend((ext, name, wfs_link(mime, extra_params)) for ext, name, mime, extra_params in types)
         elif self.resource.resource_type == "coverage":
             try:
                 client = httplib2.Http()
@@ -768,7 +772,7 @@ class Layer(models.Model, PermissionLevelMixin):
                         "coverage": self.typename
                     })
                 response, content = client.request(description_url)
-                doc = parse(StringIO(content))
+                doc = etree.fromstring(content)
                 extent = doc.find("//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
                 low = extent.find("{http://www.opengis.net/gml}low").text.split()
                 high = extent.find("{http://www.opengis.net/gml}high").text.split()
@@ -932,7 +936,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
                 response, body = http.request(dft_url)
-                doc = XML(body)
+                doc = etree.fromstring(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
                 atts = [n.attrib["name"] for n in doc.findall(path)]
             except Exception, e:
@@ -949,7 +953,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
                 response, body = http.request(dc_url)
-                doc = XML(body)
+                doc = etree.fromstring(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
                 atts = [n.text for n in doc.findall(path)]
             except Exception, e:
@@ -1128,10 +1132,10 @@ class Layer(models.Model, PermissionLevelMixin):
                 self.distribution_description = res.description
 
     def keyword_list(self):
-        if self.keywords is None:
+        if self.keywords is None or len(self.keywords) == 0:
             return []
         else:
-            return self.keywords.split(" ")
+            return self.keywords.split()
 
     def set_bbox(self, box, srs=None):
         """
@@ -1182,12 +1186,12 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=1000)
+    title = models.TextField(_('Title'))
     """
     A display name suitable for search results and page headers
     """
 
-    abstract = models.CharField(_('Abstract'),max_length=200)
+    abstract = models.TextField(_('Abstract'))
     """
     A longer description of the themes in the map.
     """
@@ -1482,13 +1486,13 @@ class MapLayer(models.Model):
     be drawn on top of others.
     """
 
-    format = models.CharField(_('format'), null=True,max_length=200)
+    format = models.CharField(_('format'), null=True, max_length=200)
     """
     The mimetype of the image format to use for tiles (image/png, image/jpeg,
     image/gif...)
     """
 
-    name = models.CharField(_('name'), null=True,max_length=200)
+    name = models.CharField(_('name'), null=True, max_length=200)
     """
     The name of the layer to load.
 
@@ -1534,7 +1538,7 @@ class MapLayer(models.Model):
     The URL of the OWS service providing this layer, if any exists.
     """
 
-    layer_params = models.CharField(_('layer params'), max_length=1024)
+    layer_params = models.TextField(_('layer params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     passed to the GXP viewer.
@@ -1543,7 +1547,7 @@ class MapLayer(models.Model):
     (such as format, styles, etc.) then the fields override.
     """
 
-    source_params = models.CharField(_('source params'), max_length=1024)
+    source_params = models.TextField(_('source params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
     configuration for this layer.

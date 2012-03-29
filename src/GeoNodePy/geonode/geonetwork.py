@@ -5,10 +5,7 @@ from django.template import Context
 from django.template.loader import get_template
 from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.util import nspath
-from xml.dom import minidom
-from xml.etree.ElementTree import XML
-
-
+from lxml import etree
 
 class Catalog(object):
 
@@ -35,9 +32,8 @@ class Catalog(object):
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(),
                 urllib2.HTTPRedirectHandler())
         response = self.opener.open(request)
-        body = response.read()
-        dom = minidom.parseString(body)
-        assert dom.childNodes[0].nodeName == 'ok', "GeoNetwork login failed!"
+        doc = etree.fromstring(response.read())
+        assert doc.tag == 'ok', "GeoNetwork login failed!"
         self.connected = True
 
     def logout(self):
@@ -131,7 +127,7 @@ class Catalog(object):
         # get the id of the data.
         request = urllib2.Request(get_dbid_url)
         response = self.urlopen(request)
-        doc = XML(response.read())
+        doc = etree.fromstring(response.read())
         data_dbid = doc.find('metadata/{http://www.fao.org/geonetwork}info/id').text
 
         # update group and operation info if needed
@@ -176,7 +172,7 @@ class Catalog(object):
         get_groups_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'groups'})
         request = urllib2.Request(get_groups_url)
         response = self.urlopen(request)
-        doc = XML(response.read())
+        doc = etree.fromstring(response.read())
         groups = {}
         for gp in doc.findall('groups/group'):
             groups[gp.find('name').text.lower()] = gp.attrib['id']
@@ -191,7 +187,7 @@ class Catalog(object):
         get_ops_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'operations'})
         request = urllib2.Request(get_ops_url)
         response = self.urlopen(request)
-        doc = XML(response.read())
+        doc = etree.fromstring(response.read())
         ops = {}
         for op in doc.findall('operations/operation'):
             ops[op.find('name').text.lower()] = op.attrib['id']

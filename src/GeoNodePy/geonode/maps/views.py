@@ -9,7 +9,6 @@ from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -32,6 +31,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
+from geonode.maps.utils import forward_mercator
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -40,15 +40,8 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 
-def _project_center(llcenter):
-    wkt = "POINT({x} {y})".format(x=llcenter[0],y=llcenter[1])
-    center = GEOSGeometry(wkt, srid=4326)
-    center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
-    return center.x, center.y
-
 def default_map_config():
-
-    _DEFAULT_MAP_CENTER = _project_center(settings.DEFAULT_MAP_CENTER)
+    _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = Map(
         title=DEFAULT_TITLE,
@@ -175,6 +168,8 @@ def mapJSON(request, mapid):
                 mimetype="text/plain"
             )
         map = get_object_or_404(Map, pk=mapid)
+        if not request.user.has_perm('maps.change_map', obj=map):
+            return HttpResponse("You are not allowed to modify this map.", status=403)
         try:
             map.update_from_viewer(request.raw_post_data)
 
@@ -259,9 +254,10 @@ def newmap_config(request):
                 minx, maxx, miny, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
-                wkt = "POINT(" + str(x) + " " + str(y) + ")"
-                center = GEOSGeometry(wkt, srid=4326)
-                center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+
+                center = forward_mercator((x, y))
+                if center[1] == float('-inf'):
+                    center[1] = 0
 
                 if maxx == minx:
                     width_zoom = 15
@@ -272,8 +268,8 @@ def newmap_config(request):
                 else:
                     height_zoom = math.log(360 / (maxy - miny), 2)
 
-                map.center_x = center.x
-                map.center_y = center.y
+                map.center_x = center[0]
+                map.center_y = center[1]
                 map.zoom = math.ceil(min(width_zoom, height_zoom))
 
 
@@ -893,7 +889,7 @@ def upload_layer(request):
                         )
                 return HttpResponse(json.dumps({
                     "success": True,
-                    "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
+                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
@@ -940,7 +936,7 @@ def layer_replace(request, layername):
                 saved_layer = save(layer, base_file, request.user, overwrite=True)
                 return HttpResponse(json.dumps({
                     "success": True,
-                    "redirect_to": saved_layer.get_absolute_url() + "?describe"}))
+                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
@@ -1323,7 +1319,8 @@ def _extract_links(rec, xml):
     format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
 
     for link in xml.findall("*//" + nspath("onLine", namespaces['gmd'])):
-        if link.find(dl_type_path).text == "WWW:DOWNLOAD-1.0-http--download":
+        dl_type = link.find(dl_type_path)
+        if dl_type is not None and dl_type.text == "WWW:DOWNLOAD-1.0-http--download":
             extension = link.find(dl_name_path).text.split('.')[-1]
             format = format_re.match(link.find(dl_description_path).text).groups()[0]
             url = link.find(dl_link_path).text
