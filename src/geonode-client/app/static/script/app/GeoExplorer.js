@@ -295,7 +295,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         url.indexOf(this.proxy) === -1) {
                         this.showLoginWindow(options);
                     } else {
-                        this.displayXHRTrouble(response);
+                        //this.displayXHRTrouble(response);
                     }
                 }
             },
@@ -2301,6 +2301,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var historyControl = new OpenLayers.Control.NavigationHistory();
         this.mapPanel.map.addControl(historyControl);
 
+        this.mapPanel.map.addControl(new OpenLayers.Control.MousePosition({
+            displayProjection: 'EPSG:4326'
+        }));
+
         // create actions for previous and next
         var navPreviousAction = new GeoExt.Action({
             tooltip: this.navPreviousActionText,
@@ -2477,7 +2481,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this,
                 disabled: !this.config["edit_map"],
                 text: '<span class="x-btn-text">' + this.saveMapBtnText + '</span>'
-            }), "-","-",
+            }), "-","-","-",
             "-",
             publishAction,
             "-",
@@ -3116,6 +3120,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *  any configuration before applyConfig is called.
      */
     save: function(as) {
+
+
         var config = this.getState();
 
         var treeConfig = [];

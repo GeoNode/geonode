@@ -479,24 +479,25 @@ def create_django_record(user, title, keywords, abstract, resource, permissions)
         # Step 9. Delete layer attributes if they no longer exist in an updated layer
         logger.info('>>> Step 11. Delete layer attributes if they no longer exist in an updated layer [%s]', name)
         attributes = LayerAttribute.objects.filter(layer=saved_layer)
-        for la in attributes:
-            lafound = False
-            if saved_layer.attribute_names is not None:
-                for field, ftype in saved_layer.attribute_names.iteritems():
+        attrNames = saved_layer.attribute_names
+        if attrNames is not None:
+            for la in attributes:
+                lafound = False
+                for field, ftype in attrNames.iteritems():
                     if field == la.attribute:
                         lafound = True
-            if not lafound:
-                logger.debug("Going to delete [%s] for [%s]", la.attribute, saved_layer.name)
-                la.delete()
+                if not lafound:
+                    logger.debug("Going to delete [%s] for [%s]", la.attribute, saved_layer.name)
+                    la.delete()
 
         #
         # Step 10. Add new layer attributes if they dont already exist
         logger.info('>>> Step 10. Add new layer attributes if they dont already exist in an updated layer [%s]', name)
-        if saved_layer.attribute_names is not None:
+        if attrNames is not None:
             logger.debug("Attributes are not None")
             iter = 1
             mark_searchable = True
-            for field, ftype in saved_layer.attribute_names.iteritems():
+            for field, ftype in attrNames.iteritems():
                     if field is not None and  ftype.find("gml:") != 0:
                         las = LayerAttribute.objects.filter(layer=saved_layer, attribute=field)
                         if len(las) == 0:
