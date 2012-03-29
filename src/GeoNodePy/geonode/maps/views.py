@@ -17,6 +17,7 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 import json
+import simplejson
 import math
 import httplib2 
 from owslib.csw import CswRecord, namespaces
@@ -134,13 +135,16 @@ def maps(request, mapid=None):
                 status=401
             )
         else:
-            map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
-            map.save()
-            map.set_default_permissions()
-            map.update_from_viewer(request.raw_post_data)
-            response = HttpResponse('', status=201)
-            response['Location'] = map.id
-            return response
+            try:
+                map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
+                map.save()
+                map.set_default_permissions()
+                map.update_from_viewer(request.raw_post_data)
+                response = HttpResponse('', status=201)
+                response['Location'] = map.id
+                return response
+            except simplejson.JSONDecodeError:
+                return HttpResponse(status=400)
 
 def mapJSON(request, mapid):
     if request.method == 'GET':
