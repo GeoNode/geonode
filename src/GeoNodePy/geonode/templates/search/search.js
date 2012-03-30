@@ -1,5 +1,5 @@
 Ext.onReady(function() {
-    var start = 0,
+    var startIndex = 0,
     limit = 5,
     loadnotify = Ext.get('loading'),
     itemTemplate = "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
@@ -95,14 +95,14 @@ Ext.onReady(function() {
 
         var read = store.reader.readRecords(results);
         if (read.records.length === 0) {
-            if (start === 0) {
+            if (startIndex === 0) {
                 Ext.DomHelper.append(list,'<li><h4 class="center">No Results</h4></li>');
             }
-            start = -1;
+            startIndex = -1;
             updateDisplaying();
             return;
         } else {
-            start += limit;
+            startIndex += limit;
         }
         store.add(read.records);
         updateDisplaying();
@@ -167,17 +167,17 @@ Ext.onReady(function() {
     function reset() {
         store.removeAll(false);
         list.select('li').remove();
-        start = 0;
+        startIndex = 0;
         fetch();
     }
 
     function fetch() {
         if (fetching) return;
-        if (start < 0) return;
+        if (startIndex < 0) return;
         loadnotify.show();
         fetching = true;
         var params = Ext.apply({
-                start: start,
+                startIndex: startIndex,
                 limit: limit
             },queryItems);
         Ext.Ajax.request({
@@ -192,7 +192,7 @@ Ext.onReady(function() {
     fetch();
     var scrollEl = Ext.isIE ? document.body : document;
     Ext.fly(scrollEl).on('scroll',function() {
-        if (start < 0) return;
+        if (startIndex < 0) return;
         var scroll = Ext.fly(document).getScroll().top;
         var height = list.getHeight() + list.getTop();
         var windowHeight = Ext.isIE ? document.body.clientHeight : window.innerHeight;
