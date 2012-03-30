@@ -11,6 +11,11 @@ from haystack.query import SearchQuerySet
 from geonode.maps.views import default_map_config, Map, Layer
 
 default_facets = ["map", "layer", "vector", "raster", "contact"]
+fieldsets = {
+    "brief": ["name", "type", "description"],
+    "summary": ["name", "type", "description", "owner"],
+    "full": ["name", "type", "description", "owner", "language"],
+}
 
 def search(request):
     """
@@ -57,7 +62,7 @@ def search_api(request):
     type = request.REQUEST.get("type", None)
     extra_facets = request.REQUEST.get("facets", None)
     fields = request.REQUEST.get("fields", None)
-    fieldsets = request.REQUEST.get("fieldsets", None)
+    fieldset = request.REQUEST.get("fieldset", None)
     format = request.REQUEST.get("format", "json")
     groups = request.REQUEST.get("groups", None)
     callback = request.REQUEST.get("callback", None)
@@ -112,9 +117,19 @@ def search_api(request):
             data.update({"iid": i + startIndex})
             results.append(data)
 
-
     # Filter Fields/Fieldsets
-    # TODO: 
+    if fieldset:
+        if fieldset in fieldsets.keys():
+            for result in results:
+                for key in result.keys():
+                    if key not in fieldsets[fieldset]:
+                        del result[key]
+    elif fields:
+        fields = fields.split(',')
+        for result in results:
+            for key in result.keys():
+                if key not in fields:
+                    del result[key]        
 
     # Setup Facet Counts
     sqs = sqs.facet("type").facet("subtype")
