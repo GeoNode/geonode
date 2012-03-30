@@ -121,24 +121,6 @@ def search_api(request):
             sqs = sqs.facet(facet)
 
     facets = sqs.facet_counts()
-    facet_counts = {}
-    for facet in default_facets:
-        facet_counts[facet] = 0
-
-    if extra_facets:
-        for facet in extra_facets:
-            facet_counts[facet] = 0
-
-    for t, c in facets.get("fields", {}).get("type", []):
-        facet_counts[t] = c
-
-    for t, c in facets.get("fields", {}).get("subtype", []):
-        facet_counts[t] = c
-
-    if extra_facets:
-        for t, c in facets.get("fields", {}).get(facet, []):
-                for t, c in facets.get("fields", {}).get(facet, []):
-                    facet_counts[t] = c
 
     # Filter by permissions
     # TODO:
