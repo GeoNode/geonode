@@ -61,7 +61,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "_display_type": obj.display_type,
             "storeType": obj.storeType,
             "name": obj.title,
-            "desciption": obj.abstract,
+            "description": obj.abstract,
             "owner": obj.metadata_author.name,
             "owner_detail": obj.owner.get_absolute_url(),
             "organization": "",
