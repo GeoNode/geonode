@@ -106,8 +106,12 @@ def search_api(request):
 
     for i, result in enumerate(sqs[startIndex:startIndex + limit]):
         data = json.loads(result.json)
-        data.update({"iid": i + startIndex})
-        results.append(data)
+        layer = Layer.objects.get(uuid=data['uuid'])
+        # Dont return results that the user doesnt have permission to view
+        if request.user.has_perm('maps.view_layer', obj=layer):
+            data.update({"iid": i + startIndex})
+            results.append(data)
+
 
     # Filter Fields/Fieldsets
     # TODO: 
@@ -122,8 +126,6 @@ def search_api(request):
 
     facets = sqs.facet_counts()
 
-    # Filter by permissions
-    # TODO:
 
     # Prepare Search Results
     data = {
@@ -137,7 +139,7 @@ def search_api(request):
             "type": type,
         },
         "facets": facets,
-        #"results": results,
+        "results": results,
     }
 
     # Return Results
