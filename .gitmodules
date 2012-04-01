@@ -17,8 +17,5 @@
 	path = src/geonode-client/externals/buildkit
 	url = git://github.com/tschaub/buildkit.git
 [submodule "src/geonode-client/app/static/externals/gxp"]
-        path = src/geonode-client/app/static/externals/gxp
-        url = git://github.com/cga-harvard/gxp.git
-
-
-
+	path = src/geonode-client/app/static/externals/gxp
+	url = git://github.com/cga-harvard/gxp.git

@@ -704,67 +704,8 @@ class LayerManager(models.Manager):
     def default_metadata_author(self):
         return self.admin_contact()
 
-    def import_existing_layer(self, resource_name):
-        #Like slurp but for just one particular layer
-        cat = self.gs_catalog
-        gn = self.gn_catalog
-        resource = cat.get_resource(resource_name)
-        if resource:
-            store = resource.store
-            workspace = store.workspace
-            layer, created = self.get_or_create(name=resource.name, defaults = {
-                    "workspace": workspace.name,
-                    "store": store.name,
-                    "storeType": store.resource_type,
-                    "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title or 'No title provided',
-                    "abstract": resource.abstract or 'No abstract provided',
-                    "uuid": str(uuid.uuid4())
-            })
-            ## Due to a bug in GeoNode versions prior to 1.0RC2, the data
-            ## in the database may not have a valid date_type set.  The
-            ## invalid values are expected to differ from the acceptable
-            ## values only by case, so try to convert, then fallback to a
-            ## default.
-            ##
-            ## We should probably drop this adjustment in 1.1. --David Winslow
-            if layer.date_type not in Layer.VALID_DATE_TYPES:
-                candidate = lower(layer.date_type)
-                if candidate in Layer.VALID_DATE_TYPES:
-                    layer.date_type = candidate
-                else:
-                    layer.date_type = Layer.VALID_DATE_TYPES[0]
 
-            layer._populate_from_gs()
-
-            layer.save()
-
-            if created:
-                layer.set_default_permissions()
-                #Create layer attributes if they don't already exist
-            try:
-                if layer.attribute_names is not None:
-                    for field, ftype in layer.attribute_names.iteritems():
-                        iter = 1
-                        if field is not None:
-                            la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
-                            if created:
-                                la.attribute_label = field
-                                la.searchable = (ftype == "xsd:string")
-                                la.display_order = iter
-                                la.save()
-                                msg = ("Created [%s] attribute for [%s]", field, layer.name)
-                                iter += 1
-            except Exception, e:
-                logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
-            finally:
-                pass
-        # Doing a logout since we know we don't need this object anymore.
-        gn.logout()
-
-
-
-    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout):
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, layer=None):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
@@ -773,7 +714,11 @@ class LayerManager(models.Manager):
         if verbosity > 1:
             print >> console, "Inspecting the available layers in GeoServer ..."
         cat = self.gs_catalog
-        resources = cat.get_resources()
+        if layer is None:
+            resources = cat.get_resources()
+        else:
+            resource = cat.get_resource(layer)
+            resources = [resource] if resource else []
         number = len(resources)
         if verbosity > 1:
             msg =  "Found %d layers, starting processing" % number
@@ -2233,22 +2178,16 @@ def delete_layer(instance, sender, **kwargs):
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
-    if (re.search("coverageStore|dataStore", instance.storeType)):
-        logger.info("Call save_to_geoserver for %s", instance.name)
-        instance.save_to_geoserver()
-        logger.info("Call save_to_geonetwork for %s", instance.name)
-        instance.save_to_geonetwork()
+    instance.save_to_geoserver()
 
-        if kwargs['created']:
-            logger.info("Call populate_from_geoserver for %s", instance.name)
-            instance._populate_from_gs()
-            logger.debug("populate from geonetwork")
-            try:
-                instance._populate_from_gn()
-            except:
-                logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
-                raise
-            logger.debug("save instance")
+    if kwargs['created']:
+        instance._populate_from_gs()
+
+    instance.save_to_geonetwork()
+
+    if kwargs['created']:
+        instance._populate_from_gn()
+        instance.save(force_update=True)
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
