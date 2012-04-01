@@ -745,10 +745,12 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
 def forward_mercator(lonlat):
     """
         Given geographic coordinates, return a x,y tuple in spherical mercator.
+
+        If the lat value is out of range, -inf will be returned as the y value
     """
     x = lonlat[0] * 20037508.34 / 180
     n = math.tan((90 + lonlat[1]) * math.pi / 360)
-    if n == 0:
+    if n <= 0:
         y = float("-inf")
     else:
         y = math.log(n) / math.pi * 20037508.34
@@ -762,4 +764,3 @@ def inverse_mercator(xy):
     lat = (xy[1] / 20037508.34) * 180
     lat = 180/math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
     return (lon, lat)
-

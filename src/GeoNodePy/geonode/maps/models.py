@@ -2178,16 +2178,26 @@ def delete_layer(instance, sender, **kwargs):
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
-    instance.save_to_geoserver()
+    #Don't save to geoserver if storeType isn't populated yet; do it later
+    if (re.search("coverageStore|dataStore", instance.storeType)):
+        logger.info("Call save_to_geoserver for %s", instance.name)
+        instance.save_to_geoserver()
 
-    if kwargs['created']:
-        instance._populate_from_gs()
+        if kwargs['created']:
+            logger.info("Call populate_from_geoserver for %s", instance.name)
+            instance._populate_from_gs()
 
     instance.save_to_geonetwork()
 
     if kwargs['created']:
-        instance._populate_from_gn()
-        instance.save(force_update=True)
+        logger.debug("populate from geonetwork")
+        try:
+            instance._populate_from_gn()
+            instance.save(force_update=True)
+        except:
+            logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
+            raise
+        logger.debug("save instance")
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
