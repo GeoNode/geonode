@@ -214,46 +214,49 @@ DEFAULT_LAYER_SOURCE = {
 }
 
 MAP_BASELAYERS = [
-{
-    "source": {"ptype": "gx_olsource"},
-    "type":"OpenLayers.Layer",
-    "args":["No background"],
-    "visibility": True,
-    "fixed": False,
-    "group":"background"
-  },
- {
-    "source": {"ptype": "gx_googlesource"},
-    "group":"background",
-    "name":"SATELLITE",
-    "visibility": False,
-    "fixed": True,
-},{
-    "source": {"ptype": "gx_googlesource"},
-    "name":"TERRAIN",
-    "visibility": True,
-    "fixed": True,
-    "group":"background"
-},            {
-    "source": {"ptype": "gx_googlesource"},
-    "group":"background",
-    "name":"ROADMAP",
-    "visibility": False,
-    "fixed": True,
-},{
-    "source": {"ptype": "gx_googlesource"},
-    "group":"background",
-    "name":"HYBRID",
-    "visibility": False,
-    "fixed": True,
-},{
-    "source": {"ptype": "gx_olsource"},
-    "type":"OpenLayers.Layer.OSM",
-    "args":["OpenStreetMap"],
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  }]
+        {
+        "source":{"ptype": "gx_googlesource"},
+        "group":"background",
+        "name":"SATELLITE",
+        "visibility": False,
+        "fixed": True,
+        },
+        {
+        "source":{"ptype": "gx_googlesource"},
+        "group":"background",
+        "name":"TERRAIN",
+        "visibility": True,
+        "fixed": True,
+        },            {
+        "source":{"ptype": "gx_googlesource"},
+        "group":"background",
+        "name":"ROADMAP",
+        "visibility": False,
+        "fixed": True,
+        },
+        {
+        "source":{"ptype": "gx_googlesource"},
+        "group":"background",
+        "name":"HYBRID",
+        "visibility": False,
+        "fixed": True,
+        },
+        {
+        "source": {"url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer", "ptype": "gxp_arcrestsource"},
+        "group":"background",
+        "name":"World Imagery",
+        "visibility": False,
+        "fixed": True,
+        "title": "ESRI World Imagery"
+    },
+        {
+        "source":{"ptype": "gx_olsource"},
+        "type":"OpenLayers.Layer.OSM",
+        "args":["OpenStreetMap"],
+        "visibility": False,
+        "fixed": True,
+        "group":"background"
+    }]
 
 
 INSTALLED_APPS = (
