@@ -2517,18 +2517,10 @@ def create_pg_layer(request):
                 return HttpResponse(msg, status='400')
 
             #TODO: Let users create their own schema
-            attributes = LAYER_SCHEMA_TEMPLATE
+            attribute_list = LAYER_SCHEMA_TEMPLATE
 
             # Add geometry to attributes dictionary, based on user input; use OrderedDict to remember order
-            attribute_dict = OrderedDict({u"the_geom" : "com.vividsolutions.jts.geom." + layer_form.cleaned_data['geom']})
-
-            for attribute in attributes.split(','):
-                key, value = attribute.split(':')
-                logger.info("Attribute: %s", key)
-                attribute_dict[key] = value
-
-            for k, v in attribute_dict.items():
-                logger.info("Stored Attribute: %s", k)
+            attribute_list.insert(0,[u"the_geom",u"com.vividsolutions.jts.geom." + layer_form.cleaned_data['geom'],{"nillable":False}])
 
             name = get_valid_layer_name(layer_form.cleaned_data['name'])
             permissions = layer_form.cleaned_data["permissions"]
@@ -2541,7 +2533,7 @@ def create_pg_layer(request):
                                           name,
                                           layer_form.cleaned_data['title'],
                                           layer_form.cleaned_data['srs'],
-                                          attribute_dict)
+                                          attribute_list)
                 
                 logger.info("Create default style")
                 publishing = cat.get_layer(name)
