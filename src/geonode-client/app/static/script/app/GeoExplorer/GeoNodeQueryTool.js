@@ -82,6 +82,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                 iconCls: this.iconCls,
                 text: this.toolText,
                 id: this.id,
+                pressed: true,
                 toggleGroup: this.toggleGroup,
                 enableToggle: true,
                 allowDepress: true,
