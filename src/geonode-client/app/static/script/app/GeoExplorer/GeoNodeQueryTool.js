@@ -81,6 +81,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                 tooltip: this.infoActionTip,
                 iconCls: this.iconCls,
                 text: this.toolText,
+                id: this.id,
                 toggleGroup: this.toggleGroup,
                 enableToggle: true,
                 allowDepress: true,
@@ -93,15 +94,6 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                             tool.reset(true);
                         }
                     }
-//                    if (pressed) {
-//                        for (var j = this.ownerCt.items.length; j--;) {
-//                            var otool = this.ownerCt.items.items.j;
-//                            if (otool instanceof gxp.plugins.FeatureEditor || otool instanceof gxp.plugins.FeatureManager)
-//                            {
-//                                otool.deactivate();
-//                            }
-//                        }
-//                    }
                 }
             }
         ]);
@@ -633,7 +625,10 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
         for (c = 0, max = metaColumns.length; c < max; c++) {
             column = metaColumns[c];
 
+
             featureValue = '' + (column.header ? feature.attributes[column.id] : feature.attributes[column])
+            if (featureValue == 'undefined' || featureValue == 'null')
+                featureValue = '';
 
 
             if (featureValue.indexOf("http") == 0) {
