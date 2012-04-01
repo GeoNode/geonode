@@ -40,7 +40,7 @@ from gs_helpers import cascading_delete
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
-                            x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+                                                                 x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -294,7 +294,7 @@ COUNTRIES = (
     ('YEM', _('Yemen')),
     ('ZMB', _('Zambia')),
     ('ZWE', _('Zimbabwe')),
-)
+    )
 
 
 KEYWORD_REGIONS= (
@@ -314,7 +314,7 @@ KEYWORD_REGIONS= (
     ('SAF',_('South Africa')),
     ('MES',_('Middle East')),
     ('ANT',_('Antarctica')),
-)
+    )
 
 # Taken from http://www.w3.org/WAI/ER/IG/ert/iso639.htm
 ALL_LANGUAGES = (
@@ -431,43 +431,43 @@ ALL_LANGUAGES = (
     ('yor', 'Yoruba'),
     ('zha', 'Zhuang'),
     ('zul', 'Zulu'),
-)
+    )
 
 
 CHARSETS = [
-        ['', 'None/Unknown'],
-        ['UTF-8', 'UTF-8/Unicode'],
-        ['ISO-8859-1', 'Latin1/ISO-8859-1'],
-        ['ISO-8859-2', 'Latin2/ISO-8859-2'],
-        ['ISO-8859-3', 'Latin3/ISO-8859-3'],
-        ['ISO-8859-4', 'Latin4/ISO-8859-4'],
-        ['ISO-8859-5', 'Latin5/ISO-8859-5'],
-        ['ISO-8859-6', 'Latin6/ISO-8859-6'],
-        ['ISO-8859-7', 'Latin7/ISO-8859-7'],
-        ['ISO-8859-8', 'Latin8/ISO-8859-8'],
-        ['ISO-8859-9', 'Latin9/ISO-8859-9'],
-        ['ISO-8859-10','Latin10/ISO-8859-10'],
-        ['ISO-8859-13','Latin13/ISO-8859-13'],
-        ['ISO-8859-14','Latin14/ISO-8859-14'],
-        ['ISO8859-15','Latin15/ISO-8859-15'],
-        ['Big5', 'BIG5'],
-        ['EUC-JP','EUC-JP'],
-        ['EUC-KR','EUC-KR'],
-        ['GBK','GBK'],
-        ['GB18030','GB18030'],
-        ['Shift_JIS','Shift_JIS'],
-        ['KOI8-R','KOI8-R'],
-        ['KOI8-U','KOI8-U'],
-        ['windows-874', 'Windows CP874'],
-        ['windows-1250', 'Windows CP1250'],
-        ['windows-1251', 'Windows CP1251'],
-        ['windows-1252', 'Windows CP1252'],
-        ['windows-1253', 'Windows CP1253'],
-        ['windows-1254', 'Windows CP1254'],
-        ['windows-1255', 'Windows CP1255'],
-        ['windows-1256', 'Windows CP1256'],
-        ['windows-1257', 'Windows CP1257'],
-        ['windows-1258', 'Windows CP1258']
+    ['', 'None/Unknown'],
+    ['UTF-8', 'UTF-8/Unicode'],
+    ['ISO-8859-1', 'Latin1/ISO-8859-1'],
+    ['ISO-8859-2', 'Latin2/ISO-8859-2'],
+    ['ISO-8859-3', 'Latin3/ISO-8859-3'],
+    ['ISO-8859-4', 'Latin4/ISO-8859-4'],
+    ['ISO-8859-5', 'Latin5/ISO-8859-5'],
+    ['ISO-8859-6', 'Latin6/ISO-8859-6'],
+    ['ISO-8859-7', 'Latin7/ISO-8859-7'],
+    ['ISO-8859-8', 'Latin8/ISO-8859-8'],
+    ['ISO-8859-9', 'Latin9/ISO-8859-9'],
+    ['ISO-8859-10','Latin10/ISO-8859-10'],
+    ['ISO-8859-13','Latin13/ISO-8859-13'],
+    ['ISO-8859-14','Latin14/ISO-8859-14'],
+    ['ISO8859-15','Latin15/ISO-8859-15'],
+    ['Big5', 'BIG5'],
+    ['EUC-JP','EUC-JP'],
+    ['EUC-KR','EUC-KR'],
+    ['GBK','GBK'],
+    ['GB18030','GB18030'],
+    ['Shift_JIS','Shift_JIS'],
+    ['KOI8-R','KOI8-R'],
+    ['KOI8-U','KOI8-U'],
+    ['windows-874', 'Windows CP874'],
+    ['windows-1250', 'Windows CP1250'],
+    ['windows-1251', 'Windows CP1251'],
+    ['windows-1252', 'Windows CP1252'],
+    ['windows-1253', 'Windows CP1253'],
+    ['windows-1254', 'Windows CP1254'],
+    ['windows-1255', 'Windows CP1255'],
+    ['windows-1256', 'Windows CP1256'],
+    ['windows-1257', 'Windows CP1257'],
+    ['windows-1258', 'Windows CP1258']
 ]
 
 
@@ -497,7 +497,7 @@ CONSTRAINT_OPTIONS = [
     'trademark',
     'public',
     'no restrictions',
-]
+    ]
 
 SPATIAL_REPRESENTATION_TYPES = [
     'grid', 'steroModel', 'textTable', 'tin', 'vector'
@@ -520,55 +520,55 @@ CONTACT_FIELDS = [
 ]
 
 DEFAULT_SUPPLEMENTAL_INFORMATION=_(
-''
+    ''
 )
 
 DEFAULT_CONTENT=_(
-'<h3>The Harvard WorldMap Project</h3>\
-<p>WorldMap is an open source web mapping system that is currently\
-under construction. It is built to assist academic research and\
-teaching as well as the general public and supports discovery,\
-investigation, analysis, visualization, communication and archiving\
-of multi-disciplinary, multi-source and multi-format data,\
-organized spatially and temporally.</p>\
-<p>The first instance of WorldMap, focused on the continent of\
-Africa, is called AfricaMap. Since its beta release in November of\
-2008, the framework has been implemented in several geographic\
-locations with different research foci, including metro Boston,\
-East Asia, Vermont, Harvard Forest and the city of Paris. These web\
-mapping applications are used in courses as well as by individual\
-researchers.</p>\
-<h3>Introduction to the WorldMap Project</h3>\
-<p>WorldMap solves the problem of discovering where things happen.\
-It draws together an array of public maps and scholarly data to\
-create a common source where users can:</p>\
-<ol>\
-<li>Interact with the best available public data for a\
-city/region/continent</li>\
-<li>See the whole of that area yet also zoom in to particular\
-places</li>\
-<li>Accumulate both contemporary and historical data supplied by\
-researchers and make it permanently accessible online</li>\
-<li>Work collaboratively across disciplines and organizations with\
-spatial information in an online environment</li>\
-</ol>\
-<p>The WorldMap project aims to accomplish these goals in stages,\
-with public and private support. It draws on the basic insight of\
-geographic information systems that spatiotemporal data becomes\
-more meaningful as more "layers" are added, and makes use of tiling\
-and indexing approaches to facilitate rapid search and\
-visualization of large volumes of disparate data.</p>\
-<p>WorldMap aims to augment existing initiatives for globally\
-sharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial Data\
-Infrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open Geospatial\
-Consortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (Web\
-Map Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>\
-(cached WMS), and standards-based metadata formats, to enable\
-WorldMap data layers to be inserted into existing data\
-infrastructures.&nbsp;<br>\
-<br>\
-All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use\
-and improve upon.</p>'
+    '<h3>The Harvard WorldMap Project</h3>\
+  <p>WorldMap is an open source web mapping system that is currently\
+  under construction. It is built to assist academic research and\
+  teaching as well as the general public and supports discovery,\
+  investigation, analysis, visualization, communication and archiving\
+  of multi-disciplinary, multi-source and multi-format data,\
+  organized spatially and temporally.</p>\
+  <p>The first instance of WorldMap, focused on the continent of\
+  Africa, is called AfricaMap. Since its beta release in November of\
+  2008, the framework has been implemented in several geographic\
+  locations with different research foci, including metro Boston,\
+  East Asia, Vermont, Harvard Forest and the city of Paris. These web\
+  mapping applications are used in courses as well as by individual\
+  researchers.</p>\
+  <h3>Introduction to the WorldMap Project</h3>\
+  <p>WorldMap solves the problem of discovering where things happen.\
+  It draws together an array of public maps and scholarly data to\
+  create a common source where users can:</p>\
+  <ol>\
+  <li>Interact with the best available public data for a\
+  city/region/continent</li>\
+  <li>See the whole of that area yet also zoom in to particular\
+  places</li>\
+  <li>Accumulate both contemporary and historical data supplied by\
+  researchers and make it permanently accessible online</li>\
+  <li>Work collaboratively across disciplines and organizations with\
+  spatial information in an online environment</li>\
+  </ol>\
+  <p>The WorldMap project aims to accomplish these goals in stages,\
+  with public and private support. It draws on the basic insight of\
+  geographic information systems that spatiotemporal data becomes\
+  more meaningful as more "layers" are added, and makes use of tiling\
+  and indexing approaches to facilitate rapid search and\
+  visualization of large volumes of disparate data.</p>\
+  <p>WorldMap aims to augment existing initiatives for globally\
+  sharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial Data\
+  Infrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open Geospatial\
+  Consortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (Web\
+  Map Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>\
+  (cached WMS), and standards-based metadata formats, to enable\
+  WorldMap data layers to be inserted into existing data\
+  infrastructures.&nbsp;<br>\
+  <br>\
+  All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use\
+  and improve upon.</p>'
 )
 
 
@@ -628,7 +628,7 @@ _viewer_projection_lookup = {
         "maxResolution": 156543.03390625,
         "units": "m",
         "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
-    },
+        },
     "EPSG:4326": {
         "max_resolution": (180 - (-180)) / 256,
         "units": "degrees",
@@ -684,7 +684,7 @@ class LayerManager(models.Manager):
         # check if geonetwork is logged in
         if not self.geonetwork.connected:
             self.geonetwork.login()
-        # Make sure to logout after you have finished using it.
+            # Make sure to logout after you have finished using it.
         return self.geonetwork
 
 
@@ -695,7 +695,7 @@ class LayerManager(models.Manager):
             raise RuntimeError('GeoNode needs at least one admin/superuser set')
 
         contact, created = Contact.objects.get_or_create(user=superusers[0],
-                                                defaults={"name": "Geonode Admin"})
+            defaults={"name": "Geonode Admin"})
         return contact
 
     def default_poc(self):
@@ -804,8 +804,8 @@ class LayerManager(models.Manager):
 
     def update_stores(self):
         cat = self.gs_catalog
-	for layer in Layer.objects.all():
-    	    logger.debug('Process %s', layer.name)
+        for layer in Layer.objects.all():
+            logger.debug('Process %s', layer.name)
             resource = cat.get_resource(layer.name)
             if resource:
                 store = resource.store
@@ -960,11 +960,11 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 client = httplib2.Http()
                 description_url = settings.SITEURL + "download/wcs/" + str(self.id) + "?" + urllib.urlencode({
-                        "service": "WCS",
-                        "version": "1.0.0",
-                        "request": "DescribeCoverage",
-                        "coverage": self.typename
-                    })
+                    "service": "WCS",
+                    "version": "1.0.0",
+                    "request": "DescribeCoverage",
+                    "coverage": self.typename
+                })
                 response, content = client.request(description_url)
                 doc = parse(StringIO(content))
                 extent = doc.find("//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
@@ -1071,15 +1071,15 @@ class Layer(models.Model, PermissionLevelMixin):
         if(csw_layer.uri != self.get_absolute_url()):
             msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
 
-        # Visit get_absolute_url and make sure it does not give a 404
-        #logger.info(self.get_absolute_url())
-        #response, body = http.request(self.get_absolute_url())
-        #if(int(response['status']) != 200):
-        #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
-        #    raise GeoNodeException(msg)
+            # Visit get_absolute_url and make sure it does not give a 404
+            #logger.info(self.get_absolute_url())
+            #response, body = http.request(self.get_absolute_url())
+            #if(int(response['status']) != 200):
+            #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
+            #    raise GeoNodeException(msg)
 
-        #FIXME: Add more checks, for example making sure the title, keywords and description
-        # are the same in every database.
+            #FIXME: Add more checks, for example making sure the title, keywords and description
+            # are the same in every database.
 
     def layer_attributes(self):
         attribute_fields = cache.get('layer_searchfields_' + self.typename)
@@ -1098,31 +1098,31 @@ class Layer(models.Model, PermissionLevelMixin):
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
         return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename).select_related()])
 
-#    def metadata(self):
-#        logger.info('METADATA called here--------<<<<<<<<<<<<<<<<<<<<<')
-#        global _wms
-#        if (_wms is None) or (self.typename not in _wms.contents):
-#            get_wms()
-#            """
-#            wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
-#            netloc = urlparse(wms_url).netloc
-#            http = httplib2.Http()
-#            http.add_credentials(_user, _password)
-#            http.authorizations.append(
-#                httplib2.BasicAuthentication(
-#                    (_user, _password),
-#                    netloc,
-#                    wms_url,
-#                    {},
-#                    None,
-#                    None,
-#                    http
-#                )
-#            )
-#            response, body = http.request(wms_url)
-#            _wms = WebMapService(wms_url, xml=body)
-#            """
-#        return _wms[self.typename]
+    #    def metadata(self):
+    #        logger.info('METADATA called here--------<<<<<<<<<<<<<<<<<<<<<')
+    #        global _wms
+    #        if (_wms is None) or (self.typename not in _wms.contents):
+    #            get_wms()
+    #            """
+    #            wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
+    #            netloc = urlparse(wms_url).netloc
+    #            http = httplib2.Http()
+    #            http.add_credentials(_user, _password)
+    #            http.authorizations.append(
+    #                httplib2.BasicAuthentication(
+    #                    (_user, _password),
+    #                    netloc,
+    #                    wms_url,
+    #                    {},
+    #                    None,
+    #                    None,
+    #                    http
+    #                )
+    #            )
+    #            response, body = http.request(wms_url)
+    #            _wms = WebMapService(wms_url, xml=body)
+    #            """
+    #        return _wms[self.typename]
 
     def __setattr__(self, name, value):
         return super(Layer, self).__setattr__(name, value)
@@ -1139,24 +1139,24 @@ class Layer(models.Model, PermissionLevelMixin):
         from ordereddict import OrderedDict
         if self.resource.resource_type == "featureType":
             dft_url = settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
-                    "service": "wfs",
-                    "version": "1.0.0",
-                    "request": "DescribeFeatureType",
-                    "typename": self.typename
-                })
+                "service": "wfs",
+                "version": "1.0.0",
+                "request": "DescribeFeatureType",
+                "typename": self.typename
+            })
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
                 netloc = urlparse(dft_url).netloc
                 http.authorizations.append(
                     httplib2.BasicAuthentication(
-                    (_user, _password),
-                    netloc,
-                    dft_url,
-                    {},
-                    None,
-                    None,
-                    http
+                        (_user, _password),
+                        netloc,
+                        dft_url,
+                            {},
+                        None,
+                        None,
+                        http
                     ))
                 response, body = http.request(dft_url)
                 doc = XML(body)
@@ -1170,24 +1170,24 @@ class Layer(models.Model, PermissionLevelMixin):
             return atts
         elif self.resource.resource_type == "coverage":
             dc_url = settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
-                     "service": "wcs",
-                     "version": "1.1.0",
-                     "request": "DescribeCoverage",
-                     "identifiers": self.typename
-                })
+                "service": "wcs",
+                "version": "1.1.0",
+                "request": "DescribeCoverage",
+                "identifiers": self.typename
+            })
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
                 netloc = urlparse(dft_url).netloc
                 http.authorizations.append(
                     httplib2.BasicAuthentication(
-                    (_user, _password),
-                    netloc,
-                    dft_url,
-                    {},
-                    None,
-                    None,
-                    http
+                        (_user, _password),
+                        netloc,
+                        dft_url,
+                            {},
+                        None,
+                        None,
+                        http
                     ))
                 response, body = http.request(dc_url)
                 doc = XML(body)
@@ -1204,7 +1204,7 @@ class Layer(models.Model, PermissionLevelMixin):
         return ({
             "dataStore" : "Vector Data",
             "coverageStore": "Raster Data",
-        }).get(self.storeType, "Data")
+            }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
@@ -1233,7 +1233,7 @@ class Layer(models.Model, PermissionLevelMixin):
             except AttributeError:
                 # Geoserver is not running
                 raise RuntimeError("Geoserver cannot be accessed, are you sure it is running in: %s" %
-                                    (settings.GEOSERVER_BASE_URL))
+                                   (settings.GEOSERVER_BASE_URL))
             store = cat.get_store(self.store, ws)
             self._resource_cache = cat.get_resource(self.name, store)
         return self._resource_cache
@@ -1309,7 +1309,7 @@ class Layer(models.Model, PermissionLevelMixin):
         ContactRole.objects.filter(role=self.metadata_author_role, layer=self).delete()
         #create the new assignation
         contact_role = ContactRole.objects.create(role=self.metadata_author_role,
-                                                  layer=self, contact=metadata_author)
+            layer=self, contact=metadata_author)
 
     def _get_metadata_author(self):
         try:
@@ -1352,7 +1352,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
             self.set_bbox(gs_resource.native_bbox, srs=self.srs)
-        ## Save using filter/update to avoid triggering post_save_layer
+            ## Save using filter/update to avoid triggering post_save_layer
         Layer.objects.filter(id=self.id).update(srs = self.srs, llbbox = self.llbbox, bbox=self.bbox, geographic_bounding_box = self.geographic_bounding_box)
 
 
@@ -1371,9 +1371,9 @@ class Layer(models.Model, PermissionLevelMixin):
         if meta is None:
             return
         kw_list = reduce(
-                lambda x, y: x + y["keywords"],
-                meta.identification.keywords,
-                [])
+            lambda x, y: x + y["keywords"],
+            meta.identification.keywords,
+            [])
         kw_list = filter(lambda x: x is not None, kw_list)
         self.keywords = ' '.join(kw_list)
 
@@ -1383,7 +1383,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 res = onlineresources[0]
                 self.distribution_url = res.url
                 self.distribution_description = res.description
-        ## Save using filter/update to avoid triggering post_save_layer
+            ## Save using filter/update to avoid triggering post_save_layer
         Layer.objects.filter(id=self.id).update(keywords = self.keywords, distribution_url = self.distribution_url, distribution_description=self.distribution_description )
 
     def keyword_list(self):
@@ -1620,10 +1620,10 @@ class Map(models.Model, PermissionLevelMixin):
             layers = filter(layer_filter, layers)
 
         readme = (
-            "Title: %s\n" +
-            "Author: %s\n"
-            "Abstract: %s\n"
-        ) % (self.title, "The GeoNode Team", self.abstract)
+                     "Title: %s\n" +
+                     "Author: %s\n"
+                     "Abstract: %s\n"
+                     ) % (self.title, "The GeoNode Team", self.abstract)
 
         def layer_json(lyr):
             return {
@@ -1777,7 +1777,7 @@ class Map(models.Model, PermissionLevelMixin):
             self.layer_set.add(
                 self.layer_set.from_viewer_config(
                     self, layer, source_for(layer), ordering
-            ))
+                ))
         self.save()
         cache.delete('maplayerset_' + str(self.id))
 
@@ -1835,10 +1835,10 @@ class MapSnapshot(models.Model):
 
     def json(self):
         return {
-                "map": self.map.id,
-                "created": self.created_dttm.isoformat(),
-                "user": self.user.username if self.user else None,
-                "url": num_encode(self.id)
+            "map": self.map.id,
+            "created": self.created_dttm.isoformat(),
+            "user": self.user.username if self.user else None,
+            "url": num_encode(self.id)
         }
 
 
@@ -2040,7 +2040,7 @@ class MapLayer(models.Model):
         :method:`geonode.maps.models.Map.viewer_json` for an example of
         generating a full map configuration.
         """
-#       Caching of  maplayer config, per user (due to permissions)
+        #       Caching of  maplayer config, per user (due to permissions)
         if self.id is not None:
             cfg = cache.get("maplayer_config_" + str(self.id) + "_" + str(0 if user is None else user.id))
             if cfg is not None:
@@ -2153,9 +2153,9 @@ class ContactRole(models.Model):
         if (self.role == self.layer.poc_role) or (self.role == self.layer.metadata_author_role):
             contacts = self.layer.contacts.filter(contactrole__role=self.role)
             if contacts.count() == 1:
-                 # only allow this if we are updating the same contact
-                 if self.contact != contacts.get():
-                     raise ValidationError('There can be only one %s for a given layer' % self.role)
+                # only allow this if we are updating the same contact
+                if self.contact != contacts.get():
+                    raise ValidationError('There can be only one %s for a given layer' % self.role)
         if self.contact.user is None:
             # verify that any unbound contact is only associated to one layer
             bounds = ContactRole.objects.filter(contact=self.contact).count()
