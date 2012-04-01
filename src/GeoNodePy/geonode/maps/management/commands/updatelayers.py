@@ -16,7 +16,7 @@ class Command(BaseCommand):
             dest='layer',
             default=None,
             help='Specify a layer to update'),
-    )
+        )
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
