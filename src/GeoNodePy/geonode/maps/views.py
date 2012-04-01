@@ -203,7 +203,7 @@ def maps(request, mapid=None):
             map.save()
             map.set_default_permissions()
             map.update_from_viewer(request.raw_post_data)
-            MapSnapshot.objects.create(config=request.raw_post_data,map=map,user=request.user)
+            MapSnapshot.objects.create(config=clean_config(request.raw_post_data),map=map,user=request.user)
             response = HttpResponse('', status=201)
             response['Location'] = map.officialurl if map.officialurl else (map.urlsuffix if map.urlsuffix else map.id)
             transaction.commit()
@@ -235,7 +235,7 @@ def mapJSON(request, mapid):
             return HttpResponse("You are not allowed to modify this map.", status=403)
         try:
             map.update_from_viewer(request.raw_post_data)
-            MapSnapshot.objects.create(config=request.raw_post_data,map=Map.objects.get(id=map.id),user=request.user)
+            MapSnapshot.objects.create(config=clean_config(request.raw_post_data),map=Map.objects.get(id=map.id),user=request.user)
             return HttpResponse(
                 "Map successfully updated.",
                 mimetype="text/plain",
@@ -929,11 +929,19 @@ def snapshot_create(request):
 
     if isinstance(conf, basestring):
         config = simplejson.loads(conf)
-        mapid = config['id']
-        snapshot = MapSnapshot.objects.create(config=conf,map=Map.objects.get(id=mapid))
+        del config["tools"]
+        snapshot = MapSnapshot.objects.create(config=clean_config(config),map=Map.objects.get(id=config['id']))
         return HttpResponse(num_encode(snapshot.id), mimetype="text/plain")
     else:
         return HttpResponse("Invalid JSON", mimetype="text/plain", status=500)
+
+def clean_config(conf):
+    if isinstance(conf, basestring):
+        config = simplejson.loads(conf)
+        del config["tools"]
+        return simplejson.dumps(config)
+    else:
+        return conf
 
 
 def ajax_snapshot_history(request, mapid):
@@ -2432,6 +2440,8 @@ def snapshot_config(snapshot, map, user):
     snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
     if snapshot.map == map:
         config = simplejson.loads(snapshot.config)
+        if "tools" in config:
+            del config["tools"]
         layers = [l for l in config["map"]["layers"]]
         sources = config["sources"]
         maplayers = []
