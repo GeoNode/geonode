@@ -62,12 +62,8 @@ class XssCleaner(HTMLParser):
         HTMLParser.__init__(self, fmt)
         self.result = ""
         self.open_tags = []
-        # A list of the only tags allowed.  Be careful adding to this.  Adding
-        # "script," for example, would not be smart.  'img' is out by default
-        # because of the danger of IMG embedded commands, and/or web bugs.
-        self.permitted_tags = ['a', 'b', 'blockquote', 'br', 'i', 'sup', 'sub', 'strike', 'hr', 'u',
-                               'li', 'ol', 'ul', 'p', 'cite', 'img', 'style', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'div']
-
+        # A list of forbidden tags.
+        self.forbidden_tags = ['script', 'embed', 'iframe', 'frame' ]
 
         # A list of tags that require no closing tag.
         self.requires_no_close = ['img', 'br']
@@ -77,9 +73,16 @@ class XssCleaner(HTMLParser):
         # "on" tags, like "onhover," would not be smart.  Also be very careful
         # of "background" and "style."
         self.allowed_attributes =\
-            {'a':['href','title'],
-             'img':['src','alt'],
-             'blockquote':['type']}
+            {'a':['href','title','target','style'],
+             'img':['src','alt','border','style'],
+             'blockquote':['type','style'],
+             'table': ['border', 'width', 'height', 'style', 'align'],
+             'tbody': ['border', 'width', 'height', 'style', 'align'],
+             'tr': ['border', 'width', 'height', 'style', 'align'],
+             'td': ['border', 'width', 'height', 'style', 'align'],
+             'div': ['border', 'width', 'height', 'style', 'align'],
+             'span': ['border', 'width', 'height', 'style', 'align'],
+             }
 
         # The only schemes allowed in URLs (for href and src attributes).
         # Adding "javascript" or "vbscript" to this list would not be smart.
@@ -102,7 +105,7 @@ class XssCleaner(HTMLParser):
             self.result += xssescape("<!--%s-->" % comment)
 
     def handle_starttag(self, tag, method, attrs):
-        if tag not in self.permitted_tags:
+        if tag in self.forbidden_tags:
             self.result += xssescape("<%s>" %  tag)
         else:
             bt = "<" + tag
@@ -128,7 +131,7 @@ class XssCleaner(HTMLParser):
 
     def handle_endtag(self, tag, attrs):
         bracketed = "</%s>" % tag
-        if tag not in self.permitted_tags:
+        if tag in self.forbidden_tags:
             self.result += xssescape(bracketed)
         elif tag in self.open_tags:
             self.result += bracketed
@@ -152,9 +155,9 @@ class XssCleaner(HTMLParser):
         return self.result
     def xtags(self):
         """Returns a printable string informing the user which tags are allowed"""
-        self.permitted_tags.sort()
+        self.forbidden_tags.sort()
         tg = ""
-        for x in self.permitted_tags:
+        for x in self.forbidden_tags:
             tg += "<" + x
             if x in self.allowed_attributes:
                 for y in self.allowed_attributes[x]:
