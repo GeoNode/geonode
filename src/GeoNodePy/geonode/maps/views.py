@@ -275,7 +275,8 @@ def newmap_config(request):
         if request.user.is_authenticated(): map.owner = request.user
         config = map.viewer_json(request.user)
         config['edit_map'] = True
-        del config['id']
+        if 'id' in config:
+            del config['id']
     else:
         if request.method == 'GET':
             params = request.GET
@@ -929,7 +930,6 @@ def snapshot_create(request):
 
     if isinstance(conf, basestring):
         config = simplejson.loads(conf)
-        del config["tools"]
         snapshot = MapSnapshot.objects.create(config=clean_config(config),map=Map.objects.get(id=config['id']))
         return HttpResponse(num_encode(snapshot.id), mimetype="text/plain")
     else:
@@ -938,7 +938,8 @@ def snapshot_create(request):
 def clean_config(conf):
     if isinstance(conf, basestring):
         config = simplejson.loads(conf)
-        del config["tools"]
+        if "tools" in config:
+            del config["tools"]
         return simplejson.dumps(config)
     else:
         return conf
