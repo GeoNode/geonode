@@ -49,7 +49,11 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             return "vector"
         elif obj.storeType == "coverageStore":
             return "raster"
-
+            
+    def prepare_metadata_links(self,obj):
+        prepped = [(ext,name.encode(),extra) for ext,name,extra in obj]
+        return prepped
+      
     def prepare_json(self, obj):
         bbox = obj.resource.latlon_bbox
         poc_profile = Contact.objects.get(user=obj.poc.user)
@@ -84,7 +88,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "views": "",
             "thumb": Thumbnail.objects.get_thumbnail(obj),
             "detail_url": obj.get_absolute_url(),  # @@@ Use Sites Framework?
-            "download_links": obj.download_links(),
+            "download_links": self.prepare_metadata_links(obj.download_links()),
             "metadata_links": obj.metadata_links,
             "bbox": {
                 "minx": bbox[0],
