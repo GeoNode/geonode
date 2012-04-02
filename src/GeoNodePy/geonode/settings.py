@@ -271,10 +271,11 @@ DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
 
 HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
-    },
+  'default': {
+    'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+    'URL': 'http://localhost:9200/',
+    'INDEX_NAME': 'haystack',
+  },
 }
 
 SOUTH_MIGRATION_MODULES = {

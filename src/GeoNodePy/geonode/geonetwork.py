@@ -158,9 +158,9 @@ class Catalog(object):
     def get_all_keywords(self):
         request = urllib2.Request('%ssrv/en/xml.search' % self.base)
         response = self.urlopen(request)
-        doc = XML(response.read())
+        doc = etree.fromstring(response.read())
         # use doc.iter for 2.7 - getiterator for 2.6
-        kws = doc.getiterator('keywords')[0]
+        kws = doc.findall('keywords')
         return dict( [ (el.get('name'),el.get('count')) for el in kws])
         
     def _get_group_ids(self):
