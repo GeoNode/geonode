@@ -12,5 +12,6 @@ django-profiles
 -e git+https://github.com/ericflo/django-avatar.git#egg=avatar
 django-staticfiles
 -e git+https://github.com/toastdriven/django-haystack.git#egg=django-haystack
+django-taggit==0.9.3
 South==0.7.3
 lxml

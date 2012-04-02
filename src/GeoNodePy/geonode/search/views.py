@@ -1,9 +1,11 @@
 import json
+import xmlrpclib
 
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.core import serializers
 
 from haystack.inputs import AutoQuery, Raw 
 from haystack.query import SearchQuerySet
@@ -16,6 +18,7 @@ fieldsets = {
     "summary": ["name", "type", "description", "owner"],
     "full": ["name", "type", "description", "owner", "language"],
 }
+
 
 def search(request):
     """
@@ -64,7 +67,6 @@ def search_api(request):
     fields = request.REQUEST.get("fields", None)
     fieldset = request.REQUEST.get("fieldset", None)
     format = request.REQUEST.get("format", "json")
-    groups = request.REQUEST.get("groups", None)
     callback = request.REQUEST.get("callback", None)
     # Geospatial Elements
     name = request.REQUEST.get("name", None)
@@ -80,6 +82,10 @@ def search_api(request):
     metaend = request.REQUEST.get("metaend", None)
 
     sqs = SearchQuerySet()
+
+    # Filter by ID
+    if id:
+        sqs = sqs.narrow("django_id:%s" % id)
 
     # Filter by Type
     if type is not None:
@@ -113,6 +119,7 @@ def search_api(request):
         data = json.loads(result.json)
         layer = Layer.objects.get(uuid=data['uuid'])
         # Dont return results that the user doesnt have permission to view
+        # NOTE: This will probably mess up the paging. Need to re-visit
         if request.user.has_perm('maps.view_layer', obj=layer):
             data.update({"iid": i + startIndex})
             results.append(data)
@@ -158,5 +165,10 @@ def search_api(request):
     }
 
     # Return Results
-    # TODO: Output by output type.
-    return HttpResponse(json.dumps(data), mimetype="application/json")
+    if format:
+        if format == "xml":
+            return HttpResponse(xmlrpclib.dumps((data,), allow_none=True), mimetype="text/xml")
+        elif format == "json":
+            return HttpResponse(json.dumps(data), mimetype="application/json")
+    else:
+        return HttpResponse(json.dumps(data), mimetype="application/json")
