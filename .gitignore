@@ -31,6 +31,7 @@ target
 /src/GeoNodePy/capra/development.db
 /man
 /src/geonode-client/
+/share/
 
 # OSX specific
 .Python
