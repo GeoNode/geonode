@@ -930,7 +930,7 @@ def snapshot_create(request):
 
     if isinstance(conf, basestring):
         config = simplejson.loads(conf)
-        snapshot = MapSnapshot.objects.create(config=clean_config(config),map=Map.objects.get(id=config['id']))
+        snapshot = MapSnapshot.objects.create(config=clean_config(conf),map=Map.objects.get(id=config['id']))
         return HttpResponse(num_encode(snapshot.id), mimetype="text/plain")
     else:
         return HttpResponse("Invalid JSON", mimetype="text/plain", status=500)
