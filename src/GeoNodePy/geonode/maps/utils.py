@@ -47,6 +47,7 @@ from geoserver.resource import FeatureType, Coverage
 
 logger = logging.getLogger('geonode.maps.utils')
 _separator = '\n' + ('-' * 100) + '\n'
+import math
 
 
 class GeoNodeException(Exception):
@@ -462,13 +463,12 @@ def create_django_record(user, title, keywords, abstract, resource, permissions)
     defaults = dict(store=resource.store.name,
                     storeType=resource.store.resource_type,
                     typename=typename,
-                    workspace=resource.store.workspace.name,
                     title=title or resource.title,
                     uuid=layer_uuid,
                     keywords=' '.join(keywords),
                     abstract=abstract or resource.abstract or '',
                     owner=user)
-    logger.info("User % about to save django record for %s", user.username, resource.store.name)
+    logger.info("User %s about to save django record for %s", user.username, resource.store.name)
     saved_layer, created = Layer.objects.get_or_create(name=name,
                                                        defaults=defaults)
     logger.info("Created django record for %s", resource.store.name)
@@ -479,24 +479,25 @@ def create_django_record(user, title, keywords, abstract, resource, permissions)
         # Step 9. Delete layer attributes if they no longer exist in an updated layer
         logger.info('>>> Step 11. Delete layer attributes if they no longer exist in an updated layer [%s]', name)
         attributes = LayerAttribute.objects.filter(layer=saved_layer)
-        for la in attributes:
-            lafound = False
-            if saved_layer.attribute_names is not None:
-                for field, ftype in saved_layer.attribute_names.iteritems():
+        attrNames = saved_layer.attribute_names
+        if attrNames is not None:
+            for la in attributes:
+                lafound = False
+                for field, ftype in attrNames.iteritems():
                     if field == la.attribute:
                         lafound = True
-            if not lafound:
-                logger.debug("Going to delete [%s] for [%s]", la.attribute, saved_layer.name)
-                la.delete()
+                if not lafound:
+                    logger.debug("Going to delete [%s] for [%s]", la.attribute, saved_layer.name)
+                    la.delete()
 
         #
         # Step 10. Add new layer attributes if they dont already exist
         logger.info('>>> Step 10. Add new layer attributes if they dont already exist in an updated layer [%s]', name)
-        if saved_layer.attribute_names is not None:
+        if attrNames is not None:
             logger.debug("Attributes are not None")
             iter = 1
             mark_searchable = True
-            for field, ftype in saved_layer.attribute_names.iteritems():
+            for field, ftype in attrNames.iteritems():
                     if field is not None and  ftype.find("gml:") != 0:
                         las = LayerAttribute.objects.filter(layer=saved_layer, attribute=field)
                         if len(las) == 0:
@@ -558,7 +559,7 @@ def create_django_record(user, title, keywords, abstract, resource, permissions)
                          'method in geonode.maps.models.Layer')
     except GeoNodeException, e:
         msg = ('The layer [%s] was not correctly saved to '
-               'GeoNetwork/GeoServer. Error is: %s' % (layer, str(e)))
+               'GeoNetwork/GeoServer. Error is: %s' % (saved_layer, str(e)))
         logger.exception(msg)
         e.args = (msg,)
         # Deleting the layer
@@ -741,3 +742,25 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         raise
 
 
+def forward_mercator(lonlat):
+    """
+        Given geographic coordinates, return a x,y tuple in spherical mercator.
+
+        If the lat value is out of range, -inf will be returned as the y value
+    """
+    x = lonlat[0] * 20037508.34 / 180
+    n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    if n <= 0:
+        y = float("-inf")
+    else:
+        y = math.log(n) / math.pi * 20037508.34
+    return (x, y)
+
+def inverse_mercator(xy):
+    """
+        Given coordinates in spherical mercator, return a lon,lat tuple.
+    """
+    lon = (xy[0] / 20037508.34) * 180
+    lat = (xy[1] / 20037508.34) * 180
+    lat = 180/math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+    return (lon, lat)

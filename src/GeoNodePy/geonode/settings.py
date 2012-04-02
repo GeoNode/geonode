@@ -63,6 +63,9 @@ LANGUAGES = (
     ('es', 'Español'),
     ('it', 'Italiano'),
     ('fr', 'Français'),
+    ('el', 'Ελληνικά'),
+    ('id', 'Bahasa Indonesia'),
+    ('zh', '中國的'),
 )
 
 SITE_ID = 1
@@ -252,31 +255,6 @@ MAP_BASELAYERS = [
     "group":"background"
   }]
 
-# NAVBAR expects a dict of dicts or a path to an ini file
-NAVBAR = \
-{'maps': {'id': '%sLink',
-               'item_class': '',
-               'link_class': '',
-               'text': 'Create Your Own Map',
-               'url': "geonode.maps.views.newmap"},
-'help': {'id': '%sLink',
-               'item_class': '',
-               'link_class': '',
-               'text': 'Help',
-               'url': "geonode.views.static 'help'"},      
- 'master': {'id': '%sLink',
-            'item_class': '',
-            'link_class': '',
-            'text': 'This page has no tab for this navigation'},
- 'meta': {'active_class': 'here',
-          'default_id': '%sLink',
-          'default_item_class': '',
-          'default_link_class': '',
-          'end_class': 'last',
-          'id': '%sLink',
-          'item_class': '',
-          'link_class': '',
-          'visible': 'maps\nhelp'}}
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -290,12 +268,13 @@ INSTALLED_APPS = (
     'registration',
     'profiles',
     'avatar',
+    'south',
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
     'geonode',
-    'geonode.accountforms',
-    'geonode.profileforms',
+    'geonode.registration',
+    'geonode.profiles',
     #'debug_toolbar',
 )
 
@@ -346,6 +325,9 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
+
+SOUTH_MIGRATION_MODULES = {
+}
 
 DEFAULT_WORKSPACE = 'geonode'
 

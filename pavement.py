@@ -10,16 +10,13 @@ import time
 from datetime import date
 import socket
 import ConfigParser
-import paver.doctools
-import paver.misctasks
 import pkg_resources
 import subprocess
 import shutil
-from shutil import move,copy,rmtree
+from shutil import copy
 import zipfile
 import tarfile
 import urllib
-import glob
 
 assert sys.version_info >= (2,6), \
        SystemError("GeoNode Build requires python 2.6 or better")
@@ -49,7 +46,7 @@ options(
     ),
     deploy=Bunch(
 #        pavement=path('shared/package/pavement.py'),
-        req_file=path('shared/package/deploy-libs.txt'),
+        req_file=path('shared/package/requirements.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
 #        install_paver=True,
@@ -72,7 +69,7 @@ geonode_client_target_war = path('webapps/geonode-client.war')
 
 deploy_req_txt = """
 # NOTE... this file is generated
--r %(venv)s/shared/core-libs.txt
+-r %(venv)s/shared/requirements.txt
 -e %(venv)s/src/GeoNodePy
 """ % locals()
 
@@ -99,6 +96,7 @@ def install_deps(options):
         info('Installing from requirements file. '\
              'Use "paver bundle_deps" to create an install bundle')
         pip_install("-r shared/%s" % options.config.corelibs)
+        pip_install("-r shared/%s" % options.config.devlibs)
         if options.config.platform == "win32":
             info("You will need to install 'PIL' and 'ReportLab' "\
                  "separately to do PDF generation")
@@ -109,7 +107,7 @@ def bundle_deps(options):
     Create a pybundle of all python dependencies.  If created, this
     will be the default for installing python deps.
     """
-    pip_bundle("-r shared/core-libs.txt %s" % bundle)
+    pip_bundle("-r shared/requirements.txt %s" % bundle)
 
 
 @task
@@ -176,16 +174,14 @@ def setup_gs_data(options):
 @needs(['setup_gs_data'])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
-    geoserver_target.remove()
     with pushd('src/geoserver-geonode-ext'):
         sh("mvn clean install")
-    #copy('src/externals/geoserver-restconfig-2-1.jar', 'src/geoserver-geonode-ext/target/geoserver-geonode-dev/WEB-INF/lib/')
 
 @task
 def setup_geonetwork(options):
     """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
     war_zip_file = options.config.parser.get('geonetwork', 'geonetwork_zip')
-    src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file + '/download')
+    src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file)
     info("geonetwork url: %s" %src_url)
     # where to download the war files. If changed change also
     # src/geoserver-geonode-ext/jetty.xml accordingly
@@ -195,21 +191,21 @@ def setup_geonetwork(options):
         webapps.mkdir()
 
     dst_url = webapps / war_zip_file
+    dst_war = webapps / "geonetwork.war"
     deployed_url = webapps / "geonetwork"
-    schema_url = deployed_url / "xml" / "schemas" / "iso19139.geonode"
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
-
-    if not dst_url.exists():
         grab(src_url, dst_url)
+    if not dst_war.exists():
+        zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
-        zip_extractall(zipfile.ZipFile(dst_url), deployed_url)
+        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
 
-    # Update the ISO 19139 profile to the latest version
-    path(schema_url).rmtree()
-    info("Copying GeoNode ISO 19139 profile to %s" %schema_url)
-    path("gn_schema").copytree(schema_url)
+    src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
+    dst_url = webapps / "intermap.war"
+
+    grab(src_url, dst_url)
 
 @task
 @needs([
@@ -232,6 +228,17 @@ def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""")
 
+@task
+@needs([
+    'install_deps',
+    'setup_geonode_client',
+    'sync_django_db',
+    'package_client'
+])
+def fastbuild(options):
+    """Get dependencies and generally prepare a GeoNode development environment."""
+    info("""GeoNode development environment successfully set up minus GeoServer and Geonetwork.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""")
+
 
 @task
 def setup_geonode_client(options):
@@ -242,7 +249,7 @@ def setup_geonode_client(options):
     if not static.exists():
         static.mkdir()
 
-    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
+
     dst_zip = static / "geonode-client.zip"
 
     copy("src/externals/geonode-client.zip", dst_zip)
@@ -253,6 +260,7 @@ def setup_geonode_client(options):
 @task
 def sync_django_db(options):
     sh("django-admin.py syncdb --settings=geonode.settings --noinput")
+    sh("django-admin.py migrate --settings=geonode.settings --noinput")
 
 @task
 def generate_geoserver_token(options):
@@ -302,13 +310,6 @@ def package_client(options):
 @needs('package_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
-
-    zip = zipfile.ZipFile(geoserver_target, "a")
-    zip.printdir()
-    #zip.write('src/externals/geoserver-restconfig-2-1.jar', 'WEB-INF/lib/geoserver-restconfig.jar')
-    #zip.printdir()
-    zip.close()
-
     geoserver_target.copy(options.deploy.out_dir)
 
 
@@ -442,7 +443,7 @@ def make_release(options):
         tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
         for file in out_pkg.walkfiles():
             tar.add(file)
-        tar.add('../README.release.rst', arcname=('%s/README.rst' % out_pkg))
+        tar.add('README.release.rst', arcname=('%s/README.rst' % out_pkg))
         tar.close()
 
         out_pkg.rmtree()
@@ -610,16 +611,17 @@ def platform_options(options):
     # defaults:
     pip_flags = ""
     scripts = "bin"
-    corelibs = "core-libs.txt"
+    corelibs = "requirements.txt"
+    devlibs = "dev-requirements.txt"
 
     if sys.platform == "win32":
-        corelibs = "py-base-libs.txt"
         scripts = "Scripts"
     elif sys.platform == "darwin":
         pip_flags = "ARCHFLAGS='-arch i386'"
         
     options.config.bin = path(scripts)
     options.config.corelibs = corelibs
+    options.config.devlibs = devlibs
     options.config.pip_flags = pip_flags
 
 # include patched versions of zipfile code

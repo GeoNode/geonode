@@ -704,63 +704,8 @@ class LayerManager(models.Manager):
     def default_metadata_author(self):
         return self.admin_contact()
 
-    def import_existing_layer(self, resource_name):
-        #Like slurp but for just one particular layer
-        cat = self.gs_catalog
-        gn = self.gn_catalog
-        resource = cat.get_resource(resource_name)
-        if resource:
-            store = resource.store
-            workspace = store.workspace
-            layer, created = self.get_or_create(name=resource.name, defaults = {
-                    "workspace": workspace.name,
-                    "store": store.name,
-                    "storeType": store.resource_type,
-                    "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title or 'No title provided',
-                    "abstract": resource.abstract or 'No abstract provided',
-                    "uuid": str(uuid.uuid4())
-            })
-            ## Due to a bug in GeoNode versions prior to 1.0RC2, the data
-            ## in the database may not have a valid date_type set.  The
-            ## invalid values are expected to differ from the acceptable
-            ## values only by case, so try to convert, then fallback to a
-            ## default.
-            ##
-            ## We should probably drop this adjustment in 1.1. --David Winslow
-            if layer.date_type not in Layer.VALID_DATE_TYPES:
-                candidate = lower(layer.date_type)
-                if candidate in Layer.VALID_DATE_TYPES:
-                    layer.date_type = candidate
-                else:
-                    layer.date_type = Layer.VALID_DATE_TYPES[0]
 
-            layer._populate_from_gs()
-
-            layer.save()
-
-            if created:
-                layer.set_default_permissions()
-                #Create layer attributes if they don't already exist
-            try:
-                if layer.attribute_names is not None:
-                    for field, ftype in layer.attribute_names.iteritems():
-                        if field is not None:
-                            la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
-                            if created:
-                                logger.debug("Created [%s] attribute for [%s]", field, layer.name)
-                                la.attribute_label = field
-                                la.searchable = (ftype == "xsd:string")
-            except Exception, e:
-                logger.debug("Could not create attributes for [%s] : [%s]", layer.name, str(e))
-            finally:
-                pass
-        # Doing a logout since we know we don't need this object anymore.
-        gn.logout()
-
-
-
-    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout):
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, layer=None):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
@@ -769,7 +714,11 @@ class LayerManager(models.Manager):
         if verbosity > 1:
             print >> console, "Inspecting the available layers in GeoServer ..."
         cat = self.gs_catalog
-        resources = cat.get_resources()
+        if layer is None:
+            resources = cat.get_resources()
+        else:
+            resource = cat.get_resource(layer)
+            resources = [resource] if resource else []
         number = len(resources)
         if verbosity > 1:
             msg =  "Found %d layers, starting processing" % number
@@ -790,51 +739,58 @@ class LayerManager(models.Manager):
                     "uuid": str(uuid.uuid4())
                 })
 
-                layer.save()
+
+                if created:
+                    layer.set_default_permissions()
+                    status = 'created'
+                else:
+                    status = 'updated'
+
+                #Create layer attributes if they don't already exist
+                try:
+                    if layer.attribute_names is not None:
+                        iter = 1
+                        for field, ftype in layer.attribute_names.iteritems():
+                            if field is not None:
+                                la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
+                                if created:
+                                    la.attribute_label = field
+                                    la.searchable = (ftype == "xsd:string")
+                                    la.display_order = iter
+                                    la.save()
+                                    msg = ("Created [%s] attribute for [%s]", field, layer.name)
+                                    iter += 1
+                                    print >> console, msg
+                except Exception, e:
+                    msg = ("Could not create attributes for [%s] : [%s]", layer.name, str(e))
+                    print >> console, msg
+                finally:
+                    pass
+
+
+                if layer is not None and layer.bbox is None:
+                    layer._populate_from_gs()
+                    layer.save()
+
+                msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
+                info = {'name': name, 'status': status}
+                if status == 'failed':
+                    info['traceback'] = traceback
+                    info['exception_type'] = exception_type
+                    info['error'] = error
+                output.append(info)
+                if verbosity > 0:
+                    print >> console, msg
+
             except Exception, e:
                 if ignore_errors:
                     status = 'failed'
                     exception_type, error, traceback = sys.exc_info()
                 else:
                     if verbosity > 0:
-                        msg = "Stopping process because --strict=True and an error was found."
+                        msg = "Stopping process because --ignore-errors was not set and an error was found."
                         print >> sys.stderr, msg
                     raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
-            else:
-                if created:
-                    layer.set_default_permissions()
-                    status = 'created'
-
-                    #Create layer attributes if they don't already exist
-                    try:
-                        if layer.attribute_names is not None:
-                            for field, ftype in layer.attribute_names.iteritems():
-                                if field is not None:
-                                    la, created = LayerAttribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype, defaults={'attribute_label' : field, 'searchable': ftype == "xsd:string" })
-                                    if created:
-                                        msg = ("Created [%s] attribute for [%s]", field, layer.name)
-                                        print >> console, msg
-                    except Exception, e:
-                        msg = ("Could not create attributes for [%s] : [%s]", layer.name, str(e))
-                        print >> console, msg
-                    finally:
-                        pass
-                else:
-                    status = 'updated'
-
-                if layer is not None and layer.bbox is None:
-                    layer._populate_from_gs()
-                    layer.save()
-
-            msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
-            info = {'name': name, 'status': status}
-            if status == 'failed':
-                info['traceback'] = traceback
-                info['exception_type'] = exception_type
-                info['error'] = error
-            output.append(info)
-            if verbosity > 0:
-                print >> console, msg
         return output
 
 
@@ -858,7 +814,7 @@ class LayerManager(models.Manager):
                     layer.store = store.name
                     layer.save()
 
-                
+
 class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
     title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
@@ -988,15 +944,18 @@ class Layer(models.Model, PermissionLevelMixin):
                     'outputFormat': mime,
                     'format_options': 'charset:UTF-8' #TODO: make this a settings property?
                 })
+                params.update(extra_params)
+                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode(params)
+
             types = [
-                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
-                ("gml", _("GML 2.0"), "gml2"),
-                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1"),
-                ("csv", _("CSV"), "csv"),
-                ("excel", _("Excel"), "excel"),
-                ("json", _("GeoJSON"), "json")
+                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
+                ("gml", _("GML 2.0"), "gml2", {}),
+                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
+                ("csv", _("CSV"), "csv", {}),
+                ("excel", _("Excel"), "excel", {}),
+                ("json", _("GeoJSON"), "json", {})
             ]
-            links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
+            links.extend((ext, name, wfs_link(mime, extra_params)) for ext, name, mime, extra_params in types)
         elif self.resource.resource_type == "coverage":
             try:
                 client = httplib2.Http()
@@ -1426,10 +1385,10 @@ class Layer(models.Model, PermissionLevelMixin):
         Layer.objects.filter(id=self.id).update(keywords = self.keywords, distribution_url = self.distribution_url, distribution_description=self.distribution_description )
 
     def keyword_list(self):
-        if self.keywords is None:
+        if self.keywords is None or len(self.keywords) == 0:
             return []
         else:
-            return self.keywords.split(" ")
+            return self.keywords.split()
 
     def set_bbox(self, box, srs=None):
         """
@@ -1534,12 +1493,12 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=1000)
+    title = models.TextField(_('Title'))
     """
     A display name suitable for search results and page headers
     """
 
-    abstract = models.CharField(_('Abstract'),max_length=200)
+    abstract = models.TextField(_('Abstract'))
     """
     A longer description of the themes in the map.
     """
@@ -1769,7 +1728,6 @@ class Map(models.Model, PermissionLevelMixin):
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
-        logger.debug("CONFIG: %s", config)
 
         return config
 
@@ -1955,13 +1913,13 @@ class MapLayer(models.Model):
     be drawn on top of others.
     """
 
-    format = models.CharField(_('format'), null=True,max_length=200)
+    format = models.CharField(_('format'), null=True, max_length=200)
     """
     The mimetype of the image format to use for tiles (image/png, image/jpeg,
     image/gif...)
     """
 
-    name = models.CharField(_('name'), null=True,max_length=200)
+    name = models.CharField(_('name'), null=True, max_length=200)
     """
     The name of the layer to load.
 
@@ -2007,7 +1965,8 @@ class MapLayer(models.Model):
     The URL of the OWS service providing this layer, if any exists.
     """
 
-    layer_params = models.CharField(_('layer params'), max_length=2048)
+
+    layer_params = models.TextField(_('layer params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     passed to the GXP viewer.
@@ -2016,7 +1975,7 @@ class MapLayer(models.Model):
     (such as format, styles, etc.) then the fields override.
     """
 
-    source_params = models.CharField(_('source params'), max_length=2048)
+    source_params = models.TextField(_('source params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
     configuration for this layer.
@@ -2217,6 +2176,7 @@ def delete_layer(instance, sender, **kwargs):
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
+    #Don't save to geoserver if storeType isn't populated yet; do it later
     if (re.search("coverageStore|dataStore", instance.storeType)):
         logger.info("Call save_to_geoserver for %s", instance.name)
         instance.save_to_geoserver()

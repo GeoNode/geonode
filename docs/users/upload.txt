@@ -2,33 +2,35 @@
 Adding New Data
 ===============
 
+Uploading shapefile 
+===================
 
-Creating styles with desktop software
-=====================================
+Navigate to the GeoNode home page by clicking the GeoNode logo or the Home link in the menu bar and click the *Upload Data* link.
 
-You can create styles using desktop tools such as `AtlasStyler <http://en.geopublishing.org/AtlasStyler>`_.  This application is currently somewhat limited but you may find it does what you need.
+.. image:: images/upload_data_link.png
 
-There is also a tool which runs in ArcGIS 9.3 called `ArcMap2SLD <http://wald.intevation.org/projects/arcmap2sld/>`_. This approach allows you to take advantage of much of the symbolization power of ArcGIS and apply it to GeoNode. The adaptation of this tool to ArcGIS 10 is a work in progress.
+When you come to the *Upload Layer* page you will see the following form (* items are required)
 
-We will not use AtlasStyler or ArcMap2SLD now but an optional challenge exercise for this is included at the end.
-
-
-Uploading shapefile with associated style
-=========================================
-
-Navigate back to the GeoNode home page and click the *Upload Data* link.
-
-When you come to the *Upload Layer* page you will see these areas (* items are required).
+.. image:: images/upload_form.png
 
 ***Title:**  Give your layer a title.
 
-***Data:**  Choose a Shapefile (.shp parts) or GeoTIFF as your data to load.  
+***Data:**  Choose a Shapefile or GeoTIFF as your data to load.
 
-.. note:: You will increase your chances of a successful upload by having your shapefile or GeoTIFF file be in the “plain vanilla” projection space, Geographic WGS 84, also known as EPSG:4326.  To know whether your shapefile is in this space, the contents of your .prj file will look like this in a text editor: ``GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984", SPHEROID["WGS_1984",6378137.0, 298.257223563]], PRIMEM["Greenwich",0.0], UNIT["Degree",0.0174532925199433]]``
+If you select a GeoTIFF file for the Data item above, the view will remain the same.  If you choose a shapefile, (the part of the shapefile with the “.shp” ending), the view will change to handle the additional parts of the shapefile as shown below as well as an optional encoding selection:  
+
+.. image:: images/shapefile_upload.png
+
+* **Data:**  Choose the .shp portion of the shapefile
+* **DBF:**  Choose the .dbf portion of the shapefile
+* **SHX:**  Choose the .shx portion of the shapefile
+* **PRJ:**  Choose the .prj portion of the shapefile
+
+.. note:: You will increase your chances of a successful upload by having your shapefile or GeoTIFF file be in the “plain vanilla” projection, Geographic WGS 84, also known as EPSG:4326.  To know whether your shapefile is in this projection, the contents of your .prj file will look like this in a text editor: ``GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984", SPHEROID["WGS_1984",6378137.0, 298.257223563]], PRIMEM["Greenwich",0.0], UNIT["Degree",0.0174532925199433]]``
 
 You may not have a .prj file for your GeoTIFF as it is not needed since the projection information for a GeoTIFF is stored in the header of the GeoTIFF.
 
-If your .prj file does not look like this, the upload may still work fine.  If it doesn’t, the most likely culprit is the projection space.  The best way to fix that is to use an application like ArcGIS or QGIS and reproject your file to Geographic WGS 84.  This can be done for shapefiles or GeoTIFF files.
+If your .prj file does not look like this, the upload may still work fine.  If it doesn’t, the most likely culprit is the projection.  The best way to fix that is to use an application like ArcGIS or QGIS and reproject your file to Geographic WGS 84.  This can be done for shapefiles or GeoTIFF files.
 
 **SLD:**  Optionally provide an SLD.  This is an XML document that you would have created using the *AtlasStyler* or the *ArcMap2SLD* tool.
 
@@ -36,19 +38,22 @@ If your .prj file does not look like this, the upload may still work fine.  If i
 
 **Permissions:**  Default permissions are set such that the world can view it but only you can change it.  Add individual users to define who can edit (modify the style), or manage (delete layer, change permission settings).  
 
-If you select a GeoTIFF file for the Data item above, the view will remain the same.  If you choose a shapefile, (the part of the shapefile with the “.shp” ending), the view will change to handle the additional parts of the shapefile as shown below as well as an optional encoding selection:  
-
-* **Data:**  Choose the .shp portion of the shapefile
-* **DBF:**  Choose the .dbf portion of the shapefile
-* **SHX:**  Choose the .shx portion of the shapefile
-* **PRJ:**  Choose the .prj portion of the shapefile
+.. image:: images/layer_permissions.png
 
 Click *Upload* and once uploaded you will be presented with a metadata form (see below).
+
+.. note:: When uploading a shapefile, the .shx and .dbf files are *required* in addition to the .shp file. If you neglect to supply them, you will recieve the following error message. You will need to select those files for upload and resubmit the form.
+
+.. image:: images/shapefile_parts_error.png
+
+.. note:: If you receive an different error message in this form, you will need to contact the administrator of the GeoNode to resolve the problem. It is helpful if you cut and paste the contents of the error message when contacting the Administrator.
 
 Metadata
 --------
 
-.. note:: Users uploading new layers are prompted to fill in optional and required descriptive information about the layer.  Required items include: Title, Abstract, Keyword, thematic category (ISO 19115 format).  Eventually Author, Source, and Date will be included as options in the metadata editor. 
+.. note:: Users uploading new layers are prompted to fill in optional and required descriptive information about the layer.  Required items include: Title, Abstract, Keyword, thematic category (ISO 19115 format).  Eventually Author, Source, and Date will be included as options in the metadata editor.
+
+.. image:: images/metadata_form.png
 
 Once the file has been uploaded, the only additional required items are Keyword and Category, though there are useful metadata fields here which we strongly encourage you to make use of.  Starred items are required.
 
@@ -109,11 +114,11 @@ Troubleshooting shapefile uploading
 
 If the layer does not upload there are several possible reasons why:
 
-* The projection is not being read properly.  If the layer is not already in Geographic WGS 84 space, also known as EPSG 4326, project the shapefile to that space and try again.
+* The projection is not being read properly.  If the layer is not already in Geographic WGS 84 projection, also known as EPSG 4326, reproject the shapefile  and try again.
 * The SLD file is not correct. Check to see that the `XML is valid <http://validator.w3.org/#validate_by_input>`_  
 * Check to see that the SLD file was created for this shapefile and not another shapefile.  The fields described in the SLD should match the fields in the shapefile.
 
-If all else fails, project your file to Geographic WGS 84 and don’t include any SLD.
+If all else fails, project your file to Geographic WGS 84 and don’t include an SLD file.
 
 
 Uploading GeoTIFF
@@ -123,7 +128,7 @@ Raster files are images and can be satellite imagery or scanned maps which have 
 
 Return to the *Upload Data* page.  Now give it a title and choose the *elevation.tif* file to upload. Provide abstract information and click *Upload*.  
 
-Raster (GeoTIFF) images do not have the same type of styling options as vector (shapefile) layers do. 
+.. note:: Raster (GeoTIFF) images do not have the same type of styling options as vector (shapefile) layers do. You must use a raster specific SLD. 
 
 
 Permissions
@@ -141,18 +146,25 @@ Go to the information page for your newly uploaded layer.
 
 To find it, go back to the GeoNode home page, and type the title of your layer into the search field under *Data*.  Click the search button to go to a list of the available data on GeoNode, filtered by your search keywords.
 
-Now click the *Create a map* link in the right hand sidebar.  This will take you to the *Map Composer* with the suitability layer added already.
+.. image:: images/layer_search.png
 
+You can also click the *Advanced Search* link on the layer search page to be taken to a page that lets you browse the full list of available layers or perform a more complex search.
 
-Exercises
-=========
+.. image:: images/layer_browse.png
 
-#. Go to the *Upload Data* page from the GeoNode home page.
-#. Upload a shapefile *workshop_suitability.shp* with SLD *suitability_atlas.sld*. Please use the name formatting for the title ``<subject>_<initials>_temp``.
-#. Add the minimum metadata – *Title, Abstract*.
-#. Upload GeoTIFF *elevation.tif*. Use the name formatting ``<geography>_<subject>_<date>_<version>_temp``.
-#. Add the minimum metadata.
-#. Create a new map from the suitability data layer.
-#. Add the elevation data layer.
-#. Put the *elevation* layer under the *suitability* layer, then style the suitability layer to make it more transparent.
-#. Save your map.
+From the grid that displays the list of layers, click your newly uploaded layer to view the Layer Detail page.
+
+.. image:: images/layer_detail_owner.png
+
+Now click the *Create new map* link in the right hand sidebar.  This will take you to the *Map Composer* with the selected layer added already.
+
+.. image:: images/map_composer_from_layer.png
+
+Creating styles with desktop software
+=====================================
+
+You can create styles using desktop tools such as `AtlasStyler <http://en.geopublishing.org/AtlasStyler>`_.  This application is currently somewhat limited but you may find it does what you need.
+
+There is also a tool which runs in ArcGIS 9.3 called `ArcMap2SLD <http://wald.intevation.org/projects/arcmap2sld/>`_. This approach allows you to take advantage of much of the symbolization power of ArcGIS and apply it to GeoNode. The adaptation of this tool to ArcGIS 10 is a work in progress.
+
+We will not use AtlasStyler or ArcMap2SLD now but an optional challenge exercise for this is included at the end of the tutorial.

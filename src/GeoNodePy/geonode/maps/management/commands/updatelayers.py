@@ -12,13 +12,18 @@ class Command(BaseCommand):
             dest='ignore_errors',
             default=False,
             help='Stop after any errors are encountered.'),
+        make_option('--layer',
+            dest='layer',
+            default=None,
+            help='Specify a layer to update'),
         )
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
         verbosity = options.get('verbosity')
+        layer = options.get('layer')
         start = datetime.datetime.now()
-        output = Layer.objects.slurp(ignore_errors, verbosity)
+        output = Layer.objects.slurp(ignore_errors, verbosity, layer=layer)
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']
         failed = [dict_['name'] for dict_ in output if dict_['status']=='failed']
