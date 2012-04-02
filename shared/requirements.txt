@@ -5,7 +5,7 @@ simplejson # needed for python2.5
 django-extensions
 httplib2
 psycopg2
--e git+https://github.com/opengeo/gsconfig.py.git#egg=gsconfig.py
+-e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 #django-registration
 https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
 django-profiles
