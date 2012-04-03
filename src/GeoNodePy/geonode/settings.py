@@ -232,8 +232,9 @@ INSTALLED_APPS = (
     'profiles',
     'avatar',
     'haystack',
-    
+    'taggit',
     'south',
+
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
