@@ -901,11 +901,21 @@ class Layer(models.Model, PermissionLevelMixin):
     """
     The last time the object was modified.
     """
+
+    downloadable = models.BooleanField(_('Downloadable'), blank=False, null=False, default=True)
+    """
+    Is the layer downloadable?
+    """
+
+
+
     # Section 8
     data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True)
 
     # Section 9
     # see metadata_author property definition below
+
+
 
     def llbbox_coords(self):
         return [float(n) for n in re.findall('[0-9\.\-]+', self.llbbox)]
@@ -914,7 +924,7 @@ class Layer(models.Model, PermissionLevelMixin):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
 
-        if self.name.find('nc_community_survey') > -1:
+        if not self.downloadable:
             return None
 
         bbox = self.llbbox_coords()
@@ -935,7 +945,7 @@ class Layer(models.Model, PermissionLevelMixin):
         links = []
 
         if self.resource.resource_type == "featureType":
-            def wfs_link(mime):
+            def wfs_link(mime,extra_params):
                 return settings.SITEURL + "download/wfs/" + str(self.id) + "?" + urllib.urlencode({
                     'service': 'WFS',
                     'version':'1.0.0',

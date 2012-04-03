@@ -436,7 +436,7 @@ def map_download(request, mapid):
                 remote_layers.append(lyr)
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
-                if not request.user.has_perm('maps.view_layer', obj=ownable_layer):
+                if not ownable_layer.downloadable or not request.user.has_perm('maps.view_layer', obj=ownable_layer):
                     locked_layers.append(lyr)
                 else:
                     downloadable_layers.append(lyr)

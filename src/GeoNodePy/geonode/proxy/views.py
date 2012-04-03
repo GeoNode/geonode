@@ -174,10 +174,6 @@ def youtube(request):
     return HttpResponse(feed_response, mimetype="text/xml")
 
 def download(request, service, layer):
-    layerstats,created = LayerStats.objects.get_or_create(layer=layer)
-    layerstats.downloads += 1
-    layerstats.save()
-
     params = request.GET
     #mimetype = params.get("outputFormat") if service == "wfs" else params.get("format")
 
@@ -186,7 +182,12 @@ def download(request, service, layer):
 
     layerObj = Layer.objects.get(pk=layer)
 
-    if layerObj.name.find('nc_community_survey') == -1 and request.user.has_perm('maps.view_layer', obj=layerObj):
+    if layerObj.downloadable and request.user.has_perm('maps.view_layer', obj=layerObj):
+
+        layerstats,created = LayerStats.objects.get_or_create(layer=layer)
+        layerstats.downloads += 1
+        layerstats.save()
+
         download_response, content = h.request(
             url, request.method,
             body=None,

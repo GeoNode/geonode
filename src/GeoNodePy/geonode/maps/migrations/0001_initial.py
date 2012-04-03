@@ -78,6 +78,7 @@ class Migration(SchemaMigration):
             ('created_dttm', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ('data_quality_statement', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('downloadable', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ))
         db.send_create_signal('maps', ['Layer'])
 
