@@ -84,6 +84,10 @@ def search_api(request):
 
     sqs = SearchQuerySet()
 
+    # Filter by ID
+    if id:
+        sqs = sqs.narrow("django_id:%s" % id)
+
     # Filter by Type
     if type is not None:
         if type in ["map", "layer", "contact"]:
