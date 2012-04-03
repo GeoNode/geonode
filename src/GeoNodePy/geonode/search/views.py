@@ -67,7 +67,6 @@ def search_api(request):
     fields = request.REQUEST.get("fields", None)
     fieldset = request.REQUEST.get("fieldset", None)
     format = request.REQUEST.get("format", "json")
-    groups = request.REQUEST.get("groups", None)
     callback = request.REQUEST.get("callback", None)
     # Geospatial Elements
     name = request.REQUEST.get("name", None)
