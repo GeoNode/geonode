@@ -1716,7 +1716,7 @@ class Map(models.Model, PermissionLevelMixin):
                 'keywords' : self.keywords,
                 'officialurl' : self.officialurl
             },
-            'defaultSourceType': "gxp_gnsource",
+            'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
                 'layers': [layer_config(l, user) for l in layers],
