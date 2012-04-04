@@ -97,6 +97,7 @@ $.extend( $.fn.dataTableExt.oPagination, {
 /* Table initialisation */
 $(document).ready(function() {
     $("table.geonode-profile").dataTable( {
+        "iDisplayLength": 25,
         "sDom": "<'row'<'span4'l><'span4'f>r>t<'row'<'span4'i><'span4'p>>",
         "sPaginationType": "bootstrap",
         "oLanguage": {
