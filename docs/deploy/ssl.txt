@@ -106,13 +106,10 @@ As root edit the file :file:`/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml`
        <param-value>https://localhost/</param-value>
    </context-param>
 
-Also update the ``Proxy Base URL`` in the Global section of Geoserver from::
+Also update the ``proxyBaseUrl`` in the Geoserver's global settings file :file:`/var/lib/geoserver/geonode-data/global.xml`::
 
-    http://<host>/geoserver/
+    <proxyBaseUrl>https://192.168.10.10/geoserver/</proxyBaseUrl>
 
-to::
-
-    https://<host>/geoserver/
 
 Final Restart
 =============
