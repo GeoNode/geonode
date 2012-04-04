@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Browse Maps" %} - {{ block.super }} {% endblock %}
+
+{% block main %}
+  <div class="row">
+    <div class="span3 pull-left">
+      <h2>{% trans "Maps" %}</h2>
+      <ul class="nav nav-pills">
+        <li><a href="{% url maps_search %}">{% trans "All Maps" %}</a></li>
+        <li><a href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "New Maps" %}</a></a></li>
+      </ul>
+    </div>
+    <div class="span5 pull-right">
+      <form class="form-search" action="{% url maps_search %}" method="GET">
+        <input type="text" id="search_query" name="q" class="input-large search-query">
+        <button type="submit" class="btn">Search</button>
+      </form>
+        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+    </div>
+  </div>
+
+    <h3>{% trans "Create" %}</h4>
+    <p>
+      {% trans "Use GeoNode's Map Composer application to create your own maps.  Add layers from this GeoNode or remote services, and style them." %}
+    </p>
+    <a href="{%url geonode.maps.views.newmap %}" class="btn">{% trans "Create your own map" %}</a>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+

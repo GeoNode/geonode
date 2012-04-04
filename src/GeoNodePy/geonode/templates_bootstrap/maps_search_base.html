@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Search Maps" %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+Ext.onReady(function(){
+   {% autoescape off %}
+ 
+    var searchTable = new GeoNode.MapSearchTable({
+        renderTo: 'search_results',
+        trackSelection: true,
+        permalinkURL: '{% url maps_search %}',
+        searchURL: '{% url maps_search_api %}',
+        searchParams: {{init_search}}
+    });
+
+
+    {% endautoescape %}
+});
+</script>
+{% endblock %}
+
+{% block main %} 
+<div class="twocol">
+  <div class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
+
+    <div id="search_results"></div>  
+
+    <p class="explain">{%trans "Click the <b>+</b> on any row to show map abstract." %}
+      {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+
+{% endblock %}
