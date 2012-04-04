@@ -35,7 +35,7 @@ logger = logging.getLogger("geonode.maps.models")
 from gs_helpers import cascading_delete
 
 
-
+ows_sub = re.compile(re.escape('&SERVICE=WMS|&REQUEST=GetCapabilities'), re.IGNORECASE)
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
@@ -2031,7 +2031,7 @@ class MapLayer(models.Model):
             cfg = dict(ptype = "gxp_gnsource", restUrl="/gs/rest")
 
         if self.ows_url:
-            cfg["url"] = self.ows_url
+            cfg["url"] = ows_sub.sub('',self.ows_url)
 
         if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
             cfg["restUrl"] = "/gs/rest"
@@ -2067,7 +2067,7 @@ class MapLayer(models.Model):
         if self.transparent: cfg['transparent'] = True
 
         cfg["fixed"] = self.fixed
-        if self.ows_url:cfg['url'] = self.ows_url
+        if self.ows_url:cfg['url'] = ows_sub.sub('', self.ows_url)
         if self.group: cfg["group"] = self.group
         cfg["visibility"] = self.visibility
 
