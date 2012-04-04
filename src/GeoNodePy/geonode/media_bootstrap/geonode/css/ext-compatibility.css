@@ -1,0 +1,128 @@
+/* Fixes for compatibility issues between extjs and bootstrap */
+
+.x-panel table, .x-window table {
+  margin: 0;
+  padding: 0;
+  border-top: none;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  width: auto;
+}
+
+.x-panel td, .x-panel th, .x-window td, .x-window th{
+  border-top: none;
+  margin: 0; 
+  padding: 0;
+}
+/*
+.x-panel-header {
+  background:transparent;
+  text-align: center;
+  border-color: none;
+}
+*/
+.x-panel-body {
+  border: none;
+  list-style:none;
+}
+.x-panel-body ul{
+list-style:none;
+}
+ /*
+.x-toolbar {
+  border: none;
+  background: transparent;
+}
+
+.x-panel ul, .x-panel ol, .x-window ul, .xwindow ol {
+  margin: 0;
+}
+*/
+/*
+ul.x-tab-strip li {
+  background: black;
+  color: white;
+}
+
+.x-tab-strip-top .x-tab-right, .x-tab-strip-top .x-tab-left, .x-tab-strip-top .x-tab-strip-inner {
+background-image: none;
+background: none;
+color: white;
+}
+
+.x-tab-strip-active span.x-tab-strip-text {
+  background: black;
+  color: white;
+}
+
+.x-tab-strip span.x-tab-strip-text {
+  color: white;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.x-tab-strip {
+  border-bottom-width: 0;
+}
+
+ul.x-tab-strip-top {
+    border-bottom-color: red;
+    border-bottom-width: 0;
+}
+
+.x-panel-tbar-noheader .x-toolbar, .x-panel-mc .x-panel-tbar .x-toolbar {
+    border-width: 0;
+}
+
+.x-panel-noborder .x-panel-bbar-noborder .x-toolbar {
+    border-width: 0;
+}
+*/
+/*
+.x-grid3-cell-inner, .x-grid3-hd-inner{
+  height: 30px;
+  padding-top: 10px;
+  font-size: 14px;
+}
+*/
+.x-grid3-hd-inner{
+height:20px;
+font-size: 14px;
+}
+.x-grid3-cell-inner{
+height:20px;
+font-size: 14px;
+padding-top:5px;
+}
+.hero-unit h1{
+font-size:40px
+}
+/*
+.x-tab-strip-wrap {
+background: #404040;
+}
+.x-tab-strip-wrap ul {
+background: #404040;
+}
+.x-tab-strip-wrap ul li {
+color:white;
+background: #404040;
+}
+
+ul.x-tab-strip li {
+margin-left: 0;
+}
+
+.x-tab-strip-top .x-tab-right {
+padding-left: 0;
+border-bottom: none;
+}
+
+.x-panel-noborder .x-panel-tbar-noborder .x-toolbar {
+    border-width: 0;
+}
+
+.x-tab-panel-noborder .x-tab-panel-header-noborder {
+    border-width: 0;
+}
+*/
