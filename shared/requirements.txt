@@ -4,7 +4,6 @@ Django==1.2
 simplejson # needed for python2.5
 django-extensions
 httplib2
-psycopg2
 -e git+https://github.com/dwins/gsconfig.py.git#egg=gsconfig.py
 #django-registration
 https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
