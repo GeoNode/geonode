@@ -50,7 +50,7 @@ At the bottom of the file, replace::
 	</VirtualHost>
 
 with::
-openssl req -new -key server.key.tmp -out server.csr
+
 		SSLEngine on
 		SSLCertificateFile    /etc/ssl/certs/geonode.crt
 		SSLCertificateKeyFile /etc/ssl/private/geonode.key
