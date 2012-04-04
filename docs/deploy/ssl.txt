@@ -4,14 +4,17 @@ Running GeoNode under SSL
 
 Enabling SSL will encrypt traffic between your GeoNode server and client browsers.  This approach involves re-configuring Apache to serve on port 443, instead of port 80.  Other approaches exist and should be added to this document.
 
-Generate SSL Key
-================
+Generate SSL Key & Certificate
+==============================
 
-The first step is to generate a DES key::
+The first step is to generate a DES key.::
 
-    openssl genrsa -des3 -out server.key 1024
-    openssl req -new -key server.key.tmp -out server.csr
-    openssl rsa -in server.key.tmp -out server.key
+    # for "Common Name" use the GeoNode domain name or ip address as specified in the SITEURL
+    openssl genrsa -des3 -out server.key 1024    
+    openssl req -new -key server.key -out server.csr
+
+    mv server.key server.key.tmp
+    openssl rsa -in server.key.tmp -out server.key  # generate new server.key without challenge password
     openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 
 Copy the key and certificate to the standard locations::
@@ -47,7 +50,7 @@ At the bottom of the file, replace::
 	</VirtualHost>
 
 with::
-
+openssl req -new -key server.key.tmp -out server.csr
 		SSLEngine on
 		SSLCertificateFile    /etc/ssl/certs/geonode.crt
 		SSLCertificateKeyFile /etc/ssl/private/geonode.key
