@@ -9,12 +9,15 @@ Generate SSL Key & Certificate
 
 The first step is to generate a DES key.::
 
-    # for "Common Name" use the GeoNode domain name or ip address as specified in the SITEURL
+    # for CommonName use GeoNode domain name or ip address as specified in GeoNode's SITEURL
     openssl genrsa -des3 -out server.key 1024    
     openssl req -new -key server.key -out server.csr
 
+    # generate new server.key without challenge password, or Apache will ask for password at startup
     mv server.key server.key.tmp
-    openssl rsa -in server.key.tmp -out server.key  # generate new server.key without challenge password
+    openssl rsa -in server.key.tmp -out server.key
+
+    # generate certificate
     openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 
 Copy the key and certificate to the standard locations::
@@ -67,29 +70,25 @@ This tells Apache where to fine the key and certificate.  There are also some ad
 Tomcat Configuration
 ====================
 
-This step is a problem.  Tomcat seems to be redirecting to http instead of https when there is no trailing slash.  For example::
+As root edit the Tomcat server config file :file:`/var/lib/tomcat6/conf/server.xml`, and replace::
 
-    curl -I -k "https://192.168.10.10/geoserver/web"
+    <Connector port="8080" protocol="HTTP/1.1" 
+               connectionTimeout="20000" 
+               URIEncoding="UTF-8"
+               redirectPort="8443"
+    />
 
-    HTTP/1.1 302 Moved Temporarily
-    Date: Wed, 04 Apr 2012 16:21:58 GMT
-    Server: Apache-Coyote/1.1
-    Location: http://192.168.10.10/geoserver/web/
-    Set-Cookie: JSESSIONID=0D3CFDE6F108845CFAE550428FB74B93; Path=/geoserver
-    Via: 1.1 localhost
-    Content-Type: text/plain
+with::
 
-And accessing Tomcat directly::
+    <Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000" 
+               URIEncoding="UTF-8"
+               scheme="https"
+               proxyName="<yourServersIPorDomainName>"
+               proxyPort="443"
+     />
 
-    curl -I -k "http://192.168.10.10:8080/geoserver/web"
-
-    HTTP/1.1 302 Moved Temporarily
-    Server: Apache-Coyote/1.1
-    Set-Cookie: JSESSIONID=9E21F3E88BDF60326B67F2E16C47ACAA; Path=/geoserver
-    Location: http://192.168.10.10:8080/geoserver/web/
-    Content-Length: 0
-    Date: Wed, 04 Apr 2012 18:59:35 GMT
-
+This tells Tomcat that it is running behind an https proxy.  If this is omitted Tomcat will try to redirect to http.
 
 GeoNode Configuration
 =====================
@@ -109,13 +108,13 @@ As root edit the file :file:`/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml`
        <param-value>https://localhost/</param-value>
    </context-param>
 
-Also update the ``proxyBaseUrl`` in the Geoserver's global settings file :file:`/var/lib/geoserver/geonode-data/global.xml`::
+Also update ``proxyBaseUrl`` in the Geoserver global settings file :file:`/var/lib/geoserver/geonode-data/global.xml`::
 
     <proxyBaseUrl>https://192.168.10.10/geoserver/</proxyBaseUrl>
 
 
-Final Restart
-=============
+Restart
+=======
 
 Finally restart Apache and Tomcat with::
 
@@ -125,6 +124,7 @@ Finally restart Apache and Tomcat with::
 This information was complied from a number of sources.  The main links are listed below.  Please contact the GeoNode list with any updates or corrections.
 
 * http://confluence.atlassian.com/display/JIRA/Connecting+to+SSL+services
+* http://confluence.atlassian.com/display/JIRA/Integrating+JIRA+with+Apache+using+SSL
 * http://www.akadia.com/services/ssh_test_certificate.html
 * https://help.ubuntu.com/10.04/serverguide/C/httpd.html
 * https://help.ubuntu.com/10.04/serverguide/C/certificates-and-security.html
