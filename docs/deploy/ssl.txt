@@ -65,6 +65,11 @@ with::
     </VirtualHost>
     </IfModule>
 
+    <VirtualHost  *:80>
+        Redirect permanent / https://192.168.10.10/
+    </VirtualHost>
+
+
 This tells Apache where to fine the key and certificate.  There are also some additional lines to handle MSIE, taken from Apache's default-ssl file.
 
 Tomcat Configuration
