@@ -1,0 +1,131 @@
+=========================
+Running GeoNode under SSL
+=========================
+
+Enabling SSL will encrypt traffic between your GeoNode server and client browsers.  This approach involves re-configuring Apache to serve on port 443, instead of port 80.  Other approaches exist and should be added to this document.
+
+Generate SSL Key
+================
+
+The first step is to generate a DES key::
+
+    openssl genrsa -des3 -out server.key 1024
+    openssl req -new -key server.key.tmp -out server.csr
+    openssl rsa -in server.key.tmp -out server.key
+    openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
+Copy the key and certificate to the standard locations::
+
+    sudo cp server.crt /etc/ssl/certs/geonode.crt
+    sudo cp server.key /etc/ssl/private/geonode.key
+
+Next add the certificate to the cacerts file for python and java::
+
+    sudo -s "cat server.crt >> /var/lib/geonode/lib/python2.6/site-packages/httplib2/cacerts.txt"
+    sudo keytool -import -alias geonodessl -keystore /etc/ssl/certs/java/cacerts -file server.crt
+
+Note keytool will ask for a password and the standard password for the java cacerts file is ``changeit``.
+
+Apache Configuration
+====================
+
+Enable the ssl module in Apache with the command::
+
+    sudo a2enmod ssl
+
+Next as root edit the Apache geonode config file :file:`/etc/apache/sites-available/geonode`.  At the beginning of the file replace::
+
+    <VirtualHost *:80>
+
+with::
+
+	<IfModule mod_ssl.c>
+	<VirtualHost _default_:443>
+
+At the bottom of the file, replace::
+
+	</VirtualHost>
+
+with::
+
+		SSLEngine on
+		SSLCertificateFile    /etc/ssl/certs/geonode.crt
+		SSLCertificateKeyFile /etc/ssl/private/geonode.key
+		BrowserMatch "MSIE [2-6]" \
+			nokeepalive ssl-unclean-shutdown \
+			downgrade-1.0 force-response-1.0
+		# MSIE 7 and newer should be able to use keepalive
+		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+	</VirtualHost>
+	</IfModule>
+
+This tells Apache where to fine the key and certificate.  There are also some additional lines to handle MSIE, taken from Apache's default-ssl file.
+
+Tomcat Configuration
+====================
+
+This step is a problem.  Tomcat seems to be redirecting to http instead of https when there is no trailing slash.  For example::
+
+    curl -I -k "https://192.168.10.10/geoserver/web"
+
+    HTTP/1.1 302 Moved Temporarily
+    Date: Wed, 04 Apr 2012 16:21:58 GMT
+    Server: Apache-Coyote/1.1
+    Location: http://192.168.10.10/geoserver/web/
+    Set-Cookie: JSESSIONID=0D3CFDE6F108845CFAE550428FB74B93; Path=/geoserver
+    Via: 1.1 localhost
+    Content-Type: text/plain
+
+And accessing Tomcat directly::
+
+    curl -I -k "http://192.168.10.10:8080/geoserver/web"
+
+    HTTP/1.1 302 Moved Temporarily
+    Server: Apache-Coyote/1.1
+    Set-Cookie: JSESSIONID=9E21F3E88BDF60326B67F2E16C47ACAA; Path=/geoserver
+    Location: http://192.168.10.10:8080/geoserver/web/
+    Content-Length: 0
+    Date: Wed, 04 Apr 2012 18:59:35 GMT
+
+
+GeoNode Configuration
+=====================
+
+As root edit the geonode config file :file:`/etc/geonode/local_settings.py` and change the ``SITEURL`` protocol to https::
+
+   SITEURL = 'https://<ipaddressOrDomainName>/'
+
+
+GeoServer Configuration
+=======================
+
+As root edit the file :file:`/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml` and ensure the ``GEONODE_BASE_URL`` is specified as follows::
+
+   <context-param>
+       <param-name>GEONODE_BASE_URL</param-name>
+       <param-value>https://localhost/</param-value>
+   </context-param>
+
+Also update the ``Proxy Base URL`` in the Global section of Geoserver from::
+
+    http://<host>/geoserver/
+
+to::
+
+    https://<host>/geoserver/
+
+Final Restart
+=============
+
+Finally restart Apache and Tomcat with::
+
+    sudo /etc/init.d/apache2 restart
+    sudo /etc/init.d/tomcat6 restart
+
+This information was complied from a number of sources.  The main links are listed below.  Please contact the GeoNode list with any updates or corrections.
+
+* http://confluence.atlassian.com/display/JIRA/Connecting+to+SSL+services
+* http://www.akadia.com/services/ssh_test_certificate.html
+* https://help.ubuntu.com/10.04/serverguide/C/httpd.html
+* https://help.ubuntu.com/10.04/serverguide/C/certificates-and-security.html
+
