@@ -45,25 +45,25 @@ Next as root edit the Apache geonode config file :file:`/etc/apache/sites-availa
 
 with::
 
-	<IfModule mod_ssl.c>
-	<VirtualHost _default_:443>
+    <IfModule mod_ssl.c>
+    <VirtualHost _default_:443>
 
 At the bottom of the file, replace::
 
-	</VirtualHost>
+    </VirtualHost>
 
 with::
 
-		SSLEngine on
-		SSLCertificateFile    /etc/ssl/certs/geonode.crt
-		SSLCertificateKeyFile /etc/ssl/private/geonode.key
-		BrowserMatch "MSIE [2-6]" \
-			nokeepalive ssl-unclean-shutdown \
-			downgrade-1.0 force-response-1.0
-		# MSIE 7 and newer should be able to use keepalive
-		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
-	</VirtualHost>
-	</IfModule>
+        SSLEngine on
+        SSLCertificateFile    /etc/ssl/certs/geonode.crt
+        SSLCertificateKeyFile /etc/ssl/private/geonode.key
+        BrowserMatch "MSIE [2-6]" \
+            nokeepalive ssl-unclean-shutdown \
+            downgrade-1.0 force-response-1.0
+        # MSIE 7 and newer should be able to use keepalive
+        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+    </VirtualHost>
+    </IfModule>
 
 This tells Apache where to fine the key and certificate.  There are also some additional lines to handle MSIE, taken from Apache's default-ssl file.
 
@@ -73,20 +73,20 @@ Tomcat Configuration
 As root edit the Tomcat server config file :file:`/var/lib/tomcat6/conf/server.xml`, and replace::
 
     <Connector port="8080" protocol="HTTP/1.1" 
-               connectionTimeout="20000" 
-               URIEncoding="UTF-8"
-               redirectPort="8443"
+        connectionTimeout="20000" 
+        URIEncoding="UTF-8"
+        redirectPort="8443"
     />
 
 with::
 
     <Connector port="8080" protocol="HTTP/1.1"
-               connectionTimeout="20000" 
-               URIEncoding="UTF-8"
-               scheme="https"
-               proxyName="<yourServersIPorDomainName>"
-               proxyPort="443"
-     />
+        connectionTimeout="20000" 
+        URIEncoding="UTF-8"
+        scheme="https"
+        proxyName="<yourServersIPorDomainName>"
+        proxyPort="443"
+    />
 
 This tells Tomcat that it is running behind an https proxy.  If this is omitted Tomcat will try to redirect to http.
 
@@ -95,7 +95,7 @@ GeoNode Configuration
 
 As root edit the geonode config file :file:`/etc/geonode/local_settings.py` and change the ``SITEURL`` protocol to https::
 
-   SITEURL = 'https://<ipaddressOrDomainName>/'
+    SITEURL = 'https://<ipaddressOrDomainName>/'
 
 
 GeoServer Configuration
@@ -103,10 +103,10 @@ GeoServer Configuration
 
 As root edit the file :file:`/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml` and ensure the ``GEONODE_BASE_URL`` is specified as follows::
 
-   <context-param>
-       <param-name>GEONODE_BASE_URL</param-name>
-       <param-value>https://localhost/</param-value>
-   </context-param>
+    <context-param>
+        <param-name>GEONODE_BASE_URL</param-name>
+        <param-value>https://localhost/</param-value>
+    </context-param>
 
 Also update ``proxyBaseUrl`` in the Geoserver global settings file :file:`/var/lib/geoserver/geonode-data/global.xml`::
 
