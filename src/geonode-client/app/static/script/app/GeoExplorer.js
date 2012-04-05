@@ -394,7 +394,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         return record;
     },
 
-
     reorderNodes : function() {
         var mpl = this.mapPanel.layers;
         var x = 0;
@@ -415,10 +414,49 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         });
     },
+//    reorderNodes : function() {
+//        var mpl = this.mapPanel.layers;
+//        var x = 0;
+//        var layerCount = this.mapPanel.layers.getCount() - 1;
+//        var mapRoot = this.treeRoot.findChild("id", "maplayerroot");
+//
+//        var reorderLayer = function(node) {
+//            if (node.isLeaf() && node.layer) {
+//                var layer = node.layer;
+//                var store = node.layerStore;
+//                record = store.getAt(store.findBy(function(r) {
+//                    return r.getLayer() === layer;
+//                }));
+//                if (record.get("group") !== "background") {
+//                    mpl.remove(record);
+//                    mpl.insert(layerCount - x, [record]);
+//                }
+//                x++;
+//            } else
+//            {
+//                var isExpanded = node.expanded;
+//                if (!isExpanded)
+//                    node.expand();
+//                if (node.hasChildNodes) {
+//                    for (var nodeit =0; nodeit < node.childNodes.length; nodeit++)
+//                    {
+//                        reorderLayer(node.childNodes[nodeit]);
+//                    }
+//                }
+//                if (!isExpanded) {
+//                    node.collapse();
+//                }
+//            }
+//
+//        };
+//
+//        reorderLayer(mapRoot);
+//
+//    },
 
 
     addCategoryFolder : function(category, isExpanded) {
-        mapRoot = this.treeRoot.findChild("id", "maplayerroot");
+        var mapRoot = this.treeRoot.findChild("id", "maplayerroot");
         if (category == "" || category == undefined || category == null)
             category = "General";
         if (mapRoot.findChild("text", category) == null) {
@@ -756,6 +794,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (this.busyMask) {
                 this.busyMask.hide();
             }
+
+            this.reorderNodes();
+
+
 
             //Show the info window if it's the first time here
             if (this.config.first_visit)
@@ -3129,9 +3171,36 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             node = this.treeRoot.firstChild.childNodes[x];
             treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
         }
-
-
         config.treeconfig = treeConfig;
+        config.map.layers = [];
+
+        for (var folder = 0; folder < treeConfig.length; folder++)
+        {
+
+            var group = treeConfig[folder].group;
+
+
+            var filteredRecords = this.mapPanel.layers.filter("group", group, true, true);
+
+            var count = filteredRecords.length;
+
+            filteredRecords.each(function(record){
+                var layer = record.getLayer();
+                if (layer.displayInLayerSwitcher) {
+                    var id = record.get("source");
+                    var source = this.layerSources[id];
+                    if (!source) {
+                        throw new Error("Could not find source for layer '" + record.get("name") + "'");
+                    }
+                    // add layer
+                    config.map.layers.push(source.getConfigForRecord(record));
+                }
+            }, this);
+
+            this.mapPanel.layers.clearFilter();
+        }
+
+
         if (!this.mapID || as) {
             /* create a new map */
             Ext.Ajax.request({
