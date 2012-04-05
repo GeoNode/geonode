@@ -42,7 +42,7 @@ from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
 from datetime import datetime, timedelta
 from django.core.cache import cache
-from geonode.maps.forms import LayerCreateForm, LAYER_SCHEMA_TEMPLATE, GEOMETRY_CHOICES
+from geonode.maps.forms import LayerCreateForm, GEOMETRY_CHOICES
 from geonode.maps.utils import forward_mercator
 
 
@@ -436,7 +436,7 @@ def map_download(request, mapid):
                 remote_layers.append(lyr)
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
-                if not ownable_layer.downloadable or not request.user.has_perm('maps.view_layer', obj=ownable_layer):
+                if not request.user.has_perm('maps.view_layer', obj=ownable_layer):
                     locked_layers.append(lyr)
                 else:
                     downloadable_layers.append(lyr)
@@ -2517,10 +2517,20 @@ def create_pg_layer(request):
                 return HttpResponse(msg, status='400')
 
             #TODO: Let users create their own schema
-            attribute_list = LAYER_SCHEMA_TEMPLATE
+            attribute_list = [
+                ["the_geom","com.vividsolutions.jts.geom." + layer_form.cleaned_data['geom'],{"nillable":False}],
+                ["Name","java.lang.String",{"nillable":True}],
+                ["Description","java.lang.String", {"nillable":True}],
+                ["Start_Date","java.util.Date",{"nillable":True}],
+                ["End_Date","java.util.Date",{"nillable":True}],
+                ["String_Value_1","java.lang.String",{"nillable":True}],
+                ["String_Value_2","java.lang.String", {"nillable":True}],
+                ["Number_Value_1","java.lang.Float",{"nillable":True}],
+                ["Number_Value_2","java.lang.Float", {"nillable":True}],
+            ]
 
             # Add geometry to attributes dictionary, based on user input; use OrderedDict to remember order
-            attribute_list.insert(0,[u"the_geom",u"com.vividsolutions.jts.geom." + layer_form.cleaned_data['geom'],{"nillable":False}])
+            #attribute_list.insert(0,[u"the_geom",u"com.vividsolutions.jts.geom." + layer_form.cleaned_data['geom'],{"nillable":False}])
 
             name = get_valid_layer_name(layer_form.cleaned_data['name'])
             permissions = layer_form.cleaned_data["permissions"]
