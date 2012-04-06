@@ -53,11 +53,9 @@ def proxy(request):
 
     logger.debug("%s: %s : %s : %s", url.hostname, url.port, locator, settings.SESSION_COOKIE_NAME)
     headers = {}
-    if settings.SESSION_COOKIE_NAME in request.COOKIES:
-        headers["Cookie"] = request.META["HTTP_COOKIE"]
 
     conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.raw_post_data, headers)
+    conn.request(request.method, locator, request.raw_post_data)
     result = conn.getresponse()
     response = HttpResponse(
             result.read(),
@@ -174,10 +172,6 @@ def youtube(request):
     return HttpResponse(feed_response, mimetype="text/xml")
 
 def download(request, service, layer):
-    layerstats,created = LayerStats.objects.get_or_create(layer=layer)
-    layerstats.downloads += 1
-    layerstats.save()
-
     params = request.GET
     #mimetype = params.get("outputFormat") if service == "wfs" else params.get("format")
 
@@ -186,7 +180,12 @@ def download(request, service, layer):
 
     layerObj = Layer.objects.get(pk=layer)
 
-    if layerObj.name.find('nc_community_survey') == -1 and request.user.has_perm('maps.view_layer', obj=layerObj):
+    if layerObj.downloadable and request.user.has_perm('maps.view_layer', obj=layerObj):
+
+        layerstats,created = LayerStats.objects.get_or_create(layer=layer)
+        layerstats.downloads += 1
+        layerstats.save()
+
         download_response, content = h.request(
             url, request.method,
             body=None,

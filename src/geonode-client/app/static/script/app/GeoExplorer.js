@@ -378,7 +378,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
 
-        GeoExplorer.superclass.constructor.apply(this, arguments);
+            GeoExplorer.superclass.constructor.apply(this, arguments);
 
         this.mapID = this.initialConfig.id;
     },
@@ -418,7 +418,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
     addCategoryFolder : function(category, isExpanded) {
-        mapRoot = this.treeRoot.findChild("id", "maplayerroot");
+        var mapRoot = this.treeRoot.findChild("id", "maplayerroot");
         if (category == "" || category == undefined || category == null)
             category = "General";
         if (mapRoot.findChild("text", category) == null) {
@@ -1852,7 +1852,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
                 toggleGroup: 'featureGroup'
             }
-       );
+        );
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
 

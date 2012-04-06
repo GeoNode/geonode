@@ -31,7 +31,7 @@ def get_hood_center(resource_name, block_ids):
     conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
         cur = conn.cursor()
-        query = "select ST_AsGeoJSON(ST_Centroid(EXTENT(ST_Transform(the_geom,900913)))) as center from \"%s\" where \"" + settings.HOODS_TEMPLATE_ATTRIBUTE + "\" IN (%s)" % (layer, block_ids)
+        query = "select ST_AsGeoJSON(ST_Centroid(EXTENT(ST_Transform(the_geom,900913)))) as center from \"" + layer + "\" where \"" + settings.HOODS_TEMPLATE_ATTRIBUTE + "\" IN (" + block_ids + ")"
         cur.execute(query)
         rows = cur.fetchall()
         point = json.loads(str(rows[0][0]))

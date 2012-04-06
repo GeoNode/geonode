@@ -76,12 +76,12 @@ class XssCleaner(HTMLParser):
             {'a':['href','title','target','style'],
              'img':['src','alt','border','style'],
              'blockquote':['type','style'],
-             'table': ['border', 'width', 'height', 'style', 'align'],
-             'tbody': ['border', 'width', 'height', 'style', 'align'],
-             'tr': ['border', 'width', 'height', 'style', 'align'],
-             'td': ['border', 'width', 'height', 'style', 'align'],
-             'div': ['border', 'width', 'height', 'style', 'align'],
-             'span': ['border', 'width', 'height', 'style', 'align'],
+             'table': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
+             'tbody': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
+             'tr': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
+             'td': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
+             'div': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
+             'span': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
              }
 
         # The only schemes allowed in URLs (for href and src attributes).

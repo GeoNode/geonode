@@ -156,7 +156,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                                 if (successCount == count) {
                                     successCount = 0;
                                     if (features.length == 0) {
-                                        Ext.Msg.alert('Map Results', 'No features found at this location.');
+                                        //Ext.Msg.alert('Map Results', 'No features found at this location.');
                                     } else {
                                         this.displayXYResults(features, featureMeta);
                                     }
@@ -209,7 +209,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
 
                                         }  //end if(featureInfo)
                                     } catch (err) {
-                                        Ext.Msg.alert("Error", err)
+                                        //Ext.Msg.alert("Error", err)
                                     }
                                 }  //end if (resp.responseText)
 
@@ -217,7 +217,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                                 if (successCount == count) {
                                     successCount = 0;
                                     if (features.length == 0) {
-                                        Ext.Msg.alert('Map Results', 'No features found at this location.');
+                                        //Ext.Msg.alert('Map Results', 'No features found at this location.');
                                     } else {
                                         this.displayXYResults(features, featureMeta);
                                     }
@@ -451,7 +451,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                                 if (successCount == count) {
                                     successCount = 0;
                                     if (features.length == 0) {
-                                        Ext.Msg.alert('Map Results', 'No features found at this location.');
+                                        //Ext.Msg.alert('Map Results', 'No features found at this location.');
                                     } else {
                                         this.displayXYResults(features, featureMeta);
                                     }

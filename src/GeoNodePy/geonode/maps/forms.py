@@ -26,17 +26,6 @@ TYPE_CHOICES = (
 )
 
 
-LAYER_SCHEMA_TEMPLATE = [
-    ["Name","java.lang.String",{"nillable":True}],
-    ["Description","java.lang.String", {"nillable":True}],
-    ["Start_Date","java.util.Date",{"nillable":True}],
-    ["End_Date","java.util.Date",{"nillable":True}],
-    ["String_Value_1","java.lang.String",{"nillable":True}],
-    ["String_Value_2","java.lang.String", {"nillable":True}],
-    ["Number_Value_1","java.lang.Float",{"nillable":True}],
-    ["Number_Value_2","java.lang.Float", {"nillable":True}],
-]
-
 class JSONField(forms.CharField):
     def clean(self, text):
         text = super(JSONField, self).clean(text)
