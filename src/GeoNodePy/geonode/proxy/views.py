@@ -53,11 +53,9 @@ def proxy(request):
 
     logger.debug("%s: %s : %s : %s", url.hostname, url.port, locator, settings.SESSION_COOKIE_NAME)
     headers = {}
-    if settings.SESSION_COOKIE_NAME in request.COOKIES:
-        headers["Cookie"] = request.META["HTTP_COOKIE"]
 
     conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.raw_post_data, headers)
+    conn.request(request.method, locator, request.raw_post_data)
     result = conn.getresponse()
     response = HttpResponse(
             result.read(),
