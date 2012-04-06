@@ -67,15 +67,24 @@ def create_hood(request):
     #TODO: calculate center of selected blocks, assign to map center x,y
 
     del config['id']
-    ids = "'" + "','".join(request.GET['ids'].split(',')) + "'"
 
-    map_center = get_hood_center(settings.HOODS_TEMPLATE_LAYER, ids)
-    if map_center is not None:
-        config['map']['center'] = map_center
+    #Are these ID's legit? Make sure.
+    isLegitIdList = True
+    num_ids = request.GET['ids'].split(',')
+    for num in num_ids:
+        if not num.isdigit():
+            isLegitIdList = False
 
-    for lc in config['map']['layers']:
-        if 'name' in lc and settings.HOODS_TEMPLATE_LAYER in lc['name']:
-            lc['cql_filter'] = settings.HOODS_TEMPLATE_ATTRIBUTE + ' IN (' + request.GET['ids'] + ')'
+    if isLegitIdList:
+        ids = "'" + "','".join(request.GET['ids'].split(',')) + "'"
+
+        map_center = get_hood_center(settings.HOODS_TEMPLATE_LAYER, ids)
+        if map_center is not None:
+            config['map']['center'] = map_center
+
+        for lc in config['map']['layers']:
+            if 'name' in lc and settings.HOODS_TEMPLATE_LAYER in lc['name']:
+                lc['cql_filter'] = settings.HOODS_TEMPLATE_ATTRIBUTE + ' IN (' + request.GET['ids'] + ')'
 
 
     return render_to_response('maps/view.html', RequestContext(request, {
