@@ -163,7 +163,20 @@ gxp.plugins.HGLSource = Ext.extend(gxp.plugins.WMSSource, {
         
     },
 
+    /** api: method[createStore]
+     *
+     *  Creates a store of layer records.  Not necessary for this case,
+     *  so create a fake store to avoid the wrath of WMSSource.
+     */
+    createStore: function() {
+        this.store = {
+            reader: {
+                raw: null
+            }
+        };
 
+        this.fireEvent("ready", this);
+    },
 
     /** api: method[getConfigForRecord]
      *  :arg record: :class:`GeoExt.data.LayerRecord`
