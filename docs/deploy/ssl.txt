@@ -1,0 +1,136 @@
+=========================
+Running GeoNode under SSL
+=========================
+
+Enabling SSL will encrypt traffic between your GeoNode server and client browsers.  This approach involves re-configuring Apache to serve on port 443, instead of port 80.  Other approaches exist and should be added to this document.
+
+Generate SSL Key & Certificate
+==============================
+
+The first step is to generate a DES key.::
+
+    # for CommonName use GeoNode domain name or ip address as specified in GeoNode's SITEURL
+    openssl genrsa -des3 -out server.key 1024    
+    openssl req -new -key server.key -out server.csr
+
+    # generate new server.key without challenge password, or Apache will ask for password at startup
+    mv server.key server.key.tmp
+    openssl rsa -in server.key.tmp -out server.key
+
+    # generate certificate
+    openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
+Copy the key and certificate to the standard locations::
+
+    sudo cp server.crt /etc/ssl/certs/geonode.crt
+    sudo cp server.key /etc/ssl/private/geonode.key
+
+Next add the certificate to the cacerts file for python and java::
+
+    sudo -s "cat server.crt >> /var/lib/geonode/lib/python2.6/site-packages/httplib2/cacerts.txt"
+    sudo keytool -import -alias geonodessl -keystore /etc/ssl/certs/java/cacerts -file server.crt
+
+Note keytool will ask for a password and the standard password for the java cacerts file is ``changeit``.
+
+Apache Configuration
+====================
+
+Enable the ssl module in Apache with the command::
+
+    sudo a2enmod ssl
+
+Next as root edit the Apache geonode config file :file:`/etc/apache/sites-available/geonode`.  At the beginning of the file replace::
+
+    <VirtualHost *:80>
+
+with::
+
+    <IfModule mod_ssl.c>
+    <VirtualHost _default_:443>
+
+At the bottom of the file, replace::
+
+    </VirtualHost>
+
+with::
+
+        SSLEngine on
+        SSLCertificateFile    /etc/ssl/certs/geonode.crt
+        SSLCertificateKeyFile /etc/ssl/private/geonode.key
+        BrowserMatch "MSIE [2-6]" \
+            nokeepalive ssl-unclean-shutdown \
+            downgrade-1.0 force-response-1.0
+        # MSIE 7 and newer should be able to use keepalive
+        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+    </VirtualHost>
+    </IfModule>
+
+    <VirtualHost  *:80>
+        Redirect permanent / https://192.168.10.10/
+    </VirtualHost>
+
+
+This tells Apache where to fine the key and certificate.  There are also some additional lines to handle MSIE, taken from Apache's default-ssl file.
+
+Tomcat Configuration
+====================
+
+As root edit the Tomcat server config file :file:`/var/lib/tomcat6/conf/server.xml`, and replace::
+
+    <Connector port="8080" protocol="HTTP/1.1" 
+        connectionTimeout="20000" 
+        URIEncoding="UTF-8"
+        redirectPort="8443"
+    />
+
+with::
+
+    <Connector port="8080" protocol="HTTP/1.1"
+        connectionTimeout="20000" 
+        URIEncoding="UTF-8"
+        scheme="https"
+        proxyName="<yourServersIPorDomainName>"
+        proxyPort="443"
+    />
+
+This tells Tomcat that it is running behind an https proxy.  If this is omitted Tomcat will try to redirect to http.
+
+GeoNode Configuration
+=====================
+
+As root edit the geonode config file :file:`/etc/geonode/local_settings.py` and change the ``SITEURL`` protocol to https::
+
+    SITEURL = 'https://<ipaddressOrDomainName>/'
+
+
+GeoServer Configuration
+=======================
+
+As root edit the file :file:`/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml` and ensure the ``GEONODE_BASE_URL`` is specified as follows::
+
+    <context-param>
+        <param-name>GEONODE_BASE_URL</param-name>
+        <param-value>https://localhost/</param-value>
+    </context-param>
+
+Also update ``proxyBaseUrl`` in the Geoserver global settings file :file:`/var/lib/geoserver/geonode-data/global.xml`::
+
+    <proxyBaseUrl>https://192.168.10.10/geoserver/</proxyBaseUrl>
+
+
+Restart
+=======
+
+Finally restart Apache and Tomcat with::
+
+    sudo /etc/init.d/apache2 restart
+    sudo /etc/init.d/tomcat6 restart
+
+This information was complied from a number of sources.  The main links are listed below.  Please contact the GeoNode list with any updates or corrections.
+
+* http://confluence.atlassian.com/display/JIRA/Connecting+to+SSL+services
+* http://confluence.atlassian.com/display/JIRA/Integrating+JIRA+with+Apache+using+SSL
+* http://www.akadia.com/services/ssh_test_certificate.html
+* https://help.ubuntu.com/10.04/serverguide/C/httpd.html
+* https://help.ubuntu.com/10.04/serverguide/C/certificates-and-security.html
+
