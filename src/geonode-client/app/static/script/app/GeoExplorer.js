@@ -400,13 +400,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             rasterStyling: true,
             actionTarget: ["treetbar", "treecontent.contextMenu"]
         }, {
-            ptype: "gxp_legend",
-            outputTarget: 'legend',
-            outputConfig: {
-                autoScroll: true,
-                title: null
-            }
-        }, {
             ptype: "gxp_print",
             includeLegend: true,
             printCapabilities: window.printCapabilities,
