@@ -1,0 +1,49 @@
+{% load bootstrap_tags %}
+
+{% if field.is_hidden %}
+    {{ field }}
+{% else %}
+    <div id="div_{{ field.auto_id }}" class="control-group {% if field.errors %}error{% endif %} {% if field.css_classes %} {{ field.css_classes }}{% endif %}">
+
+        {% if field.label and not field|is_checkbox %}
+            <label for="{{ field.auto_id }}" class="control-label {% if field.field.required %}required-field{% endif %}">
+                {{ field.label|safe }}
+            </label>
+        {% endif %}
+
+        <div class="controls">
+            {% if field|css_class == "checkboxselectmultiple" %}
+                {% include "bootstrap/_field_errors_block.html" %}
+                {% for choice in field.field.choices %}
+                    <label class="checkbox">
+                        <input type="checkbox" {% if choice.0 in field.value or choice.0 == field.value %}checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0 }}">{{ choice.1 }}
+                    </label> 
+                {% endfor %}
+                {% include "bootstrap/_field_help_text.html" %}
+            {% endif %}
+            {% if field|css_class == "radioselect" %}
+                {% include "bootstrap/_field_errors_block.html" %}
+                {% for choice in field.field.choices %}
+                    <label class="radio">
+                        <input type="radio" {% if choice.0 == field.value %}checked="checked" {% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0 }}">{{ choice.1 }}
+                    </label>
+                {% endfor %}
+                {% include "bootstrap/_field_help_text.html" %}
+            {% endif %}
+            {% if field|css_class != "checkboxselectmultiple" and field|css_class != "radioselect" %}
+                {% if field|is_checkbox %}
+                    <label for="{{ field.auto_id }}" class="checkbox {% if field.field.required %}required-field{% endif %}">
+                        {{ field }}
+                        {{ field.label|safe }}
+                    </label>
+                    {% include "bootstrap/_field_errors_block.html" %}
+                    {% include "bootstrap/_field_help_text.html" %}
+                {% else %}
+                    {{ field }}
+                    {% include "bootstrap/_field_errors.html" %}
+                    {% include "bootstrap/_field_help_text.html" %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
