@@ -3,12 +3,13 @@
 {% load i18n avatar_tags %}
 
 {% block main %}
-  <table cellpadding="0" cellspacing="0" border="0" class="geonode-profile table table-striped table-bordered">
+  <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
         <th>{% trans "Type" %}</th>
         <th>{% trans "Title" %}</th>
         <th>{% trans "Date" %}</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -17,6 +18,7 @@
           <td>{% trans "Layer" %}</td>
           <td><a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></td>
           <td>{{ layer.date|date:"Y-m-d" }}</td>
+          <td><input type="checkbox" class="pull-right" data-id="{{ layer.id }}" data-type="layer"></td>
         </tr>
       {% endfor %}
 
@@ -25,10 +27,82 @@
           <td>{% trans "Map" %}</td>
           <td><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></td>
           <td>{{ map.last_modified|date:"Y-m-d" }}</td>
+          <td><input type="checkbox" class="pull-right" data-id="{{ map.id }}" data-type="map"></td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
+  <div class="pull-right">
+    <a href="#modal-perms" class="btn" data-toggle="modal"><i class="icon-lock"></i> {% trans "Change permissions on selected" %}</a>
+    <a href="#modal-delete" class="btn" data-toggle="modal"><i class="icon-remove"></i> {% trans "Remove selected" %}</a>
+  </div>
+
+  <div class="modal fade" id="modal-perms" style="display:none">
+    <form id="permission-form" accept-charset="UTF-8" action="/tagging" data-remote="true" method="post" class="modal-form">
+      <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>{% trans "Permissions" %}</h3>
+      </div>
+      <div class="modal-body">
+        <div class="control-group">
+          <label class="control-label"><strong>{% trans "Who can view and download this data?" %}</strong></label>
+          <div class="controls">
+            <label class="radio">
+              <input type="radio" name="perms-view" id="perms-view" value="option1">
+              {% trans "Anyone" %}
+            </label>
+            <label class="radio">
+              <input type="radio" name="perms-view" id="perms-view2" value="option2">
+              {% trans "Any registered user" %}
+            </label>
+            <label class="radio">
+              <input type="radio" name="perms-view" id="perms-view3" value="option3">
+              {% trans "Only users who can edit" %}
+            </label>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label"><strong>{% trans "Who can edit this data?" %}</strong></label>
+          <div class="controls">
+            <label class="radio">
+              <input type="radio" name="perms-edit" id="perms-edit1" value="option1">
+              {% trans "Any registered user" %}
+            </label>
+            <label class="radio">
+              <input type="radio" name="perms-edit" id="perms-edit2" value="option2">
+              {% trans "Only the following users or groups:" %}
+            </label>
+            <select class="user-select span4" multiple data-placeholder="Choose a user or group...">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
+        <a id="permission-submit" href="#" class="btn btn-primary">{% trans "Apply changes" %}</a>
+      </div>
+    </form>
+  </div>
+  <div class="modal fade" id="modal-delete" style="display:none">
+    <form id="delete-form" accept-charset="UTF-8" action="" data-remote="true" method="post" class="modal-form">
+      <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>{% trans "Delete Layers" %}</h3>
+      </div>
+      <div class="modal-body">
+        <p>{% trans "You're about to delete multiple layers and maps.  Is that really what you want to do?" %}</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
+        <a id="permission-submit" href="#" class="btn btn-danger">{% trans "Delete" %}</a>
+      </div>
+    </form>
+  </div>
 {% endblock %}
 
 {% block sidebar %}
@@ -47,4 +121,14 @@
       <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
     </ul>
   {% endif %}
+{% endblock %}
+
+{% block extra_script %}
+  <script>
+    $(".user-select").chosen();
+    $("#permission-submit").on("click", function(e){
+      e.preventDefault();
+      $("#permission-form").submit();
+    });
+  </script>
 {% endblock %}
