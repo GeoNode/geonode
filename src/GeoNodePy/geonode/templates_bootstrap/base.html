@@ -139,6 +139,7 @@
     <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
     <script src="{{ STATIC_URL }}datatables/js/jquery.dataTables.min.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/datatables.js"></script>
+    {% block extra_script %}{% endblock extra_script %}
 
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script type="text/javascript" src="{% url lang %}"></script>
