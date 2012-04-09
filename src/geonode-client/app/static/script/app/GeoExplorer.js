@@ -401,18 +401,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             actionTarget: ["treetbar", "treecontent.contextMenu"]
         }, {
             ptype: "gxp_print",
+            openInNewWindow: true,
             includeLegend: true,
             printCapabilities: window.printCapabilities,
             actionTarget: {target: "paneltbar", index: 3}
         }, {
             ptype: "gxp_googleearth",
-            actionTarget: {target: "paneltbar", index: 4},
-            apiKeys: {
-                "localhost": "ABQIAAAAeDjUod8ItM9dBg5_lz0esxTnme5EwnLVtEDGnh-lFVzRJhbdQhQBX5VH8Rb3adNACjSR5kaCLQuBmw",
-                "localhost:8080": "ABQIAAAAeDjUod8ItM9dBg5_lz0esxTnme5EwnLVtEDGnh-lFVzRJhbdQhQBX5VH8Rb3adNACjSR5kaCLQuBmw",
-                "localhost:8000": "ABQIAAAAeDjUod8ItM9dBg5_lz0esxTnme5EwnLVtEDGnh-lFVzRJhbdQhQBX5VH8Rb3adNACjSR5kaCLQuBmw",
-                "example.com": "-your-api-key-here-"
-            }
+            actionTarget: {target: "paneltbar", index: 4}
         });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
