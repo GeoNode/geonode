@@ -1,6 +1,9 @@
 from django.conf.urls.defaults import *
+from django.conf.urls.static import static
 from django.conf import settings
+
 from staticfiles.urls import staticfiles_urlpatterns
+
 from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
 import geonode.maps.urls
@@ -45,5 +48,5 @@ urlpatterns = patterns('',
 urlpatterns += geonode.proxy.urls.urlpatterns
 
 # Extra static file endpoint for development use
-if settings.SERVE_MEDIA:
-    urlpatterns += staticfiles_urlpatterns()
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
