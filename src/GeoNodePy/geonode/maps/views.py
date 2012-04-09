@@ -125,7 +125,6 @@ LAYER_LEV_NAMES = {
     Layer.LEVEL_ADMIN : _('Administrative')
 }
 
-@transaction.commit_manually
 def maps(request, mapid=None):
     if request.method == 'GET':
         return render_to_response('maps.html', RequestContext(request))
@@ -136,22 +135,23 @@ def maps(request, mapid=None):
                 mimetype="text/plain",
                 status=401
             )
-        try: 
-            map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
-            map.save()
-            map.set_default_permissions()
-            map.update_from_viewer(request.raw_post_data)
-            response = HttpResponse('', status=201)
-            response['Location'] = map.id
-            transaction.commit()
-            return response
-        except Exception, e:
-            transaction.rollback()
-            return HttpResponse(
-                "The server could not understand your request." + str(e),
-                status=400, 
-                mimetype="text/plain"
-            )
+        with transaction.commit_manually:
+            try:
+                map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
+                map.save()
+                map.set_default_permissions()
+                map.update_from_viewer(request.raw_post_data)
+                response = HttpResponse('', status=201)
+                response['Location'] = map.id
+                transaction.commit()
+                return response
+            except Exception, e:
+                transaction.rollback()
+                return HttpResponse(
+                    "The server could not understand your request." + str(e),
+                    status=400,
+                    mimetype="text/plain"
+                )
 
 def mapJSON(request, mapid):
     if request.method == 'GET':

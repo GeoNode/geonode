@@ -4,4 +4,13 @@
 
 <script type="text/javascript">
   Ext.BLANK_IMAGE_URL = "{{ GEONODE_CLIENT_LOCATION }}externals/ext/resources/images/default/s.gif";
+  Ext.Ajax.on('beforerequest', function (conn, options) {
+     if (!(/^http:.*/.test(options.url) || /^https:.*/.test(options.url))) {
+       if (typeof(options.headers) == "undefined") {
+         options.headers = {'X-CSRFToken': Ext.util.Cookies.get('csrftoken')};
+       } else {
+         options.headers.extend({'X-CSRFToken': Ext.util.Cookies.get('csrftoken')});
+       }
+     }
+  }, this);
 </script>
