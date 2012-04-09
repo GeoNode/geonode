@@ -115,7 +115,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     layerSelectionLabel: "UT:View available data from:",
     layersContainerText: "UT:Data",
     layersPanelText: "UT:Layers",
-    loadingMapMessage: "UT:Loading Map...",
     mapSizeLabel: 'UT: Map Size', 
     metadataFormCancelText : "UT:Cancel",
     metadataFormSaveAsCopyText : "UT:Save as Copy",
