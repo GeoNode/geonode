@@ -5,6 +5,7 @@
 package org.geonode.security;
 
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,6 +76,9 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         // if we still need to authenticate and we find the cookie, consult GeoNode for
         // an authentication
         final boolean authenticationRequired;
+        
+        LOGGER.info("REQUEST REMOTE ADDRESS IS " + httpRequest.getRemoteAddr());
+        
         if (existingAuth == null || !existingAuth.isAuthenticated()
                 || (existingAuth instanceof AnonymousAuthenticationToken)) {
             LOGGER.info("authentication required");
@@ -97,8 +101,11 @@ public class GeoNodeCookieProcessingFilter implements Filter {
                 final Authentication authResult;
                 LOGGER.info("Try to authenticate against cookie");
                 authResult = client.authenticateCookie(gnCookie);
-                LOGGER.info("Authenticated, set security conext to result");
-                securityContext.setAuthentication(authResult);
+                LOGGER.info("Authenticated? " + authResult.isAuthenticated() + ", if so set security conext to result");
+                if (authResult.isAuthenticated()) {
+                	LOGGER.info("Set Authentication");
+                	securityContext.setAuthentication(authResult);
+                }
 
             } catch (AuthenticationException e) {
                 LOGGER.info("Authentication exception: " + e.getMessage());

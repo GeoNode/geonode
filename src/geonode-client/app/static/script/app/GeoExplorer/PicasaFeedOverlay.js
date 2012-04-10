@@ -1,5 +1,17 @@
 Ext.namespace("GeoExplorer")
 
+// TODO: Use JSON, override read instead of createFeatureFromItem, see http://openlayers.org/dev/examples/strategy-bbox.html
+
+OpenLayers.Format.Picasa = OpenLayers.Class(OpenLayers.Format.GeoRSS, {
+    createFeatureFromItem: function(item) {
+        var feature = OpenLayers.Format.GeoRSS.prototype
+            .createFeatureFromItem.apply(this, arguments);
+        feature.attributes.thumbnail = this.getElementsByTagNameNS(item, "http://search.yahoo.com/mrss/", "thumbnail")[0].getAttribute("url");
+        feature.attributes.content = OpenLayers.Util.getXmlNodeValue(this.getElementsByTagNameNS(item, "*","summary")[0]);
+        return feature;
+    }
+});
+
 
 /*
  *  Create a tool to display Picasa Feeds in GeoExplorer based on 1 or more keywords
@@ -12,26 +24,23 @@ GeoExplorer.PicasaFeedOverlay = function(target){
 		this.popupControl = null;
 
         this.popup = null;
-		
+
 		this.createOverlay = function() {
 			var keywords = target.about["keywords"] ? target.about["keywords"] : "of";
-            var picasaConfig = {name: "Picasa", source: "0", group: "Overlays", buffer: "0", type: "OpenLayers.Layer.WFS",  
-            		args: ["Picasa Pictures", "/picasa/", 
-                           { 'kind': 'photo', 'max-results':'50', 'q' : keywords},
-                           {  format: OpenLayers.Format.GeoRSS, projection: "EPSG:4326", displayInLayerSwitcher: false, 
-                              formatOptions: {
-                                              createFeatureFromItem: function(item) {
-                                                                     var feature = OpenLayers.Format.GeoRSS.prototype
-                                                                                   .createFeatureFromItem.apply(this, arguments);
-                                                                                    feature.attributes.thumbnail = this.getElementsByTagNameNS(item, "http://search.yahoo.com/mrss/", "thumbnail")[0].getAttribute("url");
-                                                                                    feature.attributes.content = OpenLayers.Util.getXmlNodeValue(this.getElementsByTagNameNS(item, "*","summary")[0]);
-                                                                                    return feature;
-                                                                                    }
-                                             },
+            var picasaConfig = {name: "Picasa", source: "0", group: "Overlays", buffer: "0", type: "OpenLayers.Layer.Vector",
+            		args: ["Picasa Pictures",
+                           {   projection:new OpenLayers.Projection("EPSG:4326"),
+                               displayInLayerSwitcher:false,
+                               strategies:[new OpenLayers.Strategy.Fixed()],
+                               protocol:new OpenLayers.Protocol.HTTP({
+                                   url:"/picasa/",
+                                   params:{'KIND': 'photo', 'MAX-RESULTS':'50', 'Q' : keywords, 'BBOX':target.mapPanel.map.getExtent().transform(target.mapPanel.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")).toBBOX()},
+                                   format:new OpenLayers.Format.Picasa()
+                               }),
                               styleMap: new OpenLayers.StyleMap({
                                                                  "default": new OpenLayers.Style({externalGraphic: "${thumbnail}", pointRadius: 14}),
                                                                  "select": new OpenLayers.Style({pointRadius: 20})
-                                                               })
+                              })
                       }]
              };
 
