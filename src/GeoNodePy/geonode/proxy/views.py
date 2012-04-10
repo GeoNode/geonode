@@ -53,9 +53,11 @@ def proxy(request):
 
     logger.debug("%s: %s : %s : %s", url.hostname, url.port, locator, settings.SESSION_COOKIE_NAME)
     headers = {}
+    if settings.SESSION_COOKIE_NAME in request.COOKIES:
+        headers["Cookie"] = request.META["HTTP_COOKIE"]
 
     conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.raw_post_data)
+    conn.request(request.method, locator, request.raw_post_data, headers)
     result = conn.getresponse()
     response = HttpResponse(
             result.read(),
@@ -109,7 +111,7 @@ def picasa(request):
     coords[1] = coords[1] if float(coords[1]) > -90 else -90
     coords[3] = coords[3] if float(coords[3])  < 90 else 90
     newbbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
-    url = url + "kind=" + kind + "&max-results=" + maxResults + "&bbox=" + newbbox + "&q=" + query
+    url = url + "kind=" + kind + "&max-results=" + maxResults + "&bbox=" + newbbox + "&q=" + query  #+ "&alt=json"
 
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
