@@ -344,6 +344,7 @@ HOODS_TEMPLATE_LAYER = 'boston_census_block_neighborhoods' # layer name in geose
 HOODS_TEMPLATE_ID = 188  #Map id to be used as template
 HOODS_TEMPLATE_ATTRIBUTE = 'GEOID10'  #Attribute to be used for block id
 
+DB_GAZETTEER_TABLE = "worldmap_gazetteer"
 
 try:
     from local_settings import *
