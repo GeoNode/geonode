@@ -6,7 +6,6 @@ django-extensions
 httplib2
 gsconfig
 django-registration
-https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
 django-profiles
 -e git+https://github.com/ericflo/django-avatar.git#egg=avatar
 django-staticfiles
