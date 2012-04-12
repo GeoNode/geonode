@@ -163,19 +163,18 @@ function setup_django_every_time() {
 
 function setup_apache_once() {
 	chown www-data -R $GEONODE_WWW
-	a2dissite default
 	a2enmod proxy_http
 	sitedir=`$GEONODE_LIB/bin/python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
         
 	sed -i '1d' $APACHE_SITES/geonode
 	sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2 python-path=$sitedir" $APACHE_SITES/geonode
 
-	a2ensite geonode
-        $APACHE_SERVICE restart
 }
 
 function setup_apache_every_time() {
-    true
+	a2dissite default
+	a2ensite geonode
+	$APACHE_SERVICE restart
 }
 
 function one_time_setup() {
