@@ -40,7 +40,7 @@ software installed and in your PATH:
     ``Python 2.6``
   - If not, download from http://python.org/download/
   - Python must be compiled w/ SSL support and sqlite support to
-    support the geonode development setup.  Installing the sqlite and
+
     openssl development headers before building Python will suffice.
 
 * Apache Maven 2.0.10 or Later:
@@ -289,12 +289,9 @@ Directory Structure
   of the sample data archive.
 * src/ - where the source code for the actual project lives.  This is divided
   up like so:
-    * capra-client/ - the JavaScript/CSS for CAPRA-specific extensions
-      (MyHazard) to the GeoNode core
     * geonode-client/ - the JavaScript/CSS for general apps (the Map editor,
       search, embedded viewer...)
-    * GeoNodePy/ - the Python/Django modules.  Inside, geonode/ is the "core"
-      and capra/ contains CAPRA-specific extensions.
+    * GeoNodePy/ - the Python/Django modules.  Inside, geonode/ is the "core".
     * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
       Actually, the build script for this project is set up to create a WAR
       that includes those extensions, not just a bundle with the extension.
