@@ -134,6 +134,12 @@ def fixup_style(cat, resource, style):
             logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
+    if resource is None:
+        # If there is no associated resource,
+        # this method can not delete anything.
+        # Let's return and make a note in the log.
+        logger.debug('cascading_delete was called with a non existant resource')
+        return
     resource_name = resource.name
     lyr = cat.get_layer(resource_name)
     if(lyr is not None): #Already deleted

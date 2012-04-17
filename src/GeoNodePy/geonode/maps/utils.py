@@ -25,7 +25,7 @@ from django.conf import settings
 # Geonode functionality
 from geonode.maps.models import Map, Layer, MapLayer
 from geonode.maps.models import Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
 
 # Geoserver functionality
 import geoserver
@@ -634,6 +634,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     If the import into the database fails then delete the store
     (and delete the PostGIS table for it).
     """
+    cat = Layer.objects.gs_catalog
     try:
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
     except FailedRequestError, e:
