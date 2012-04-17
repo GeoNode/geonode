@@ -22,13 +22,13 @@ Ext.onReady(function(){
 		queryItems: {},
 		totalQueryCount: 0,
 		store: new Ext.data.JsonStore({
-		autoDestroy: true,
-		storeId: 'items',
-		root: 'rows',
-		idProperty: 'iid',
-		fields: ['title'],
-		listeners: []
-	}),
+			autoDestroy: true,
+			storeId: 'items',
+			root: 'rows',
+			idProperty: 'iid',
+			fields: ['title'],
+			listeners: []
+		}),
 		constructor: function(){
 			itemTemplate = new Ext.DomHelper.createTemplate(this.itemTemplate);
 			itemTemplate.compile();
@@ -50,37 +50,11 @@ Ext.onReady(function(){
 				}
 			});
 		
-			Ext.select('.refineSection').each(function(e,i) {
-				if (e.hasClass('collapse')) {
-					this.collapseSection(e);
-				}
-				var h = e.first('h5');
-				if (e.hasClass('refine')) {
-					h.on('click',function() {
-						bbox.enable();
-					});
-				}
-				h.on('click',function(ev) {
-					this.toggleSection(Ext.get(this).parent());
-				});
-			},this);
-		
 			var SelectionModel = this.createSelModel();
-			
-			this.enableSearchLink('#bytype a','bytype',false);
-			this.enableSearchLink('#bykeyword a','kw',true);
-
-			Ext.get('searchForm').on('submit',function(ev) {
-				ev.preventDefault();
-				this.queryItems['q'] = this.dom.search.value;
-				this.queryItems['sort'] = this.dom.sortby.value;
-				this.reset();
-			});
-		
 			this.selModel = new SelectionModel();
 			
 			this.dataCartStore = new GeoNode.DataCartStore({
-				selModel : selModel
+				selModel : this.selModel
 			});
 			
 			var bbox = new GeoNode.BoundingBoxWidget({
@@ -100,6 +74,31 @@ Ext.onReady(function(){
 				begin_download_url: '{% url geonode.maps.views.batch_layer_download %}',
 				stop_download_url: '{{site}}geoserver/rest/process/batchDownload/kill/',
 				download_url: '{{site}}geoserver/rest/process/batchDownload/download/'
+			});
+			
+			Ext.select('.refineSection').each(function(e,i) {
+				if (e.hasClass('collapse')) {
+					this.collapseSection(e);
+				}
+				var h = e.first('h5');
+				if (e.hasClass('refine')) {
+					h.on('click',function() {
+						bbox.enable();
+					});
+				}
+				h.on('click',function(ev) {
+					this.toggleSection(Ext.get(this).parent());
+				});
+			},this);
+			
+			this.enableSearchLink('#bytype a','bytype',false);
+			this.enableSearchLink('#bykeyword a','kw',true);
+			
+			Ext.get('searchForm').on('submit',function(ev) {
+				ev.preventDefault();
+				this.queryItems['q'] = this.dom.search.value;
+				this.queryItems['sort'] = this.dom.sortby.value;
+				this.reset();
 			});
 		},
 		createSelModel: function(){
@@ -199,7 +198,7 @@ Ext.onReady(function(){
 			}
 			store.add(read.records);
 			this.updateDisplaying();
-			this.setResultItem(results);
+			this.setResultItem(results);	
 		},
 		updateCounts: function(counts){
 			counts.map ? Ext.fly('map-count').update("(" + counts.map + ")") : Ext.fly('map-count').update("(0)");
