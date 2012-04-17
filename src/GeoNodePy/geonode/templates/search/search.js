@@ -57,11 +57,11 @@ Ext.onReady(function(){
 				selModel : this.selModel
 			});
 			
-			/*var bbox = new GeoNode.BoundingBoxWidget({
+			this.bbox = new GeoNode.BoundingBoxWidget({
 				proxy: "/proxy/?url=",
 				viewerConfig: viewer_config,
 				renderTo: 'refine'
-			});*/
+			});
 			
 			var dataCart = new GeoNode.DataCart({
 				store: this.dataCartStore,
@@ -80,12 +80,7 @@ Ext.onReady(function(){
 				if (e.hasClass('collapse')) {
 					this.collapseSection(e);
 				}
-				var h = e.first('h5');
-				if (e.hasClass('refine')) {
-					h.on('click',function() {
-						bbox.enable();
-					});
-				}
+				var h = e.first('h5');		
 				h.on('click',function(ev) {
 					this.toggleSection(Ext.get(h).parent());
 				},this);
@@ -139,13 +134,13 @@ Ext.onReady(function(){
 			var isbbox = el.dom.id == 'refine';
 			if (expand) {
 				if (isbbox) {
-					bbox.enable();
+					this.bbox.enable();
 				}
 				this.expandSection(el);
 			} else {
 				this.collapseSection(el);
 				if (isbbox) {
-					bbox.disable();
+					this.bbox.disable();
 				}
 			}
 			el.toggleClass('collapse');
