@@ -30,12 +30,12 @@ Ext.onReady(function(){
 			listeners: []
 		}),
 		constructor: function(){
-			itemTemplate = new Ext.DomHelper.createTemplate(this.itemTemplate);
-			itemTemplate.compile();
-			contactTemplate = new Ext.DomHelper.createTemplate(this.contactTemplate);
-			contactTemplate.compile();
-			filterTemplate = new Ext.DomHelper.createTemplate(this.filterTemplate);
-			filterTemplate.compile();
+			this.itemTemplate = new Ext.DomHelper.createTemplate(this.itemTemplate);
+			this.itemTemplate.compile();
+			this.contactTemplate = new Ext.DomHelper.createTemplate(this.contactTemplate);
+			this.contactTemplate.compile();
+			this.filterTemplate = new Ext.DomHelper.createTemplate(this.filterTemplate);
+			this.filterTemplate.compile();
 
 			this.fetch();
 			
@@ -185,7 +185,7 @@ Ext.onReady(function(){
 			
 			this.updateCounts(results.counts);
 			
-			var read = this.store.reader.readRecords(results);
+			var read = this.store.reader.readRecords(results.results);
 			if (read.records.length === 0) {
 				if (this.startIndex === 0) {
 					Ext.DomHelper.append(list,'<li><h4 class="center">No Results</h4></li>');
@@ -211,7 +211,7 @@ Ext.onReady(function(){
 			var saveListeners = {
 				click: this.handleSave
 			};
-			Ext.each(results.rows,function(r,i){
+			Ext.each(results.results,function(r,i){
 				if (r.thumb === null) {
 				r.thumb = "{{ STATIC_URL }}theme/img/silk/map.png";
 				r.thumbclass = "missing";
@@ -219,10 +219,10 @@ Ext.onReady(function(){
 					r.thumbclass = "";
 				}
 				if (r._type == "contact") {
-					this.contactTemplate.append(list, r, true);
+					this.contactTemplate.append(this.list, r, true);
 				}
 				else {
-					var item = this.itemTemplate.append(list,r,true);
+					var item = this.itemTemplate.append(this.list,r,true);
 					var img = item.child('.thumb');
 					if (!img.hasClass('missing')) {
 						this.enableThumbHover(img);
@@ -262,7 +262,7 @@ Ext.onReady(function(){
 						button.on('click',handleAddToMap,r,{'choad':'bar'});*/
 					}
 				}
-			});
+			},this);
 		},
 		reset: function(){
 			this.store.removeAll(false);
@@ -302,12 +302,12 @@ Ext.onReady(function(){
 				delete this.queryItems[querykey];
 			}
 			this.reset();
-			});
+			},this);
 		},
 		enableSearchLink: function(selector,querykey,multiple){
 			Ext.select(selector).on('click',function(ev) {
 				ev.preventDefault();
-				var anchor = Ext.get(this),
+				var anchor = Ext.get(ev.target),
 				href =  anchor.getAttribute('href'),
 				filterType,
 				existing;
@@ -330,7 +330,7 @@ Ext.onReady(function(){
 				}
 				this.addActiveFilter(filterType, querykey, anchor.dom.innerHTML, href, multiple);
 				this.reset();
-			});
+			},this);
 		},
 	}); //end search
 	new Search.search();
