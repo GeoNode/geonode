@@ -69,6 +69,10 @@
                 <a href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a>
               </li>
             </ul>
+            <div class="pull-right">
+              {% if user.is_authenticated %}
+                <p class="navbar-text pull-left">{% trans "Logged in as:" %}</p>
+              {% endif %}
               <ul class="nav pull-right">
                 {% if user.is_authenticated %}
                   <li class="dropdown">
@@ -93,6 +97,7 @@
                     {% endif %}
                 {% endif %}
               </ul>
+            </div>
             </div>
           </div>
         </div>
