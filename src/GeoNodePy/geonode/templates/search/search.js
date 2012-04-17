@@ -6,7 +6,7 @@ Ext.onReady(function(){
 		loadnotify: Ext.get('loading'),
 		itemTemplate: "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 			"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
-			"<div class='itemTitle'><a href='{detail}'>{title}</a></div>" +
+			"<div class='itemTitle'><a href='{detail}'>{name}</a></div>" +
 			"<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
 			"<div class='itemAbstract>{abstract}</div>"+
 			"</li>",
@@ -24,9 +24,9 @@ Ext.onReady(function(){
 		store: new Ext.data.JsonStore({
 			autoDestroy: true,
 			storeId: 'items',
-			root: 'rows',
+			root: '',
 			idProperty: 'iid',
-			fields: ['title'],
+			fields: ['name'],
 			listeners: []
 		}),
 		constructor: function(){
@@ -46,9 +46,9 @@ Ext.onReady(function(){
 				var height = this.list.getHeight() + this.list.getTop();
 				var windowHeight = Ext.isIE ? document.body.clientHeight : window.innerHeight;
 				if (scroll + windowHeight > height) {
-					fetch();
+					this.fetch();
 				}
-			});
+			},this);
 		
 			var SelectionModel = this.createSelModel();
 			this.selModel = new SelectionModel();
@@ -57,11 +57,11 @@ Ext.onReady(function(){
 				selModel : this.selModel
 			});
 			
-			var bbox = new GeoNode.BoundingBoxWidget({
+			/*var bbox = new GeoNode.BoundingBoxWidget({
 				proxy: "/proxy/?url=",
 				viewerConfig: viewer_config,
 				renderTo: 'refine'
-			});
+			});*/
 			
 			var dataCart = new GeoNode.DataCart({
 				store: this.dataCartStore,
@@ -87,8 +87,8 @@ Ext.onReady(function(){
 					});
 				}
 				h.on('click',function(ev) {
-					this.toggleSection(Ext.get(this).parent());
-				});
+					this.toggleSection(Ext.get(h).parent());
+				},this);
 			},this);
 			
 			this.enableSearchLink('#bytype a','bytype',false);
@@ -99,7 +99,7 @@ Ext.onReady(function(){
 				this.queryItems['q'] = this.dom.search.value;
 				this.queryItems['sort'] = this.dom.sortby.value;
 				this.reset();
-			});
+			},this);
 		},
 		createSelModel: function(){
 			return new Ext.extend(Ext.util.Observable, {
@@ -134,7 +134,7 @@ Ext.onReady(function(){
 			button.setIconClass(clazz);
 			this.selModel.select(this.iid,selected);
 		},
-		toggleSelection: function(el){
+		toggleSection: function(el){
 			var expand = el.hasClass('collapse');
 			var isbbox = el.dom.id == 'refine';
 			if (expand) {
@@ -168,12 +168,12 @@ Ext.onReady(function(){
 				displaying.hide();
 			} 
 			else {
-				if (cnt == totalQueryCount) {
+				if (cnt == this.totalQueryCount) {
 					note.hide();
 				} else {
 					note.show();
 				}
-				displaying.dom.innerHTML = "Displaying " + cnt + " of " + totalQueryCount;
+				displaying.dom.innerHTML = "Displaying " + cnt + " of " + this.totalQueryCount;
 				displaying.show();
 			}
 		},
@@ -187,16 +187,16 @@ Ext.onReady(function(){
 			
 			var read = this.store.reader.readRecords(results);
 			if (read.records.length === 0) {
-				if (startIndex === 0) {
+				if (this.startIndex === 0) {
 					Ext.DomHelper.append(list,'<li><h4 class="center">No Results</h4></li>');
-			}
-			this.startIndex = -1;
-			this.updateDisplaying();
-			return;
+				}
+				this.startIndex = -1;
+				this.updateDisplaying();
+				return;
 			} else {
-				this.startIndex += limit;
+				this.startIndex += this.limit;
 			}
-			store.add(read.records);
+			this.store.add(read.records);
 			this.updateDisplaying();
 			this.setResultItem(results);	
 		},
