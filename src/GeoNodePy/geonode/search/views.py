@@ -162,6 +162,7 @@ def search_api(request):
         },
         "facets": facets,
         "results": results,
+        "counts": dict([(t,c) for t,c in facets.get("fields", {}).get("type", [])])
     }
 
     # Return Results
