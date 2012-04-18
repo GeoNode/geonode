@@ -3,42 +3,84 @@
 
 {% block title %} {% trans "Search Maps" %} - {{ block.super }} {% endblock %}
 
-{% block head %}
-{% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %}
-{{ block.super }}
-<script type="text/javascript">
-Ext.onReady(function(){
-   {% autoescape off %}
- 
-    var searchTable = new GeoNode.MapSearchTable({
-        renderTo: 'search_results',
-        trackSelection: true,
-        permalinkURL: '{% url maps_search %}',
-        searchURL: '{% url maps_search_api %}',
-        searchParams: {{init_search}}
-    });
-
-
-    {% endautoescape %}
-});
-</script>
-{% endblock %}
-
 {% block main %} 
-<div class="twocol">
-  <div class="block">
-    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
+  <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
+  <form class="geonode-search form-search" action="{% url maps_search %}" method="GET" data-results-table="#searchResults" data-search-api="{% url maps_search_api %}">
+    <input type="text" id="search_query" name="q" class="input-large search-query" value="{{ request.get.q }}">
+    <button type="submit" class="btn">Search</button>
+  </form>
+  <table id="searchResults" class="table table-striped table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th></th>
+        <th>{% trans "Title" %}</th>
+        <th>{% trans "Contact" %}</th>
+        <th>{% trans "Last Modified" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="4">
+          <p></p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-    <div id="search_results"></div>  
-
-    <p class="explain">{%trans "Click the <b>+</b> on any row to show map abstract." %}
-      {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
-    </p>
-  </div>
-</div>
 {% endblock %}
 
 {% block sidebar %}
 
 {% endblock %}
+
+{% block extra_script %}
+  <script>
+    $(document).ready(function() {
+        // Define any strings used for i18n
+        var notfound = '{% trans "Your search did not match any items." %}';
+
+        $("form.geonode-search").submit(function(e) {
+            e.preventDefault();
+            var url = $(this).data("search-api");
+            var table = $(this).data("results-table");
+            var query = $(this).find("input[name=q]").val();
+
+            // Empty results
+            $(table).find("tbody").empty();
+
+            // Get results from API
+            $.getJSON(url, { q: query }, function(json) {
+                var results = json["rows"];
+                if (json["total"] < 1) {
+                    $(table).find("tbody:last").append("<td colspan='4'>" + notfound + "</td>");
+                };
+                $.each(results, function(key, value){
+                    var title = value["title"];
+                    var contact = value["owner"];
+                    var date = value["last_modified"];
+                    var icon = "<i class='icon icon-plus-sign'></i> ";
+                    $(table).find("tbody:last").append("<tr><td>"+icon+"</td><td>"+title+"</td><td>"+contact+"</td><td>"+date+"</td></tr>");
+                });
+                $("[rel=popover]").popover();
+             });
+        });
+
+        // Grab url params for initial search
+        var urlParams = {};
+        (function () {
+            var e,
+                a = /\+/g,  // Regex for replacing addition symbol with a space
+                r = /([^&=]+)=?([^&]*)/g,
+                d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
+                q = window.location.search.substring(1);
+
+            while (e = r.exec(q))
+               urlParams[d(e[1])] = d(e[2]);
+        })();
+        if (urlParams["q"]) {
+          $("input[name=q]").val(urlParams["q"]);
+        };
+        $("form.geonode-search").submit();
+    });
+  </script>
+{% endblock extra_script %}
