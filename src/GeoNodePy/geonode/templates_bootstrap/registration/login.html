@@ -14,8 +14,8 @@
       {{ form|as_bootstrap }}
     </div>
     <div class="form-actions">
+      <a href="{% url django.contrib.auth.views.password_reset %}" class="btn">{% trans "Forgot password?" %}</a>
       <input type="submit" class="btn btn-primary" value="Log in"/>
     </div>
-    <a href="{% url django.contrib.auth.views.password_reset %}">{% trans "Forgot password?" %}</a>
   </form>
 {% endblock %}
