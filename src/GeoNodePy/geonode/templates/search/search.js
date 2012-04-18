@@ -217,18 +217,14 @@ Ext.onReady(function(){
 			var saveListeners = {
 				click: this.handleSave
 			};
-			Ext.each(results.results,function(r,i){
-				if (r.thumb === null) {
-				r.thumb = "{{ STATIC_URL }}theme/img/silk/map.png";
-				r.thumbclass = "missing";
-				} else {
-					r.thumbclass = "";
-				}
+			Ext.each(results.results,function(r,i){		
+				//this.enableThumbs(r);
 				if (r._type == "contact") {
 					this.contactTemplate.append(this.list, r, true);
-				}
+				}				
 				else {
 					var item;
+					
 					if (r._type == 'layer'){
 						item = this.itemTemplates['layer'].append(this.list,r,true);
 						var button = new Ext.Button({
@@ -239,11 +235,13 @@ Ext.onReady(function(){
 						button.on('click',this.handleSelect,r);
 					}
 					else if (r._type == 'map'){
-						item = item = this.itemTemplates['map'].append(this.list,r,true);
+						item = this.itemTemplates['map'].append(this.list,r,true);
 					}
-					var img = item.child('.thumb');
-					if (!img.hasClass('missing')) {
-						this.enableThumbHover(img);
+					if(r.thumb != null){
+						var img = item.child('.thumb');
+						if(!img.hasClass('missing')) {
+							this.enableThumbHover(img);
+						}
 					}
 					if (r.download_links) {
 						var items = [];
@@ -276,6 +274,26 @@ Ext.onReady(function(){
 					}*/
 				}
 			},this);
+		},
+		enableThumbs: function(r){
+			if (r.thumb === null) {
+				r.thumb = "{{ STATIC_URL }}theme/img/silk/map.png";
+				r.thumbclass = "missing";
+			} else {
+				r.thumbclass = "";
+			}
+		},
+		enableThumbHover: function(el){
+			el.on('mouseover',function(ev) {
+				var hover = Ext.get('thumbHover');
+				if (hover.dom.src != el.dom.src || !hover.isVisible()) {
+					hover.dom.src = el.dom.src;
+					hover.setTop(el.getBottom()).
+					setLeft(el.getLeft()).fadeIn();
+				}
+			}).on('mouseout',function() {
+				Ext.get('thumbHover').slideOut();
+			});
 		},
 		reset: function(){
 			this.store.removeAll(false);
