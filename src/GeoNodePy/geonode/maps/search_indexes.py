@@ -8,7 +8,7 @@ from haystack import indexes
 from geonode.maps.models import Layer, Map, Thumbnail, Contact
 
 
-class LayerIndex(indexes.SearchIndex, indexes.Indexable):
+class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     #id = indexes.IntegerField()
     type = indexes.CharField(faceted=True)
@@ -105,7 +105,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
         return json.dumps(data)
 
 
-class MapIndex(indexes.SearchIndex, indexes.Indexable):
+class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr="title")
     date = indexes.DateTimeField(model_attr="last_modified")
