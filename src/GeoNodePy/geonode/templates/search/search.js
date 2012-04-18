@@ -29,6 +29,7 @@ Ext.onReady(function(){
 		dataCartStore: null,
 		queryItems: {},
 		totalQueryCount: 0,
+		activateThumbs: false,
 		store: new Ext.data.JsonStore({
 			autoDestroy: true,
 			storeId: 'items',
@@ -218,7 +219,9 @@ Ext.onReady(function(){
 				click: this.handleSave
 			};
 			Ext.each(results.results,function(r,i){		
-				//this.enableThumbs(r);
+				if(this.activateThumbs){
+					this.enableThumbs(r);
+				}
 				if (r._type == "contact") {
 					this.contactTemplate.append(this.list, r, true);
 				}				
