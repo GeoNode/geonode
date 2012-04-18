@@ -4,12 +4,20 @@ Ext.onReady(function(){
 		startIndex: 0,
 		limit: 5,
 		loadnotify: Ext.get('loading'),
-		itemTemplate: "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
-			"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
-			"<div class='itemTitle'><a href='{detail_url}'>{name}</a></div>" +
-			"<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
-			"<div class='itemAbstract>{abstract}</div>"+
-			"</li>",
+		itemTemplates: {
+			'layer': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
+				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
+				"<div class='itemTitle'><a href='{detail_url}'>{name}</a></div>" +
+				"<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
+				"<div class='itemAbstract>{abstract}</div>"+
+				"</li>",
+			'map': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
+				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
+				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
+				"<div class='itemInfo'>{_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
+				"<div class='itemAbstract>{abstract}</div>"+
+				"</li>"
+		},
 		contactTemplate: "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 			"<div class='itemTitle'><a href='{detail}'>{name}</a></div>" +
 			"<div class='itemInfo'>User</div>" +
@@ -30,8 +38,10 @@ Ext.onReady(function(){
 			listeners: []
 		}),
 		constructor: function(){
-			this.itemTemplate = new Ext.DomHelper.createTemplate(this.itemTemplate);
-			this.itemTemplate.compile();
+			for (var i in this.itemTemplates){
+				this.itemTemplates[i] = new Ext.DomHelper.createTemplate(this.itemTemplates[i]);
+				this.itemTemplates[i].compile();
+			}
 			this.contactTemplate = new Ext.DomHelper.createTemplate(this.contactTemplate);
 			this.contactTemplate.compile();
 			this.filterTemplate = new Ext.DomHelper.createTemplate(this.filterTemplate);
@@ -217,7 +227,19 @@ Ext.onReady(function(){
 					this.contactTemplate.append(this.list, r, true);
 				}
 				else {
-					var item = this.itemTemplate.append(this.list,r,true);
+					var item;
+					if (r._type == 'layer'){
+						item = this.itemTemplates['layer'].append(this.list,r,true);
+						var button = new Ext.Button({
+							renderTo: 'toggle' + r.iid,
+							iconCls: 'cartAddButton',
+							tooltip : "Add to selected data"
+						});
+						button.on('click',this.handleSelect,r);
+					}
+					else if (r._type == 'map'){
+						item = item = this.itemTemplates['map'].append(this.list,r,true);
+					}
 					var img = item.child('.thumb');
 					if (!img.hasClass('missing')) {
 						this.enableThumbHover(img);
@@ -242,20 +264,15 @@ Ext.onReady(function(){
 							tooltip : "Save Layer As ..."
 						});
 					}
-					if (r._type == 'layer') {
-						var button = new Ext.Button({
-							renderTo: 'toggle' + r.iid,
-							iconCls: 'cartAddButton',
-							tooltip : "Add to selected data"
-						});
-						button.on('click',this.handleSelect,r);
-						/*button = new Ext.Button({
+					/*if (r._type == 'layer') {
+						
+						button = new Ext.Button({
 							renderTo: 'map' + r.iid,
 							iconCls: 'addToMapButton',
 							tooltip : "Add data to new map"
 						});
-						button.on('click',handleAddToMap,r,{'choad':'bar'});*/
-					}
+						button.on('click',handleAddToMap,r,{'choad':'bar'});
+					}*/
 				}
 			},this);
 		},

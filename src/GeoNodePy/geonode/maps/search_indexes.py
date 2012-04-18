@@ -8,9 +8,9 @@ from haystack import indexes
 from geonode.maps.models import Layer, Map, Thumbnail, Contact
 
 
-class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
+class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    id = indexes.IntegerField(model_attr="id")
+    #id = indexes.IntegerField()
     type = indexes.CharField(faceted=True)
     subtype = indexes.CharField(faceted=True)
     name = indexes.CharField(model_attr="title")
@@ -105,11 +105,11 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         return json.dumps(data)
 
 
-class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
+class MapIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr="title")
     date = indexes.DateTimeField(model_attr="last_modified")
-
+    #id = indexes.IntegerField()
     type = indexes.CharField(faceted=True)
     json = indexes.CharField(indexed=False)
 
@@ -125,13 +125,13 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             #"_display_type": obj.display_type,
 
             "id": obj.id,
-            #"last_modified": obj.last_modified.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "last_modified": obj.last_modified.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "title": obj.title,
             "abstract": obj.abstract,
             "owner": obj.owner.username,
             "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [], 
             "thumb": Thumbnail.objects.get_thumbnail(obj),
-            "detail": obj.get_absolute_url(),
+            "detail_url": obj.get_absolute_url(),
         }
 
         if obj.owner:
