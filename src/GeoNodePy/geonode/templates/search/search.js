@@ -22,7 +22,7 @@ Ext.onReady(function(){
 			"<div class='itemTitle'><a href='{detail}'>{name}</a></div>" +
 			"<div class='itemInfo'>User</div>" +
 			"</li>",
-		filterTemplate: "<div class='{typeclass}'><img height='8' src='/static/theme/img/silk/delete.png' class='removeFilter' href='#removeFilter'> </a><strong>{type}</strong> {value}</div>",
+			filterTemplate: "<div class='{typeclass}'><img height='14' src='{{ STATIC_URL }}theme/img/silk/delete.png' class='removeFilter' href='#removeFilter'> </a><strong>{type}</strong> {value}</div>",
 		fetching: false,
 		list: Ext.get(Ext.query('#search_results ul')[0]),
 		selModel: null,
@@ -99,10 +99,11 @@ Ext.onReady(function(){
 			this.enableSearchLink('#bytype a','bytype',false);
 			this.enableSearchLink('#bykeyword a','kw',true);
 			
-			Ext.get('searchForm').on('submit',function(ev) {
+			var searchForm = Ext.get('searchForm');
+			searchForm.on('submit',function(ev) {
 				ev.preventDefault();
-				this.queryItems['q'] = this.dom.search.value;
-				this.queryItems['sort'] = this.dom.sortby.value;
+				this.queryItems['q'] = searchForm.dom.search.value;
+				this.queryItems['sort'] = searchForm.dom.sortby.value;
 				this.reset();
 			},this);
 		},
