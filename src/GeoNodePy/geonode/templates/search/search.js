@@ -8,13 +8,13 @@ Ext.onReady(function(){
 			'layer': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
 				"<div class='itemTitle'><a href='{detail_url}'>{name}</a></div>" +
-				"<div class='itemInfo'>{_display_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
+				"<div class='itemInfo'><strong>{_display_type}</strong>, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
 				"<div class='itemAbstract>{abstract}</div>"+
 				"</li>",
 			'map': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
 				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
-				"<div class='itemInfo'>{_type}, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
+				"<div class='itemInfo'><strong>{_type:capitalize}</strong>, Created by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
 				"<div class='itemAbstract>{abstract}</div>"+
 				"</li>"
 		},
