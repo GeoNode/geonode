@@ -34,21 +34,8 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         return prepped
       
     def prepare_json(self, obj):
-        # Still need to figure out how to get the follow data:
-        """
-        {
-            attribution: {
-                href: "",
-                title: ""
-            },
-            bbox: {
-                minx: "-82.744",
-                miny: "10.706",
-                maxx: "-87.691",
-                maxy: "15.031"
-            },
-        }
-        """
+        bbox = obj.resource.latlon_bbox
+        poc_profile = Contact.objects.get(user=obj.poc.user)
 
         data = {
             "_type": self.prepare_type(obj),
@@ -94,16 +81,16 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "detail_url": obj.get_absolute_url(),  # @@@ Use Sites Framework?
             "download_links": self.prepare_metadata_links(obj.download_links()),
             "metadata_links": obj.metadata_links,
-            #"bbox": {
-            #    "minx": bbox[0],
-            #    "miny": bbox[2],
-            #    "maxx": bbox[1],
-            #    "maxy": bbox[3],
-            #},
-            #"attribution": {
-            #    "title": poc_profile.name,
-            #    "href": poc_profile.get_absolute_url(),
-            #},
+            "bbox": {
+                "minx": bbox[0],
+                "miny": bbox[2],
+                "maxx": bbox[1],
+                "maxy": bbox[3],
+            },
+            "attribution": {
+                "title": poc_profile.name,
+                "href": poc_profile.get_absolute_url(),
+            },
         }
 
         if obj.owner:
