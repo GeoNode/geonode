@@ -82,5 +82,23 @@
         };
         $("form.geonode-search").submit();
     });
+  <script type="text/html" id="searchResultsTemplate">
+  {% verbatim %}
+    {{#rows}}
+    <tr>
+      <td><a href="{{detail}}">{{title}}</a></td>
+      <td><a href="{{owner_detail}}">{{owner}}</a></td>
+      <td><abbr class="timeago" title="{{last_modified}}">{{last_modified}}</abbr></td>
+    </tr>
+    {{/rows}}
+  {% endverbatim %}
   </script>
+  <script type="text/html" id="searchNoResultsTemplate">
+    <tr>
+      <td colspan="3">
+        {% trans "Your search did not match any items." %}
+      </td>
+    </tr>
+  </script>
+  {% include "_search_js.html" %}
 {% endblock extra_script %}
