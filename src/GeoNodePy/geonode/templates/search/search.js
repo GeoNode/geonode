@@ -97,7 +97,7 @@ Ext.onReady(function(){
 				},this);
 			},this);
 			
-			this.enableSearchLink('#bytype a','bytype',false);
+			this.enableSearchLink('#bytype a','type',false);
 			this.enableSearchLink('#bykeyword a','kw',true);
 			
 			var searchForm = Ext.get('searchForm');
