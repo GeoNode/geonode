@@ -30,7 +30,7 @@ target
 /webapps/
 /src/GeoNodePy/capra/development.db
 /man
-
+/share/
 
 # OSX specific
 .Python
