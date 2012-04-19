@@ -154,7 +154,6 @@ def search_api(request):
 
 	facets = sqs.facet_counts()
 
-
 	# Prepare Search Results
 	data = {
 		"success": True,
@@ -168,7 +167,7 @@ def search_api(request):
 		},
 		"facets": facets,
 		"results": results,
-		"counts": dict([(t,c) for t,c in facets.get("fields", {}).get("type", [])])
+		"counts": dict(facets.get("fields")['type']+facets.get('fields')['subtype'])
 	}
 
 	# Return Results

@@ -63,7 +63,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "uuid": obj.uuid,
             "_type": self.prepare_type(obj),
             "_display_type": obj.display_type,
-            "storeType": obj.storeType,
+            "subtype": self.prepare_subtype(obj),
             "name": obj.title,
             "description": obj.abstract,
             "owner": obj.metadata_author.name,
