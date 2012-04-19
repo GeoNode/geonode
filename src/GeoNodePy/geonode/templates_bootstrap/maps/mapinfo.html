@@ -12,7 +12,6 @@
   <script type="text/javascript">
   var app;
   Ext.onReady(function() {
-  {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
   {% autoescape off %}
       var config = Ext.apply({
           useToolbar: false,
@@ -26,25 +25,6 @@
           }
       }, {{ config }});
       app = new GeoExplorer.Viewer(config);
-  {% if can_change_permissions %}
-      new GeoNode.PermissionsEditor({
-          levels: {
-              'admin': 'map_admin',
-              'readwrite': 'map_readwrite',
-              'readonly': 'map_readonly',
-              '_none': '_none'
-          },
-          renderTo: "permissions_form",
-          userLookup: "{% url geonode.views.ajax_lookup %}",
-          permissions: {{ permissions_json }},
-          listeners: {
-              updated: function(perms) {
-                  var submitTo = "{% url geonode.maps.views.ajax_map_permissions map.id %}";
-                  Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
-              }
-          }
-      });
-  {% endif %}
   {% endautoescape %}
   });
   </script>
@@ -57,6 +37,10 @@
   <div id="embedded_map">
   </div>
   <p><strong>{% trans "Contact:" %}</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p>
+
+{% url ajax_map_permissions map.id as form_action %}
+{% include "_permissions_form.html" %}
+
 {% endblock %}
 
 {% block sidebar %}
@@ -89,10 +73,15 @@
     {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
     <li class="nav-header">{% trans "Permissions" %}</li>
-    <li class="form-inline"> <!-- TODO: Replace Extjs -->
-      <p>{% trans "Select what kind of privileges to allow." %}</p>
-      <div id="permissions_form"></div>
-    </li>
+    <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit permissions" %}</a></li>
     {% endif %}
   </ul>
+{% endblock %}
+
+{% block extra_script %}
+    <script>
+    $(function() {
+      $("#permission_form").submit(perms_submit);
+    });
+  </script>
 {% endblock %}

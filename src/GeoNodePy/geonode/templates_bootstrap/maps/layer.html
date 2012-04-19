@@ -87,27 +87,6 @@
                   showStyle(Ext.get(elem).prev("input").getAttribute("value"));
               });
   {% endif %}
-
-  {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
-  {% if can_change_permissions %}
-              new GeoNode.PermissionsEditor({
-                  renderTo: "permissions_form",
-                  userLookup: "{% url geonode.views.ajax_lookup %}",
-                  permissions: {{ permissions_json }},
-                  levels: {
-                      'admin': 'layer_admin',
-                      'readwrite': 'layer_readwrite',
-                      'readonly': 'layer_readonly',
-                      '_none': '_none'
-                  },
-                  listeners: {
-                      updated: function(perms) {
-                          var submitTo = "{% url geonode.maps.views.ajax_layer_permissions layer.typename %}";
-                          Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
-                      }
-                  }
-              });
-  {% endif %}
           });
 
           function showStyle(styleName) {
@@ -192,6 +171,10 @@
 
   {% if layer.geographic_bounding_box %}<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>{% endif %}
   {% if layer.resource.projection %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.resource.projection|default:_("No SRS specified.") }} </p>{% endif %}
+
+{% url ajax_layer_permissions layer.typename as form_action %}
+{% include "_permissions_form.html" %}
+
 {% endblock %}
 
 {% block sidebar %}
@@ -295,10 +278,16 @@
       {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
       {% if can_change_permissions %}
       <li class="nav-header">{% trans "Permissions" %}</li>
-      <li class="form-inline">
-        <div id="permissions_form"></div>
-      </li>
+      <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit permissions" %}</a></li>
       {% endif %}
     {% endif %}
   </ul>
+{% endblock %}
+
+{% block extra_script %}
+    <script>
+    $(function() {
+      $("#permission_form").submit(perms_submit);
+    });
+  </script>
 {% endblock %}

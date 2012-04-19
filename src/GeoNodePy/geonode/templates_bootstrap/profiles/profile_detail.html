@@ -14,7 +14,7 @@
     </thead>
     <tbody>
       {% for layer in profile.user.layer_set.all %}
-        <tr>
+        <tr data-type="layer">
           <td>{% trans "Layer" %}</td>
           <td><a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></td>
           <td>{{ layer.date|date:"Y-m-d" }}</td>
@@ -23,11 +23,11 @@
       {% endfor %}
 
       {% for map in profile.user.map_set.all %}
-        <tr>
+        <tr data-type="map">
           <td>{% trans "Map" %}</td>
           <td><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></td>
           <td>{{ map.last_modified|date:"Y-m-d" }}</td>
-          <td><input type="checkbox" class="pull-right" data-id="{{ map.id }}" data-type="map"></td>
+          <td><input type="checkbox" class="asset-selector pull-right" data-id="{{ map.id }}" data-type="map"></td>
         </tr>
       {% endfor %}
     </tbody>

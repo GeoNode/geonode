@@ -148,6 +148,14 @@
     <script src="{{ STATIC_URL }}geonode/js/datatables.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/hogan.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/jquery.timeago.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/json2.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        $(".user-select").chosen();
+      });
+    </script>
+
     {% block extra_script %}{% endblock extra_script %}
 
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
