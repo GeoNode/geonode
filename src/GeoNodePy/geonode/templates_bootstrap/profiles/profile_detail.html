@@ -33,61 +33,8 @@
     </tbody>
   </table>
   <div class="pull-right">
-    <a href="#modal-perms" class="btn" data-toggle="modal"><i class="icon-lock"></i> {% trans "Change permissions on selected" %}</a>
-    <a href="#modal-delete" class="btn" data-toggle="modal"><i class="icon-remove"></i> {% trans "Remove selected" %}</a>
   </div>
 
-  <div class="modal fade" id="modal-perms" style="display:none">
-    <form id="permission-form" accept-charset="UTF-8" action="/tagging" data-remote="true" method="post" class="modal-form">
-      <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h3>{% trans "Permissions" %}</h3>
-      </div>
-      <div class="modal-body">
-        <div class="control-group">
-          <label class="control-label"><strong>{% trans "Who can view and download this data?" %}</strong></label>
-          <div class="controls">
-            <label class="radio">
-              <input type="radio" name="perms-view" id="perms-view" value="option1">
-              {% trans "Anyone" %}
-            </label>
-            <label class="radio">
-              <input type="radio" name="perms-view" id="perms-view2" value="option2">
-              {% trans "Any registered user" %}
-            </label>
-            <label class="radio">
-              <input type="radio" name="perms-view" id="perms-view3" value="option3">
-              {% trans "Only users who can edit" %}
-            </label>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><strong>{% trans "Who can edit this data?" %}</strong></label>
-          <div class="controls">
-            <label class="radio">
-              <input type="radio" name="perms-edit" id="perms-edit1" value="option1">
-              {% trans "Any registered user" %}
-            </label>
-            <label class="radio">
-              <input type="radio" name="perms-edit" id="perms-edit2" value="option2">
-              {% trans "Only the following users or groups:" %}
-            </label>
-            <select class="user-select span4" multiple data-placeholder="Choose a user or group...">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
-        <a id="permission-submit" href="#" class="btn btn-primary">{% trans "Apply changes" %}</a>
-      </div>
-    </form>
-  </div>
   <div class="modal fade" id="modal-delete" style="display:none">
     <form id="delete-form" accept-charset="UTF-8" action="" data-remote="true" method="post" class="modal-form">
       <div class="modal-header">
@@ -99,10 +46,14 @@
       </div>
       <div class="modal-footer">
         <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
-        <a id="permission-submit" href="#" class="btn btn-danger">{% trans "Delete" %}</a>
+        <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
       </div>
     </form>
   </div>
+  {% with "/data/api/batch_permissions/" as form_action %}
+      {% include "_permissions_form.html" %}
+  {% endwith %}
+  
 {% endblock %}
 
 {% block sidebar %}
@@ -125,10 +76,7 @@
 
 {% block extra_script %}
   <script>
-    $(".user-select").chosen();
-    $("#permission-submit").on("click", function(e){
-      e.preventDefault();
-      $("#permission-form").submit();
+      $("#permission_form").submit(batch_perms_submit);
     });
   </script>
 {% endblock %}
