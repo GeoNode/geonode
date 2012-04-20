@@ -74,13 +74,13 @@ Ext.onReady(function(){
 				renderTo: 'refine'
 			});
 			
-			var dataCart = new GeoNode.DataCart({
+			this.dataCart = new GeoNode.DataCart({
 				store: this.dataCartStore,
 				renderTo: 'data_cart'
 			});
 			
-			var dataOps = new GeoNode.DataCartOps({
-				cart: dataCart,
+			this.dataOps = new GeoNode.DataCartOps({
+				cart: this.dataCart,
 				renderTo: 'data_ops',
 				begin_download_url: '{% url geonode.maps.views.batch_layer_download %}',
 				stop_download_url: '{{site}}geoserver/rest/process/batchDownload/kill/',
@@ -267,17 +267,21 @@ Ext.onReady(function(){
 							tooltip : "Save Layer As ..."
 						});
 					}
-					/*if (r._type == 'layer') {
+					if (r._type == 'layer') {
 						
 						button = new Ext.Button({
 							renderTo: 'map' + r.iid,
 							iconCls: 'addToMapButton',
-							tooltip : "Add data to new map"
+							tooltip : "Add data to new map",
+							record_iid: r.iid
 						});
-						button.on('click',handleAddToMap,r,{'choad':'bar'});
-					}*/
+						button.on('click',this.handleAddToMap,this);
+					}
 				}
 			},this);
+		},
+		handleAddToMap:function(button,el,opt){
+			this.dataOps.createNewMap(button.record_iid);
 		},
 		enableThumbs: function(r){
 			if (r.thumb === null) {
