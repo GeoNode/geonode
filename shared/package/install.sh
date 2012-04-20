@@ -155,6 +155,7 @@ function setup_django_every_time() {
 
     export DJANGO_SETTINGS_MODULE=geonode.settings
     django-admin.py syncdb --noinput
+    django-admin.py migrate --noinput
     django-admin.py collectstatic -v0 --noinput
     django-admin.py loaddata $GEONODE_SHARE/admin.json
 
