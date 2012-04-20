@@ -7,7 +7,7 @@ Ext.onReady(function(){
 		itemTemplates: {
 			'layer': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
-				"<div class='itemTitle'><a href='{detail_url}'>{name}</a></div>" +
+				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
 				"<div class='itemInfo'><strong>{_display_type}</strong>, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
 				"<div class='itemAbstract>{abstract}</div>"+
 				"</li>",
@@ -35,7 +35,7 @@ Ext.onReady(function(){
 			storeId: 'items',
 			root: '',
 			idProperty: 'iid',
-			fields: ['name'],
+			fields: ['title'],
 			listeners: []
 		}),
 		constructor: function(){
@@ -74,13 +74,13 @@ Ext.onReady(function(){
 				renderTo: 'refine'
 			});
 			
-			var dataCart = new GeoNode.DataCart({
+			this.dataCart = new GeoNode.DataCart({
 				store: this.dataCartStore,
 				renderTo: 'data_cart'
 			});
 			
-			var dataOps = new GeoNode.DataCartOps({
-				cart: dataCart,
+			this.dataOps = new GeoNode.DataCartOps({
+				cart: this.dataCart,
 				renderTo: 'data_ops',
 				begin_download_url: '{% url geonode.maps.views.batch_layer_download %}',
 				stop_download_url: '{{site}}geoserver/rest/process/batchDownload/kill/',
@@ -119,27 +119,27 @@ Ext.onReady(function(){
 				},
 				getButton : function(el) {
 					// maybe a better way to do this?
-					return Ext.getCmp(el.parent('.x-btn').id);
+						return Ext.getCmp(el.id);
 				},
 				clearSelections : function() {
 					Ext.select('.cartRemoveButton').each(function(e,i) {
-					this.getButton(e).setIconClass('cartAddButton');
+						this.getButton(e.parent('.x-btn')).setIconClass('cartAddButton');
 					}, this);
 				},
 				selectRow : function(index, keepExisting) {
-					this.getButton(Ext.get('toggle' + index)).setIconClass('cartRemoveButton');
+					this.getButton(Ext.get('toggle' + index).child('.x-btn')).setIconClass('cartRemoveButton');
 				},
 				select: function(index,selected) {
-					var record = store.getAt(index);
+					var record = this.grid.store.getAt(index);	
 					this.fireEvent(selected ? 'rowselect' : 'rowdeselect',this,index,record);
 				}
 			});
 		},
-		handleSelect: function(button){
+		handleSelect: function(button,el){
 			var selected = button.iconCls == 'cartAddButton';
 			var clazz = selected ? 'cartRemoveButton' : 'cartAddButton';
 			button.setIconClass(clazz);
-			this.selModel.select(this.iid,selected);
+			this.selModel.select(button.record_iid,selected);
 		},
 		toggleSection: function(el){
 			var expand = el.hasClass('collapse');
@@ -233,9 +233,10 @@ Ext.onReady(function(){
 						var button = new Ext.Button({
 							renderTo: 'toggle' + r.iid,
 							iconCls: 'cartAddButton',
-							tooltip : "Add to selected data"
+							tooltip : "Add to selected data",
+							record_iid: r.iid
 						});
-						button.on('click',this.handleSelect,r);
+						button.on('click',this.handleSelect,this);
 					}
 					else if (r._type == 'map'){
 						item = this.itemTemplates['map'].append(this.list,r,true);
@@ -266,17 +267,21 @@ Ext.onReady(function(){
 							tooltip : "Save Layer As ..."
 						});
 					}
-					/*if (r._type == 'layer') {
+					if (r._type == 'layer') {
 						
 						button = new Ext.Button({
 							renderTo: 'map' + r.iid,
 							iconCls: 'addToMapButton',
-							tooltip : "Add data to new map"
+							tooltip : "Add data to new map",
+							record_iid: r.iid
 						});
-						button.on('click',handleAddToMap,r,{'choad':'bar'});
-					}*/
+						button.on('click',this.handleAddToMap,this);
+					}
 				}
 			},this);
+		},
+		handleAddToMap:function(button,el,opt){
+			this.dataOps.createNewMap(button.record_iid);
 		},
 		enableThumbs: function(r){
 			if (r.thumb === null) {

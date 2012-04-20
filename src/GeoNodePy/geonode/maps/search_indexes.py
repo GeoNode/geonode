@@ -55,7 +55,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             #"thumb": Thumbnail.objects.get_thumbnail(obj),
             #"detail": obj.get_absolute_url(),  # @@@ Use Sites Framework?
             "subtype": self.prepare_subtype(obj),
-            "name": obj.title,
+            "title": obj.title,
             "description": obj.abstract,
             "owner": obj.metadata_author.name,
             #"owner_detail": obj.owner.get_absolute_url(),
