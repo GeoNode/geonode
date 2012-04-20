@@ -119,18 +119,18 @@ Ext.onReady(function(){
 				},
 				getButton : function(el) {
 					// maybe a better way to do this?
-					return Ext.getCmp(el.parent('.x-btn').id);
+						return Ext.getCmp(el.id);
 				},
 				clearSelections : function() {
 					Ext.select('.cartRemoveButton').each(function(e,i) {
-						this.getButton(e).setIconClass('cartAddButton');
+						this.getButton(e.parent('.x-btn')).setIconClass('cartAddButton');
 					}, this);
 				},
 				selectRow : function(index, keepExisting) {
-					this.getButton(Ext.get('toggle' + index)).setIconClass('cartRemoveButton');
+					this.getButton(Ext.get('toggle' + index).child('.x-btn')).setIconClass('cartRemoveButton');
 				},
 				select: function(index,selected) {
-					var record = this.grid.store.getAt(index);
+					var record = this.grid.store.getAt(index);	
 					this.fireEvent(selected ? 'rowselect' : 'rowdeselect',this,index,record);
 				}
 			});
