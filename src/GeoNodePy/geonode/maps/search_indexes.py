@@ -56,6 +56,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             #"detail": obj.get_absolute_url(),  # @@@ Use Sites Framework?
             "subtype": self.prepare_subtype(obj),
             "title": obj.title,
+            "name": obj.title,
             "description": obj.abstract,
             "owner": obj.metadata_author.name,
             #"owner_detail": obj.owner.get_absolute_url(),
@@ -64,7 +65,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "last_modified": obj.date.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "start": "",
             "end": "",
-            "category": "",
+            "category": obj.topic_category,
             "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [],
             "language": "",
             "edition": "",
