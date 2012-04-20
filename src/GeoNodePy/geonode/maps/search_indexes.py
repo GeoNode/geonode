@@ -64,7 +64,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "_type": self.prepare_type(obj),
             "_display_type": obj.display_type,
             "subtype": self.prepare_subtype(obj),
-            "name": obj.title,
+            "title": obj.title,
             "description": obj.abstract,
             "owner": obj.metadata_author.name,
             "owner_detail": obj.owner.get_absolute_url(),

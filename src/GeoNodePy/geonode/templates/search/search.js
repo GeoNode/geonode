@@ -7,7 +7,7 @@ Ext.onReady(function(){
 		itemTemplates: {
 			'layer': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
-				"<div class='itemTitle'><a href='{detail_url}'>{name}</a></div>" +
+				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
 				"<div class='itemInfo'><strong>{_display_type}</strong>, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
 				"<div class='itemAbstract>{abstract}</div>"+
 				"</li>",
@@ -35,7 +35,7 @@ Ext.onReady(function(){
 			storeId: 'items',
 			root: '',
 			idProperty: 'iid',
-			fields: ['name'],
+			fields: ['title'],
 			listeners: []
 		}),
 		constructor: function(){
@@ -123,23 +123,23 @@ Ext.onReady(function(){
 				},
 				clearSelections : function() {
 					Ext.select('.cartRemoveButton').each(function(e,i) {
-					this.getButton(e).setIconClass('cartAddButton');
+						this.getButton(e).setIconClass('cartAddButton');
 					}, this);
 				},
 				selectRow : function(index, keepExisting) {
 					this.getButton(Ext.get('toggle' + index)).setIconClass('cartRemoveButton');
 				},
 				select: function(index,selected) {
-					var record = store.getAt(index);
+					var record = this.grid.store.getAt(index);
 					this.fireEvent(selected ? 'rowselect' : 'rowdeselect',this,index,record);
 				}
 			});
 		},
-		handleSelect: function(button){
+		handleSelect: function(button,el){
 			var selected = button.iconCls == 'cartAddButton';
 			var clazz = selected ? 'cartRemoveButton' : 'cartAddButton';
 			button.setIconClass(clazz);
-			this.selModel.select(this.iid,selected);
+			this.selModel.select(button.record_iid,selected);
 		},
 		toggleSection: function(el){
 			var expand = el.hasClass('collapse');
@@ -233,9 +233,10 @@ Ext.onReady(function(){
 						var button = new Ext.Button({
 							renderTo: 'toggle' + r.iid,
 							iconCls: 'cartAddButton',
-							tooltip : "Add to selected data"
+							tooltip : "Add to selected data",
+							record_iid: r.iid
 						});
-						button.on('click',this.handleSelect,r);
+						button.on('click',this.handleSelect,this);
 					}
 					else if (r._type == 'map'){
 						item = this.itemTemplates['map'].append(this.list,r,true);
