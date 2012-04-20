@@ -133,7 +133,7 @@ function setup_django_every_time() {
     pushd $GEONODE_LIB
     easy_install -U virtualenv
     easy_install -U pip
-    virtualenv .
+    virtualenv . --system-site-packages --never-download
 
     if [ ! -f bin/activate ]
     then
