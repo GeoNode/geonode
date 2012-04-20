@@ -35,7 +35,7 @@ Ext.onReady(function(){
 			storeId: 'items',
 			root: '',
 			idProperty: 'iid',
-			fields: ['title'],
+			fields: ['title','name'],
 			listeners: []
 		}),
 		constructor: function(){
@@ -273,7 +273,7 @@ Ext.onReady(function(){
 							renderTo: 'map' + r.iid,
 							iconCls: 'addToMapButton',
 							tooltip : "Add data to new map",
-							record_iid: r.iid
+							record_id: r.name
 						});
 						button.on('click',this.handleAddToMap,this);
 					}
@@ -281,7 +281,7 @@ Ext.onReady(function(){
 			},this);
 		},
 		handleAddToMap:function(button,el,opt){
-			this.dataOps.createNewMap(button.record_iid);
+			this.dataOps.createNewMap([button.record_id]);
 		},
 		enableThumbs: function(r){
 			if (r.thumb === null) {
