@@ -123,6 +123,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
+    "django.core.context_processors.request",
     "geonode.maps.context_processors.resource_urls",
 )
 
@@ -225,11 +226,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.sitemaps',
+
     'staticfiles',
     'django_extensions',
     'registration',
     'profiles',
     'avatar',
+    'dialogos',
+
     'south',
     'geonode.core',
     'geonode.maps',

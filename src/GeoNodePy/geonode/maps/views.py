@@ -818,7 +818,6 @@ def layer_style(request, layername):
     else:  
         return HttpResponse("Not allowed",status=403)
 
-@csrf_exempt
 def layer_detail(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.view_layer', obj=layer):
