@@ -41,6 +41,11 @@ The main components are:
 
     It talks to the other components via *HTTP* and *JSON* as well as standard *OGC* services.
 
+#. **PostgreSQL & PostGIS/ArcSDE: Database**
+
+    The database component manages data and configuration informaton for GeoNetwork and Geonode.  The geonode database is created when GeoNode is first installed.  The userid is ``geonode`` and the password is stored in :file:`/etc/geonode/local_settings.py`.
+
+    GeoServer uses PostGIS or ArcSDE to store and manage spatial vector data.  With PostGIS the layers are stored within the geonode database.
 
 Dependencies
 ------------
