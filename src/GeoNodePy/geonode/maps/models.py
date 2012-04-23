@@ -642,7 +642,7 @@ class LayerManager(models.Manager):
                 else:
                     status = 'updated'
 
-            msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
+            msg = "[%s] Layer %s (%d/%d)" % (status, name, i+1, number)
             info = {'name': name, 'status': status}
             if status == 'failed':
                 info['traceback'] = traceback
