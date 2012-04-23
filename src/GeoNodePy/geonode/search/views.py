@@ -147,7 +147,7 @@ def search_api(request):
 	# Setup Facet Counts
 	sqs = sqs.facet("type").facet("subtype")
 	
-	sqs.facet('category')
+	sqs = sqs.facet('category')
 	
 	# Add Additional Facets
 	if extra_facets:
@@ -170,7 +170,7 @@ def search_api(request):
 		"facets": facets,
 		"results": results,
 		"counts": dict(facets.get("fields")['type']+facets.get('fields')['subtype']),
-		"categories": []
+		"categories": [facet[0] for facet in facets.get('fields')['category']]
 	}
 
 	# Return Results
