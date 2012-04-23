@@ -6,7 +6,7 @@ In order to completely backup a GeoNode installation requries that each separate
 
 Creating a backup
 =================
-ln -
+
 #. Make a backup of the GeoNode database (PostgreSQL needs to be running)::
 
     sudo -u postgres -i pg_dump -c -Fc geonode > geonodedb.backup
@@ -61,5 +61,9 @@ Restoring a backup
 
     geonode updatelayers
 
+Notes
+=====
+
+This approach works between machines with the same version of Linux and Geonode, and may not work between different versions of Linux, PostgreSQL, and PostGIS.
 
 
