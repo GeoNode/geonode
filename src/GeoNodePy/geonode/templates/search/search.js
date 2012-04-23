@@ -14,7 +14,7 @@ Ext.onReady(function(){
 			'map': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
 				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
-				"<div class='itemInfo'><strong>{_type:capitalize}</strong>, Created by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
+				"<div class='itemInfo'><strong>{_type:capitalize}</strong>, created by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
 				"<div class='itemAbstract>{abstract}</div>"+
 				"</li>"
 		},
@@ -99,6 +99,7 @@ Ext.onReady(function(){
 			
 			this.enableSearchLink('#bytype a','type',false);
 			this.enableSearchLink('#bykeyword a','kw',true);
+			this.enableSearchLink('#bycategory a','cat',true);
 			
 			var searchForm = Ext.get('searchForm');
 			searchForm.on('submit',function(ev) {

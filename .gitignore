@@ -31,6 +31,8 @@ target
 /src/GeoNodePy/capra/development.db
 /man
 /share/
+/src/haystack/
+/src/pyelasticsearch/
 
 # OSX specific
 .Python

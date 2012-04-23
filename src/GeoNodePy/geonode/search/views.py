@@ -125,11 +125,11 @@ def search_api(request):
 				data.update({"iid": i + startIndex})
 				results.append(data)
 		elif result.type == 'map':
-			map = Map.objects.get(id=int(result.id.split('.')[-1]))
+			map = Map.objects.get(id=result.id)
 			if request.user.has_perm('maps.view_map', obj=map):
 				data.update({"iid": i + startIndex})
 				results.append(data)
-			
+	
 	# Filter Fields/Fieldsets
 	if fieldset:
 		if fieldset in fieldsets.keys():
@@ -146,6 +146,8 @@ def search_api(request):
 
 	# Setup Facet Counts
 	sqs = sqs.facet("type").facet("subtype")
+	
+	sqs = sqs.facet('category')
 	
 	# Add Additional Facets
 	if extra_facets:
@@ -167,7 +169,8 @@ def search_api(request):
 		},
 		"facets": facets,
 		"results": results,
-		"counts": dict(facets.get("fields")['type']+facets.get('fields')['subtype'])
+		"counts": dict(facets.get("fields")['type']+facets.get('fields')['subtype']),
+		"categories": [facet[0] for facet in facets.get('fields')['category']]
 	}
 
 	# Return Results
