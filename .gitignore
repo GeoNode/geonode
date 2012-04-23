@@ -32,6 +32,8 @@ target
 /man
 /src/geonode-client/
 /share/
+/src/haystack/
+/src/pyelasticsearch/
 
 # OSX specific
 .Python
