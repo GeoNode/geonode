@@ -240,7 +240,7 @@
             {{ layer.default_style.name|title }}
          {% endif %}
         </label>
-        <a href="{{ layer.default_style.body_href }}">SLD</a><br/>
+        <a href="{{ GEOSERVER_BASE_URL }}styles/{{ layer.default_style.name }}.sld">SLD</a><br/>
     {% for style in layer.styles %} 
         <input type="radio" name="style" id="{{style.name}}" value="{{style.name}}"/>
         <label for="{{style.name}}" class="style-title">
@@ -250,7 +250,7 @@
             {{ style.name|title }}
          {% endif %}
         </label>
-        <a href="{{ style.body_href }}">SLD</a><br/>
+        <a href="{{ GEOSERVER_BASE_URL }}styles/{{ style.name }}.sld">SLD</a><br/>
     {% endfor %}
     </span>
     {% if user.is_authenticated and can_change %}
