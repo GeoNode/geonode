@@ -1,0 +1,65 @@
+================================
+Backing up and Restoring GeoNode
+================================
+
+In order to completely backup a GeoNode installation requries that each separate component of GeoNode be tackled separately.  There are separate backup files for Geonode/Django, GeoNetwork, and GeoServer.
+
+Creating a backup
+=================
+ln -
+#. Make a backup of the GeoNode database (PostgreSQL needs to be running)::
+
+    sudo -u postgres -i pg_dump -c -Fc geonode > geonodedb.backup
+
+#. Stop all services::
+
+    sudo /etc/init.d/apache2 stop
+    sudo /etc/init.d/tomcat6 stop
+    sudo /etc/init.d/postgresql-8.4 stop
+
+#. Backup Geonode config & GeoServer data directory::
+
+    tar -cvzf geonodeConfigBackup.tgz /etc/geonode
+    tar -cvzf geonodeDataBackup.tgz  /var/lib/geoserver/geonode-data/
+
+#. In addition, any templates, design changes, and/or CSS files will also need to be captured.
+
+#. Restart all services::
+
+    sudo /etc/init.d/apache2 start
+    sudo /etc/init.d/tomcat6 start
+    sudo /etc/init.d/postgresql-8.4 start
+
+
+Restoring a backup
+==================
+
+#. First stop all services::
+
+    sudo /etc/init.d/apache2 stop
+    sudo /etc/init.d/tomcat6 stop
+    sudo /etc/init.d/postgresql-8.4 stop
+
+#. Restore Geonode config & GeoServer data directory::
+
+    sudo tar -C / -xvzf geonodeConfigBackup.tgz
+    sudo tar -C / -xvzf geonodeDataBackup.tgz
+
+#. In addition, any templates, design changes, and/or CSS files will need to be restored.
+
+#. Make a backup of the GeoNode database (PostgreSQL needs to be running)::
+
+    sudo /etc/init.d/postgresql-8.4 start
+    sudo -u postgres -i pg_restore geonodedb.backup
+
+#. Start all services::
+
+    sudo /etc/init.d/apache2 start
+    sudo /etc/init.d/tomcat6 start
+
+#. Restore GeoNetwork data with::
+
+    geonode updatelayers
+
+
+
