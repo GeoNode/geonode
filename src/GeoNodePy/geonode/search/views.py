@@ -125,7 +125,7 @@ def search_api(request):
 				data.update({"iid": i + startIndex})
 				results.append(data)
 		elif result.type == 'map':
-			map = Map.objects.get(id=int(result.id.split('.')[-1]))
+			map = Map.objects.get(id=result.id)
 			if request.user.has_perm('maps.view_map', obj=map):
 				data.update({"iid": i + startIndex})
 				results.append(data)
