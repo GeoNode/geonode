@@ -47,4 +47,4 @@ This will gather all the media in the diferent locations (both source and the us
 Changing the entire site media
 ==============================
 
-All the files in :file:`/var/lib/geonode/src/GeoNodePy/geonode/media/theme` can be overriden using this method, including :file:`css/base.css` which contains most of the color schemes for the entire site.
+All the files in :file:`/var/lib/geonode/src/GeoNodePy/geonode/media/theme` can be overriden using this method, including :file:`site.css` which contains most of the color schemes for the entire site. Once you copy it, the file should live in :file:`/etc/geonode/media/theme/site.css`.
