@@ -750,3 +750,7 @@ cursor: pointer;
      float: right;
      padding-top: 3px;
 }
+
+#preview_map {
+  margin-bottom: 1em;
+}
