@@ -9,13 +9,13 @@ Ext.onReady(function(){
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
 				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
 				"<div class='itemInfo'><strong>{_display_type}</strong>, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
-				"<div class='itemAbstract>{abstract}</div>"+
+				"<div class='itemAbstract>{description}</div>"+
 				"</li>",
 			'map': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
 				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
 				"<div class='itemInfo'><strong>{_type:capitalize}</strong>, created by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
-				"<div class='itemAbstract>{abstract}</div>"+
+				"<div class='itemAbstract>{description}</div>"+
 				"</li>"
 		},
 		contactTemplate: "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
@@ -47,7 +47,7 @@ Ext.onReady(function(){
 			this.contactTemplate.compile();
 			this.filterTemplate = new Ext.DomHelper.createTemplate(this.filterTemplate);
 			this.filterTemplate.compile();
-
+			
 			this.fetch();
 			
 			var scrollEl = Ext.isIE ? document.body : document;
@@ -97,10 +97,6 @@ Ext.onReady(function(){
 				},this);
 			},this);
 			
-			this.enableSearchLink('#bytype a','type',false);
-			this.enableSearchLink('#bykeyword a','kw',true);
-			this.enableSearchLink('#bycategory a','cat',true);
-			
 			var searchForm = Ext.get('searchForm');
 			searchForm.on('submit',function(ev) {
 				ev.preventDefault();
@@ -108,6 +104,9 @@ Ext.onReady(function(){
 				this.queryItems['sort'] = searchForm.dom.sortby.value;
 				this.reset();
 			},this);
+			
+			this.enableSearchLink('#bytype a','type',false);
+			this.enableSearchLink('#bykeyword a','kw',true);
 		},
 		createSelModel: function(){
 			return new Ext.extend(Ext.util.Observable, {
@@ -192,11 +191,13 @@ Ext.onReady(function(){
 			this.totalQueryCount = results.total;
 			
 			this.updateCounts(results.counts);
+			this.updateCategories(results.categories);
+			this.enableSearchLink('#bycategory a','cat',false);
 			
 			var read = this.store.reader.readRecords(results.results);
 			if (read.records.length === 0) {
 				if (this.startIndex === 0) {
-					Ext.DomHelper.append(list,'<li><h4 class="center">No Results</h4></li>');
+					Ext.DomHelper.append(this.list,'<li><h4 class="center">No Results</h4></li>');
 				}
 				this.startIndex = -1;
 				this.updateDisplaying();
@@ -214,6 +215,14 @@ Ext.onReady(function(){
 			counts.vector ? Ext.fly('vector-count').update("(" + counts.vector + ")") : Ext.fly('vector-count').update("(0)");
 			counts.raster ? Ext.fly('raster-count').update("(" + counts.raster + ")") : Ext.fly('raster-count').update("(0)");
 			counts.contact ? Ext.fly('contact-count').update("(" + counts.contact + ")") : Ext.fly('contact-count').update("(0)");
+		},
+		updateCategories: function(categories){
+			var list = '';
+			for(var i = 0; i < categories.length; i++){
+				list+='<li><a href="#'+categories[i]+'">'+categories[i]+'</a></li>';
+			};
+			Ext.fly('bycategory').update(list);
+
 		},
 		setResultItem: function(results){
 			var saveListeners = {
@@ -331,17 +340,17 @@ Ext.onReady(function(){
 		addActiveFilter: function(typename,querykey,value,queryValue,multiple){
 			var el = this.filterTemplate.append("refineSummary",{typeclass:typename.replace(' ','_'),type:typename,value:value},true);
 			el.on('click',function(ev) {
-			ev.preventDefault();
-			el.remove();
-			if (multiple) {
-				this.queryItems[querykey].remove(queryValue);
-				if (this.queryItems[querykey].length === 0) {
-				delete this.queryItems[querykey];
+				ev.preventDefault();
+				el.remove();
+				if (multiple) {
+					this.queryItems[querykey].remove(queryValue);
+					if (this.queryItems[querykey].length === 0) {
+					delete this.queryItems[querykey];
+					}
+				} else {
+					delete this.queryItems[querykey];
 				}
-			} else {
-				delete this.queryItems[querykey];
-			}
-			this.reset();
+				this.reset();
 			},this);
 		},
 		enableSearchLink: function(selector,querykey,multiple){

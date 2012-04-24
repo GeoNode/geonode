@@ -118,11 +118,11 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         data = {
             "_type": self.prepare_type(obj),
             #"_display_type": obj.display_type,
-
+			
             "id": obj.id,
             "last_modified": obj.last_modified.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "title": obj.title,
-            "abstract": obj.abstract,
+            "description": obj.abstract,
             "owner": obj.owner.username,
             "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [], 
             "thumb": Thumbnail.objects.get_thumbnail(obj),
