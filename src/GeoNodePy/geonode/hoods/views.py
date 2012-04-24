@@ -64,7 +64,6 @@ def create_hood(request):
     config = mapTemplate.viewer_json(request.user)
     config['edit_map'] = True
 
-    #TODO: calculate center of selected blocks, assign to map center x,y
 
     del config['id']
 
@@ -78,9 +77,13 @@ def create_hood(request):
     if isLegitIdList:
         ids = "'" + "','".join(request.GET['ids'].split(',')) + "'"
 
+        #Zoom to selected blocks
         map_center = get_hood_center(settings.HOODS_TEMPLATE_LAYER, ids)
         if map_center is not None:
             config['map']['center'] = map_center
+
+        #default zoom level (BRA layer not visible below this due to scale-dependent rendering)
+        config['map']['zoom'] = 16
 
         for lc in config['map']['layers']:
             if 'name' in lc and settings.HOODS_TEMPLATE_LAYER in lc['name']:
