@@ -3,5 +3,6 @@
 <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/ext/ext-all.js"></script>
 
 <script type="text/javascript">
+  Ext.Ajax.defaultHeaders = { 'X-CSRFToken': '{{ csrf_token|escapejs }}' };
   Ext.BLANK_IMAGE_URL = "{{ GEONODE_CLIENT_LOCATION }}externals/ext/resources/images/default/s.gif";
 </script>
