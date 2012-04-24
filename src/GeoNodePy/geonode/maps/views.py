@@ -357,7 +357,7 @@ def newmap_config(request):
 def newmap(request):
     config = newmap_config(request);
     if isinstance(config, HttpResponse):
-        return config;
+        return config
     else:
         return render_to_response('maps/view.html', RequestContext(request, {
         'config': config,

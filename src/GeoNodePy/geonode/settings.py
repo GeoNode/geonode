@@ -275,6 +275,7 @@ INSTALLED_APPS = (
     'geonode',
     'geonode.registration',
     'geonode.profiles',
+    'geonode.gazetteer',
     #'debug_toolbar',
 )
 

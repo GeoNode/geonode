@@ -4,7 +4,7 @@ from staticfiles.urls import staticfiles_urlpatterns
 from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
 import geonode.maps.urls
-
+import geonode.gazetteer.urls
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -45,6 +45,7 @@ urlpatterns = patterns('',
     (r'^profiles/', include('profiles.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/?$','geonode.proxy.views.download'),
+    (r'^gazetteer/', include('geonode.gazetteer.urls'))
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
