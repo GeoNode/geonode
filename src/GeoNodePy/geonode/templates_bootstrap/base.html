@@ -124,7 +124,8 @@
             <a href="{% url geonode.views.developer %}">{% trans "For Developers" %}</a>
           </div>
           <div class="pull-right">
-            {% get_current_language as LANGUAGE %}
+            {% if csrf_token != "NOTPROVIDED" %}
+              {% get_current_language as LANGUAGE %}
               <form class="form-inline" action="/i18n/setlang/" method="post">
                 {% csrf_token %}
                 <label>{% trans "Language" %}</label>
@@ -136,6 +137,7 @@
                   {% endfor %}
                 </select>
               </form>
+            {% endif %}
           </div>
         {% endblock %}
       </footer>
