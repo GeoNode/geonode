@@ -50,7 +50,9 @@ Restoring a backup
 #. Make a backup of the GeoNode database (PostgreSQL needs to be running)::
 
     sudo /etc/init.d/postgresql-8.4 start
-    sudo -u postgres -i pg_restore geonodedb.backup
+    sudo -u postgres -i "psql -c 'drop database geonode;'"
+    sudo -u postgres -i "psql -c 'create database geonode;'"
+    sudo -u postgres -s "pg_restore -Fc -d geonode /path/to/geonodedb.backup"
 
 #. Start all services::
 
