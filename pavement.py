@@ -237,7 +237,7 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    static = path("./src/GeoNodePy/geonode/media/static")
+    static = path("./src/GeoNodePy/geonode/static/geonode/")
     if not static.exists():
         static.mkdir()
 
@@ -289,9 +289,9 @@ def package_client(options):
     else:
         # Extract static files to static_location 
         src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
-    	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
+    	geonode_media_dir = path("./src/GeoNodePy/geonode/static")
         dst_zip =  geonode_media_dir / "geonode-client.zip"
-        static_location = geonode_media_dir / "static" 
+        static_location = geonode_media_dir / "geonode" 
 
         grab(src_url, dst_zip)
 
