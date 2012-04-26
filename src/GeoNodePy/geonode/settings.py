@@ -1,28 +1,81 @@
 # -*- coding: utf-8 -*-
 # Django settings for GeoNode project.
+
 import os
 import geonode
 
 # Main GeoNode directory
 GEONODE_ROOT = os.path.dirname(geonode.__file__)
 # Project directory (where current settings file is)
-#  Resolve any links so it returns actual real path
+# Resolve links so it returns actual real path
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
-print GEONODE_ROOT
-print PROJECT_ROOT
 
 ###########################################################
-# MODE SPECIFIC SETTINGS - PRODUCTION vs DEVELOPMENT
+# SITE SPECIFIC SETTINGS
+# Default to generic, development. Override in settings_local
 ###########################################################
 
-# Production indicates if development server is in use or not
-DEVELOPMENT = True
+SITE_ID = 1
+SITENAME = "GeoNode"
+# Change to actual URL
+SITEURL = 'http://localhost:8000/'
+ROOT_URLCONF = 'geonode.urls'
 
-DEBUG = DEVELOPMENT
+# Add additional apps here (appended to INSTALLED_APPS)
+SITE_APPS = ()
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
+REGISTRATION_OPEN = False
+ACCOUNT_ACTIVATION_DAYS = 7
+
+ADMINS = (
+    # ('Your Name', 'your_email@domain.com'),
+)
+
+# Datastore settings to make geonode upload vector layers directly to postgis
+DB_DATASTORE=False
+DB_DATASTORE_NAME = ''
+DB_DATASTORE_DATABASE = '' #DATABASE_NAME
+DB_DATASTORE_USER = '' #DATABASE_USER
+DB_DATASTORE_PASSWORD = '' #DATABASE_PASSWORD
+DB_DATASTORE_HOST = ''
+DB_DATASTORE_PORT = ''
+DB_DATASTORE_TYPE='postgis'
+
+# Local time zone for this installation. http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# If running in a Windows environment set to same as your system time zone.
+TIME_ZONE = 'America/New_York'
+
+# Language code for this installation.
+LANGUAGE_CODE = 'en'
+
+# ASSETS_ROOT is only used on production servers when using collectstatic command
+# it is where all the static and media files are served from
+ASSETS_ROOT = '/var/www/geonode/'
+# URL to static web server that serves CSS, uploaded media, javascript, etc.
+# for serving from same server or in development, use '/'
+ASSETS_URL = '/'
+
+# Google API key if using Google maps
+GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
+
+###########################################################
+# MODE SPECIFIC SETTINGS
+# These settings assume a development environment.
+# For production, override these in settings_local
+###########################################################
+
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+# This tells the development server to serve static files
+SERVE_MEDIA = DEBUG
 
-# Default sqlite3 database useful for development
-# Override in settings_local
+# This is a useful 3rd party django app, install separately
+DEBUG_TOOLBAR = False
+
+# Default sqlite3 database (flatfile)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -35,95 +88,15 @@ DATABASES = {
 }
 
 ###########################################################
-# SITE SPECIFIC SETTINGS - change for each site
-###########################################################
-
-SITE_ID = 1
-SITENAME = "GeoNode"
-# If DEVELOPMENT=True, SITEURL overridden to http://localhost:8000/
-SITEURL = "geonode.domain.com"
-
-ROOT_URLCONF = 'geonode.urls'
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
-REGISTRATION_OPEN = False
-
-#Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE=False
-#Database datastore connection settings
-DB_DATASTORE_NAME = ''
-DB_DATASTORE_USER = ''
-DB_DATASTORE_PASSWORD = ''
-DB_DATASTORE_HOST = ''
-DB_DATASTORE_PORT = ''
-DB_DATASTORE_TYPE=''
-
-# Local time zone for this installation. http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# If running in a Windows environment set to same as your system time zone.
-TIME_ZONE = 'America/Chicago'
-
-ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
-)
-MANAGERS = ADMINS
-
-###########################################################
-# LOCATIONS OF THINGS
-###########################################################
-
-# For URL's always use trailing slash if there is a path component
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-
-LOGIN_REDIRECT_URL = "/"
-
-# ASSETS_ROOT is only used on production servers when using collectstatic command
-ASSETS_ROOT = '/var/www/geonode/'
-# URL to static web server that serves CSS, uploaded media, javascript, ec.
-ASSETS_URL = '/'
-
-# Media are any files uploaded by users
-# Absolute path to the directory that holds media.
-MEDIA_ROOT = os.path.join(ASSETS_ROOT, "media")
-# URL that handles the media served from MEDIA_ROOT.
-MEDIA_URL = os.path.join(ASSETS_URL,'media/')
-
-GEONODE_UPLOAD_PATH = MEDIA_ROOT
-
-# Absolute path to the directory that holds static files
-# Example: "/home/media/media.lawrence.com/apps/"
-# Not used in production
-STATIC_ROOT = os.path.join(ASSETS_ROOT,'static/')
-# Additional directories which hold static files
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static/'),
-    os.path.join(GEONODE_ROOT, 'static/')
-)
-# URL that handles the static files ( http://media.lawrence.com/static/ )
-STATIC_URL = os.path.join(ASSETS_URL,'static/')
-# this needs to be under STATIC_URL
-GEONODE_CLIENT_LOCATION = os.path.join(STATIC_URL,'geonode/')
-
-# Note that Django automatically includes the "templates" dir in all the
-# INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
-TEMPLATE_DIRS = (
-    # Look for templates in Project directory first
-    os.path.join(PROJECT_ROOT,"templates"),
-    # Then look in GeoNode templates
-    os.path.join(GEONODE_ROOT,"templates"),
-)
-
-###########################################################
 # MAP DEFAULTS
 ###########################################################
 
 DEFAULT_LAYERS_OWNER='admin'
-
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (-84.7, 12.8)
-
-# 0 = entire world; maximum zoom 12 - 15 (for Google Maps, coverage varies by area)
+# How tightly zoomed should newly created maps be?
+# 0 = entire world;
+# maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 7
 
 DEFAULT_LAYER_SOURCE = {
@@ -131,8 +104,6 @@ DEFAULT_LAYER_SOURCE = {
     "url":"/geoserver/wms",
     "restUrl": "/gs/rest"
 }
-
-GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gx_olsource"},
@@ -168,32 +139,10 @@ MAP_BASELAYERS = [{
 }]
 
 ###########################################################
-# GEONODE SPECIFIC SETTINGS - unlikely to require changing
+# GeoNode specific settings. Rarely should need changing
 ###########################################################
 
 _ = lambda x: x
-
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "geonode.maps.context_processors.resource_urls",
-)
-
-MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -213,6 +162,11 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'geonode'
 )
+
+SOUTH_MIGRATION_MODULES = {
+    'registration': 'geonode.migrations.registration',
+    'avatar': 'geonode.migrations.avatar',
+}
 
 # Setting a custom test runner to avoid running the tests for some problematic 3rd party apps
 TEST_RUNNER='django_nose.NoseTestSuiteRunner'
@@ -236,18 +190,63 @@ NOSE_ARGS = [
 #      '--pdb',
       ]
 
-SOUTH_MIGRATION_MODULES = {
-    'registration': 'geonode.migrations.registration',
-    'avatar': 'geonode.migrations.avatar',
-}
+# If you set this to False, Django will make some optimizations so as not
+# to load the internationalization machinery.
+USE_I18N = True
+
+LANGUAGES = (
+    ('en', 'English'),
+    ('es', 'Español'),
+    ('it', 'Italiano'),
+    ('fr', 'Français'),
+    ('el', 'Ελληνικά'),
+    ('id', 'Bahasa Indonesia'),
+    ('zh', '中國的'),
+)
 
 # This isn't required for running the geonode site, but it when running sites that inherit the geonode.settings module.
 LOCALE_PATHS = (
-    os.path.join(PROJECT_ROOT, "locale"),
-    os.path.join(PROJECT_ROOT, "maps", "locale"),
+    os.path.join(GEONODE_ROOT, "locale"),
+    os.path.join(GEONODE_ROOT, "maps", "locale"),
 )
 
+# List of callables that know how to import templates from various sources.
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "geonode.maps.context_processors.resource_urls",
+)
+
+# Directories to search for templates
+TEMPLATE_DIRS = (
+    os.path.join(PROJECT_ROOT,'templates'),  # files common to all sites
+    os.path.join(GEONODE_ROOT, 'templates')
+)
+
+# Additional directories which hold static files
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static/'), # static is what I like to call it
+    os.path.join(GEONODE_ROOT, 'static/')
+)
+
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+)
+
+LOGIN_REDIRECT_URL = "/"
 AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
+AUTH_PROFILE_MODULE = 'maps.Contact'
 
 def get_user_url(u):
     from django.contrib.sites.models import Site
@@ -258,52 +257,59 @@ ABSOLUTE_URL_OVERRIDES = {
     'auth.user': get_user_url
 }
 
-AUTH_PROFILE_MODULE = 'maps.Contact'
+ADMINS = ()
 
-if DEVELOPMENT:
-    SITEURL = 'http://localhost:8000/'
-
-# The settings here require a proxy to be set up for both GeoServer and GeoNetwork
-# The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = SITEURL + "/geoserver/"
 # Default password for the geoserver admin user, autogenerated during bootstrap
-GEOSERVER_TOKEN = open(os.path.join(PROJECT_ROOT,"..","..", "..","geoserver_token")).readline()[0:-1]
+GEOSERVER_TOKEN = open(os.path.join(GEONODE_ROOT,"..","..", "..","geoserver_token")).readline()[0:-1]
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", GEOSERVER_TOKEN
-
-# The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = SITEURL + "/geonetwork/"
-# The username and password for a user with write access to GeoNetwork
-GEONETWORK_CREDENTIALS = "admin", "admin"
-
-# Serves static files in development
-# SERVE_MEDIA is used with the dev server to serve static files
-SERVE_MEDIA = DEVELOPMENT
+GEONETWORK_CREDENTIALS = 'admin', 'admin'
 
 ###########################################################
-# INTERNATIONALIZATION
+# Read in settings_local to override Site and Mode settings
 ###########################################################
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en'
-
-LANGUAGES = (
-    ('en', 'English'),
-    ('es', 'Español'),
-    ('it', 'Italiano'),
-    ('fr', 'Français'),
-    ('de', 'Deutsch'),
-    ('el', 'Ελληνικά'),
-    ('id', 'Bahasa Indonesia'),
-    ('zh', '中國的'),
-)
-
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
-USE_I18N = True
 
 try:
-    from local_settings import *
+    execfile(os.path.join(PROJECT_ROOT,'settings_local.py'))
 except ImportError:
     pass
+
+###########################################################
+# Locations that might have changed after settings_local
+###########################################################
+
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = os.path.join(ASSETS_ROOT,'uploads/')
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = os.path.join(ASSETS_URL,'media/')
+
+# Absolute path to the directory that holds static files like app media.
+# Example: "/home/media/media.lawrence.com/apps/"
+STATIC_ROOT = os.path.join(ASSETS_ROOT,'static/')
+
+# URL that handles the static files like app media.
+STATIC_URL = os.path.join(ASSETS_URL,'static/')
+# this needs to be under STATIC_URL
+GEONODE_CLIENT_LOCATION = os.path.join(STATIC_URL,'geonode/')
+
+GEONODE_UPLOAD_PATH = MEDIA_ROOT #os.path.join(STATIC_URL, 'uploaded/')
+
+# The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
+GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
+# The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
+GEONETWORK_BASE_URL = SITEURL + 'geonetwork/'
+
+if SITE_APPS:
+    INSTALLED_APPS += SITE_APPS
+
+MANAGERS = ADMINS
+
+if DEBUG_TOOLBAR:
+    INTERNAL_IPS = ('127.0.0.1',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    INSTALLED_APPS += ('debug_toolbar',)
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+    }
