@@ -5,6 +5,8 @@
 package org.geonode.security;
 
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import org.geoserver.security.GeoServerAuthenticationProvider;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -20,7 +22,7 @@ import org.springframework.util.Assert;
  * @author Andrea Aime - OpenGeo
  * 
  */
-public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
+public class GeoNodeAuthenticationProvider extends GeoServerAuthenticationProvider {
 
     private GeonodeSecurityClient client;
 
@@ -28,11 +30,8 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
         this.client = client;
     }
 
-    /**
-     * @see org.springframework.security.providers.AuthenticationProvider#authenticate(org.acegisecurity.Authentication)
-     */
-    public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
+    @Override
+    public Authentication authenticate(Authentication authentication, HttpServletRequest request) throws AuthenticationException {
         Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, authentication,
                 "authentication shall be a UsernamePasswordAuthenticationToken");
         UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
@@ -46,10 +45,8 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
         }
     }
 
-    /**
-     * @see org.springframework.security.providers.AuthenticationProvider#supports(java.lang.Class)
-     */
-    public boolean supports(Class authentication) {
+    @Override
+    public boolean supports(Class<? extends Object> authentication, HttpServletRequest request) {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 

@@ -181,20 +181,16 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
             authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
             String key = "geonode";
             Object principal = "anonymous";
-            GrantedAuthority[] grantedAuthorities = authorities
-                    .toArray(new GrantedAuthority[authorities.size()]);
 
-            authentication = new AnonymousAuthenticationToken(key, principal, grantedAuthorities);
+            authentication = new AnonymousAuthenticationToken(key, principal, authorities);
         } else {
             String userName = "";
             if (json.containsKey("name")) {
                 userName = json.getString("name");
             }
-            GrantedAuthority[] grantedAuthorities = authorities
-                    .toArray(new GrantedAuthority[authorities.size()]);
 
             authentication = new UsernamePasswordAuthenticationToken(userName, credentials,
-                    grantedAuthorities);
+                    authorities);
         }
         return authentication;
     }

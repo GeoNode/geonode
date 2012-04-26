@@ -2,6 +2,7 @@ package org.geonode.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +52,10 @@ public class MockSecurityClient implements GeonodeSecurityClient {
     public void reset() {
         cookieAuths = new HashMap<String, Authentication>();
         userAuths = new HashMap<String, Authentication>();
-        anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous",
-                new GrantedAuthority[] { new GrantedAuthorityImpl("ROLE_ANONYMOUS") });
+        
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(1);
+        authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
+        anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous", authorities);
     }
 
     public void addUserAuth(String username, String password, boolean admin,
@@ -83,8 +86,7 @@ public class MockSecurityClient implements GeonodeSecurityClient {
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                username, password,
-                (GrantedAuthority[]) authorities.toArray(new GrantedAuthority[authorities.size()]));
+                username, password, authorities);
         return token;
     }
 
@@ -102,8 +104,7 @@ public class MockSecurityClient implements GeonodeSecurityClient {
             authorities.add(new LayersGrantedAuthority(readWriteLayers, LayerMode.READ_WRITE));
         }
 
-        anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous",
-                (GrantedAuthority[]) authorities.toArray(new GrantedAuthority[authorities.size()]));
+        anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous", authorities);
     }
 
     public Authentication authenticateAnonymous() throws AuthenticationException, IOException {
