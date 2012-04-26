@@ -7,9 +7,9 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core import serializers
 
-from haystack.inputs import AutoQuery, Raw
+from haystack.inputs import AutoQuery, Raw 
 from haystack.query import SearchQuerySet
-from haystack.utils.geo import Point
+from django.contrib.gis.geos import GEOSGeometry
 
 from geonode.maps.views import default_map_config, Map, Layer
 
@@ -113,21 +113,33 @@ def search_api(request):
 
 	if bbox is not None:
 		l,b,r,t = bbox.split(',')
-		bottom_left = Point(float(b),float(l))
-		top_right = Point(float(t),float(r))
-		sqs = sqs.within('location',bottom_left,top_right)	
-	
+		bbox =  GEOSGeometry('POLYGON((%s, %s, %s, %s, %s))' % (
+			('%s %s') % (b,l),
+			('%s %s') % (l,t),
+			('%s %s') % (t,r),
+			('%s %s') % (r,b),
+			('%s %s') % (b,l)
+		))
+		
 	# Setup Search Results
 	results = []
+
 	for i, result in enumerate(sqs[startIndex:startIndex + limit]):
 		data = json.loads(result.json)
 		if result.type == 'layer':
 			layer = Layer.objects.get(uuid=data['uuid'])
 			# Dont return results that the user doesnt have permission to view
 			# NOTE: This will probably mess up the paging. Need to re-visit
-			if request.user.has_perm('maps.view_layer', obj=layer):					
-				data.update({"iid": i + startIndex})
-				results.append(data)
+			if request.user.has_perm('maps.view_layer', obj=layer):
+				if bbox is not None:
+					layer_bbox = GEOSGeometry(layer.geographic_bounding_box.split(';')[1])
+					if bbox.intersects(layer_bbox):
+						data.update({"iid": i + startIndex})
+						results.append(data)
+					else: sqs = sqs.exclude(id = result.id)
+				else: 
+					results.append(data)
+					data.update({"iid": i + startIndex})
 		elif result.type == 'map':
 			map = Map.objects.get(id=result.id)
 			if request.user.has_perm('maps.view_map', obj=map):

@@ -24,7 +24,6 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     category = indexes.CharField(model_attr="topic_category", faceted=True)
     keywords = indexes.CharField(model_attr="keywords", faceted=True)
     language = indexes.CharField(model_attr="language", faceted=True)
-    location = indexes.LocationField()
     #edition = indexes.CharField(model_attr="edition")
     #purpose = indexes.CharField(model_attr="purpose")
     #constraints = indexes.CharField(model_attr="constraints_use")
@@ -54,10 +53,6 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     def prepare_download_links(self,obj):
         prepped = [(ext,name.encode(),extra) for ext,name,extra in obj]
         return prepped
-      
-	def prepare_location(self,obj):
-		bbox =  GEOSGeometry(obj.geographic_bounding_box.split(';')[1])
-		return '%s,%s' % (bbox.centroid.y,bbox.centroid.x)
 		
     def prepare_json(self, obj):
         bbox = obj.resource.latlon_bbox
