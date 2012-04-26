@@ -9,13 +9,13 @@ Ext.onReady(function(){
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
 				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
 				"<div class='itemInfo'><strong>{_display_type}</strong>, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
-				"<div class='itemAbstract>{description}</div>"+
+				"<div class='itemAbstract'>{description}</div>"+
 				"</li>",
 			'map': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
 				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
 				"<div class='itemInfo'><strong>{_type:capitalize}</strong>, created by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
-				"<div class='itemAbstract>{description}</div>"+
+				"<div class='itemAbstract'>{description}</div>"+
 				"</li>"
 		},
 		contactTemplate: "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
