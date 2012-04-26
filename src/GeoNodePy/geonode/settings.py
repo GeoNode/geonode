@@ -153,11 +153,8 @@ TEMPLATE_DIRS = (
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
 GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 
-# Default password for the geoserver admin user. Please generate a new one in a production environment.
-GEOSERVER_TOKEN = SECRET_KEY
-
 # The username and password for a user that can add and edit layer details on GeoServer
-GEOSERVER_CREDENTIALS = "geoserver_admin", GEOSERVER_TOKEN
+GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
 GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
