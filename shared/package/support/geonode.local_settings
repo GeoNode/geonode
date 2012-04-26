@@ -46,7 +46,6 @@ STATIC_ROOT = '/var/www/geonode/static/'
 STATIC_URL = '/static/'
 GEONODE_UPLOAD_PATH = MEDIA_ROOT + 'geonode'
 GEONODE_CLIENT_LOCATION = STATIC_URL + 'geonode/'
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATICFILES_STORAGE = 'staticfiles.storage.StaticFilesStorage'
 
@@ -62,7 +61,7 @@ GEONETWORK_BASE_URL = SITEURL + 'geonetwork/'
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = 'admin', 'admin'
-GEOSERVER_CREDENTIALS = 'geoserver', 'THE_GEOSERVER_PASSWORD'
+GEOSERVER_CREDENTIALS = 'geoserver', SECRET_KEY
 
 # A Google Maps API key is needed for the 3D Google Earth view of maps
 # See http://code.google.com/apis/maps/signup.html
