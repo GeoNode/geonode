@@ -16,7 +16,7 @@ public class GeoNodeSessionAuthToken extends AbstractAuthenticationToken {
     private Object credentials;
 
     public GeoNodeSessionAuthToken(Object principal, Object credentials,
-            Collection<GrantedAuthority> authorities) {
+            Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         super.setAuthenticated(true);
         this.principal = principal;
