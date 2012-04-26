@@ -7,8 +7,9 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core import serializers
 
-from haystack.inputs import AutoQuery, Raw 
+from haystack.inputs import AutoQuery, Raw
 from haystack.query import SearchQuerySet
+from haystack.utils.geo import Point
 
 from geonode.maps.views import default_map_config, Map, Layer
 
@@ -56,7 +57,8 @@ def search_api(request):
 
 	# Retrieve Query Params
 	id = request.REQUEST.get("id", None)
-	query = request.REQUEST.get("q", None)
+	query = request.REQUEST.get('q',None)
+	name = request.REQUEST.get("name", None)
 	category = request.REQUEST.get("cat", None)
 	limit = int(request.REQUEST.get("limit", getattr(settings, "HAYSTACK_SEARCH_RESULTS_PER_PAGE", 20)))
 	startIndex = int(request.REQUEST.get("startIndex", 0))
@@ -64,23 +66,14 @@ def search_api(request):
 	sort = request.REQUEST.get("sort", "relevance")
 	order = request.REQUEST.get("order", "asc")
 	type = request.REQUEST.get("type", None)
-	extra_facets = request.REQUEST.get("facets", None)
 	fields = request.REQUEST.get("fields", None)
 	fieldset = request.REQUEST.get("fieldset", None)
 	format = request.REQUEST.get("format", "json")
-	callback = request.REQUEST.get("callback", None)
 	# Geospatial Elements
-	name = request.REQUEST.get("name", None)
-	lat = request.REQUEST.get("lat", None)
-	lon = request.REQUEST.get("lon", None)
-	radius = request.REQUEST.get("radius", None)
 	bbox = request.REQUEST.get("bbox", None)
-	geometry = request.REQUEST.get("geometry", None)
 	# Temporal Elements
-	datastart = request.REQUEST.get("datastart", None)
-	dataend = request.REQUEST.get("dataend", None)
-	metastart = request.REQUEST.get("metastart", None)
-	metaend = request.REQUEST.get("metaend", None)
+	#datastart = request.REQUEST.get("datastart", None)
+	#dataend = request.REQUEST.get("dataend", None)
 
 	sqs = SearchQuerySet()
 
@@ -118,16 +111,21 @@ def search_api(request):
 	elif sort.lower() == "alphaza":
 		sqs = sqs.order_by("-title")
 
+	if bbox is not None:
+		l,b,r,t = bbox.split(',')
+		bottom_left = Point(float(b),float(l))
+		top_right = Point(float(t),float(r))
+		sqs = sqs.within('location',bottom_left,top_right)	
+	
 	# Setup Search Results
 	results = []
-
 	for i, result in enumerate(sqs[startIndex:startIndex + limit]):
 		data = json.loads(result.json)
 		if result.type == 'layer':
 			layer = Layer.objects.get(uuid=data['uuid'])
 			# Dont return results that the user doesnt have permission to view
 			# NOTE: This will probably mess up the paging. Need to re-visit
-			if request.user.has_perm('maps.view_layer', obj=layer):
+			if request.user.has_perm('maps.view_layer', obj=layer):					
 				data.update({"iid": i + startIndex})
 				results.append(data)
 		elif result.type == 'map':
@@ -154,11 +152,6 @@ def search_api(request):
 	sqs = sqs.facet("type").facet("subtype")
 	
 	sqs = sqs.facet('category')
-	
-	# Add Additional Facets
-	if extra_facets:
-		for facet in extra_facets.split(','):
-			sqs = sqs.facet(facet)
 
 	facets = sqs.facet_counts()
 

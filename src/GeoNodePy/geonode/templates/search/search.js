@@ -71,7 +71,14 @@ Ext.onReady(function(){
 			this.bbox = new GeoNode.BoundingBoxWidget({
 				proxy: "/proxy/?url=",
 				viewerConfig: viewer_config,
-				renderTo: 'refine'
+				renderTo: 'refine',
+				listeners: {
+					'moveend': function(){alert('ciao');}
+				}
+			});
+			this.bbox.viewer.mapPanel.map.events.register('moveend',this,function(){
+				this.queryItems['bbox'] = this.bbox.viewer.mapPanel.map.getExtent().transform(new OpenLayers.Projection('EPSG:900913'),new OpenLayers.Projection('EPSG:4326')).toBBOX();
+				this.reset();				
 			});
 			
 			this.dataCart = new GeoNode.DataCart({
