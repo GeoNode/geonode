@@ -21,10 +21,8 @@ SITENAME = "GeoNode"
 SITEURL = 'http://localhost:8000/'
 ROOT_URLCONF = 'geonode.urls'
 
-# Add additional apps here (appended to INSTALLED_APPS)
-SITE_APPS = ()
-
-# Make this unique, and don't share it with anybody.
+# Unique, site specific key used for geoserver password and pw hashing
+# Generate new one for production environment using "generate_secret_key" management command
 SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 REGISTRATION_OPEN = False
 ACCOUNT_ACTIVATION_DAYS = 7
@@ -71,9 +69,6 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 # This tells the development server to serve static files
 SERVE_MEDIA = DEBUG
-
-# This is a useful 3rd party django app, install separately
-DEBUG_TOOLBAR = False
 
 # Default sqlite3 database (flatfile)
 DATABASES = {
@@ -268,7 +263,7 @@ GEONETWORK_CREDENTIALS = 'admin', 'admin'
 ###########################################################
 
 try:
-    execfile(os.path.join(PROJECT_ROOT,'settings_local.py'))
+    from local_settings import *
 except ImportError:
     pass
 
@@ -299,15 +294,5 @@ GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
 GEONETWORK_BASE_URL = SITEURL + 'geonetwork/'
 
-if SITE_APPS:
-    INSTALLED_APPS += SITE_APPS
-
+# Not sure if this is still used or where
 MANAGERS = ADMINS
-
-if DEBUG_TOOLBAR:
-    INTERNAL_IPS = ('127.0.0.1',)
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    INSTALLED_APPS += ('debug_toolbar',)
-    DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS': False,
-    }
