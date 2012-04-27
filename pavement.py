@@ -237,8 +237,6 @@ def setup_geonode_client(options):
     Fetch geonode-client
     """
     static = path("./src/GeoNodePy/geonode/static/geonode")
-    if not static.exists():
-        static.mkdir()
 
     with pushd("src/geonode-client/"):
         sh("mvn clean compile")
