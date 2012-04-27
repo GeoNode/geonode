@@ -14,6 +14,7 @@
 		<li><input type="hidden" name="next" value="{{next}}" /></li>
 	    <li><input type="submit" value="Login"/></li>
         <li><a href="{% url django.contrib.auth.views.password_reset %}">Forgot password?</a></li>
+        <li><a href="{% url geonode.registration.views.forgotUsername %}">Forgot username? </a></li>
 	</ul>
   </form>
 </div>

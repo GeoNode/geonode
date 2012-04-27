@@ -4,6 +4,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
 import geonode.maps.urls
+import geonode.registration.urls
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -37,7 +38,7 @@ urlpatterns = patterns('',
     (r'^accounts/login', 'django.contrib.auth.views.login'),
     (r'^accounts/logout', 'django.contrib.auth.views.logout'),
     (r'^avatar/', include('avatar.urls')),
-    (r'^accounts/', include('registration.urls')),
+    (r'^accounts/', include('geonode.registration.urls')),
     (r'^profiles/', include('profiles.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     )
