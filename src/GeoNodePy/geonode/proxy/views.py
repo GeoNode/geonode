@@ -22,12 +22,8 @@ def proxy(request):
     if url.fragment != "":
         locator += '#' + url.fragment
 
-    headers = {}
-    if settings.SESSION_COOKIE_NAME in request.COOKIES:
-        headers["Cookie"] = request.META["HTTP_COOKIE"]
-
     conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.raw_post_data, headers)
+    conn.request(request.method, locator, request.raw_post_data)
     result = conn.getresponse()
     response = HttpResponse(
             result.read(),
