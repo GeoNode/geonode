@@ -194,6 +194,7 @@ AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 GOOGLE_ANALYTICS_ID = "UA-XXXXXXXX-1"
 
+YAHOO_API_KEY=""
 
 LOGIN_REDIRECT_URL = "/"
 

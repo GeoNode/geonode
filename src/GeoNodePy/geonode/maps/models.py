@@ -902,12 +902,20 @@ class Layer(models.Model, PermissionLevelMixin):
     The last time the object was modified.
     """
 
-    downloadable = models.BooleanField(_('Downloadable'), blank=False, null=False, default=True)
+    downloadable = models.BooleanField(_('Downloadable?'), blank=False, null=False, default=True)
     """
     Is the layer downloadable?
     """
 
+    in_gazetteer = models.BooleanField(_('In Gazetteer?'), blank=False, null=False, default=False)
+    """
+    Is the layer in the gazetteer?
+    """
 
+    gazetteer_project = models.CharField(_("Gazetteer Project"), max_length=128, blank=True, null=True)
+    """
+    Gazetteer project that the layer is associated with
+    """
 
     # Section 8
     data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True)
@@ -1474,6 +1482,22 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['styles'] = ''
         return cfg
 
+    def update_gazetteer(self):
+        from geonode.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
+        if not self.in_gazetteer:
+            delete_from_gazetteer(self.name)
+        else:
+            includedAttributes = []
+            gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
+            for attribute in gazetteerAttributes:
+                includedAttributes.append(attribute.attribute)
+
+            startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
+            endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
+
+            add_to_gazetteer(self.name, includedAttributes, start_attribute=startAttribute, end_attribute=endAttribute, project=self.gazetteer_project)
+
+
 class LayerAttribute(models.Model):
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
@@ -1482,6 +1506,9 @@ class LayerAttribute(models.Model):
     searchable = models.BooleanField(_('Searchable?'), default=False)
     visible = models.BooleanField(_('Visible?'), default=True)
     display_order = models.IntegerField(_('Display Order'), default=1)
+    in_gazetteer = models.BooleanField(_('In Gazetteer?'), default=False)
+    is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
+    is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
