@@ -89,7 +89,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, "site_media", "media")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "/site_media/media/"
+MEDIA_URL = "/media/"
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
@@ -97,19 +97,12 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, "site_media", "static")
 
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
-STATIC_URL = "/media/"
+STATIC_URL = "/static/"
 
 # Additional directories which hold static files
 STATICFILES_DIRS = [
-    os.path.join(PROJECT_ROOT, "media"),
+    os.path.join(PROJECT_ROOT, "static"),
 ]
-
-GEONODE_UPLOAD_PATH = os.path.join(STATIC_URL, "upload/")
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = os.path.join(STATIC_URL, "admin/")
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
