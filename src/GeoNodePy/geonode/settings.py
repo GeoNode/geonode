@@ -50,9 +50,9 @@ TIME_ZONE = 'America/New_York'
 LANGUAGE_CODE = 'en'
 
 # ASSETS_ROOT is only used on production servers when using collectstatic command
-# it is where all the static and media files are served from
+# it is where all the static and uploaded media files are served from
 ASSETS_ROOT = '/var/www/geonode/'
-# URL to static web server that serves CSS, uploaded media, javascript, etc.
+# URL to static web server that serves CSS, uploaded media, javascript, and uploaded files
 # for serving from same server or in development, use '/'
 ASSETS_URL = '/'
 
@@ -308,7 +308,7 @@ except ImportError:
 MEDIA_ROOT = os.path.join(ASSETS_ROOT,'uploads/')
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = os.path.join(ASSETS_URL,'media/')
+MEDIA_URL = os.path.join(ASSETS_URL,'uploads/')
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
@@ -316,10 +316,10 @@ STATIC_ROOT = os.path.join(ASSETS_ROOT,'static/')
 
 # URL that handles the static files like app media.
 STATIC_URL = os.path.join(ASSETS_URL,'static/')
-# this needs to be under STATIC_URL
+# GEONODE_CLIENT_LOCATION needs to be under STATIC_URL
 GEONODE_CLIENT_LOCATION = os.path.join(STATIC_URL,'geonode/')
 
-GEONODE_UPLOAD_PATH = MEDIA_ROOT #os.path.join(STATIC_URL, 'uploaded/')
+GEONODE_UPLOAD_PATH = MEDIA_ROOT
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
 GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
