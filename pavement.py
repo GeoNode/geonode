@@ -236,9 +236,7 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    static = path("./src/GeoNodePy/geonode/media/static")
-    if not static.exists():
-        static.mkdir()
+    static = path("./src/GeoNodePy/geonode/static/geonode")
 
     with pushd("src/geonode-client/"):
         sh("mvn clean compile")
@@ -272,17 +270,6 @@ def package_client(options):
 
     if(hasattr(options, 'use_war')): 
     	geonode_client_target_war.copy(options.deploy.out_dir)
-    else:
-        # Extract static files to static_location 
-        src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
-    	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
-        dst_zip =  geonode_media_dir / "geonode-client.zip"
-        static_location = geonode_media_dir / "static" 
-
-        grab(src_url, dst_zip)
-
-        zip_extractall(zipfile.ZipFile(dst_zip), static_location)
-        os.remove(dst_zip)
 
 @task
 @needs('package_dir', 'setup_geoserver')
