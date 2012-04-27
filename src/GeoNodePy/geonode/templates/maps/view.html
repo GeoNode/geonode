@@ -27,13 +27,27 @@ var app;
 Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
-        tools: [{
+        tools: [{//measurement tool
+            ptype: "gxp_measure"
+        },{
             ptype: "gxp_wmsgetfeatureinfo",
             // uncomment the line below if you want feature info in a grid
-            //format: "grid",
+            format: "grid",
             actionTarget: "main.tbar",
             outputConfig: {width: 400, height: 300}
-        }],
+        }{% if user.is_authenticated %},	
+	{
+	    ptype: "gxp_featuremanager",
+	    id: "feature_manager",
+	    paging: false,
+	    autoSetLayer: true,
+	    autoLoadFeatures: true
+	},
+	{
+	    ptype: "gxp_featureeditor",
+	    featureManager: "feature_manager",
+	    autoLoadFeature: true
+	}{% endif %}],
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service 
@@ -45,6 +59,9 @@ Ext.onReady(function() {
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         csrfToken: "{{ csrf_token }}",
         authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
+{% if user.is_authenticated %}
+        wfs: "/geoserver/wfs",
+{% endif %}
     }, {{ config }});
 
     app = new GeoExplorer(config);
