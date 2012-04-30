@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
 
   <!-- ========================================================================================= -->
   <!-- The following is the Acegi configuration for form based authentication, with login/logout -->
@@ -27,49 +24,24 @@
     and importance of the order please see the Acegi reference guide, chapter 3.2,
     (page 17 of the PDF version)
   -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:sec="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.0.4.xsd">
   <bean id="geonodeFilterChainProxy"
-    class="org.springframework.security.util.FilterChainProxy">
-    <property name="filterInvocationDefinitionSource">
-      <!-- 
-      	GEONODE OLD:
-        /wfs/**= httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-        /ows/**= httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-        /wfsv/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-        /wms/**= httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-        /wcs/**= httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-        
-        /rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
-        #/rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter
-        /rest/process/batchdownload=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter
-        
-        /gwc/rest/web/**=gnAnonymousProcessingFilter,filterInvocationInterceptor
-        
-        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,gnBasicProcessingFilter,gnRestFilterInvocationInterceptor
-        /**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,gnAnonymousProcessingFilter,filterInvocationInterceptor
-        
-        LEGACY NEW:
-        CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-        PATTERN_TYPE_APACHE_ANT
-        /web/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /j_spring_security_check/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /j_spring_security_logout/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
-        /gwc/rest/web/**=anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
-        /**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,filterInvocationInterceptor
-       -->
-      <value>
-        CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-        PATTERN_TYPE_APACHE_ANT
-        /web/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /j_spring_security_check/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /j_spring_security_logout/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
-        /gwc/rest/web/**=gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
-        /**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,securityContextHolderAwareRequestFilter,filterInvocationInterceptor
-      </value>
-    </property>
+    class="org.springframework.security.web.FilterChainProxy">
+    <sec:filter-chain-map path-type="ant">
+        <sec:filter-chain pattern="/web/**" filters="httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,genodeCookieFilter,gnBasicProcessingFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor"/>
+        <sec:filter-chain pattern="/j_spring_security_check/**" filters="httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor"/>
+        <sec:filter-chain pattern="/j_spring_security_logout/**" filters="httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,gnAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor"/>
+        <sec:filter-chain pattern="/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor"/>
+        <sec:filter-chain pattern="/gwc/rest/web/**" filters="gnAnonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor"/>
+        <sec:filter-chain pattern="/gwc/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor"/>
+        <sec:filter-chain pattern="/**" filters="httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,securityContextHolderAwareRequestFilter,filterInvocationInterceptor"/>
+    </sec:filter-chain-map>
   </bean>
 
   <!-- 
@@ -81,20 +53,28 @@
     <constructor-arg index="0" ref="geonodeSecurityClient"/>
   </bean>
   
-  <bean id="gnRestFilterInvocationInterceptor" class="org.springframework.security.intercept.web.FilterSecurityInterceptor">
+  <bean id="gnRestFilterInvocationInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
     <property name="authenticationManager" ref="gnAuthenticationManager" />
     <property name="accessDecisionManager">
-      <bean class="org.springframework.security.vote.AffirmativeBased">
+      <bean class="org.springframework.security.access.vote.AffirmativeBased">
         <property name="allowIfAllAbstainDecisions" value="false" />
         <property name="decisionVoters">
           <list>
-            <bean class="org.springframework.security.vote.RoleVoter" />
-            <bean class="org.springframework.security.vote.AuthenticatedVoter" />
+            <bean class="org.springframework.security.access.vote.RoleVoter" />
+            <bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
           </list>
         </property>
       </bean>
     </property>
     <property name="objectDefinitionSource" ref="restFilterDefinitionMap" />
+  </bean>
+
+  <bean id="successHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler" >
+	<property name="defaultTargetUrl" value="/" /> <!-- which is the default value -->
+  </bean>
+
+  <bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" >
+	<property name="defaultFailureUrl" value="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&amp;error=true" />
   </bean>
 
   <!-- 
@@ -107,10 +87,10 @@
   <bean id="gnAuthenticationProcessingFilter"
     class="org.geoserver.security.GeoserverAuthenticationProcessingFilter">
     <property name="authenticationManager" ref="gnAuthenticationManager" />
-    <property name="authenticationFailureUrl"
-      value="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&amp;error=true" />
-    <property name="defaultTargetUrl" value="/" />
+    <property name="authenticationFailureHandler" ref="failureHandler"/>
+    <property name="authenticationSuccessHandler" ref="successHandler"/>
     <property name="filterProcessesUrl" value="/j_spring_security_check" />
+    <property name="allowSessionCreation" value="false"/>
   </bean>
 
   <!-- 
@@ -120,12 +100,12 @@
     levels are not enough
   -->
   <bean id="geonodeOwsExceptionTranslationFilter"
-    class="org.springframework.security.ui.ExceptionTranslationFilter">
+    class="org.springframework.security.web.access.ExceptionTranslationFilter">
     <property name="authenticationEntryPoint">
       <ref bean="basicProcessingFilterEntryPoint" />
     </property>
     <property name="accessDeniedHandler">
-      <bean class="org.springframework.security.ui.AccessDeniedHandlerImpl">
+      <bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
         <property name="errorPage" value="/accessDenied.jsp" />
       </bean>
     </property>
@@ -135,12 +115,12 @@
     Handles the basic authentication headers.
   -->
   <bean id="gnBasicProcessingFilter"
-    class="org.springframework.security.ui.basicauth.BasicProcessingFilter">
+    class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
     <property name="authenticationManager">
       <ref local="gnAuthenticationManager" />
     </property>
     <property name="authenticationEntryPoint">
-      <ref bean="basicProcessingFilterEntryPoint" />
+      <ref local="basicProcessingFilterEntryPoint" />
     </property>
   </bean>
 
@@ -149,12 +129,12 @@
     a number of child providers
   -->
   <bean id="gnAuthenticationManager"
-    class="org.springframework.security.providers.ProviderManager">
+    class="org.springframework.security.authentication.ProviderManager">
     <property name="providers">
       <list>
         <ref local="geonodeAuthenticationProvider" />
         <bean
-          class="org.springframework.security.providers.anonymous.AnonymousAuthenticationProvider">
+          class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
           <property name="key" value="geoserver" />
         </bean>
       </list>
@@ -237,8 +217,12 @@
     This version will create the user session if missing, it's meant for web console operation.
   -->
   <bean id="httpSessionContextIntegrationFilterWithASCTrue"
-    class="org.springframework.security.context.HttpSessionContextIntegrationFilter">
-    <property name="allowSessionCreation" value="true" />
+    class="org.springframework.security.web.context.SecurityContextPersistenceFilter">    
+    <property name='securityContextRepository'>
+       <bean class='org.springframework.security.web.context.HttpSessionSecurityContextRepository'>
+         <property name='allowSessionCreation' value='true' />
+       </bean>
+    </property>
   </bean>
 
   <!-- 
@@ -248,8 +232,12 @@
     authentication when accessing services.
   -->
   <bean id="httpSessionContextIntegrationFilterWithASCFalse"
-    class="org.springframework.security.context.HttpSessionContextIntegrationFilter">
-    <property name="allowSessionCreation" value="false" />
+    class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+    <property name='securityContextRepository'>
+       <bean class='org.springframework.security.web.context.HttpSessionSecurityContextRepository'>
+         <property name='allowSessionCreation' value='false' />
+       </bean>
+    </property>
   </bean>
 
   <!--
@@ -257,14 +245,14 @@
     cookie from the browser
   -->
   <bean id="logoutFilter"
-    class="org.springframework.security.ui.logout.LogoutFilter">
+    class="org.springframework.security.web.authentication.logout.LogoutFilter">
     <constructor-arg value="/web/" />
     <!-- URL redirected to after logout -->
     <constructor-arg>
       <list>
         <!-- ref bean="rememberMeServices" /-->
         <bean
-          class="org.springframework.security.ui.logout.SecurityContextLogoutHandler" />
+          class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
       </list>
     </constructor-arg>
   </bean>
@@ -275,7 +263,7 @@
     with the basic processing filter 
   -->
   <bean id="basicProcessingFilterEntryPoint"
-    class="org.springframework.security.ui.basicauth.BasicProcessingFilterEntryPoint">
+    class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
     <property name="realmName">
       <value>GeoServer Realm</value>
     </property>
@@ -290,26 +278,24 @@
     roles that the user must have in order to access the secured resource
   -->
   <bean id="filterInvocationInterceptor"
-    class="org.springframework.security.intercept.web.FilterSecurityInterceptor">
+    class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
     <property name="authenticationManager" ref="gnAuthenticationManager" />
     <property name="accessDecisionManager">
-      <bean class="org.springframework.security.vote.AffirmativeBased">
+      <bean class="org.springframework.security.access.vote.AffirmativeBased">
         <property name="allowIfAllAbstainDecisions" value="false" />
         <property name="decisionVoters">
           <list>
-            <bean class="org.springframework.security.vote.RoleVoter" />
-            <bean class="org.springframework.security.vote.AuthenticatedVoter" />
+            <bean class="org.springframework.security.access.vote.RoleVoter" />
+            <bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
           </list>
         </property>
       </bean>
     </property>
-    <property name="objectDefinitionSource">
-      <value>
-        CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-        PATTERN_TYPE_APACHE_ANT 
-        /config/**=ROLE_ADMINISTRATOR
-        /**=IS_AUTHENTICATED_ANONYMOUSLY
-      </value>
+    <property name="securityMetadataSource">
+        <sec:filter-security-metadata-source lowercase-comparisons="true" path-type="ant">
+            <sec:intercept-url pattern="/config/**" access="ROLE_ADMINISTRATOR"/>
+            <sec:intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        </sec:filter-security-metadata-source>
     </property>
   </bean>
 
@@ -329,16 +315,16 @@
     levels are not enough
   -->
   <bean id="consoleExceptionTranslationFilter"
-    class="org.springframework.security.ui.ExceptionTranslationFilter">
+    class="org.springframework.security.web.access.ExceptionTranslationFilter">
     <property name="authenticationEntryPoint">
       <bean
-        class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+        class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
         <property name="loginFormUrl" value="/admin/login.do" />
         <property name="forceHttps" value="false" />
       </bean>
     </property>
     <property name="accessDeniedHandler">
-      <bean class="org.springframework.security.ui.AccessDeniedHandlerImpl">
+      <bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
         <property name="errorPage" value="/accessDenied.jsp" />
       </bean>
     </property>
@@ -348,6 +334,6 @@
     Double check, this may not be necessary
   -->
   <bean id="securityContextHolderAwareRequestFilter"
-    class="org.springframework.security.wrapper.SecurityContextHolderAwareRequestFilter" />
+    class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter" />
 
 </beans>
