@@ -21,6 +21,7 @@ class Command(BaseCommand):
             layernames = [l.name for l in cat.get_resources()]
             for l in Layer.objects.all():
                 if l.store not in storenames or l.name not in layernames:
+                    l.delete_from_geonetwork()
                     l.delete()
                     print l
         except URLError:

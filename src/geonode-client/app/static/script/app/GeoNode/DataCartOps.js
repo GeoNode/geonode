@@ -53,6 +53,12 @@ GeoNode.DataCartOps = Ext.extend(Ext.util.Observable, {
                 value: layerIds[i]
             });
         }
+        inputs.push({
+            tag: 'input',
+            type: 'hidden',
+            name: 'csrfmiddlewaretoken',
+            value: Ext.util.Cookies.get("csrftoken")
+        });
         Ext.DomHelper.overwrite(this.createMapForm, {'tag': 'div', cn: inputs});
         this.createMapForm.dom.submit();
     },
