@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from haystack import indexes
 
 from geonode.maps.models import Layer, Map, Thumbnail, Contact
-
+from django.contrib.gis.geos import GEOSGeometry
 
 class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
@@ -32,11 +32,11 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     def prepare_download_links(self,obj):
         prepped = [(ext,name.encode(),extra) for ext,name,extra in obj]
         return prepped
-      
+		
     def prepare_json(self, obj):
         bbox = obj.resource.latlon_bbox
         poc_profile = Contact.objects.get(user=obj.poc.user)
-
+		
         data = {
             "_type": self.prepare_type(obj),
             "_display_type": obj.display_type,

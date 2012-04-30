@@ -9,13 +9,13 @@ Ext.onReady(function(){
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
 				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
 				"<div class='itemInfo'><strong>{_display_type}</strong>, uploaded by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
-				"<div class='itemAbstract>{description}</div>"+
+				"<div class='itemAbstract'>{description}</div>"+
 				"</li>",
 			'map': "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
 				"<div class='itemButtons'><div id='toggle{iid}'></div><div id='save{iid}'></div><div id='map{iid}'></div></div>" +
 				"<div class='itemTitle'><a href='{detail_url}'>{title}</a></div>" +
 				"<div class='itemInfo'><strong>{_type:capitalize}</strong>, created by <a href='{owner_detail}'>{owner}</a> on {last_modified:date(\"F j, Y\")}</div>" +
-				"<div class='itemAbstract>{description}</div>"+
+				"<div class='itemAbstract'>{description}</div>"+
 				"</li>"
 		},
 		contactTemplate: "<li id='item{iid}'><img class='thumb {thumbclass}' src='{thumb}'></img>" +
@@ -71,7 +71,14 @@ Ext.onReady(function(){
 			this.bbox = new GeoNode.BoundingBoxWidget({
 				proxy: "/proxy/?url=",
 				viewerConfig: viewer_config,
-				renderTo: 'refine'
+				renderTo: 'refine',
+				listeners: {
+					'moveend': function(){alert('ciao');}
+				}
+			});
+			this.bbox.viewer.mapPanel.map.events.register('moveend',this,function(){
+				this.queryItems['bbox'] = this.bbox.viewer.mapPanel.map.getExtent().transform(new OpenLayers.Projection('EPSG:900913'),new OpenLayers.Projection('EPSG:4326')).toBBOX();
+				this.reset();				
 			});
 			
 			this.dataCart = new GeoNode.DataCart({
