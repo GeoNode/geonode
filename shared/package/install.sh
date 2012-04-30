@@ -125,7 +125,6 @@ function setup_postgres_every_time() {
 
 function setup_django_once() {
     sed -i "s/THE_SECRET_KEY/$secretkey/g" $GEONODE_ETC/local_settings.py
-    sed -i "s/THE_GEOSERVER_PASSWORD/$geoserverpass/g" $GEONODE_ETC/local_settings.py
     sed -i "s/THE_DATABASE_PASSWORD/$psqlpass/g" $GEONODE_ETC/local_settings.py
 }
 
@@ -142,7 +141,6 @@ function setup_django_every_time() {
     fi
 
     source bin/activate
-    touch geoserver_token
     pip install geonode-webapp.pybundle
 
     # FIXME: What is this doing here?
@@ -187,7 +185,6 @@ function setup_apache_every_time() {
 function one_time_setup() {
     psqlpass=$(randpass 8 0)
     secretkey=$(randpass 18 0)
-    geoserverpass=$(randpass 8 0)
 
     setup_postgres_once
     setup_tomcat_once
