@@ -11,13 +11,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 import json
+import simplejson
 import math
 import httplib2
 from owslib.csw import CswRecord, namespaces
@@ -27,7 +27,6 @@ from urllib import urlencode
 from urlparse import urlparse
 import uuid
 import unicodedata
-from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 import logging
@@ -128,7 +127,6 @@ LAYER_LEV_NAMES = {
     Layer.LEVEL_ADMIN : _('Administrative')
 }
 
-@transaction.commit_manually
 def maps(request, mapid=None):
     if request.method == 'GET':
         return render_to_response('maps.html', RequestContext(request))
@@ -139,22 +137,17 @@ def maps(request, mapid=None):
                 mimetype="text/plain",
                 status=401
             )
-        try:
-            map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
-            map.save()
-            map.set_default_permissions()
-            map.update_from_viewer(request.raw_post_data)
-            response = HttpResponse('', status=201)
-            response['Location'] = map.id
-            transaction.commit()
-            return response
-        except Exception, e:
-            transaction.rollback()
-            return HttpResponse(
-                "The server could not understand your request." + str(e),
-                status=400,
-                mimetype="text/plain"
-            )
+        else:
+            try:
+                map = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
+                map.save()
+                map.set_default_permissions()
+                map.update_from_viewer(request.raw_post_data)
+                response = HttpResponse('', status=201)
+                response['Location'] = map.id
+                return response
+            except simplejson.JSONDecodeError:
+                return HttpResponse(status=400)
 
 def mapJSON(request, mapid):
     if request.method == 'GET':
@@ -282,11 +275,10 @@ def newmap_config(request):
             config = DEFAULT_MAP_CONFIG
     return json.dumps(config)
 
-@csrf_exempt
 def newmap(request):
-    config = newmap_config(request);
+    config = newmap_config(request)
     if isinstance(config, HttpResponse):
-        return config;
+        return config
     else:
         return render_to_response('maps/view.html', RequestContext(request, {
             'config': config,
@@ -294,9 +286,8 @@ def newmap(request):
             'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
         }))
 
-@csrf_exempt
 def newmapJSON(request):
-    config = newmap_config(request);
+    config = newmap_config(request)
     if isinstance(config, HttpResponse):
         return config
     else:
@@ -400,7 +391,6 @@ def check_download(request):
     return HttpResponse(content=content,status=status)
 
 
-@csrf_exempt
 def batch_layer_download(request):
     """
     batch download a set of layers
@@ -605,7 +595,6 @@ def mapdetail(request,mapid):
         'permissions_json': json.dumps(_perms_info(map, MAP_LEV_NAMES))
     }))
 
-@csrf_exempt
 @login_required
 def describemap(request, mapid):
     '''
@@ -708,7 +697,6 @@ class LayerDescriptionForm(forms.Form):
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
 
-@csrf_exempt
 @login_required
 def layer_metadata(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -774,7 +762,6 @@ def layer_metadata(request, layername):
     else:
         return HttpResponse("Not allowed", status=403)
 
-@csrf_exempt
 def layer_remove(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
@@ -795,7 +782,6 @@ def layer_remove(request, layername):
     else:
         return HttpResponse("Not allowed",status=403)
 
-@csrf_exempt
 def layer_style(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
@@ -830,7 +816,6 @@ def layer_style(request, layername):
     else:
         return HttpResponse("Not allowed",status=403)
 
-@csrf_exempt
 def layer_detail(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.view_layer', obj=layer):
@@ -875,7 +860,6 @@ GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your dat
 Please try again, or contact and administrator if the problem continues.")
 
 @login_required
-@csrf_exempt
 def upload_layer(request):
     if request.method == 'GET':
         return render_to_response('maps/layer_upload.html',
@@ -915,7 +899,6 @@ def upload_layer(request):
             return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
 @login_required
-@csrf_exempt
 def layer_replace(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.change_layer', obj=layer):
@@ -933,7 +916,7 @@ def layer_replace(request, layername):
     elif request.method == 'POST':
         from geonode.maps.forms import LayerUploadForm
         from geonode.maps.utils import save
-        from django.template import escape
+        from django.utils.html import escape
         import os, shutil
 
         form = LayerUploadForm(request.POST, request.FILES)
@@ -1162,7 +1145,6 @@ DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
 
 
-@csrf_exempt
 def metadata_search(request):
     """
     handles a basic search for data using the
@@ -1414,6 +1396,26 @@ def _build_search_result(doc):
 def browse_data(request):
     return render_to_response('data.html', RequestContext(request, {}))
 
+def search_page(request):
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+    # for non-ajax requests, render a generic search page
+
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
+    map = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
+
+    return render_to_response('search.html', RequestContext(request, {
+        'init_search': json.dumps(params or {}),
+        'viewer_config': json.dumps(map.viewer_json(*DEFAULT_BASE_LAYERS)),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        "site" : settings.SITEURL
+    }))
+
 
 def change_poc(request, ids, template='maps/change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
@@ -1425,7 +1427,142 @@ def change_poc(request, ids, template='maps/change_poc.html'):
                 layer.save()
             # Process the data in form.cleaned_data
             # ...
-            return HttpResponseRedirect('/admin/maps/layer')  # Redirect after POST
+            return HttpResponseRedirect('/admin/maps/layer') # Redirect after POST
+    else:
+        form = PocForm() # An unbound form
+    return render_to_response(template, RequestContext(request, 
+                                  {'layers': layers, 'form': form }))
+
+
+#### MAPS SEARCHING ####
+
+DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
+MAX_MAPS_SEARCH_BATCH_SIZE = 25
+def maps_search(request):
+    """
+    handles a basic search for maps using the 
+    GeoNetwork catalog.
+
+    the search accepts: 
+    q - general query for keywords across all fields
+    start - skip to this point in the results
+    limit - max records to return
+    sort - field to sort results on
+    dir - ASC or DESC, for ascending or descending order
+
+    for ajax requests, the search returns a json structure 
+    like this: 
+    
+    {
+    'total': <total result count>,
+    'next': <url for next batch if exists>,
+    'prev': <url for previous batch if exists>,
+    'query_info': {
+        'start': <integer indicating where this batch starts>,
+        'limit': <integer indicating the batch size used>,
+        'q': <keywords used to query>,
+    },
+    'rows': [
+      {
+        'title': <map title,
+        'abstract': '...',
+        'detail' : <url geonode detail page>,
+        'owner': <name of the map's owner>,
+        'owner_detail': <url of owner's profile page>,
+        'last_modified': <date and time of last modification>
+      },
+      ...
+    ]}
+    """
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
+    else:
+        return HttpResponse(status=405)
+
+    # grab params directly to implement defaults as
+    # opposed to panicy django forms behavior.
+    query = params.get('q', '')
+    try:
+        start = int(params.get('start', '0'))
+    except:
+        start = 0
+    try:
+        limit = min(int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE)),
+                    MAX_MAPS_SEARCH_BATCH_SIZE)
+    except: 
+        limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
+
+
+    sort_field = params.get('sort', u'')
+    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')  
+    sort_dir = params.get('dir', 'ASC')
+    result = _maps_search(query, start, limit, sort_field, sort_dir)
+
+    result['success'] = True
+    return HttpResponse(json.dumps(result), mimetype="application/json")
+
+def _maps_search(query, start, limit, sort_field, sort_dir):
+
+    keywords = _split_query(query)
+
+    maps = Map.objects
+    for keyword in keywords:
+        maps = maps.filter(
+              Q(title__icontains=keyword)
+            | Q(abstract__icontains=keyword))
+
+    if sort_field:
+        order_by = ("" if sort_dir == "ASC" else "-") + sort_field
+        maps = maps.order_by(order_by)
+
+    maps_list = []
+
+    for map in maps.all()[start:start+limit]:
+        try:
+            owner_name = Contact.objects.get(user=map.owner).name
+        except:
+            owner_name = map.owner.first_name + " " + map.owner.last_name
+
+        mapdict = {
+            'id' : map.id,
+            'title' : map.title,
+            'abstract' : map.abstract,
+            'detail' : reverse('geonode.maps.views.map_controller', args=(map.id,)),
+            'owner' : owner_name,
+            'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,)),
+            'last_modified' : map.last_modified.isoformat()
+            }
+        maps_list.append(mapdict)
+
+    result = {'rows': maps_list, 
+              'total': maps.count()}
+
+    result['query_info'] = {
+        'start': start,
+        'limit': limit,
+        'q': query
+    }
+    if start > 0: 
+        prev = max(start - limit, 0)
+        params = urlencode({'q': query, 'start': prev, 'limit': limit})
+        result['prev'] = reverse('geonode.maps.views.maps_search') + '?' + params
+
+    next = start + limit + 1
+    if next < maps.count():
+         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
+         result['next'] = reverse('geonode.maps.views.maps_search') + '?' + params
+    
+    return result
+
+def maps_search_page(request):
+    # for non-ajax requests, render a generic search page
+
+    if request.method == 'GET':
+        params = request.GET
+    elif request.method == 'POST':
+        params = request.POST
     else:
         form = PocForm()  # An unbound form
     return render_to_response(template, RequestContext(request,
