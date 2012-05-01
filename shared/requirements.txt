@@ -17,6 +17,7 @@ python-memcached
 ordereddict
 #The following are for the gazetteer
 geopy
+geojson
 https://bitbucket.org/jespern/django-piston/get/7c90898072ce.zip
 #Uncomment the following to use the django debug toolbar
 -e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar

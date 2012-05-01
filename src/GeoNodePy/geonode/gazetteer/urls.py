@@ -10,7 +10,7 @@ auth = DjangoAuthentication()
 ad = { 'authentication': auth }
 
 
-placename_resource = Resource(handler=PlaceNameHandler, **ad)
+placename_resource = Resource(handler=PlaceNameHandler)
 
 urlpatterns = patterns('',
     url(r'^(?P<place_name>\d)$', placename_resource),
@@ -45,26 +45,6 @@ urlpatterns = patterns('',
         '(/EndDate/(?P<end_date>[\d\s\/\-\:]+))?' +
 
         '/json$', placename_resource, { 'emitter_format': 'json' }),
-
-#    url(r'^(?P<place_name>[^/]+)/Map/(?P<map>[\d]+)$', placename_resource),
-#    url(r'^(?P<place_name>[^/]+)/Map/(?P<map>[\d]+)/xml$', placename_resource, { 'emitter_format': 'xml' }),
-#    url(r'^(?P<place_name>[^/]+)/Map/(?P<map>[\d]+)/json', placename_resource, { 'emitter_format': 'json' }),
-#
-#    url(r'^(?P<place_name>[^/]+)/Layer/(?P<layer>[A-Za-z0-9_-]+)$', placename_resource),
-#    url(r'^(?P<place_name>[^/]+)/Layer/(?P<layer>[A-Za-z0-9_-]+)/xml$', placename_resource, { 'emitter_format': 'xml' }),
-#    url(r'^(?P<place_name>[^/]+)/Layer/(?P<layer>[A-Za-z0-9_-]+)/json', placename_resource, { 'emitter_format': 'json' }),
-#
-#    url(r'^(?P<place_name>[^/]+)/BegDate/(?P<start_date>[\d\s/-:])$', placename_resource),
-#    url(r'^(?P<place_name>[^/]+)/BegDate/(?P<start_date>[\d\s/-:])/xml$', placename_resource, { 'emitter_format': 'xml' }),
-#    url(r'^(?P<place_name>[^/]+)/BegDate/(?P<start_date>[\d\s/-:])/json', placename_resource, { 'emitter_format': 'json' }),
-#
-#    url(r'^(?P<place_name>[^/]+)/EndDate/(?P<end_date>[\d\s/-:])$', placename_resource),
-#    url(r'^(?P<place_name>[^/]+)/EndDate/(?P<end_date>[\d\s/-:])/xml$', placename_resource, { 'emitter_format': 'xml' }),
-#    url(r'^(?P<place_name>[^/]+)/EndDate/(?P<end_date>[\d\s/-:])/json', placename_resource, { 'emitter_format': 'json' }),
-#
-#    url(r'^(?P<place_name>[^/]+)/BegDateEndDate/(?P<start_date>[\d\s/-:])/(?P<end_date>[\d\s/-:])$', placename_resource),
-#    url(r'^(?P<place_name>[^/]+)/BegDateEndDate/(?P<start_date>[\d\s/-:])/(?P<end_date>[\d\s/-:])/xml$', placename_resource, { 'emitter_format': 'xml' }),
-#    url(r'^(?P<place_name>[^/]+)/BegDateEndDate/(?P<start_date>[\d\s/-:])/(?P<end_date>[\d\s/-:])/json', placename_resource, { 'emitter_format': 'json' }),
 
 
 

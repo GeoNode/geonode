@@ -1,4 +1,5 @@
 import logging
+from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from geopy import geocoders
 from django.conf import settings
@@ -40,13 +41,18 @@ def getGazetteerEntry(id):
         posts = []
         for result in results:
             print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
-            posts.append({'placename': result[0], 'coordinates':(result[2], result[3]), 'source':result[1], 'id': result[4]})
+            posts.append({'placename': result[0], 'coordinates':(result[2], result[3]), 'source':formatSourceLink(result[1]), 'id': result[4]})
         return posts
     except Exception, e:
         logger.error("Error retrieving results for gazetteer by id %d:%s", id, str(e))
         raise
     finally:
         conn.close()
+
+def formatSourceLink(layer_name):
+    layer = Layer.objects.get(name=layer_name)
+    return "<a href='{0}data/{1}' target='_blank'>{2}</a>".format(settings.SITEURL, layer.typename, layer.name)
+
 
 
 def getGazetteerResults(place_name, map = None, layer = None, start_date = None, end_date = None, project=None):
@@ -100,7 +106,8 @@ def getGazetteerResults(place_name, map = None, layer = None, start_date = None,
         posts = []
         for result in results:
             print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
-            posts.append({'placename': result[0], 'coordinates':(result[2], result[3]), 'source':result[1], 'start_date': result[4], 'end_date': result[5], 'id': result[6]})
+            posts.append({'placename': result[0], 'coordinates':(result[2], result[3]), 'source':formatSourceLink(result[1]), 'start_date': result[4], 'end_date': result[5], 'gazetteer_id': result[6]})
+            #posts.append({"type": "Feature", "geometry": {"type": "Point", "coordinates":[result[2], result[3]]}, "properties": {'placename': result[0], 'source': result[1], 'start_date': result[4], 'end_date': result[5], 'gazetteer_id': result[6]}})
         return posts
     except Exception, e:
         logger.error("Error retrieving type for PostGIS table %s:%s", layer, str(e))
@@ -109,7 +116,20 @@ def getGazetteerResults(place_name, map = None, layer = None, start_date = None,
         conn.close()
 
 def delete_from_gazetteer(layer_name):
-    return
+    """
+    Delete all placenames for a layer
+    """
+    delete_query = "DELETE FROM gazetteer_placename WHERE layer_name = '%s'" % layer_name
+    print delete_query
+    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    try:
+        cur = conn.cursor()
+        cur.execute(delete_query)
+    except Exception, e:
+        logger.error("Error deleting %s from gazetteer: %s", layer_name, str(e))
+        raise
+    finally:
+        conn.close()
 
 def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attribute=None, project=None):
     """
@@ -250,4 +270,5 @@ def getGeonamesResults(place_name):
         return []
 
 def formatExternalGeocode(geocoder, geocodeResult):
-    return {'placename':geocodeResult[0], 'coordinates':geocodeResult[1], 'source': geocoder, 'start_date': 'N/A', 'end_date':'N/A', 'id':'N/A'}
+    return {'placename':geocodeResult[0], 'coordinates':geocodeResult[1], 'source': geocoder, 'start_date': 'N/A', 'end_date':'N/A', 'gazetteer_id':'N/A'}
+    #return {"type": "Feature", "geometry": {"type": "Point", "coordinates":geocodeResult[1]}, "properties": {'placename': geocodeResult[0], 'source': geocoder, 'start_date': 'N/A', 'end_date': 'N/A', 'gazetteer_id': 'N/A'}}

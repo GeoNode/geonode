@@ -29,6 +29,8 @@
 var app;
 var init = function() {
 {% autoescape off %}
+
+
     var config = Ext.apply({
         tools:  [{
                     ptype: "gxp_geonodequerytool",
@@ -43,10 +45,12 @@ var init = function() {
                 },
             {
                 ptype: "gxp_coordinatetool",
+                actionTarget:  {target: "paneltbar"}
+            },
+            {
+                ptype: "gxp_gazetteertool",
                 actionTarget:  {target: "paneltbar", index: 7},
-                toolText: '<span class="x-btn-text">Position</span>',
-                iconCls: null,
-                toggleGroup: 'featureGroup',
+                toolText: '<span class="x-btn-text">Gazetteer</span>',
                 pressed: false
             }
         ],
