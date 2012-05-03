@@ -1,5 +1,6 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
 {% load i18n avatar_tags %}
+{% load bootstrap_tags %}
 
 {% block content %}
     <p>{% trans "Your current avatar: " %}</p>
@@ -8,7 +9,13 @@
         <p>{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</p>
     {% endif %}
     <form enctype="multipart/form-data" method="POST" action="{% url avatar_add %}">
-        {{ upload_avatar_form.as_p }}
-        <p>{% csrf_token %}<input type="submit" value="{% trans "Upload New Image" %}" /></p>
+        <legend>{% trans "Upload an Avatar" %}</legend>
+        {% csrf_token %}
+        <div class="form-controls">
+            {{ upload_avatar_form|as_bootstrap }}
+        </div>
+        <div class="form-actions">
+            <input type="submit" class="btn btn-primary" value="{% trans "Upload avatar" %}" /></p>
+        </div>
     </form>
 {% endblock %}
