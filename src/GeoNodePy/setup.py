@@ -20,7 +20,7 @@ setup(name=name,
       packages = find_packages(),
       include_package_data=True,
       install_requires = [
-          "gsconfig.py",
+          "gsconfig",
           "OWSLib==0.4.0",
           "Django>=1.1",
           "PIL",
