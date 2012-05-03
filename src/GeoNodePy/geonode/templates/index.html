@@ -20,7 +20,7 @@ Ext.onReady(function(){
   var createMapButton = new Ext.Button({
      renderTo: 'create_map', 
      text: '{% trans "Create Map" %}',
-     handler: function(){ window.location = "{% url map_new %}"; }
+     handler: function(){ window.location = "{% url maps_new %}"; }
   });
 
   var submitForm = function() {
