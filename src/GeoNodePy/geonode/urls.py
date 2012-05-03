@@ -35,7 +35,7 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
 
     # Meta
-    url(r'^(?P<page>help)/?$', 'geonode.views.static', name='help'),
+    url(r'^help/?$', 'geonode.views.help', name='help'),
     url(r'^developer/?$', 'geonode.views.developer', name='dev'),
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
                {'template': 'lang.js', 'mimetype': 'text/javascript'}, name='lang'),
