@@ -1,20 +1,21 @@
 {% extends "registration/base.html" %}
-{% block title %} GeoNode Login - {{ block.super }} {% endblock %}
-{% block main %}
-<div class="twocol">
-  <h2>GeoNode Login</h2>
-  {% if form.errors %}
-  <p>Your username and password didn't match. Please try again.</p>
-  {% endif %}
 
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title %} {% trans "Log in" %} — {{ block.super }}{% endblock %}
+
+{% block main %}
   <form method="post" action="{% url django.contrib.auth.views.login %}">
+    <legend>{{ SITENAME }} {% trans "Log in" %}</legend>
     {% csrf_token %}
-	<ul class="form">
-		  {{ form.as_ul }}
-		<li><input type="hidden" name="next" value="{{next}}" /></li>
-	    <li><input type="submit" value="Login"/></li>
-        <li><a href="{% url django.contrib.auth.views.password_reset %}">Forgot password?</a></li>
-	</ul>
+    <input type="hidden" name="next" value="{{ next }}" />
+    <div class="form-controls">
+      {{ form|as_bootstrap }}
+    </div>
+    <div class="form-actions">
+      <a href="{% url django.contrib.auth.views.password_reset %}" class="btn">{% trans "Forgot password?" %}</a>
+      <input type="submit" class="btn btn-primary" value="Log in"/>
+    </div>
   </form>
-</div>
 {% endblock %}
