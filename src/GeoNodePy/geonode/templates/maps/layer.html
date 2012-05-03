@@ -223,7 +223,7 @@
     {% else %}
         <p> {% trans "This layer is not currently used in any maps." %} </p>
     {% endif %}
-    <p><a href="{% url geonode.maps.views.newmap %}?layer={{layer.typename}}">{% trans "Create new map" %}</a></p> 
+    <p><a href="{% url maps_new %}?layer={{layer.typename}}">{% trans "Create new map" %}</a></p> 
 
     {% has_obj_perm user layer "maps.change_layer" as can_change %}
     {% has_obj_perm user layer "maps.delete_layer" as can_delete %}

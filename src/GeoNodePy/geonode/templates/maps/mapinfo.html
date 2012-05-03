@@ -86,7 +86,7 @@ Ext.onReady(function() {
     {% if can_delete %}
     <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
     {% endif %}
-    <li><a href="{% url map_new %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
+    <li><a href="{% url maps_new %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
   </ul>
   {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
   {% if can_change_permissions %}
