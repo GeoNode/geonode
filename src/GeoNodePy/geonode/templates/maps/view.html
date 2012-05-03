@@ -1,26 +1,19 @@
-{% extends "fullscreen.html" %}
+{% extends "maps/base.html" %}
+
 {% load i18n %}
 
-{% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Map Viewer" %} — {{ block.super }} {% endblock %}
 
 {% block head %}
+{{ block.super }}
 {% include "geonode/ext_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/geoext/resources/css/gxtheme-gray.css">
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
-<script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
-<script type="text/javascript">
-    google.load("earth", "1");
-</script>
-
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
-<style type="text/css">
-    #templates { display: none; }
-</style>
-
 <script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/PrintPreview/resources/css/printpreview.css" />
 <script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
-{{ block.super }}
 
 <script type="text/javascript">
 var app;
@@ -29,8 +22,8 @@ Ext.onReady(function() {
     var config = Ext.apply({
         tools: [{
             ptype: "gxp_wmsgetfeatureinfo",
-            // comment the line below if you do not want feature info in a grid
-            format: "grid",
+            // uncomment the line below if you want feature info in a grid
+            //format: "grid",
             actionTarget: "main.tbar",
             outputConfig: {width: 400, height: 300}
         }],
@@ -58,7 +51,7 @@ Ext.onReady(function() {
             }) 
         };
 
-	var moreInfoTemplate = new Ext.Template(decodeURIComponent(Ext.get("more-info-tpl").dom.innerHTML));
+    var moreInfoTemplate = new Ext.Template(decodeURIComponent(Ext.get("more-info-tpl").dom.innerHTML));
     var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
     Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
 
@@ -76,9 +69,16 @@ Ext.onReady(function() {
 });
 </script>
 
+<style>
+/* Leave room for the topnav */
+#paneltbar{
+    margin-top: 30px;
+}
+</style>
+
 {% endblock %}
 
-{% block body %}
+{% block main %}
 <div id="header-wrapper">
   {{ block.super }}
   <div id="topPanel">
