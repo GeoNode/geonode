@@ -16,7 +16,7 @@
                     $(table).find("tbody:last").append($("#searchNoResultsTemplate").html());
                 } else {
                     // Compile template used to render search rows
-                    var _results = Hogan.compile($("#searchResultsTemplate").html());
+                    var _results = Hogan.compile($("#searchResultsTemplate").html(), {delimiters: "<% %>"});
                     var results = _results.render(json);
                     $(table).find("tbody:last").append(results).find("abbr.timeago").timeago();
                 }

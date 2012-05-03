@@ -35,15 +35,13 @@
 
 {% block extra_script %}
   <script type="text/html" id="searchResultsTemplate">
-  {% verbatim %}
-    {{#rows}}
+    <%#rows%>
     <tr>
-      <td><a href="{{detail}}">{{title}}</a></td>
-      <td><a href="{{owner_detail}}">{{owner}}</a></td>
-      <td><abbr class="timeago" title="{{last_modified}}">{{last_modified}}</abbr></td>
+      <td><a href="<%detail%>"><%title%></a></td>
+      <td><a href="<%owner_detail%>"><%owner%></a></td>
+      <td><abbr class="timeago" title="<%last_modified%>"><%last_modified%></abbr></td>
     </tr>
-    {{/rows}}
-  {% endverbatim %}
+    <%/rows%>
   </script>
   <script type="text/html" id="searchNoResultsTemplate">
     <tr>
