@@ -20,24 +20,30 @@ sitemaps = {
 }
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^geonode/', include('geonode.foo.urls')),
+    # Example: (r'^geonode/', include('geonode.foo.urls')),
+    # Static pages
     (r'^(?:index/?)?$', 'geonode.views.index'),
+
+    # Data views
+    (r'^maps/', include(geonode.maps.urls.urlpatterns)),
+    (r'^data/', include(geonode.maps.urls.datapatterns)),
+
+    # Accounts
+    (r'^accounts/ajax_login$', 'geonode.views.ajax_login'),
+    (r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup'),
+    (r'^accounts/', include('registration.urls')),
+    (r'^profiles/', include('profiles.urls')),
+    (r'^avatar/', include('avatar.urls')),
+
+    # Meta
     (r'^(?P<page>help)/?$', 'geonode.views.static'),
     (r'^developer/?$', 'geonode.views.developer'),
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
                {'template': 'lang.js', 'mimetype': 'text/javascript'}, 'lang'),
-    (r'^maps/', include(geonode.maps.urls.urlpatterns)),
-    (r'^data/', include(geonode.maps.urls.datapatterns)),
-    (r'^admin/', include(admin.site.urls)),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
-    (r'^accounts/ajax_login$', 'geonode.views.ajax_login'),
-    (r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup'),
-    (r'^avatar/', include('avatar.urls')),
-    (r'^accounts/', include('registration.urls')),
-    (r'^profiles/', include('profiles.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    (r'^admin/', include(admin.site.urls)),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
