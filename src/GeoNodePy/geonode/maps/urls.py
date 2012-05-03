@@ -5,11 +5,11 @@ js_info_dict = {
 }
 
 urlpatterns = patterns('geonode.maps.views',
-    (r'^$', 'maps'),
+    url(r'^$', 'maps', name='maps_home'),
     url(r'^new$', 'newmap', name="map_new"),
     url(r'^new/data$', 'newmapJSON'),
     (r'^(?P<mapid>\d+)$', 'map_controller'),
-    (r'^(?P<mapid>\d+)/view$', 'view'),
+    url(r'^(?P<mapid>\d+)/view$', 'view', name='maps_view'),
     (r'^(?P<mapid>\d+)/download/$', 'map_download'),
     (r'^check/$', 'check_download'),
     (r'^embed/$', 'embed'),

@@ -21,8 +21,7 @@ sitemaps = {
 
 urlpatterns = patterns('',
     # Example: (r'^geonode/', include('geonode.foo.urls')),
-    # Static pages
-    (r'^(?:index/?)?$', 'geonode.views.index'),
+    url(r'^(?:index/?)?$', 'geonode.views.index', name='home'),
 
     # Data views
     (r'^maps/', include(geonode.maps.urls.urlpatterns)),
@@ -36,13 +35,13 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
 
     # Meta
-    (r'^(?P<page>help)/?$', 'geonode.views.static'),
-    (r'^developer/?$', 'geonode.views.developer'),
+    url(r'^(?P<page>help)/?$', 'geonode.views.static', name='help'),
+    url(r'^developer/?$', 'geonode.views.developer', name='dev'),
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
-               {'template': 'lang.js', 'mimetype': 'text/javascript'}, 'lang'),
+               {'template': 'lang.js', 'mimetype': 'text/javascript'}, name='lang'),
     (r'^i18n/', include('django.conf.urls.i18n')),
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
-    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict, name='jscat'),
+    url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
     (r'^admin/', include(admin.site.urls)),
     )
 
