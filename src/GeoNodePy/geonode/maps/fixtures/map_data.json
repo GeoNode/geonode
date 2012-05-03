@@ -36,6 +36,7 @@
             "owner": 1,
             "projection": "EPSG:900913",
             "title": "GeoNode Default Map",
+            "last_modified": "2010-07-20 13:31:27",
             "zoom": 7
         },
         "model": "maps.map",

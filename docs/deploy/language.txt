@@ -1,0 +1,72 @@
+=============================
+Changing the Default Language
+=============================
+
+GeoNode's default language is English, but GeoNode users can change the interface language with the pulldown menu at the top-right of most GeoNode pages.  Once a user selects a language GeoNode remembers that language for subsequent pages.  
+
+GeoNode Configuration
+=====================
+
+As root edit the geonode config file :file:`/etc/geonode/local_settings.py` and change ``LANGUAGE_CODE`` to the desired default language.  Note a list of language codes can be found in the global django config file :file:`/var/lib/geonode/lib/python2.6/site-packages/django/conf/global_settings.py`.  For example, to make French the default language use::
+
+    LANGUAGE_CODE = 'fr'
+
+Unfortunately  Django overrides this setting, giving the language setting of a user's browser priority.  For example, if ``LANGUAGE_CODE`` is set to French, but the user has configured their operating system for Spanish they may see the Spanish version when they first visit GeoNode.
+
+
+Additional Steps
+================
+
+If this is not the desired behaviour, and all users should initially see the default ``LANGUAGE_CODE``, regardless of their browser's settings, do the following steps to ensure Django ignores the browser language settings.  (Users can always use the pulldown language menu to change the language at any time.)
+
+As create a new directory within GeoNode's site packages::
+
+    sudo mkdir /var/lib/geonode/lib/python2.6/site-packages/setmydefaultlanguage
+
+As root create and edit a new file :file:`/var/lib/geonode/lib/python2.6/site-packages/setmydefaultlanguage/__init__.py` and add the following lines::
+
+    class ForceDefaultLanguageMiddleware(object):
+        """
+        Ignore Accept-Language HTTP headers
+
+        This will force the I18N machinery to always choose settings.LANGUAGE_CODE
+        as the default initial language, unless another one is set via sessions or cookies
+
+        Should be installed *before* any middleware that checks request.META['HTTP_ACCEPT_LANGUAGE'],
+        namely django.middleware.locale.LocaleMiddleware
+        """
+        def process_request(self, request):
+            if request.META.has_key('HTTP_ACCEPT_LANGUAGE'):
+                del request.META['HTTP_ACCEPT_LANGUAGE']
+
+At the end of the GeoNode configuration file :file:`/etc/geonode/local_settings.py` add the following lines to ensure the above class is executed::
+
+    MIDDLEWARE_CLASSES = (
+        'django.middleware.common.CommonMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'setmydefaultlanguage.ForceDefaultLanguageMiddleware',
+        'django.middleware.locale.LocaleMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+    )
+
+
+
+Restart
+=======
+
+Finally restart Apache with::
+
+    sudo /etc/init.d/apache2 restart
+
+
+Please refer to :doc:`Translating GeoNode <../developers/translation>` for information on editing GeoNode pages in different languages and create new GeoNode Translations. 
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    ../developers/translation
+
+
+
