@@ -1,14 +1,15 @@
 {% extends "registration/base.html" %}
 {% load i18n %}
+{% load bootstrap_tags %}
 
 {% block main %}
-<div class="twocol">
   <form method="post" action=".">
     {% csrf_token %}
-   <ul class="form">
-	  {{ form.as_ul }}
-      <li><input type="submit" value="{% trans 'Submit' %}" /></li>
-   </ul>
+    <div class="form-controls">
+      {{ form|as_bootstrap }}
+    </div>
+    <div class="form-actions">
+      <input type="submit" class="btn btn-primary" value="{% trans "Create account" %}" />
+    <div>
   </form>
-</div>
 {% endblock %}
