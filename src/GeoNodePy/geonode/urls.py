@@ -21,8 +21,10 @@ sitemaps = {
 
 urlpatterns = patterns('',
     # Example: (r'^geonode/', include('geonode.foo.urls')),
-    url(r'^(?:index/?)?$', 'geonode.views.index', name='home'),
     # Static pages
+    url(r'^(?:index/?)?$', 'geonode.views.index', name='home'),
+    url(r'^help/?$', 'geonode.views.help', name='help'),
+    url(r'^developer/?$', 'geonode.views.developer', name='dev'),
 
     # Data views
     (r'^maps/', include(geonode.maps.urls.urlpatterns)),
@@ -36,8 +38,6 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
 
     # Meta
-    url(r'^help/?$', 'geonode.views.help', name='help'),
-    url(r'^developer/?$', 'geonode.views.developer', name='dev'),
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
                {'template': 'lang.js', 'mimetype': 'text/javascript'}, name='lang'),
     (r'^i18n/', include('django.conf.urls.i18n')),
