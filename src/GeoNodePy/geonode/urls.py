@@ -22,6 +22,7 @@ sitemaps = {
 urlpatterns = patterns('',
     # Example: (r'^geonode/', include('geonode.foo.urls')),
     url(r'^(?:index/?)?$', 'geonode.views.index', name='home'),
+    # Static pages
 
     # Data views
     (r'^maps/', include(geonode.maps.urls.urlpatterns)),
