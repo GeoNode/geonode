@@ -14,13 +14,13 @@ Ext.onReady(function(){
   var exploreMapButton = new Ext.Button({
      renderTo: 'explore_map', 
      text: '{% trans "Explore Maps" %}',
-     handler: function(){ window.location = "{% url geonode.maps.views.maps_search_page %}"; }
+     handler: function(){ window.location = "{% url maps_search %}"; }
   });
 
   var createMapButton = new Ext.Button({
      renderTo: 'create_map', 
      text: '{% trans "Create Map" %}',
-     handler: function(){ window.location = "{% url geonode.maps.views.newmap %}"; }
+     handler: function(){ window.location = "{% url map_new %}"; }
   });
 
   var submitForm = function() {
@@ -91,7 +91,7 @@ Ext.onReady(function(){
   
     <!-- Links to specialized views of data -->
     <!-- Upload data button (link?) -->
-    <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload data"  %}</a>
+    <a class="layer-upload-link" href="{% url data_upload %}">{% trans "Upload data"  %}</a>
   </div>
 </div>
 {% endblock %}

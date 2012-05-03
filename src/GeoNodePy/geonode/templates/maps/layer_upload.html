@@ -34,7 +34,7 @@ Ext.onReady(function() {
 Ext.onReady(function(){
     Ext.QuickTips.init();
     
-    var form_target = "{% url geonode.maps.views.upload_layer %}";
+    var form_target = "{% url data_upload %}";
     var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
     var layer_title = new Ext.form.TextField({
       id: 'layer_title',
