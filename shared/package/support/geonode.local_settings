@@ -1,21 +1,67 @@
-import os
-import geonode
+###########################################################
+# SITE SPECIFIC SETTINGS
+# Overriding generic settings - uncomment and edit to change
+###########################################################
 
-DEBUG = TEMPLATE_DEBUG = False
-MINIFIED_RESOURCES = True
-SERVE_MEDIA=False
-
-SITENAME = 'GeoNode'
+#SITE_ID = 1
+#SITENAME = "GeoNode"
+# Change to actual URL
 SITEURL = 'http://localhost/'
+#ROOT_URLCONF = 'geonode.urls'
 
-DATABASE_ENGINE = 'postgresql_psycopg2'
-DATABASE_NAME = 'geonode'
-DATABASE_USER = 'geonode'
-DATABASE_PASSWORD = 'THE_DATABASE_PASSWORD'
-DATABASE_HOST = 'localhost'
-DATABASE_PORT = '5432'
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
+#REGISTRATION_OPEN = False
+#ACCOUNT_ACTIVATION_DAYS = 7
 
-# Make geonode upload vector layers directly to postgis
+ADMINS = ( ('Your Name', 'your_email@domain.com'),)
+
+# Datastore settings to make geonode upload vector layers directly to postgis
+DB_DATASTORE=False
+
+# Local time zone for this installation. http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# If running in a Windows environment set to same as your system time zone.
+TIME_ZONE = 'America/New_York'
+
+# Language code for this installation.
+#LANGUAGE_CODE = 'en'
+
+# Google API key if using Google maps
+#GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
+
+###########################################################
+# MODE SPECIFIC SETTINGS
+# Default settings assume production environment
+###########################################################
+
+# General Debug mode. Sometimes useful to turn on in Production
+DEBUG = False
+# Template debugging
+TEMPLATE_DEBUG = DEBUG
+MINIFIED_RESOURCES = True
+# This tells the development server to serve static files
+SERVE_MEDIA = False
+
+DATABASE_NAME='geonode'
+DATABASE_USER='geonode'
+DATABASE_PASSWORD='password'
+DATABASE_HOST='localhost'
+DATABASE_PORT='5432'
+
+# Uncomment and edit for production database
+DATABASES = {
+# Example postgres DB
+       'default': {
+       	 	'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': DATABASE_NAME,
+                'USER': DATABASE_USER,
+                'PASSWORD': DATABASE_PASSWORD,
+                'HOST': DATABASE_HOST,
+                'PORT': DATABASE_PORT,
+        }
+}
+
 DB_DATASTORE_NAME = 'postgres_imports'
 DB_DATASTORE_DATABASE = DATABASE_NAME
 DB_DATASTORE_USER = DATABASE_USER
@@ -24,77 +70,26 @@ DB_DATASTORE_HOST = DATABASE_HOST
 DB_DATASTORE_PORT = DATABASE_PORT
 DB_DATASTORE_TYPE='postgis'
 
-# Django 1.3 compatibility
-DATABASES = {
-      'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': DATABASE_NAME,
-            'USER': DATABASE_USER,
-            'PASSWORD': DATABASE_PASSWORD,
-            'HOST': DATABASE_HOST,
-            'PORT': DATABASE_PORT,
-        }
-    }
-
-DB_DATASTORE=True
-
-LANGUAGE_CODE = 'en'
-
-MEDIA_ROOT = '/var/www/geonode/uploaded'
-MEDIA_URL = '/uploaded/'
-STATIC_ROOT = '/var/www/geonode/static/'
-STATIC_URL = '/static/'
-GEONODE_UPLOAD_PATH = MEDIA_ROOT + 'geonode'
-GEONODE_CLIENT_LOCATION = STATIC_URL + 'geonode/'
-
-STATICFILES_STORAGE = 'staticfiles.storage.StaticFilesStorage'
-
-# secret key used in hashing, should be a long, unique string for each
-# site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
-SECRET_KEY = 'THE_SECRET_KEY'
-
-# The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
-
-# The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = SITEURL + 'geonetwork/'
-
-# The username and password for a user with write access to GeoNetwork
-GEONETWORK_CREDENTIALS = 'admin', 'admin'
-GEOSERVER_CREDENTIALS = 'geoserver', SECRET_KEY
-
-# A Google Maps API key is needed for the 3D Google Earth view of maps
-# See http://code.google.com/apis/maps/signup.html
-GOOGLE_API_KEY = ''
-
-DEFAULT_LAYERS_OWNER='admin'
-
-GEONODE_ROOT = os.path.dirname(geonode.__file__)
-
-TEMPLATE_DIRS = (
-    '/etc/geonode/templates',
-    os.path.join(GEONODE_ROOT, 'templates'),
-)
-
-# Additional directories which hold static files
-STATICFILES_DIRS = [
-    '/etc/geonode/media',
-    os.path.join(GEONODE_ROOT, 'media'),
-]
-# Uncomment the following to receive emails whenever there are errors in GeoNode
-#ADMINS = (
-#            ('John', 'john@example.com'), 
-#         )
-
 # Uncomment the following to use a Gmail account as the email backend
 #EMAIL_USE_TLS = True
 #EMAIL_HOST = 'smtp.gmail.com'
-#EMAIL_HOST_USER = 'youremail@gmail.com'
-#EMAIL_HOST_PASSWORD = 'yourpassword'
+#EMAIL_HOST_USER = 'email'
+#EMAIL_HOST_PASSWORD = 'pw'
 #EMAIL_PORT = 587
 
-# For more information on available settings please consult the Django docs at
-# https://docs.djangoproject.com/en/dev/ref/settings
+# Directories to search for templates
+TEMPLATE_DIRS = (
+    '/etc/geonode/templates',
+    os.path.join(PROJECT_ROOT,'templates'),
+    os.path.join(GEONODE_ROOT, 'templates')
+)
+
+# Additional directories which hold static files
+STATICFILES_DIRS = (
+    '/etc/geonode/static',
+    os.path.join(PROJECT_ROOT, 'static/'),
+    os.path.join(GEONODE_ROOT, 'static/')
+)
 
 LOGGING = {
     "version": 1,
