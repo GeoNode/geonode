@@ -134,7 +134,7 @@ class LayerAttributeForm(forms.ModelForm):
 
 class GazetteerForm(forms.Form):
 
-    project = forms.CharField(label = _('Project'), max_length=128)
+    project = forms.CharField(label = _('Project'), max_length=128, required=False)
     startDate = forms.ModelChoiceField(label = _("Start Date attribute"),
         required=False,
         queryset = LayerAttribute.objects.none())

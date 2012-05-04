@@ -21,7 +21,7 @@ def get_geometry_type(layer_name):
         cur = conn.cursor()
         cur.execute("select type, f_geometry_column, srid from geometry_columns where f_table_name = '%s'" %  layer_name)
         result = cur.fetchone()
-        print result
+        #print result
         return result
     except Exception, e:
         logger.error("Error retrieving type for PostGIS table %s:%s", layer_name, str(e))
@@ -40,7 +40,7 @@ def getGazetteerEntry(id):
 
         posts = []
         for result in results:
-            print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
+            #(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
             posts.append({'placename': result[0], 'coordinates':(result[2], result[3]), 'source':formatSourceLink(result[1]), 'id': result[4]})
         return posts
     except Exception, e:
@@ -75,7 +75,7 @@ def getGazetteerResults(place_name, map = None, layer = None, start_date = None,
                 layer = Layer.objects.get(typename=maplayer.name)
                 layers.append(layer.name)
             except:
-                print("Could not find %s", maplayer.name)
+                logger.info("Could not find %s", maplayer.name)
 
     elif layer:
         layers = [layer]
@@ -95,7 +95,7 @@ def getGazetteerResults(place_name, map = None, layer = None, start_date = None,
     if project:
         sql_query += " AND project = '" + project + "'"
 
-    print("SQL QUERY IS: %s", sql_query)
+    #print("SQL QUERY IS: %s", sql_query)
 
     conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
@@ -105,7 +105,7 @@ def getGazetteerResults(place_name, map = None, layer = None, start_date = None,
 
         posts = []
         for result in results:
-            print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
+            #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
             posts.append({'placename': result[0], 'coordinates':(result[2], result[3]), 'source':formatSourceLink(result[1]), 'start_date': result[4], 'end_date': result[5], 'gazetteer_id': result[6]})
             #posts.append({"type": "Feature", "geometry": {"type": "Point", "coordinates":[result[2], result[3]]}, "properties": {'placename': result[0], 'source': result[1], 'start_date': result[4], 'end_date': result[5], 'gazetteer_id': result[6]}})
         return posts
@@ -152,7 +152,7 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
     Delete layer placenames where the FID is no longer in the original table or the layer_attribute is not in the list of name attributes.
     """
     delete_query = "DELETE FROM gazetteer_placename WHERE layer_name = '" + str(layer.name) + "' AND (feature_fid NOT IN (SELECT fid from \"" + layer.name + "\") OR layer_attribute NOT IN (" + namelist + "))"
-    print delete_query
+    #print delete_query
 
     updateQueries = []
     insertQueries = []
@@ -168,7 +168,7 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         coord_query = "ST_Centroid(" + geom_query + ")"
 
     for name in name_attributes:
-        print("Attribute:" + name + " for " + layer.name)
+        #print("Attribute:" + name + " for " + layer.name)
         attribute = get_object_or_404(LayerAttribute, layer = layer, attribute=name)
         """
         Update layer placenames where placename FID = layer FID and placename layer attribute = name attribute
@@ -202,18 +202,18 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         cur.execute(delete_query)
         logger.info(delete_query)
         for updateQuery in updateQueries:
-            print updateQuery
+            #print updateQuery
             cur.execute(updateQuery)
             logger.info(updateQuery)
         for insertQuery in insertQueries:
-            print insertQuery
+            #print insertQuery
             cur.execute(insertQuery)
             logger.info(insertQuery)
         conn.commit()
         cur.close()
         return "Done"
     except Exception, e:
-        print ("Error retrieving type for PostGIS table %s:%s", layer_name, str(e))
+        #print ("Error retrieving type for PostGIS table %s:%s", layer_name, str(e))
         logger.error("Error retrieving type for PostGIS table %s:%s", layer_name, str(e))
         raise
     finally:
@@ -223,15 +223,15 @@ def getExternalServiceResults(place_name, services):
     results = []
     for service in services.split(',',):
         if service == "google":
-            print("get Google")
+            #print("get Google")
             google = getGoogleResults(place_name)
             results.extend(google)
         elif service == "yahoo":
-            print("get Yahoo")
+            #print("get Yahoo")
             yahoo = getYahooResults(place_name)
             results.extend(yahoo)
         elif service == "geonames":
-            print("get Geonames")
+            #print("get Geonames")
             geonames = getGeonamesResults(place_name)
             results.extend(geonames)
     return results
