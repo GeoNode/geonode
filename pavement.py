@@ -196,8 +196,10 @@ def setup_geonetwork(options):
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
-        grab(src_url, dst_url)
+
     if not dst_war.exists():
+    	info("getting geoserver.war")
+        grab(src_url, dst_url)
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
         zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
@@ -205,7 +207,8 @@ def setup_geonetwork(options):
     src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
     dst_url = webapps / "intermap.war"
 
-    grab(src_url, dst_url)
+    if not dst_url.exists():
+        grab(src_url, dst_url)
 
 @task
 @needs([
