@@ -31,8 +31,8 @@ urlpatterns = patterns('',
     (r'^data/', include(geonode.maps.urls.datapatterns)),
 
     # Accounts
-    (r'^accounts/ajax_login$', 'geonode.views.ajax_login'),
-    (r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup'),
+    url(r'^accounts/ajax_login$', 'geonode.views.ajax_login', name='auth_ajax_login'),
+    url(r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup', name='auth_ajax_lookup'),
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
     (r'^avatar/', include('avatar.urls')),
