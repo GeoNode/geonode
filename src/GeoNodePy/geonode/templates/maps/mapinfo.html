@@ -33,11 +33,11 @@ Ext.onReady(function() {
             '_none': '_none'
         },
         renderTo: "permissions_form",
-        userLookup: "{% url geonode.views.ajax_lookup %}",
+        userLookup: "{% url auth_ajax_lookup %}",
         permissions: {{ permissions_json }},
         listeners: {
             updated: function(perms) {
-                var submitTo = "{% url geonode.maps.views.ajax_map_permissions map.id %}";
+                var submitTo = "{% url maps_ajax_perm map.id %}";
                 Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
             }
         }
@@ -61,7 +61,7 @@ Ext.onReady(function() {
 {% block sidebar %}
 <div id="sidebar" class="threecol">
     <h3>{% trans "Download" %}</h3>
-    <p><a href="{% url geonode.maps.views.map_download map.id %}">{% trans "Download all layers included in this map" %}</a></p>
+    <p><a href="{% url maps_download map.id %}">{% trans "Download all layers included in this map" %}</a></p>
     <h3>{% trans "Layers" %}</h3>
   <p>{% trans "This map uses the following layers" %} </p>
   <ul>
@@ -76,17 +76,14 @@ Ext.onReady(function() {
     {% has_obj_perm user map "maps.change_map" as can_change %}
     {% has_obj_perm user map "maps.delete_map" as can_delete %}
 
-    <li><a href="{% url geonode.maps.views.view map.id %}">{% trans "View or edit this map" %}</a></li>
+    <li><a href="{% url maps_view map.id %}">{% trans "View or edit this map" %}</a></li>
     {% if can_change %}
-    <li><a href="{% url geonode.maps.views.map_controller map.id %}?describe">{% trans "Edit metadata" %}</a></li>
-    {% endif %}
-    {% if can_change_permissions %}
-    <li><a href="{% url edit_map_permissions map.id %}">{% trans "Edit permissions" %}</a></li>
+    <li><a href="{% url maps_controller map.id %}?describe">{% trans "Edit metadata" %}</a></li>
     {% endif %}
     {% if can_delete %}
-    <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
+    <li><a href="{% url maps_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
     {% endif %}
-    <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
+    <li><a href="{% url maps_new %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
   </ul>
   {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
   {% if can_change_permissions %}
