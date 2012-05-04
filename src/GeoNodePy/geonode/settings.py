@@ -250,37 +250,6 @@ ABSOLUTE_URL_OVERRIDES = {
 GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 GEONETWORK_CREDENTIALS = 'admin', 'admin'
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "null": {
-            "level":"DEBUG",
-            "class":"django.utils.log.NullHandler",
-        },
-        "console":{
-            "level":"DEBUG",
-            "class":"logging.StreamHandler",
-            "formatter": "simple"
-        },
-        "mail_admins": {
-            "level": "ERROR",
-            "class": "django.utils.log.AdminEmailHandler",
-        },
-    },
-    "loggers": {
-        "django.request": {
-            "handlers": ["mail_admins"],
-            "level": "ERROR",
-            "propagate": True,
-        },
-        "geonode": {
-            "handlers": ["console"],
-            "level": "WARNING",
-        },
-    },
-}
-
 ###########################################################
 # Locations of statically served files. These settings
 # are only used in production mode.
