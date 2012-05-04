@@ -80,9 +80,6 @@ Ext.onReady(function() {
     {% if can_change %}
     <li><a href="{% url maps_controller map.id %}?describe">{% trans "Edit metadata" %}</a></li>
     {% endif %}
-    {% if can_change_permissions %}
-    <li><a href="{% url edit_map_permissions map.id %}">{% trans "Edit permissions" %}</a></li>
-    {% endif %}
     {% if can_delete %}
     <li><a href="{% url maps_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
     {% endif %}
