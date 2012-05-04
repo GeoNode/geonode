@@ -203,7 +203,7 @@ Ext.onReady(function(){
 
     var permissionsEditor = new GeoNode.PermissionsEditor({
         renderTo: "permissions_form",
-        userLookup: "{% url geonode.views.ajax_lookup %}",
+        userLookup: "{% url auth_ajax_lookup %}",
         listeners: {
             updated: function(pe) {
                 permissionsField.setValue(Ext.util.JSON.encode(pe.writePermissions()));
