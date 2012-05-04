@@ -252,13 +252,13 @@ def setup_geonode_client(options):
     if not static.exists():
         static.mkdir()
 
+    sh("git submodule update --init")
 
-    dst_zip = static / "geonode-client.zip"
-
-    copy("src/externals/geonode-client.zip", dst_zip)
-
-    zip_extractall(zipfile.ZipFile(dst_zip), static)
-    dst_zip.remove()
+    with pushd("src/geonode-client/"):
+        sh("mvn clean compile")
+    
+    src_zip = "src/geonode-client/build/geonode-client.zip"
+    zip_extractall(zipfile.ZipFile(src_zip), static)
 
 @task
 def sync_django_db(options):
@@ -301,11 +301,10 @@ def package_client(options):
     else:
         # Extract static files to static_location
     	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
-        dst_zip =  geonode_media_dir / "geonode-client.zip"
         static_location = geonode_media_dir / "static"
 
+        dst_zip = "src/geonode-client/build/geonode-client.zip"
 
-        copy("src/externals/geonode-client.zip", dst_zip)
         zip_extractall(zipfile.ZipFile(dst_zip), static_location)
         os.remove(dst_zip)
 
