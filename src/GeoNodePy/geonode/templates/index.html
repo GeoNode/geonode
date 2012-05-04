@@ -74,7 +74,7 @@ Ext.onReady(function(){
 
     <!-- Data search text box and button -->
 
-    <form action="{% url search %}" method="POST">
+    <form action="{% url data_search %}" method="POST">
       {% csrf_token %}
         <table>
           <tr>
@@ -86,7 +86,7 @@ Ext.onReady(function(){
             </td>
           </tr>
         </table>
-        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
     </form>
   
     <!-- Links to specialized views of data -->
