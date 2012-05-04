@@ -12,7 +12,7 @@
 
         function update() { 
             Ext.Ajax.request({ 
-                url : "{% url geonode.maps.views.check_download %}",
+                url : "{% url maps_download_check %}",
                 method: "GET",              
                 success: function(result) { 
                     process = Ext.util.JSON.decode(result.responseText);
