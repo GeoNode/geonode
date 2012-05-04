@@ -215,13 +215,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # Directories to search for templates
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT,'templates'),  # files common to all sites
+    os.path.join(PROJECT_ROOT,'templates'),
     os.path.join(GEONODE_ROOT, 'templates')
 )
 
 # Additional directories which hold static files
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static/'), # static is what I like to call it
+    os.path.join(PROJECT_ROOT, 'static/'),
     os.path.join(GEONODE_ROOT, 'static/')
 )
 
