@@ -78,18 +78,23 @@
       </li>
       {% endfor %} 
     </ul>     
+    {% if locked_layers %}
     {% blocktrans %}
     Additionally, the map contains these layers which will not be downloaded
     due to security restrictions:
     {% endblocktrans %}
+    {% endif %}
     <ul>
       {% for layer in locked_layers %} 
       <li>{{ layer.name }}</li>
       {% endfor %} 
-    </ul>{% blocktrans %}
+    </ul>
+    {% if remote_layers %}
+    {% blocktrans %}
     Finally, the map contains these layers which will not be downloaded
     because they are not available directly from this GeoNode:
     {% endblocktrans %}
+    {% endif %}
     <ul>
       {% for layer in remote_layers %} 
       <li>{{ layer }}</li>
