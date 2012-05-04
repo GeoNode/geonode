@@ -284,11 +284,6 @@
             {% trans "Upload a new version of this data" %}
         </a></li>
         {% endif %}
-        {% if can_change_permissions %}
-        <li><a href="{% url edit_layer_permissions layer.typename %}">
-            {% trans "Edit Permissions" %}
-        </a></li>
-        {% endif %}
             {% if can_delete %}
             <li><a href="{% url data_remove layer.typename %}">
                 {% trans "Remove" %}
