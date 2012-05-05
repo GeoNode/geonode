@@ -43,7 +43,7 @@ The main components are:
 
 #. **PostgreSQL & PostGIS/ArcSDE: Database**
 
-    The database component manages data and configuration informaton for Geonode/Django, GeoNetwork and GeoServer.  All of these tables and data are stroed within the geonode database on PostgreSQL.  GeoServer can use either PostGIS or ArcSDE to store and manage spatial vector data.  (Each layer is stored as a separate table.)  When PostGIS is used as the spatial database for GeoServer, the layers are also stored within the geonode database.
+    The database component manages data and configuration information for Geonode/Django, GeoNetwork and GeoServer.  All of these tables and data are stored within the geonode database on PostgreSQL.  GeoServer can use either PostGIS or ArcSDE to store and manage spatial vector data.  (Each layer is stored as a separate table.)  When PostGIS is used as the spatial database for GeoServer, the layers are also stored within the geonode database.
 
 
 Dependencies
