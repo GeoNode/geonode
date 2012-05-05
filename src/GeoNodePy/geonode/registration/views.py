@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.contrib.auth import login
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -64,10 +65,19 @@ def registerOrganizationUser(request, success_url=None,
             # a default value using reverse() will cause circular-import
             # problems with the default URLConf for this application, which
             # imports this file.
+
+
             if new_user.get_profile().is_org_member:
                 request.session["group_username"] = new_user.username
                 logger.debug("group username set to [%s]", new_user.username)
                 return HttpResponseRedirect(settings.CUSTOM_ORG_AUTH_URL)
+            elif "bra_harvard_redirect" in request.session:
+                new_user.active = True
+                new_user.save()
+                new_user.backend = 'django.contrib.auth.backends.ModelBackend'
+                # This login function does not need password.
+                login(request, new_user)
+                return HttpResponseRedirect(request.session["bra_harvard_redirect"])
             else:
                 return HttpResponseRedirect(success_url or reverse('registration_complete'))
     else:
@@ -85,7 +95,7 @@ def registerOrganizationUser(request, success_url=None,
 
 def registercompleteOrganizationUser(request, template_name='registration/registration_complete.html',):
 
-    if settings.ORG_AUTH_COOKIE in request.COOKIES:
+    if True: #settings.ORG_AUTH_COOKIE in request.COOKIES:
         username = request.session["group_username"]
         user = User.objects.get(username=username)
         userProfile = user.get_profile()
@@ -97,6 +107,14 @@ def registercompleteOrganizationUser(request, template_name='registration/regist
             #else:
             #    userProfile.is_org_member = False
             #    userProfile.save()
+            if "bra_harvard_redirect" in request.session:
+                new_user.active = True
+                new_user.save()
+                new_user.backend = 'django.contrib.auth.backends.ModelBackend'
+                # This login function does not need password.
+                login(request, new_user)
+                return HttpResponseRedirect(request.session["bra_harvard_redirect"])
+
             if user.is_active:
                 return HttpResponseRedirect(user.get_profile().get_absolute_url())
     else:
@@ -105,3 +123,13 @@ def registercompleteOrganizationUser(request, template_name='registration/regist
                 return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
 
     return render_to_response(template_name, RequestContext(request))
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
