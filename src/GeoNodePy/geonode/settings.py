@@ -228,8 +228,9 @@ INSTALLED_APPS = (
     'profiles',
     'avatar',
     'dialogos',
-
+    'agon_ratings',
     'south',
+
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
@@ -264,6 +265,16 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
+
+# Agon Ratings
+AGON_RATINGS_CATEGORY_CHOICES = {
+    "maps.Map": {
+        "map": "How good is this map?"
+    },
+    "maps.Layer": {
+        "layer": "How good is this layer?"
+    },
+}
 
 SOUTH_MIGRATION_MODULES = {
     'registration': 'geonode.migrations.registration',

@@ -2,6 +2,7 @@
 {% load geonode_auth %}
 {% load i18n %}
 {% load dialogos_tags %}
+{% load agon_ratings_tags %}
 
 {% block title %} {{ layer.resource.title|default:layer.typename }} - {{ block.super }} {% endblock %}
 
@@ -132,10 +133,15 @@
 {% block main %}
 <div class="twocol">
 <div id="description"> <h3> {{ layer.resource.title|default:layer.typename }} </h3> </div>
+{% overall_rating layer "layer" as layer_rating %}
+<div class="overall_rating" data-rating="{{ layer_rating }}"></div>
+
 <p> <strong>{% trans "Abstract" %}:</strong> {{ layer.abstract|default:_("No abstract for this layer.") }} </p>
 
 <div id="preview_map"></div>
 
+
+<h3>{% trans "Layer Information" %}</h3>
 {% if layer.display_type %}<p> <strong>{% trans "Type" %}:</strong> {{ layer.display_type }} </p>{% endif %}
 {% if layer.keywords %}<p> <strong>{% trans "Keywords" %}:</strong> {{ layer.keywords }}</p>{% endif %}
 {% if layer.edition %}<p> <strong>{% trans "Edition" %}:</strong> {{ layer.edition }}</p>{% endif %}
@@ -230,6 +236,11 @@
     {% endif %}
 </div>
 
+{% if request.user.is_authenticated %}
+	<h3>{% trans "Rate this layer" %}</h3>
+	{% user_rating request.user layer "layer" as user_layer_rating %}
+	<div id="user_rating" class="category-layer"></div>
+{% endif %}
 </div>
 {% endblock %}
 
@@ -337,4 +348,22 @@
     {% endif %}
     {% endif %}
 </div>
+{% endblock %}
+
+{% block end_body_js %}
+{% if request.user.is_authenticated %}
+	{% user_rating_js request.user layer "layer" %}
+{% else %}
+	<script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
+{% endif %}
+<script>
+	$(function() {
+		$('div.overall_rating').raty({
+			half: true,
+			readOnly: true,
+			start: $('div.overall_rating').data('rating'),
+			path: "{{ STATIC_URL }}agon_ratings/img/"
+		});
+	});
+</script>
 {% endblock %}

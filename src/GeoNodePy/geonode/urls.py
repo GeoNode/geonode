@@ -27,9 +27,11 @@ urlpatterns = patterns('',
     url(r'^developer/?$', 'geonode.views.developer', name='dev'),
 
     # Data views
-    (r'^maps/', include(geonode.maps.urls.urlpatterns)),
-    (r'^comments/', include('dialogos.urls')),
     (r'^data/', include(geonode.maps.urls.datapatterns)),
+    (r'^maps/', include(geonode.maps.urls.urlpatterns)),
+
+    (r'^comments/', include('dialogos.urls')),
+    (r'^ratings/', include('agon_ratings.urls')),
 
     # Accounts
     url(r'^accounts/ajax_login$', 'geonode.views.ajax_login', name='auth_ajax_login'),
