@@ -781,3 +781,7 @@ Comments
 .comment_post input:hover {
   background-color: #F2FFE6;
 }
+
+#preview_map {
+  margin-bottom: 1em;
+}
