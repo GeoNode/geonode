@@ -114,8 +114,6 @@ Ext.onReady(function() {
 		{% user_rating request.user map "map" as user_map_rating %}
 		<div id="user_rating" class="category-map"></div>
 	{% endif %}
-
-  <h3>Social</h3>
 </div>
 {% endblock %}
 {% block sidebar %}
@@ -160,7 +158,7 @@ Ext.onReady(function() {
 {% else %}
 	<script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
 {% endif %}
-<script>
+<script type="text/javascript">
 	$(function() {
 		$('div.overall_rating').raty({
 			half: true,
@@ -169,7 +167,7 @@ Ext.onReady(function() {
 			path: "{{ STATIC_URL }}agon_ratings/img/"
 		});
 	});
-<script type="text/javascript">
+
 	(function() {
 		var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
 		po.src = 'https://apis.google.com/js/plusone.js';
