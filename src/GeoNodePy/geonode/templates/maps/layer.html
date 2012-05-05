@@ -145,9 +145,9 @@
 {% block main %}
 <div class="twocol">
 	<div id="description">
+		<h3>{{ layer.resource.title|default:layer.typename }}</h3>
         {% overall_rating layer "layer" as layer_rating %}
         <div class="overall_rating" data-rating="{{ layer_rating }}"></div>
-		<h3>{{ layer.resource.title|default:layer.typename }}</h3>
 		<g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
 		<div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
 	</div>
@@ -371,7 +371,7 @@
 {% else %}
 	<script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
 {% endif %}
-<script>
+<script type="text/javascript">
 	$(function() {
 		$('div.overall_rating').raty({
 			half: true,
@@ -380,7 +380,7 @@
 			path: "{{ STATIC_URL }}agon_ratings/img/"
 		});
 	});
-<script type="text/javascript">
+
 	(function() {
 		var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
 		po.src = 'https://apis.google.com/js/plusone.js';
