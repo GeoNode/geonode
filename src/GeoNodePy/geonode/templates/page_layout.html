@@ -81,7 +81,7 @@
     <div class="wrap selfclear">             
       {% block footer %}
       <div class="onecol">
-        {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a>
+        Powered by <a href="http://geonode.org">{% trans "GeoNode" %} {{VERSION}}</a>
         | <strong>{% trans "Need Help?" %}</strong>
         <a href="{% url help %}">{% trans "Help" %}</a> 
         | <a href="{% url dev %}">{% trans "For Developers" %}</a>
