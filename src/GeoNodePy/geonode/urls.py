@@ -28,6 +28,7 @@ urlpatterns = patterns('',
 
     # Data views
     (r'^maps/', include(geonode.maps.urls.urlpatterns)),
+    (r'^comments/', include('dialogos.urls')),
     (r'^data/', include(geonode.maps.urls.datapatterns)),
 
     # Accounts
