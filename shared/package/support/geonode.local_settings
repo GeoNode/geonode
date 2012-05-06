@@ -79,7 +79,7 @@ TEMPLATE_DIRS = (
 # Additional directories which hold static files
 STATICFILES_DIRS = [
     '/etc/geonode/media',
-    os.path.join(GEONODE_ROOT, 'media'),
+    os.path.join(GEONODE_ROOT, 'static'),
 ]
 # Uncomment the following to receive emails whenever there are errors in GeoNode
 #ADMINS = (
