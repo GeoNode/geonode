@@ -190,9 +190,14 @@ MAP_BASELAYERS = [{
     "source": { "ptype":"gx_olsource"},
     "type":"OpenLayers.Layer.OSM",
     "args":["OpenStreetMap"],
-    "visibility": True,
+    "visibility": False,
     "fixed": True,
     "group":"background"
+  },{
+    "source": { "ptype":"gxp_mapquestsource"},
+    "name":"osm",
+    "group":"background",
+    "visibility": True
   },{
     "source": {"ptype":"gx_olsource"},
     "type":"OpenLayers.Layer.WMS",
