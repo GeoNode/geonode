@@ -199,6 +199,11 @@ MAP_BASELAYERS = [{
     "group":"background",
     "visibility": True
   },{
+    "source": { "ptype":"gxp_mapquestsource"},
+    "name":"naip",
+    "group":"background",
+    "visibility": False
+  },{
     "source": {"ptype":"gx_olsource"},
     "type":"OpenLayers.Layer.WMS",
     "group":"background",
