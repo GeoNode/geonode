@@ -291,6 +291,37 @@ SOUTH_MIGRATION_MODULES = {
     'avatar': 'geonode.migrations.avatar',
 }
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "null": {
+            "level":"DEBUG",
+            "class":"django.utils.log.NullHandler",
+        },
+        "console":{
+            "level":"DEBUG",
+            "class":"logging.StreamHandler",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "geonode": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+    },
+}
+
+
 try:
     from local_settings import *
 except ImportError:
