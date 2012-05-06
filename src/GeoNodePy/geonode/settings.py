@@ -204,6 +204,16 @@ MAP_BASELAYERS = [{
     "group":"background",
     "visibility": False
   },{
+    "source": { "ptype":"gxp_stamensource"},
+    "name":"watercolor",
+    "group":"background",
+    "visibility": False
+  },{
+    "source": { "ptype":"gxp_stamensource"},
+    "name":"toner",
+    "group":"background",
+    "visibility": False
+  },{
     "source": {"ptype":"gx_olsource"},
     "type":"OpenLayers.Layer.WMS",
     "group":"background",
