@@ -30,12 +30,12 @@ public abstract class GeoNodeTestSupport extends GeoServerTestSupport {
         namespaces.put(MockData.SF_PREFIX, MockData.SF_URI);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
 
-        // if necessary, disable the authorization subsystem
-        if (!isAuthorizationEnabled()) {
-            GeoNodeDataAccessManager manager = GeoServerExtensions.bean(
-                    GeoNodeDataAccessManager.class, applicationContext);
-            manager.setAuthenticationEnabled(false);
-        }
+        // // if necessary, disable the authorization subsystem
+        // if (!isAuthorizationEnabled()) {
+        //     GeoNodeDataAccessManager manager = GeoServerExtensions.bean(
+        //             GeoNodeDataAccessManager.class, applicationContext);
+        //     manager.setAuthenticationEnabled(false);
+        // }
     }
 
     /**
@@ -47,7 +47,7 @@ public abstract class GeoNodeTestSupport extends GeoServerTestSupport {
     protected String[] getSpringContextLocations() {
         return new String[] {
                 "classpath*:/applicationContext.xml",
-                "classpath*:/geonodeApplicationSecurityContext.xml"
+                "classpath*:/applicationSecurityContext.xml"
             };
     }
     
