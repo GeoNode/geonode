@@ -110,4 +110,5 @@
   <bean id="downloadKillerRestlet" class="org.geonode.rest.batchdownload.DownloadKillerRestlet">
     <constructor-arg ref="processController" />
   </bean>
+  <bean class="org.geonode.security.GeoNodeSecurityProvider"/>
 </beans>
