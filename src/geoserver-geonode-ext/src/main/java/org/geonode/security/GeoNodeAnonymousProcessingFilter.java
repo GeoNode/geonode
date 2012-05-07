@@ -33,9 +33,9 @@ public class GeoNodeAnonymousProcessingFilter extends GeoServerSecurityFilter {
 
     static final Logger LOGGER = Logging.getLogger(GeoNodeAnonymousProcessingFilter.class);
 
-    private GeonodeSecurityClient client;
+    private GeoNodeSecurityClient client;
 
-    public GeoNodeAnonymousProcessingFilter(GeonodeSecurityClient client) {
+    public GeoNodeAnonymousProcessingFilter(GeoNodeSecurityClient client) {
         this.client = client;
     }
 
@@ -89,7 +89,7 @@ public class GeoNodeAnonymousProcessingFilter extends GeoServerSecurityFilter {
     /**
      * @param client
      */
-    public void setClient(GeonodeSecurityClient client) {
+    public void setClient(GeoNodeSecurityClient client) {
         this.client = client;
     }
 

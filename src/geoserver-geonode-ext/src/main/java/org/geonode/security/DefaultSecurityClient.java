@@ -44,7 +44,7 @@ import org.springframework.util.Assert;
  * 
  * @author Andrea Aime - OpenGeo
  */
-public class DefaultSecurityClient implements GeonodeSecurityClient, ApplicationContextAware {
+public class DefaultSecurityClient implements GeoNodeSecurityClient, ApplicationContextAware {
     static final Logger LOGGER = Logging.getLogger(DefaultSecurityClient.class);
 
     private final HTTPClient client;
@@ -77,7 +77,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     }
 
     /**
-     * @see org.geonode.security.GeonodeSecurityClient#authenticateCookie(java.lang.String)
+     * @see org.geonode.security.GeoNodeSecurityClient#authenticateCookie(java.lang.String)
      */
     public Authentication authenticateCookie(final String cookieValue)
             throws AuthenticationException, IOException {
@@ -110,7 +110,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     }
 
     /**
-     * @see org.geonode.security.GeonodeSecurityClient#authenticateUserPwd(java.lang.String,
+     * @see org.geonode.security.GeoNodeSecurityClient#authenticateUserPwd(java.lang.String,
      *      java.lang.String)
      */
     public Authentication authenticateUserPwd(String username, String password)
@@ -123,7 +123,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     }
 
     /**
-     * @see org.geonode.security.GeonodeSecurityClient#authenticateAnonymous()
+     * @see org.geonode.security.GeoNodeSecurityClient#authenticateAnonymous()
      */
     public Authentication authenticateAnonymous() throws AuthenticationException, IOException {
         Authentication cachedAuth = authCache.get("__anonymous__");

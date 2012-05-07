@@ -21,7 +21,7 @@ import org.geonode.security.LayersGrantedAuthority.LayerMode;
  * @author Andrea Aime - OpenGeo
  * 
  */
-public class MockSecurityClient implements GeonodeSecurityClient {
+public class MockSecurityClient implements GeoNodeSecurityClient {
 
     Map<String, Authentication> cookieAuths;
 
