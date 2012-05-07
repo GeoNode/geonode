@@ -37,9 +37,9 @@ public class GeoNodeCookieProcessingFilter implements Filter {
 
     static final String GEONODE_COOKIE_NAME = "sessionid";
 
-    private GeonodeSecurityClient client;
+    private GeoNodeSecurityClient client;
 
-    public GeoNodeCookieProcessingFilter(GeonodeSecurityClient client) {
+    public GeoNodeCookieProcessingFilter(GeoNodeSecurityClient client) {
         this.client = client;
     }
 
@@ -122,7 +122,7 @@ public class GeoNodeCookieProcessingFilter implements Filter {
     /**
      * @param client
      */
-    public void setClient(GeonodeSecurityClient client) {
+    public void setClient(GeoNodeSecurityClient client) {
         this.client = client;
     }
 

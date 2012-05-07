@@ -24,9 +24,9 @@ import org.springframework.util.Assert;
  */
 public class GeoNodeAuthenticationProvider extends GeoServerAuthenticationProvider {
 
-    private GeonodeSecurityClient client;
+    private GeoNodeSecurityClient client;
 
-    public GeoNodeAuthenticationProvider(GeonodeSecurityClient client) {
+    public GeoNodeAuthenticationProvider(GeoNodeSecurityClient client) {
         this.client = client;
     }
 
@@ -54,7 +54,7 @@ public class GeoNodeAuthenticationProvider extends GeoServerAuthenticationProvid
      * 
      * @param client
      */
-    public void setClient(GeonodeSecurityClient client) {
+    public void setClient(GeoNodeSecurityClient client) {
         this.client = client;
     }
 

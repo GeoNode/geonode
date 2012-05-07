@@ -16,7 +16,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
  * 
  * @author Andrea Aime - OpenGeo
  */
-public interface GeonodeSecurityClient {
+public interface GeoNodeSecurityClient {
 
     /**
      * Authenticates a user based on cookie contents

@@ -2,7 +2,7 @@ package org.geoserver.security;
 
 import java.io.IOException;
 import org.geonode.security.GeoNodeAuthenticationProvider;
-import org.geonode.security.GeonodeSecurityClient;
+import org.geonode.security.GeoNodeSecurityClient;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.security.config.SecurityManagerConfig;
 
@@ -12,9 +12,9 @@ import org.geoserver.security.config.SecurityManagerConfig;
  * @author Ian Schneider <ischneider@opengeo.org>
  */
 public class GeoNodeSecurityManager extends GeoServerSecurityManager {
-    private final GeonodeSecurityClient client;
+    private final GeoNodeSecurityClient client;
 
-    public GeoNodeSecurityManager(GeoServerDataDirectory dataDir, GeonodeSecurityClient client) throws Exception {
+    public GeoNodeSecurityManager(GeoServerDataDirectory dataDir, GeoNodeSecurityClient client) throws Exception {
         super(dataDir);
         this.client = client;
     }

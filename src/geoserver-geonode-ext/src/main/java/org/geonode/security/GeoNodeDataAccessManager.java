@@ -16,7 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 /**
  * An access manager that uses the special authentication tokens setup by the
- * {@link GeonodeSecurityClient} to check if a layer can be accessed, or not
+ * {@link GeoNodeSecurityClient} to check if a layer can be accessed, or not
  * 
  * @author Andrea Aime - OpenGeo
  */
