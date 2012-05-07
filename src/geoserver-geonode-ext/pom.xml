@@ -28,6 +28,11 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
+      <artifactId>main</artifactId>
+      <version>${geoserver.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
       <artifactId>rest</artifactId>
       <version>${geoserver.version}</version>
     </dependency>
@@ -69,7 +74,26 @@
       <artifactId>commons-httpclient</artifactId>
       <version>3.1</version>
     </dependency>
-    
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+      <version>3.1.0.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-expression</artifactId>
+      <version>3.1.1.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>3.1.1.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>3.1.1.RELEASE</version>
+    </dependency>
 
     <!-- GeoJSON module dependencies -->
     <dependency>

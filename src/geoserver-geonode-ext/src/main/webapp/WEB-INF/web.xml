@@ -43,7 +43,7 @@
     <!-- 
     <context-param>
       <param-name>PROXY_BASE_URL</param-name>
-      <param-value>http://82.58.146.45/</param-value>
+      <param-value>http://82.58.146.45/geoserver</param-value>
     </context-param>
      -->
    
@@ -53,25 +53,31 @@
         <param-value>C:\eclipse\workspace\geoserver_trunk\cite\confCiteWFSPostGIS</param-value>
     </context-param> 
    -->
-  
+    
     <!-- pick up all spring application contexts -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <!-- param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value-->
-        <param-value>classpath*:/applicationContext.xml classpath*:/geonodeApplicationSecurityContext.xml</param-value>
+        <param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value>
     </context-param>
-
-    <!-- Use GeoNode specific filter chain -->
+    
     <filter>
-     <filter-name>filterChainProxy</filter-name>
-     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-     <init-param>
-       <param-name>targetBeanName</param-name>
-       <param-value>filterChainProxy</param-value>
+     <filter-name>SessionDebugger</filter-name>
+     <filter-class>org.geoserver.filters.SessionDebugFilter</filter-class>
+    </filter>
+
+    <filter>
+    <filter-name>filterChainProxy</filter-name>     
+     <filter-class> org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+     
+<!-- <filter-name>Spring Security Filter Chain Proxy</filter-name> 
+    <init-param>
+       <param-name>targetClass</param-name>
+       <param-value>org.springframework.security.util.FilterChainProxy</param-value>
      </init-param>
+-->
     </filter>
     
-       <filter>
+   <filter>
     <filter-name>Set Character Encoding</filter-name>
     <filter-class>org.vfny.geoserver.filters.SetCharacterEncodingFilter</filter-class>
     <init-param>
@@ -149,6 +155,11 @@
    </filter>
 
     <filter-mapping>
+      <filter-name>SessionDebugger</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
       <filter-name>GZIP Compression Filter</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
@@ -201,6 +212,10 @@
       <listener-class>org.geoserver.platform.GeoServerContextLoaderListener</listener-class>
     </listener>
     
+    <!--  http session listener proxy -->
+    <listener>
+      <listener-class>org.geoserver.platform.GeoServerHttpSessionListenerProxy</listener-class>
+    </listener>
     
     <!-- spring dispatcher servlet, dispatches all incoming requests -->
     <servlet>
@@ -208,6 +223,8 @@
       <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     </servlet>
     
+    <!-- single mapping to spring, this only works properly if the advanced dispatch filter is 
+         active -->
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/*</url-pattern>
