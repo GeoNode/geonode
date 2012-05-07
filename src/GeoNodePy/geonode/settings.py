@@ -204,6 +204,10 @@ MAP_BASELAYERS = [{
     "group":"background",
     "visibility": False
   },{
+    "source": {"ptype": "gxp_bingsource"},
+  },{
+    "source": {"ptype": "gxp_mapboxsource"},
+  },{
     "source": {"ptype":"gx_olsource"},
     "type":"OpenLayers.Layer.WMS",
     "group":"background",
