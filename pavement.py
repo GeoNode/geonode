@@ -196,8 +196,10 @@ def setup_geonetwork(options):
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
-        grab(src_url, dst_url)
+
     if not dst_war.exists():
+    	info("getting geoserver.war")
+        grab(src_url, dst_url)
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
         zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
@@ -205,7 +207,8 @@ def setup_geonetwork(options):
     src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
     dst_url = webapps / "intermap.war"
 
-    grab(src_url, dst_url)
+    if not dst_url.exists():
+        grab(src_url, dst_url)
 
 @task
 @needs([
@@ -249,13 +252,13 @@ def setup_geonode_client(options):
     if not static.exists():
         static.mkdir()
 
+    sh("git submodule update --init")
 
-    dst_zip = static / "geonode-client.zip"
+    with pushd("src/geonode-client/"):
+        sh("mvn clean compile")
 
-    copy("src/externals/geonode-client.zip", dst_zip)
-
-    zip_extractall(zipfile.ZipFile(dst_zip), static)
-    dst_zip.remove()
+    src_zip = "src/geonode-client/build/geonode-client.zip"
+    zip_extractall(zipfile.ZipFile(src_zip), static)
 
 @task
 def sync_django_db(options):
@@ -294,15 +297,14 @@ def package_client(options):
     """Package compressed client resources (JavaScript, CSS, images)."""
 
     if(hasattr(options, 'use_war')):
-        geonode_client_target_war.copy(options.deploy.out_dir)
+    	geonode_client_target_war.copy(options.deploy.out_dir)
     else:
         # Extract static files to static_location
-        geonode_media_dir = path("./src/GeoNodePy/geonode/media")
-        dst_zip =  geonode_media_dir / "geonode-client.zip"
+    	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
         static_location = geonode_media_dir / "static"
 
+        dst_zip = "src/geonode-client/build/geonode-client.zip"
 
-        copy("src/externals/geonode-client.zip", dst_zip)
         zip_extractall(zipfile.ZipFile(dst_zip), static_location)
         os.remove(dst_zip)
 
@@ -350,7 +352,7 @@ def create_version_name():
     slug = "GeoNode-%s-%s" % (
         pkg_resources.get_distribution('GeoNodePy').version,
         date.today().isoformat()
-        )
+    )
 
     return slug
 
