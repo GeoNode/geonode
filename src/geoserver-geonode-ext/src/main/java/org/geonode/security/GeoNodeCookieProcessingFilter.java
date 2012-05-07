@@ -22,6 +22,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -31,7 +32,7 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - OpenGeo
  * @author Gabriel Roldan - OpenGeo
  */
-public class GeoNodeCookieProcessingFilter implements Filter {
+public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter {
 
     static final Logger LOGGER = Logging.getLogger(GeoNodeCookieProcessingFilter.class);
 
@@ -47,13 +48,6 @@ public class GeoNodeCookieProcessingFilter implements Filter {
      * @see javax.servlet.Filter#destroy()
      */
     public void destroy() {
-        // nothing to do here
-    }
-
-    /**
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
-    public void init(FilterConfig filterConfig) throws ServletException {
         // nothing to do here
     }
 
