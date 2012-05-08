@@ -115,15 +115,18 @@ TEMPLATE_LOADERS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
+    "django.core.context_processors.request",
     "geonode.maps.context_processors.resource_urls",
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -163,12 +166,12 @@ LOGIN_REDIRECT_URL = "/"
 DEFAULT_LAYERS_OWNER='admin'
 
 # Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (-84.7, 12.8)
+DEFAULT_MAP_CENTER = (0, 0)
 
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
-DEFAULT_MAP_ZOOM = 7
+DEFAULT_MAP_ZOOM = 0
 
 DEFAULT_LAYER_SOURCE = {
     "ptype":"gxp_wmscsource",
@@ -187,9 +190,26 @@ MAP_BASELAYERS = [{
     "source": { "ptype":"gx_olsource"},
     "type":"OpenLayers.Layer.OSM",
     "args":["OpenStreetMap"],
-    "visibility": True,
+    "visibility": False,
     "fixed": True,
     "group":"background"
+  },{
+    "source": { "ptype":"gxp_mapquestsource"},
+    "name":"osm",
+    "group":"background",
+    "visibility": True
+  },{
+    "source": { "ptype":"gxp_mapquestsource"},
+    "name":"naip",
+    "group":"background",
+    "visibility": False
+  },{
+    "source": {"ptype": "gxp_bingsource"},
+    "name": "AerialWithLabels",
+    "visibility": False,
+    "group":"background",
+  },{
+    "source": {"ptype": "gxp_mapboxsource"},
   },{
     "source": {"ptype":"gx_olsource"},
     "type":"OpenLayers.Layer.WMS",
@@ -219,11 +239,16 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django_forms_bootstrap',
     'django.contrib.staticfiles',
+    'django.contrib.messages',
+
     'django_extensions',
     'registration',
     'profiles',
     'avatar',
+    'dialogos',
+    'agon_ratings',
     'south',
+
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
@@ -259,10 +284,51 @@ DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
 
+# Agon Ratings
+AGON_RATINGS_CATEGORY_CHOICES = {
+    "maps.Map": {
+        "map": "How good is this map?"
+    },
+    "maps.Layer": {
+        "layer": "How good is this layer?"
+    },
+}
+
 SOUTH_MIGRATION_MODULES = {
     'registration': 'geonode.migrations.registration',
     'avatar': 'geonode.migrations.avatar',
 }
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "null": {
+            "level":"DEBUG",
+            "class":"django.utils.log.NullHandler",
+        },
+        "console":{
+            "level":"DEBUG",
+            "class":"logging.StreamHandler",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "geonode": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+    },
+}
+
 
 try:
     from local_settings import *

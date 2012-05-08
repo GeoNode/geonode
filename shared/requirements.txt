@@ -1,3 +1,5 @@
+--extra-index-url=http://dist.pinaxproject.com/dev
+
 PIL
 OWSLib==0.4.0
 Django==1.4
@@ -9,6 +11,8 @@ django-registration
 django-profiles
 -e git+https://github.com/ericflo/django-avatar.git#egg=avatar
 django-staticfiles
+dialogos==0.1.dev4
+agon-ratings==0.2
 South==0.7.3
 lxml
 django-forms-bootstrap==2.0.3.post1

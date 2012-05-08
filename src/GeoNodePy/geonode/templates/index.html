@@ -12,10 +12,10 @@
       {% endblocktrans %}
     </p>
     <p>
-      <a class="btn btn-large" href="{% url geonode.maps.views.maps_search_page %}">
+      <a class="btn btn-large" href="{% url maps_search %}">
         {% trans "Explore Maps" %}
       </a>
-      <a class="btn btn-large" href="{% url geonode.maps.views.newmap %}">
+      <a class="btn btn-large" href="{% url maps_new %}">
         {% trans "Create Map" %}
       </a>
     </p>
@@ -42,11 +42,12 @@
       </p>
     </div>
     <div class="span4">
-        <form class="form-search" action="{% url search %}" method="POST">
+        <form class="form-search" action="{% url data_search %}" method="POST">
+		  {% csrf_token %}
           <input type="text" class="input-medium search-query" name="q">
           <button type="submit" class="btn btn-small">{% trans "Search" %}</button>
         </form>
-        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
     </div>
   </div>
 {% endblock %}

@@ -12,7 +12,7 @@
 
         function update() { 
             Ext.Ajax.request({ 
-                url : "{% url geonode.maps.views.check_download %}",
+                url : "{% url maps_download_check %}",
                 method: "GET",              
                 success: function(result) { 
                     process = Ext.util.JSON.decode(result.responseText);
@@ -80,26 +80,30 @@
         </li>
       {% endfor %} 
     </ul>
+   
+    {% if locked_layers %}
+      {% blocktrans %}
+        Additionally, the map contains these layers which will not be downloaded
+        due to security restrictions:
+      {% endblocktrans %}
+      <ul>
+        {% for layer in locked_layers %} 
+          <li>{{ layer.name }}</li>
+        {% endfor %} 
+      </ul>
+    {% endif %}
 
-    {% blocktrans %}
-      Additionally, the map contains these layers which will not be downloaded
-      due to security restrictions:
-    {% endblocktrans %}
-    <ul>
-      {% for layer in locked_layers %} 
-        <li>{{ layer.name }}</li>
-      {% endfor %} 
-    </ul>
-
-    {% blocktrans %}
-      Finally, the map contains these layers which will not be downloaded
-      because they are not available directly from this GeoNode:
-    {% endblocktrans %}
-    <ul>
-      {% for layer in remote_layers %} 
-        <li>{{ layer }}</li>
-      {% endfor %} 
-    </ul>
+	  {% if remote_layers %}
+      {% blocktrans %}
+        Finally, the map contains these layers which will not be downloaded
+        because they are not available directly from this GeoNode:
+      {% endblocktrans %}
+      <ul>
+        {% for layer in remote_layers %} 
+          <li>{{ layer }}</li>
+        {% endfor %} 
+      </ul>
+    {% endif %}
 
     {% if map_status %} 
       <div id="cancel"> </div>
