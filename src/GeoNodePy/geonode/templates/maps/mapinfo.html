@@ -1,6 +1,8 @@
 {% extends "maps/base.html" %}
 {% load i18n %}
 {% load geonode_auth %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
 
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
@@ -17,7 +19,6 @@
           useToolbar: false,
           proxy: "/proxy/?url=",
           rest: "/maps/",
-
           // tell the map viewer where and how to be rendered
           portalConfig: {
               height: 300,
@@ -30,23 +31,78 @@
   </script>
 {% endblock %}
 
+{% block start_body_js %}
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+{% endblock %}
+
 {% block main %}
-  <h2>{{ map.title }}</h2>
+  {% overall_rating map "map" as map_rating %}
+  <h2>{{ map.title }}</h2
+  <div class="overall_rating" data-rating="{{ map_rating }}"></div>
+  <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+  <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+	  
   <p><strong>{% trans "Abstract:" %}</strong> {{ map.abstract }}</p>
 
   <div id="embedded_map">
   </div>
   <p><strong>{% trans "Contact:" %}</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p>
+    <h3>{% trans "Comments" %}</h3>
+    <div class="comments_container">
+        {% comments map as comments %}
+        {% for comment in comments %}
+            <div class="comment">
+                <p class="comment_author">{{ comment.author.get_full_name|default:comment.author|capfirst }}</p>
+                <div class="comment_content">
+                    {{ comment.comment|escape|urlize|safe }} &mdash; 
+                    <span class="comment_ago">
+                    {% blocktrans with comment.submit_date|timesince as age %}
+                    {{ age }} ago
+                    {% endblocktrans %}
+                    </span>
+                </div>
+            </div>
+        {% endfor %}
 
-{% url ajax_map_permissions map.id as form_action %}
+        {% if request.user.is_authenticated %}
+            <h3>{% trans "Post a comment" %}</h3>
+            {% comment_form map as comment_form %}
+            <form method="POST" action="{% comment_target map %}">
+                {% csrf_token %}
+                <div class="comment_box">
+                    {{ comment_form.comment }}
+                </div>
+                <div class="comment_post">
+                    <input type="submit" value="{% trans "Submit" %}" />
+                </div>
+                <input type="hidden" name="next" value="{{ request.path }}" />
+            </form>
+        {% else %}
+            <p><a href="{% url auth_login %}">{% trans "Login to add a comment" %}</a></p>
+        {% endif %}
+    </div>
+
+	{% if request.user.is_authenticated %}
+		<h3>{% trans "Rate this map" %}</h3>
+		{% user_rating request.user map "map" as user_map_rating %}
+		<div id="user_rating" class="category-map"></div>
+	{% endif %}
+</div>
+{% url maps_ajax_perm map.id as form_action %}
 {% include "_permissions_form.html" %}
-
 {% endblock %}
 
 {% block sidebar %}
   <ul class="nav nav-list">
     <li class="nav-header">{% trans "Download" %}</li>
-    <li><a href="{% url geonode.maps.views.map_download map.id %}">{% trans "Download all layers included in this map" %}</a></li>
+    <li><a href="{% url maps_download map.id %}">{% trans "Download all layers included in this map" %}</a></li>
     
     <li class="nav-header">{% trans "Layers" %}</li>
     {% for layer in layers %}
@@ -58,17 +114,14 @@
     <li class="nav-header">{% trans "Manage" %}</li>
     {% has_obj_perm user map "maps.change_map" as can_change %}
     {% has_obj_perm user map "maps.delete_map" as can_delete %}
-    <li><a href="{% url geonode.maps.views.view map.id %}">{% trans "View or edit this map" %}</a></li>
+    <li><a href="{% url maps_view map.id %}">{% trans "View or edit this map" %}</a></li>
     {% if can_change %}
-    <li><a href="{% url geonode.maps.views.map_controller map.id %}?describe">{% trans "Edit metadata" %}</a></li>
-    {% endif %}
-    {% if can_change_permissions %}
-    <li><a href="{% url edit_map_permissions map.id %}">{% trans "Edit permissions" %}</a></li>
+    <li><a href="{% url maps_controller map.id %}?describe">{% trans "Edit metadata" %}</a></li>
     {% endif %}
     {% if can_delete %}
-    <li><a href="{% url geonode.maps.views.map_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
+    <li><a href="{% url maps_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
     {% endif %}
-    <li><a href="{% url geonode.maps.views.newmap %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
+    <li><a href="{% url maps_new %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
 
     {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
@@ -84,4 +137,28 @@
       $("#permission_form").submit(perms_submit);
     });
   </script>
+{% endblock %}
+
+{% block end_body_js %}
+{% if request.user.is_authenticated %}
+	{% user_rating_js request.user map "map" %}
+{% else %}
+	<script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
+{% endif %}
+<script type="text/javascript">
+	$(function() {
+		$('div.overall_rating').raty({
+			half: true,
+			readOnly: true,
+			start: $('div.overall_rating').data('rating'),
+			path: "{{ STATIC_URL }}agon_ratings/img/"
+		});
+	});
+
+	(function() {
+		var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+		po.src = 'https://apis.google.com/js/plusone.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	})();
+</script>
 {% endblock %}

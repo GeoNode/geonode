@@ -1,114 +1,134 @@
 {% extends "maps/base.html" %}
 {% load geonode_auth %}
 {% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
 
 {% block title %}{{ layer.resource.title|default:layer.typename }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-  {% include "geonode/ext_header.html" %}
-  {% include "geonode/app_header.html" %}
-  {% include "geonode/geo_header.html" %}
 
-  <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 
-  {{ block.super }}
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
 
-  <script type="text/javascript">
-  {% autoescape off %}
-          var styleEditor, modified = false;
-          Ext.onReady(function() {
-              var config = {
-                  tools: [{
-                      ptype: "gxp_wmsgetfeatureinfo",
-                      // uncomment the line below if you want feature info in a grid
-                      //format: "grid",
-                      actionTarget: "main.tbar",
-                      outputConfig: {width: 400, height: 200, panIn: false}
-                  }],
-                  proxy: "/proxy/?url=",
-                  localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
-                  authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+{{ block.super }}
 
-                  /* The URL to a REST map configuration service.  This service 
-                   * provides listing and, with an authenticated user, saving of 
-                   * maps on the server for sharing and editing.
-                   */
-                  rest: "/maps/",
-                  
-                  portalConfig: {
-                      renderTo: "preview_map",
-                      height: 350
-                  },
+    <script type="text/javascript">
+{% autoescape off %}
+        var styleEditor, modified = false;
+        Ext.onReady(function() {
+            var config = {
+                tools: [{
+                    ptype: "gxp_wmsgetfeatureinfo",
+                    // uncomment the line below if you want feature info in a grid
+                    //format: "grid",
+                    actionTarget: "main.tbar",
+                    outputConfig: {width: 400, height: 200, panIn: false}
+                }],
+                proxy: "/proxy/?url=",
+                localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+                authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
-                  createTools: function() {
-                      return [new Ext.Button({
-                          tooltip: GeoExplorer.prototype.backgroundContainerText,
-                          iconCls: 'icon-layer-switcher',
-                          menu: new gxp.menu.LayerMenu({
-                              layers: this.mapPanel.layers
-                          })
-                      })]
-                  },
-                  listeners: {
-                      "ready": function() {
-                          var map = app.mapPanel.map;
-                          map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
-                      },
-                      "beforeunload": function() {
-                          if (modified) {
-                              styleEditor.show();
-                              return false;
-                          }
-                      }
-                  }
-              };
+                /* The URL to a REST map configuration service.  This service 
+                 * provides listing and, with an authenticated user, saving of 
+                 * maps on the server for sharing and editing.
+                 */
+                rest: "/maps/",
+                
+                portalConfig: {
+                    renderTo: "preview_map",
+                    height: 350
+                },
 
-              config = Ext.apply(config, {{ viewer|safe }});
+                createTools: function() {
+                    return [new Ext.Button({
+                        tooltip: GeoExplorer.prototype.backgroundContainerText,
+                        iconCls: 'icon-layer-switcher',
+                        menu: new gxp.menu.LayerMenu({
+                            layers: this.mapPanel.layers
+                        })
+                    })]
+                },
+                listeners: {
+                    "ready": function() {
+                        var map = app.mapPanel.map;
+                        map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
+                    },
+                    "beforeunload": function() {
+                        if (modified) {
+                            styleEditor.show();
+                            return false;
+                        }
+                    }
+                }
+            };
 
-              app = new GeoExplorer.Viewer(config);
-              
-              Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
-                  app.selectedLayer.getLayer().mergeNewParams({
-                      "STYLES": elem.value,
-                      "_dc": Math.random()
-                  });
-              });
+            config = Ext.apply(config, {{ viewer|safe }});
 
-              Ext.get(Ext.DomQuery.select("select[@name='default-style']")).on("change", function(evt, elem) {
-                  Ext.Ajax.request({
-                      method: "post",
-                      url: "{% url layer_style layer.typename %}",
-                      params: {"defaultStyle" : elem.value}
-                  });
-              });
-  {% has_obj_perm user layer "maps.change_layer" as can_change %}
-  {% if can_change %}
-              Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
-                  showStyle(Ext.get(elem).prev("input").getAttribute("value"));
-              });
-  {% endif %}
-          });
+            app = new GeoExplorer.Viewer(config);
+            
+            Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
+                app.selectedLayer.getLayer().mergeNewParams({
+                    "STYLES": elem.value,
+                    "_dc": Math.random()
+                });
+            });
 
-          function showStyle(styleName) {
-              
-              if (!styleName) {
-                  Ext.ComponentMgr.all.on("add", function(index, object) {
-                      if (object instanceof gxp.WMSStylesDialog) {
-                          Ext.ComponentMgr.all.un("add", arguments.callee);
-                          object.on("ready", function() {
-                              object.addStyle();
-                          }, this, {single: true});
-                      }
-                  });
-              }
-              app.tools["styler"].actions[0].execute();
-          }
-  {% endautoescape %}
-  </script>
+            Ext.get(Ext.DomQuery.select("select[@name='default-style']")).on("change", function(evt, elem) {
+                Ext.Ajax.request({
+                    method: "post",
+                    url: "{% url data_style layer.typename %}",
+                    params: {"defaultStyle" : elem.value}
+                });
+            });
+{% has_obj_perm user layer "maps.change_layer" as can_change %}
+{% if can_change %}
+            Ext.get(Ext.DomQuery.select(".style-title")).on("click", function(evt, elem) {
+                showStyle(Ext.get(elem).prev("input").getAttribute("value"));
+            });
+{% endif %}
+        });
+
+        function showStyle(styleName) {
+            
+            if (!styleName) {
+                Ext.ComponentMgr.all.on("add", function(index, object) {
+                    if (object instanceof gxp.WMSStylesDialog) {
+                        Ext.ComponentMgr.all.un("add", arguments.callee);
+                        object.on("ready", function() {
+                            object.addStyle();
+                        }, this, {single: true});
+                    }
+                });
+            }
+            app.tools["styler"].actions[0].execute();
+        }
+{% endautoescape %}
+    </script>
 {% endblock %}
 
+{% block start_body_js %}
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+{% endblock %}
+
+
 {% block main %}
-  <div id="description"><h3>{{ layer.resource.title|default:layer.typename }}</h3></div>
+  <div id="description">
+		<h3>{{ layer.resource.title|default:layer.typename }}</h3>
+    <div class="overall_rating" data-rating="{{ layer_rating }}"></div>
+		<g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+		<div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+	</div>
   <p> <strong>{% trans "Abstract" %}:</strong> {{ layer.abstract|default:_("No abstract for this layer.") }} </p>
 
   <div id="preview_map"></div>
@@ -124,57 +144,98 @@
   </p>
   {% endif %}
 
-  {% if layer.owner %}
-  <p><strong>{% trans "Owner" %}:</strong>
-      <a href="{{ layer.owner.get_profile.get_absolute_url }}"> {{ layer.owner.username }} </a>
-  </p>
-  {% endif %}
+	{% if layer.owner %}
+	<p> <strong>{% trans "Owner" %}:</strong>
+	    <a href="{{ layer.owner.get_profile.get_absolute_url }}"> {{ layer.owner.username }} </a>
+	</p>
+	{% endif %}
 
-  {% if layer.poc %}
-  <p> <strong>{% trans "Point of Contact" %}:</strong>
-    {% if layer.poc.user %}
-      <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
-    {% else %}
-      <ul>
-          {% if layer.poc.name %}<li><strong>{% trans "Name" %}:</strong> {{ layer.poc.name}}</li>{% endif %}
-          {% if layer.poc.email %}<li><strong>{% trans "Email" %}:</strong>  {{ layer.poc.email }}</li>{% endif %}
-          {% if layer.poc.organization %}<li><strong>{% trans "Organization" %}:</strong> {{ layer.poc.organization}}</li>{% endif %}
-          {% if layer.poc.position %}<li><strong>{% trans "Position" %}:</strong>: {{ layer.poc.position}}</li>{% endif %}
-          {% if layer.poc.voice %}<li><strong>{% trans "Voice" %}:</strong>  {{ layer.poc.voice}}</li>{% endif %}
-          {% if layer.poc.fax %}<li><strong>{% trans "Fax" %}:</strong> {{ layer.poc.fax}}</li>{% endif %}
-          {% if layer.poc.delivery %}<li><strong>{% trans "Delivery" %}:</strong> {{ layer.poc.delivery}}</li>{% endif %}
-          {% if layer.poc.area %}<li><strong>{% trans "Area" %}:</strong> {{ layer.poc.area}}</li>{% endif %}
-          {% if layer.poc.zipcode %}<li><strong>{% trans "Zip Code" %}:</strong> {{ layer.poc.zipcode}}</li>{% endif %}
-          {% if layer.poc.country %}<li><strong>{% trans "Country" %}:</strong> {{ layer.poc.country}}</li>{% endif %}
-      </ul>
-    {% endif %}
-  </p>
-  {% endif %}
+	{% if layer.poc %}
+	<p> <strong>{% trans "Point of Contact" %}:</strong>
+	  {% if layer.poc.user %}
+	    <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
+	  {% else %}
+	    <ul>
+	        {% if layer.poc.name %}<li><strong>{% trans "Name" %}:</strong> {{ layer.poc.name}}</li>{% endif %}
+	        {% if layer.poc.email %}<li><strong>{% trans "Email" %}:</strong>  {{ layer.poc.email }}</li>{% endif %}
+	        {% if layer.poc.organization %}<li><strong>{% trans "Organization" %}:</strong> {{ layer.poc.organization}}</li>{% endif %}
+	        {% if layer.poc.position %}<li><strong>{% trans "Position" %}:</strong>: {{ layer.poc.position}}</li>{% endif %}
+	        {% if layer.poc.voice %}<li><strong>{% trans "Voice" %}:</strong>  {{ layer.poc.voice}}</li>{% endif %}
+	        {% if layer.poc.fax %}<li><strong>{% trans "Fax" %}:</strong> {{ layer.poc.fax}}</li>{% endif %}
+	        {% if layer.poc.delivery %}<li><strong>{% trans "Delivery" %}:</strong> {{ layer.poc.delivery}}</li>{% endif %}
+	        {% if layer.poc.area %}<li><strong>{% trans "Area" %}:</strong> {{ layer.poc.area}}</li>{% endif %}
+	        {% if layer.poc.zipcode %}<li><strong>{% trans "Zip Code" %}:</strong> {{ layer.poc.zipcode}}</li>{% endif %}
+	        {% if layer.poc.country %}<li><strong>{% trans "Country" %}:</strong> {{ layer.poc.country}}</li>{% endif %}
+	    </ul>
+	  {% endif %}
+	</p>
+	{% endif %}
 
-  {% if layer.attribute_names %}
-  <p> <strong>{% trans "Attributes" %}:</strong> 
-      {{ layer.attribute_names|join:", " }}
-  </p>
-  {% endif %}
+	{% if layer.attribute_names %}
+	<p> <strong>{% trans "Attributes" %}:</strong> 
+	    {{ layer.attribute_names|join:", " }}
+	</p>
+	{% endif %}
 
-  {% if layer.supplemental_information %}
-  <p> <strong>{% trans "Supplemental Information" %}:</strong> 
-      {{ layer.supplemental_information }}
-  </p>
-  {% endif %}
+	{% if layer.supplemental_information %}
+	<p> <strong>{% trans "Supplemental Information" %}:</strong> 
+	    {{ layer.supplemental_information }}
+	</p>
+	{% endif %}
 
-  {% if layer.data_quality_statement %}
-  <p> <strong>{% trans "Data Quality Statement" %}:</strong> 
-      {{ layer.data_quality_statement }}
-  </p>
-  {% endif %}
+	{% if layer.data_quality_statement %}
+	<p> <strong>{% trans "Data Quality Statement" %}:</strong> 
+	    {{ layer.data_quality_statement }}
+	</p>
+	{% endif %}
 
-  {% if layer.geographic_bounding_box %}<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>{% endif %}
-  {% if layer.resource.projection %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.resource.projection|default:_("No SRS specified.") }} </p>{% endif %}
+	{% if layer.geographic_bounding_box %}<p> <strong>{% trans "Bounding Box" %}:</strong> {{ layer.geographic_bounding_box }} </p>{% endif %}
+	{% if layer.resource.projection %}<p> <strong>{% trans "Native SRS" %}:</strong> {{ layer.resource.projection|default:_("No SRS specified.") }} </p>{% endif %}
 
-{% url ajax_layer_permissions layer.typename as form_action %}
-{% include "_permissions_form.html" %}
+	<h3>{% trans "Comments" %}</h3>
+	<div class="comments_container">
+	    {% comments layer as comments %}
+	    {% for comment in comments %}
+	        <div class="comment">
+	            <p class="comment_author">{{ comment.author.get_full_name|default:comment.author|capfirst }}</p>
+	            <div class="comment_content">
+	                {{ comment.comment|escape|urlize|safe }} &mdash; 
+	                <span class="comment_ago">
+	                {% blocktrans with comment.submit_date|timesince as age %}
+	                {{ age }} ago
+	                {% endblocktrans %}
+	                </span>
+	            </div>
+	        </div>
+	    {% endfor %}
 
+	    {% if request.user.is_authenticated %}
+	        <h3>{% trans "Post a comment" %}</h3>
+	        {% comment_form layer as comment_form %}
+	        <form method="POST" action="{% comment_target layer %}">
+	            {% csrf_token %}
+	            <div class="comment_box">
+	                {{ comment_form.comment }}
+	            </div>
+	            <div class="comment_post">
+	                <input type="submit" value="{% trans "Submit" %}" />
+	            </div>
+	            <input type="hidden" name="next" value="{{ request.path }}" />
+	        </form>
+	    {% else %}
+	        <p><a href="{% url auth_login %}">{% trans "Login to add a comment" %}</a></p>
+	    {% endif %}
+	</div>
+
+	{% if request.user.is_authenticated %}
+		<h3>{% trans "Rate this layer" %}</h3>
+		{% user_rating request.user layer "layer" as user_layer_rating %}
+		<div id="user_rating" class="category-layer"></div>
+	{% endif %}
+	</div>
+
+	{% url ajax_layer_permissions layer.typename as form_action %}
+	{% include "_permissions_form.html" %}
 {% endblock %}
 
 {% block sidebar %}
@@ -200,7 +261,7 @@
       <li>{% trans "This layer is not currently used in any maps." %}</li>
     {% endfor %}
     <li>
-      <a href="{% url geonode.maps.views.newmap %}?layer={{ layer.typename }}">{% trans "Create new map" %}</a>
+      <a href="{% url maps_new %}?layer={{layer.typename}}">{% trans "Create new map" %}</a>
     </li>
   </ul>
 
@@ -217,7 +278,7 @@
         {{ layer.default_style.name|title }}
      {% endif %}
     </label>
-    <a href="{{ layer.default_style.body_href }}">SLD</a><br/>
+    <a href="{{ GEOSERVER_BASE_URL }}styles/{{ layer.default_style.name }}.sld">SLD</a><br/>
     {% for style in layer.styles %} 
       <input type="radio" name="style" id="{{style.name}}" value="{{style.name}}"/>
       <label for="{{style.name}}" class="style-title">
@@ -249,23 +310,16 @@
         <li class="nav-header">{% trans "Manage" %}</li>
         {% if user.is_authenticated %}
           {% if can_change %}
-            <li> <a href="{% url layer_metadata layer.typename %}">
+            <li> <a href="{% url data_metadata layer.typename %}">
                 {% trans "Update the description of this data" %}
             </a> </li>
-            <li> <a href="{% url layer_replace layer.typename %}">
+            <li> <a href="{% url data_replace layer.typename %}">
                 {% trans "Upload a new version of this data" %}
             </a></li>
           {% endif %}
-
-          {% if can_change_permissions %}
-            <li><a href="{% url edit_layer_permissions layer.typename %}">
-                {% trans "Edit Permissions" %}
-            </a></li>
-          {% endif %}
-
           {% if can_delete %}
             <li>
-              <a href="{% url layer_remove layer.typename %}">
+              <a href="{% url data_remove layer.typename %}">
                 {% trans "Remove" %}
               </a>
             </li>
@@ -277,17 +331,39 @@
 
       {% has_obj_perm user layer "maps.change_layer_permissions" as can_change_permissions %}
       {% if can_change_permissions %}
-      <li class="nav-header">{% trans "Permissions" %}</li>
-      <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit permissions" %}</a></li>
+	      <li class="nav-header">{% trans "Permissions" %}</li>
+	      <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit permissions" %}</a></li>
       {% endif %}
     {% endif %}
   </ul>
 {% endblock %}
 
 {% block extra_script %}
-    <script>
+  <script>
     $(function() {
       $("#permission_form").submit(perms_submit);
     });
   </script>
+
+	{% if request.user.is_authenticated %}
+		{% user_rating_js request.user layer "layer" %}
+	{% else %}
+		<script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
+	{% endif %}
+	<script type="text/javascript">
+		$(function() {
+			$('div.overall_rating').raty({
+				half: true,
+				readOnly: true,
+				start: $('div.overall_rating').data('rating'),
+				path: "{{ STATIC_URL }}agon_ratings/img/"
+			});
+		});
+
+		(function() {
+			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			po.src = 'https://apis.google.com/js/plusone.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+		})();
+	</script>
 {% endblock %}

@@ -9,11 +9,11 @@
       <h2>{% trans "Geospatial Data" %}</h2>
     </div>
     <div class="span5 pull-right">
-      <form class="form-search" action="{% url search %}" method="GET">
+      <form class="form-search" action="{% url data_search %}" method="GET">
         <input type="text" id="search_query" name="q" class="input-xlarge search-query">
         <button type="submit" class="btn">Search</button>
       </form>
-        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
     </div>
   </div>
 
@@ -21,7 +21,7 @@
     <div id="upload" class="span4">
       <h3>{% trans "Upload" %}</h3>
       <p>{% trans "We support Shapefile and GeoTIFF uploads." %}
-      <a class="btn" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload a new layer"  %}</a>
+      <a class="btn" href="{% url data_upload %}">{% trans "Upload a new layer"  %}</a>
       </p>
     </div>
 
@@ -30,7 +30,7 @@
       {% blocktrans %} 
       If you are interested in information about accessing this information through OGC services, please visit our
       {% endblocktrans %}
-      <a href="{% url geonode.views.developer %}">{% trans "developer page" %}</a>.
+      <a href="{% url dev %}">{% trans "developer page" %}</a>.
     </div>
   </div>
 {% endblock %}

@@ -25,7 +25,7 @@
     <p>
       {% trans "Use GeoNode's Map Composer application to create your own maps.  Add layers from this GeoNode or remote services, and style them." %}
     </p>
-    <a href="{%url geonode.maps.views.newmap %}" class="btn">{% trans "Create your own map" %}</a>
+    <a href="{% url maps_new %}" class="btn">{% trans "Create your own map" %}</a>
 {% endblock %}
 
 {% block sidebar %}

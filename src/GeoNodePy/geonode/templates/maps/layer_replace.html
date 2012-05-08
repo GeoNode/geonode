@@ -25,7 +25,7 @@
   <script type="text/javascript">
     Ext.onReady(function(){
     {% autoescape off %}
-      var form_target = "{% url layer_replace layer.typename %}";
+      var form_target = "{% url data_replace layer.typename %}";
       var layer_name = "{{ layer.name|escapejs }}";
       
       var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
