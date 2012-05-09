@@ -9,6 +9,7 @@ from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 from django.utils.html import escape
+from taggit.managers import TaggableManager
 import httplib2
 import simplejson
 import urllib
@@ -16,7 +17,7 @@ from urlparse import urlparse
 import uuid
 from datetime import datetime
 from django.contrib.auth.models import User, Permission
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from string import lower
 from StringIO import StringIO
@@ -499,6 +500,8 @@ class Contact(models.Model):
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
 
     def clean(self):
         # the specification says that either name or organization should be provided
@@ -688,7 +691,7 @@ class Layer(models.Model, PermissionLevelMixin):
     # see poc property definition below
 
     # section 3
-    keywords = models.TextField(_('keywords'), blank=True, null=True)
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
     constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
@@ -1117,7 +1120,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 meta.identification.keywords,
                 [])
         kw_list = filter(lambda x: x is not None, kw_list)
-        self.keywords = ' '.join(kw_list)
+        self.keywords.add(*kw_list)
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:
@@ -1126,10 +1129,11 @@ class Layer(models.Model, PermissionLevelMixin):
                 self.distribution_description = res.description
 
     def keyword_list(self):
-        if self.keywords is None or len(self.keywords) == 0:
-            return []
+        keywords_qs = self.keywords.all()
+        if keywords_qs:
+            return [kw.name for kw in keywords_qs]
         else:
-            return self.keywords.split()
+            return []
 
     def set_bbox(self, box, srs=None):
         """
@@ -1224,6 +1228,8 @@ class Map(models.Model, PermissionLevelMixin):
     """
     The last time the map was modified.
     """
+    
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
 
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
@@ -1379,6 +1385,8 @@ class Map(models.Model, PermissionLevelMixin):
         
         for layer in self.layer_set.all():
             layer.delete()
+            
+        self.keywords.add(*conf['map'].get('keywords', []))
 
         for ordering, layer in enumerate(layers):
             self.layer_set.add(
@@ -1386,6 +1394,13 @@ class Map(models.Model, PermissionLevelMixin):
                     self, layer, source_for(layer), ordering
             ))
         self.save()
+
+    def keyword_list(self):
+        keywords_qs = self.keywords.all()
+        if keywords_qs:
+            return [kw.name for kw in keywords_qs]
+        else:
+            return []
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id

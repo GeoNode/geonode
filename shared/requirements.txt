@@ -14,4 +14,5 @@ django-staticfiles
 dialogos==0.1.dev4
 agon-ratings==0.2
 South==0.7.3
+django-taggit==0.9.3
 lxml
