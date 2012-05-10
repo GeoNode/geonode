@@ -9,6 +9,7 @@ from django.core import serializers
 
 from haystack.inputs import AutoQuery, Raw 
 from haystack.query import SearchQuerySet
+
 from django.contrib.gis.geos import GEOSGeometry
 
 from geonode.maps.views import default_map_config, Map, Layer
@@ -110,41 +111,41 @@ def search_api(request):
 		sqs = sqs.order_by("title")
 	elif sort.lower() == "alphaza":
 		sqs = sqs.order_by("-title")
-
+		
+	# Setup Search Results
+	results = []
+	
 	if bbox is not None:
 		l,b,r,t = bbox.split(',')
-		bbox =  GEOSGeometry('POLYGON((%s, %s, %s, %s, %s))' % (
+		bbox = GEOSGeometry('POLYGON((%s, %s, %s, %s, %s))' % (
 			('%s %s') % (b,l),
 			('%s %s') % (l,t),
 			('%s %s') % (t,r),
 			('%s %s') % (r,b),
 			('%s %s') % (b,l)
 		))
-		
-	# Setup Search Results
-	results = []
-
-	for i, result in enumerate(sqs[startIndex:startIndex + limit]):
+	
+	# Firts take out everything that is not permitted or in the spatial search
+	for i,result in enumerate(sqs):
 		data = json.loads(result.json)
 		if result.type == 'layer':
 			layer = Layer.objects.get(uuid=data['uuid'])
-			# Dont return results that the user doesnt have permission to view
-			# NOTE: This will probably mess up the paging. Need to re-visit
-			if request.user.has_perm('maps.view_layer', obj=layer):
-				if bbox is not None:
-					layer_bbox = GEOSGeometry(layer.geographic_bounding_box.split(';')[1])
-					if bbox.intersects(layer_bbox):
-						data.update({"iid": i + startIndex})
-						results.append(data)
-					else: sqs = sqs.exclude(id = result.id)
-				else: 
-					results.append(data)
-					data.update({"iid": i + startIndex})
+			if bbox is not None:
+				layer_bbox = GEOSGeometry(layer.geographic_bounding_box.split(';')[1])
+				if not bbox.intersects(layer_bbox):	
+					sqs = sqs.exclude(id = result.id)
+			if not request.user.has_perm('maps.view_layer', obj=layer):
+				sqs = sqs.exclude(id = result.id)
 		elif result.type == 'map':
 			map = Map.objects.get(id=result.id)
 			if request.user.has_perm('maps.view_map', obj=map):
-				data.update({"iid": i + startIndex})
-				results.append(data)
+				sqs = sqs.exclude(id = result.id)
+		
+	# Build the result based no the limit
+	for i, result in enumerate(sqs[startIndex:startIndex + limit]):
+		data = json.loads(result.json)
+		data.update({"iid": i + startIndex})
+		results.append(data)
 	
 	# Filter Fields/Fieldsets
 	if fieldset:
