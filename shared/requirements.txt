@@ -3,7 +3,6 @@
 PIL
 OWSLib==0.4.0
 Django==1.4
-simplejson # needed for python2.5
 django-extensions
 httplib2
 gsconfig
