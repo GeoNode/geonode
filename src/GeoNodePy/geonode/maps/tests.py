@@ -2,6 +2,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User, AnonymousUser
+from django.utils import simplejson as json
 
 import geonode.maps.models
 import geonode.maps.views
@@ -11,7 +12,6 @@ from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock, patch
 
-import json
 import os
 import base64
 import math
