@@ -16,8 +16,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
-import json
-import simplejson
+from django.utils import simplejson as json
+
 import math
 import httplib2 
 from owslib.csw import CswRecord, namespaces
@@ -146,7 +146,7 @@ def maps(request, mapid=None):
                 response = HttpResponse('', status=201)
                 response['Location'] = map.id
                 return response
-            except simplejson.JSONDecodeError:
+            except json.JSONDecodeError:
                 return HttpResponse(status=400)
 
 def mapJSON(request, mapid):
