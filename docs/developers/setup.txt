@@ -103,7 +103,7 @@ The following steps should prepare a Python virtual environment for you::
 
 .. note:: 
 
-  If your firewall does not allow connections to git respositories using git://
+  If your firewall does not allow connections to git repositories using git://
   (TCP port 9418), you may connect using http:// ::
 
     $ git clone http://github.com/GeoNode/geonode.git geonode
