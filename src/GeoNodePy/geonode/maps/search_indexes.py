@@ -10,7 +10,7 @@ from django.contrib.gis.geos import GEOSGeometry
 
 class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    id = indexes.IntegerField(model_attr='id')
+    iid = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
     subtype = indexes.CharField(faceted=True)
     name = indexes.CharField(model_attr="title")
@@ -110,7 +110,7 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr="title")
     date = indexes.DateTimeField(model_attr="last_modified")
-    id = indexes.IntegerField(model_attr='id')
+    iid = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
     json = indexes.CharField(indexed=False)
 

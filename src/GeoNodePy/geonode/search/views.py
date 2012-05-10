@@ -133,15 +133,15 @@ def search_api(request):
 			if bbox is not None:
 				layer_bbox = GEOSGeometry(layer.geographic_bounding_box.split(';')[1])
 				if not bbox.intersects(layer_bbox):	
-					sqs = sqs.exclude(id = result.id)
+					sqs = sqs.exclude(id = result.iid)
 			if not request.user.has_perm('maps.view_layer', obj=layer):
-				sqs = sqs.exclude(id = result.id)
+				sqs = sqs.exclude(id = result.iid)
 		elif result.type == 'map':
-			map = Map.objects.get(id=result.id)
-			if not equest.user.has_perm('maps.view_map', obj=map):
-				sqs = sqs.exclude(id = result.id)
+			map = Map.objects.get(id=result.iid)
+			if not request.user.has_perm('maps.view_map', obj=map):
+				sqs = sqs.exclude(id = result.iid)
 		
-	# Build the result based no the limit
+	# Build the result based on the limit
 	for i, result in enumerate(sqs[startIndex:startIndex + limit]):
 		data = json.loads(result.json)
 		data.update({"iid": i + startIndex})
