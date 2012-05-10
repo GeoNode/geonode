@@ -35,16 +35,16 @@
 Ext.onReady(function() {
     var mapsAndLayers = [];
     {% for lyr in profile.user.layer_set.all %}
-    mapsAndLayers.push(["lyr.{{ lyr.pk|escapejs }}", "{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|escapejs }}"]);
+    mapsAndLayers.push(["lyr.{{ lyr.pk|escapejs }}", "{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|date:'Y-m-d H:i:s' }}"]);
     {% endfor %}
     {% for map in profile.user.map_set.all %}
-    mapsAndLayers.push(["map.{{ map.pk|escapejs }}", "{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}", "{{ map.title|escapejs }}", "{{ map.last_modified|escapejs }}"]);
+    mapsAndLayers.push(["map.{{ map.pk|escapejs }}", "{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}", "{{ map.title|escapejs }}", "{{ map.last_modified|date:'Y-m-d H:i:s' }}"]);
     {% endfor %}
 
     var assets = new Ext.data.Store({
         reader: new Ext.data.ArrayReader({
             idIndex: 0,
-            fields: ["pk", "id", "type", "href", "title", "date"]
+            fields: ["pk", "id", "type", "href", "title", { name: "date", type: "date", dateFormat: "Y-m-d H:i:s" }]
         }),
         data: mapsAndLayers
     });
