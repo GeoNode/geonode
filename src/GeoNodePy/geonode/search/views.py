@@ -138,7 +138,7 @@ def search_api(request):
 				sqs = sqs.exclude(id = result.id)
 		elif result.type == 'map':
 			map = Map.objects.get(id=result.id)
-			if request.user.has_perm('maps.view_map', obj=map):
+			if not equest.user.has_perm('maps.view_map', obj=map):
 				sqs = sqs.exclude(id = result.id)
 		
 	# Build the result based no the limit
