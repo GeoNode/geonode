@@ -120,8 +120,8 @@
           <div class="pull-left">
             {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> |
             <strong>{% trans "Need Help?" %}</strong>
-            <a href="{% url geonode.views.static "help" %}">{% trans "Help" %}</a> |
-            <a href="{% url geonode.views.developer %}">{% trans "For Developers" %}</a>
+            <a href="{% url help %}">{% trans "Help" %}</a> |
+            <a href="{% url dev %}">{% trans "For Developers" %}</a>
           </div>
           <div class="pull-right">
             {% if csrf_token != "NOTPROVIDED" %}
