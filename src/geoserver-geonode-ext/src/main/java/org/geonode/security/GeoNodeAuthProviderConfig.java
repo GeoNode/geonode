@@ -3,11 +3,12 @@ package org.geonode.security;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 
-public class GeoNodeSecurityServiceConfig extends BaseSecurityNamedServiceConfig
+public class GeoNodeAuthProviderConfig extends BaseSecurityNamedServiceConfig
     implements SecurityAuthProviderConfig
 {
     private static final long serialVersionUID = -4659786609079726648L;
     private String userGroupServiceName;
+    private String baseUrl;
 
     public void setUserGroupServiceName(String userGroupServiceName) {
         this.userGroupServiceName = userGroupServiceName;
@@ -18,6 +19,10 @@ public class GeoNodeSecurityServiceConfig extends BaseSecurityNamedServiceConfig
     }
 
     public String getBaseUrl() {
-        return "http://localhost:8000/";
+        return baseUrl;
+    }
+    
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }
