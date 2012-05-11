@@ -22,6 +22,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geotools.util.logging.Logging;
 
@@ -32,10 +33,10 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - OpenGeo
  * @author Gabriel Roldan - OpenGeo
  */
-public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter {
-
+public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter
+    implements GeoServerAuthenticationFilter
+{
     static final Logger LOGGER = Logging.getLogger(GeoNodeCookieProcessingFilter.class);
-
     static final String GEONODE_COOKIE_NAME = "sessionid";
 
     private GeoNodeSecurityClient client;

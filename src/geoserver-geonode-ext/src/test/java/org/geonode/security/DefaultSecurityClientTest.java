@@ -40,27 +40,14 @@ public class DefaultSecurityClientTest extends TestCase {
     @Override
     public void setUp() {
         mockHttpClient = EasyMock.createNiceMock(HTTPClient.class);
-        client = new DefaultSecurityClient(mockHttpClient);
-        client.setApplicationContext(null);
+        client = new DefaultSecurityClient("http://localhost:8000/", mockHttpClient);
     }
 
     public void testSetApplicationContext() throws Exception {
         final String baseUrl = "http://127.0.0.1/fake";
+        DefaultSecurityClient client2 = new DefaultSecurityClient(baseUrl, mockHttpClient);
 
-        final MockServletContext mockServletContext = new MockServletContext();
-        mockServletContext.setInitParameter("GEONODE_BASE_URL", baseUrl);
-        WebApplicationContext appCtx = new XmlWebApplicationContext() {
-            @Override
-            public ServletContext getServletContext() {
-                return mockServletContext;
-            }
-        };
-
-        client.setApplicationContext(null);
-        assertEquals("http://localhost:8000/", client.getBaseUrl());
-
-        client.setApplicationContext(appCtx);
-        assertEquals(baseUrl + "/", client.getBaseUrl());
+        assertEquals(baseUrl, client2.getBaseUrl());
     }
 
     public void testAuthenticateAnonymous() throws Exception {

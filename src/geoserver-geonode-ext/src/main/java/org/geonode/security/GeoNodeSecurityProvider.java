@@ -15,7 +15,8 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
     public GeoNodeAuthenticationProvider createAuthenticationProvider(
             SecurityNamedServiceConfig config)
     {
-        return new GeoNodeAuthenticationProvider(configuredClient(config));
+        return new GeoNodeAuthenticationProvider(
+                configuredClient(((GeoNodeAuthProviderConfig)config).getBaseUrl()));
     }
     
     @Override
@@ -25,11 +26,11 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
     
     @Override
     public GeoNodeCookieProcessingFilter createFilter(SecurityNamedServiceConfig config) {
-        return new GeoNodeCookieProcessingFilter(configuredClient(config));
+        return new GeoNodeCookieProcessingFilter(
+                configuredClient(((GeoNodeAuthFilterConfig)config).getBaseUrl()));
     }
     
-    private GeoNodeSecurityClient configuredClient(SecurityNamedServiceConfig config) {
-        GeoNodeSecurityServiceConfig gnConfig = (GeoNodeSecurityServiceConfig) config;
-        return new DefaultSecurityClient(gnConfig.getBaseUrl(), httpClient);
+    private GeoNodeSecurityClient configuredClient(String baseUrl) {
+        return new DefaultSecurityClient(baseUrl, httpClient);
     }
 }
