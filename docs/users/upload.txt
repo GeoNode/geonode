@@ -32,7 +32,7 @@ You may not have a .prj file for your GeoTIFF as it is not needed since the proj
 
 If your .prj file does not look like this, the upload may still work fine.  If it doesn’t, the most likely culprit is the projection.  The best way to fix that is to use an application like ArcGIS or QGIS and reproject your file to Geographic WGS 84.  This can be done for shapefiles or GeoTIFF files.
 
-**SLD:**  Optionally provide a Styled Layer Descriptor (SLD) file.  This is an XML document that defines the layer's default style.  For more information on creating SLD files, see :ref:`sld-desktop-ref`.
+**SLD:**  Optionally provide a Styled Layer Descriptor (SLD) file.  This is an XML document that defines the layer's default style.  For more information on creating SLD files, see `Creating styles with desktop software`_.
 
 ***Abstract:**  Provide a description of your data. More information is better.  At the very least when you add real data, please include a brief description of the data, who created it, for what purpose, and when.  Please also include source materials used to create the data layer.  This information is important both for you to remember what the data is about, and to allow someone else a chance to benefit from your work (assuming you want to make the data available for others to use at some point).
 
@@ -162,7 +162,6 @@ Now click the *Create new map* link in the right hand sidebar.  This will take y
 
 .. image:: images/map_composer_from_layer.png
 
-.. _sld-desktop-ref:
 
 Creating styles with desktop software
 =====================================
