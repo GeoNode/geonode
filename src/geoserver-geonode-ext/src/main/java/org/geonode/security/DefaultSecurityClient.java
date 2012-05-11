@@ -44,7 +44,7 @@ import org.springframework.util.Assert;
  * 
  * @author Andrea Aime - OpenGeo
  */
-public class DefaultSecurityClient implements GeoNodeSecurityClient, ApplicationContextAware {
+public class DefaultSecurityClient implements GeoNodeSecurityClient {
     static final Logger LOGGER = Logging.getLogger(DefaultSecurityClient.class);
 
     private final HTTPClient client;
@@ -62,9 +62,10 @@ public class DefaultSecurityClient implements GeoNodeSecurityClient, Application
      */
     private Lock authLock = new ReentrantLock();
 
-    public DefaultSecurityClient(final HTTPClient httpClient) {
+    public DefaultSecurityClient(String baseUrl, final HTTPClient httpClient) {
         this.client = httpClient;
         this.authCache = new AuthCache();
+        this.baseUrl = baseUrl;
     }
 
     /**
@@ -194,29 +195,4 @@ public class DefaultSecurityClient implements GeoNodeSecurityClient, Application
         }
         return authentication;
     }
-
-    /**
-     * Looks up for the {@code GEONODE_BASE_URL} property (either a System property, a servlet
-     * context parameter or an environment variable) to be used as the base URL for the GeoNode
-     * authentication requests (for which {@code 'data/acls'} will be appended).
-     * <p>
-     * If not provided, defaults to {@code http://localhost:8000}
-     * </p>
-     * 
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     * @see GeoServerExtensions#getProperty(String, ApplicationContext)
-     */
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // determine where geonode is
-        this.baseUrl = GeoServerExtensions.getProperty("GEONODE_BASE_URL", applicationContext);
-        if (baseUrl == null) {
-            LOGGER.log(Level.WARNING, "GEONODE_BASE_URL is not set, "
-                    + "assuming http://localhost:8000/");
-            baseUrl = "http://localhost:8000/";
-        }
-        if (!baseUrl.endsWith("/")) {
-            baseUrl += "/";
-        }
-    }
-
 }
