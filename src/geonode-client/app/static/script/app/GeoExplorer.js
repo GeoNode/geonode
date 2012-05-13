@@ -14,6 +14,7 @@ Ext.override(Ext.dd.DragTracker, {
         e.preventDefault();
         var xy = e.getXY(), s = this.startXY;
         this.lastXY = xy;
+        this.lastXY = xy;
         if (!this.active) {
             if (Math.abs(s[0] - xy[0]) > this.tolerance || Math.abs(s[1] - xy[1]) > this.tolerance) {
                 this.triggerStart(e);
@@ -261,20 +262,24 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 // GeoServer's RESTconfig API
                 var url = options.url.replace(this.urlPortRegEx, "$1/");
                 if (this.localGeoServerBaseUrl) {
+                    if (url.indexOf(this.localGeoServerBaseUrl) == 0) {
+                        // replace local GeoServer url with /geoserver/
+                        options.url = url.replace(
+                            new RegExp("^" + this.localGeoServerBaseUrl),
+                            "/geoserver/"
+                        );
+                        return;
+                    }
                     var localUrl = this.localGeoServerBaseUrl.replace(
                         this.urlPortRegEx, "$1/");
                     if (url.indexOf(localUrl + "rest/") === 0) {
                         options.url = url.replace(new RegExp("^" +
-                            localUrl), "/gs/");
+                            localUrl), "/geoserver/");
                         return;
                     }
-                    if (url.indexOf(this.localGeoServerBaseUrl) == 0) {
-                        options.url = url.replace(new RegExp("^" + localUrl),"/geoserver/");
-                        return;
                     }
-                }
                 // use the proxy for all non-local requests
-                if (url.indexOf(this.siteUrl) === -1 && this.proxy && options.url.indexOf(this.proxy) !== 0 &&
+                if(this.proxy && options.url.indexOf(this.proxy) !== 0 &&
                     options.url.indexOf(window.location.protocol) === 0) {
                     var parts = options.url.replace(/&$/, "").split("?");
                     var params = Ext.apply(parts[1] && Ext.urlDecode(
@@ -904,6 +909,20 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     "change": function() {
                                         this.modified |= 1;
                                     },
+                                    "beforerender": {
+                                        fn: function(cmp) {
+                                            Ext.Ajax.request({
+                                                url: "/data/" + layer.params.LAYERS + "/ajax_layer_edit_check/",
+                                                method: "POST",
+                                                params: {layername:record.getLayer().params.LAYERS},
+                                                callback: function(options, success, response) {
+                                                    cmp.authorized = cmp.editableStyles = (response.responseText == "True");
+                                                    cmp.ownerCt.doLayout();
+                                                }
+                                            });
+                                        },
+                                        scope: this
+                                    },
                                     scope: this
                                 }
                             }
@@ -926,39 +945,39 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     }
 
                     //Don't show style dialog unless editable for now
-                    prop.items.get(0).remove(prop.items.get(0).items.get(3), true);
+                    //prop.items.get(0).remove(prop.items.get(0).items.get(3), true);
 
-                    var geoEx = this;
-
-                    Ext.Ajax.request({
-                        url: "/data/" + layer.params.LAYERS + "/ajax_layer_edit_check/",
-                        method: "POST",
-                        params: {layername:layer.params.LAYERS},
-                        success: function(result, request) {
-                            if (result.responseText == "True") {
-                                var stylesPanel = geoEx.createStylesPanel({
-                                    layerRecord: record
-                                });
-                                stylesPanel.items.get(0).on({
-                                    "styleselected": function() {
-                                        this.modified |= 1;
-                                    },
-                                    "modified": function() {
-                                        this.modified |= 2;
-                                    },
-                                    scope: this
-                                });
-                                stylesPanel.setTitle("Styles");
-                                // add styles tab
-
-                                prop.items.get(0).add(stylesPanel)
-                            }
-
-                        },
-                        failure: function (result, request) {
-
-                        }
-                    });
+//                    var geoEx = this;
+//
+//                    Ext.Ajax.request({
+//                        url: "/data/" + layer.params.LAYERS + "/ajax_layer_edit_check/",
+//                        method: "POST",
+//                        params: {layername:layer.params.LAYERS},
+//                        success: function(result, request) {
+//                            if (result.responseText == "True") {
+//                                var stylesPanel = geoEx.createStylesPanel({
+//                                    layerRecord: record
+//                                });
+//                                stylesPanel.items.get(0).on({
+//                                    "styleselected": function() {
+//                                        this.modified |= 1;
+//                                    },
+//                                    "modified": function() {
+//                                        this.modified |= 2;
+//                                    },
+//                                    scope: this
+//                                });
+//                                stylesPanel.setTitle("Styles");
+//                                // add styles tab
+//
+//                                prop.items.get(0).add(stylesPanel)
+//                            }
+//
+//                        },
+//                        failure: function (result, request) {
+//
+//                        }
+//                    });
                 }
                 prop.show();
             }
@@ -1401,155 +1420,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         ;
     },
 
-    /** api: method[createStylesPanel]
-     *  :param options: ``Object`` Options for the :class:`gxp.WMSStylesDialogWithFonts`.
-     *      Supported options are ``layerRecord``, ``styleName``, ``editable``
-     *      and ``listeners`` (except "ready", "modified" and "styleselected"
-     *      listeners)
-     *  :return: ``Ext.Panel`` A panel with a :class:`gxp.WMSStylesDialogWithFonts` as
-     *      only item.
-     */
-    createStylesPanel: function(options) {
-        var layer = options.layerRecord.getLayer();
-
-        var stylesPanel, stylesDialog;
-        var createStylesDialog = function() {
-            if (stylesPanel) {
-                stylesDialog.destroy();
-                stylesPanel.getFooterToolbar().items.each(function(i) {
-                    i.disable();
-                });
-            }
-            var modified = false;
-            stylesDialog = this.stylesDlgCache[layer.id] =
-                new gxp.WMSStylesDialog(Ext.apply({
-                    style: "padding: 10px 10px 0 10px;",
-                    fonts:[
-                        "Arial Unicode MS",
-                        "Serif",
-                        "SansSerif",
-                        "Arial",
-                        "Courier New",
-                        "Jomolhari",
-                        "Tahoma",
-                        "Times New Roman",
-                        "Verdana"
-                    ],
-                    editable: layer.url.replace(
-                        this.urlPortRegEx, "$1/").indexOf(
-                        this.localGeoServerBaseUrl.replace(
-                            this.urlPortRegEx, "$1/")) === 0,
-                    hasPermission: true,
-                    plugins: [{
-                        ptype: "gxp_geoserverstylewriter",
-                        baseUrl: layerUrl.split(
-                            "?").shift().replace(/\/(wms|ows)\/?$/, "/rest")
-                    }, {
-                        ptype: "gxp_wmsrasterstylesdialog"
-                    }],
-                    autoScroll: true,
-                    listeners: Ext.apply(options.listeners || {}, {
-                        "ready": function() {
-                            // we don't want the Cancel and Save buttons
-                            // if we cannot edit styles
-                            stylesDialog.editable === false &&
-                            stylesPanel.getFooterToolbar().hide();
-                        },
-                        "modified": function(cmp, name) {
-                            // enable the cancel and save button
-                            stylesPanel.buttons[0].enable();
-                            stylesPanel.buttons[1].enable();
-                            // instant style preview
-                            layer.mergeNewParams({
-                                "STYLES": name,
-                                "SLD_BODY": cmp.createSLD({userStyles: [name]})
-                            });
-                            modified = true;
-                        },
-                        "styleselected": function(cmp, name) {
-                            // enable the cancel button
-                            stylesPanel.buttons[0].enable();
-                            layer.mergeNewParams({
-                                "STYLES": name,
-                                "SLD_BODY": modified ?
-                                    cmp.createSLD({userStyles: [name]}) : null
-                            });
-                        },
-                        "saved": function() {
-                            this.busyMask.hide();
-                            this.modified ^= this.modified & 2;
-                            var rec = stylesDialog.selectedStyle;
-                            var styleName = rec.get("userStyle").isDefault ?
-                                "" : rec.get("name");
-                            if (options.applySelectedStyle === true ||
-                                styleName === initialStyle ||
-                                rec.get("name") === initialStyle) {
-                                layer.mergeNewParams({
-                                    "STYLES": styleName,
-                                    "SLD_BODY": null,
-                                    "_dc": Math.random()
-                                });
-                            }
-                            stylesPanel.ownerCt instanceof Ext.Window ?
-                                stylesPanel.ownerCt.close() :
-                                createStylesDialog();
-                        },
-                        scope: this
-                    })
-                }, options));
-            if (stylesPanel) {
-                stylesPanel.add(stylesDialog);
-                stylesPanel.doLayout();
-            }
-        }.bind(this);
-
-        var layerUrl = layer.url;
-
-        // remember the layer's current style
-        var initialStyle = layer.params.STYLES;
-
-        createStylesDialog();
-        stylesPanel = new Ext.Panel({
-            autoHeight: true,
-            border: false,
-            items: stylesDialog,
-            buttons: [
-                {
-                    text: "Cancel",
-                    disabled: true,
-                    handler: function() {
-                        layer.mergeNewParams({
-                            "STYLES": initialStyle,
-                            "SLD_BODY": null
-                        });
-                        stylesPanel.ownerCt instanceof Ext.Window ?
-                            stylesPanel.ownerCt.close() :
-                            createStylesDialog();
-                    },
-                    scope: this
-                },
-                {
-                    text: "Save",
-                    disabled: true,
-                    handler: function() {
-                        this.busyMask = new Ext.LoadMask(stylesPanel.el,
-                            {msg: "Applying style changes..."});
-                        this.busyMask.show();
-                        stylesDialog.saveStyles();
-                    },
-                    scope: this
-                }
-            ],
-            listeners: {
-                "added": function(cmp, ownerCt) {
-                    ownerCt instanceof Ext.Window &&
-                    cmp.buttons[0].enable();
-                }
-            }
-        });
-        return stylesPanel;
-    },
-
 
     reloadWorldMapSource : function(layerRecords) {
         var geoEx = this;
@@ -1622,7 +1492,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
-
+                //source['restUrl'] = '/gs/rest';
                 var layer = records[i].get("name");
                 var tiled = records[i].get("tiled");
 

@@ -2430,7 +2430,7 @@ def snapshot_config(snapshot, map, user):
     #Set up the proper layer configuration
     def snaplayer_config(layer, sources, user):
         cfg = layer.layer_config(user)
-        src_cfg = layer.source_config()
+        src_cfg = layer.source_config(user)
         source = snapsource_lookup(src_cfg, sources)
         if source: cfg["source"] = source
         if src_cfg.get("ptype", "gxp_wmscsource") == "gxp_wmscsource"  or src_cfg.get("ptype", "gxp_gnsource") == "gxp_gnsource" : cfg["buffer"] = 0
