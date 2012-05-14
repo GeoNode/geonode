@@ -152,7 +152,7 @@ gxp.plugins.GeoNodeSource = Ext.extend(gxp.plugins.WMSSource, {
                 'disabled': config.disabled,
                 'abstract': config['abstract'],
                 'styles': [config.styles],
-                restUrl: this.restUrl,
+                'restUrl': this.restUrl,
                 'cql_filter': "cql_filter" in config ? config.cql_filter : ''
             };
             

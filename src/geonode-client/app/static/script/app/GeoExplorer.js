@@ -943,42 +943,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     if (isLocal) {
                         prop.items.get(0).items.get(0).add({html: "<a target='_blank' href='/data/" + layer.params.LAYERS + "'>" + this.shareLayerText + "</a>", xtype: "panel"});
                     }
-
-                    //Don't show style dialog unless editable for now
-                    //prop.items.get(0).remove(prop.items.get(0).items.get(3), true);
-
-//                    var geoEx = this;
-//
-//                    Ext.Ajax.request({
-//                        url: "/data/" + layer.params.LAYERS + "/ajax_layer_edit_check/",
-//                        method: "POST",
-//                        params: {layername:layer.params.LAYERS},
-//                        success: function(result, request) {
-//                            if (result.responseText == "True") {
-//                                var stylesPanel = geoEx.createStylesPanel({
-//                                    layerRecord: record
-//                                });
-//                                stylesPanel.items.get(0).on({
-//                                    "styleselected": function() {
-//                                        this.modified |= 1;
-//                                    },
-//                                    "modified": function() {
-//                                        this.modified |= 2;
-//                                    },
-//                                    scope: this
-//                                });
-//                                stylesPanel.setTitle("Styles");
-//                                // add styles tab
-//
-//                                prop.items.get(0).add(stylesPanel)
-//                            }
-//
-//                        },
-//                        failure: function (result, request) {
-//
-//                        }
-//                    });
-                }
+               }
                 prop.show();
             }
         };
@@ -1492,7 +1457,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
-                //source['restUrl'] = '/gs/rest';
                 var layer = records[i].get("name");
                 var tiled = records[i].get("tiled");
 

@@ -1686,7 +1686,7 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config(user) for l in layers]
-        configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms"})
+        configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms", "restUrl":"/gs/rest"})
 
         i = 0
         for source in uniqify(configs):
@@ -2030,15 +2030,15 @@ class MapLayer(models.Model):
         try:
             cfg = simplejson.loads(self.source_params)
         except:
-            cfg = dict(ptype = "gxp_gnsource")
+            cfg = dict(ptype = "gxp_gnsource", restUrl = "gs/rest")
 
         if self.ows_url:
             cfg["url"] = ows_sub.sub('',self.ows_url)
 
         if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
-            gnLayer = Layer.objects.get(typename=self.name)
-            if user.has_perm('maps.change_layer', obj=gnLayer):
-                cfg["restUrl"] = "/gs/rest"
+            #gnLayer = Layer.objects.get(typename=self.name)
+            #if user.has_perm('maps.change_layer', obj=gnLayer):
+            cfg["restUrl"] = "/gs/rest"
         return cfg
 
     def layer_config(self, user):
