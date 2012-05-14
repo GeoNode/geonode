@@ -22,9 +22,12 @@ sitemaps = {
 urlpatterns = patterns('',
 
     # Static pages
-    url(r'^$', 'geonode.views.index', name='home'),
-    url(r'^help/?$', 'geonode.views.help', name='help'),
-    url(r'^developer/?$', 'geonode.views.developer', name='dev'),
+    url(r'^$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'index.html'}, name='home'),
+    url(r'^help/$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'help.html'}, name='help'),
+    url(r'^developer/$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'developer.html'}, name='dev'),
 
     # Data views
     (r'^data/', include(geonode.maps.urls.datapatterns)),
