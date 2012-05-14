@@ -106,7 +106,7 @@
 
     <target name="zip" depends="dist" description="create zip with static files">
         <echo>Creating ZIP file of static files</echo>
-        <zip destfile="../externals/${ant.project.name}.zip">
+        <zip destfile="build/${ant.project.name}.zip">
             <fileset dir="${build}/${ant.project.name}/WEB-INF/app/static"/>
         </zip>
     </target>
