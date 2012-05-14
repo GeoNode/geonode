@@ -37,18 +37,22 @@ urlpatterns = patterns('',
     (r'^ratings/', include('agon_ratings.urls')),
 
     # Accounts
-    url(r'^accounts/ajax_login$', 'geonode.views.ajax_login', name='auth_ajax_login'),
-    url(r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup', name='auth_ajax_lookup'),
+    url(r'^accounts/ajax_login$', 'geonode.views.ajax_login',
+                                       name='auth_ajax_login'),
+    url(r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup',
+                                       name='auth_ajax_lookup'),
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
     (r'^avatar/', include('avatar.urls')),
 
     # Meta
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
-               {'template': 'lang.js', 'mimetype': 'text/javascript'}, name='lang'),
+         {'template': 'lang.js', 'mimetype': 'text/javascript'}, name='lang'),
+    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog',
+                                  js_info_dict, name='jscat'),
+    url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
+                                  {'sitemaps': sitemaps}, name='sitemap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict, name='jscat'),
-    url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
     (r'^admin/', include(admin.site.urls)),
     )
 
