@@ -1684,7 +1684,7 @@ class Map(models.Model, PermissionLevelMixin):
             return results
 
         configs = [l.source_config() for l in layers]
-        configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms"})
+        configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms", "restUrl":"/gs/rest"})
 
         i = 0
         for source in uniqify(configs):
