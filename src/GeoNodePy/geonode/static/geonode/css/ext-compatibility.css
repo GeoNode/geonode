@@ -1,5 +1,9 @@
 /* Fixes for compatibility issues between extjs and bootstrap */
 
+img {
+  max-width: none;
+}
+
 .x-panel table, .x-window table {
   margin: 0;
   padding: 0;
