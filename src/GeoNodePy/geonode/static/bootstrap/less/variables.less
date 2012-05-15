@@ -33,13 +33,13 @@
 
 // Scaffolding
 // -------------------------
-@bodyBackground:        @white;
+@bodyBackground:        #fefefe;
 @textColor:             @grayDark;
 
 
 // Links
 // -------------------------
-@linkColor:             #08c;
+@linkColor:             #003C4C;
 @linkColorHover:        darken(@linkColor, 15%);
 
 
@@ -73,8 +73,9 @@
 @btnBackgroundHighlight:            darken(@white, 10%);
 @btnBorder:                         #ccc;
 
-@btnPrimaryBackground:              @linkColor;
-@btnPrimaryBackgroundHighlight:     spin(@btnPrimaryBackground, 15%);
+@btnPrimaryBackground:              #008CB3;
+@btnPrimaryBackgroundHighlight:     darken(@btnPrimaryBackground, 10%);
+
 
 @btnInfoBackground:                 #5bc0de;
 @btnInfoBackgroundHighlight:        #2f96b4;
@@ -106,7 +107,7 @@
 @dropdownBorder:                rgba(0,0,0,.2);
 @dropdownLinkColor:             @grayDark;
 @dropdownLinkColorHover:        @white;
-@dropdownLinkBackgroundHover:   @linkColor;
+@dropdownLinkBackgroundHover:   @btnPrimaryBackground;
 
 
 
@@ -144,12 +145,12 @@
 
 // Navbar
 // -------------------------
-@navbarHeight:                    40px;
-@navbarBackground:                @grayDarker;
-@navbarBackgroundHighlight:       @grayDark;
+@navbarHeight:                    50px;
+@navbarBackground:                darken(@btnPrimaryBackground, 15%);
+@navbarBackgroundHighlight:       @btnPrimaryBackground;
 
-@navbarText:                      @grayLight;
-@navbarLinkColor:                 @grayLight;
+@navbarText:                      #fefefe;
+@navbarLinkColor:                 #fefefe;
 @navbarLinkColorHover:            @white;
 @navbarLinkColorActive:           @navbarLinkColorHover;
 @navbarLinkBackgroundHover:       transparent;
