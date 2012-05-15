@@ -50,7 +50,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a href="{% url geonode.views.index %}">
+          <a href="{% url home %}">
             <span class="nav-logo">
               <a class="brand">{{ SITENAME }}</a>
             </span>
@@ -59,7 +59,7 @@
             <ul class="nav">
               
               <li>
-                <a href="{% url geonode.views.index %}">{% trans "Home" %}</a>
+                <a href="{% url home %}">{% trans "Home" %}</a>
               </li>
               <li>
                 <a href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a>
