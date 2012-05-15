@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-05 09:37-0500\n"
+"POT-Creation-Date: 2012-05-15 12:31-0500\n"
 "PO-Revision-Date: 2011-06-06 14:42\n"
 "Last-Translator: Matthew Ford <mford@worldbank.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,11 +19,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "X-Translated-Using: django-rosetta 0.6.0\n"
 
-#: core/models.py:24 maps/models.py:677
+#: core/models.py:24 maps/models.py:681
 msgid "title"
 msgstr "标题"
 
-#: core/models.py:25 maps/models.py:1623
+#: core/models.py:25 maps/models.py:1639
 msgid "permissions"
 msgstr "权限"
 
@@ -35,963 +35,963 @@ msgstr "代号"
 msgid "Determines the order that roles are presented in the user interface."
 msgstr "确定的角色是在用户界面中出现的顺序。"
 
-#: core/models.py:67 maps/views.py:961
+#: core/models.py:67 maps/views.py:971
 msgid "Anonymous Users"
 msgstr "匿名用户"
 
-#: core/models.py:68 maps/views.py:965
+#: core/models.py:68 maps/views.py:975
 msgid "Registered Users"
 msgstr "注册用户"
 
-#: maps/models.py:53
+#: maps/models.py:55
 msgid "Afghanistan"
 msgstr "阿富汗"
 
-#: maps/models.py:54
+#: maps/models.py:56
 msgid "Aland Islands"
 msgstr "奥兰群岛"
 
-#: maps/models.py:55
+#: maps/models.py:57
 msgid "Albania"
 msgstr "阿尔巴尼亚"
 
-#: maps/models.py:56
+#: maps/models.py:58
 msgid "Algeria"
 msgstr "阿尔及利亚"
 
-#: maps/models.py:57
+#: maps/models.py:59
 msgid "American Samoa"
 msgstr "美属萨摩亚"
 
-#: maps/models.py:58
+#: maps/models.py:60
 msgid "Andorra"
 msgstr "安道"
 
-#: maps/models.py:59
+#: maps/models.py:61
 msgid "Angola"
 msgstr "安哥拉"
 
-#: maps/models.py:60
+#: maps/models.py:62
 msgid "Anguilla"
 msgstr "安圭拉"
 
-#: maps/models.py:61
+#: maps/models.py:63
 msgid "Antigua and Barbuda"
 msgstr "安提瓜和巴布达"
 
-#: maps/models.py:62
+#: maps/models.py:64
 msgid "Argentina"
 msgstr "阿根廷"
 
-#: maps/models.py:63
+#: maps/models.py:65
 msgid "Armenia"
 msgstr "亚美尼亚"
 
-#: maps/models.py:64
+#: maps/models.py:66
 msgid "Aruba"
 msgstr "阿鲁巴"
 
-#: maps/models.py:65
+#: maps/models.py:67
 msgid "Australia"
 msgstr "澳大利亚"
 
-#: maps/models.py:66
+#: maps/models.py:68
 msgid "Austria"
 msgstr "奥地利"
 
-#: maps/models.py:67
+#: maps/models.py:69
 msgid "Azerbaijan"
 msgstr "阿塞拜疆"
 
-#: maps/models.py:68
+#: maps/models.py:70
 msgid "Bahamas"
 msgstr "巴哈马"
 
-#: maps/models.py:69
+#: maps/models.py:71
 msgid "Bahrain"
 msgstr "巴林"
 
-#: maps/models.py:70
+#: maps/models.py:72
 msgid "Bangladesh"
 msgstr "孟加拉国"
 
-#: maps/models.py:71
+#: maps/models.py:73
 msgid "Barbados"
 msgstr "巴巴多斯"
 
-#: maps/models.py:72
+#: maps/models.py:74
 msgid "Belarus"
 msgstr "白俄罗斯"
 
-#: maps/models.py:73
+#: maps/models.py:75
 msgid "Belgium"
 msgstr "比利时"
 
-#: maps/models.py:74
+#: maps/models.py:76
 msgid "Belize"
 msgstr "伯利兹"
 
-#: maps/models.py:75
+#: maps/models.py:77
 msgid "Benin"
 msgstr "贝宁"
 
-#: maps/models.py:76
+#: maps/models.py:78
 msgid "Bermuda"
 msgstr "百慕大"
 
-#: maps/models.py:77
+#: maps/models.py:79
 msgid "Bhutan"
 msgstr "不丹"
 
-#: maps/models.py:78
+#: maps/models.py:80
 msgid "Bolivia"
 msgstr "玻利维亚"
 
-#: maps/models.py:79
+#: maps/models.py:81
 msgid "Bosnia and Herzegovina"
 msgstr "波斯尼亚和黑塞哥维那"
 
-#: maps/models.py:80
+#: maps/models.py:82
 msgid "Botswana"
 msgstr "博茨瓦纳"
 
-#: maps/models.py:81
+#: maps/models.py:83
 msgid "Brazil"
 msgstr "巴西"
 
-#: maps/models.py:82
+#: maps/models.py:84
 msgid "British Virgin Islands"
 msgstr "英属维尔京群岛"
 
-#: maps/models.py:83
+#: maps/models.py:85
 msgid "Brunei Darussalam"
 msgstr "汶莱"
 
-#: maps/models.py:84
+#: maps/models.py:86
 msgid "Bulgaria"
 msgstr "保加利亚"
 
-#: maps/models.py:85
+#: maps/models.py:87
 msgid "Burkina Faso"
 msgstr "布基纳法索"
 
-#: maps/models.py:86
+#: maps/models.py:88
 msgid "Burundi"
 msgstr "布隆迪"
 
-#: maps/models.py:87
+#: maps/models.py:89
 msgid "Cambodia"
 msgstr "柬埔寨"
 
-#: maps/models.py:88
+#: maps/models.py:90
 msgid "Cameroon"
 msgstr "喀麦隆"
 
-#: maps/models.py:89
+#: maps/models.py:91
 msgid "Canada"
 msgstr "加拿大"
 
-#: maps/models.py:90
+#: maps/models.py:92
 msgid "Cape Verde"
 msgstr "佛得角"
 
-#: maps/models.py:91
+#: maps/models.py:93
 msgid "Cayman Islands"
 msgstr "开曼群岛"
 
-#: maps/models.py:92
+#: maps/models.py:94
 msgid "Central African Republic"
 msgstr "中非共和国"
 
-#: maps/models.py:93
+#: maps/models.py:95
 msgid "Chad"
 msgstr "乍得"
 
-#: maps/models.py:94
+#: maps/models.py:96
 msgid "Channel Islands"
 msgstr "海峡群岛"
 
-#: maps/models.py:95
+#: maps/models.py:97
 msgid "Chile"
 msgstr "智利"
 
-#: maps/models.py:96
+#: maps/models.py:98
 msgid "China"
 msgstr "中国"
 
-#: maps/models.py:97
+#: maps/models.py:99
 msgid "China - Hong Kong"
 msgstr "中国 - 香港"
 
-#: maps/models.py:98
+#: maps/models.py:100
 msgid "China - Macao"
 msgstr "中国 - 澳门"
 
-#: maps/models.py:99
+#: maps/models.py:101
 msgid "Colombia"
 msgstr "哥伦比亚"
 
-#: maps/models.py:100
+#: maps/models.py:102
 msgid "Comoros"
 msgstr "科摩罗"
 
-#: maps/models.py:101
+#: maps/models.py:103
 msgid "Congo"
 msgstr "刚果"
 
-#: maps/models.py:102
+#: maps/models.py:104
 msgid "Cook Islands"
 msgstr "库克群岛"
 
-#: maps/models.py:103
+#: maps/models.py:105
 msgid "Costa Rica"
 msgstr "哥斯达黎加"
 
-#: maps/models.py:104
+#: maps/models.py:106
 msgid "Cote d'Ivoire"
 msgstr "科特迪瓦"
 
-#: maps/models.py:105
+#: maps/models.py:107
 msgid "Croatia"
 msgstr "克罗地亚"
 
-#: maps/models.py:106
+#: maps/models.py:108
 msgid "Cuba"
 msgstr "古巴"
 
-#: maps/models.py:107
+#: maps/models.py:109
 msgid "Cyprus"
 msgstr "塞浦路斯"
 
-#: maps/models.py:108
+#: maps/models.py:110
 msgid "Czech Republic"
 msgstr "捷克共和国"
 
-#: maps/models.py:109
+#: maps/models.py:111
 msgid "Democratic People's Republic of Korea"
 msgstr "朝鲜人民民主共和国"
 
-#: maps/models.py:110
+#: maps/models.py:112
 msgid "Democratic Republic of the Congo"
 msgstr "刚果民主共和国"
 
-#: maps/models.py:111
+#: maps/models.py:113
 msgid "Denmark"
 msgstr "丹麦"
 
-#: maps/models.py:112
+#: maps/models.py:114
 msgid "Djibouti"
 msgstr "吉布提"
 
-#: maps/models.py:113
+#: maps/models.py:115
 msgid "Dominica"
 msgstr "多米尼克"
 
-#: maps/models.py:114
+#: maps/models.py:116
 msgid "Dominican Republic"
 msgstr "多米尼加共和国"
 
-#: maps/models.py:115
+#: maps/models.py:117
 msgid "Ecuador"
 msgstr "厄瓜多尔"
 
-#: maps/models.py:116
+#: maps/models.py:118
 msgid "Egypt"
 msgstr "埃及"
 
-#: maps/models.py:117
+#: maps/models.py:119
 msgid "El Salvador"
 msgstr "萨尔瓦多"
 
-#: maps/models.py:118
+#: maps/models.py:120
 msgid "Equatorial Guinea"
 msgstr "赤道几内亚"
 
-#: maps/models.py:119
+#: maps/models.py:121
 msgid "Eritrea"
 msgstr "厄立特里亚"
 
-#: maps/models.py:120
+#: maps/models.py:122
 msgid "Estonia"
 msgstr "爱沙尼亚"
 
-#: maps/models.py:121
+#: maps/models.py:123
 msgid "Ethiopia"
 msgstr "埃塞俄比亚"
 
-#: maps/models.py:122
+#: maps/models.py:124
 msgid "Faeroe Islands"
 msgstr "法罗群岛"
 
-#: maps/models.py:123
+#: maps/models.py:125
 msgid "Falkland Islands (Malvinas)"
 msgstr "福克兰群岛（马尔维纳斯）"
 
-#: maps/models.py:124
+#: maps/models.py:126
 msgid "Fiji"
 msgstr "斐济"
 
-#: maps/models.py:125
+#: maps/models.py:127
 msgid "Finland"
 msgstr "芬兰"
 
-#: maps/models.py:126
+#: maps/models.py:128
 msgid "France"
 msgstr "法国"
 
-#: maps/models.py:127
+#: maps/models.py:129
 msgid "French Guiana"
 msgstr "法属圭亚那"
 
-#: maps/models.py:128
+#: maps/models.py:130
 msgid "French Polynesia"
 msgstr "法属波利尼西亚"
 
-#: maps/models.py:129
+#: maps/models.py:131
 msgid "Gabon"
 msgstr "加蓬"
 
-#: maps/models.py:130
+#: maps/models.py:132
 msgid "Gambia"
 msgstr "冈比亚"
 
-#: maps/models.py:131
+#: maps/models.py:133
 msgid "Georgia"
 msgstr "格鲁吉亚"
 
-#: maps/models.py:132
+#: maps/models.py:134
 msgid "Germany"
 msgstr "德国"
 
-#: maps/models.py:133
+#: maps/models.py:135
 msgid "Ghana"
 msgstr "加纳"
 
-#: maps/models.py:134
+#: maps/models.py:136
 msgid "Gibraltar"
 msgstr "直布罗陀"
 
-#: maps/models.py:135
+#: maps/models.py:137
 msgid "Greece"
 msgstr "希腊"
 
-#: maps/models.py:136
+#: maps/models.py:138
 msgid "Greenland"
 msgstr "格陵兰"
 
-#: maps/models.py:137
+#: maps/models.py:139
 msgid "Grenada"
 msgstr "格林纳达"
 
-#: maps/models.py:138
+#: maps/models.py:140
 msgid "Guadeloupe"
 msgstr "瓜德罗普岛"
 
-#: maps/models.py:139
+#: maps/models.py:141
 msgid "Guam"
 msgstr "关岛"
 
-#: maps/models.py:140
+#: maps/models.py:142
 msgid "Guatemala"
 msgstr "危地马拉"
 
-#: maps/models.py:141
+#: maps/models.py:143
 msgid "Guernsey"
 msgstr "根西岛"
 
-#: maps/models.py:142
+#: maps/models.py:144
 msgid "Guinea"
 msgstr "几内亚"
 
-#: maps/models.py:143
+#: maps/models.py:145
 msgid "Guinea-Bissau"
 msgstr "几内亚比绍"
 
-#: maps/models.py:144
+#: maps/models.py:146
 msgid "Guyana"
 msgstr "圭亚那"
 
-#: maps/models.py:145
+#: maps/models.py:147
 msgid "Haiti"
 msgstr "海地"
 
-#: maps/models.py:146
+#: maps/models.py:148
 msgid "Holy See (Vatican City)"
 msgstr "罗马教廷（梵蒂冈城）"
 
-#: maps/models.py:147
+#: maps/models.py:149
 msgid "Honduras"
 msgstr "洪都拉斯"
 
-#: maps/models.py:148
+#: maps/models.py:150
 msgid "Hungary"
 msgstr "匈牙利"
 
-#: maps/models.py:149
+#: maps/models.py:151
 msgid "Iceland"
 msgstr "冰岛"
 
-#: maps/models.py:150
+#: maps/models.py:152
 msgid "India"
 msgstr "印度"
 
-#: maps/models.py:151
+#: maps/models.py:153
 msgid "Indonesia"
 msgstr "印尼"
 
-#: maps/models.py:152
+#: maps/models.py:154
 msgid "Iran"
 msgstr "伊朗"
 
-#: maps/models.py:153
+#: maps/models.py:155
 msgid "Iraq"
 msgstr "伊拉克"
 
-#: maps/models.py:154
+#: maps/models.py:156
 msgid "Ireland"
 msgstr "爱尔兰"
 
-#: maps/models.py:155
+#: maps/models.py:157
 msgid "Isle of Man"
 msgstr "马恩岛"
 
-#: maps/models.py:156
+#: maps/models.py:158
 msgid "Israel"
 msgstr "以色列"
 
-#: maps/models.py:157
+#: maps/models.py:159
 msgid "Italy"
 msgstr "意大利"
 
-#: maps/models.py:158
+#: maps/models.py:160
 msgid "Jamaica"
 msgstr "牙买加"
 
-#: maps/models.py:159
+#: maps/models.py:161
 msgid "Japan"
 msgstr "日本"
 
-#: maps/models.py:160
+#: maps/models.py:162
 msgid "Jersey"
 msgstr "新泽西州"
 
-#: maps/models.py:161
+#: maps/models.py:163
 msgid "Jordan"
 msgstr "约旦"
 
-#: maps/models.py:162
+#: maps/models.py:164
 msgid "Kazakhstan"
 msgstr "哈萨克斯坦"
 
-#: maps/models.py:163
+#: maps/models.py:165
 msgid "Kenya"
 msgstr "肯尼亚"
 
-#: maps/models.py:164
+#: maps/models.py:166
 msgid "Kiribati"
 msgstr "基里巴斯"
 
-#: maps/models.py:165
+#: maps/models.py:167
 msgid "Kuwait"
 msgstr "科威特"
 
-#: maps/models.py:166
+#: maps/models.py:168
 msgid "Kyrgyzstan"
 msgstr "吉尔吉斯斯坦"
 
-#: maps/models.py:167
+#: maps/models.py:169
 msgid "Lao People's Democratic Republic"
 msgstr "老挝人民民主共和国"
 
-#: maps/models.py:168
+#: maps/models.py:170
 msgid "Latvia"
 msgstr "拉脱维亚"
 
-#: maps/models.py:169
+#: maps/models.py:171
 msgid "Lebanon"
 msgstr "黎巴嫩"
 
-#: maps/models.py:170
+#: maps/models.py:172
 msgid "Lesotho"
 msgstr "莱索托"
 
-#: maps/models.py:171
+#: maps/models.py:173
 msgid "Liberia"
 msgstr "利比里亚"
 
-#: maps/models.py:172
+#: maps/models.py:174
 msgid "Libyan Arab Jamahiriya"
 msgstr "阿拉伯利比亚民众国"
 
-#: maps/models.py:173
+#: maps/models.py:175
 msgid "Liechtenstein"
 msgstr "列支敦士登"
 
-#: maps/models.py:174
+#: maps/models.py:176
 msgid "Lithuania"
 msgstr "立陶宛"
 
-#: maps/models.py:175
+#: maps/models.py:177
 msgid "Luxembourg"
 msgstr "卢森堡"
 
-#: maps/models.py:176
+#: maps/models.py:178
 msgid "Macedonia"
 msgstr "马其顿"
 
-#: maps/models.py:177
+#: maps/models.py:179
 msgid "Madagascar"
 msgstr "马达加斯加"
 
-#: maps/models.py:178
+#: maps/models.py:180
 msgid "Malawi"
 msgstr "马拉维"
 
-#: maps/models.py:179
+#: maps/models.py:181
 msgid "Malaysia"
 msgstr "马来西亚"
 
-#: maps/models.py:180
+#: maps/models.py:182
 msgid "Maldives"
 msgstr "马尔代夫"
 
-#: maps/models.py:181
+#: maps/models.py:183
 msgid "Mali"
 msgstr "马里"
 
-#: maps/models.py:182
+#: maps/models.py:184
 msgid "Malta"
 msgstr "马耳他"
 
-#: maps/models.py:183
+#: maps/models.py:185
 msgid "Marshall Islands"
 msgstr "马绍尔群岛"
 
-#: maps/models.py:184
+#: maps/models.py:186
 msgid "Martinique"
 msgstr "马提尼克岛"
 
-#: maps/models.py:185
+#: maps/models.py:187
 msgid "Mauritania"
 msgstr "毛里塔尼亚"
 
-#: maps/models.py:186
+#: maps/models.py:188
 msgid "Mauritius"
 msgstr "毛里求斯"
 
-#: maps/models.py:187
+#: maps/models.py:189
 msgid "Mayotte"
 msgstr "马约特岛"
 
-#: maps/models.py:188
+#: maps/models.py:190
 msgid "Mexico"
 msgstr "墨西哥"
 
-#: maps/models.py:189
+#: maps/models.py:191
 msgid "Micronesia, Federated States of"
 msgstr "密克罗尼西亚联邦"
 
-#: maps/models.py:190
+#: maps/models.py:192
 msgid "Monaco"
 msgstr "摩纳哥"
 
-#: maps/models.py:191
+#: maps/models.py:193
 msgid "Mongolia"
 msgstr "蒙古"
 
-#: maps/models.py:192
+#: maps/models.py:194
 msgid "Montenegro"
 msgstr "黑山"
 
-#: maps/models.py:193
+#: maps/models.py:195
 msgid "Montserrat"
 msgstr "蒙特塞拉特"
 
-#: maps/models.py:194
+#: maps/models.py:196
 msgid "Morocco"
 msgstr "摩洛哥"
 
-#: maps/models.py:195
+#: maps/models.py:197
 msgid "Mozambique"
 msgstr "莫桑比克"
 
-#: maps/models.py:196
+#: maps/models.py:198
 msgid "Myanmar"
 msgstr "缅甸"
 
-#: maps/models.py:197
+#: maps/models.py:199
 msgid "Namibia"
 msgstr "纳米比亚"
 
-#: maps/models.py:198
+#: maps/models.py:200
 msgid "Nauru"
 msgstr "瑙鲁"
 
-#: maps/models.py:199
+#: maps/models.py:201
 msgid "Nepal"
 msgstr "尼泊尔"
 
-#: maps/models.py:200
+#: maps/models.py:202
 msgid "Netherlands"
 msgstr "荷兰"
 
-#: maps/models.py:201
+#: maps/models.py:203
 msgid "Netherlands Antilles"
 msgstr "荷属安的列斯"
 
-#: maps/models.py:202
+#: maps/models.py:204
 msgid "New Caledonia"
 msgstr "新喀里多尼亚"
 
-#: maps/models.py:203
+#: maps/models.py:205
 msgid "New Zealand"
 msgstr "新西兰"
 
-#: maps/models.py:204
+#: maps/models.py:206
 msgid "Nicaragua"
 msgstr "尼加拉瓜"
 
-#: maps/models.py:205
+#: maps/models.py:207
 msgid "Niger"
 msgstr "尼日尔"
 
-#: maps/models.py:206
+#: maps/models.py:208
 msgid "Nigeria"
 msgstr "尼日利亚"
 
-#: maps/models.py:207
+#: maps/models.py:209
 msgid "Niue"
 msgstr "纽埃"
 
-#: maps/models.py:208
+#: maps/models.py:210
 msgid "Norfolk Island"
 msgstr "诺福克岛"
 
-#: maps/models.py:209
+#: maps/models.py:211
 msgid "Northern Mariana Islands"
 msgstr "北马里亚纳群岛"
 
-#: maps/models.py:210
+#: maps/models.py:212
 msgid "Norway"
 msgstr "挪威"
 
-#: maps/models.py:211
+#: maps/models.py:213
 msgid "Occupied Palestinian Territory"
 msgstr "被占领的巴勒斯坦领土"
 
-#: maps/models.py:212
+#: maps/models.py:214
 msgid "Oman"
 msgstr "阿曼"
 
-#: maps/models.py:213
+#: maps/models.py:215
 msgid "Pakistan"
 msgstr "巴基斯坦"
 
-#: maps/models.py:214
+#: maps/models.py:216
 msgid "Palau"
 msgstr "帕劳"
 
-#: maps/models.py:215
+#: maps/models.py:217
 msgid "Panama"
 msgstr "巴拿马"
 
-#: maps/models.py:216
+#: maps/models.py:218
 msgid "Papua New Guinea"
 msgstr "巴布亚新几内亚"
 
-#: maps/models.py:217
+#: maps/models.py:219
 msgid "Paraguay"
 msgstr "巴拉圭"
 
-#: maps/models.py:218
+#: maps/models.py:220
 msgid "Peru"
 msgstr "秘鲁"
 
-#: maps/models.py:219
+#: maps/models.py:221
 msgid "Philippines"
 msgstr "菲律宾"
 
-#: maps/models.py:220
+#: maps/models.py:222
 msgid "Pitcairn"
 msgstr "皮特凯恩"
 
-#: maps/models.py:221
+#: maps/models.py:223
 msgid "Poland"
 msgstr "波兰"
 
-#: maps/models.py:222
+#: maps/models.py:224
 msgid "Portugal"
 msgstr "葡萄牙"
 
-#: maps/models.py:223
+#: maps/models.py:225
 msgid "Puerto Rico"
 msgstr "波多黎各"
 
-#: maps/models.py:224
+#: maps/models.py:226
 msgid "Qatar"
 msgstr "卡塔尔"
 
-#: maps/models.py:225
+#: maps/models.py:227
 msgid "Republic of Korea"
 msgstr "韩国共和国"
 
-#: maps/models.py:226
+#: maps/models.py:228
 msgid "Republic of Moldova"
 msgstr "摩尔多瓦共和国"
 
-#: maps/models.py:227
+#: maps/models.py:229
 msgid "Reunion"
 msgstr "团圆"
 
-#: maps/models.py:228
+#: maps/models.py:230
 msgid "Romania"
 msgstr "罗马尼亚"
 
-#: maps/models.py:229
+#: maps/models.py:231
 msgid "Russian Federation"
 msgstr "俄罗斯联邦"
 
-#: maps/models.py:230
+#: maps/models.py:232
 msgid "Rwanda"
 msgstr "卢旺达"
 
-#: maps/models.py:231
+#: maps/models.py:233
 msgid "Saint-Barthelemy"
 msgstr "圣 - 缪"
 
-#: maps/models.py:232
+#: maps/models.py:234
 msgid "Saint Helena"
 msgstr "圣赫勒拿"
 
-#: maps/models.py:233
+#: maps/models.py:235
 msgid "Saint Kitts and Nevis"
 msgstr "圣基茨和尼维斯"
 
-#: maps/models.py:234
+#: maps/models.py:236
 msgid "Saint Lucia"
 msgstr "圣卢西亚"
 
-#: maps/models.py:235
+#: maps/models.py:237
 msgid "Saint-Martin (French part)"
 msgstr "圣马丁（法国部分）"
 
-#: maps/models.py:236
+#: maps/models.py:238
 msgid "Saint Pierre and Miquelon"
 msgstr "圣皮埃尔和密克隆"
 
-#: maps/models.py:237
+#: maps/models.py:239
 msgid "Saint Vincent and the Grenadines"
 msgstr "圣文森特和格林纳丁斯"
 
-#: maps/models.py:238
+#: maps/models.py:240
 msgid "Samoa"
 msgstr "萨摩亚"
 
-#: maps/models.py:239
+#: maps/models.py:241
 msgid "San Marino"
 msgstr "圣马力诺"
 
-#: maps/models.py:240
+#: maps/models.py:242
 msgid "Sao Tome and Principe"
 msgstr "圣多美和普林西比"
 
-#: maps/models.py:241
+#: maps/models.py:243
 msgid "Saudi Arabia"
 msgstr "沙特阿拉伯"
 
-#: maps/models.py:242
+#: maps/models.py:244
 msgid "Senegal"
 msgstr "塞内加尔"
 
-#: maps/models.py:243
+#: maps/models.py:245
 msgid "Serbia"
 msgstr "塞尔维亚"
 
-#: maps/models.py:244
+#: maps/models.py:246
 msgid "Seychelles"
 msgstr "塞舌尔"
 
-#: maps/models.py:245
+#: maps/models.py:247
 msgid "Sierra Leone"
 msgstr "塞拉利昂"
 
-#: maps/models.py:246
+#: maps/models.py:248
 msgid "Singapore"
 msgstr "新加坡"
 
-#: maps/models.py:247
+#: maps/models.py:249
 msgid "Slovakia"
 msgstr "斯洛伐克"
 
-#: maps/models.py:248
+#: maps/models.py:250
 msgid "Slovenia"
 msgstr "斯洛文尼亚"
 
-#: maps/models.py:249
+#: maps/models.py:251
 msgid "Solomon Islands"
 msgstr "所罗门群岛"
 
-#: maps/models.py:250
+#: maps/models.py:252
 msgid "Somalia"
 msgstr "索马里"
 
-#: maps/models.py:251
+#: maps/models.py:253
 msgid "South Africa"
 msgstr "南非"
 
-#: maps/models.py:252
+#: maps/models.py:254
 msgid "Spain"
 msgstr "西班牙"
 
-#: maps/models.py:253
+#: maps/models.py:255
 msgid "Sri Lanka"
 msgstr "斯里兰卡"
 
-#: maps/models.py:254
+#: maps/models.py:256
 msgid "Sudan"
 msgstr "苏丹"
 
-#: maps/models.py:255
+#: maps/models.py:257
 msgid "Suriname"
 msgstr "苏里南"
 
-#: maps/models.py:256
+#: maps/models.py:258
 msgid "Svalbard and Jan Mayen Islands"
 msgstr "斯瓦尔巴岛和扬马延岛"
 
-#: maps/models.py:257
+#: maps/models.py:259
 msgid "Swaziland"
 msgstr "斯威士兰"
 
-#: maps/models.py:258
+#: maps/models.py:260
 msgid "Sweden"
 msgstr "瑞典"
 
-#: maps/models.py:259
+#: maps/models.py:261
 msgid "Switzerland"
 msgstr "瑞士"
 
-#: maps/models.py:260
+#: maps/models.py:262
 msgid "Syrian Arab Republic"
 msgstr "阿拉伯叙利亚共和国"
 
-#: maps/models.py:261
+#: maps/models.py:263
 msgid "Tajikistan"
 msgstr "塔吉克斯坦"
 
-#: maps/models.py:262
+#: maps/models.py:264
 msgid "Thailand"
 msgstr "泰国"
 
-#: maps/models.py:263
+#: maps/models.py:265
 msgid "Timor-Leste"
 msgstr "东帝汶"
 
-#: maps/models.py:264
+#: maps/models.py:266
 msgid "Togo"
 msgstr "多哥"
 
-#: maps/models.py:265
+#: maps/models.py:267
 msgid "Tokelau"
 msgstr "托克劳"
 
-#: maps/models.py:266
+#: maps/models.py:268
 msgid "Tonga"
 msgstr "汤加"
 
-#: maps/models.py:267
+#: maps/models.py:269
 msgid "Trinidad and Tobago"
 msgstr "特里尼达和多巴哥"
 
-#: maps/models.py:268
+#: maps/models.py:270
 msgid "Tunisia"
 msgstr "突尼斯"
 
-#: maps/models.py:269
+#: maps/models.py:271
 msgid "Turkey"
 msgstr "土耳其"
 
-#: maps/models.py:270
+#: maps/models.py:272
 msgid "Turkmenistan"
 msgstr "土库曼斯坦"
 
-#: maps/models.py:271
+#: maps/models.py:273
 msgid "Turks and Caicos Islands"
 msgstr "特克斯和凯科斯群岛"
 
-#: maps/models.py:272
+#: maps/models.py:274
 msgid "Tuvalu"
 msgstr "图瓦卢"
 
-#: maps/models.py:273
+#: maps/models.py:275
 msgid "Uganda"
 msgstr "乌干达"
 
-#: maps/models.py:274
+#: maps/models.py:276
 msgid "Ukraine"
 msgstr "乌克兰"
 
-#: maps/models.py:275
+#: maps/models.py:277
 msgid "United Arab Emirates"
 msgstr "阿拉伯联合酋长国"
 
-#: maps/models.py:276
+#: maps/models.py:278
 msgid "United Kingdom"
 msgstr "英国"
 
-#: maps/models.py:277
+#: maps/models.py:279
 msgid "United Republic of Tanzania"
 msgstr "坦桑尼亚联合共和国"
 
-#: maps/models.py:278
+#: maps/models.py:280
 msgid "United States of America"
 msgstr "美国"
 
-#: maps/models.py:279
+#: maps/models.py:281
 msgid "United States Virgin Islands"
 msgstr "美属维尔京群岛"
 
-#: maps/models.py:280
+#: maps/models.py:282
 msgid "Uruguay"
 msgstr "乌拉圭"
 
-#: maps/models.py:281
+#: maps/models.py:283
 msgid "Uzbekistan"
 msgstr "乌兹别克斯坦"
 
-#: maps/models.py:282
+#: maps/models.py:284
 msgid "Vanuatu"
 msgstr "瓦努阿图"
 
-#: maps/models.py:283
+#: maps/models.py:285
 msgid "Venezuela (Bolivarian Republic of)"
 msgstr "委内瑞拉（玻利瓦尔共和国）"
 
-#: maps/models.py:284
+#: maps/models.py:286
 msgid "Viet Nam"
 msgstr "越南"
 
-#: maps/models.py:285
+#: maps/models.py:287
 msgid "Wallis and Futuna Islands"
 msgstr "瓦利斯群岛和富图纳群岛"
 
-#: maps/models.py:286
+#: maps/models.py:288
 msgid "Western Sahara"
 msgstr "西撒哈拉"
 
-#: maps/models.py:287
+#: maps/models.py:289
 msgid "Yemen"
 msgstr "也门"
 
-#: maps/models.py:288
+#: maps/models.py:290
 msgid "Zambia"
 msgstr "赞比亚"
 
-#: maps/models.py:289
+#: maps/models.py:291
 msgid "Zimbabwe"
 msgstr "津巴布韦"
 
-#: maps/models.py:476
+#: maps/models.py:478
 msgid ""
 "You can customize the template to suit your needs. You can add and remove "
 "fields and fill out default information (e.g. contact details). Fields you "
@@ -1004,317 +1004,321 @@ msgstr ""
 "不能改变默认视图中字段，可访问更全面和复杂的高级视图。你甚至可以使用XML编辑器"
 "创建自定义的结构，但必须通过系统验证，这样才知道你要做什么:-)"
 
-#: maps/models.py:491
+#: maps/models.py:493
 msgid "Individual Name"
 msgstr "个人名称"
 
-#: maps/models.py:492
+#: maps/models.py:494
 msgid "Organization Name"
 msgstr "组织名称"
 
-#: maps/models.py:493
+#: maps/models.py:495
 msgid "Position Name"
 msgstr "位置名称"
 
-#: maps/models.py:494 templates/maps/layer.html:187
+#: maps/models.py:496 templates/maps/layer.html:187
 msgid "Voice"
 msgstr "发言"
 
-#: maps/models.py:495
+#: maps/models.py:497
 msgid "Facsimile"
 msgstr "传真"
 
-#: maps/models.py:496
+#: maps/models.py:498
 msgid "Delivery Point"
 msgstr "交付地点"
 
-#: maps/models.py:497
+#: maps/models.py:499
 msgid "City"
 msgstr "城市"
 
-#: maps/models.py:498
+#: maps/models.py:500
 msgid "Administrative Area"
 msgstr "行政区"
 
-#: maps/models.py:499
+#: maps/models.py:501
 msgid "Postal Code"
 msgstr "邮政编码"
 
-#: maps/models.py:678
-msgid "date"
-msgstr "日期"
-
-#: maps/models.py:680
-msgid "date type"
-msgstr "日期类型"
-
-#: maps/models.py:682
-msgid "edition"
-msgstr "版本"
-
-#: maps/models.py:683
-msgid "abstract"
-msgstr "摘要"
-
-#: maps/models.py:684
-msgid "purpose"
-msgstr "宗旨"
-
-#: maps/models.py:685
-msgid "maintenance frequency"
-msgstr "维修次数"
-
-#: maps/models.py:691
+#: maps/models.py:505 maps/models.py:695 maps/models.py:1233
 msgid "keywords"
 msgstr "关键字"
 
-#: maps/models.py:692
+#: maps/models.py:505 maps/models.py:695 maps/models.py:1233
+msgid "A space or comma-separated list of keywords"
+msgstr ""
+
+#: maps/models.py:682
+msgid "date"
+msgstr "日期"
+
+#: maps/models.py:684
+msgid "date type"
+msgstr "日期类型"
+
+#: maps/models.py:686
+msgid "edition"
+msgstr "版本"
+
+#: maps/models.py:687
+msgid "abstract"
+msgstr "摘要"
+
+#: maps/models.py:688
+msgid "purpose"
+msgstr "宗旨"
+
+#: maps/models.py:689
+msgid "maintenance frequency"
+msgstr "维修次数"
+
+#: maps/models.py:696
 msgid "keywords region"
 msgstr "关键词区域"
 
-#: maps/models.py:693
+#: maps/models.py:697
 msgid "constraints use"
 msgstr "使用约束"
 
-#: maps/models.py:694
+#: maps/models.py:698
 msgid "constraints other"
 msgstr "其他约束"
 
-#: maps/models.py:695
+#: maps/models.py:699
 msgid "spatial representation type"
 msgstr "空间描绘类型"
 
-#: maps/models.py:698
+#: maps/models.py:702
 msgid "language"
 msgstr "语言"
 
-#: maps/models.py:699
+#: maps/models.py:703
 msgid "topic_category"
 msgstr "topic_category"
 
-#: maps/models.py:702
+#: maps/models.py:706
 msgid "temporal extent start"
 msgstr "起始时间"
 
-#: maps/models.py:703
+#: maps/models.py:707
 msgid "temporal extent end"
 msgstr "结束时间"
 
-#: maps/models.py:704
+#: maps/models.py:708
 msgid "geographic bounding box"
 msgstr "地图边界范围"
 
-#: maps/models.py:705
+#: maps/models.py:709
 msgid "supplemental information"
 msgstr "补充信息"
 
-#: maps/models.py:708
+#: maps/models.py:712
 msgid "distribution URL"
 msgstr "发布网址"
 
-#: maps/models.py:709
+#: maps/models.py:713
 msgid "distribution description"
 msgstr "发布描述"
 
-#: maps/models.py:712
+#: maps/models.py:716
 msgid "data quality statement"
 msgstr "数据质量描述"
 
-#: maps/models.py:751
+#: maps/models.py:755
 msgid "Zipped Shapefile"
 msgstr "Shapefile压缩(.zip)"
 
-#: maps/models.py:752
+#: maps/models.py:756
 msgid "GML 2.0"
 msgstr "GML 2.0"
 
-#: maps/models.py:753
+#: maps/models.py:757
 msgid "GML 3.1.1"
 msgstr "GML 3.1.1"
 
-#: maps/models.py:754
+#: maps/models.py:758
 msgid "CSV"
 msgstr "CSV"
 
-#: maps/models.py:755
+#: maps/models.py:759
 msgid "Excel"
 msgstr "Excel"
 
-#: maps/models.py:756
+#: maps/models.py:760
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: maps/models.py:809
+#: maps/models.py:813
 msgid "JPEG"
 msgstr "JPEG"
 
-#: maps/models.py:810
+#: maps/models.py:814
 msgid "PDF"
 msgstr "PDF"
 
-#: maps/models.py:811
+#: maps/models.py:815
 msgid "PNG"
 msgstr "PNG"
 
-#: maps/models.py:826
+#: maps/models.py:830
 msgid "KML"
 msgstr "KML"
 
-#: maps/models.py:827
+#: maps/models.py:831
 msgid "View in Google Earth"
 msgstr "谷歌地球"
 
-#: maps/models.py:1183
+#: maps/models.py:1188
 msgid "Title"
 msgstr "标题"
 
-#: maps/models.py:1188 templates/maps/layer.html:154
+#: maps/models.py:1193 templates/maps/layer.html:154
 msgid "Abstract"
 msgstr "摘要"
 
-#: maps/models.py:1194
+#: maps/models.py:1199
 msgid "zoom"
 msgstr "缩放"
 
-#: maps/models.py:1200
+#: maps/models.py:1205
 msgid "projection"
 msgstr "投影"
 
-#: maps/models.py:1206
+#: maps/models.py:1211
 msgid "center X"
 msgstr "中心X"
 
-#: maps/models.py:1212
+#: maps/models.py:1217
 msgid "center Y"
 msgstr "中心Y"
 
-#: maps/models.py:1218
+#: maps/models.py:1223
 msgid "owner"
 msgstr "所有者"
 
-#: maps/models.py:1474
+#: maps/models.py:1490
 msgid "stack order"
 msgstr "重叠顺序"
 
-#: maps/models.py:1480
+#: maps/models.py:1496
 msgid "format"
 msgstr "格式"
 
-#: maps/models.py:1486
+#: maps/models.py:1502
 msgid "name"
 msgstr "名称"
 
-#: maps/models.py:1495
+#: maps/models.py:1511
 msgid "opacity"
 msgstr "透明度"
 
-#: maps/models.py:1500
+#: maps/models.py:1516
 msgid "styles"
 msgstr "样式"
 
-#: maps/models.py:1505
+#: maps/models.py:1521
 msgid "transparent"
 msgstr "透明"
 
-#: maps/models.py:1510
+#: maps/models.py:1526
 msgid "fixed"
 msgstr "固定"
 
-#: maps/models.py:1516
+#: maps/models.py:1532
 msgid "group"
 msgstr "组"
 
-#: maps/models.py:1522
+#: maps/models.py:1538
 msgid "visibility"
 msgstr "能见度"
 
-#: maps/models.py:1527
+#: maps/models.py:1543
 msgid "ows URL"
 msgstr "OWS网址"
 
-#: maps/models.py:1532
+#: maps/models.py:1548
 msgid "layer params"
 msgstr "图层参数"
 
-#: maps/models.py:1541
+#: maps/models.py:1557
 msgid "source params"
 msgstr "资源参数"
 
-#: maps/views.py:115 maps/views.py:121
+#: maps/views.py:118 maps/views.py:124
 msgid "No Permissions"
 msgstr "没有权限"
 
-#: maps/views.py:116 maps/views.py:122
+#: maps/views.py:119 maps/views.py:125
 msgid "Read Only"
 msgstr "只读"
 
-#: maps/views.py:117 maps/views.py:123
+#: maps/views.py:120 maps/views.py:126
 msgid "Read/Write"
 msgstr "读/写"
 
-#: maps/views.py:118 maps/views.py:124
+#: maps/views.py:121 maps/views.py:127
 msgid "Administrative"
 msgstr "管理"
 
-#: maps/views.py:159
+#: maps/views.py:162
 msgid "You must be logged in to save this map"
 msgstr "登录后才能保存地图"
 
-#: maps/views.py:199
+#: maps/views.py:202
 msgid "You are not permitted to view or copy this map."
 msgstr "您没有查看或复制地图权限。"
 
-#: maps/views.py:319 maps/views.py:648 maps/views.py:664 templates/401.html:10
+#: maps/views.py:322 maps/views.py:656 maps/views.py:672 templates/401.html:10
 msgid "Not Permitted"
 msgstr "不允许"
 
-#: maps/views.py:547
+#: maps/views.py:550
 msgid "You are not permitted to delete this map."
 msgstr "您无权删除此地图。"
 
-#: maps/views.py:569 maps/views.py:632
+#: maps/views.py:572 maps/views.py:640
 msgid "You are not allowed to view this map."
 msgstr "您无权查看此地图。"
 
-#: maps/views.py:591
+#: maps/views.py:594
 msgid "You are not allowed to modify this map's metadata."
 msgstr "您不得修改此地图元数据。"
 
-#: maps/views.py:683
+#: maps/views.py:691
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "您无权修改此图层元数据"
 
-#: maps/views.py:745
+#: maps/views.py:755
 msgid "You are not permitted to delete this layer"
 msgstr "您无权删除此图层"
 
-#: maps/views.py:765 maps/views.py:865
+#: maps/views.py:775 maps/views.py:875
 msgid "You are not permitted to modify this layer"
 msgstr "您无权修改此层"
 
-#: maps/views.py:798
+#: maps/views.py:808
 msgid "You are not permitted to view this layer"
 msgstr "您无权以查看此图层"
 
-#: maps/views.py:817
+#: maps/views.py:827
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
 msgstr "在上传数据时出现错误。请重试，如果还有问题，请与管理员联系。"
 
-#: maps/views.py:910
+#: maps/views.py:920
 msgid "???"
 msgstr "???"
 
-#: maps/views.py:952
+#: maps/views.py:962
 msgid "Invalid permission level."
 msgstr "权限等级不够。"
 
-#: maps/views.py:974
+#: maps/views.py:984
 msgid "User"
 msgstr "用户"
 
-#: maps/views.py:1032
+#: maps/views.py:1042
 msgid "Bad HTTP Authorization Credentials."
 msgstr "HTTP授权证书错误。"
 
@@ -2021,7 +2025,7 @@ msgstr "本地SRS"
 msgid "No SRS specified."
 msgstr "没有指定SRS。"
 
-#: templates/maps/layer.html:219 templates/maps/mapinfo.html:77
+#: templates/maps/layer.html:219 templates/maps/mapinfo.html:78
 msgid "Comments"
 msgstr ""
 
@@ -2033,12 +2037,12 @@ msgid ""
 "                "
 msgstr ""
 
-#: templates/maps/layer.html:237 templates/maps/mapinfo.html:95
+#: templates/maps/layer.html:237 templates/maps/mapinfo.html:96
 #, fuzzy
 msgid "Post a comment"
 msgstr "邮政编码"
 
-#: templates/maps/layer.html:245 templates/maps/mapinfo.html:103
+#: templates/maps/layer.html:245 templates/maps/mapinfo.html:104
 #: templates/registration/password_change_form.html:10
 #: templates/registration/password_reset_confirm.html:14
 #: templates/registration/password_reset_form.html:11
@@ -2046,7 +2050,7 @@ msgstr "邮政编码"
 msgid "Submit"
 msgstr "提交"
 
-#: templates/maps/layer.html:250 templates/maps/mapinfo.html:108
+#: templates/maps/layer.html:250 templates/maps/mapinfo.html:109
 msgid "Login to add a comment"
 msgstr ""
 
@@ -2055,7 +2059,7 @@ msgstr ""
 msgid "Rate this layer"
 msgstr "此图层没有摘要。"
 
-#: templates/maps/layer.html:264 templates/maps/mapinfo.html:121
+#: templates/maps/layer.html:264 templates/maps/mapinfo.html:122
 msgid "Download"
 msgstr "下载"
 
@@ -2099,7 +2103,7 @@ msgstr "默认样式:"
 msgid "Create new style"
 msgstr "创建样式"
 
-#: templates/maps/layer.html:338 templates/maps/mapinfo.html:132
+#: templates/maps/layer.html:338 templates/maps/mapinfo.html:133
 msgid "Manage"
 msgstr "管理"
 
@@ -2120,7 +2124,7 @@ msgid "Please authenticate to update or remove layers"
 msgstr ""
 
 #: templates/maps/layer.html:361 templates/maps/layer_upload.html:228
-#: templates/maps/mapinfo.html:148
+#: templates/maps/mapinfo.html:149
 msgid "Permissions"
 msgstr "权限"
 
@@ -2199,11 +2203,15 @@ msgstr "是的，我确信"
 msgid "Abstract:"
 msgstr "摘要:"
 
-#: templates/maps/mapinfo.html:75
+#: templates/maps/mapinfo.html:72 templates/maps/search_result_snippet.html:32
+msgid "Keywords:"
+msgstr "关键字:"
+
+#: templates/maps/mapinfo.html:76
 msgid "Contact:"
 msgstr "联系:"
 
-#: templates/maps/mapinfo.html:86
+#: templates/maps/mapinfo.html:87
 #, python-format
 msgid ""
 "\n"
@@ -2211,39 +2219,39 @@ msgid ""
 "                    "
 msgstr ""
 
-#: templates/maps/mapinfo.html:113
+#: templates/maps/mapinfo.html:114
 msgid "Rate this map"
 msgstr ""
 
-#: templates/maps/mapinfo.html:122
+#: templates/maps/mapinfo.html:123
 msgid "Download all layers included in this map"
 msgstr "下载在此地图中包含所有层。"
 
-#: templates/maps/mapinfo.html:123
+#: templates/maps/mapinfo.html:124
 msgid "Layers"
 msgstr "图层"
 
-#: templates/maps/mapinfo.html:124
+#: templates/maps/mapinfo.html:125
 msgid "This map uses the following layers"
 msgstr "地图使用以下几层"
 
-#: templates/maps/mapinfo.html:137
+#: templates/maps/mapinfo.html:138
 msgid "View or edit this map"
 msgstr "查看或编辑此地图"
 
-#: templates/maps/mapinfo.html:139
+#: templates/maps/mapinfo.html:140
 msgid "Edit metadata"
 msgstr "编辑元数据"
 
-#: templates/maps/mapinfo.html:142
+#: templates/maps/mapinfo.html:143
 msgid "Delete map"
 msgstr "删除地图"
 
-#: templates/maps/mapinfo.html:144
+#: templates/maps/mapinfo.html:145
 msgid "Duplicate map"
 msgstr "副本地图"
 
-#: templates/maps/mapinfo.html:149
+#: templates/maps/mapinfo.html:150
 msgid "Select what kind of privileges to allow."
 msgstr "选择许可权限。"
 
@@ -2266,10 +2274,6 @@ msgstr "元数据链接:"
 #: templates/maps/search_result_snippet.html:28
 msgid "No metadata URLs are defined for this layer."
 msgstr "此图层没有元数据的网址。"
-
-#: templates/maps/search_result_snippet.html:32
-msgid "Keywords:"
-msgstr "关键字:"
 
 #: templates/maps/search_result_snippet.html:36
 msgid "No keywords are listed for this layer."

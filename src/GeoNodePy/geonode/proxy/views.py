@@ -3,7 +3,6 @@ from httplib import HTTPConnection
 from urlparse import urlsplit
 import httplib2
 import urllib
-import simplejson 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
