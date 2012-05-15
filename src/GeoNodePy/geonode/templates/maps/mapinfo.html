@@ -44,7 +44,7 @@
 
 {% block main %}
   {% overall_rating map "map" as map_rating %}
-  <h2>{{ map.title }}</h2
+  <h2>{{ map.title }}</h2>
   <div class="overall_rating" data-rating="{{ map_rating }}"></div>
   <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
   <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
@@ -94,7 +94,6 @@
 		{% user_rating request.user map "map" as user_map_rating %}
 		<div id="user_rating" class="category-map"></div>
 	{% endif %}
-</div>
 {% url maps_ajax_perm map.id as form_action %}
 {% include "_permissions_form.html" %}
 {% endblock %}
