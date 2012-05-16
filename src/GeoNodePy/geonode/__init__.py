@@ -1,1 +1,1 @@
-__version__='1.2-alpha5'
+__version__='1.2-alpha6'
