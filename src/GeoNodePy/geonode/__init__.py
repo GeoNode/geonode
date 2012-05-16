@@ -1,5 +1,5 @@
 __all__ = ('__version__', '__build__', '__docformat__', 'get_revision')
-__version__= (1, 2, 0, 'alpha6')
+__version__= (1, 2, 0, 'alpha7')
 
 import os
 
