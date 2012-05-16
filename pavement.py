@@ -182,7 +182,7 @@ def setup_geonetwork(options):
     """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
     war_zip_file = options.config.parser.get('geonetwork', 'geonetwork_zip')
     src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file)
-    info("geonetwork url: %s" %src_url)
+    info("geonetwork url: %s" % src_url)
     # where to download the war files. If changed change also
     # src/geoserver-geonode-ext/jetty.xml accordingly
 
@@ -196,16 +196,15 @@ def setup_geonetwork(options):
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
-    grab(src_url, dst_url)
+
+    # only download geonetwork when needed
+    if not (deployed_url.exists() and dst_war.exists()):
+        grab(src_url, dst_url)
+
     if not dst_war.exists():
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
         zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
-
-    src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
-    dst_url = webapps / "intermap.war"
-
-    grab(src_url, dst_url)
 
 @task
 @needs([
