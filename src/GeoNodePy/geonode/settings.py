@@ -248,6 +248,10 @@ NOSE_ARGS = [
 # GeoNode specific settings
 #
 
+SITENAME = "GeoNode"
+
+SITEURL = "http://localhost:8000/"
+
 # GeoServer information
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
