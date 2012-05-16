@@ -77,6 +77,11 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, "templates"),
 )
 
+# Location of translation files
+LOCALE_PATHS = (
+    os.path.join(PROJECT_ROOT, "locale"),
+)
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 
