@@ -3,18 +3,11 @@
 from urllib import urlencode
 import os
 
-DEBUG = True
+DEBUG = TEMPLATE_DEBUG = True
 SITENAME = "GeoNode"
 SITEURL = "http://localhost:8000/"
-TEMPLATE_DEBUG = DEBUG
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-
-ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
-)
-
-MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
