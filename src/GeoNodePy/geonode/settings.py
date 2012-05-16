@@ -3,8 +3,6 @@
 from urllib import urlencode
 import os
 
-_ = lambda x: x
-
 DEBUG = True
 SITENAME = "GeoNode"
 SITEURL = "http://localhost:8000/"
