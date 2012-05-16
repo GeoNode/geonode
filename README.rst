@@ -260,21 +260,11 @@ DB_DATASTORE_TYPE='postgis'
 Directory Structure
 ===================
 
-* docs/ - ? I think this is to help paver find our docs so whit doesn't have
-  to maintain two checkouts to build them.
-* hazard.json - a data dump for the hazard categories
-* package - this directory is where distributable bundles of the GeoNode pieces
-  end up (in theory? I don't think we used this for the most recent deployment)
-* pavement.py - the main build script for everything
-* paver-minilib.zip - a zip archive of the paver library used by pavement.py
-* setup.py - a shim to make the entire GeoNode source tree look like a Python
-  package.  This probably should not be there since our Python modules have
-  their own source tree with a setup.py now.
-* shared/ - where "build configuration" lives.  This includes some dependency
-  lists for the Python modules and stuff like the ini file with the location
-  of the sample data archive.
-* src/ - where the source code for the actual project lives.  This is divided
-  up like so:
+* docs/ - Documentation based on Sphinx
+* pavement.py - Main build script.
+* shared/ - Configuration files and support files for the installer.
+* src/ - Source code for the java, javascript and python modules. Split in:
+
     * geonode-client/ - the JavaScript/CSS for general apps (the Map editor,
       search, embedded viewer...)
     * GeoNodePy/ - the Python/Django modules.  Inside, geonode/ is the "core".
