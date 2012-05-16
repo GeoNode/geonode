@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-setup(name=name,
+setup(name='GeoNodePy',
       version='.'.join(map(str, __import__('geonode').__version__)),
       description="Application for serving and sharing geospatial data",
       long_description=open('README.rst').read(),
