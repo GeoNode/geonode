@@ -161,8 +161,6 @@ AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 LOGIN_REDIRECT_URL = "/"
 
-DEFAULT_LAYERS_OWNER='admin'
-
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
 
