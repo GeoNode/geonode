@@ -944,6 +944,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         prop.items.get(0).items.get(0).add({html: "<a target='_blank' href='/data/" + layer.params.LAYERS + "'>" + this.shareLayerText + "</a>", xtype: "panel"});
                     }
                }
+
                 prop.show();
             }
         };

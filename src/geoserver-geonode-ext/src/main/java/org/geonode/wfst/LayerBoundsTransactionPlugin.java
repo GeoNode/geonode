@@ -7,6 +7,7 @@
  */
 package org.geonode.wfst;
 
+import java.lang.reflect.Proxy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -18,8 +19,11 @@ import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.TransactionPlugin;
@@ -38,8 +42,8 @@ import org.geotools.util.logging.Logging;
  */
 public class LayerBoundsTransactionPlugin implements TransactionPlugin {
 
-    private static Logger log = Logging.getLogger(LayerBoundsTransactionPlugin.class);
-    private final Catalog catalog;
+	static Logger log = org.geotools.util.logging.Logging.getLogger("org.geoserver.wfs");
+    private Catalog catalog;
 
     public LayerBoundsTransactionPlugin(final Catalog catalog) {
     	this.catalog = catalog;
@@ -90,12 +94,12 @@ public class LayerBoundsTransactionPlugin implements TransactionPlugin {
      * @see org.geoserver.wfs.TransactionListener#dataStoreChange(org.geoserver.wfs.TransactionEvent)
      */
     public void dataStoreChange(final TransactionEvent event) throws WFSException {
-        log.info("DataStoreChange: " + event.getLayerName() + " " + event.getType());
+        log.log(Level.FINE, "DataStoreChange: " + event.getLayerName() + " " + event.getType());
         final Object source = event.getSource();
         log.info("DataStoreChange class is " + source.getClass().toString());
         TransactionEventType eventType = event.getType();
         if (!(eventType == TransactionEventType.POST_UPDATE || eventType == TransactionEventType.PRE_INSERT )) {
-            log.info("Incorrect type, do nothing");
+            log.log(Level.FINE, "Incorrect type, do nothing");
         	return;
         }
         try {
@@ -116,22 +120,32 @@ public class LayerBoundsTransactionPlugin implements TransactionPlugin {
         final QName featureTypeName = event.getLayerName();
         try {
                 /* Get layer resource */
-                LayerInfo layer = this.catalog.getLayerByName(featureTypeName.getLocalPart().toString());
-                ResourceInfo resource = layer.getResource();
-                log.info("Original bounding box:" + resource.getNativeBoundingBox());
+                log.log(Level.FINE,"Get layer");
+                
+                ResourceInfo resource = this.catalog.getResourceByName(featureTypeName.getLocalPart().toString(),  FeatureTypeInfo.class);
+                log.log(Level.FINE,"Original bounding box:" + resource.getNativeBoundingBox());
                 
                 
                 /* Calculate new bounds */
+                log.info("Calculate bounds");
                 ReferencedEnvelope nativeBounds = event.getAffectedFeatures().getBounds(); 
                 ReferencedEnvelope newBounds = resource.getNativeBoundingBox();
                 newBounds.expandToInclude(nativeBounds);
-                log.info("New bounding box:" + newBounds);
+                log.log(Level.FINE,"New bounding box:" + newBounds);
 
-                /* Save new bounds */                
+                /* Save new bounds */
+                log.log(Level.FINE,"Set resource bounds");
                 resource.setNativeBoundingBox(newBounds);
                 resource.setLatLonBoundingBox(newBounds.transform(CRS.decode("EPSG:4326"), true));
-                this.catalog.save(resource);
-                log.info("Layer bounds updated");
+                log.log(Level.FINE,"DIRECT Save resource via catalog");
+                //this.catalog.save(resource);  //Takes too long, save directly, may be a bad idea?
+                
+                
+                ModificationProxy realResource = 
+                    (ModificationProxy) Proxy.getInvocationHandler(resource);
+                //commit to the original object
+                realResource.commit();    
+                log.log(Level.FINE,"Layer bounds updated");
         } catch (Exception e)
         {
         	log.log(Level.WARNING, "Exception occurred" + e);
