@@ -197,9 +197,7 @@ def setup_geonetwork(options):
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
 
-    # only download geonetwork when needed
-    if not (deployed_url.exists() and dst_war.exists()):
-        grab(src_url, dst_url)
+    grab(src_url, dst_url)
 
     if not dst_war.exists():
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
