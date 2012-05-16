@@ -40,7 +40,6 @@ LANGUAGE_CODE = 'en'
 
 MEDIA_ROOT = '/var/www/geonode/uploaded'
 STATIC_ROOT = '/var/www/geonode/static/'
-GEONODE_UPLOAD_PATH = MEDIA_ROOT + 'geonode'
 
 # secret key used in hashing, should be a long, unique string for each
 # site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
