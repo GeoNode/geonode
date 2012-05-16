@@ -14,18 +14,6 @@ software installed and in your PATH:
   - If not, you can download one of the installers from http://git-scm.com/ or
     from your operating system provider.
 
-* The Subversion command-line client, version 1.5 or higher.
-  - To verify that is is available, run ``svn --version`` and verify the output
-    starts with something like ``svn, version 1.6.9 (r901367)``
-  - If not, you can find the appropriate installer at
-    http://subversion.apache.org/packages.html
-
-* The GEOS geometry handling library: http://trac.osgeo.org/geos/
-
-* The GDAL geographic raster access library: http://www.gdal.org/
-
-* The OGR geographic vector data access library: http://www.gdal.org/ogr/
-
 * Sun Java Development Kit 1.5 or Higher: 
   - To verify that it is available, run
     ``javac -help -version`` and verify that it reports a list of usage flags,
@@ -63,8 +51,6 @@ operating system provider for installation instructions.
 The native libraries needed include:
 
 * PIL http://www.pythonware.com/products/pil/
-
-* simplejson http://code.google.com/p/simplejson/
 
 For GCC, packages are available for Mac OSX and all Linux distributions;
 consult your operating system provider for installation instructions.  When
