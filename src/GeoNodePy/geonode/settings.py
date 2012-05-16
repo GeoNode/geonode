@@ -130,12 +130,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-# This isn't required for running the geonode site, but it when running sites that inherit the geonode.settings module.
-LOCALE_PATHS = (
-    os.path.join(PROJECT_ROOT, "locale"),
-    os.path.join(PROJECT_ROOT, "maps", "locale"),
-)
-
 ROOT_URLCONF = 'geonode.urls'
 
 # Note that Django automatically includes the "templates" dir in all the
