@@ -306,9 +306,8 @@ def package_all(options):
 def create_version_name():
     # we'll use the geonodepy version as our "official" version number
     # for now
-    slug = "GeoNode-%s-%s" % (
+    slug = "GeoNode-%s" % (
         pkg_resources.get_distribution('GeoNodePy').version,
-        date.today().isoformat()
     )
 
     return slug
