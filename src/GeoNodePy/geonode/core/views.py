@@ -4,9 +4,9 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from geonode import settings
-from geonode.registration.forms import ForgotUsernameForm
+from geonode.core.forms import ForgotUsernameForm
 
-def forgotUsername(request):
+def forgot_username(request):
     """ Look up a username based on an email address, and send an email
     containing the username if found"""
     username_form = ForgotUsernameForm()
@@ -25,7 +25,7 @@ def forgotUsername(request):
             if len(users) > 0:
                 username = users[0].username
                 email_message = email_subject + " : " + username
-                send_mail(email_subject, email_message, settings.DEFAULT_FROM_EMAIL,
+                send_mail(email_subject, email_message, None,
                     [username_form.cleaned_data['email']], fail_silently=False)
                 message = _("Your username has been emailed to you.")
             else:
