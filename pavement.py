@@ -38,7 +38,7 @@ options(
     ),
     virtualenv=Bunch(
         packages_to_install=[
-            'http://bitbucket.org/ianb/pip/get/2cb1db7b2baf.gz#egg=pip',
+            'pip',
             'jstools',
             'virtualenv'
         ],
@@ -48,12 +48,9 @@ options(
         paver_command_line='post_bootstrap'
     ),
     deploy=Bunch(
-#        pavement=path('shared/package/pavement.py'),
         req_file=path('shared/package/requirements.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
-#        install_paver=True,
-#        paver_command_line='post_bootstrap'      
     ),
     host=Bunch(
     	bind='localhost'
@@ -223,7 +220,6 @@ def setup_webapps(options):
 @needs([
     'install_deps',
     'setup_webapps',
-    'generate_geoserver_token',
     'sync_django_db',
     'package_client'
 ])
@@ -237,36 +233,20 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    static = path("./src/GeoNodePy/geonode/media/static")
-    if not static.exists():
-        static.mkdir()
+    static = path("./src/GeoNodePy/geonode/static/geonode")
 
-    src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
-    dst_zip = static / "geonode-client.zip"
+    with pushd("src/geonode-client/"):
+        sh("mvn clean compile")
+    
+    src_zip = "src/geonode-client/build/geonode-client.zip"
+    zip_extractall(zipfile.ZipFile(src_zip), static)
 
-    grab(src_url, dst_zip)
-
-    zip_extractall(zipfile.ZipFile(dst_zip), static)
-    dst_zip.remove()
 
 @task
 def sync_django_db(options):
     sh("django-admin.py syncdb --settings=geonode.settings --noinput")
     sh("django-admin.py migrate --settings=geonode.settings --noinput")
 
-@task
-def generate_geoserver_token(options):
-    gs_token_file = 'geoserver_token'
-    if not os.path.exists(gs_token_file):
-        from random import choice
-        import string
-        chars = string.letters + string.digits + "-_!@#$*"
-        token = ''
-        for i in range(32):
-            token += choice(chars)
-        tf = open('geoserver_token', 'w')
-        tf.write(token)
-        tf.close()
 
 @task
 def package_dir(options):
@@ -287,17 +267,6 @@ def package_client(options):
 
     if(hasattr(options, 'use_war')): 
     	geonode_client_target_war.copy(options.deploy.out_dir)
-    else:
-        # Extract static files to static_location 
-        src_url = str(options.config.parser.get('geonode-client', 'geonode_client_zip_url'))
-    	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
-        dst_zip =  geonode_media_dir / "geonode-client.zip"
-        static_location = geonode_media_dir / "static" 
-
-        grab(src_url, dst_zip)
-
-        zip_extractall(zipfile.ZipFile(dst_zip), static_location)
-        os.remove(dst_zip)
 
 @task
 @needs('package_dir', 'setup_geoserver')

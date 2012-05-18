@@ -21,9 +21,9 @@ Ext.onReady(function(){
     var searchTable = new GeoNode.SearchTable({
         renderTo: 'search_results',
         trackSelection: true,
-        permalinkURL: '{% url search %}',
-        searchURL: '{% url search_api %}',
-        layerDetailURL: '{% url search_result_detail %}',
+        permalinkURL: '{% url data_search %}',
+        searchURL: '{% url data_search_api %}',
+        layerDetailURL: '{% url data_search_detail %}',
         constraints: [bbox],
         searchParams: {{init_search}}
     });
@@ -38,7 +38,7 @@ Ext.onReady(function(){
       cart: dataCart,
       renderTo: 'data_ops',
       
-      begin_download_url: '{% url geonode.maps.views.batch_layer_download %}',
+      begin_download_url: '{% url data_download %}',
       stop_download_url: '{{site}}geoserver/rest/process/batchDownload/kill/',
       download_url: '{{site}}geoserver/rest/process/batchDownload/download/'
     });
@@ -90,7 +90,7 @@ Ext.onReady(function(){
             <a href="#geotiff" class="batch-download">GeoTiff</a>
         </li> -->
       </ul>
-      <form id="create_map_form" action="{% url geonode.maps.views.newmap %}" method="POST">
+      <form id="create_map_form" action="{% url maps_new %}" method="POST">
       </form>
     </div>
   </div>

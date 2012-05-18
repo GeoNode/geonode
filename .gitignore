@@ -28,6 +28,8 @@ target
 /webapps/
 /src/GeoNodePy/capra/development.db
 
+# Directory created by collectstatic
+src/GeoNodePy/geonode/site_media/
 
 # OSX specific
 .Python

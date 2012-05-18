@@ -1,9 +1,10 @@
 from setuptools import setup, find_packages
 import pkg_resources
 import sys, os
+from geonode import __version__
 
 name='GeoNodePy'
-version = "1.2"
+version = __version__
 req = pkg_resources.Requirement.parse(name)
 
 setup(name=name,
@@ -20,7 +21,7 @@ setup(name=name,
       packages = find_packages(),
       include_package_data=True,
       install_requires = [
-          "gsconfig.py",
+          "gsconfig",
           "OWSLib==0.4.0",
           "Django>=1.1",
           "PIL",
