@@ -35,6 +35,10 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     #comments = indexes.IntegerField(model_attr="")
     #views = indexes.IntegerField(model_attr="")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
+    bbox_left = indexes.FloatField(model_attr='bbox_left')
+    bbox_right = indexes.FloatField(model_attr='bbox_right')
+    bbox_top = indexes.FloatField(model_attr='bbox_top')
+    bbox_bottom = indexes.FloatField(model_attr='bbox_bottom')
 
     json = indexes.CharField(indexed=False)
 

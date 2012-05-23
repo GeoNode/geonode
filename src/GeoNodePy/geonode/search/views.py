@@ -8,8 +8,8 @@ from django.template import RequestContext
 from django.core import serializers
 
 from haystack.inputs import AutoQuery, Raw 
-from haystack.query import SearchQuerySet
-
+from haystack.query import SearchQuerySet, SQ
+from django.db.models import Sum
 from django.contrib.gis.geos import GEOSGeometry
 
 from geonode.maps.views import default_map_config, Map, Layer
@@ -116,30 +116,16 @@ def search_api(request):
 	results = []
 	
 	if bbox is not None:
-		l,b,r,t = bbox.split(',')
-		bbox = GEOSGeometry('POLYGON((%s, %s, %s, %s, %s))' % (
-			('%s %s') % (b,l),
-			('%s %s') % (l,t),
-			('%s %s') % (t,r),
-			('%s %s') % (r,b),
-			('%s %s') % (b,l)
-		))
-	
-	# Firts take out everything that is not permitted or in the spatial search
-	for i,result in enumerate(sqs):
-		data = json.loads(result.json)
-		if result.type == 'layer':
-			layer = Layer.objects.get(uuid=data['uuid'])
-			if bbox is not None:
-				layer_bbox = GEOSGeometry(layer.geographic_bounding_box.split(';')[1])
-				if not bbox.intersects(layer_bbox):	
-					sqs = sqs.exclude(id = result.iid)
-			if not request.user.has_perm('maps.view_layer', obj=layer):
-				sqs = sqs.exclude(id = result.iid)
-		elif result.type == 'map':
-			map = Map.objects.get(id=result.iid)
-			if not request.user.has_perm('maps.view_map', obj=map):
-				sqs = sqs.exclude(id = result.iid)
+		left,bottom,right,top = bbox.split(',')
+		sqs = sqs.filter(
+			# first check if the bbox has at least one point inside the window
+			SQ(bbox_left__gte=left) & SQ(bbox_left__lte=right) & SQ(bbox_top__gte=bottom) & SQ(bbox_top__lte=top) | #check top_left is inside the window
+			SQ(bbox_right__lte=right) &  SQ(bbox_right__gte=left) & SQ(bbox_top__lte=top) &  SQ(bbox_top__gte=bottom) | #check top_right is inside the window
+			SQ(bbox_bottom__gte=bottom) & SQ(bbox_bottom__lte=top) & SQ(bbox_right__lte=right) &  SQ(bbox_right__gte=left) | #check bottom_right is inside the window
+			SQ(bbox_top__lte=top) & SQ(bbox_top__gte=bottom) & SQ(bbox_left__gte=left) & SQ(bbox_left__lte=right) | #check bottom_left is inside the window
+			# then check if the bbox is including the window
+			SQ(bbox_left__lte=left) & SQ(bbox_right__gte=right) & SQ(bbox_bottom__lte=bottom) & SQ(bbox_top__gte=top)
+		)
 		
 	# Build the result based on the limit
 	for i, result in enumerate(sqs[startIndex:startIndex + limit]):
