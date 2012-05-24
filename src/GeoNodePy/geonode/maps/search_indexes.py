@@ -16,24 +16,11 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     name = indexes.CharField(model_attr="title")
     description = indexes.CharField(model_attr="abstract")
     owner = indexes.CharField(model_attr="owner", faceted=True)
-    #organization = indexes.CharField(model_attr="organization")
     created = indexes.DateTimeField(model_attr="date")
     modified = indexes.DateTimeField(model_attr="date")
-    #datastart = indexes.DateTimeField(model_attr="")
-    #dataend = indexes.DateTimeField(model_attr="")
     category = indexes.CharField(model_attr="topic_category", faceted=True)
     keywords = indexes.CharField(model_attr="keywords", faceted=True)
     language = indexes.CharField(model_attr="language", faceted=True)
-    #edition = indexes.CharField(model_attr="edition")
-    #purpose = indexes.CharField(model_attr="purpose")
-    #constraints = indexes.CharField(model_attr="constraints_use")
-    #license = indexes.CharField(model_attr="", faceted=True)
-    #supplemental = indexes.CharField(model_attr="supplemental_information")
-    #distribution = indexes.CharField(model_attr="distribution_description")
-    #dqs = indexes.CharField(model_attr="data_quality_statement")
-    #rating = indexes.IntegerField(model_attr="", faceted=True)
-    #comments = indexes.IntegerField(model_attr="")
-    #views = indexes.IntegerField(model_attr="")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
     bbox_left = indexes.FloatField(model_attr='bbox_left')
     bbox_right = indexes.FloatField(model_attr='bbox_right')
@@ -73,24 +60,9 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "description": obj.abstract,
             "owner": obj.metadata_author.name,
             "owner_detail": obj.owner.get_absolute_url(),
-            "organization": "",
-            "created": "",
             "last_modified": obj.date.strftime("%Y-%m-%dT%H:%M:%S.%f"),
-            "start": "",
-            "end": "",
             "category": obj.topic_category,
             "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [],
-            "language": "",
-            "edition": "",
-            "purpose": "",
-            "constraints": "",
-            "license": "",
-            "supplemental": "",
-            "distribution": "",
-            "dqs": "",
-            "rating": "",
-            "comments": "",
-            "views": "",
             "thumb": Thumbnail.objects.get_thumbnail(obj),
             "detail_url": obj.get_absolute_url(),  # @@@ Use Sites Framework?
             "download_links": self.prepare_download_links(obj.download_links()),
@@ -126,9 +98,7 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
     def prepare_json(self, obj):
         data = {
-            "_type": self.prepare_type(obj),
-            #"_display_type": obj.display_type,
-			
+            "_type": self.prepare_type(obj),			
             "id": obj.id,
             "last_modified": obj.last_modified.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "title": obj.title,
