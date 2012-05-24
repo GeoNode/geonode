@@ -72,9 +72,6 @@ def search_api(request):
 	format = request.REQUEST.get("format", "json")
 	# Geospatial Elements
 	bbox = request.REQUEST.get("bbox", None)
-	# Temporal Elements
-	#datastart = request.REQUEST.get("datastart", None)
-	#dataend = request.REQUEST.get("dataend", None)
 
 	sqs = SearchQuerySet()
 
@@ -126,7 +123,15 @@ def search_api(request):
 			# then check if the bbox is including the window
 			SQ(bbox_left__lte=left) & SQ(bbox_right__gte=right) & SQ(bbox_bottom__lte=bottom) & SQ(bbox_top__gte=top)
 		)
-		
+	
+	for i, result in enumerate(sqs):
+		if result.type == 'layer':
+			if not request.user.has_perm('maps.view_layer',obj = result.object):
+				sqs = sqs.exclude(id = result.id)
+		if result.type == 'map':
+			if not request.user.has_perm('maps.view_map',obj = result.object):
+				sqs = sqs.exclude(id = result.id)
+
 	# Build the result based on the limit
 	for i, result in enumerate(sqs[startIndex:startIndex + limit]):
 		data = json.loads(result.json)
