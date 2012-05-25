@@ -4,7 +4,7 @@
 PIL
 lxml
 
-OWSLib==0.4.0
+svn+https://owslib.svn.sourceforge.net/svnroot/owslib/trunk@1844#egg=owslib
 Django==1.4
 django-extensions==0.8
 httplib2==0.7.4
