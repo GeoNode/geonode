@@ -255,7 +255,7 @@ SITEURL = "http://localhost:8000/"
 # GeoServer information
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://catalog.dev.geonode.org:8001/geoserver/"
+GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 
 # The username and password for a user that can add and
 # edit layer details on GeoServer
@@ -274,21 +274,22 @@ METADATA_FORMATS = {
 CSW = {
     'default': {
         # The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
-        'type': 'pycsw',
-        #'type': 'geonetwork',
+        #'type': 'pycsw',
+        'type': 'geonetwork',
         #'type': 'deegree',
 
         # enabled formats
-        'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
+        #'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
+        'formats': ['TC211'],
 
         # is XML upload enabled for non         
         # TODO make this better
         'non_iso_xml_upload_enabled': False,
     
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'url': 'http://catalog.dev.geonode.org/pycsw/trunk/csw.py',
-        #'url': 'http://catalog.dev.geonode.org:8001/geonetwork/srv/en/csw',
-        #'url': 'http://catalog.dev.geonode.org:8001/deegree-csw-demo-3.0.4/services',
+        #'url': 'http://localhost/pycsw/trunk/csw.py',
+        'url': 'http://localhost:8001/geonetwork/srv/en/csw',
+        #'url': 'http://localhost:8001/deegree-csw-demo-3.0.4/services',
     
         # login credentials (for GeoNetwork)
         'username': 'admin',
