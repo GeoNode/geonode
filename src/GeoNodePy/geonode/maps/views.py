@@ -1,6 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
+from geonode.catalogue import normalize_bbox
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import base64
@@ -1233,14 +1234,9 @@ def _metadata_search(query, start, limit, **kw):
 
     keywords = _split_query(query)
    
-    # fix bbox axis order
-    # GeoNetwork accepts x/y
-    # pycsw accepts y/x
     if kw.has_key('bbox'):
-        if csw.type == 'pycsw':  # swap coords per standard
-            bbox = [kw['bbox'][1], kw['bbox'][0], kw['bbox'][3], kw['bbox'][2]]
-        else:
-            bbox = kw['bbox']
+        # ensure proper bbox axis order
+        bbox = normalize_bbox(bbox)
     else:
         bbox = None
 

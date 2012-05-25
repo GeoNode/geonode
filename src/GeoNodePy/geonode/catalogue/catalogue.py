@@ -221,3 +221,16 @@ class Catalogue(CatalogueServiceWeb):
             raise Exception("No URL opener defined in geonetwork module!!")
         else:
             return self.opener.open(request)
+
+def normalize_bbox(bbox):
+    """
+    fix bbox axis order
+    GeoNetwork accepts x/y
+    pycsw accepts y/x
+    """
+
+    if settings.CSW['type'] == 'geonetwork': 
+        return kw['bbox']
+    else:  # swap coords per standard
+        return [kw['bbox'][1], kw['bbox'][0], kw['bbox'][3], kw['bbox'][2]]
+
