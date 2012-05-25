@@ -1,7 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
-from geonode.catalogue.catalogue import normalize_bbox
+from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import base64
@@ -687,7 +687,7 @@ def layer_metadata(request, layername):
         if layer.metadata_uploaded and request.method == 'GET':  # show upload just metadata XML page
             return render_to_response("maps/layer_metadata_uploaded.html", RequestContext(request, {
                 "layer": layer,
-                "CSW_URL": settings.CSW['url']
+                "CSW_URL": catalogue_connection['url']
         }))
 
         poc = layer.poc

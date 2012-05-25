@@ -33,6 +33,9 @@ import geoserver
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 
+# Catalogue functionality
+from geonode.catalogue.catalogue import connection as catalogue_connection
+
 logger = logging.getLogger('geonode.maps.utils')
 _separator = '\n' + ('-' * 100) + '\n'
 import math
@@ -548,7 +551,6 @@ def get_valid_user(user=None):
 
     return theuser
 
-
 def check_geonode_is_up():
     """Verifies all of geonetwork, geoserver and the django server are running,
        this is needed to be able to upload.
@@ -569,7 +571,7 @@ def check_geonode_is_up():
         from django.conf import settings
         msg = ("Cannot connect to the Catalogue at %s\n"
                 "Please make sure you have started the CSW." %
-                settings.CSW['url'])
+                catalogue_connection['url'])
         raise GeoNodeException(msg)
 
 def file_upload(filename, user=None, title=None, overwrite=True, keywords=[]):
@@ -673,7 +675,7 @@ def update_metadata(layer_uuid, xml, saved_layer):
     # update relevant XML
     layer_updated = saved_layer.date.strftime('%Y-%m-%dT%H:%M:%SZ') 
 
-    if tagname != 'MD_Metadata' and settings.CSW['type'] != 'pycsw':
+    if catalogue_connection['non_iso_xml_upload_enabled'] is False:
         raise GeoNodeException('Only ISO XML is supported')
 
     if tagname == 'Record':  # Dublin Core

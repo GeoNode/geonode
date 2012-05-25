@@ -7,12 +7,14 @@ from owslib.util import http_post, nspath
 from urlparse import urlparse
 from lxml import etree
 
+connection = settings.CSW['default']
+
 class Catalogue(CatalogueServiceWeb):
     def __init__(self, skip_caps=True):
-        self.type = settings.CSW['type']
-        self.url = settings.CSW['url']
-        self.user = settings.CSW['username']
-        self.password = settings.CSW['password']
+        self.type = connection['type']
+        self.url = connection['url']
+        self.user = connection['username']
+        self.password = connection['password']
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
@@ -75,7 +77,7 @@ class Catalogue(CatalogueServiceWeb):
         """returns list of valid GetRecordById URLs for a given record"""
 
         urls = []
-        for mformat in settings.CSW['formats']:
+        for mformat in connection['formats']:
             urls.append({mformat: self.url_for_uuid(uuid, settings.METADATA_FORMATS[mformat])})
         return urls
 
@@ -237,7 +239,7 @@ def normalize_bbox(bbox):
     pycsw accepts y/x
     """
 
-    if settings.CSW['type'] == 'geonetwork': 
+    if connection['type'] == 'geonetwork': 
         return kw['bbox']
     else:  # swap coords per standard
         return [kw['bbox'][1], kw['bbox'][0], kw['bbox'][3], kw['bbox'][2]]

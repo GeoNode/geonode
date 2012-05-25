@@ -272,23 +272,29 @@ METADATA_FORMATS = {
 
 # CSW settings
 CSW = {
-    # The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
-    'type': 'pycsw',
-    # enabled formats
-    'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
-    #'type': 'geonetwork',
-    #'type': 'deegree',
+    'default': {
+        # The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
+        'type': 'pycsw',
+        #'type': 'geonetwork',
+        #'type': 'deegree',
 
-    # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-    'url': 'http://catalog.dev.geonode.org/pycsw/trunk/csw.py',
-    #'url': 'http://catalog.dev.geonode.org:8001/geonetwork/srv/en/csw',
-    #'url': 'http://catalog.dev.geonode.org:8001/deegree-csw-demo-3.0.4/services',
+        # enabled formats
+        'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
 
-    # login credentials (for GeoNetwork)
-    'username': 'admin',
-    'password': 'admin'
+        # is XML upload enabled for non         
+        # TODO make this better
+        'non_iso_xml_upload_enabled': False,
+    
+        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+        'url': 'http://catalog.dev.geonode.org/pycsw/trunk/csw.py',
+        #'url': 'http://catalog.dev.geonode.org:8001/geonetwork/srv/en/csw',
+        #'url': 'http://catalog.dev.geonode.org:8001/deegree-csw-demo-3.0.4/services',
+    
+        # login credentials (for GeoNetwork)
+        'username': 'admin',
+        'password': 'admin'
+    }
 }
-
 
 # GeoNode javascript client configuration
 
