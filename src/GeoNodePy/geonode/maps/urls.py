@@ -37,4 +37,5 @@ datapatterns = patterns('geonode.maps.views',
   url(r'^(?P<layername>[^/]*)/replace$', 'layer_replace', name="data_replace"),
   url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="data_style"),
   url(r'^(?P<layername>[^/]*)/ajax-permissions$', 'ajax_layer_permissions', name='data_ajax_perm'),
+  url(r'^(?P<layername>[^/]*)/ajax-edit-check?$', 'ajax_feature_edit_check', name="data_ajax_edit")
 )

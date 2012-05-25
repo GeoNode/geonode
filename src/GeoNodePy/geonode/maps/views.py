@@ -283,7 +283,8 @@ def newmap(request):
         return render_to_response('maps/view.html', RequestContext(request, {
             'config': config, 
             'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-            'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
+            'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+            'DB_DATASTORE' : settings.DB_DATASTORE
         }))
 
 def newmapJSON(request):
@@ -467,6 +468,16 @@ def set_map_permissions(m, perm_spec):
         user = User.objects.get(username=username)
         m.set_user_level(user, level)
 
+def ajax_feature_edit_check(request, layername):
+    """
+    If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
+    Otherwise, return a status of 401 (unauthorized).
+    """
+    layer = get_object_or_404(Layer, typename=layername);
+    return HttpResponse(
+        status=200 if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' else 401
+    )
+
 def ajax_layer_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
 
@@ -643,7 +654,8 @@ def view(request, mapid):
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'DB_DATASTORE' : settings.DB_DATASTORE
     }))
 
 def embed(request, mapid=None):

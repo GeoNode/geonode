@@ -410,7 +410,46 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
-    
+
+    //Check permissions for selected layer and enable/disable feature edit buttons accordingly
+    checkLayerPermissions:function (layer) {
+        var buttons = this.tools["gn_layer_editor"].actions;
+        if (layer == null) {
+            buttons[0].disable();
+            buttons[1].disable();
+        }
+        else {
+            var changedLayer = layer.getLayer();
+            //Proceed if this is a local queryable WMS layer
+            if (!changedLayer.isBaseLayer && layer.get("queryable") === true) {
+                Ext.Ajax.request({
+                    url:"/data/" + changedLayer.params.LAYERS + "/ajax-edit-check",
+                    method:"POST",
+                    params:{layername:changedLayer.params.LAYERS},
+                    success:function (result, request) {
+                        if (result.status != 200) {
+                            for (i = 0; i < buttons.length; i++) {
+                                buttons[i].disable();
+                            }
+                        } else {
+                            changedLayer.displayOutsideMaxExtent = true;
+                            for (i = 0; i < buttons.length; i++) {
+                                buttons[i].enable();
+                            }
+                        }
+                    },
+                    failure:function (result, request) {
+                        buttons[0].disable();
+                        buttons[1].disable();
+                    }
+                });
+            } else {
+                buttons[0].disable();
+                buttons[1].disable();
+            }
+        }
+    },
+
     initMapPanel: function() {
         this.mapItems = [{
             xtype: "gx_zoomslider",
@@ -512,8 +551,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled.each(function(item) {
                 item.disable();
             });
+
+            if (this.tools["gn_layer_editor"]) {
+                //this.on("layerselectionchange", this.checkLayerPermissions);
+                this.tools["gn_layer_editor"].getFeatureManager().on('layerchange', function(mgr, layer, schema) {
+                    this.checkLayerPermissions(layer);
+                }, this);
+            }
         }, this);
-        
+
         var showContextMenu;
         this.googleEarthPanel = new gxp.GoogleEarthPanel({
             mapPanel: this.mapPanel,
