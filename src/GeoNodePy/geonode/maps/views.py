@@ -1,7 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_catalogue
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
-from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox, namespaces
+from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox, namespaces, metadatarecord2dict
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import base64
@@ -1236,10 +1236,10 @@ def _metadata_search(query, start, limit, **kw):
     else:
         bbox = None
 
-    catalogue.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
+    catalogue.search(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=bbox)
 
     # build results into JSON for API
-    results = [_build_search_result(doc, catalogue) for v, doc in catalogue.records.iteritems()]
+    results = [metadatarecord2dict(doc, catalogue) for v, doc in catalogue.records.iteritems()]
 
     result = {'rows': results, 
               'total': catalogue.results['matches']}
@@ -1264,8 +1264,7 @@ def _metadata_search(query, start, limit, **kw):
 def search_result_detail(request):
     uuid = request.GET.get("uuid")
     catalogue = get_catalogue()
-    catalogue.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = catalogue.records.values()[0]
+    rec = catalogue.get_by_uuid(uuid)
     extra_links = dict(download=_extract_links(rec))
 
     try:
@@ -1308,49 +1307,6 @@ def _extract_links(rec):
             except:
                 pass
     return links
-
-def _build_search_result(rec, catalogue):
-    """
-    accepts a node representing a catalogue result 
-    record and builds a POD structure representing 
-    the search result.
-    """
-
-    # TODO: Move to catalogue/catalogue.py
-
-    if rec is None:
-        return None
-    # Let owslib do some parsing for us...
-    result = {}
-    result['uuid'] = rec.identifier
-    result['title'] = rec.identification.title
-    result['abstract'] = rec.identification.abstract
-
-    keywords = []
-    for kw in rec.identification.keywords:
-        keywords.extend(kw['keywords'])
-
-    result['keywords'] = keywords
-
-    # XXX needs indexing ? how
-    result['attribution'] = {'title': '', 'href': ''}
-
-    result['name'] = result['uuid']
-
-    result['bbox'] = {
-        'minx': rec.identification.bbox.minx,
-        'maxx': rec.identification.bbox.maxx,
-        'miny': rec.identification.bbox.miny,
-        'maxy': rec.identification.bbox.maxy
-        }
-    
-    # locate all distribution links
-    result['download_links'] = _extract_links(rec)
-
-    # construct the link to the Catalogue metadata record (not self-indexed)
-    result['metadata_links'] = [("text/xml", "TC211", catalogue.url_for_uuid(rec.identifier, 'http://www.isotc211.org/2005/gmd'))]
-
-    return result
 
 def browse_data(request):
     return render_to_response('data.html', RequestContext(request, {}))

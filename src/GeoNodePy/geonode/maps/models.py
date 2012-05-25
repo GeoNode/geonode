@@ -891,8 +891,7 @@ class Layer(models.Model, PermissionLevelMixin):
         if(_catalogue is None): # Might need to re-cache, nothing equivalent to _wms.contents?
             get_catalogue()
         try:
-            _catalogue.getrecordbyid([self.uuid], esn='summary', outputschema='http://www.isotc211.org/2005/gmd')
-            catalogue_layer = _catalogue.records.get(self.uuid)
+            catalogue_layer = _catalogue.get_by_uuid(self.uuid)
         except:
             msg = "Catalogue Record Missing for layer [%s]" % self.typename
             raise GeoNodeException(msg)
@@ -949,8 +948,7 @@ class Layer(models.Model, PermissionLevelMixin):
         global _catalogue
         if(_catalogue is None):
             _catalogue= get_catalogue()
-        _catalogue.getrecordbyid([self.uuid], outputschema='http://www.isotc211.org/2005/gmd')
-        return _catalogue.records.get(self.uuid)
+        return _catalogue.get_by_uuid(self.uuid)
 
     @property
     def attribute_names(self):
