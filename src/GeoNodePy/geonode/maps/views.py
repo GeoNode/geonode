@@ -1,7 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
+from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_catalogue
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
-from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox
+from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox, namespaces
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import base64
@@ -20,8 +20,6 @@ from django.utils import simplejson as json
 
 import math
 import httplib2 
-from owslib.csw import namespaces
-from owslib.util import nspath
 import re
 from urllib import urlencode
 from urlparse import urlparse
@@ -687,7 +685,7 @@ def layer_metadata(request, layername):
         if layer.metadata_uploaded and request.method == 'GET':  # show upload just metadata XML page
             return render_to_response("maps/layer_metadata_uploaded.html", RequestContext(request, {
                 "layer": layer,
-                "CSW_URL": catalogue_connection['url']
+                "CATALOGUE_URL": catalogue_connection['url']
         }))
 
         poc = layer.poc
@@ -1131,7 +1129,7 @@ DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
 def metadata_search(request):
     """
-    handles a basic search for data using CSW.
+    handles a basic search for data using Catalogue.
 
     the search accepts: 
     q - general query for keywords across all fields
@@ -1228,7 +1226,7 @@ def metadata_search(request):
 
 def _metadata_search(query, start, limit, **kw):
     
-    csw = get_csw()
+    catalogue = get_catalogue()
 
     keywords = _split_query(query)
    
@@ -1238,13 +1236,13 @@ def _metadata_search(query, start, limit, **kw):
     else:
         bbox = None
 
-    csw.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
+    catalogue.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
 
     # build results into JSON for API
-    results = [_build_search_result(doc, csw) for v, doc in csw.records.iteritems()]
+    results = [_build_search_result(doc, catalogue) for v, doc in catalogue.records.iteritems()]
 
     result = {'rows': results, 
-              'total': csw.results['matches']}
+              'total': catalogue.results['matches']}
 
     result['query_info'] = {
         'start': start,
@@ -1256,7 +1254,7 @@ def _metadata_search(query, start, limit, **kw):
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
         result['prev'] = reverse('geonode.maps.views.metadata_search') + '?' + params
 
-    next = csw.results.get('nextrecord', 0) 
+    next = catalogue.results.get('nextrecord', 0) 
     if next > 0:
         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
@@ -1265,9 +1263,9 @@ def _metadata_search(query, start, limit, **kw):
 
 def search_result_detail(request):
     uuid = request.GET.get("uuid")
-    csw = get_csw()
-    csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.records.values()[0]
+    catalogue = get_catalogue()
+    catalogue.getrecordbyid([uuid], outputschema=namespaces['gmd'])
+    rec = catalogue.records.values()[0]
     extra_links = dict(download=_extract_links(rec))
 
     try:
@@ -1284,7 +1282,7 @@ def search_result_detail(request):
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
-        'md_link': csw.url_for_uuid(uuid, namespaces['gmd']),
+        'md_link': catalogue.url_for_uuid(uuid, namespaces['gmd']),
         'keywords': ','.join(keywords),
         'layer': layer,
         'layer_is_remote': layer_is_remote
@@ -1311,12 +1309,15 @@ def _extract_links(rec):
                 pass
     return links
 
-def _build_search_result(rec, csw):
+def _build_search_result(rec, catalogue):
     """
-    accepts a node representing a csw result 
+    accepts a node representing a catalogue result 
     record and builds a POD structure representing 
     the search result.
     """
+
+    # TODO: Move to catalogue/catalogue.py
+
     if rec is None:
         return None
     # Let owslib do some parsing for us...
@@ -1346,8 +1347,8 @@ def _build_search_result(rec, csw):
     # locate all distribution links
     result['download_links'] = _extract_links(rec)
 
-    # construct the link to the CSW metadata record (not self-indexed)
-    result['metadata_links'] = [("text/xml", "TC211", csw.url_for_uuid(rec.identifier, 'http://www.isotc211.org/2005/gmd'))]
+    # construct the link to the Catalogue metadata record (not self-indexed)
+    result['metadata_links'] = [("text/xml", "TC211", catalogue.url_for_uuid(rec.identifier, 'http://www.isotc211.org/2005/gmd'))]
 
     return result
 

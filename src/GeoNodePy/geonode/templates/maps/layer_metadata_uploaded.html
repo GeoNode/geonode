@@ -101,7 +101,7 @@ Ext.onReady(function(){
 
 {% block sidebar %}
 <p>
-This layer's <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&elementsetname=full&id={{layer.uuid}}">metadata</a> has been generated from a XML document upload and cannot be edited manually.
+This layer's <a href="{{CATALOGUE_URL}}?service=CSW&version=2.0.2&request=GetRecordById&elementsetname=full&id={{layer.uuid}}">metadata</a> has been generated from a XML document upload and cannot be edited manually.
 To update this layer's metadata, please re-upload the XML document.
 </p>
 <p>{% trans "Select a metadata file and submit the form to begin the transfer."  %}</p>

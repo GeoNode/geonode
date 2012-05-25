@@ -244,4 +244,3 @@ def normalize_bbox(bbox):
     else:  # swap coords per standard
         return [kw['bbox'][1], kw['bbox'][0], kw['bbox'][3], kw['bbox'][2]]
 
-

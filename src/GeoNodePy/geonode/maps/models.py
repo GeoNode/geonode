@@ -533,7 +533,7 @@ def _get_viewer_projection_info(srid):
     return _viewer_projection_lookup.get(srid, {})
 
 _wms = None
-_csw = None
+_catalogue = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
 def get_wms():
@@ -556,10 +556,10 @@ def get_wms():
     response, body = http.request(wms_url)
     _wms = WebMapService(wms_url, xml=body)
 
-def get_csw():
-    global _csw
-    _csw = Catalogue()
-    return _csw
+def get_catalogue():
+    global _catalogue
+    _catalogue = Catalogue()
+    return _catalogue
 
 class LayerManager(models.Manager):
     
@@ -571,8 +571,8 @@ class LayerManager(models.Manager):
         self.catalogue = Catalogue()
 
     @property
-    def csw_catalogue(self):
-        # check if CSW is geonetwork and is logged in
+    def metadata_catalogue(self):
+        # check if metadata catalogue is geonetwork and is logged in
         if (self.catalogue.type == 'geonetwork' and not self.catalogue.connected):
             self.catalogue.login()
         # Make sure to logout after you have finished using it.
@@ -888,22 +888,22 @@ class Layer(models.Model, PermissionLevelMixin):
         #    raise GeoNodeException(msg)
  
         # Check the layer is in the catalogue and points back to get_absolute_url
-        if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
-            get_csw()
+        if(_catalogue is None): # Might need to re-cache, nothing equivalent to _wms.contents?
+            get_catalogue()
         try:
-            _csw.getrecordbyid([self.uuid], esn='summary', outputschema='http://www.isotc211.org/2005/gmd')
-            csw_layer = _csw.records.get(self.uuid)
+            _catalogue.getrecordbyid([self.uuid], esn='summary', outputschema='http://www.isotc211.org/2005/gmd')
+            catalogue_layer = _catalogue.records.get(self.uuid)
         except:
-            msg = "CSW Record Missing for layer [%s]" % self.typename
+            msg = "Catalogue Record Missing for layer [%s]" % self.typename
             raise GeoNodeException(msg)
 
-        if hasattr(csw_layer, 'distribution') and hasattr(csw_layer.distribution, 'online'):
-            for link in csw_layer.distribution.online:
+        if hasattr(catalogue_layer, 'distribution') and hasattr(catalogue_layer.distribution, 'online'):
+            for link in catalogue_layer.distribution.online:
                 if link.protocol == 'WWW:LINK-1.0-http--link':
                     if(link.url != self.get_absolute_url()):
-                        msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
+                        msg = "Catalogue Layer URL does not match layer URL for layer [%s]" % self.typename
         else:        
-            msg = "CSW Layer URL not found layer [%s]" % self.typename
+            msg = "Catalogue Layer URL not found layer [%s]" % self.typename
             
         # Visit get_absolute_url and make sure it does not give a 404
         #logger.info(self.get_absolute_url())
@@ -945,12 +945,12 @@ class Layer(models.Model, PermissionLevelMixin):
             """
         return _wms[self.typename]
 
-    def metadata_csw(self):
-        global _csw
-        if(_csw is None):
-            _csw = get_csw()
-        _csw.getrecordbyid([self.uuid], outputschema='http://www.isotc211.org/2005/gmd')
-        return _csw.records.get(self.uuid)
+    def metadata_record(self):
+        global _catalogue
+        if(_catalogue is None):
+            _catalogue= get_catalogue()
+        _catalogue.getrecordbyid([self.uuid], outputschema='http://www.isotc211.org/2005/gmd')
+        return _catalogue.records.get(self.uuid)
 
     @property
     def attribute_names(self):
@@ -1000,12 +1000,12 @@ class Layer(models.Model, PermissionLevelMixin):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
 
     def delete_from_catalogue(self):
-        cat = Layer.objects.csw_catalogue
+        cat = Layer.objects.metadata_catalogue
         cat.delete_layer(self)
         cat.logout()
 
     def save_to_catalogue(self):
-        cat = Layer.objects.csw_catalogue
+        cat = Layer.objects.metadata_catalogue
         record = cat.get_by_uuid(self.uuid)
         if record is None:
             md_link = cat.create_from_layer(self)
@@ -1038,11 +1038,11 @@ class Layer(models.Model, PermissionLevelMixin):
 
     @property
     def full_metadata_links(self):
-        """Returns complete list of dicts of possible CSW metadata URLs
+        """Returns complete list of dicts of possible Catalogue metadata URLs
            NOTE: we are NOT using the above properties because this will
            break the OGC W*S Capabilities rules
         """
-        cat = Layer.objects.csw_catalogue
+        cat = Layer.objects.metadata_catalogue
         return cat.urls_for_uuid(self.uuid)
 
     def _get_default_style(self):
@@ -1120,7 +1120,7 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.resource is None:
             return
         if hasattr(self, "_resource_cache"):
-            cat = Layer.objects.csw_catalogue
+            cat = Layer.objects.metadata_catalogue
             self.resource.title = self.title
             self.resource.abstract = self.abstract
             self.resource.name= self.name
@@ -1153,7 +1153,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.title = self.name
 
     def _populate_from_catalogue(self):
-        meta = self.metadata_csw()
+        meta = self.metadata_record()
         if meta is None:
             return
         kw_list = reduce(

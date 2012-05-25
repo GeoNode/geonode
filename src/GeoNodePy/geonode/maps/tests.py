@@ -24,14 +24,14 @@ Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
-geonode.maps.models.get_csw = Mock()
-geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = []
+geonode.maps.models.get_catalogue= Mock()
+geonode.maps.models.get_catalogue.return_value.records.get.return_value.identification.keywords = []
 
-_csw_resource = Mock()
-_csw_resource.protocol = "WWW:LINK-1.0-http--link"
-_csw_resource.url = "http://example.com/"
-_csw_resource.description = "example link"
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
+_catalogue_resource = Mock()
+_catalogue_resource.protocol = "WWW:LINK-1.0-http--link"
+_catalogue_resource.url = "http://example.com/"
+_catalogue_resource.description = "example link"
+geonode.maps.models.get_catalogue.return_value.records.get.return_value.distribution.online = [_catalogue_resource]
 from geonode.maps.utils import forward_mercator, inverse_mercator
 
 DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
@@ -39,9 +39,9 @@ DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':
 geonode.maps.views._metadata_search = Mock()
 geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
 
-geonode.maps.views.get_csw = Mock()
-geonode.maps.views.get_csw.return_value.getrecordbyid.return_value = None
-geonode.maps.views.get_csw.return_value.records.values.return_value = [None]
+geonode.maps.views.get_catalogue = Mock()
+geonode.maps.views.get_catalogue.return_value.getrecordbyid.return_value = None
+geonode.maps.views.get_catalogue.return_value.records.values.return_value = [None]
 geonode.maps.views._extract_links = Mock()
 geonode.maps.views._extract_links.return_value = {}
 
@@ -83,7 +83,7 @@ community."
 #    def test_layer_metadata(self):
 #        pass
     
-#    def test_layer_metadata_csw(self):
+#    def test_layer_metadata_catalogue(self):
 #        pass
 
 #    def test_layer_attribute_names(self):

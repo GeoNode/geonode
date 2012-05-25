@@ -25,7 +25,7 @@ from django.conf import settings
 
 # Geonode functionality
 from geonode.maps.models import Map, Layer, MapLayer
-from geonode.maps.models import Contact, ContactRole, Role, get_csw
+from geonode.maps.models import Contact, ContactRole, Role
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
 
 # Geoserver functionality
@@ -207,8 +207,8 @@ def cleanup(name, uuid):
            logger.exception("Couldn't delete GeoServer store during cleanup()")
 
    cat = Layer.objects.catalogue
-   csw_record = cat.get_by_uuid(uuid)
-   if csw_record is not None:
+   catalogue_record = cat.get_by_uuid(uuid)
+   if catalogue_record is not None:
        logger.warning('Deleting dangling GeoNetwork record for [%s] '
                       '(no Django record to match)', name)
        try:
@@ -566,7 +566,7 @@ def check_geonode_is_up():
         raise GeoNodeException(msg)
 
     try:
-        Layer.objects.csw_catalogue.login()
+        Layer.objects.metadata_catalogue.login()
     except:
         from django.conf import settings
         msg = ("Cannot connect to the Catalogue at %s\n"
