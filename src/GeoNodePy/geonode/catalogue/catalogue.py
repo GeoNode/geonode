@@ -61,15 +61,23 @@ class Catalogue(CatalogueServiceWeb):
         else:
             return None
 
-    def url_for_uuid(self, uuid):
+    def url_for_uuid(self, uuid, outputschema):
         return "%s?%s" % (self.url, urllib.urlencode({
             "request": "GetRecordById",
             "service": "CSW",
             "version": "2.0.2",
             "id": uuid,
-            "outputschema": namespaces["gmd"],
+            "outputschema": outputschema,
             "elementsetname": "full"
         }))
+
+    def urls_for_uuid(self, uuid):
+        """returns list of valid GetRecordById URLs for a given record"""
+
+        urls = []
+        for mformat in settings.CSW['formats']:
+            urls.append({mformat: self.url_for_uuid(uuid, settings.METADATA_FORMATS[mformat])})
+        return urls
 
     def csw_request(self, layer, template):
         tpl = get_template(template)
@@ -233,4 +241,5 @@ def normalize_bbox(bbox):
         return kw['bbox']
     else:  # swap coords per standard
         return [kw['bbox'][1], kw['bbox'][0], kw['bbox'][3], kw['bbox'][2]]
+
 

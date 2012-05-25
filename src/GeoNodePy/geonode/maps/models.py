@@ -1036,6 +1036,15 @@ class Layer(models.Model, PermissionLevelMixin):
 
     metadata_links = property(_get_metadata_links, _set_metadata_links)
 
+    @property
+    def full_metadata_links(self):
+        """Returns complete list of dicts of possible CSW metadata URLs
+           NOTE: we are NOT using the above properties because this will
+           break the OGC W*S Capabilities rules
+        """
+        cat = Layer.objects.csw_catalogue
+        return cat.urls_for_uuid(self.uuid)
+
     def _get_default_style(self):
         return self.publishing.default_style
 
@@ -1115,7 +1124,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.title = self.title
             self.resource.abstract = self.abstract
             self.resource.name= self.name
-            self.resource.metadata_links = [('text/xml', 'TC211', cat.url_for_uuid(self.uuid))]
+            self.resource.metadata_links = [('text/xml', 'TC211', cat.url_for_uuid(self.uuid, 'http://www.isotc211.org/2005/gmd'))]
             self.resource.keywords = self.keyword_list()
             Layer.objects.gs_catalog.save(self._resource_cache)
             cat.logout()

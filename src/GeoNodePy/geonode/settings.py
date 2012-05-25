@@ -261,13 +261,21 @@ GEOSERVER_BASE_URL = "http://catalog.dev.geonode.org:8001/geoserver/"
 # edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 
+# Catalogue information
 
-# GeoNetwork information
+METADATA_FORMATS = {
+    'DIF': 'http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/',
+    'Dublin Core': 'http://www.opengis.net/cat/csw/2.0.2',
+    'FGDC': 'http://www.opengis.net/cat/csw/csdgm',
+    'TC211': 'http://www.isotc211.org/2005/gmd',
+}
 
 # CSW settings
 CSW = {
     # The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
     'type': 'pycsw',
+    # enabled formats
+    'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
     #'type': 'geonetwork',
     #'type': 'deegree',
 

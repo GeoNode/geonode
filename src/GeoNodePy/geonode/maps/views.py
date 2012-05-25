@@ -1,7 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
-from geonode.catalogue import normalize_bbox
+from geonode.catalogue.catalogue import normalize_bbox
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import base64
@@ -807,7 +807,7 @@ def layer_detail(request, layername):
             RequestContext(request, {'error_message': 
                 _("You are not permitted to view this layer")})), status=401)
     
-    metadata = layer.metadata_csw()
+    metadata_links = layer.full_metadata_links
 
     maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
@@ -817,12 +817,10 @@ def layer_detail(request, layername):
 
     return render_to_response('maps/layer.html', RequestContext(request, {
         "layer": layer,
-        "metadata": metadata,
+        "metadata_links": metadata_links,
         "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
-        "CSW_URL": settings.CSW['url'],
-        "CSW_TYPE": settings.CSW['type']
     }))
 
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
@@ -1286,7 +1284,7 @@ def search_result_detail(request):
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
-        'md_link': csw.url_for_uuid(uuid),
+        'md_link': csw.url_for_uuid(uuid, namespaces['gmd']),
         'keywords': ','.join(keywords),
         'layer': layer,
         'layer_is_remote': layer_is_remote
@@ -1349,7 +1347,7 @@ def _build_search_result(rec, csw):
     result['download_links'] = _extract_links(rec)
 
     # construct the link to the CSW metadata record (not self-indexed)
-    result['metadata_links'] = [("text/xml", "TC211", csw.url_for_uuid(rec.identifier))]
+    result['metadata_links'] = [("text/xml", "TC211", csw.url_for_uuid(rec.identifier, 'http://www.isotc211.org/2005/gmd'))]
 
     return result
 

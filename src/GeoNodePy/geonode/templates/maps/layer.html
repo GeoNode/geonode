@@ -268,14 +268,11 @@
         {% endfor %}
     </p>
     <p> <strong>{% trans "Metadata" %}: </strong>
-            <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=http://www.isotc211.org/2005/gmd&elementsetname=full">TC211</a>
-        {% if CSW_TYPE == 'pycsw' %}
-            <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=http://www.opengis.net/cat/csw/2.0.2">Dublin Core</a>
-            <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=http://www.opengis.net/cat/csw/csdgm">FGDC</a>
-            <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/">DIF</a>
-            <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">ebRIM</a>
-            <a href="{{CSW_URL}}?service=CSW&version=2.0.2&request=GetRecordById&id={{metadata.identifier}}&outputschema=urn:us:mil:ces:metadata:ddms:4">DDMS</a>
-        {% endif %}
+        {% for mlink in metadata_links %}
+          {% for link in mlink.items %}
+            <a href="{{link.1}}">{{link.0}}</a>
+          {% endfor %}
+        {% endfor %}
     </p>
     <h3>{% trans "Maps" %} </h3>
     {% if layer.maps %}
