@@ -42,7 +42,7 @@ geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
 mockrecord = Mock()
 mockrecord.identification.keywords = [dict(keywords=["aardvark", "baboon", "cougar"])]
 geonode.maps.views.get_catalogue = Mock()
-geonode.maps.views.get_catalogue.return_value.getrecordbyid.return_value = None
+geonode.maps.views.get_catalogue.return_value.get_by_uuid.return_value = None
 geonode.maps.views.get_catalogue.return_value.records.values.return_value = [mockrecord]
 geonode.maps.views._extract_links = Mock()
 geonode.maps.views._extract_links.return_value = {}
