@@ -2,6 +2,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User, AnonymousUser
+from django.utils import simplejson as json
 
 import geonode.maps.models
 import geonode.maps.views
@@ -11,9 +12,9 @@ from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock, patch
 
-import json
 import os
 import base64
+import math
 
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
@@ -31,19 +32,24 @@ _csw_resource.protocol = "WWW:LINK-1.0-http--link"
 _csw_resource.url = "http://example.com/"
 _csw_resource.description = "example link"
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
+from geonode.maps.utils import forward_mercator, inverse_mercator
+
+DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
+
+geonode.maps.views._metadata_search = Mock()
+geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
+
+geonode.maps.views.get_csw = Mock()
+geonode.maps.views.get_csw.return_value.getrecordbyid.return_value = None
+geonode.maps.views.get_csw.return_value.records.values.return_value = [None]
+geonode.maps.views._extract_links = Mock()
+geonode.maps.views._extract_links.return_value = {}
 
 class MapTest(TestCase):
     """Tests geonode.maps app/module
     """
 
     fixtures = ['test_data.json', 'map_data.json']
-    GEOSERVER = False
-
-    def setUp(self):
-        # If Geoserver and GeoNetwork are not running
-        # avoid running tests that call those views.
-        if "GEOSERVER" in os.environ:
-            self.GEOSERVER = True
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
@@ -56,107 +62,107 @@ community."
 
     # maps.models.Layer
 
-    def test_layer_save_to_geoserver(self):
-        pass
+#    def test_layer_save_to_geoserver(self):
+#        pass
 
-    def test_layer_save_to_catalogue(self):
-        pass
+#    def test_layer_save_to_catalogue(self):
+#        pass
 
-    def test_post_save_layer(self):
-        pass
+#    def test_post_save_layer(self):
+#        pass
 
-    def test_layer_verify(self):
-        pass
+#    def test_layer_verify(self):
+#        pass
 
-    def test_layer_download_links(self):
-        pass
+#    def test_layer_download_links(self):
+#        pass
 
-    def test_layer_maps(self):
-        pass
+#    def test_layer_maps(self):
+#        pass
 
-    def test_layer_metadata(self):
-        pass
+#    def test_layer_metadata(self):
+#        pass
     
-    def test_layer_metadata_csw(self):
-        pass
+#    def test_layer_metadata_csw(self):
+#        pass
 
-    def test_layer_attribute_names(self):
-        pass
+#    def test_layer_attribute_names(self):
+#        pass
 
-    def test_layer_display_type(self):
-        pass
+#    def test_layer_display_type(self):
+#        pass
 
-    def test_layer_delete_from_geoserver(self):
-        pass
+#    def test_layer_delete_from_geoserver(self):
+#        pass
 
-    def test_layer_delete_from_catalogue(self):
-        pass
+#    def test_layer_delete_from_catalogue(self):
+#        pass
 
-    def test_delete_layer(self):
-        pass
+#    def test_delete_layer(self):
+#        pass
 
-    def test_layer_resource(self):
-        pass
+#    def test_layer_resource(self):
+#        pass
 
-    def test_layer_get_metadata_links(self):
-        pass
+#    def test_layer_get_metadata_links(self):
+#        pass
 
-    def test_layer_set_metadata_links(self):
-        pass
+#    def test_layer_set_metadata_links(self):
+#        pass
 
-    def test_layer_get_default_style(self):
-        pass
+#    def test_layer_get_default_style(self):
+#        pass
     
-    def test_layer_set_default_style(self):
-        pass
+#    def test_layer_set_default_style(self):
+#        pass
 
-    def test_layer_get_styles(self):
-        pass
+#    def test_layer_get_styles(self):
+#        pass
 
-    def test_layer_set_styles(self):
-        pass
+#    def test_layer_set_styles(self):
+#        pass
 
-    def test_layer_service_type(self):
-        pass
+#    def test_layer_service_type(self):
+#        pass
 
-    def test_layer_publishing(self):
-        pass
+#    def test_layer_publishing(self):
+#        pass
 
-    def test_layer_poc_role(self):
-        pass
+#    def test_layer_poc_role(self):
+#        pass
 
-    def test_layer_metadata_author_role(self):
-        pass
+#    def test_layer_metadata_author_role(self):
+#        pass
 
-    def test_layer_set_poc(self):
-        pass
+#    def test_layer_set_poc(self):
+#        pass
 
-    def test_layer_get_poc(self):
-        pass
+#    def test_layer_get_poc(self):
+#        pass
 
-    def test_layer_set_metadata_author(self):
-        pass
+#    def test_layer_set_metadata_author(self):
+#        pass
 
-    def test_layer_get_metadata_author(self):
-        pass
+#    def test_layer_get_metadata_author(self):
+#        pass
 
-    def test_layer_populate_from_gs(self):
-        pass
+#    def test_layer_populate_from_gs(self):
+#        pass
 
-    def test_layer_autopopulate(self):
-        pass
+#    def test_layer_autopopulate(self):
+#        pass
 
-    def test_layer_populate_from_catalogue(self):
-        pass
+#    def test_layer_populate_from_catalogue(self):
+#        pass
 
-    def test_layer_keyword_list(self):
-        pass
+#    def test_layer_keyword_list(self):
+#        pass
 
-    def test_layer_set_bbox(self):
-        pass
+#    def test_layer_set_bbox(self):
+#        pass
 
-    def test_layer_get_absolute_url(self):
-        pass
+#    def test_layer_get_absolute_url(self):
+#        pass
 
     def test_layer_set_default_permissions(self):
         """Verify that Layer.set_default_permissions is behaving as expected
@@ -188,14 +194,14 @@ community."
 
     # maps.models.Map
 
-    def test_map_center(self):
-        pass
+#    def test_map_center(self):
+#        pass
 
-    def test_map_layers(self):
-        pass
+#    def test_map_layers(self):
+#        pass
 
-    def test_map_local_layers(self):
-        pass
+#    def test_map_local_layers(self):
+#        pass
 
 
     viewer_config_alternative = """
@@ -243,53 +249,53 @@ community."
         self.assertEquals(map.abstract, "Abstract2")
         self.assertEquals(map.layer_set.all().count(), 1)
 
-    def test_map_viewer_json(self):
-        pass
+#    def test_map_viewer_json(self):
+#        pass
 
-    def test_map_update_from_viewer(self):
-        pass
+#    def test_map_update_from_viewer(self):
+#        pass
 
-    def test_map_get_absolute_url(self):
-        pass
+#    def test_map_get_absolute_url(self):
+#        pass
 
-    def test_map_set_default_permissions(self):
-        pass
+#    def test_map_set_default_permissions(self):
+#        pass
 
     # maps.models.MapLayerManager
 
-    def test_mlm_from_viewer_config(self):
-        pass
+#    def test_mlm_from_viewer_config(self):
+#        pass
     
     # maps.models.MapLayer
 
-    def test_map_layer_from_viewer_config(self):
-        pass
+#    def test_map_layer_from_viewer_config(self):
+#        pass
 
-    def test_map_layer_source_config(self):
-        pass
+#    def test_map_layer_source_config(self):
+#        pass
 
-    def test_map_layer_layer_config(self):
-        pass
+#    def test_map_layer_layer_config(self):
+#        pass
 
-    def test_map_layer_local_link(self):
-        pass
+#    def test_map_layer_local_link(self):
+#        pass
 
     # maps/views.py tests
 
-    def test_project_center(self):
-        pass
+#    def test_project_center(self):
+#        pass
 
-    def test_baselayer(self):
-        pass
+#    def test_baselayer(self):
+#        pass
 
-    def test_bbox_to_wkt(self):
-        pass
+#    def test_bbox_to_wkt(self):
+#        pass
 
-    def test_view_js(self):
-        pass
+#    def test_view_js(self):
+#        pass
 
-    def test_view(self):
-        pass
+#    def test_view(self):
+#        pass
 
     # Maps Tests
 
@@ -319,16 +325,17 @@ community."
           "wms":"capra",
           "name":"base:nic_admin"
         }],
+        "keywords":["saving", "keywords"],
         "zoom":7
       }
     }
     """
 
-    def test_map_controller(self):
-        pass
+#    def test_map_controller(self):
+#        pass
 
-    def test_new_map(self):
-        pass
+#    def test_new_map(self):
+#        pass
 
     def test_map_save(self):
         """POST /maps -> Test saving a new map"""
@@ -351,6 +358,7 @@ community."
         self.assertEquals(map.title, "Title")
         self.assertEquals(map.abstract, "Abstract")
         self.assertEquals(map.layer_set.all().count(), 1)
+        self.assertEquals(map.keyword_list(), ["keywords", "saving"])
 
         # Test an invalid map creation request
         log = c.login(username="bobby", password="bob")
@@ -395,31 +403,31 @@ community."
         response = c.get("/maps/%s" % map.id)
         self.assertEquals(response.status_code,200) 
 
-    def test_delete_map(self):
-        pass
+#    def test_delete_map(self):
+#        pass
 
-    def test_map_detail(self):
-        pass
+#    def test_map_detail(self):
+#        pass
 
-    def test_describe_map(self):
-        pass
+#    def test_describe_map(self):
+#        pass
 
-    def test_embed_map(self):
-        pass
+#    def test_embed_map(self):
+#        pass
 
     # Batch Tests    
     
-    def test_map_download(self):
-        pass
+#    def test_map_download(self):
+#        pass
 
-    def test_check_download(self):
-        pass
+#    def test_check_download(self):
+#        pass
 
-    def test_batch_layer_download(self):
-        pass
+#    def test_batch_layer_download(self):
+#        pass
 
-    def test_batch_delete(self):
-        pass
+#    def test_batch_delete(self):
+#        pass
 
     # Permissions Tests
 
@@ -478,14 +486,6 @@ community."
         for username, level in self.perm_spec['users']:
             user = geonode.maps.models.User.objects.get(username=username)
             self.assertEqual(layer.get_user_level(user), level)
-
-    def test_view_layer_permissions(self):
-        """Verify that the view_layer_permissions view is behaving as expected
-        """
-
-        # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-
-        pass        
 
     def test_ajax_layer_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
@@ -574,13 +574,6 @@ community."
 
         # TODO Lots more to do here once jj0hns0n understands the ACL system better
 
-    def test_view_perms_context(self):
-        # It seems that since view_layer_permissions and view_map_permissions
-        # are no longer used, that this view is also no longer used since those
-        # are the only 2 places it is ever called (jj0hns0n 2011-04-13)
- 
-        pass
-
     def test_perms_info(self):
         """ Verify that the perms_info view is behaving as expected
         """
@@ -601,33 +594,30 @@ community."
         # Test with a Map object
         # TODO
 
-    def test_perms_info_json(self):
-        # Should only need to verify that valid json is returned?
-        pass
+#    def test_perms_info_json(self):
+#        # Should only need to verify that valid json is returned?
+#        pass
 
-    def test_fix_map_perms_for_editor(self):
+#    def test_fix_map_perms_for_editor(self):
         # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-        pass
+#        pass
 
-    def test_handle_perms_edit(self):
+#    def test_handle_perms_edit(self):
         # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-        pass
+#        pass
 
-    def test_get_basic_auth_info(self):
+#    def test_get_basic_auth_info(self):
         # How do we test this? Perhaps as a part of test_layer_acls
-        pass
+#        pass
 
-    def test_view_map_permissions(self):
-        pass
+#    def test_set_map_permissions(self):
+#        pass
 
-    def test_set_map_permissions(self):
-        pass
+#    def test_ajax_map_permissions(self):
+#        pass
 
-    def test_ajax_map_permissions(self):
-        pass
-
-    def test_batch_permissions(self):
-        pass
+#    def test_batch_permissions(self):
+#        pass
 
     # Data Tests
 
@@ -637,29 +627,22 @@ community."
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_browse_data(self):
-        pass
+#    def test_browse_data(self):
+#        pass
 
     def test_describe_data(self):
-        '''/data/base:CA?describe -> Test accessing the description of a layer '''
+        '''/data/base:CA/metadata -> Test accessing the description of a layer '''
         from django.contrib.auth.models import User
         self.assertEqual(2, User.objects.all().count())
         c = Client()
-        response = c.get('/data/base:CA?describe')
+        response = c.get('/data/base:CA/metadata')
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='bobby', password='bob')
         # ... all should be good
-        if self.GEOSERVER:
-            response = c.get('/data/base:CA?describe')
-            self.failUnlessEqual(response.status_code, 200)
-        else:
-            # If Geoserver is not running, this should give a runtime error
-            try:
-                c.get('/data/base:CA?describe')
-            except RuntimeError:
-                pass
+        response = c.get('/data/base:CA/metadata')
+        self.failUnlessEqual(response.status_code, 200)
     
     # Layer Tests
 
@@ -676,26 +659,26 @@ community."
         response = c.get("/data/upload")
         self.assertEquals(response.status_code,200)
 
-    def test_handle_layer_upload(self):
-        pass
+#    def test_handle_layer_upload(self):
+#        pass
 
-    def test_update_layer(self):
-        pass
+#    def test_update_layer(self):
+#        pass
 
-    def test_describe_layer(self):
-        pass
+#    def test_describe_layer(self):
+#        pass
 
-    def test_remove_layer(self):
-        pass
+#    def test_remove_layer(self):
+#        pass
 
-    def test_change_layer_default_style(self):
-        pass
+#    def test_change_layer_default_style(self):
+#        pass
 
-    def test_layer_controller(self):
-        pass
+#    def test_layer_controller(self):
+#        pass
 
-    def test_extract_links(self):
-        pass
+#    def test_extract_links(self):
+#        pass
 
     # Search Tests
     
@@ -705,11 +688,11 @@ community."
         response = c.get('/data/search/')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_search_page(self):
-        pass
+#    def test_search_page(self):
+#        pass
 
-    def test_build_search_result(self):
-        pass
+#    def test_build_search_result(self):
+#        pass
 
     def test_metadata_search(self):
         c = Client()
@@ -731,8 +714,8 @@ community."
             self.assertEqual(call_args[0][1], 5)
             self.assertEqual(call_args[0][2], 10)
 
-    def test_search_result_detail(self):
-        pass
+#    def test_search_result_detail(self):
+#        pass
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
@@ -743,26 +726,24 @@ community."
     
     def test_search_api(self):
         '''/data/search/api -> Test accessing the data search api JSON'''
-        if self.GEOSERVER:
-            c = Client()
-            response = c.get('/data/search/api')
-            self.failUnlessEqual(response.status_code, 200)
+        c = Client()
+        response = c.get('/data/search/api')
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_search_detail(self):
         '''
         /data/search/detail -> Test accessing the data search detail for a layer
         Disabled due to reliance on consistent UUIDs across loads.
         '''
-        if self.GEOSERVER:
-            layer = Layer.objects.all()[0]
+        layer = Layer.objects.all()[0]
 
-            # save to catalogue so we know the uuid is consistent between
-            # django db and catalogue
-            layer.save_to_catalogue()
+        # save to catalogue so we know the uuid is consistent between
+        # django db and catalogue
+        layer.save_to_catalogue()
 
-            c = Client()
-            response = c.get('/data/search/detail', {'uuid':layer.uuid})
-            self.failUnlessEqual(response.status_code, 200)
+        c = Client()
+        response = c.get('/data/search/detail', {'uuid':layer.uuid})
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_search_template(self):
         from django.template import Context
@@ -778,34 +759,27 @@ community."
 
 
     def test_describe_data(self):
-        '''/data/base:CA?describe -> Test accessing the description of a layer '''
+        '''/data/base:CA/metadata -> Test accessing the description of a layer '''
 
         from django.contrib.auth.models import User
         self.assertEqual(2, User.objects.all().count())
         c = Client()
-        response = c.get('/data/base:CA?describe')
+        response = c.get('/data/base:CA/metadata')
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='bobby', password='bob')
         # ... all should be good
-        if self.GEOSERVER:
-            response = c.get('/data/base:CA?describe')
-            self.failUnlessEqual(response.status_code, 200)
-        else:
-            # If Geoserver is not running, this should give a runtime error
-            try:
-                c.get('/data/base:CA?describe')
-            except RuntimeError:
-                pass
+        response = c.get('/data/base:CA/metadata')
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
-        lyr.keywords = "saving,keywords"
+        lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
-        self.assertEqual(lyr.keyword_list(), ["saving", "keywords"])
-        self.assertEqual(lyr.resource.keywords, ["saving", "keywords"])
-        self.assertEqual(_gs_resource.keywords, ["saving", "keywords"])
+        self.assertEqual(lyr.keyword_list(), ["keywords", "saving"])
+        self.assertEqual(lyr.resource.keywords, ["keywords", "saving"])
+        self.assertEqual(_gs_resource.keywords, ["keywords", "saving"])
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
@@ -1299,3 +1273,60 @@ class UtilsTest(TestCase):
         finally:
             if d is not None:
                 shutil.rmtree(d)
+
+    def test_forward_mercator(self):
+        arctic = forward_mercator((0, 85))
+        antarctic = forward_mercator((0, -85))
+        hawaii = forward_mercator((-180, 0))
+        phillipines = forward_mercator((180, 0))
+        ne = forward_mercator((180, 90))
+        sw = forward_mercator((-180, -90))
+
+        self.assertEqual(round(arctic[0]), 0, "Arctic longitude is correct")
+        self.assertEqual(round(arctic[1]), 19971869, "Arctic latitude is correct")
+
+        self.assertEqual(round(antarctic[0]), 0, "Antarctic longitude is correct")
+        self.assertEqual(round(antarctic[1]), -19971869, "Antarctic latitude is correct")
+
+        self.assertEqual(round(hawaii[0]), -20037508, "Hawaiian lon is correct")
+        self.assertEqual(round(hawaii[1]), 0, "Hawaiian lat is correct")
+
+        self.assertEqual(round(phillipines[0]), 20037508, "Phillipines lon is correct")
+        self.assertEqual(round(phillipines[1]), 0, "Phillipines lat is correct")
+
+        self.assertEqual(round(ne[0]), 20037508, "NE lon is correct")
+        self.assertTrue(ne[1] > 50000000, "NE lat is correct")
+
+        self.assertEqual(round(sw[0]), -20037508, "SW lon is correct")
+        self.assertTrue(math.isinf(sw[1]), "SW lat is correct")
+        
+        # verify behavior for invalid y values
+        self.assertEqual(float('-inf'), forward_mercator((0, 135))[1])
+        self.assertEqual(float('-inf'), forward_mercator((0, -135))[1])
+
+    def test_inverse_mercator(self):
+        arctic = inverse_mercator(forward_mercator((0, 85)))
+        antarctic = inverse_mercator(forward_mercator((0, -85)))
+        hawaii = inverse_mercator(forward_mercator((-180, 0)))
+        phillipines = inverse_mercator(forward_mercator((180, 0)))
+        ne = inverse_mercator(forward_mercator((180, 90)))
+        sw = inverse_mercator(forward_mercator((-180, -90)))
+
+        self.assertAlmostEqual(arctic[0], 0.0, msg="Arctic longitude is correct")
+        self.assertAlmostEqual(arctic[1], 85.0, msg="Arctic latitude is correct")
+
+        self.assertAlmostEqual(antarctic[0], 0.0, msg="Antarctic longitude is correct")
+        self.assertAlmostEqual(antarctic[1], -85.0, msg="Antarctic latitude is correct")
+
+        self.assertAlmostEqual(hawaii[0], -180.0, msg="Hawaiian lon is correct")
+        self.assertAlmostEqual(hawaii[1], 0.0, msg="Hawaiian lat is correct")
+
+        self.assertAlmostEqual(phillipines[0], 180.0, msg="Phillipines lon is correct")
+        self.assertAlmostEqual(phillipines[1], 0.0, msg="Phillipines lat is correct")
+
+        self.assertAlmostEqual(ne[0], 180.0, msg="NE lon is correct")
+        self.assertAlmostEqual(ne[1], 90.0, msg="NE lat is correct")
+
+        self.assertAlmostEqual(sw[0], -180.0, msg="SW lon is correct")
+        self.assertAlmostEqual(sw[1], -90.0, msg="SW lat is correct")
+

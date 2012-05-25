@@ -1,7 +1,5 @@
-:orphan:
-
 =======================================
-Configuring GeoNode in development mode
+Configuring GeoNode in Development Mode
 =======================================
 
 
@@ -18,14 +16,6 @@ software installed and in your ``PATH``:
 
   - If not, you can download one of the installers from http://git-scm.com/ or
     from your operating system provider.
-
-* The Subversion command-line client, version 1.5 or higher.
-
-  - To verify that is is available, run ``svn --version`` and verify the output
-    starts with something like ``svn, version 1.6.9 (r901367)``
-
-  - If not, you can find the appropriate installer at
-    http://subversion.apache.org/packages.html
 
 * The GEOS geometry handling library: http://trac.osgeo.org/geos/
 
@@ -95,21 +85,33 @@ If you are using Ubuntu Linux, you can configure all the above dependencies by r
     sudo apt-get install -y vim zip unzip subversion git-core binutils build-essential python-dev python-setuptools python-imaging gdal-bin libproj-dev libgeos-dev python-urlgrabber python-scipy python-nose pep8 python-virtualenv python-gdal python-pastescript postgresql-contrib libpq-dev gettext python-psycopg2 libxml2-dev libxslt1-dev
     sudo apt-get install -y --force-yes ant --no-install-recommends
 
-
+.. TODO: This does not install java
 
 Install
 =======
 
 The following steps should prepare a Python virtual environment for you::
 
-  git clone git://github.com/GeoNode/geonode.git geonode
-  cd geonode
-  git submodule update --init
-  python bootstrap.py --no-site-packages # see note below
-  source bin/activate
-  paver build
-  django-admin.py createsuperuser --settings=geonode.settings
-  paver host 
+  $ git clone git://github.com/GeoNode/geonode.git geonode
+  $ cd geonode
+  $ git submodule update --init
+  $ python bootstrap.py --no-site-packages # see note below
+  $ source bin/activate
+  $ paver build
+  $ django-admin.py createsuperuser --settings=geonode.settings
+  $ paver host 
+
+.. note:: 
+
+  If your firewall does not allow connections to git repositories using git://
+  (TCP port 9418), you may connect using http:// ::
+
+    $ git clone http://github.com/GeoNode/geonode.git geonode
+    $ cd geonode
+    $ git submodule init
+    $ sed -i 's/git:\/\//http:\/\//g' .gitmodules
+    $ git submodule sync
+    $ git submodule update
 
 Once fully started, you should see a message indicating the address of your geonode::
   
@@ -132,7 +134,7 @@ Once fully started, you should see a message indicating the address of your geon
 
 This command::
 
-  django-admin.py createsuperuser --settings=geonode.settings
+  $ django-admin.py createsuperuser --settings=geonode.settings
 
 can be used to create additional administrative user accounts.  The administrative control panel is not
 linked from the main site, but can be accessed at http://localhost:8000/admin/
@@ -207,8 +209,8 @@ The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
 in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
 instance at that port with the following commands::
    
-    cd src/geonode-geoserver-ext/
-    sh startup.sh
+    $ cd src/geonode-geoserver-ext/
+    $ sh startup.sh
 
 .. note:: 
     Normally, ``mvn jetty:run-war`` would be sufficient.  However, we use the
@@ -216,17 +218,20 @@ instance at that port with the following commands::
     run Jetty in order to workaround a JVM bug that affects GeoNetwork.
 
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
-change the line::
+change the line below to indicate the GeoServer URL that you want to use.::
   
     GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
-to indicate the GeoServer URL that you want to use. 
+To run the Django app when Jetty is started independently, use the command below in the base of your working directory.::
 
-To run the Django app when Jetty is started independently, use::
+    $ paster serve --reload shared/dev-paste.ini
 
-    paster serve --reload shared/dev-paste.ini
+.. note:: It is also possible to build the geoserver war file and deploy it into Tomcat (or another servlet container) on your development machine. To do this, excecute the following commands, then deploy the resultant war into your servlet container and configure the GEOSERVER_BASE_URL as specified above::
 
-in the base of your working directory.
+    $ cd src/geonode-geoserver-ext/
+    $ mvn clean install
+
+    You will also need to configure the deployed GeoServer to find GeoNode by editing the ``WEB-INF/web.xml`` file to point to your GeoNode installation on the right port.
 
 Alternative GeoServer Data Directories
 ......................................

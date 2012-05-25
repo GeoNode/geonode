@@ -1,7 +1,5 @@
-:orphan:
-
 ========================================
-Customizing the look and feel of GeoNode
+Customizing the Look and Feel of GeoNode
 ========================================
 
 This section will explain how to change GeoNode's main logo, the index page and the colors.
@@ -34,7 +32,7 @@ Changing the default logo
 
 Similarly to the way the templates work, GeoNode's images and css files can be overriden in :file:`/etc/geonode/media`.
 
-The original GeoNode logo is located at :file:`/var/lib/geonode/src/GeoNode/geonode/media/theme/img/logo-bg.png`.
+The original GeoNode logo is located at :file:`/var/lib/geonode/src/GeoNodePy/geonode/media/theme/img/logo-bg.png`.
 Make a copy and edit it using Photoshop, GIMP, or your preferred image editor and then save it in :file:`/etc/geonode/media/theme/img/logo-bg.png`.
 
 Once the logo is placed there, it is neccessary to run the media collection command::
@@ -49,4 +47,4 @@ This will gather all the media in the diferent locations (both source and the us
 Changing the entire site media
 ==============================
 
-All the files in :file:`/var/lib/geonode/src/GeoNodePy/geonode/media/theme` can be overriden using this method, including :file:`css/base.css` which contains most of the color schemes for the entire site.
+All the files in :file:`/var/lib/geonode/src/GeoNodePy/geonode/media/theme` can be overriden using this method, including :file:`site.css` which contains most of the color schemes for the entire site. Once you copy it, the file should live in :file:`/etc/geonode/media/theme/site.css`.

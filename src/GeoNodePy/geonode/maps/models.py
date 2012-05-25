@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
@@ -8,17 +8,20 @@ from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.catalogue.catalogue import Catalogue
 from django.db.models import signals
 from django.utils.html import escape
+from taggit.managers import TaggableManager
+from django.utils import simplejson as json
+
 import httplib2
-import simplejson
 import urllib
 from urlparse import urlparse
 import uuid
 from datetime import datetime
 from django.contrib.auth.models import User, Permission
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from string import lower
 from StringIO import StringIO
+from lxml import etree
 from gs_helpers import cascading_delete
 import logging
 import sys
@@ -494,6 +497,8 @@ class Contact(models.Model):
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
 
     def clean(self):
         # the specification says that either name or organization should be provided
@@ -636,7 +641,7 @@ class LayerManager(models.Manager):
                 else:
                     status = 'updated'
 
-            msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
+            msg = "[%s] Layer %s (%d/%d)" % (status, name, i+1, number)
             info = {'name': name, 'status': status}
             if status == 'failed':
                 info['traceback'] = traceback
@@ -685,7 +690,7 @@ class Layer(models.Model, PermissionLevelMixin):
     # see poc property definition below
 
     # section 3
-    keywords = models.TextField(_('keywords (comma-separated)'), blank=True, null=True)
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
     constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
@@ -761,22 +766,26 @@ class Layer(models.Model, PermissionLevelMixin):
         links = []        
 
         if self.resource.resource_type == "featureType":
-            def wfs_link(mime):
-                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
+            def wfs_link(mime, extra_params):
+                params = {
                     'service': 'WFS',
+                    'version': '1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
                     'outputFormat': mime
-                })
+                }
+                params.update(extra_params)
+                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode(params)
+
             types = [
-                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP"),
-                ("gml", _("GML 2.0"), "gml2"),
-                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1"),
-                ("csv", _("CSV"), "csv"),
-                ("excel", _("Excel"), "excel"),
-                ("json", _("GeoJSON"), "json")
+                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
+                ("gml", _("GML 2.0"), "gml2", {}),
+                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
+                ("csv", _("CSV"), "csv", {}),
+                ("excel", _("Excel"), "excel", {}),
+                ("json", _("GeoJSON"), "json", {})
             ]
-            links.extend((ext, name, wfs_link(mime)) for ext, name, mime in types)
+            links.extend((ext, name, wfs_link(mime, extra_params)) for ext, name, mime, extra_params in types)
         elif self.resource.resource_type == "coverage":
             try:
                 client = httplib2.Http()
@@ -869,7 +878,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # rather than searching for it
         #api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
         #response, body = http.request(api_url)
-        #api_json = simplejson.loads(body)
+        #api_json = json.loads(body)
         #api_layer = None
         #for row in api_json['rows']:
         #    if(row['name'] == self.typename):
@@ -973,7 +982,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
                 response, body = http.request(dc_url)
-                doc = XML(body)
+                doc = etree.fromstring(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
                 atts = [n.text for n in doc.findall(path)]
             except Exception, e:
@@ -1143,7 +1152,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 meta.identification.keywords,
                 [])
         kw_list = filter(lambda x: x is not None, kw_list)
-        self.keywords = ','.join(kw_list)
+        self.keywords.add(*kw_list)
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:
@@ -1152,10 +1161,11 @@ class Layer(models.Model, PermissionLevelMixin):
                 self.distribution_description = res.description
 
     def keyword_list(self):
-        if self.keywords is None:
-            return []
+        keywords_qs = self.keywords.all()
+        if keywords_qs:
+            return [kw.name for kw in keywords_qs]
         else:
-            return self.keywords.split(',')
+            return []
 
     def set_bbox(self, box, srs=None):
         """
@@ -1206,12 +1216,12 @@ class Map(models.Model, PermissionLevelMixin):
     configuration.
     """
 
-    title = models.CharField(_('Title'),max_length=1000)
+    title = models.TextField(_('Title'))
     """
     A display name suitable for search results and page headers
     """
 
-    abstract = models.CharField(_('Abstract'),max_length=200)
+    abstract = models.TextField(_('Abstract'))
     """
     A longer description of the themes in the map.
     """
@@ -1250,6 +1260,8 @@ class Map(models.Model, PermissionLevelMixin):
     """
     The last time the map was modified.
     """
+    
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
 
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
@@ -1303,7 +1315,7 @@ class Map(models.Model, PermissionLevelMixin):
             "layers" : [layer_json(lyr) for lyr in layers]
         }
 
-        return simplejson.dumps(map)
+        return json.dumps(map)
 
     def viewer_json(self, *added_layers):
         """
@@ -1338,7 +1350,7 @@ class Map(models.Model, PermissionLevelMixin):
         for source in uniqify(configs):
             while str(i) in sources: i = i + 1
             sources[str(i)] = source 
-            server_lookup[simplejson.dumps(source)] = str(i)
+            server_lookup[json.dumps(source)] = str(i)
 
         def source_lookup(source):
             for k, v in sources.iteritems():
@@ -1384,7 +1396,7 @@ class Map(models.Model, PermissionLevelMixin):
         This method automatically persists to the database!
         """
         if isinstance(conf, basestring):
-            conf = simplejson.loads(conf)
+            conf = json.loads(conf)
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
@@ -1405,6 +1417,8 @@ class Map(models.Model, PermissionLevelMixin):
         
         for layer in self.layer_set.all():
             layer.delete()
+            
+        self.keywords.add(*conf['map'].get('keywords', []))
 
         for ordering, layer in enumerate(layers):
             self.layer_set.add(
@@ -1412,6 +1426,13 @@ class Map(models.Model, PermissionLevelMixin):
                     self, layer, source_for(layer), ordering
             ))
         self.save()
+
+    def keyword_list(self):
+        keywords_qs = self.keywords.all()
+        if keywords_qs:
+            return [kw.name for kw in keywords_qs]
+        else:
+            return []
 
     def get_absolute_url(self):
         return '/maps/%i' % self.id
@@ -1476,8 +1497,8 @@ class MapLayerManager(models.Manager):
             group = layer.get('group', None),
             visibility = layer.get("visibility", True),
             ows_url = source.get("url", None),
-            layer_params = simplejson.dumps(layer_cfg),
-            source_params = simplejson.dumps(source_cfg)
+            layer_params = json.dumps(layer_cfg),
+            source_params = json.dumps(source_cfg)
         )
 
 class MapLayer(models.Model):
@@ -1503,13 +1524,13 @@ class MapLayer(models.Model):
     be drawn on top of others.
     """
 
-    format = models.CharField(_('format'), null=True,max_length=200)
+    format = models.CharField(_('format'), null=True, max_length=200)
     """
     The mimetype of the image format to use for tiles (image/png, image/jpeg,
     image/gif...)
     """
 
-    name = models.CharField(_('name'), null=True,max_length=200)
+    name = models.CharField(_('name'), null=True, max_length=200)
     """
     The name of the layer to load.
 
@@ -1555,7 +1576,7 @@ class MapLayer(models.Model):
     The URL of the OWS service providing this layer, if any exists.
     """
 
-    layer_params = models.CharField(_('layer params'), max_length=1024)
+    layer_params = models.TextField(_('layer params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     passed to the GXP viewer.
@@ -1564,7 +1585,7 @@ class MapLayer(models.Model):
     (such as format, styles, etc.) then the fields override.
     """
 
-    source_params = models.CharField(_('source params'), max_length=1024)
+    source_params = models.TextField(_('source params'))
     """
     A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
     configuration for this layer.
@@ -1590,7 +1611,7 @@ class MapLayer(models.Model):
         configuration suitable for loading this layer.
         """
         try:
-            cfg = simplejson.loads(self.source_params)
+            cfg = json.loads(self.source_params)
         except:
             cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
 
@@ -1609,7 +1630,7 @@ class MapLayer(models.Model):
         generating a full map configuration.
         """
         try:
-            cfg = simplejson.loads(self.layer_params)
+            cfg = json.loads(self.layer_params)
         except: 
             cfg = dict()
 

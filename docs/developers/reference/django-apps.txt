@@ -159,5 +159,3 @@ geonode.proxy.views.geoserver
   component for GeoServer.  Requests to this URL require valid authentication
   against the Django site, and will use the GEOSERVER_CREDENTIALS and
   GEOSERVER_BASE_URL settings as defined in the maps application.
-
-

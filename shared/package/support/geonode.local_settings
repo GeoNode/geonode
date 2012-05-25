@@ -2,8 +2,6 @@ import os
 import geonode
 
 DEBUG = TEMPLATE_DEBUG = False
-MINIFIED_RESOURCES = True
-SERVE_MEDIA=False
 
 SITENAME = 'GeoNode'
 SITEURL = 'http://localhost/'
@@ -41,14 +39,7 @@ DB_DATASTORE=True
 LANGUAGE_CODE = 'en'
 
 MEDIA_ROOT = '/var/www/geonode/uploaded'
-MEDIA_URL = '/uploaded/'
 STATIC_ROOT = '/var/www/geonode/static/'
-STATIC_URL = '/static/'
-GEONODE_UPLOAD_PATH = MEDIA_ROOT + 'geonode'
-GEONODE_CLIENT_LOCATION = STATIC_URL + 'geonode/'
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
-
-STATICFILES_STORAGE = 'staticfiles.storage.StaticFilesStorage'
 
 # secret key used in hashing, should be a long, unique string for each
 # site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
@@ -70,13 +61,11 @@ CSW = {
     'password': 'tiger'
 }
 
-GEOSERVER_CREDENTIALS = 'geoserver', 'THE_GEOSERVER_PASSWORD'
+GEOSERVER_CREDENTIALS = 'geoserver', SECRET_KEY
 
 # A Google Maps API key is needed for the 3D Google Earth view of maps
 # See http://code.google.com/apis/maps/signup.html
 GOOGLE_API_KEY = ''
-
-DEFAULT_LAYERS_OWNER='admin'
 
 GEONODE_ROOT = os.path.dirname(geonode.__file__)
 
@@ -88,8 +77,9 @@ TEMPLATE_DIRS = (
 # Additional directories which hold static files
 STATICFILES_DIRS = [
     '/etc/geonode/media',
-    os.path.join(GEONODE_ROOT, 'media'),
+    os.path.join(GEONODE_ROOT, 'static'),
 ]
+
 # Uncomment the following to receive emails whenever there are errors in GeoNode
 #ADMINS = (
 #            ('John', 'john@example.com'), 
@@ -105,9 +95,32 @@ STATICFILES_DIRS = [
 # For more information on available settings please consult the Django docs at
 # https://docs.djangoproject.com/en/dev/ref/settings
 
-import logging
-_logger = logging.getLogger('geonode.maps')
-_logger.addHandler(logging.StreamHandler())
-# available levels: DEBUG, INFO, WARNING, ERROR, CRITICAL.
-# The earlier a level appears in this list, the more output it will produce in the log file.
-_logger.setLevel(logging.WARNING)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "null": {
+            "level":"DEBUG",
+            "class":"django.utils.log.NullHandler",
+        },
+        "console":{
+            "level":"DEBUG",
+            "class":"logging.StreamHandler",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "geonode": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+    },
+}
