@@ -553,7 +553,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
 
             if (this.tools["gn_layer_editor"]) {
-                //this.on("layerselectionchange", this.checkLayerPermissions);
                 this.tools["gn_layer_editor"].getFeatureManager().on('layerchange', function(mgr, layer, schema) {
                     this.checkLayerPermissions(layer);
                 }, this);
