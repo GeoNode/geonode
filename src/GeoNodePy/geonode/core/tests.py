@@ -8,7 +8,7 @@ class GeoNodeClientTests(TestCase):
     GEOSERVER = False
 
     def setUp(self):
-        # If Geoserver and GeoNetwork are not running
+        # If Geoserver and Catalogue are not running
         # avoid running tests that call those views.
         if "GEOSERVER" in os.environ.keys():
             self.GEOSERVER = True

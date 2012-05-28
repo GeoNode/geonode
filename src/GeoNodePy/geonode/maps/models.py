@@ -859,7 +859,7 @@ class Layer(models.Model, PermissionLevelMixin):
         return links
 
     def verify(self):
-        """Makes sure the state of the layer is consistent in GeoServer and GeoNetwork.
+        """Makes sure the state of the layer is consistent in GeoServer and Catalogue.
         """
         http = httplib2.Http() # Do we need to add authentication?
         
@@ -1713,7 +1713,7 @@ class ContactRole(models.Model):
 
 def delete_layer(instance, sender, **kwargs): 
     """
-    Removes the layer from GeoServer and GeoNetwork
+    Removes the layer from GeoServer and Catalogue
     """
     instance.delete_from_geoserver()
     instance.delete_from_catalogue()

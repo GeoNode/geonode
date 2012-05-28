@@ -1355,8 +1355,7 @@ DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
 def maps_search(request):
     """
-    handles a basic search for maps using the 
-    GeoNetwork catalog.
+    handles a basic search for maps using the Catalogue.
 
     the search accepts: 
     q - general query for keywords across all fields

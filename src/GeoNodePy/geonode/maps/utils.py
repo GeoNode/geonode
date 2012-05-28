@@ -154,7 +154,7 @@ def get_valid_layer_name(layer=None, overwrite=False):
 
 
 def cleanup(name, uuid):
-   """Deletes GeoServer and GeoNetwork records for a given name.
+   """Deletes GeoServer and Catalogue records for a given name.
 
       Useful to clean the mess when something goes terribly wrong.
       It also verifies if the Django record existed, in which case
@@ -209,7 +209,7 @@ def cleanup(name, uuid):
    cat = Layer.objects.catalogue
    catalogue_record = cat.get_by_uuid(uuid)
    if catalogue_record is not None:
-       logger.warning('Deleting dangling GeoNetwork record for [%s] '
+       logger.warning('Deleting dangling Catalogue record for [%s] '
                       '(no Django record to match)', name)
        try:
            # this is a bit hacky, delete_layer expects an instance of the layer
@@ -217,10 +217,10 @@ def cleanup(name, uuid):
            # too.
            cat.delete_layer({ "uuid": uuid }) 
        except:
-           logger.exception('Couldn\'t delete GeoNetwork record '
+           logger.exception('Couldn\'t delete Catalogue record '
                             'during cleanup()')
 
-   logger.warning('Finished cleanup after failed GeoNetwork/Django '
+   logger.warning('Finished cleanup after failed Catalogue/Django '
                   'import for layer: %s', name)
 
 
@@ -509,7 +509,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
                          'method in geonode.maps.models.Layer')
     except GeoNodeException, e:
         msg = ('The layer [%s] was not correctly saved to '
-               'GeoNetwork/GeoServer. Error is: %s' % (layer, str(e)))
+               'Catalogue/GeoServer. Error is: %s' % (layer, str(e)))
         logger.exception(msg)
         e.args = (msg,)
         # Deleting the layer
