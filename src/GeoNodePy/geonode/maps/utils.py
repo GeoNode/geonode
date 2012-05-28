@@ -552,7 +552,7 @@ def get_valid_user(user=None):
     return theuser
 
 def check_geonode_is_up():
-    """Verifies all of geonetwork, geoserver and the django server are running,
+    """Verifies all of catalogue, geoserver and the django server are running,
        this is needed to be able to upload.
     """
     try:
