@@ -5,38 +5,11 @@
     <meta charset="utf-8">
     <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
     {% block head %}
+      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/datatables.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
-      <style>
-        body {
-          padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-        footer {
-          margin-top: 30px;
-          padding-top: 10px;
-          border-top: 1px solid #eee;
-        }
-        .nav-logo {
-          float: left;
-          width: 158px;
-          height: 50px;
-          background: url({{ STATIC_URL }}theme/img/logo-bg.png) no-repeat;
-          overflow: hidden;
-          text-indent: -9999em;
-        }
-        .brand {
-          overflow: hidden;
-          text-indent: -9999em;
-        }
-        .navbar .nav > li > a {
-          padding: 15px 10px 16px;
-        }
-
-      </style>
-      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet">
-      <link href="{{ STATIC_URL }}geonode/css/datatables.css" rel="stylesheet">
     {% endblock %}
-
-
     <!--[if lt IE 9]>
       <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -45,62 +18,102 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a href="{% url home %}">
-            <span class="nav-logo">
-              <a class="brand">{{ SITENAME }}</a>
-            </span>
-          </a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              
-              <li>
-                <a href="{% url home %}">{% trans "Home" %}</a>
-              </li>
-              <li>
-                <a href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a>
-              </li>
-              <li>
-                <a href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a>
-              </li>
-            </ul>
-            <div class="pull-right">
-              {% if user.is_authenticated %}
-                <p class="navbar-text pull-left">{% trans "Logged in as:" %}</p>
-              {% endif %}
-              <ul class="nav pull-right">
-                {% if user.is_authenticated %}
-                  <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                      {{ user.username }}
-                      <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li><a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
-                      {% if user.is_staff %}
-                        <li><a href="{% url admin:index %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
-                      {% endif %}
-                      <li class="divider"></li>
-                      <li><a href="{% url auth_logout %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
-                    </ul>
-                  </li>
-                {% else %}
-                    <li><a href="{% url auth_login %}">{% trans "Sign in" %}</a></li>
-                    {% if REGISTRATION_OPEN %}
-                      <li class="navbar-text">{% trans "or" %}</li>
-                      <li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
-                    {% endif %}
-                {% endif %}
-              </ul>
+          <div class="row">
+            <div class="span3">
+              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+              <a href="{% url home %}">
+                <span class="nav-logo">
+                  <a class="brand">{{ SITENAME }}</a>
+                </span>
+              </a>
             </div>
+            <div class="span6">
+                <form class="form-inline well search-box" action="{% url data_search %}" method="POST">
+                  {% csrf_token %}
+                  <input type="text" class="input-medium" name="q" placeholder="Search" />
+                  <select name="" id="" class="span2">
+                    <option value="">All Categories</option>
+                    <option value="">Category 1</option>
+                    <option value="">Category 2</option>
+                  </select>
+                  <button type="submit" class="btn btn-small"><i class="icon-search"></i></button>
+                  <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
+                </form>
+            </div>
+            <div class="span3">
+              <div class="nav-collapse">
+                <div class="pull-right">
+                  <p class="navbar-text pull-left"><a href="#">{% trans "Help" %}</a>&nbsp;|&nbsp;
+                  {% if user.is_authenticated %}
+                    {% trans "Logged in as:" %}
+                  {% endif %}
+                  </p>
+                  <ul class="nav pull-right">
+                    {% if user.is_authenticated %}
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                          {{ user.username }}
+                          <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
+                          {% if user.is_staff %}
+                            <li><a href="{% url admin:index %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
+                          {% endif %}
+                          <li class="divider"></li>
+                          <li><a href="{% url auth_logout %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
+                        </ul>
+                      </li>
+                    {% else %}
+                        <li><a href="{% url auth_login %}">{% trans "Sign in" %}</a></li>
+                        {% if REGISTRATION_OPEN %}
+                          <li class="navbar-text">{% trans "or" %}</li>
+                          <li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
+                        {% endif %}
+                    {% endif %}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+    <div class="container">
+        <div class="row">
+          <div class="span10">
+            <nav class="main-nav">
+              <ul>
+                <li>
+                  <a href="{% url home %}">{% trans "Home" %}</a>
+                </li>
+                <li>
+                  <a href="{% url geonode.maps.views.browse_data %}">{% trans "Explore Data" %}</a>
+                </li>
+                <li>
+                  <a href="{% url geonode.maps.views.browse_data %}">{% trans "Upload Data" %}</a>
+                </li>
+                <li>
+                  <a href="{% url geonode.maps.views.maps %}">{% trans "Explore Maps" %}</a>
+                </li>
+                <li>
+                  <a href="{% url geonode.maps.views.maps %}" class="last">{% trans "Create a New Map" %}</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="span2">
+            <ul class="social">
+              <li><a href="#" class="fb">facebook</a></li>
+              <li><a href="#" class="tw">twitter</a></li>
+              <li><a href="#" class="yt">youtube</a></li>
+            </ul>
+          </div>
+        </div>
     </div>
     <div class="container">
       <div class="row">
@@ -113,8 +126,9 @@
           </div>
         {% endblock %}
       </div>
-
-      <footer class="footer">
+    </div>
+    <footer class="footer">
+      <div class="container">
         {% block footer %}
           <div class="pull-left">
             {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> |
@@ -128,7 +142,7 @@
               <form class="form-inline" action="/i18n/setlang/" method="post">
                 {% csrf_token %}
                 <label>{% trans "Language" %}</label>
-                <select class="input" name="language" onchange="javascript:form.submit()">
+                <select class="input span2" name="language" onchange="javascript:form.submit()">
                   {% for lang in LANGUAGES %}
                     <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
                       {{ lang.1 }}
@@ -139,8 +153,8 @@
             {% endif %}
           </div>
         {% endblock %}
-      </footer>
-    </div>
+      </div>
+    </footer>
 
     <script src="{{ STATIC_URL }}bootstrap/js/jquery-1.7.1.min.js"></script>
     <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
