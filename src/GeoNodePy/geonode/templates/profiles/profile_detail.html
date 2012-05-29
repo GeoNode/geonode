@@ -2,60 +2,15 @@
 
 {% load i18n avatar_tags %}
 
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{{ block.super }}
+{% endblock %}
+
 {% block main %}
-  <table class="table table-striped table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>{% trans "Type" %}</th>
-        <th>{% trans "Title" %}</th>
-        <th>{% trans "Date" %}</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for layer in profile.user.layer_set.all %}
-        <tr data-type="layer">
-          <td>{% trans "Layer" %}</td>
-          <td><a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></td>
-          <td>{{ layer.date|date:"Y-m-d" }}</td>
-          <td><input type="checkbox" class="pull-right" data-id="{{ layer.id }}" data-type="layer"></td>
-        </tr>
-      {% endfor %}
-
-      {% for map in profile.user.map_set.all %}
-        <tr data-type="map">
-          <td>{% trans "Map" %}</td>
-          <td><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></td>
-          <td>{{ map.last_modified|date:"Y-m-d" }}</td>
-          <td><input type="checkbox" class="asset-selector pull-right" data-id="{{ map.id }}" data-type="map"></td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <div class="pull-right">
-    <a href="#modal_perms" class="btn" data-toggle="modal"><i class="icon-lock"></i> {% trans "Change permissions on selected" %}</a>
-    <a href="#modal_delete" class="btn" data-toggle="modal"><i class="icon-remove"></i> {% trans "Remove selected" %}</a>
-  </div>
-
-  <div class="modal fade" id="modal-delete" style="display:none">
-    <form id="delete-form" accept-charset="UTF-8" action="" data-remote="true" method="post" class="modal-form">
-      <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h3>{% trans "Delete Layers" %}</h3>
-      </div>
-      <div class="modal-body">
-        <p>{% trans "You're about to delete multiple layers and maps.  Is that really what you want to do?" %}</p>
-      </div>
-      <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
-        <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
-      </div>
-    </form>
-  </div>
-  {% with "/data/api/batch_permissions/" as form_action %}
-      {% include "_permissions_form.html" %}
-  {% endwith %}
-  
+  <h2>{% trans "Maps & Data" %}</h2>
+  <div id="assets"></div>
 {% endblock %}
 
 {% block sidebar %}
@@ -77,9 +32,185 @@
 {% endblock %}
 
 {% block extra_script %}
-  <script>
-    $(function() {
-      $("#permission_form").submit(batch_perms_submit);
+<script type="text/javascript">
+Ext.onReady(function() {
+    var mapsAndLayers = [];
+    {% for lyr in profile.user.layer_set.all %}
+    mapsAndLayers.push(["lyr.{{ lyr.pk|escapejs }}", "{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|date:'Y-m-d H:i:s' }}"]);
+    {% endfor %}
+    {% for map in profile.user.map_set.all %}
+    mapsAndLayers.push(["map.{{ map.pk|escapejs }}", "{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}", "{{ map.title|escapejs }}", "{{ map.last_modified|date:'Y-m-d H:i:s' }}"]);
+    {% endfor %}
+
+    var assets = new Ext.data.Store({
+        reader: new Ext.data.ArrayReader({
+            idIndex: 0,
+            fields: ["pk", "id", "type", "href", "title", { name: "date", type: "date", dateFormat: "Y-m-d H:i:s" }]
+        }),
+        data: mapsAndLayers
     });
-  </script>
+
+    var cb = new Ext.grid.CheckboxSelectionModel();
+    var columns = [
+       { header: gettext('Type'), tpl: "<div class='data-type {type}'>&nbsp;</div>", width: 10 },
+       { header: gettext('Title'), dataIndex: 'title', autoExpand: true, tpl: "<a href='{href}'> {title} </a>" },
+       { header: gettext('Date'), dataIndex: 'date', width: 30, xtype: 'datecolumn' }
+    ]
+
+    {% if user == profile.user %}
+        columns.unshift(cb);
+        columns.push({
+            tpl: "<span class='data-edit'>&nbsp;</span><span class='data-delete'>&nbsp;</span>",
+            width: 15
+        });
+    {% endif %} 
+
+    var assetView = new Ext.grid.GridPanel({
+        store: assets,
+        autoHeight: true,
+        border: false,
+        viewConfig: {
+            forceFit: true
+        },
+        hideCollapseTool: true,
+        header: false,
+        sm: cb,
+        colModel: new Ext.grid.ColumnModel({
+            defaults: { xtype: 'templatecolumn' },
+            columns: columns
+        }),
+        listeners: {
+            render: function(grid)  {
+                function doToRecord(act) {
+                    return function(evt, target) {
+                        var elem = evt.getTarget('.x-grid3-row');
+                        if (elem) {
+                            var idx = elem.rowIndex;
+                            var rec = grid.getStore().getAt(idx);
+                            act(rec);
+                        }
+                    }
+                }
+                var view = doToRecord(function(rec) {
+                    window.location = rec.get("href");
+                });
+                var edit = doToRecord(function(rec) {
+                    var link = rec.get("href");
+                    if (rec.get("type") === "map") {
+                        link += "/view";
+                    } else {
+                        link += "/metadata";
+                    }
+                    window.location = link;
+                });
+                var delete_ = doToRecord(function(rec) {
+                    var link = rec.get("href") + "/remove";
+                    window.location = link;
+                });
+                grid.getEl().on("click", view, this, { delegate: 'a' });
+                grid.getEl().on("click", edit, this, { delegate: '.data-edit' });
+                grid.getEl().on("click", delete_, this, { delegate: '.data-delete' });
+            }
+        }
+    });
+
+    function serialize() {
+        var list = { layers: [], maps: [] };
+        var selection = assetView.getSelectionModel().getSelections();
+
+        for (var i = 0; i < selection.length; i++) {
+            var rec = selection[i],
+                type = rec.get("type"),
+                id = rec.get("id");
+
+            if (type === "layer") {
+                list.layers.push(id);
+            } else if (type === "map") {
+                list.maps.push(id);
+            }
+        };
+        
+        return list;
+    }
+
+    {% if user == profile.user %}
+    var tools = {
+        layout: 'hbox',
+        unstyled: true,
+        items: [
+            { xtype: 'button',
+              text: gettext("Remove selected"),
+              iconCls: 'icon-delete',
+              handler: function() {
+                  Ext.Msg.confirm(
+                      gettext("Delete layers"),
+                      gettext("You're about to delete multiple layers and maps.  Is that really what you want to do?"),
+                      function(btn) {
+                          if (btn == 'yes') {
+                              var spec = serialize();
+                              Ext.Ajax.request({
+                                  url: '/data/api/batch_delete',
+                                  method: 'post',
+                                  jsonData: spec,
+                                  success: function() {
+                                      assetView.getStore().remove(assetView.getSelectionModel().getSelections());
+                                  }
+                              });
+                          }
+                      }
+                  );
+              }
+            },
+            { xtype: 'button',
+              text: gettext("Change permissions on selected"),
+              iconCls: 'icon-security',
+              handler: function() {
+                  var activeList = serialize();
+                  var editor = new GeoNode.PermissionsEditor({
+                      userLookup: "{% url auth_ajax_lookup %}",
+                      permissions: { users:[] }
+                  });
+                  editor.container.padding = 5;
+                  var saveButton = new Ext.Button({
+                      xtype: 'button',
+                      text: gettext("Apply changes"),
+                      handler: function() {
+                          var spec = serialize();
+                          spec.permissions = editor.writePermissions();
+                          Ext.Ajax.request({
+                              url: '/data/api/batch_permissions',
+                              method: 'post',
+                              jsonData: spec
+                          });
+                      }
+                  });
+                  var win = new Ext.Window({
+                      title: gettext("Permissions"),
+                      modal: true,
+                      items: [ editor.container, {
+                          padding: 5,
+                          border: false,
+                          items: [ saveButton ]
+                      }]
+                  });
+                  win.show();
+              }
+            }
+        ]
+    }
+
+    new Ext.Panel({
+        border: false,
+        renderTo: 'assets',
+        items: [tools, assetView]
+    });
+    {% else %}
+    new Ext.Panel({
+        border: false,
+        renderTo: 'assets',
+        items: [assetView]
+    });
+    {% endif %}
+});
+</script>
 {% endblock %}
