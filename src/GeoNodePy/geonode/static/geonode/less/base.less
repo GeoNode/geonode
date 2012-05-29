@@ -1,0 +1,316 @@
+// CSS Reset
+@import "bootstrap/reset.less";
+
+// Core variables and mixins
+@import "variables.less"; // Modify this for custom colors, font-sizes, etc
+@import "bootstrap/mixins.less";
+
+// Grid system and page structure
+@import "bootstrap/scaffolding.less";
+@import "bootstrap/grid.less";
+@import "bootstrap/layouts.less";
+
+// Base CSS
+@import "bootstrap/type.less";
+@import "bootstrap/code.less";
+@import "bootstrap/forms.less";
+@import "bootstrap/tables.less";
+
+// Components: common
+@import "bootstrap/sprites.less";
+@import "bootstrap/dropdowns.less";
+@import "bootstrap/wells.less";
+@import "bootstrap/component-animations.less";
+@import "bootstrap/close.less";
+
+// Components: Buttons & Alerts
+@import "bootstrap/buttons.less";
+@import "bootstrap/button-groups.less";
+@import "bootstrap/alerts.less"; // Note: alerts share common CSS with buttons and thus have styles in buttons.less
+
+// Components: Nav
+@import "bootstrap/navs.less";
+@import "bootstrap/navbar.less";
+@import "bootstrap/breadcrumbs.less";
+@import "bootstrap/pagination.less";
+@import "bootstrap/pager.less";
+
+// Components: Popovers
+@import "bootstrap/modals.less";
+@import "bootstrap/tooltip.less";
+@import "bootstrap/popovers.less";
+
+// Components: Misc
+@import "bootstrap/thumbnails.less";
+@import "bootstrap/labels.less";
+@import "bootstrap/badges.less";
+@import "bootstrap/progress-bars.less";
+@import "bootstrap/accordion.less";
+@import "bootstrap/carousel.less";
+@import "bootstrap/hero-unit.less";
+
+// Utility classes
+@import "bootstrap/utilities.less"; // Has to be last to override when necessary
+
+@graySp: #777;
+@bdrColor: #ccc;
+
+body {
+  padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+
+footer {
+  margin-top: 30px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+h2 {
+  margin-bottom:10px !important;
+}
+
+.nav-logo {
+  float: left;
+  width: 158px;
+  height: 50px;
+  overflow: hidden;
+  text-indent: -9999em;
+  margin-top:11px;
+}
+
+.brand {
+  overflow: hidden;
+  text-indent: -9999em;
+}
+
+.navbar {
+  p {
+    font-size:12px;
+  }
+
+  .navbar-text a {
+    color:#fff;
+  }
+
+  .navbar-text a:hover {
+    color:#fff;
+  }
+
+  .nav > li > a {
+    padding: 15px 10px 16px;
+  }
+
+  .well.search-box {
+    padding:0px 15px;
+    margin:10px 0 15px;
+    background:rgba(255,255,255,0.3);
+
+    select {
+      font-size:11px;
+      width:110px;
+    }
+
+    button {
+      margin-left:0;
+    }
+
+    a {
+      font-size:11px;
+      color:#eee;
+    }
+  }
+
+}
+
+nav.main-nav  {
+  margin:20px 0 20px;
+  overflow:hidden;
+
+  ul {
+    margin-left:0;
+     li {
+       list-style-type:none;
+
+      a {
+        display:block;
+        float:left;
+        text-transform:uppercase;
+        font-size:16px;
+        padding:4px 15px;
+        border-right:1px solid #ccc;
+      }
+
+      a.last {
+        border-right:0;
+      }
+
+      a:hover {
+        text-decoration:none;
+      }
+    }
+  }
+}
+
+ul.social {
+  margin-top:20px;
+    li {
+      list-style-type:none;
+
+    a {
+      display:block;
+      text-indent:-9999px;
+      width:30px;
+      height:30px;
+      float:left;
+      margin-right:5px;
+      zoom: 1;
+      filter: alpha(opacity=50);
+      opacity: 0.5;
+    }
+
+    a.fb { background:url(../../theme/img/social/facebook.png) no-repeat 0 0; }
+    a.tw { background:url(../../theme/img/social/twitter.png) no-repeat 0 0; }
+    a.yt { background:url(../../theme/img/social/youtube.png) no-repeat 0 0; }
+
+    a:hover {
+      filter: alpha(opacity=100);
+      opacity: 1;
+    }
+  }
+}
+
+.hero-unit {
+  p.btns {
+    text-align:right;
+    margin:30px 0 0;
+
+    span {
+      text-align:left;
+      float:left;
+      display:block;
+      font-size:@baseFontSize - 1;
+    }
+
+    a.btn-large {
+      font-size:@baseFontSize * 2;
+      margin-left:15px;
+      font-weight:bold;
+    }
+  }
+}
+
+.map-list article {
+  border-bottom:1px solid @bdrColor;
+  padding-bottom:10px;
+  margin-bottom:20px;
+  overflow:hidden;
+
+  img {
+    float:left;
+    margin:0 15px 15px 0;
+  }
+
+  .details {
+    float:left;
+    width:450px;
+  }
+
+  .meta {
+    font-size:@baseFontSize - 1;
+    color:@graySp;
+  }
+
+  .rating {
+    color:@graySp;
+  }
+}
+
+aside .well section {
+  border-bottom:1px solid @bdrColor;
+  padding-bottom:20px;
+  margin-bottom:20px;
+}
+
+aside .well section.last {
+  border-bottom:0;
+  margin-bottom:0;
+}
+
+section.article-list {
+  article {
+    overflow:hidden;
+    margin-bottom:10px;
+
+    img.thumb {
+      float:left;
+      margin:0 10px 10px 0;
+    }
+
+    .details {
+      float:left;
+      width:152px;
+    }
+
+    h6 {
+      text-transform:none;
+      line-height:1.2em;
+      font-size:12px;
+
+      a {
+       color:#4a4a4a;
+      }
+    }
+
+    h6 a:hover {
+      text-decoration:none;
+    }
+
+    a[rel="name"], time {
+      display:block;
+      font-size:11px;
+    }
+
+    footer {
+      font-weight:bold;
+      font-size:10px;
+      margin-top:0;
+      border:0;
+
+      .views {
+        border-right:1px solid #777;
+        padding-right:8px;
+      }
+    }
+  }
+}
+
+.main-actions a.btn-large {
+  font-size:@baseFontSize + 6;
+  font-weight:bold;
+  display:block;
+  margin-bottom:15px;
+}
+
+footer.footer {
+  background:@gray;
+  border:0;
+  color:#ccc;
+  font-size:@baseFontSize - 2;
+
+  a {
+    color:#ccc;
+    text-decoration:underline;
+  }
+
+  form {
+    margin-bottom:10px;
+
+    label, select {
+      font-size:@baseFontSize - 2;
+    }
+
+    label {
+      color:#ccc;
+    }
+  }
+}
