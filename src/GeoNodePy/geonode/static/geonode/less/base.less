@@ -53,10 +53,13 @@
 @import "bootstrap/utilities.less"; // Has to be last to override when necessary
 
 @graySp: #777;
+@grayNeutral: #ccc;
 @bdrColor: #ccc;
 
+// Universal styles
 body {
   padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
+  background:#f3f3f3 !important;
 }
 
 footer {
@@ -69,6 +72,7 @@ h2 {
   margin-bottom:10px !important;
 }
 
+// General layout styles
 .nav-logo {
   float: left;
   width: 158px;
@@ -123,8 +127,13 @@ h2 {
 
 }
 
+.nav-box {
+  border-bottom:1px solid @bdrColor;
+  margin-bottom:15px;
+}
+
 nav.main-nav  {
-  margin:20px 0 20px;
+  margin:20px 0 15px;
   overflow:hidden;
 
   ul {
@@ -138,7 +147,7 @@ nav.main-nav  {
         text-transform:uppercase;
         font-size:16px;
         padding:4px 15px;
-        border-right:1px solid #ccc;
+        border-right:1px solid @bdrColor;
       }
 
       a.last {
@@ -180,24 +189,41 @@ ul.social {
   }
 }
 
-.hero-unit {
-  p.btns {
-    text-align:right;
-    margin:30px 0 0;
+footer.footer {
+  background:@gray;
+  border:0;
+  color:@grayNeutral;
+  font-size:@baseFontSize - 2;
 
-    span {
-      text-align:left;
-      float:left;
-      display:block;
-      font-size:@baseFontSize - 1;
+  a {
+    color:@grayNeutral;
+    text-decoration:underline;
+  }
+
+  form {
+    margin-bottom:10px;
+
+    label, select {
+      font-size:@baseFontSize - 2;
     }
 
-    a.btn-large {
-      font-size:@baseFontSize * 2;
-      margin-left:15px;
-      font-weight:bold;
+    label {
+      color:@grayNeutral;
     }
   }
+}
+
+.content-wrap {
+  background:#fff;
+  padding:0 0 0 20px;
+  width:980px;
+  margin:0 auto;
+}
+
+// Elements
+.meta {
+  font-size:@baseFontSize - 1;
+  color:@graySp;
 }
 
 .map-list article {
@@ -214,11 +240,6 @@ ul.social {
   .details {
     float:left;
     width:450px;
-  }
-
-  .meta {
-    font-size:@baseFontSize - 1;
-    color:@graySp;
   }
 
   .rating {
@@ -292,26 +313,166 @@ section.article-list {
   margin-bottom:15px;
 }
 
-footer.footer {
-  background:@gray;
-  border:0;
-  color:#ccc;
-  font-size:@baseFontSize - 2;
+h2.page-title {
+  text-transform:uppercase;
+  font-size:22px;
+}
+
+.strong {
+  font-weight:bold;
+}
+
+.btn.strong {
+  margin-bottom:10px;
+}
+
+ul.nav-pills.filter {
+  margin-left:-10px;
 
   a {
-    color:#ccc;
-    text-decoration:underline;
+    display:block;
+    float:left;
+    text-transform:uppercase;
+    padding:4px 10px;
+    border-right:1px solid @bdrColor;
+    font-size:@baseFontSize - 1;
+  }
+
+  a.selected { font-weight:bold; }
+
+  a:hover {
+    text-decoration:none;
   }
 
   form {
-    margin-bottom:10px;
-
-    label, select {
-      font-size:@baseFontSize - 2;
-    }
+    padding:2px 0 0 10px;
 
     label {
-      color:#ccc;
+      font-size:@baseFontSize - 2;
+      font-weight:bold;
+    }
+
+    select {
+      font-size:@baseFontSize - 2;
+      height:20px;
+      width:90px;
+    }
+  }
+}
+
+/** pagination **/
+.pages {
+  font-weight:bold;
+  font-size:11px;
+  text-align:right;
+}
+
+.comments header .pages {
+  position:absolute;
+  top:0;
+  right:0;
+}
+
+.pages span {
+  padding-right:7px;
+}
+
+.pages .pager {
+  display:inline;
+  border-left:1px solid @bdrColor;
+  padding-left:3px;
+}
+
+.pager a {
+  padding:0 !important;
+  border: 0 !important;
+  display:inline-block;
+  width:15px;
+  height:15px;
+  text-indent:-9999px;
+}
+
+.pages a.prev { background:url(../../theme/img/arrows_gr_sm.png) no-repeat 0 0; }
+.pages a.next { background:url(../../theme/img/arrows_gr_sm.png) no-repeat -11px 0; }
+.pages a.prev:hover { background:url(../../theme/img/arrows_gr_sm.png) no-repeat 0 -15px; }
+.pages a.next:hover { background:url(../../theme/img/arrows_gr_sm.png) no-repeat -11px -15px; }
+
+// Bootstrap overwrite
+.tabs-left .nav-tabs {
+  float:none !important;
+  border-right:0 !important;
+
+  a {
+    font-size:@baseFontSize + 4;
+    font-weight:bold;
+    padding:20px 20px;
+    color:@grayDarker;
+    background: rgb(239,239,238); /* Old browsers */
+    background: -moz-linear-gradient(top,  rgba(239,239,238,1) 0%, rgba(251,251,251,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(239,239,238,1)), color-stop(100%,rgba(251,251,251,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(239,239,238,1) 0%,rgba(251,251,251,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(239,239,238,1) 0%,rgba(251,251,251,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(239,239,238,1) 0%,rgba(251,251,251,1) 100%); /* IE10+ */
+    background: linear-gradient(top,  rgba(239,239,238,1) 0%,rgba(251,251,251,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#efefee', endColorstr='#fbfbfb',GradientType=0 ); /* IE6-9 */
+    margin-bottom:0 !important;
+    .border-radius(0) !important;
+    border:0;
+  }
+}
+
+.tabs-left > .nav-tabs .active > a, .tabs-left > .nav-tabs .active > a:hover, .tabs-left .nav-tabs a:hover {
+  border:0;
+  background: rgb(200,203,202); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(200,203,202,1) 0%, rgba(218,221,220,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(200,203,202,1)), color-stop(100%,rgba(218,221,220,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(200,203,202,1) 0%,rgba(218,221,220,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(200,203,202,1) 0%,rgba(218,221,220,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(200,203,202,1) 0%,rgba(218,221,220,1) 100%); /* IE10+ */
+  background: linear-gradient(top,  rgba(200,203,202,1) 0%,rgba(218,221,220,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c8cbca', endColorstr='#dadddc',GradientType=0 ); /* IE6-9 */
+  color:@grayDarker;
+}
+
+.tab-content {
+  width:auto;
+}
+
+.tab-pane article {
+  margin-bottom:40px;
+
+  img {
+    margin-bottom:10px;
+  }
+}
+
+// Page specific styles
+/** homepage **/
+body.home .content-wrap {
+  background:none;
+}
+
+body.home .nav-box {
+  border-bottom:0;
+  margin-bottom:0;
+}
+
+.hero-unit {
+  p.btns {
+    text-align:right;
+    margin:30px 0 0;
+
+    span {
+      text-align:left;
+      float:left;
+      display:block;
+      font-size:@baseFontSize - 1;
+    }
+
+    a.btn-large {
+      font-size:@baseFontSize * 2;
+      margin-left:15px;
+      font-weight:bold;
     }
   }
 }
