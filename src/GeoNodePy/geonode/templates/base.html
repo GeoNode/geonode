@@ -83,39 +83,38 @@
         </div>
       </div>
     </div>
+    <div class="content-wrap">
     <div class="container">
-        <div class="row">
-          <div class="span10">
-            <nav class="main-nav">
-              <ul>
-                <li>
-                  <a href="{% url home %}">{% trans "Home" %}</a>
-                </li>
-                <li>
-                  <a href="{% url geonode.maps.views.browse_data %}">{% trans "Explore Data" %}</a>
-                </li>
-                <li>
-                  <a href="{% url geonode.maps.views.browse_data %}">{% trans "Upload Data" %}</a>
-                </li>
-                <li>
-                  <a href="{% url geonode.maps.views.maps %}">{% trans "Explore Maps" %}</a>
-                </li>
-                <li>
-                  <a href="{% url geonode.maps.views.maps %}" class="last">{% trans "Create a New Map" %}</a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div class="span2">
-            <ul class="social">
-              <li><a href="#" class="fb">facebook</a></li>
-              <li><a href="#" class="tw">twitter</a></li>
-              <li><a href="#" class="yt">youtube</a></li>
+      <div class="row nav-box">
+        <div class="span10">
+          <nav class="main-nav">
+            <ul>
+              <li>
+                <a href="{% url home %}">{% trans "Home" %}</a>
+              </li>
+              <li>
+                <a href="{% url geonode.maps.views.browse_data %}">{% trans "Explore Data" %}</a>
+              </li>
+              <li>
+                <a href="{% url geonode.maps.views.browse_data %}">{% trans "Upload Data" %}</a>
+              </li>
+              <li>
+                <a href="{% url geonode.maps.views.maps %}">{% trans "Explore Maps" %}</a>
+              </li>
+              <li>
+                <a href="{% url geonode.maps.views.maps %}" class="last">{% trans "Create a New Map" %}</a>
+              </li>
             </ul>
-          </div>
+          </nav>
         </div>
-    </div>
-    <div class="container">
+        <div class="span2">
+          <ul class="social">
+            <li><a href="#" class="fb">facebook</a></li>
+            <li><a href="#" class="tw">twitter</a></li>
+            <li><a href="#" class="yt">youtube</a></li>
+          </ul>
+        </div>
+      </div>
       <div class="row">
         {% block body_outer %}
           <div class="span8">
@@ -126,6 +125,7 @@
           </div>
         {% endblock %}
       </div>
+    </div>
     </div>
     <footer class="footer">
       <div class="container">
