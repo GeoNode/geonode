@@ -1,14 +1,7 @@
 from setuptools import setup, find_packages
-import pkg_resources
-import sys, os
-from geonode import __version__
 
-name='GeoNodePy'
-version = __version__
-req = pkg_resources.Requirement.parse(name)
-
-setup(name=name,
-      version=version,
+setup(name='GeoNodePy',
+      version= __import__('geonode').get_version(),
       description="Application for serving and sharing geospatial data",
       long_description=open('README.rst').read(),
       classifiers=[
