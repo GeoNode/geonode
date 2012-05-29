@@ -81,9 +81,9 @@ Ubuntu
 
 If you are using Ubuntu Linux, you can configure all the above dependencies (and a few libraries useful for testing and debugging) by running the following command::
 
-    sudo apt-get install -y --force-yes openjdk-6-jdk
-    sudo apt-get install -y vim zip unzip subversion git-core binutils build-essential python-dev python-setuptools python-imaging gdal-bin libproj-dev libgeos-dev python-urlgrabber python-nose pep8 python-virtualenv python-gdal python-pastescript postgresql-contrib libpq-dev gettext python-psycopg2 libxml2-dev libxslt1-dev
-    sudo apt-get install -y --force-yes ant maven2 --no-install-recommends
+    $ sudo apt-get install -y --force-yes openjdk-6-jdk
+    $ sudo apt-get install -y vim zip unzip subversion git-core binutils build-essential python-dev python-setuptools python-imaging gdal-bin libproj-dev libgeos-dev python-urlgrabber python-nose pep8 python-virtualenv python-gdal python-pastescript postgresql-contrib libpq-dev gettext python-psycopg2 libxml2-dev libxslt1-dev
+    $ sudo apt-get install -y --force-yes ant maven2 --no-install-recommends
 
 .. TODO: This does not install java
 
