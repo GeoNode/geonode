@@ -11,7 +11,8 @@
         GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our mailing list by emailing <em>geonode@librelist.com</em>.
       {% endblocktrans %}
     </p>
-    <p>
+    <p class="btns">
+      <span>Need help <a href="#">Getting Started?</a></span>
       <a class="btn btn-large" href="{% url maps_search %}">
         {% trans "Explore Maps" %}
       </a>
@@ -21,33 +22,113 @@
     </p>
   </div>
   <div class="row">
-    <div class="span4">
-      <h2> {% trans "Maps" %} </h2>
-      <p>
-      {% blocktrans %} 
-        GeoNode lets you compose and share maps.  <strong>Create</strong>
-        a map with our cartography tool, or <strong>explore</strong> maps
-        shared by others.
-      {% endblocktrans %} 
-      </p>
+    <div class="span8">
+      <h2>{% trans "Most Viewed" %}</h2>
+      <section class="map-list">
+        <article>
+          <img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" />
+          <div class="details">
+            <h3>Title of the Map goes right here</h3>
+            <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+            <p class="rating">564 likes</p>
+          </div>
+        </article>
+        <article>
+          <img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" />
+          <div class="details">
+            <h3>Title of the Map goes right here</h3>
+            <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+            <p class="rating">564 likes</p>
+          </div>
+        </article>
+        <article>
+          <img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" />
+          <div class="details">
+            <h3>Title of the Map goes right here</h3>
+            <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+            <p class="rating">564 likes</p>
+          </div>
+        </article>
+        <article>
+          <img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" />
+          <div class="details">
+            <h3>Title of the Map goes right here</h3>
+            <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+            <p class="rating">564 likes</p>
+          </div>
+        </article>
+        <article>
+          <img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" />
+          <div class="details">
+            <h3>Title of the Map goes right here</h3>
+            <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+            <p class="rating">564 likes</p>
+          </div>
+        </article>
+        <article>
+          <img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" />
+          <div class="details">
+            <h3>Title of the Map goes right here</h3>
+            <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+            <p class="rating">564 likes</p>
+          </div>
+        </article>
+      </section>
     </div>
-    <div class="span4">
-      <h2> {% trans "Data" %} </h2>
-      <p>
-      {% blocktrans %} 
-        GeoNode lets you upload, manage, and browse data.  
-        <strong>Search</strong> for data that is valuable to you, or 
-        <strong>upload</strong> your own data.
-      {% endblocktrans %} 
-      </p>
-    </div>
-    <div class="span4">
-        <form class="form-search" action="{% url data_search %}" method="POST">
-		  {% csrf_token %}
-          <input type="text" class="input-medium search-query" name="q">
-          <button type="submit" class="btn btn-small">{% trans "Search" %}</button>
-        </form>
-        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
-    </div>
+    <aside class="span4">
+      <div class="well">
+        <section>
+          <h2>{% trans "Lorem ipsum" %}</h2>
+          <p>
+          {% blocktrans %}
+            Lorem ipsum dolor sit amet, consectetur adipi sicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          {% endblocktrans %}
+          </p>
+          <p class="main-actions">
+            <a href="#" class="btn btn-large">Upload Data</a>
+            <a href="#" class="btn btn-large">Download Data</a>
+          </p>
+        </section>
+        <section class="article-list last">
+          <h2>{% trans "Latest Layers:" %}</h2>
+          <article>
+            <img src="{{ STATIC_URL }}theme/img/placeholder1.png" width="97" height="91" alt="Placeholder1" class="thumb" />
+            <div class="details">
+                <h6><a href="#">Af/Pak Tribal Dynamics, 1805-2010</a></h6>
+                <a href="#" rel="author">Prof. Susan Smith</a>
+                <time pubdate datetime="2011-09-27">on Sep 27, 2011</time>
+                <footer>
+                    <span class="views">1,205 Views</span>
+                    <span class="rating">3 stars</span>
+                </footer>
+            </div>
+          </article>
+          <article>
+            <img src="{{ STATIC_URL }}theme/img/placeholder1.png" width="97" height="91" alt="Placeholder1" class="thumb" />
+            <div class="details">
+                <h6><a href="#">Af/Pak Tribal Dynamics, 1805-2010</a></h6>
+                <a href="#" rel="author">Prof. Susan Smith</a>
+                <time pubdate datetime="2011-09-27">on Sep 27, 2011</time>
+                <footer>
+                    <span class="views">1,205 Views</span>
+                    <span class="rating">3 stars</span>
+                </footer>
+            </div>
+          </article>
+        </section>
+      </div>
+    </aside>
   </div>
 {% endblock %}
