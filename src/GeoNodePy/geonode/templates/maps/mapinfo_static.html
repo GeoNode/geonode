@@ -49,7 +49,7 @@
   </div>
   <div class="span4">
     <p class="hd-actions pull-right">
-      <a href="#" class="btn btn-large strong"><i class="icon-download-alt"></i> {% trans "Download" %}</a>
+      <a href="#download-layer" data-toggle="modal" class="btn btn-large strong"><i class="icon-download-alt"></i> {% trans "Download" %}</a>
       <a href="#" class="btn btn-large strong"><i class="icon-print"></i> {% trans "Print" %}</a>
     </p>
   </div>
@@ -62,10 +62,10 @@
       {% include "maps/_actions.html" %}
     </div>
   </div>
-  
+
   <div class="span8">
     <article class="abstract">
-      <strong>{% trans "Abstract:" %}</strong> 
+      <strong>{% trans "Abstract:" %}</strong>
       This map shows a scanned map from DCGIS, that displays an old plan for the District of Columbia.
       It is overlaid on a Google Satellite image, and made a bit transparent. Apologies for slow loading, as the image
       is 50 megs, and we have not integrated caching yet <a href="#" class="read-more" data-toggle="collapse" data-target="#abstract-full">Read more</a>
@@ -100,6 +100,37 @@
       {% include "maps/_widget_about_author.html" %}
     </div>
   </aside>
+
+  <div class="modal custom hide" id="download-layer">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
+    </div>
+    <div class="modal-body">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nos-trud exercitation.</p>
+    </div>
+    <div class="modal-footer">
+      <div class="span2 offset1">
+        <ul class="unstyled">
+          <li><a href="#">Zipped Shapefile</a></li>
+          <li><a href="#">JPEG</a></li>
+          <li><a href="#">GML 2.0</a></li>
+          <li><a href="#">PDF</a></li>
+          <li><a href="#">GML 3.1.1</a></li>
+          <li><a href="#">PNG</a></li>
+        </ul>
+      </div>
+      <div class="span2">
+        <ul class="unstyled">
+          <li><a href="#">CSV</a></li>
+          <li><a href="#">KML</a></li>
+          <li><a href="#">Excel</a></li>
+          <li><a href="#">GeoJSON</a></li>
+          <li><a href="#">View in Google Earth</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {# {% block extra_script %} #}
