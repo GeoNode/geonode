@@ -17,3 +17,4 @@ python-memcached
 ordereddict
 #Uncomment the following to use the django debug toolbar
 -e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
+boto

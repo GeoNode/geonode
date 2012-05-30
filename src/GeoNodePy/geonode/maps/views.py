@@ -999,6 +999,72 @@ def view(request, mapid, snapshot=None):
     }))
 
 
+def ajax_start_twitter(request):
+    from boto.ec2.connection import EC2Connection
+    try:
+        ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+        twitterInstance = ec2.get_all_instances(instance_ids=[settings.AWS_INSTANCE_ID])[0].instances[0]
+        twitterInstance.start()
+        instanceStarted = False
+        while not instanceStarted:
+            try:
+                twitterInstance.use_ip(settings.AWS_INSTANCE_IP)
+                instanceStarted = True
+            except:
+                pass
+        return HttpResponse(
+            status=200
+        )
+    except:
+        return HttpResponse(
+            status=500
+        )
+
+def tweetview(request):
+    from boto.ec2.connection import EC2Connection
+    map = get_object_or_404(Map,urlsuffix="tweetmap")
+    config = map.viewer_json(request.user)
+
+    redirectPage = 'maps/tweetview.html'
+
+    #Check if twitter server is running
+    ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+    twitterInstance = ec2.get_all_instances(instance_ids=[settings.AWS_INSTANCE_ID])[0].instances[0]
+
+
+    instanceStarted = twitterInstance.state == 'running'
+
+    if not instanceStarted:
+        redirectPage = 'maps/tweetstartup.html'
+
+
+
+    first_visit = True
+    if request.session.get('visit' + str(map.id), False):
+        first_visit = False
+    else:
+        request.session['visit' + str(map.id)] = True
+
+    mapstats, created = MapStats.objects.get_or_create(map=map)
+    mapstats.visits += 1
+    if created or first_visit:
+        mapstats.uniques+=1
+    mapstats.save()
+
+    #Remember last visited map
+    request.session['lastmap'] = map.id
+    request.session['lastmapTitle'] = map.title
+
+    config['first_visit'] = first_visit
+    config['edit_map'] = request.user.has_perm('maps.change_map', obj=map)
+
+    return render_to_response(redirectPage, RequestContext(request, {
+        'config': json.dumps(config),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'maptitle': map.title,
+        'urlsuffix': get_suffix_if_custom(map),
+        }))
 
 def official_site(request, site):
     """

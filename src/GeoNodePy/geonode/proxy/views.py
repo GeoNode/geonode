@@ -1,3 +1,4 @@
+import random
 from django.http import HttpResponse
 from httplib import HTTPConnection
 from urlparse import urlsplit
@@ -146,6 +147,43 @@ def hglServiceStarter (request, layer):
     return HttpResponse(urllib.urlopen(startUrl).read())
 
 
+def tweetTrendProxy (request):
+    tweetUrl = "" + "?bbox=" + request.POST["bounds"] + "&date=" + request.POST["date"];
+    #resultJSON = simplejson.loads(urllib.urlopen(tweetUrl).read())
+    resultJSON = """
+    {
+    "records": [
+
+        {
+            "topic" : "Ebola",
+            "count" : $rnd1
+        },
+        {
+            "topic" : "Malaria",
+            "count" : $rnd2
+        },
+        {
+            "topic" : "Flu",
+            "count" : $rnd3
+        },
+        {
+            "topic" : "Plague",
+            "count" : $rnd4
+        },
+        {
+            "topic" : "LymeDisease",
+            "count" : $rnd5
+        }
+    ]
+}
+"""
+    resultJSON = resultJSON.replace("$rnd1", str(random.randrange(50,500,1)))
+    resultJSON = resultJSON.replace("$rnd2", str(random.randrange(50,500,1)))
+    resultJSON = resultJSON.replace("$rnd3", str(random.randrange(50,500,1)))
+    resultJSON = resultJSON.replace("$rnd4", str(random.randrange(50,500,1)))
+    resultJSON = resultJSON.replace("$rnd5", str(random.randrange(50,500,1)))
+
+    return HttpResponse(resultJSON, mimetype="application/json")
 
 
 def youtube(request):

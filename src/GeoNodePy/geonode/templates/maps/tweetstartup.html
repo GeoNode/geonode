@@ -1,0 +1,36 @@
+
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Twitter Server is starting up"  %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/fileuploadfield/fileuploadfield.css"
+      xmlns="http://www.w3.org/1999/html"/>
+{{ block.super }}
+<script type="text/javascript">
+Ext.onReady(function() {
+
+    Ext.Ajax.request({
+        url: "/data/start_twitter/",
+        method: "POST"
+    });
+
+});
+</script>
+{% endblock %}
+
+{% block main %}
+<div class="twocol" style="min-height:400px">
+    <h2>{% trans "Twitter Server is starting up" %}</h2>
+The on-demand server responsible for querying and displaying tweets is starting up.
+Please wait about 5 minutes then revisit the <a href="/tweetmap">Twitter Map page</a> (http://worldmap.harvard.edu/tweetmap)
+</div>
+
+
+
+
+{% endblock %}

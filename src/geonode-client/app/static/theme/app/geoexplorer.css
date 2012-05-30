@@ -409,7 +409,7 @@ float:right;
 }
 
 .x-btn .icon-youtube {
-    background-image: url(img/worldmap/youtube.gif);
+    background-image: url(img/w orldmap/youtube.gif);
 }
 
 
@@ -491,3 +491,22 @@ div.cga-link {
 .nicEdit-button {
     background-color: #fff !important;
 }
+
+div.cql-overlay {
+    z-index: 10000;
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    background:#FFF;
+    opacity: 0.9
+}
+
+div.chart-overlay {
+    z-index: 10000;
+    position: absolute;
+    left: 10px;
+    bottom: 120px;
+    background:#FFF;
+    opacity: 0.9
+}
+

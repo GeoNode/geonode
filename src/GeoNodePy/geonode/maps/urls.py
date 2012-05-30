@@ -46,6 +46,7 @@ datapatterns = patterns('geonode.maps.views',
     url(r'^create_pg_layer', 'create_pg_layer', name='create_pg_layer'),
     url(r'^addlayers/?$', 'addlayers', name='addlayers'),
     (r'^layerstats/?$', 'ajax_increment_layer_stats'),
+    (r'^start_twitter/?$', 'ajax_start_twitter'),
     url(r'^(?P<layername>[^/]*)$', 'layer_detail', name="layer_detail"),
     url(r'^(?P<layername>[^/]*)/metadata$', 'layer_metadata', name="layer_metadata"),
     url(r'^(?P<layername>[^/]*)/remove$', 'layer_remove', name="layer_remove"),
@@ -55,6 +56,8 @@ datapatterns = patterns('geonode.maps.views',
     (r'^(?P<layername>[^/]*)/ajax-permissions-email$', 'ajax_layer_permissions_by_email'),
     (r'^(?P<layername>[^/]*)/ajax_layer_edit_check/?$', 'ajax_layer_edit_check'),
     (r'^(?P<layername>[^/]*)/ajax_layer_update_bounds/?$', 'ajax_layer_update_bounds'),
+
+
 )
 
 
