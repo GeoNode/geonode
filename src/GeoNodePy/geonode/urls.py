@@ -33,6 +33,8 @@ urlpatterns = patterns('',
     # Temp static pages
     url(r'^mapinfo/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'maps/mapinfo_static.html'}, name='mapinfo'),
+    url(r'^layer/$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'maps/layer_static.html'}, name='layer'),
 
     # Data views
     (r'^data/', include(geonode.maps.urls.datapatterns)),
