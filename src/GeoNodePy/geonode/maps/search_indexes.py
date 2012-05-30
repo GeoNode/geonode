@@ -19,8 +19,6 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     created = indexes.DateTimeField(model_attr="date")
     modified = indexes.DateTimeField(model_attr="date")
     category = indexes.CharField(model_attr="topic_category", faceted=True)
-    keywords = indexes.CharField(model_attr="keywords", faceted=True)
-    language = indexes.CharField(model_attr="language", faceted=True)
     detail_url = indexes.CharField(model_attr="get_absolute_url")
     bbox_left = indexes.FloatField(model_attr='bbox_left')
     bbox_right = indexes.FloatField(model_attr='bbox_right')
@@ -88,6 +86,10 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     date = indexes.DateTimeField(model_attr="last_modified")
     iid = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
+    bbox_left = indexes.FloatField(model_attr='bbox_left')
+    bbox_right = indexes.FloatField(model_attr='bbox_right')
+    bbox_top = indexes.FloatField(model_attr='bbox_top')
+    bbox_bottom = indexes.FloatField(model_attr='bbox_bottom')
     json = indexes.CharField(indexed=False)
 
     def get_model(self):
