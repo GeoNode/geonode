@@ -25,27 +25,24 @@ Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
-geonode.maps.models.get_catalogue = Mock()
-geonode.maps.models.get_catalogue.return_value.records.get.return_value.identification.keywords = []
+DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
+
+geonode.maps.views._metadata_search = Mock()
+geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
 
 _catalogue_resource = Mock()
 _catalogue_resource.protocol = "WWW:LINK-1.0-http--link"
 _catalogue_resource.url = "http://example.com/"
 _catalogue_resource.description = "example link"
 
-geonode.maps.models.get_catalogue.return_value.records.get.return_value.distribution.online = [_catalogue_resource]
-
-DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
-
-geonode.maps.views._metadata_search = Mock()
-geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
-
 mockrecord = Mock()
 mockrecord.identification.keywords = [dict(keywords=["keywords", "saving"])]
 mockrecord.distribution.online = [_catalogue_resource]
+
 geonode.maps.models.get_catalogue = Mock()
 geonode.maps.models.get_catalogue.return_value.get_by_uuid.return_value = mockrecord
 geonode.maps.models.get_catalogue.return_value.records.values.return_value = [mockrecord]
+
 geonode.maps.models._extract_links = Mock()
 geonode.maps.models._extract_links.return_value = {}
 
