@@ -9,7 +9,6 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
-<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/highcharts.js"></script>
 <script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
 
 
@@ -151,7 +150,7 @@ remoteStore.on('beforeload', function(store){
 });
 
     var updateLayer =  function() {
-        if (tweetLayer != null && tweetLayer.getLayer().params.LAYERS.indexOf("asd_ah9") > -1) {
+        if (tweetLayer != null && tweetLayer.getLayer().params.LAYERS.indexOf("basic") > -1) {
             tweetLayer["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
             tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
             tweetLayer.getLayer().redraw(true);
@@ -277,7 +276,41 @@ var chartPanel = new Ext.Panel({
     items : chart
 });
 
-    app.mapPanel.add(cqlOverlay);
+var tweetConfig = {title: "Twitter Trends", source: "0", group: "Twitter", name: "basic",
+    url: "http://107.22.230.16", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
+    params: {displayInlayerSwitcher: true}
+};
+
+var feedSource = Ext.ComponentMgr.createPlugin(
+        tweetConfig, "gx_wmssource"
+);
+var tweetRecord = feedSource.createLazyLayerRecord(tweetConfig);
+tweetRecord.group = tweetConfig.group;
+
+//var tweetWms = new OpenLayers.Layer.WMS(
+//        'Tweet WMS',
+//        'http://50.19.39.177',
+//        //'http://192.168.1.90:8080',
+//        {layers: 'basic', group: "Twitter", format: 'image/png'},
+//        {isBaseLayer: false, singleTile: true, ratio: 1, opacity: 0.7, group: "Twitter"}
+//);
+//
+//var tweetConfig = {title: "hello", group: "bye", id:"tweeter"};
+
+//var tweetRecord = new GeoExt.data.LayerRecord(tweetConfig);
+//tweetRecord.setLayer(tweetWms);
+
+app.on("ready", function() {
+    app.mapPanel.layers.add([tweetRecord]);
+    app.addCategoryFolder(tweetRecord.get("group"), "true");
+    app.reorderNodes(tweetRecord.getLayer());
+});
+
+
+//app.mapPanel.layers.insert(app.mapPanel.layers.data.items.length, [tweetWms] );
+//app.mapPanel.map.addLayers(tweetWms);
+
+app.mapPanel.add(cqlOverlay);
 
 
     app.on("ready", function() {
@@ -290,7 +323,7 @@ var chartPanel = new Ext.Panel({
 
         app.mapPanel.layers.each(function (layer) {
             try {
-                if (layer.getLayer().params.LAYERS.indexOf("asd_ah9") > -1) {
+                if (layer.getLayer().params.LAYERS.indexOf("basic") > -1) {
                     tweetLayer = layer;
                     tweetLayer["cql_filter"] = "Name='f1' AND Start_Date > '2001-01-01'"
                     tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
