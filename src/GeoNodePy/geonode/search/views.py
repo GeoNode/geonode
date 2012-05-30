@@ -8,7 +8,8 @@ from django.template import RequestContext
 from django.core import serializers
 
 from haystack.inputs import AutoQuery, Raw 
-from haystack.query import SearchQuerySet
+from haystack.query import SearchQuerySet, SQ
+from django.db.models import Sum
 from django.contrib.gis.geos import GEOSGeometry
 
 from geonode.maps.views import default_map_config, Map, Layer
@@ -71,9 +72,6 @@ def search_api(request):
 	format = request.REQUEST.get("format", "json")
 	# Geospatial Elements
 	bbox = request.REQUEST.get("bbox", None)
-	# Temporal Elements
-	#datastart = request.REQUEST.get("datastart", None)
-	#dataend = request.REQUEST.get("dataend", None)
 
 	sqs = SearchQuerySet()
 
@@ -110,41 +108,35 @@ def search_api(request):
 		sqs = sqs.order_by("title")
 	elif sort.lower() == "alphaza":
 		sqs = sqs.order_by("-title")
-
-	if bbox is not None:
-		l,b,r,t = bbox.split(',')
-		bbox =  GEOSGeometry('POLYGON((%s, %s, %s, %s, %s))' % (
-			('%s %s') % (b,l),
-			('%s %s') % (l,t),
-			('%s %s') % (t,r),
-			('%s %s') % (r,b),
-			('%s %s') % (b,l)
-		))
 		
 	# Setup Search Results
 	results = []
+	
+	if bbox is not None:
+		left,bottom,right,top = bbox.split(',')
+		sqs = sqs.filter(
+			# first check if the bbox has at least one point inside the window
+			SQ(bbox_left__gte=left) & SQ(bbox_left__lte=right) & SQ(bbox_top__gte=bottom) & SQ(bbox_top__lte=top) | #check top_left is inside the window
+			SQ(bbox_right__lte=right) &  SQ(bbox_right__gte=left) & SQ(bbox_top__lte=top) &  SQ(bbox_top__gte=bottom) | #check top_right is inside the window
+			SQ(bbox_bottom__gte=bottom) & SQ(bbox_bottom__lte=top) & SQ(bbox_right__lte=right) &  SQ(bbox_right__gte=left) | #check bottom_right is inside the window
+			SQ(bbox_top__lte=top) & SQ(bbox_top__gte=bottom) & SQ(bbox_left__gte=left) & SQ(bbox_left__lte=right) | #check bottom_left is inside the window
+			# then check if the bbox is including the window
+			SQ(bbox_left__lte=left) & SQ(bbox_right__gte=right) & SQ(bbox_bottom__lte=bottom) & SQ(bbox_top__gte=top)
+		)
+	
+	for i, result in enumerate(sqs):
+		if result.type == 'layer':
+			if not request.user.has_perm('maps.view_layer',obj = result.object):
+				sqs = sqs.exclude(id = result.id)
+		if result.type == 'map':
+			if not request.user.has_perm('maps.view_map',obj = result.object):
+				sqs = sqs.exclude(id = result.id)
 
+	# Build the result based on the limit
 	for i, result in enumerate(sqs[startIndex:startIndex + limit]):
 		data = json.loads(result.json)
-		if result.type == 'layer':
-			layer = Layer.objects.get(uuid=data['uuid'])
-			# Dont return results that the user doesnt have permission to view
-			# NOTE: This will probably mess up the paging. Need to re-visit
-			if request.user.has_perm('maps.view_layer', obj=layer):
-				if bbox is not None:
-					layer_bbox = GEOSGeometry(layer.geographic_bounding_box.split(';')[1])
-					if bbox.intersects(layer_bbox):
-						data.update({"iid": i + startIndex})
-						results.append(data)
-					else: sqs = sqs.exclude(id = result.id)
-				else: 
-					results.append(data)
-					data.update({"iid": i + startIndex})
-		elif result.type == 'map':
-			map = Map.objects.get(id=result.id)
-			if request.user.has_perm('maps.view_map', obj=map):
-				data.update({"iid": i + startIndex})
-				results.append(data)
+		data.update({"iid": i + startIndex})
+		results.append(data)
 	
 	# Filter Fields/Fieldsets
 	if fieldset:

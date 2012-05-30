@@ -10,11 +10,21 @@ from django.contrib.gis.geos import GEOSGeometry
 
 class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    title = indexes.CharField(model_attr="title")
-    date = indexes.DateTimeField(model_attr="date")
-    id = indexes.IntegerField(model_attr='id')
+    iid = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
     subtype = indexes.CharField(faceted=True)
+    name = indexes.CharField(model_attr="title")
+    description = indexes.CharField(model_attr="abstract")
+    owner = indexes.CharField(model_attr="owner", faceted=True)
+    created = indexes.DateTimeField(model_attr="date")
+    modified = indexes.DateTimeField(model_attr="date")
+    category = indexes.CharField(model_attr="topic_category", faceted=True)
+    detail_url = indexes.CharField(model_attr="get_absolute_url")
+    bbox_left = indexes.FloatField(model_attr='bbox_left')
+    bbox_right = indexes.FloatField(model_attr='bbox_right')
+    bbox_top = indexes.FloatField(model_attr='bbox_top')
+    bbox_bottom = indexes.FloatField(model_attr='bbox_bottom')
+
     json = indexes.CharField(indexed=False)
 
     def get_model(self):
@@ -59,25 +69,10 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "name": obj.typename,
             "description": obj.abstract,
             "owner": obj.metadata_author.name,
-            #"owner_detail": obj.owner.get_absolute_url(),
-            "organization": "",
-            "created": "",
+            "owner_detail": obj.owner.get_absolute_url(),
             "last_modified": obj.date.strftime("%Y-%m-%dT%H:%M:%S.%f"),
-            "start": "",
-            "end": "",
             "category": obj.topic_category,
             "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [],
-            "language": "",
-            "edition": "",
-            "purpose": "",
-            "constraints": "",
-            "license": "",
-            "supplemental": "",
-            "distribution": "",
-            "dqs": "",
-            "rating": "",
-            "comments": "",
-            "views": "",
             "thumb": Thumbnail.objects.get_thumbnail(obj),
             "detail_url": obj.get_absolute_url(),  # @@@ Use Sites Framework?
             "download_links": self.prepare_download_links(obj.download_links()),
@@ -104,8 +99,12 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr="title")
     date = indexes.DateTimeField(model_attr="last_modified")
-    id = indexes.IntegerField(model_attr='id')
+    iid = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
+    bbox_left = indexes.FloatField(model_attr='bbox_left')
+    bbox_right = indexes.FloatField(model_attr='bbox_right')
+    bbox_top = indexes.FloatField(model_attr='bbox_top')
+    bbox_bottom = indexes.FloatField(model_attr='bbox_bottom')
     json = indexes.CharField(indexed=False)
 
     def get_model(self):
@@ -116,9 +115,7 @@ class MapIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
     def prepare_json(self, obj):
         data = {
-            "_type": self.prepare_type(obj),
-            #"_display_type": obj.display_type,
-			
+            "_type": self.prepare_type(obj),			
             "id": obj.id,
             "last_modified": obj.last_modified.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "title": obj.title,
