@@ -1275,8 +1275,9 @@ def search_result_detail(request):
         layer_is_remote = True
 
     keywords = []
-    for kw in rec.identification.keywords:
-        keywords.extend(kw['keywords'])
+    if hasattr(rec, 'identification') and hasattr(rec.identification, 'keywords'):
+        for kw in rec.identification.keywords:
+            keywords.extend(kw['keywords'])
 
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
@@ -1294,7 +1295,9 @@ def _extract_links(rec):
     # extract subset of description value for user-friendly display
     format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
 
-    if not all([hasattr(rec, 'distribution'), hasattr(rec.distribution, 'online')]):
+    if not hasattr(rec, 'distribution'):
+        return None
+    if not hasattr(rec.distribution, 'online'):
         return None
 
     for link_el in rec.distribution.online:
