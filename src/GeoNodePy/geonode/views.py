@@ -1,5 +1,4 @@
 from django.conf import settings
-from geonode import __version__
 from geonode.maps.models import Map
 from django import forms
 from django.contrib.auth import authenticate, login
