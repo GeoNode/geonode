@@ -6,21 +6,7 @@
 {% block body_outer %}
   <div class="span8">
     <h2 class="page-title">{% trans "Explore Maps" %}</h2>
-    <ul class="nav nav-pills filter">
-      <li><a href="{% url maps_search %}" class="selected">{% trans "All" %}</a></li>
-      <li><a href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "Most viewed" %}</a></li>
-      <li><a href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "Most popular" %}</a></li>
-      <li><a href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "Most shared" %}</a></li>
-      <li>
-        <form action="" class="form-inline">
-          <label for="">sort by:</label>
-          <select name="" id="" class="span1">
-            <option value="">Newest</option>
-            <option value="">Popular</option>
-          </select>
-        </form>
-      </li>
-    </ul>
+    {% include "maps/_filters.html" %}
   </div>
   <div class="span4">
     <p><a href="{% url maps_new %}" class="btn btn-large pull-right strong">{% trans "Create a New Map" %}</a></p>

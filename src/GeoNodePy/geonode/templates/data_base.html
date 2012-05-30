@@ -1,41 +1,152 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %} {% trans "Browse Data" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Explore Data" %} - {{ block.super }} {% endblock %}
 
-{% block main %}
-  <div class="row">
-    <div class="span3 pull-left">
-      <h2>{% trans "Geospatial Data" %}</h2>
-    </div>
-    <div class="span5 pull-right">
-      <form class="form-search" action="{% url data_search %}" method="GET">
-        <input type="text" id="search_query" name="q" class="input-xlarge search-query">
-        <button type="submit" class="btn">Search</button>
-      </form>
-        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
-    </div>
-  </div>
+{% block body_class %}explore-data{% endblock %}
 
-  <div class="row">
-    <div id="upload" class="span4">
-      <h3>{% trans "Upload" %}</h3>
-      <p>{% trans "We support Shapefile and GeoTIFF uploads." %}
-      <a class="btn" href="{% url data_upload %}">{% trans "Upload a new layer"  %}</a>
-      </p>
+{% block body_outer %}
+    <div class="span8">
+      <h2 class="page-title">{% trans "Explore Data" %}</h2>
+      {% include "maps/_filters.html" %}
     </div>
-
     <div class="span4">
-      <h3>{% trans "For Developers" %}</h3>
-      {% blocktrans %} 
-      If you are interested in information about accessing this information through OGC services, please visit our
-      {% endblocktrans %}
-      <a href="{% url dev %}">{% trans "developer page" %}</a>.
+      <p><a href="{% url maps_new %}" class="btn btn-large pull-right strong">{% trans "Download Data" %}</a></p>
+      <div class="pull-right">
+        {% include "_pagination.html" %}
+      </div>
     </div>
-  </div>
-{% endblock %}
+    <div class="span12">
+      <div class="row">
+        <div class="tabs-left span4">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#all" data-toggle="tab">All Categories <i class="icon-chevron-right pull-right"></i></a></li>
+            <li><a href="#cat1" data-toggle="tab">Category 1 <i class="icon-chevron-right pull-right"></i></a></li>
+            <li><a href="#cat2" data-toggle="tab">Category 2 <i class="icon-chevron-right pull-right"></i></a></li>
+            <li><a href="#cat3" data-toggle="tab">Category 3 <i class="icon-chevron-right pull-right"></i></a></li>
+            <li><a href="#cat4" data-toggle="tab">Category 4 <i class="icon-chevron-right pull-right"></i></a></li>
+            <li><a href="#cat5" data-toggle="tab">Category 5 <i class="icon-chevron-right pull-right"></i></a></li>
+            <li><a href="#cat6" data-toggle="tab">Category 6 <i class="icon-chevron-right pull-right"></i></a></li>
+            <li><a href="#cat7" data-toggle="tab">Category 7 <i class="icon-chevron-right pull-right"></i></a></li>
+            <li><a href="#cat8" data-toggle="tab">Category 8 <i class="icon-chevron-right pull-right"></i></a></li>
+          </ul>
+        </div>
+        <div class="tab-content">
+          <div class="tab-pane active span8" id="all">
+            <article>
+              <div class="details">
+                <h3>Title of the Map goes right here</h3>
+                <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                <p class="rating">564 likes</p>
+              </div>
+            </article>
+            <article>
+              <div class="details">
+                <h3>Title of the Map goes right here</h3>
+                <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                <p class="rating">564 likes</p>
+              </div>
+            </article>
+            <article>
+              <div class="details">
+                <h3>Title of the Map goes right here</h3>
+                <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                <p class="rating">564 likes</p>
+              </div>
+            </article>
+            <article>
+              <div class="details">
+                <h3>Title of the Map goes right here</h3>
+                <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                <p class="rating">564 likes</p>
+              </div>
+            </article>
+          </div>
 
-{% block sidebar %}
-  {% block sidebar_info %}
-  {% endblock %}
+          <div class="tab-pane span8" id="cat1">
+              <article>
+                <div class="details">
+                  <h3>Title of the Map goes right here</h3>
+                  <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                </div>
+              </article>
+              <article>
+                <div class="details">
+                  <h3>Title of the Map goes right here</h3>
+                  <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                </div>
+              </article>
+              <article>
+                <div class="details">
+                  <h3>Title of the Map goes right here</h3>
+                  <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                </div>
+              </article>
+              <article>
+                <div class="details">
+                  <h3>Title of the Map goes right here</h3>
+                  <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                </div>
+              </article>
+          </div>
+
+          <div class="tab-pane span8" id="cat2">
+              <article>
+                <div class="details">
+                  <h3>Title of the Map goes right here</h3>
+                  <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                </div>
+              </article>
+              <article>
+                <div class="details">
+                  <h3>Title of the Map goes right here</h3>
+                  <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                </div>
+              </article>
+              <article>
+                <div class="details">
+                  <h3>Title of the Map goes right here</h3>
+                  <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                </div>
+              </article>
+              <article>
+                <div class="details">
+                  <h3>Title of the Map goes right here</h3>
+                  <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+                  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+                </div>
+              </article>
+          </div>
+
+        </div>
+        <div class="span12">
+          <div class="pull-right mrg-btm">
+            {% include "_pagination.html" %}
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}
