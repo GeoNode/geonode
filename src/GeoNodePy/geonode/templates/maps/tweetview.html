@@ -1,0 +1,386 @@
+{% extends "fullscreen.html" %}
+{% load i18n %}
+
+{% block title %} {{maptitle}}{% endblock %}
+
+{% block head %}
+{% include "geonode/jquery_header.html" %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/highcharts.js"></script>
+<script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+
+
+
+
+
+<script type="text/javascript">
+    google.load("earth", "1");
+</script>
+
+
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
+<style type="text/css">
+    #templates { display: none; }
+</style>
+
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/PrintPreview/resources/css/printpreview.css" />
+<script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
+{{ block.super }}
+
+<script type="text/javascript">
+var app;
+var init = function() {
+{% autoescape off %}
+    var config = Ext.apply({
+        tools:  [{
+                    ptype: "gxp_geonodequerytool",
+                    id: "worldmap_query_tool",
+                    actionTarget:  {target: "paneltbar", index: 5},
+                    toolText: '<span class="x-btn-text">Identify</span>',
+                    iconCls: null,
+                    outputConfig: {width: 400, height: 200, panIn: false},
+                    featurePanel: 'queryPanel',
+                    attributePanel: 'gridWinPanel',
+                    toggleGroup: 'featureGroup'
+                },
+            {
+                ptype: "gxp_coordinatetool",
+                actionTarget:  {target: "paneltbar", index: 7},
+                toolText: '<span class="x-btn-text">Position</span>',
+                iconCls: null,
+                toggleGroup: 'featureGroup',
+                pressed: false
+            }
+        ],
+        proxy: "/proxy/?url=",
+
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/",
+        homeUrl: "{% url geonode.views.index %}",
+        siteUrl: "{{ SITE_URL }}",
+        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+        csrfToken: "{{ csrf_token }}",
+        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
+    }, {{ config }});
+
+
+    app = new GeoExplorer(config, true);
+
+
+
+    var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
+    var permalink = function(id) {
+            return permalinkTemplate.apply({
+                protocol: window.location.protocol,
+                host: window.location.host,
+                id: id
+            })
+        };
+
+
+    var titleTemplate = new Ext.Template("<span>{title}</span>");
+    Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
+
+    app.on("saved", function(id) {
+        //reset title header
+        Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
+
+
+    }, this);
+
+
+
+
+
+    var updateArrows = function() {
+        rewindDate.disabled = tweetDateField.getValue() <= tweetDateField.minValue;
+        forwardDate.disabled = tweetDateField.getValue() >= tweetDateField.maxValue;
+        console.log (rewindDate.disabled + ":" + forwardDate.disabled);
+    };
+
+    var tweetFilterField = new Ext.form.TextField({
+        id: 'tweetFilter',
+        fieldLabel: 'Query',
+        name: 'tweetFilter',
+        allowBlank: true,
+        labelStyle:"font-weight:bold;text-align:right"
+
+    });
+
+    var tweetDateField = new Ext.form.DateField({
+        id: 'tweetDate',
+        fieldLabel: 'Start Date',
+        labelStyle:"font-weight:bold;text-align:right",
+        allowBlank: false,
+        minValue: new Date('2012-01-26'),
+        maxValue: new Date('2012-03-26'),
+        value: new Date('2012-01-26'),
+        width:125,
+        listeners: {
+            'select': updateArrows
+        }
+    });
+
+
+    var tweetLayer = null;
+
+var employeeStoreProxy = new Ext.data.HttpProxy({
+    url : "/tweettrends"
+});
+var remoteStore = new Ext.data.JsonStore({
+    root : 'records',
+    autoLoad : true,
+    storeId : 'employeeDv',
+    proxy : employeeStoreProxy,
+    baseParams: { bounds: config["map"]["maxExtent"], date: tweetDateField.getValue() },
+    fields : [
+        { name : "topic", mapping : "topic" },
+        { name : "count", mapping : "count" }
+    ]
+});
+
+remoteStore.on('beforeload', function(store){
+    remoteStore.baseParams = { bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue() };
+});
+
+    var updateLayer =  function() {
+        if (tweetLayer != null && tweetLayer.getLayer().params.LAYERS.indexOf("asd_ah9") > -1) {
+            tweetLayer["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
+            tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
+            tweetLayer.getLayer().redraw(true);
+            //console.log("Redrew with cql filter " + tweetLayer["cql_filter"])
+            remoteStore.load({
+                params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue()}
+            });
+        }
+    };
+
+
+
+    var rewindDate = new Ext.Button({
+            iconCls: "icon-zoom-previous",
+            handler: function(button,event) {
+                if (tweetDateField.validate()){
+                    var yesterday = tweetDateField.getValue().add(Date.DAY, -1);
+                    if (yesterday >= tweetDateField.minValue) {
+                        tweetDateField.setValue(yesterday);
+                        updateArrows();
+                        updateLayer();
+                    }
+                }
+            }
+    });
+
+
+    var forwardDate = new Ext.Button({
+        iconCls: "icon-zoom-next",
+        handler: function(button,event) {
+            if (tweetDateField.validate()){
+                var tomorrow = tweetDateField.getValue().add(Date.DAY, 1);
+                if (tomorrow <= tweetDateField.maxValue) {
+                    tweetDateField.setValue(tweetDateField.getValue().add(Date.DAY,1));
+                    updateArrows();
+                    updateLayer();
+                }
+            }
+        }
+    });
+
+
+    var updateLayerBtn = new Ext.Button({
+        text: "Go",
+        handler: updateLayer
+    });
+
+    var cqlOverlay = new Ext.FormPanel({
+        frame: true,
+        title: gettext('Tweet Filter'),
+        autoHeight: true,
+        bodyStyle: 'padding: 10px 10px 0 10px;',
+        labelWidth: 80,
+        defaults: {
+            anchor: '95%',
+            msgTarget: 'side'
+        },
+        cls: 'cql-overlay',
+        width: 600,
+        height: 100,
+        layout:"fit",
+        items: [
+            {
+                layout:"column",
+                width: 600,
+                items:[{
+                    columnWidth:0.5,
+                    //title: "1",
+                    layout:"form",
+                    width:200,
+                    items:[tweetFilterField]
+                },
+                {
+                    columnWidth:0.5,
+                    layout:"form",
+                    //title:"3",
+                    items:[tweetDateField]
+                },
+                {   width: 50,
+                    layout: "form",
+                    items: [updateLayerBtn]
+                },
+                {columnWidth:0.5, layout:"form",style:"text-align:right;padding-right:10px;font-weight:bold", html: "Previous date"},
+                {
+                    width: 50,
+                    layout: "form",
+                    style: "align:right",
+                    items:[rewindDate]
+                },
+                    {
+                        width: 30,
+                        layout: "form",
+                        items:[forwardDate]
+                    },
+                    {columnWidth:0.5, layout:"form",style:"text-align:left;font-weight:bold", html: "Next date"}
+                ]
+            }
+        ]
+    });
+
+
+Ext.chart.Chart.CHART_URL = '{{ GEONODE_CLIENT_LOCATION }}externals/ext/resources/charts.swf';
+
+
+var chart = {
+    xtype : 'columnchart', // 1
+    store : remoteStore,
+    xField : 'topic', // 2
+    yField : 'count',
+    listeners:{
+        'itemclick' : function(obj) {
+            tweetFilterField.setValue(obj.item['topic']);
+            updateLayer();
+        }
+    }
+};
+var chartPanel = new Ext.Panel({
+    title: "Top 5 Trending Health Terms",
+    width : 350,
+    height : 100,
+    layout : 'fit',
+    cls: "chart-overlay",
+    items : chart
+});
+
+    app.mapPanel.add(cqlOverlay);
+
+
+    app.on("ready", function() {
+        app.toolbar.items.each(function(item) {
+            if (item.text != undefined && (item.text.indexOf(app.saveMapBtnText) > -1 || item.text.indexOf(app.publishBtnText) > -1 )) {
+                //item.disable();
+                //item.hide();
+            }
+        });
+
+        app.mapPanel.layers.each(function (layer) {
+            try {
+                if (layer.getLayer().params.LAYERS.indexOf("asd_ah9") > -1) {
+                    tweetLayer = layer;
+                    tweetLayer["cql_filter"] = "Name='f1' AND Start_Date > '2001-01-01'"
+                    tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
+                    tweetLayer.getLayer().params["TILED"] = false;
+                    tweetLayer.getLayer().singleTile = true
+                    tweetLayer.redraw(true);
+                }
+            } catch (ex) {
+            //    alert(ex);
+            //Do nothing
+            }
+        });
+
+});
+
+
+app.mapPanel.add(chartPanel);
+
+{% endautoescape %}
+}
+
+window.onload = init;
+
+</script>
+
+{% endblock %}
+
+{% block body %}
+
+<div id="container" style="min-width: 400px; height: 100px; margin: 0 auto; position:absolute; z-index:10005; right: 400px; top:200px;"></div>
+
+<div id="header-wrapper">
+  {{ block.super }}
+<div id="dataTabs" class="x-hidden">
+
+<div id="searchDiv" style="background-color:#fff;width:800px;">
+<div style="float:left;position:relative;margin:10px;width:580px;">
+  <div class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+
+    <div id="search_results"></div>
+
+  </div>
+
+  <div class="block wrap selfclear">
+  <h3>Selected Data</h3>
+  <div id="selection">
+    <div id="data_cart"></div>
+    </div>
+    <div id="data_ops">
+    </div>
+  </div>
+
+
+</div>
+
+
+
+<div style="position:relative;float:right;width:200px">
+  <div id="refine" class="block">
+    <h3>{% trans "Refine Search" %}</h3>
+    <div class="bbox-controls">
+      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
+      <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
+      <div class="bbox-expand">
+      </div>
+    </div>
+    <div class="search-button">Refine</div>
+  </div>
+
+</div>
+</div>
+        <div id="externalDiv"></div>
+        <div id="uploadDiv"></div>
+        <div id="createDiv"></div>
+        <div id="warpDiv">
+            <div id="tabContainer" style="padding:20px;">
+
+                <div style="position:relative;float:left;">
+
+                    <h3>{%trans "Rectify Images"  %}</h3>    
+                    
+                    <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 3.9.1 in <a href="http://localhost:8000/media/docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
+                    <br/><br/>
+                    <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
