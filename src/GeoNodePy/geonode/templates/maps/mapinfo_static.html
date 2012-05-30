@@ -1,0 +1,135 @@
+{% extends "maps/base.html" %}
+{% load i18n %}
+{% load geonode_auth %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+
+{% block title %}Map Title — {{ block.super }}{% endblock %}
+
+{# {% block head %} #}
+{#   {% include "geonode/ext_header.html" %} #}
+{#   {% include "geonode/app_header.html" %} #}
+{#   {% include "geonode/geo_header.html" %} #}
+{#   {{ block.super }} #}
+{#   <script type="text/javascript"> #}
+{#   var app; #}
+{#   Ext.onReady(function() { #}
+{#   {% autoescape off %} #}
+{#       var config = Ext.apply({ #}
+{#           useToolbar: false, #}
+{#           proxy: "/proxy/?url=", #}
+{#           rest: "/maps/", #}
+{#           // tell the map viewer where and how to be rendered #}
+{#           portalConfig: { #}
+{#               height: 300, #}
+{#               renderTo: "embedded_map" #}
+{#           } #}
+{#       }, {{ config }}); #}
+{#       app = new GeoExplorer.Viewer(config); #}
+{#   {% endautoescape %} #}
+{#   }); #}
+{#   </script> #}
+{# {% endblock %} #}
+
+{# {% block start_body_js %} #}
+{# <div id="fb-root"></div> #}
+{# <script>(function(d, s, id) { #}
+{#   var js, fjs = d.getElementsByTagName(s)[0]; #}
+{#   if (d.getElementById(id)) {return;} #}
+{#   js = d.createElement(s); js.id = id; #}
+{#   js.src = "//connect.facebook.net/en_US/all.js#xfbml=1"; #}
+{#   fjs.parentNode.insertBefore(js, fjs); #}
+{# }(document, 'script', 'facebook-jssdk'));</script> #}
+{# {% endblock %} #}
+
+{% block body_outer %}
+  {# {% overall_rating map "map" as map_rating %} #}
+  <div class="span8">
+    <h2 class="page-title">Title of the Map Goes Here</h2>
+  </div>
+  <div class="span4">
+    <p class="hd-actions pull-right">
+      <a href="#" class="btn btn-large strong"><i class="icon-download-alt"></i> {% trans "Download" %}</a>
+      <a href="#" class="btn btn-large strong"><i class="icon-print"></i> {% trans "Print" %}</a>
+    </p>
+  </div>
+  {# <div class="overall_rating" data-rating="{{ map_rating }}"></div> #}
+  {# <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone> #}
+  {# <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div> #}
+  <div class="span12">
+	  <div id="embedded_map">
+	    <img src="{{ STATIC_URL }}theme/img/placeholder_map.png" width="100%" alt="Placeholder Map" />
+      {% include "maps/_actions.html" %}
+    </div>
+  </div>
+  
+  <div class="span8">
+    <article class="abstract">
+      <strong>{% trans "Abstract:" %}</strong> 
+      This map shows a scanned map from DCGIS, that displays an old plan for the District of Columbia.
+      It is overlaid on a Google Satellite image, and made a bit transparent. Apologies for slow loading, as the image
+      is 50 megs, and we have not integrated caching yet <a href="#" class="read-more" data-toggle="collapse" data-target="#abstract-full">Read more</a>
+      <div id="abstract-full" class="collapse">More content goes here and is displayed when read more is clicked.</div>
+    </article>
+    <p class="meta"><strong>Uploaded by <a href="#">John Smith</a> on Sep 27, 2011</strong></p>
+    {% include "maps/_comments.html" %}
+  </div>
+  <aside class="span4">
+    <div class="well">
+      <section>
+        <h2>{% trans "Layers" %}</h2>
+        <p>{% trans "This map uses the following layers:" %}</p>
+        <ul class="unstyled">
+          <li><a href="#">Lorem ipsum dolor site amet adipiscing elit</a></li>
+          <li><a href="#">Sed do eisumod tempor</a></li>
+          <li><a href="#">Incididnet ut labore et dolor</a></li>
+        </ul>
+      </section>
+      <section>
+        <h2>{% trans "Edit Map" %}</h2>
+        <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
+        <a href="#" class="btn btn-large">{% trans "Edit Map" %}</a>
+      </section>
+      <section class="last">
+        <h2>{% trans "Create a New Map" %}</h2>
+        <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
+        <a href="#" class="btn btn-large">{% trans "Create a New Map" %}</a>
+      </section>
+    </div>
+    <div class="well">
+      {% include "maps/_widget_about_author.html" %}
+    </div>
+  </aside>
+{% endblock %}
+
+{# {% block extra_script %} #}
+{#     <script> #}
+{#     $(function() { #}
+{#       $("#permission_form").submit(perms_submit); #}
+{#     }); #}
+{#   </script> #}
+{# {% endblock %} #}
+
+{# {% block end_body_js %} #}
+{# {% if request.user.is_authenticated %} #}
+{#  {% user_rating_js request.user map "map" %} #}
+{# {% else %} #}
+{#  <script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script> #}
+{# {% endif %} #}
+{# <script type="text/javascript"> #}
+{#  $(function() { #}
+{#    $('div.overall_rating').raty({ #}
+{#      half: true, #}
+{#      readOnly: true, #}
+{#      start: $('div.overall_rating').data('rating'), #}
+{#      path: "{{ STATIC_URL }}agon_ratings/img/" #}
+{#    }); #}
+{#  }); #}
+{#  #}
+{#  (function() { #}
+{#    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true; #}
+{#    po.src = 'https://apis.google.com/js/plusone.js'; #}
+{#    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s); #}
+{#  })(); #}
+{# </script> #}
+{# {% endblock %} #}

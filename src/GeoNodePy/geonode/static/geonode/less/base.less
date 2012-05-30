@@ -62,12 +62,6 @@ body {
   background:#f3f3f3 !important;
 }
 
-footer {
-  margin-top: 30px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
-}
-
 h2 {
   margin-bottom:10px !important;
 }
@@ -191,9 +185,9 @@ ul.social {
 
 footer.footer {
   background:@gray;
-  border:0;
   color:@grayNeutral;
   font-size:@baseFontSize - 2;
+  padding-top:10px;
 
   a {
     color:@grayNeutral;
@@ -258,15 +252,15 @@ aside .well section.last {
   margin-bottom:0;
 }
 
+img.thumb {
+  float:left;
+  margin:0 10px 10px 0;
+}
+
 section.article-list {
   article {
     overflow:hidden;
     margin-bottom:10px;
-
-    img.thumb {
-      float:left;
-      margin:0 10px 10px 0;
-    }
 
     .details {
       float:left;
@@ -445,6 +439,48 @@ ul.nav-pills.filter {
     margin-bottom:10px;
   }
 }
+
+/** map actions **/
+.map-actions {
+  margin:20px 0;
+
+  a {
+    font-size:16px;
+    padding-right:20px;
+
+    [class^="icon-"], [class*=" icon-"] {
+      margin:2px 1px 0 0;
+    }
+  }
+}
+
+article.abstract {
+  border-top:1px solid @bdrColor;
+  border-bottom:1px solid @bdrColor;
+  padding:15px 0;
+  margin-bottom:15px;
+}
+
+/** comments **/
+.comments {
+  margin-top:20px;
+
+  article {
+    margin-bottom:15px;
+
+    p {
+      margin-bottom:3px;
+    }
+
+    footer {
+      font-size:@baseFontSize - 2;
+      font-weight:bold;
+      color:@graySp;
+    }
+  }
+}
+
+.clear { clear:both; }
 
 // Page specific styles
 /** homepage **/
