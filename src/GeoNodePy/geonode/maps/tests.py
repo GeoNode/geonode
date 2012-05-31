@@ -18,6 +18,7 @@ import math
 
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
+_gs_resource.latlon_bbox = [1, 2, 3, 4]
 
 Layer.objects.geonetwork = Mock()
 Layer.objects.gs_catalog = Mock()
