@@ -336,45 +336,6 @@ MAP_BASELAYERS = [{
 
 }]
 
-INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.admin',
-    'django.contrib.sitemaps',
-    
-    'django.contrib.staticfiles',
-    'django_extensions',
-    'registration',
-    'profiles',
-    'avatar',
-    'haystack',
-    'taggit',
-    'south',
-
-    'geonode.core',
-    'geonode.maps',
-    'geonode.proxy',
-    'geonode.search',
-    'geonode'
-)
-
-def get_user_url(u):
-    from django.contrib.sites.models import Site
-    s = Site.objects.get_current()
-    return "http://" + s.domain + "/profiles/" + u.username
-
-
-ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': get_user_url
-}
-
-AUTH_PROFILE_MODULE = 'maps.Contact'
-REGISTRATION_OPEN = False
-
-SERVE_MEDIA = DEBUG;
-
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/static/geonode/"
 
@@ -392,17 +353,14 @@ DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
 
+
+# Haystack Search Backend Configuration
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         'URL': 'http://127.0.0.1:9200/',
         'INDEX_NAME': 'haystack',
     },
-}
-
-SOUTH_MIGRATION_MODULES = {
-    'registration': 'geonode.migrations.registration',
-    'avatar': 'geonode.migrations.avatar',
 }
 
 # Load more settings from a file called local_settings.py if it exists
