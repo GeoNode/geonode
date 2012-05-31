@@ -1,5 +1,0 @@
-{{ object.user.username }}
-
-{{ object.name }}
-
-{{ object.organization }}
