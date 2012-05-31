@@ -96,12 +96,10 @@ var init = function() {
 
 
 
-
-
     var updateArrows = function() {
         rewindDate.disabled = tweetDateField.getValue() <= tweetDateField.minValue;
         forwardDate.disabled = tweetDateField.getValue() >= tweetDateField.maxValue;
-        console.log (rewindDate.disabled + ":" + forwardDate.disabled);
+        //console.log (rewindDate.disabled + ":" + forwardDate.disabled);
     };
 
     var tweetFilterField = new Ext.form.TextField({
@@ -145,19 +143,15 @@ var remoteStore = new Ext.data.JsonStore({
     ]
 });
 
-remoteStore.on('beforeload', function(store){
-    remoteStore.baseParams = { bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue() };
-});
+//remoteStore.on('beforeload', function(store){
+//    remoteStore.baseParams = { bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue() };
+//});
 
     var updateLayer =  function() {
         if (tweetLayer != null && tweetLayer.getLayer().params.LAYERS.indexOf("basic") > -1) {
             tweetLayer["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
             tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
             tweetLayer.getLayer().redraw(true);
-            //console.log("Redrew with cql filter " + tweetLayer["cql_filter"])
-            remoteStore.load({
-                params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue()}
-            });
         }
     };
 
@@ -270,7 +264,7 @@ var chart = {
 var chartPanel = new Ext.Panel({
     title: "Top 5 Trending Health Terms",
     width : 350,
-    height : 100,
+    height : 150,
     layout : 'fit',
     cls: "chart-overlay",
     items : chart
@@ -278,17 +272,25 @@ var chartPanel = new Ext.Panel({
 
 var tweetConfig = {title: "Twitter Trends", source: "0", group: "Twitter", name: "basic",
     url: "http://107.22.230.16", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
-    singleTile: true, tiled: false, ratio: 1, opacity: 0.7, visibility: true
+    singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true
 };
+/*
+var tweetConfig = {title: "Twitter Trends", source: "0", group: "Twitter", name: "basic",
+    url: "http://192.168.1.90:8081", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
+    singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true
+};
+*/
+
+
 
 var feedSource = Ext.ComponentMgr.createPlugin(
         tweetConfig, "gx_wmssource"
 );
-var tweetRecord = feedSource.createLazyLayerRecord(tweetConfig);
-tweetRecord.setLayer(new OpenLayers.Layer.WMS(
-        tweetConfig.title || tweetConfig.name,
+var tweetPointRecord = feedSource.createLazyLayerRecord(tweetConfig);
+tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
+        "Tweets",
         tweetConfig.url, {
-            layers: tweetConfig.name,
+            layers: "basic",
             transparent: "transparent" in tweetConfig ? tweetConfig.transparent : true,
             format: tweetConfig.format,
             tiled: false
@@ -298,31 +300,54 @@ tweetRecord.setLayer(new OpenLayers.Layer.WMS(
             visibility: ("visibility" in tweetConfig) ? tweetConfig.visibility : true,
             opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
             buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
-            transitionEffect: 'resize',
+            //transitionEffect: 'resize',
             projection: 'EPSG:900913'
         }
 ));
-tweetRecord.group = tweetConfig.group;
+app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
+    remoteStore.load({
+        params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue()}
+    });
+});
+tweetPointRecord.group = tweetConfig.group;
 
 
+var tweetHeatRecord = feedSource.createLazyLayerRecord(tweetConfig);
+tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
+        "Tweet Heatmap",
+        tweetConfig.url, {
+            layers: 'heatmap',
+            transparent: "transparent" in tweetConfig ? tweetConfig.transparent : true,
+            format: tweetConfig.format,
+            tiled: false
+        }, {
+            singleTile: true,
+            ratio: tweetConfig.ratio || 1,
+            visibility: false,
+            opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
+            buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
+            //transitionEffect: 'resize',
+            projection: 'EPSG:900913'
+        }
+));
+//tweetHeatRecord.getLayer().events.register("loadend", tweetRecord.getLayer(), function() {
+//    remoteStore.load({
+//        params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue()}
+//    });
+//});
+tweetHeatRecord.group = tweetConfig.group;
 
-//var tweetWms = new OpenLayers.Layer.WMS(
-//        'Tweet WMS',
-//        'http://50.19.39.177',
-//        //'http://192.168.1.90:8080',
-//        {layers: 'basic', group: "Twitter", format: 'image/png'},
-//        {isBaseLayer: false, singleTile: true, ratio: 1, opacity: 0.7, group: "Twitter"}
-//);
-//
-//var tweetConfig = {title: "hello", group: "bye", id:"tweeter"};
-
-//var tweetRecord = new GeoExt.data.LayerRecord(tweetConfig);
-//tweetRecord.setLayer(tweetWms);
 
 app.on("ready", function() {
-    app.mapPanel.layers.add([tweetRecord]);
-    app.addCategoryFolder(tweetRecord.get("group"), "true");
-    app.reorderNodes(tweetRecord.getLayer());
+
+    app.mapPanel.layers.add([tweetHeatRecord]);
+    app.addCategoryFolder(tweetHeatRecord.get("group"), "true");
+    app.reorderNodes(tweetHeatRecord.getLayer());
+
+    app.mapPanel.layers.add([tweetPointRecord]);
+    app.addCategoryFolder(tweetPointRecord.get("group"), "true");
+    app.reorderNodes(tweetPointRecord.getLayer());
+
 });
 
 
