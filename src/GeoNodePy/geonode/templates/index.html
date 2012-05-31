@@ -14,7 +14,7 @@ Ext.onReady(function(){
   var exploreMapButton = new Ext.Button({
      renderTo: 'explore_map',
      text: '{% trans "Explore Maps" %}',
-     handler: function(){ window.location = "{% url search %}"; }
+     handler: function(){ window.location = "{% url maps_search %}"; }
   });
 
   var createMapButton = new Ext.Button({
@@ -23,8 +23,20 @@ Ext.onReady(function(){
      handler: function(){ window.location = "{% url maps_new %}"; }
   });
 
+  var exploreDataButton = new Ext.Button({
+     renderTo: 'explore_data',
+     text: '{% trans "Explore Data" %}',
+     handler: function(){ window.location = "{% url data_search %}"; }
+  });
+
+  var uploadDataButton = new Ext.Button({
+     renderTo: 'upload_data',
+     text: '{% trans "Upload Data" %}',
+     handler: function(){ window.location = "{% url data_upload %}"; }
+  });
+
   var submitForm = function() {
-      Ext.query('#data_block form')[0].submit();
+      Ext.query('#search_block form')[0].submit();
   };
 
   var searchButton = new Ext.Button({renderTo: 'submit_search', text: '{% trans "Search" %}',
@@ -72,9 +84,16 @@ Ext.onReady(function(){
     {% endblocktrans %}
     </p>
 
-    <!-- Data search text box and button -->
+    <div class="selfclear">
+      <div id="explore_data" class="content-button"></div>
+      <div id="upload_data" class="content-button"></div>
+    </div>
+  </div>
+  <div id="search_block" class = "block">
+    <!-- Global search text box and button -->
+    <h2> {% trans "Search" %} </h2>
 
-    <form action="{% url data_search %}" method="POST">
+    <form action="{% url search %}" method="POST">
       {% csrf_token %}
         <table>
           <tr>
@@ -86,13 +105,10 @@ Ext.onReady(function(){
             </td>
           </tr>
         </table>
-        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
+        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
     </form>
-
-    <!-- Links to specialized views of data -->
-    <!-- Upload data button (link?) -->
-    <a class="layer-upload-link" href="{% url data_upload %}">{% trans "Upload data"  %}</a>
   </div>
+
 </div>
 {% endblock %}
 {% block sidebar %}
