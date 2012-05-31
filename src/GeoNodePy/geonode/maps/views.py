@@ -1584,9 +1584,12 @@ def maps_search_page(request):
     elif request.method == 'POST':
         params = request.POST
     else:
-        form = PocForm()  # An unbound form
-    return render_to_response(template, RequestContext(request,
-                                  {'layers': layers, 'form': form}))
+        return HttpResponse(status=405)
+
+    return render_to_response('maps_search.html', RequestContext(request, {
+        'init_search': json.dumps(params or {}),
+         "site" : settings.SITEURL
+    }))
 
 
 def batch_permissions(request):
