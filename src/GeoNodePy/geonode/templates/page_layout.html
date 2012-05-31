@@ -56,6 +56,7 @@
         <li class="home"><a href="{% url home %}">{% trans "Home" %}</a></li> 
         <li class=""><a class="" id="dataLink" href="{% url data_home %}">{% trans "Data" %}</a></li>
         <li class=""><a class="" id="mapsLink" href="{% url maps_home %}">{% trans "Maps" %}</a></li>
+        <li class=""><a class="" id="searchLink" href="{% url search %}">{% trans "Search" %}</a></li>
     {% if user.is_authenticated %}
         <li class=""><a class="" id="profileLink" href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{% trans "Profile" %}</a></li>
     {% if user.is_staff %}
