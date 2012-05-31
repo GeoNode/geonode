@@ -126,7 +126,8 @@ var init = function() {
     });
 
 
-    var tweetLayer = null;
+    var tweetPointLayer = null;
+    var tweetHeatLayer = null;
 
 var employeeStoreProxy = new Ext.data.HttpProxy({
     url : "/tweettrends"
@@ -148,11 +149,23 @@ var remoteStore = new Ext.data.JsonStore({
 //});
 
     var updateLayer =  function() {
-        if (tweetLayer != null && tweetLayer.getLayer().params.LAYERS.indexOf("basic") > -1) {
-            tweetLayer["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
-            tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
-            tweetLayer.getLayer().redraw(true);
+        console.log('update');
+        if (tweetPointRecord != null && tweetPointRecord.getLayer().params.LAYERS.indexOf("basic") > -1) {
+            tweetPointRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
+            tweetPointRecord.getLayer().params["CQL_FILTER"] = tweetPointRecord["cql_filter"];
+            tweetPointRecord.getLayer().redraw(true);
         }
+
+        if (tweetHeatRecord != null && tweetHeatRecord.getLayer().params.LAYERS.indexOf("heatmap") > -1) {
+            tweetHeatRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
+            tweetHeatRecord.getLayer().params["CQL_FILTER"] = tweetHeatRecord["cql_filter"];
+            tweetHeatRecord.getLayer().redraw(true);
+        }
+
+        remoteStore.load({
+            params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue()}
+        });
+
     };
 
 
