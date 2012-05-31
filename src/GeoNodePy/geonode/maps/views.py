@@ -1280,6 +1280,27 @@ def _metadata_search(query, start, limit, **kw):
 
     return result
 
+def search_result_detail(request):
+    uuid = request.GET.get("uuid")
+    csw = get_csw()
+    csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
+    rec = csw.records.values()[0]
+    raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
+    extra_links = _extract_links(rec, raw_xml)
+    
+    try:
+        layer = Layer.objects.get(uuid=uuid)
+        layer_is_remote = False
+    except:
+        layer = None
+        layer_is_remote = True
+
+    return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
+        'rec': rec,
+        'extra_links': extra_links,
+        'layer': layer,
+        'layer_is_remote': layer_is_remote
+    }))
 
 def _extract_links(rec, xml):
     download_links = []
