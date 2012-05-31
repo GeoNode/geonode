@@ -278,14 +278,33 @@ var chartPanel = new Ext.Panel({
 
 var tweetConfig = {title: "Twitter Trends", source: "0", group: "Twitter", name: "basic",
     url: "http://107.22.230.16", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
-    params: {displayInlayerSwitcher: true}
+    singleTile: true, tiled: false, ratio: 1, opacity: 0.7, visibility: true
 };
 
 var feedSource = Ext.ComponentMgr.createPlugin(
         tweetConfig, "gx_wmssource"
 );
 var tweetRecord = feedSource.createLazyLayerRecord(tweetConfig);
+tweetRecord.setLayer(new OpenLayers.Layer.WMS(
+        tweetConfig.title || tweetConfig.name,
+        tweetConfig.url, {
+            layers: tweetConfig.name,
+            transparent: "transparent" in tweetConfig ? tweetConfig.transparent : true,
+            format: tweetConfig.format,
+            tiled: false
+        }, {
+            singleTile: true,
+            ratio: tweetConfig.ratio || 1,
+            visibility: ("visibility" in tweetConfig) ? tweetConfig.visibility : true,
+            opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
+            buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
+            transitionEffect: 'resize',
+            projection: 'EPSG:900913'
+        }
+));
 tweetRecord.group = tweetConfig.group;
+
+
 
 //var tweetWms = new OpenLayers.Layer.WMS(
 //        'Tweet WMS',
@@ -328,7 +347,8 @@ app.mapPanel.add(cqlOverlay);
                     tweetLayer["cql_filter"] = "Name='f1' AND Start_Date > '2001-01-01'"
                     tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
                     tweetLayer.getLayer().params["TILED"] = false;
-                    tweetLayer.getLayer().singleTile = true
+                    tweetLayer.getLayer().singleTile = true;
+
                     tweetLayer.redraw(true);
                 }
             } catch (ex) {
