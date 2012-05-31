@@ -11,8 +11,9 @@ from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 from django.utils.html import escape
 from taggit.managers import TaggableManager
+from django.utils import simplejson as json
+
 import httplib2
-import simplejson
 import urllib
 from urlparse import urlparse
 import uuid
@@ -861,7 +862,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # rather than searching for it
         #api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
         #response, body = http.request(api_url)
-        #api_json = simplejson.loads(body)
+        #api_json = json.loads(body)
         #api_layer = None
         #for row in api_json['rows']:
         #    if(row['name'] == self.typename):
@@ -1314,7 +1315,7 @@ class Map(models.Model, PermissionLevelMixin):
             "layers" : [layer_json(lyr) for lyr in layers]
         }
 
-        return simplejson.dumps(map)
+        return json.dumps(map)
 
     def viewer_json(self, *added_layers):
         """
@@ -1349,7 +1350,7 @@ class Map(models.Model, PermissionLevelMixin):
         for source in uniqify(configs):
             while str(i) in sources: i = i + 1
             sources[str(i)] = source 
-            server_lookup[simplejson.dumps(source)] = str(i)
+            server_lookup[json.dumps(source)] = str(i)
 
         def source_lookup(source):
             for k, v in sources.iteritems():
@@ -1395,7 +1396,7 @@ class Map(models.Model, PermissionLevelMixin):
         This method automatically persists to the database!
         """
         if isinstance(conf, basestring):
-            conf = simplejson.loads(conf)
+            conf = json.loads(conf)
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
@@ -1507,8 +1508,8 @@ class MapLayerManager(models.Manager):
             group = layer.get('group', None),
             visibility = layer.get("visibility", True),
             ows_url = source.get("url", None),
-            layer_params = simplejson.dumps(layer_cfg),
-            source_params = simplejson.dumps(source_cfg)
+            layer_params = json.dumps(layer_cfg),
+            source_params = json.dumps(source_cfg)
         )
 
 class MapLayer(models.Model):
@@ -1621,7 +1622,7 @@ class MapLayer(models.Model):
         configuration suitable for loading this layer.
         """
         try:
-            cfg = simplejson.loads(self.source_params)
+            cfg = json.loads(self.source_params)
         except:
             cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
 
@@ -1640,7 +1641,7 @@ class MapLayer(models.Model):
         generating a full map configuration.
         """
         try:
-            cfg = simplejson.loads(self.layer_params)
+            cfg = json.loads(self.layer_params)
         except: 
             cfg = dict()
 

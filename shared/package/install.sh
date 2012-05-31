@@ -78,6 +78,7 @@ function setup_tomcat_once() {
 # configure tomcat defaults to avoid geonetwork bug and increase the available ram
 cat >> /etc/default/tomcat6 <<- EOF 
 JAVA_OPTS='-Djava.awt.headless=true -Xmx1024m -Xms1024M -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement'
+JAVA_HOME=/usr/
 EOF
 patch $GEONODE_ETC/geonetwork/config.xml $GEONODE_SHARE/geonetwork.patch
 patch $GEONODE_ETC/geoserver/web.xml $GEONODE_SHARE/geoserver.patch

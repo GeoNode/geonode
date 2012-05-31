@@ -16,8 +16,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
-import json
-import simplejson
+from django.utils import simplejson as json
+
 import math
 import httplib2
 from owslib.csw import CswRecord, namespaces
@@ -146,7 +146,7 @@ def maps(request, mapid=None):
                 response = HttpResponse('', status=201)
                 response['Location'] = map.id
                 return response
-            except simplejson.JSONDecodeError:
+            except json.JSONDecodeError:
                 return HttpResponse(status=400)
 
 def mapJSON(request, mapid):
@@ -444,7 +444,6 @@ Contents:
         url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL, download_id)
         resp,content = h.request(url,'GET')
         return HttpResponse(content, status=resp.status)
-
 
 
 def view_map_permissions(request, mapid):
@@ -883,7 +882,7 @@ def upload_layer(request):
                         )
                 return HttpResponse(json.dumps({
                     "success": True,
-                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
+                    "redirect_to": reverse('data_metadata', args=[saved_layer.typename])}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
@@ -929,7 +928,7 @@ def layer_replace(request, layername):
                 saved_layer = save(layer, base_file, request.user, overwrite=True)
                 return HttpResponse(json.dumps({
                     "success": True,
-                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
+                    "redirect_to": reverse('data_metadata', args=[saved_layer.typename])}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({

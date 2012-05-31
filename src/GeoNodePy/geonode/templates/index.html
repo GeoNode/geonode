@@ -20,7 +20,7 @@ Ext.onReady(function(){
   var createMapButton = new Ext.Button({
      renderTo: 'create_map',
      text: '{% trans "Create Map" %}',
-     handler: function(){ window.location = "{% url geonode.maps.views.newmap %}"; }
+     handler: function(){ window.location = "{% url maps_new %}"; }
   });
 
   var submitForm = function() {
@@ -74,7 +74,7 @@ Ext.onReady(function(){
 
     <!-- Data search text box and button -->
 
-    <form action="{% url search %}" method="POST">
+    <form action="{% url data_search %}" method="POST">
       {% csrf_token %}
         <table>
           <tr>
@@ -86,12 +86,12 @@ Ext.onReady(function(){
             </td>
           </tr>
         </table>
-        <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
     </form>
 
     <!-- Links to specialized views of data -->
     <!-- Upload data button (link?) -->
-    <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload data"  %}</a>
+    <a class="layer-upload-link" href="{% url data_upload %}">{% trans "Upload data"  %}</a>
   </div>
 </div>
 {% endblock %}

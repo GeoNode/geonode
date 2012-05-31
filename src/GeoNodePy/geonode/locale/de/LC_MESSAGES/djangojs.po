@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-23 13:39-0400\n"
+"POT-Creation-Date: 2012-05-15 12:29-0500\n"
 "PO-Revision-Date: 2012-03-01 15:34\n"
 "Last-Translator: <>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,39 +19,39 @@ msgstr ""
 "X-Translated-Using: django-rosetta 0.5.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: media/static/script/GeoNode.js:33
+#: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
 msgid "Add user..."
 msgstr ""
 
-#: media/static/script/GeoNode.js:36
+#: static/geonode/script/GeoNode.js:36
 msgid "Who can view and download this data?"
 msgstr ""
 
-#: media/static/script/GeoNode.js:36
+#: static/geonode/script/GeoNode.js:36
 msgid "Anyone"
 msgstr ""
 
-#: media/static/script/GeoNode.js:36 media/static/script/GeoNode.js.py:38
+#: static/geonode/script/GeoNode.js:36 static/geonode/script/GeoNode.js.c:38
 msgid "Any registered user"
 msgstr ""
 
-#: media/static/script/GeoNode.js:36
+#: static/geonode/script/GeoNode.js:36
 msgid "Only users who can edit"
 msgstr ""
 
-#: media/static/script/GeoNode.js:37
+#: static/geonode/script/GeoNode.js:37
 msgid "Who can edit this data?"
 msgstr ""
 
-#: media/static/script/GeoNode.js:38
+#: static/geonode/script/GeoNode.js:38
 msgid "Only the following users or groups:"
 msgstr ""
 
-#: media/static/script/GeoNode.js:39
+#: static/geonode/script/GeoNode.js:39
 msgid "Who can manage and edit this data?"
 msgstr ""
 
-#: templates/lang.js:9 templates/lang.js.py:12
+#: templates/lang.js:9 templates/lang.js.c:12
 msgid "Add Layers"
 msgstr "Ebenen hinzufügen"
 
@@ -83,7 +83,7 @@ msgstr "Der Server gab einen Fehler zurück"
 msgid "Details..."
 msgstr "Einzelheiten..."
 
-#: templates/lang.js:19 templates/lang.js.py:111
+#: templates/lang.js:19 templates/lang.js.c:111
 msgid "Height"
 msgstr "Höhe"
 
@@ -91,7 +91,7 @@ msgstr "Höhe"
 msgid "Get Feature Info"
 msgstr "Get Feature Info"
 
-#: templates/lang.js:21 templates/lang.js.py:112
+#: templates/lang.js:21 templates/lang.js.c:112
 msgid "Large"
 msgstr "Groß"
 
@@ -127,7 +127,7 @@ msgstr "Länge"
 msgid "Loading Map..."
 msgstr "Karte ladet ..."
 
-#: templates/lang.js:30 templates/lang.js.py:113
+#: templates/lang.js:30 templates/lang.js.c:113
 msgid "Map Size"
 msgstr "Kartengröße"
 
@@ -139,19 +139,19 @@ msgstr "Messen"
 msgid "About this Map"
 msgstr "Über diese Karte"
 
-#: templates/lang.js:33 templates/lang.js.py:86 templates/lang.js.py:155
+#: templates/lang.js:33 templates/lang.js.c:86 templates/lang.js.c:155
 msgid "Abstract"
 msgstr "Kurzbeschreibung"
 
-#: templates/lang.js:34 templates/lang.js.py:87 templates/lang.js.py:153
+#: templates/lang.js:34 templates/lang.js.c:87 templates/lang.js.c:153
 msgid "Contact"
 msgstr "Kontakt"
 
-#: templates/lang.js:35 templates/lang.js.py:45
+#: templates/lang.js:35 templates/lang.js.c:45
 msgid "Permalink"
 msgstr "Permalink"
 
-#: templates/lang.js:36 templates/lang.js.py:226
+#: templates/lang.js:36 templates/lang.js.c:226
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -163,12 +163,12 @@ msgstr "Speichern als Kopie"
 msgid "Save"
 msgstr "Speichern"
 
-#: templates/lang.js:39 templates/lang.js.py:90 templates/lang.js.py:99
-#: templates/lang.js:152 templates/lang.js.py:174 templates/lang.js.py:209
+#: templates/lang.js:39 templates/lang.js.c:90 templates/lang.js.c:99
+#: templates/lang.js:152 templates/lang.js.c:174 templates/lang.js.c:209
 msgid "Title"
 msgstr "Titel"
 
-#: templates/lang.js:40 templates/lang.js.py:114
+#: templates/lang.js:40 templates/lang.js.c:114
 msgid "Mini"
 msgstr "Mini"
 
@@ -188,7 +188,7 @@ msgstr "Zoom zu bisherigen Bereich"
 msgid "This map has not yet been saved."
 msgstr "Diese Karte wurde noch nicht gespeichert."
 
-#: templates/lang.js:46 templates/lang.js.py:115
+#: templates/lang.js:46 templates/lang.js.c:115
 msgid "Premium"
 msgstr "Premium"
 
@@ -204,11 +204,11 @@ msgstr "Druckvorschau"
 msgid "Properties"
 msgstr "Eigenschaften"
 
-#: templates/lang.js:50 templates/lang.js.py:116
+#: templates/lang.js:50 templates/lang.js.c:116
 msgid "Publish Map"
 msgstr "Karte publizieren"
 
-#: templates/lang.js:51 templates/lang.js.py:52
+#: templates/lang.js:51 templates/lang.js.c:52
 msgid "Remove Layer"
 msgstr "Ebene entfernen"
 
@@ -228,7 +228,7 @@ msgstr "Karte speichern"
 msgid "You must be logged in to save this map."
 msgstr "Um diese Karte zu speichern müssen Sie angemeldet sein."
 
-#: templates/lang.js:57 templates/lang.js.py:118
+#: templates/lang.js:57 templates/lang.js.c:118
 msgid "Small"
 msgstr "Klein"
 
@@ -272,7 +272,7 @@ msgstr ""
 msgid "Unknown Map"
 msgstr "Unbekannte Karte"
 
-#: templates/lang.js:66 templates/lang.js.py:119
+#: templates/lang.js:66 templates/lang.js.c:119
 msgid "Width"
 msgstr "Breite"
 
@@ -301,7 +301,6 @@ msgid "Zoom to Visible Extent"
 msgstr "Zoom auf sichtbaren Exten"
 
 #: templates/lang.js:78
-#, perl-brace-format
 msgid "Zoom Level {zoom}"
 msgstr "Zoomstufe {zoom}"
 
@@ -317,7 +316,7 @@ msgstr "Karte exportieren "
 msgid "Map"
 msgstr "Karte"
 
-#: templates/lang.js:89 templates/lang.js.py:156
+#: templates/lang.js:89 templates/lang.js.c:156
 msgid "View this Map"
 msgstr "Karte anschauen"
 
@@ -325,7 +324,7 @@ msgstr "Karte anschauen"
 msgid "Open Map"
 msgstr "Karte öffnen"
 
-#: templates/lang.js:97 templates/lang.js.py:173
+#: templates/lang.js:97 templates/lang.js.c:173
 msgid "Name"
 msgstr "Name"
 
@@ -345,35 +344,35 @@ msgstr ""
 "Ihre Karte ist bereit, um im Internet veröffentlicht zu werden! Kopieren Sie "
 "einfach den folgenden HTML, um die Karte in Ihre Webseite einzubinden:"
 
-#: templates/lang.js:126 templates/lang.js.py:192
+#: templates/lang.js:126 templates/lang.js.c:192
 msgid "Abstract:"
 msgstr "Kurzbeschreibung:"
 
-#: templates/lang.js:127 templates/lang.js.py:194
+#: templates/lang.js:127 templates/lang.js.c:194
 msgid "No attribution information is provided for this layer."
 msgstr "Kein Attributierungsinformationen vorgegeben für diese Ebene."
 
-#: templates/lang.js:128 templates/lang.js.py:195
+#: templates/lang.js:128 templates/lang.js.c:195
 msgid "Provided by:"
 msgstr "Bereitgestellt von:"
 
-#: templates/lang.js:129 templates/lang.js.py:196
+#: templates/lang.js:129 templates/lang.js.c:196
 msgid "Download:"
 msgstr "Herunterladen:"
 
-#: templates/lang.js:130 templates/lang.js.py:198
+#: templates/lang.js:130 templates/lang.js.c:198
 msgid "No keywords are listed for this layer."
 msgstr "Keine Schlüsselwörter sind für diese Ebene aufgeführt."
 
-#: templates/lang.js:131 templates/lang.js.py:199
+#: templates/lang.js:131 templates/lang.js.c:199
 msgid "Keywords:"
 msgstr "Schlüsselwörter:"
 
-#: templates/lang.js:132 templates/lang.js.py:200
+#: templates/lang.js:132 templates/lang.js.c:200
 msgid "No metadata URLs are defined for this layer."
 msgstr "Keine Metadaten-URLs sind für diese Ebene definiert."
 
-#: templates/lang.js:133 templates/lang.js.py:201
+#: templates/lang.js:133 templates/lang.js.c:201
 msgid "Metadata Links:"
 msgstr "Metatdaten Links:"
 
@@ -409,19 +408,19 @@ msgstr "Erstelle PDF ..."
 msgid "Last Modified"
 msgstr "Zuletzt geändert"
 
-#: templates/lang.js:157 templates/lang.js.py:178
+#: templates/lang.js:157 templates/lang.js.c:178
 msgid "Prev"
 msgstr "Vorherige"
 
-#: templates/lang.js:158 templates/lang.js.py:179
+#: templates/lang.js:158 templates/lang.js.c:179
 msgid "Next"
 msgstr "Nächste"
 
-#: templates/lang.js:159 templates/lang.js.py:180
+#: templates/lang.js:159 templates/lang.js.c:180
 msgid "of"
 msgstr "von"
 
-#: templates/lang.js:160 templates/lang.js.py:181
+#: templates/lang.js:160 templates/lang.js.c:181
 msgid "Your search did not match any items."
 msgstr "Ihre Suche brachte keine Ergebnisse hervor."
 
@@ -429,11 +428,11 @@ msgstr "Ihre Suche brachte keine Ergebnisse hervor."
 msgid "Search Maps"
 msgstr "Suche Karten"
 
-#: templates/lang.js:162 templates/lang.js.py:182
+#: templates/lang.js:162 templates/lang.js.c:182
 msgid "Search"
 msgstr "Suche"
 
-#: templates/lang.js:163 templates/lang.js.py:183
+#: templates/lang.js:163 templates/lang.js.c:183
 msgid "Showing"
 msgstr "Angezeigt"
 
@@ -441,7 +440,7 @@ msgstr "Angezeigt"
 msgid "Loading"
 msgstr "Laden"
 
-#: templates/lang.js:165 templates/lang.js.py:185
+#: templates/lang.js:165 templates/lang.js.c:185
 msgid "permalink"
 msgstr "permalink"
 

@@ -2,8 +2,6 @@ import os
 import geonode
 
 DEBUG = TEMPLATE_DEBUG = False
-MINIFIED_RESOURCES = True
-SERVE_MEDIA=False
 
 SITENAME = 'GeoNode'
 SITEURL = 'http://localhost/'
@@ -41,13 +39,7 @@ DB_DATASTORE=True
 LANGUAGE_CODE = 'en'
 
 MEDIA_ROOT = '/var/www/geonode/uploaded'
-MEDIA_URL = '/uploaded/'
 STATIC_ROOT = '/var/www/geonode/static/'
-STATIC_URL = '/static/'
-GEONODE_UPLOAD_PATH = MEDIA_ROOT + 'geonode'
-GEONODE_CLIENT_LOCATION = STATIC_URL + 'geonode/'
-
-STATICFILES_STORAGE = 'staticfiles.storage.StaticFilesStorage'
 
 # secret key used in hashing, should be a long, unique string for each
 # site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
@@ -67,8 +59,6 @@ GEOSERVER_CREDENTIALS = 'geoserver', SECRET_KEY
 # See http://code.google.com/apis/maps/signup.html
 GOOGLE_API_KEY = ''
 
-DEFAULT_LAYERS_OWNER='admin'
-
 GEONODE_ROOT = os.path.dirname(geonode.__file__)
 
 TEMPLATE_DIRS = (
@@ -79,8 +69,9 @@ TEMPLATE_DIRS = (
 # Additional directories which hold static files
 STATICFILES_DIRS = [
     '/etc/geonode/media',
-    os.path.join(GEONODE_ROOT, 'media'),
+    os.path.join(GEONODE_ROOT, 'static'),
 ]
+
 # Uncomment the following to receive emails whenever there are errors in GeoNode
 #ADMINS = (
 #            ('John', 'john@example.com'), 
@@ -107,7 +98,6 @@ LOGGING = {
         "console":{
             "level":"DEBUG",
             "class":"logging.StreamHandler",
-            "formatter": "simple"
         },
         "mail_admins": {
             "level": "ERROR",

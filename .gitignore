@@ -34,6 +34,9 @@ target
 /src/haystack/
 /src/pyelasticsearch/
 
+# Directory created by collectstatic
+src/GeoNodePy/geonode/site_media/
+
 # OSX specific
 .Python
 .DS_Store
