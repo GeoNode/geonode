@@ -29,7 +29,7 @@ Ext.onReady(function(){
   <div id="search_form" class="block">
     <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
 
-    <form action="{% url search %}" method="POST">
+    <form action="{% url maps_search %}" method="POST">
       {% csrf_token %}
       <table>
         <tr>
@@ -42,8 +42,8 @@ Ext.onReady(function(){
         </tr>
       </table>
       <p>
-        <a href="{% url search %}">{% trans "All Maps" %}</a> |
-        <a href="{% url search %}?sort=newest">{% trans "New Maps" %}</a>
+        <a href="{% url maps_search %}">{% trans "All Maps" %}</a> |
+        <a href="{% url maps_search %}?sort=newest">{% trans "New Maps" %}</a>
       </p>
     </form>
   </div>
