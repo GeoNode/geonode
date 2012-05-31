@@ -12,7 +12,6 @@ gsconfig==0.5.4
 django-registration==0.8
 django-profiles==0.2
 -e git+https://github.com/ericflo/django-avatar.git#egg=avatar
-django-staticfiles
 -e git+https://github.com/toastdriven/django-haystack.git#egg=django-haystack
 -e git+https://github.com/toastdriven/pyelasticsearch.git#egg=pyelasticsearch
 requests
