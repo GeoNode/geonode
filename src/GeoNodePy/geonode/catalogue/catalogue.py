@@ -1,3 +1,4 @@
+import re
 import urllib, urllib2, cookielib
 from django.conf import settings
 from django.template import Context
@@ -232,9 +233,9 @@ class Catalogue(CatalogueServiceWeb):
         else:
             return self.opener.open(request)
 
-    def search(keywords, startposition, maxrecords, bbox):
+    def search(self, keywords, startposition, maxrecords, bbox):
         """CSW search wrapper"""
-        return self.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=start+1, maxrecords=limit, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
+        return self.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=startposition, maxrecords=maxrecords, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
 
 def normalize_bbox(bbox):
     """
@@ -244,9 +245,9 @@ def normalize_bbox(bbox):
     """
 
     if connection['type'] == 'geonetwork': 
-        return kw['bbox']
+        return bbox
     else:  # swap coords per standard
-        return [kw['bbox'][1], kw['bbox'][0], kw['bbox'][3], kw['bbox'][2]]
+        return [bbox[1], bbox[0], bbox[3], bbox[2]]
 
 def update_metadata(layer_uuid, xml, saved_layer):
     """Update metadata XML with GeoNode specific information"""
@@ -468,3 +469,26 @@ def metadatarecord2dict(rec, catalogue):
     result['metadata_links'] = [("text/xml", "TC211", catalogue.url_for_uuid(rec.identifier, 'http://www.isotc211.org/2005/gmd'))]
 
     return result
+
+def _extract_links(rec):
+    # fetch all distribution links
+
+    links = []
+    # extract subset of description value for user-friendly display
+    format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
+
+    if not hasattr(rec, 'distribution'):
+        return None
+    if not hasattr(rec.distribution, 'online'):
+        return None
+
+    for link_el in rec.distribution.online:
+        if link_el.protocol == 'WWW:DOWNLOAD-1.0-http--download':
+            try:
+                extension = link_el.name.split('.')[-1]
+                format = format_re.match(link_el.description).groups()[0]
+                href = link_el.url
+                links.append((extension, format, href))
+            except:
+                pass
+    return links

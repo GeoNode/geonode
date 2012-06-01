@@ -1,7 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_catalogue
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
-from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox, namespaces, metadatarecord2dict
+from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox, namespaces, metadatarecord2dict, _extract_links
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import base64
@@ -1225,18 +1225,18 @@ def metadata_search(request):
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
 def _metadata_search(query, start, limit, **kw):
-    
+   
     catalogue = get_catalogue()
 
     keywords = _split_query(query)
    
     if kw.has_key('bbox'):
         # ensure proper bbox axis order
-        bbox = normalize_bbox(bbox)
+        bbox = normalize_bbox(kw['bbox'])
     else:
         bbox = None
 
-    catalogue.search(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=bbox)
+    catalogue.search(keywords, start+1, limit, bbox)
 
     # build results into JSON for API
     results = [metadatarecord2dict(doc, catalogue) for v, doc in catalogue.records.iteritems()]
@@ -1265,6 +1265,7 @@ def search_result_detail(request):
     uuid = request.GET.get("uuid")
     catalogue = get_catalogue()
     rec = catalogue.get_by_uuid(uuid)
+
     extra_links = dict(download=_extract_links(rec))
 
     try:
@@ -1287,29 +1288,6 @@ def search_result_detail(request):
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))
-
-def _extract_links(rec):
-    # fetch all distribution links
-
-    links = []
-    # extract subset of description value for user-friendly display
-    format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
-
-    if not hasattr(rec, 'distribution'):
-        return None
-    if not hasattr(rec.distribution, 'online'):
-        return None
-
-    for link_el in rec.distribution.online:
-        if link_el.protocol == 'WWW:DOWNLOAD-1.0-http--download':
-            try:
-                extension = link_el.name.split('.')[-1]
-                format = format_re.match(link_el.description).groups()[0]
-                href = link_el.url
-                links.append((extension, format, href))
-            except:
-                pass
-    return links
 
 def browse_data(request):
     return render_to_response('data.html', RequestContext(request, {}))
