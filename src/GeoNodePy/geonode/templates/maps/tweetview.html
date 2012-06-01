@@ -383,7 +383,7 @@ tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
         }, {
             singleTile: true,
             ratio: tweetConfig.ratio || 1,
-            visibility: ("visibility" in tweetConfig) ? tweetConfig.visibility : true,
+            visibility: false,
             opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
             buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
             //transitionEffect: 'resize',
@@ -409,7 +409,7 @@ tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
         }, {
             singleTile: true,
             ratio: tweetConfig.ratio || 1,
-            visibility: false,
+            visibility: true,
             opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
             buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
             //transitionEffect: 'resize',
