@@ -23,7 +23,7 @@
          FILE
          - outputs to the local filesystem first, before sending it off to the user
       -->
-    <param-value>PARTIAL-BUFFER2</param-value>
+    <param-value>FILE</param-value>
   </context-param>
   
   <!-- If true, enable versioning datastore as well -->

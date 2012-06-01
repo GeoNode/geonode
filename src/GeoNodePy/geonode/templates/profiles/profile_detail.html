@@ -17,7 +17,7 @@
     <li><a href="{% url auth_password_change %}">{% trans "Change password" %}</a></li>
     {% endif %}
     <li><a href="{% url data_upload %}">{% trans "Upload new data" %}</a></li>
-    <li><a href="{% url map_new %}">{% trans "Create a new map" %}</a></li>
+    <li><a href="{% url maps_new %}">{% trans "Create a new map" %}</a></li>
   </ul>
   <h3>{% trans "Settings" %}</h3>
   <ul>
@@ -35,16 +35,16 @@
 Ext.onReady(function() {
     var mapsAndLayers = [];
     {% for lyr in profile.user.layer_set.all %}
-    mapsAndLayers.push(["lyr.{{ lyr.pk|escapejs }}", "{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|escapejs }}"]);
+    mapsAndLayers.push(["lyr.{{ lyr.pk|escapejs }}", "{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.date|date:'Y-m-d H:i:s' }}"]);
     {% endfor %}
     {% for map in profile.user.map_set.all %}
-    mapsAndLayers.push(["map.{{ map.pk|escapejs }}", "{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}", "{{ map.title|escapejs }}", "{{ map.last_modified|escapejs }}"]);
+    mapsAndLayers.push(["map.{{ map.pk|escapejs }}", "{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}", "{{ map.title|escapejs }}", "{{ map.last_modified|date:'Y-m-d H:i:s' }}"]);
     {% endfor %}
 
     var assets = new Ext.data.Store({
         reader: new Ext.data.ArrayReader({
             idIndex: 0,
-            fields: ["pk", "id", "type", "href", "title", "date"]
+            fields: ["pk", "id", "type", "href", "title", { name: "date", type: "date", dateFormat: "Y-m-d H:i:s" }]
         }),
         data: mapsAndLayers
     });
@@ -166,7 +166,7 @@ Ext.onReady(function() {
               handler: function() {
                   var activeList = serialize();
                   var editor = new GeoNode.PermissionsEditor({
-                      userLookup: "{% url geonode.views.ajax_lookup %}",
+                      userLookup: "{% url auth_ajax_lookup %}",
                       permissions: { users:[] }
                   });
                   editor.container.padding = 5;
