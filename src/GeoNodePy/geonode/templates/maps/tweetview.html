@@ -162,9 +162,9 @@ var init = function() {
 
 
     var updateArrows = function() {
-        rewindDate.disabled = tweetDateField.getValue() <= tweetDateField.minValue;
-        forwardDate.disabled = tweetDateField.getValue() >= tweetDateField.maxValue;
-        //console.log (rewindDate.disabled + ":" + forwardDate.disabled);
+        rewindDate.disabled = tweetDateStartField.getValue() <= tweetDateStartField.minValue;
+        forwardDate.disabled = tweetDateEndField.getValue() >= tweetDateEndField.maxValue;
+        console.log (rewindDate.disabled + ":" + forwardDate.disabled);
     };
 
     var tweetFilterField = new Ext.form.TextField({
@@ -176,13 +176,13 @@ var init = function() {
 
     });
 
-    var tweetDateField = new Ext.form.DateField({
-        id: 'tweetDate',
-        fieldLabel: 'Date',
+    var tweetDateStartField = new Ext.form.DateField({
+        id: 'tweetStartDate',
+        fieldLabel: 'From',
         labelStyle:"font-weight:bold;text-align:right",
         allowBlank: false,
         minValue: new Date('2012-01-27'),
-        maxValue: new Date('2012-03-26'),
+        maxValue: new Date('2012-03-19'),
         value: new Date('2012-01-27'),
         width:125,
         listeners: {
@@ -190,9 +190,22 @@ var init = function() {
         }
     });
 
+var tweetDateEndField = new Ext.form.DateField({
+    id: 'tweetEndDate',
+    fieldLabel: 'To',
+    labelStyle:"font-weight:bold;text-align:right",
+    allowBlank: false,
+    minValue: new Date('2012-02-03'),
+    maxValue: new Date('2012-03-26'),
+    value: new Date('2012-02-03'),
+    width:125,
+    listeners: {
+        'select': updateArrows
+    }
+});
 
-    var tweetPointLayer = null;
-    var tweetHeatLayer = null;
+var tweetPointLayer = null;
+var tweetHeatLayer = null;
 
 var employeeStoreProxy = new Ext.data.HttpProxy({
     url : "/tweettrends"
@@ -202,7 +215,7 @@ var remoteStore = new Ext.data.JsonStore({
     autoLoad : true,
     storeId : 'employeeDv',
     proxy : employeeStoreProxy,
-    baseParams: { bounds: config["map"]["maxExtent"], date: tweetDateField.getValue() },
+    baseParams: { bounds: config["map"]["maxExtent"], dateStart: tweetDateStartField.getValue(), dateEnd:  tweetDateEndField.getValue()},
     fields : [
         { name : "topic", mapping : "topic" },
         { name : "count", mapping : "count" }
@@ -220,7 +233,7 @@ var remoteStore = new Ext.data.JsonStore({
             if (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) {
                 tweetPointRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
             }
-            tweetPointRecord["cql_filter"] += "Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
+            tweetPointRecord["cql_filter"] += "Start_Date > '" + tweetDateStartField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateEndField.getValue().format('Y-M-d') + "'";
             tweetPointRecord.getLayer().params["CQL_FILTER"] = tweetPointRecord["cql_filter"];
             tweetPointRecord.getLayer().redraw(true);
         }
@@ -230,13 +243,13 @@ var remoteStore = new Ext.data.JsonStore({
             if (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) {
                 tweetHeatRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
             }
-            tweetHeatRecord["cql_filter"] += "Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
+            tweetHeatRecord["cql_filter"] += "Start_Date > '" + tweetDateStartField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateEndField.getValue().format('Y-M-d') + "'";
             tweetHeatRecord.getLayer().params["CQL_FILTER"] = tweetHeatRecord["cql_filter"];
             tweetHeatRecord.getLayer().redraw(true);
         }
 
         remoteStore.load({
-            params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue()}
+            params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], dateStart: tweetDateStartField.getValue(), dateEnd: tweetDateEndField.getValue()}
         });
 
     };
@@ -246,10 +259,12 @@ var remoteStore = new Ext.data.JsonStore({
     var rewindDate = new Ext.Button({
             iconCls: "icon-zoom-previous",
             handler: function(button,event) {
-                if (tweetDateField.validate()){
-                    var yesterday = tweetDateField.getValue().add(Date.DAY, -1);
-                    if (yesterday >= tweetDateField.minValue) {
-                        tweetDateField.setValue(yesterday);
+                if (tweetDateStartField.validate() && tweetDateEndField.validate()){
+                    var yesterdayStart = tweetDateStartField.getValue().add(Date.DAY, -1);
+                    var yesterdayEnd = tweetDateEndField.getValue().add(Date.DAY, -1);
+                    if (yesterdayStart >= tweetDateStartField.minValue) {
+                        tweetDateStartField.setValue(yesterdayStart);
+                        tweetDateEndField.setValue(yesterdayEnd);
                         updateArrows();
                         updateLayer();
                     }
@@ -261,10 +276,12 @@ var remoteStore = new Ext.data.JsonStore({
     var forwardDate = new Ext.Button({
         iconCls: "icon-zoom-next",
         handler: function(button,event) {
-            if (tweetDateField.validate()){
-                var tomorrow = tweetDateField.getValue().add(Date.DAY, 1);
-                if (tomorrow <= tweetDateField.maxValue) {
-                    tweetDateField.setValue(tweetDateField.getValue().add(Date.DAY,1));
+            if (tweetDateStartField.validate() && tweetDateEndField.validate()){
+                var tomorrowStart = tweetDateStartField.getValue().add(Date.DAY, 1);
+                var tomorrowEnd = tweetDateEndField.getValue().add(Date.DAY, 1);
+                if (tomorrowEnd < tweetDateEndField.maxValue) {
+                    tweetDateStartField.setValue(tomorrowStart);
+                    tweetDateEndField.setValue(tomorrowEnd);
                     updateArrows();
                     updateLayer();
                 }
@@ -289,31 +306,40 @@ var remoteStore = new Ext.data.JsonStore({
             msgTarget: 'side'
         },
         cls: 'cql-overlay',
-        width: 600,
+        width: 800,
         height: 100,
         layout:"fit",
         items: [
             {
                 layout:"column",
-                width: 600,
-                items:[{
-                    columnWidth:0.5,
-                    //title: "1",
-                    layout:"form",
-                    width:200,
-                    items:[tweetFilterField]
-                },
+                width: 800,
+                items:[
                 {
-                    columnWidth:0.5,
+                    columnWidth:0.33,
                     layout:"form",
                     //title:"3",
-                    items:[tweetDateField]
+                    items:[tweetDateStartField]
                 },
+                {
+                        columnWidth:0.33,
+                        layout:"form",
+                        //title:"3",
+                        items:[tweetDateEndField]
+                },
+                    {
+                        columnWidth:0.34,
+                        //title: "1",
+                        layout:"form",
+                        width:200,
+                        items:[tweetFilterField]
+                    },
                 {   width: 50,
                     layout: "form",
-                    items: [updateLayerBtn]
+                    items: [updateLayerBtn],
+                    style: "padding-left:20px;"
                 },
-                {columnWidth:0.5, layout:"form",style:"text-align:right;padding-right:10px;font-weight:bold", html: "Previous date"},
+
+                {columnWidth:0.33, layout:"form",style:"text-align:right;padding-right:10px;font-weight:bold", html: "Previous date"},
                 {
                     width: 50,
                     layout: "form",
@@ -325,7 +351,7 @@ var remoteStore = new Ext.data.JsonStore({
                         layout: "form",
                         items:[forwardDate]
                     },
-                    {columnWidth:0.5, layout:"form",style:"text-align:left;font-weight:bold", html: "Next date"}
+                    {columnWidth:0.33, layout:"form",style:"text-align:left;font-weight:bold", html: "Next date"}
                 ]
             }
         ]
@@ -348,7 +374,7 @@ var chart = {
     }
 };
 var chartPanel = new Ext.Panel({
-    title: "Top 5 Trending Weekly Health Terms",
+    title: "Top 5 Trending Health Terms",
     width : 350,
     height : 150,
     layout : 'fit',
@@ -392,7 +418,7 @@ tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
 ));
 app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
     remoteStore.load({
-        params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue()}
+        params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], dateStart: tweetDateStartField.getValue(),  dateStart: tweetDateEndField.getValue()}
     });
 });
 tweetPointRecord.group = tweetConfig.group;
@@ -445,28 +471,14 @@ app.mapPanel.add(cqlOverlay);
 
     app.on("ready", function() {
         app.toolbar.items.each(function(item) {
-            if (item.text != undefined && (item.text.indexOf(app.saveMapBtnText) > -1 || item.text.indexOf(app.publishBtnText) > -1 )) {
-                //item.disable();
-                //item.hide();
+            if (item.text != undefined && item.text.indexOf(app.publishBtnText) > -1 ) {
+                item.disable();
+                item.hide();
             }
         });
 
         app.mapPanel.layers.each(function (layer) {
             updateLayer();
-//            try {
-//                if (layer.getLayer().params.LAYERS.indexOf("basic") > -1 || layer.getLayer().params.LAYERS.indexOf("heatmap") > -1 ) {
-//                    var tweetLayer = layer;
-//                    tweetLayer["cql_filter"] = "Name='" + tweetFilterField.getValue() + "' AND Start_Date > '" +  + "'"
-//                    tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
-//                    tweetLayer.getLayer().params["TILED"] = false;
-//                    tweetLayer.getLayer().singleTile = true;
-//
-//                    tweetLayer.redraw(true);
-//                }
-//            } catch (ex) {
-//            //    alert(ex);
-//            //Do nothing
-//            }
         });
 
 });

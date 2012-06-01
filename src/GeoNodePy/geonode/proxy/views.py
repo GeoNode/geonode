@@ -148,7 +148,7 @@ def hglServiceStarter (request, layer):
 
 
 def tweetTrendProxy (request):
-    tweetUrl = "" + "?bbox=" + request.POST["bounds"] + "&date=" + request.POST["date"];
+    tweetUrl = "" + "?bbox=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
     #resultJSON = simplejson.loads(urllib.urlopen(tweetUrl).read())
     resultJSON = """
     {
