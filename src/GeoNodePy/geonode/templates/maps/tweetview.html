@@ -178,12 +178,12 @@ var init = function() {
 
     var tweetDateField = new Ext.form.DateField({
         id: 'tweetDate',
-        fieldLabel: 'Start Date',
+        fieldLabel: 'Date',
         labelStyle:"font-weight:bold;text-align:right",
         allowBlank: false,
-        minValue: new Date('2012-01-26'),
+        minValue: new Date('2012-01-27'),
         maxValue: new Date('2012-03-26'),
-        value: new Date('2012-01-26'),
+        value: new Date('2012-01-27'),
         width:125,
         listeners: {
             'select': updateArrows
@@ -216,13 +216,21 @@ var remoteStore = new Ext.data.JsonStore({
     var updateLayer =  function() {
         console.log('update');
         if (tweetPointRecord != null && tweetPointRecord.getLayer().params.LAYERS.indexOf("basic") > -1) {
-            tweetPointRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
+            tweetPointRecord["cql_filter"] = "";
+            if (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) {
+                tweetPointRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
+            }
+            tweetPointRecord["cql_filter"] += "Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
             tweetPointRecord.getLayer().params["CQL_FILTER"] = tweetPointRecord["cql_filter"];
             tweetPointRecord.getLayer().redraw(true);
         }
 
         if (tweetHeatRecord != null && tweetHeatRecord.getLayer().params.LAYERS.indexOf("heatmap") > -1) {
-            tweetHeatRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
+            tweetHeatRecord["cql_filter"] = "";
+            if (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) {
+                tweetHeatRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
+            }
+            tweetHeatRecord["cql_filter"] += "Start_Date > '" + tweetDateField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateField.getValue().add(Date.DAY, 1).format('Y-M-d') + "'";
             tweetHeatRecord.getLayer().params["CQL_FILTER"] = tweetHeatRecord["cql_filter"];
             tweetHeatRecord.getLayer().redraw(true);
         }
@@ -340,7 +348,7 @@ var chart = {
     }
 };
 var chartPanel = new Ext.Panel({
-    title: "Top 5 Trending Health Terms",
+    title: "Top 5 Trending Weekly Health Terms",
     width : 350,
     height : 150,
     layout : 'fit',
@@ -444,20 +452,21 @@ app.mapPanel.add(cqlOverlay);
         });
 
         app.mapPanel.layers.each(function (layer) {
-            try {
-                if (layer.getLayer().params.LAYERS.indexOf("basic") > -1) {
-                    tweetLayer = layer;
-                    tweetLayer["cql_filter"] = "Name='f1' AND Start_Date > '2001-01-01'"
-                    tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
-                    tweetLayer.getLayer().params["TILED"] = false;
-                    tweetLayer.getLayer().singleTile = true;
-
-                    tweetLayer.redraw(true);
-                }
-            } catch (ex) {
-            //    alert(ex);
-            //Do nothing
-            }
+            updateLayer();
+//            try {
+//                if (layer.getLayer().params.LAYERS.indexOf("basic") > -1 || layer.getLayer().params.LAYERS.indexOf("heatmap") > -1 ) {
+//                    var tweetLayer = layer;
+//                    tweetLayer["cql_filter"] = "Name='" + tweetFilterField.getValue() + "' AND Start_Date > '" +  + "'"
+//                    tweetLayer.getLayer().params["CQL_FILTER"] = tweetLayer["cql_filter"];
+//                    tweetLayer.getLayer().params["TILED"] = false;
+//                    tweetLayer.getLayer().singleTile = true;
+//
+//                    tweetLayer.redraw(true);
+//                }
+//            } catch (ex) {
+//            //    alert(ex);
+//            //Do nothing
+//            }
         });
 
 });
