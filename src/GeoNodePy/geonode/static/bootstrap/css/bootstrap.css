@@ -1452,8 +1452,8 @@ table .span24 {
   width: 1884px;
   margin-left: 0;
 }
-[class^="icon-"],
-[class*=" icon-"] {
+i[class^="icon-"],
+i[class*=" icon-"] {
   display: inline-block;
   width: 14px;
   height: 14px;
@@ -1464,8 +1464,8 @@ table .span24 {
   background-position: 14px 14px;
   background-repeat: no-repeat;
 }
-[class^="icon-"]:last-child,
-[class*=" icon-"]:last-child {
+i[class^="icon-"]:last-child,
+i[class*=" icon-"]:last-child {
   *margin-left: 0;
 }
 .icon-white {
