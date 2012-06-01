@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
-import json
+from django.utils import simplejson as json
 import os
 import tempfile
 

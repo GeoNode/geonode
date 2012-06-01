@@ -34,7 +34,7 @@ Ext.onReady(function() {
 Ext.onReady(function(){
     Ext.QuickTips.init();
     
-    var form_target = "{% url geonode.maps.views.upload_layer %}";
+    var form_target = "{% url data_upload %}";
     var xml_unsafe = /(^[^a-zA-Z\._]+)|([^a-zA-Z0-9\._])/g;
     var layer_title = new Ext.form.TextField({
       id: 'layer_title',
@@ -203,7 +203,7 @@ Ext.onReady(function(){
 
     var permissionsEditor = new GeoNode.PermissionsEditor({
         renderTo: "permissions_form",
-        userLookup: "{% url geonode.views.ajax_lookup %}",
+        userLookup: "{% url auth_ajax_lookup %}",
         listeners: {
             updated: function(pe) {
                 permissionsField.setValue(Ext.util.JSON.encode(pe.writePermissions()));

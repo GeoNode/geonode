@@ -2,6 +2,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User, AnonymousUser
+from django.utils import simplejson as json
 
 import geonode.maps.models
 import geonode.maps.views
@@ -11,7 +12,6 @@ from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock, patch
 
-import json
 import os
 import base64
 import math
@@ -325,6 +325,7 @@ community."
           "wms":"capra",
           "name":"base:nic_admin"
         }],
+        "keywords":["saving", "keywords"],
         "zoom":7
       }
     }
@@ -357,6 +358,7 @@ community."
         self.assertEquals(map.title, "Title")
         self.assertEquals(map.abstract, "Abstract")
         self.assertEquals(map.layer_set.all().count(), 1)
+        self.assertEquals(map.keyword_list(), ["keywords", "saving"])
 
         # Test an invalid map creation request
         log = c.login(username="bobby", password="bob")
@@ -485,14 +487,6 @@ community."
             user = geonode.maps.models.User.objects.get(username=username)
             self.assertEqual(layer.get_user_level(user), level)
 
-    def test_view_layer_permissions(self):
-        """Verify that the view_layer_permissions view is behaving as expected
-        """
-
-        # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-
-        pass        
-
     def test_ajax_layer_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
         """
@@ -580,13 +574,6 @@ community."
 
         # TODO Lots more to do here once jj0hns0n understands the ACL system better
 
-#    def test_view_perms_context(self):
-        # It seems that since view_layer_permissions and view_map_permissions
-        # are no longer used, that this view is also no longer used since those
-        # are the only 2 places it is ever called (jj0hns0n 2011-04-13)
- 
-#        pass
-
     def test_perms_info(self):
         """ Verify that the perms_info view is behaving as expected
         """
@@ -621,9 +608,6 @@ community."
 
 #    def test_get_basic_auth_info(self):
         # How do we test this? Perhaps as a part of test_layer_acls
-#        pass
-
-#    def test_view_map_permissions(self):
 #        pass
 
 #    def test_set_map_permissions(self):
@@ -791,11 +775,11 @@ community."
 
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
-        lyr.keywords = "saving keywords"
+        lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
-        self.assertEqual(lyr.keyword_list(), ["saving", "keywords"])
-        self.assertEqual(lyr.resource.keywords, ["saving", "keywords"])
-        self.assertEqual(_gs_resource.keywords, ["saving", "keywords"])
+        self.assertEqual(lyr.keyword_list(), ["keywords", "saving"])
+        self.assertEqual(lyr.resource.keywords, ["keywords", "saving"])
+        self.assertEqual(_gs_resource.keywords, ["keywords", "saving"])
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
