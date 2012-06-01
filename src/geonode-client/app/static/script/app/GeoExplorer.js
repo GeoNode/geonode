@@ -490,7 +490,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         layer.events.register("loadend", layer, function() {
             if (geoEx.busyMask) {
                 geoEx.busyMask.hide();
-            }
+            }prototype
         });
     },
 
