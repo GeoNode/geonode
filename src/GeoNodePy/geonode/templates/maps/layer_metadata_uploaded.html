@@ -36,16 +36,16 @@ Ext.onReady(function(){
       }
   };
 
-  var xml_file = new Ext.ux.form.FileUploadField({
-      id: 'xml_file',
+  var metadata_file = new Ext.ux.form.FileUploadField({
+      id: 'metadata_file',
       emptyText: gettext('Select a .xml metadata file (ISO, Dublin Core, FGDC)'),
       fieldLabel: gettext('XML'),
-      name: 'xml_file',
+      name: 'metadata_file',
       allowBlank: false,
       listeners: listeners
   });
 
-  form_fields = [xml_file];
+  form_fields = [metadata_file];
 
   var fp = new Ext.FormPanel({
     renderTo: 'upload_form',

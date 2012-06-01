@@ -115,11 +115,11 @@ Ext.onReady(function(){
         listeners: listeners
     });
 
-    var xml_file = new Ext.ux.form.FileUploadField({
-        id: 'xml_file',
+    var metadata_file = new Ext.ux.form.FileUploadField({
+        id: 'metadata_file',
         emptyText: gettext('Select a .xml metadata file (ISO, Dublin Core, FGDC [optional])'),
         fieldLabel: gettext('XML'),
-        name: 'xml_file',
+        name: 'metadata_file',
         allowBlank: true,
         listeners: listeners
     });
@@ -147,7 +147,7 @@ Ext.onReady(function(){
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, xml_file, abstractField, permissionsField, {
+        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, metadata_file, abstractField, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"
@@ -218,7 +218,7 @@ Ext.onReady(function(){
 
     disable_shapefile_inputs();
 
-    xml_file.addListener('fileselected', function() {
+    metadata_file.addListener('fileselected', function() {
         disable_title_and_abstract_inputs();
     });
 
