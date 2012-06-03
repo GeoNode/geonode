@@ -88,7 +88,7 @@ class LayerForm(forms.ModelForm):
     keywords = taggit.forms.TagField()
     class Meta:
         model = Layer
-        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'metadata_uploaded', 'metadata_xml')
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -681,12 +681,6 @@ def layer_metadata(request, layername):
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {'error_message': 
                     _("You are not permitted to modify this layer's metadata")})), status=401)
-     
-        if layer.metadata_uploaded and request.method == 'GET':  # show upload just metadata XML page
-            return render_to_response("maps/layer_metadata_uploaded.html", RequestContext(request, {
-                "layer": layer,
-                "CATALOGUE_URL": catalogue_connection['url']
-        }))
 
         poc = layer.poc
         metadata_author = layer.metadata_author
@@ -881,44 +875,10 @@ def layer_replace(request, layername):
                                   RequestContext(request, {'layer': layer,
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
-        from geonode.maps.forms import LayerUploadForm, LayerMetadataUploadForm
+        from geonode.maps.forms import LayerUploadForm
         from geonode.maps.utils import save
         from django.utils.html import escape
         import os, shutil
-
-        if layer.metadata_uploaded:  # it's an XML metadata upload update
-            # save the XML file to django and catalogue
-
-            from geonode.maps.utils import update_metadata
-
-            form = LayerMetadataUploadForm(request.POST, request.FILES)
-
-            if form.is_valid():
-                try:
-                    layer_to_update = Layer.objects.get_or_create(typename=layer.typename)[0]
-
-                    md_xml, md_title, md_abstract = update_metadata(layer.uuid, form.cleaned_data['metadata_file'].read(), layer_to_update)
-
-                    Layer.objects.filter(typename=layer.typename).update(
-                        metadata_xml=md_xml,
-                        title=md_title,
-                        abstract=md_abstract
-                    )
-
-                    layer_to_update.metadata_xml = md_xml
-                    layer_to_update.title = md_title
-                    layer_to_update.abstract = md_abstract
-                    layer_to_update.save_to_catalogue()
-
-                    return HttpResponse(json.dumps({
-                        "success": True,
-                        "redirect_to": "/data/" + layer.typename}))
-
-                except Exception, e:
-                    logger.exception("Unexpected error during metadata upload.")
-                    return HttpResponse(json.dumps({
-                        "success": False,
-                        "errors": ["Unexpected error during metadata upload: " + escape(str(e))]}))
 
         form = LayerUploadForm(request.POST, request.FILES)
         tempdir = None

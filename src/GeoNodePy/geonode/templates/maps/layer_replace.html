@@ -86,16 +86,7 @@ Ext.onReady(function(){
 
     });
 
-    var metadata_file = new Ext.ux.form.FileUploadField({
-        id: 'metadatal_file',
-        emptyText: gettext('Select a .xml metadata file (ISO, Dublin Core, FGDC [optional])'),
-        fieldLabel: gettext('XML'),
-        name: 'metadata_file',
-        allowBlank: true,
-        listeners: listeners
-    });
-
-    form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file, metadata_file, csrf_token];
+    form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file, csrf_token];
 
   }
   else {

@@ -115,15 +115,6 @@ Ext.onReady(function(){
         listeners: listeners
     });
 
-    var metadata_file = new Ext.ux.form.FileUploadField({
-        id: 'metadata_file',
-        emptyText: gettext('Select a .xml metadata file (ISO, Dublin Core, FGDC [optional])'),
-        fieldLabel: gettext('XML'),
-        name: 'metadata_file',
-        allowBlank: true,
-        listeners: listeners
-    });
-
     var abstractField = new Ext.form.TextArea({
         id: 'abstract', 
         fieldLabel: gettext('Abstract'),
@@ -147,7 +138,7 @@ Ext.onReady(function(){
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, metadata_file, abstractField, permissionsField, {
+        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, abstractField, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"
@@ -205,22 +196,11 @@ Ext.onReady(function(){
         }
     };
 
-    var disable_title_and_abstract_inputs = function() {
-        layer_title.setValue('DISABLED: Will be derived from metadata XML.');
-        abstractField.setValue('DISABLED: Will be derived from metadata XML.');
-        layer_title.disable();
-        abstractField.disable();
-    }
-
     base_file.addListener('fileselected', function(cmp, value) {
         check_shapefile();
     });
 
     disable_shapefile_inputs();
-
-    metadata_file.addListener('fileselected', function() {
-        disable_title_and_abstract_inputs();
-    });
 
     var permissionsEditor = new GeoNode.PermissionsEditor({
         renderTo: "permissions_form",

@@ -34,7 +34,7 @@ from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 
 # Catalogue functionality
-from geonode.catalogue.catalogue import connection as catalogue_connection, update_metadata
+from geonode.catalogue.catalogue import connection as catalogue_connection
 
 logger = logging.getLogger('geonode.maps.utils')
 _separator = '\n' + ('-' * 100) + '\n'
@@ -453,23 +453,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
 
     saved_layer.poc = poc_contact
     saved_layer.metadata_author = author_contact
-
-    logger.info('>>> Step XML. If an XML metadata document was passed, process it')
-    # Step XML.  If an XML metadata document is uploaded,
-    # parse the XML metadata and update uuid and URLs as per the content model
-
-    if 'xml' in files:
-        md_xml, md_title, md_abstract = update_metadata(layer_uuid, open(files['xml']).read(), saved_layer)
-        Layer.objects.filter(uuid=layer_uuid).update(
-            metadata_xml=md_xml,
-            metadata_uploaded=True,
-            title=md_title,
-            abstract=md_abstract,
-        )
-        saved_layer.metadata_xml = md_xml
-        saved_layer.title = md_title
-        saved_layer.abstract = md_abstract
-        saved_layer.metadata_uploaded = True
 
     # add to CSW catalogue
     saved_layer.save_to_catalogue()

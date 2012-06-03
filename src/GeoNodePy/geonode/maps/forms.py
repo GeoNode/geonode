@@ -17,9 +17,8 @@ class LayerUploadForm(forms.Form):
     dbf_file = forms.FileField(required=False)
     shx_file = forms.FileField(required=False)
     prj_file = forms.FileField(required=False)
-    metadata_file = forms.FileField(required=False)
 
-    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "metadata_file")
+    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file")
 
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
@@ -43,12 +42,6 @@ class LayerUploadForm(forms.Form):
                     raise forms.ValidationError("It looks like you're "
                         "uploading components from different Shapefiles. "
                         "Please double-check your file selections.")
-            if cleaned["metadata_file"] is not None:
-                metadata_file = cleaned["metadata_file"].name
-                if os.path.splitext(metadata_file)[0] != base_name:
-                    if metadata_file.find('.shp') != -1:
-                        # force rename of file so that file.shp.xml doesn't overwrite as file.shp
-                        cleaned["metadata_file"].name = '%s.xml' % base_name
         return cleaned
 
     def write_files(self):
@@ -71,7 +64,4 @@ class NewLayerUploadForm(LayerUploadForm):
     layer_title = forms.CharField(required=False)
     permissions = JSONField()
 
-    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file", "metadata_file")
-
-class LayerMetadataUploadForm(forms.Form):
-    metadata_file = forms.FileField(required=True)
+    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file")
