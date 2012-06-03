@@ -1226,6 +1226,9 @@ def search_result_detail(request):
     catalogue = get_catalogue()
     rec = catalogue.get_by_uuid(uuid)
 
+    if rec is None:
+        return HttpResponse('No metadata found!', status=500)
+
     extra_links = dict(download=_extract_links(rec))
 
     try:
