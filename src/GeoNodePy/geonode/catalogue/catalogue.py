@@ -83,10 +83,16 @@ class Catalogue(CatalogueServiceWeb):
         return urls
 
     def csw_request(self, layer, template):
+
+        id_pname = 'dc:identifier'
+        if settings.CSW['default']['type'] == 'deegree':
+            id_pname = 'apiso:Identifier'
+
         tpl = get_template(template)
         ctx = Context({
             'layer': layer,
             'SITEURL': settings.SITEURL[:-1],
+            'id_pname': id_pname
         })
         md_doc = tpl.render(ctx)
         md_doc = md_doc.encode("utf-8")
