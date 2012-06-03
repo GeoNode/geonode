@@ -79,7 +79,7 @@ class Catalogue(CatalogueServiceWeb):
 
         urls = []
         for mformat in connection['formats']:
-            urls.append({mformat: self.url_for_uuid(uuid, settings.METADATA_FORMATS[mformat])})
+            urls.append({mformat: self.url_for_uuid(uuid, settings.METADATA_FORMATS[mformat][1])})
         return urls
 
     def csw_request(self, layer, template):
@@ -228,7 +228,12 @@ class Catalogue(CatalogueServiceWeb):
 
     def search(self, keywords, startposition, maxrecords, bbox):
         """CSW search wrapper"""
-        return self.getrecords(typenames='gmd:MD_Metadata csw:Record dif:DIF fgdc:metadata',keywords=keywords, startposition=startposition, maxrecords=maxrecords, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
+
+        formats = []
+        for f in settings.CSW['default']['formats']:
+            formats.append(settings.METADATA_FORMATS[f][0])
+
+        return self.getrecords(typenames=' '.join(formats), keywords=keywords, startposition=startposition, maxrecords=maxrecords, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
 
 def normalize_bbox(bbox):
     """

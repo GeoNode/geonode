@@ -264,10 +264,10 @@ GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 # Catalogue information
 
 METADATA_FORMATS = {
-    'DIF': 'http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/',
-    'Dublin Core': 'http://www.opengis.net/cat/csw/2.0.2',
-    'FGDC': 'http://www.opengis.net/cat/csw/csdgm',
-    'TC211': 'http://www.isotc211.org/2005/gmd',
+    'DIF': ('dif:DIF', 'http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/'),
+    'Dublin Core': ('csw:Record', 'http://www.opengis.net/cat/csw/2.0.2'),
+    'FGDC': ('fgdc:metadata', 'http://www.opengis.net/cat/csw/csdgm'),
+    'TC211': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd'),
 }
 
 # CSW settings
@@ -282,10 +282,6 @@ CSW = {
         #'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
         'formats': ['TC211'],
 
-        # is XML upload enabled for non         
-        # TODO make this better
-        'non_iso_xml_upload_enabled': False,
-    
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         #'url': 'http://localhost/pycsw/trunk/csw.py',
         'url': 'http://localhost:8001/geonetwork/srv/en/csw',
