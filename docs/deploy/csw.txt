@@ -59,6 +59,10 @@ At this point, the CSW server implementation is ready for GeoNode integration. G
       #'type': 'geonetwork',
       #'type': 'deegree',
 
+      # enabled formats
+      # the metadata formats supported by this CSW server implementation
+      'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
+
       # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
       'url': 'http://$HOST/pycsw/csw.py',
       #'url': 'http://$HOST:8080/geonetwork/srv/en/csw',
