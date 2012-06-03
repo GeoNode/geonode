@@ -22,9 +22,11 @@
 </p>
 
 <p><b>{% trans "Metadata:" %}</b>
-{% if md_link %}
-  <a href="{{md_link}}">TC211</a>
-{% endif %}
+{% for mlink in metadata_links %}
+  {% for link in mlink.items %}
+    <a href="{{link.1}}">{{link.0}}</a>
+  {% endfor %}
+{% endfor %}
 </p>
 
 <p><b>{% trans "Keywords:" %}</b>

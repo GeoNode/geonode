@@ -1243,7 +1243,7 @@ def search_result_detail(request):
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
-        'md_link': catalogue.url_for_uuid(uuid, namespaces['gmd']),
+        'metadata_links': catalogue.urls_for_uuid(uuid),
         'keywords': ','.join(keywords),
         'layer': layer,
         'layer_is_remote': layer_is_remote
