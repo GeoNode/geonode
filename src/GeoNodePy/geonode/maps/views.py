@@ -1015,7 +1015,7 @@ def ajax_start_twitter(request):
         return HttpResponse(
             status=200
         )
-    except:
+    except Exception, e:
         return HttpResponse(
             status=500
         )
@@ -1034,8 +1034,8 @@ def tweetview(request):
 
     instanceStarted = twitterInstance.state == 'running'
 
-    if not instanceStarted:
-        redirectPage = 'maps/tweetstartup.html'
+    #if not instanceStarted:
+    #    redirectPage = 'maps/tweetstartup.html'
 
 
 
@@ -2222,12 +2222,13 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             else:
                 owner_name = map.owner.username
 
+        url = ("/" + map.officialurl) if map.officialurl else ("/maps/" + map.urlsuffix) if map.urlsuffix  else "/maps/" + str(map.id)
+
         mapdict = {
             'id' : map.id,
             'title' : map.title,
             'abstract' : map.abstract,
-            'urlsuffix' : map.urlsuffix,
-            'detail' : reverse('geonode.maps.views.view', args=(map.id,)),
+            'detail' : url,
             'owner' : owner_name,
             'owner_detail' : reverse('profiles.views.profile_detail', args=(map.owner.username,)),
             'last_modified' : map.last_modified.isoformat()

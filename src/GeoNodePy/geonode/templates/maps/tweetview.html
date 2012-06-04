@@ -164,14 +164,15 @@ var init = function() {
     var updateArrows = function() {
         rewindDate.disabled = tweetDateStartField.getValue() <= tweetDateStartField.minValue;
         forwardDate.disabled = tweetDateEndField.getValue() >= tweetDateEndField.maxValue;
-        console.log (rewindDate.disabled + ":" + forwardDate.disabled);
+        //console.log (rewindDate.disabled + ":" + forwardDate.disabled);
     };
 
     var tweetFilterField = new Ext.form.TextField({
         id: 'tweetFilter',
         fieldLabel: 'Query',
         name: 'tweetFilter',
-        allowBlank: true,
+        allowBlank: false,
+        value: 'flu',
         labelStyle:"font-weight:bold;text-align:right"
 
     });
@@ -227,16 +228,15 @@ var remoteStore = new Ext.data.JsonStore({
 //});
 
     var updateLayer =  function() {
-        console.log('update');
-        if (tweetPointRecord != null && tweetPointRecord.getLayer().params.LAYERS.indexOf("basic") > -1) {
-            tweetPointRecord["cql_filter"] = "";
-            if (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) {
-                tweetPointRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
-            }
-            tweetPointRecord["cql_filter"] += "Start_Date > '" + tweetDateStartField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateEndField.getValue().format('Y-M-d') + "'";
-            tweetPointRecord.getLayer().params["CQL_FILTER"] = tweetPointRecord["cql_filter"];
-            tweetPointRecord.getLayer().redraw(true);
-        }
+//        if (tweetPointRecord != null && tweetPointRecord.getLayer().params.LAYERS.indexOf("basic") > -1) {
+//            tweetPointRecord["cql_filter"] = "";
+//            if (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) {
+//                tweetPointRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
+//            }
+//            tweetPointRecord["cql_filter"] += "Start_Date > '" + tweetDateStartField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateEndField.getValue().format('Y-M-d') + "'";
+//            tweetPointRecord.getLayer().params["CQL_FILTER"] = tweetPointRecord["cql_filter"];
+//            tweetPointRecord.getLayer().redraw(true);
+//        }
 
         if (tweetHeatRecord != null && tweetHeatRecord.getLayer().params.LAYERS.indexOf("heatmap") > -1) {
             tweetHeatRecord["cql_filter"] = "";
@@ -300,19 +300,19 @@ var remoteStore = new Ext.data.JsonStore({
         title: gettext('Tweet Filter'),
         autoHeight: true,
         bodyStyle: 'padding: 10px 10px 0 10px;',
-        labelWidth: 80,
+        labelWidth: 50,
         defaults: {
             anchor: '95%',
             msgTarget: 'side'
         },
         cls: 'cql-overlay',
-        width: 800,
+        width: 700,
         height: 100,
         layout:"fit",
         items: [
             {
                 layout:"column",
-                width: 800,
+                width: 700,
                 items:[
                 {
                     columnWidth:0.33,
@@ -382,7 +382,8 @@ var chartPanel = new Ext.Panel({
     items : chart
 });
 
-var tweetConfig = {title: "Twitter Trends", source: "0", group: "Twitter", name: "basic",
+
+var tweetConfig = {title: "Twitter Trends", source: "local", group: "Twitter", name: "heatmap",
     url: "http://107.22.230.16", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
     singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true
 };
@@ -398,30 +399,26 @@ var tweetConfig = {title: "Twitter Trends", source: "0", group: "Twitter", name:
 var feedSource = Ext.ComponentMgr.createPlugin(
         tweetConfig, "gx_wmssource"
 );
-var tweetPointRecord = feedSource.createLazyLayerRecord(tweetConfig);
-tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
-        "Tweets",
-        tweetConfig.url, {
-            layers: "basic",
-            transparent: "transparent" in tweetConfig ? tweetConfig.transparent : true,
-            format: tweetConfig.format,
-            tiled: false
-        }, {
-            singleTile: true,
-            ratio: tweetConfig.ratio || 1,
-            visibility: false,
-            opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
-            buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
-            //transitionEffect: 'resize',
-            projection: 'EPSG:900913'
-        }
-));
-app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
-    remoteStore.load({
-        params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], dateStart: tweetDateStartField.getValue(),  dateStart: tweetDateEndField.getValue()}
-    });
-});
-tweetPointRecord.group = tweetConfig.group;
+//var tweetPointRecord = feedSource.createLazyLayerRecord(tweetConfig);
+//tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
+//        "Tweets",
+//        tweetConfig.url, {
+//            layers: "basic",
+//            transparent: "transparent" in tweetConfig ? tweetConfig.transparent : true,
+//            format: tweetConfig.format,
+//            tiled: false
+//        }, {
+//            singleTile: true,
+//            ratio: tweetConfig.ratio || 1,
+//            visibility: false,
+//            opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
+//            buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
+//            //transitionEffect: 'resize',
+//            projection: 'EPSG:900913'
+//        }
+//));
+//tweetPointRecord.group = tweetConfig.group;
+
 
 
 var tweetHeatRecord = feedSource.createLazyLayerRecord(tweetConfig);
@@ -442,23 +439,36 @@ tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
             projection: 'EPSG:900913'
         }
 ));
-//tweetHeatRecord.getLayer().events.register("loadend", tweetRecord.getLayer(), function() {
-//    remoteStore.load({
-//        params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue()}
-//    });
-//});
 tweetHeatRecord.group = tweetConfig.group;
 
 
+app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
+    remoteStore.load({
+        params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], dateStart: tweetDateStartField.getValue(),  dateStart: tweetDateEndField.getValue()}
+    });
+});
+
+
 app.on("ready", function() {
+
+    app.mapPanel.layers.each(function (candidate) {
+        //console.log("NAME:" + candidate.get("name"));
+        if (candidate.get("name") == "heatmap")
+        {
+            //console.log("Remove saved heatmap");
+            app.mapPanel.layers.remove(candidate, true);
+            //console.log("Successfully removed");
+        }
+
+    });
 
     app.mapPanel.layers.add([tweetHeatRecord]);
     app.addCategoryFolder(tweetHeatRecord.get("group"), "true");
     app.reorderNodes(tweetHeatRecord.getLayer());
 
-    app.mapPanel.layers.add([tweetPointRecord]);
-    app.addCategoryFolder(tweetPointRecord.get("group"), "true");
-    app.reorderNodes(tweetPointRecord.getLayer());
+//    app.mapPanel.layers.add([tweetPointRecord]);
+//    app.addCategoryFolder(tweetPointRecord.get("group"), "true");
+//    app.reorderNodes(tweetPointRecord.getLayer());
 
 });
 

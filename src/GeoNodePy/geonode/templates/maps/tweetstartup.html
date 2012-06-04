@@ -25,9 +25,23 @@ Ext.onReady(function() {
 
 {% block main %}
 <div class="twocol" style="min-height:400px">
-    <h2>{% trans "Twitter Server is starting up" %}</h2>
-The on-demand server responsible for querying and displaying tweets is starting up.
-Please wait about 5 minutes then revisit the <a href="/tweetmap">Twitter Map page</a> (http://worldmap.harvard.edu/tweetmap)
+    <h2>{% trans "Welcome to GEOPS-WorldMap: Collaboration for Big Geodata" %}</h2>
+    <p>The system is now starting up and will take approximately 5 minutes to become active.</p>
+
+    <p>We have implemented the system in this way to demonstrate the power of Graphics Processing Units (GPUs) for analyzing large geospatial datasets while we apply for project funding.  The approach allows us to run this application on a minimal budget while also demonstrating a simple method by which any organization can take advantage of Amazon’s   “just in time” infrastructure, firing up sleeping servers as needed.  Our system automatically shuts down after half an hour of non-use.</p>
+
+    <p>This is not to say that GPU servers are terribly expensive. The Amazon server we are using, if purchased as a reserve instance with an up front cost of $6830 per year, would cost about $355/month to run (not including data storage and bandwidth).  One can purchase such a server off-the-shelf for under $5000. Compute power that used to require a supercomputer is now available for not much more than the cost of a standard desktop.</p>
+
+    <p>Thank you for your patience.  We expect to have GEOPS running on a full time server soon.</p>
+
+
+    <p>Sincerely,</p>
+
+    Todd Mostak<br />
+    Matt Bertrand<br />
+    Ben Lewis<br />
+
+    <br />Harvard University
 </div>
 
 

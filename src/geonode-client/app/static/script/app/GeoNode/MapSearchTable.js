@@ -175,11 +175,13 @@ GeoNode.MapSearchTable = Ext.extend(Ext.util.Observable, {
         
         var el = Ext.get(this.renderTo);
         el.update(widgetHTML);
+
+
         var input_el = el.query('.search-input')[0];
         var table_el = el.query('.search-table')[0];
         var controls_el = el.query('.search-controls')[0];
 
-        var tpl = new Ext.Template('<p><b>' + this.mapAbstractLabelText + ':</b> {abstract}</p>'+ '<p><a href="/maps/{id}">' + this.mapLinkLabelText + '</a></p>');
+        var tpl = new Ext.Template('<p><b>' + this.mapAbstractLabelText + ':</b> {abstract}</p>'+ '<p><a href="{detail}">' + this.mapLinkLabelText + '</a></p>');
         var expander = new Ext.grid.RowExpander({tpl: tpl});
         expander.on("expand", function(expander, record, body, idx) {
             Ext.select("a", Ext.get(body)).on("click", function(evt) {
