@@ -1,11 +1,11 @@
-{% extends "page_layout.html" %}
+{% extends "maps/base.html" %}
 {% load i18n %}
 
 {% block head %} 
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {{ block.super }}
-<script  type="text/javascript">
+<script type="text/javascript">
 {% autoescape off %}
         {% if map_status %} 
         var checkStatus, progress, pb, process;
@@ -62,52 +62,59 @@
 
 {% block main %}
 <div class="twocol">
-  <h3>Download {{map.title}}</h3>
+  <h3>{% trans "Download" %} {{map.title}}</h3>
   <p>
     {% blocktrans %}
-    Here you can download all the layers of this map that
-    are hosted on this GeoNode.  The following layers will
-    be downloaded:
+      Here you can download all the layers of this map that
+      are hosted on this GeoNode.  The following layers will
+      be downloaded:
     {% endblocktrans %}
     <ul>
       {% for layer in downloadable_layers %} 
-      <li>
-        {% if layer.local %} {{ layer.local_link|safe }}
-        {% else %} {{ layer }}
-        {% endif %}
-      </li>
+        <li>
+          {% if layer.local %}
+            {{ layer.local_link|safe }}
+          {% else %}
+            {{ layer }}
+          {% endif %}
+        </li>
       {% endfor %} 
-    </ul>     
+    </ul>
+   
     {% if locked_layers %}
-    {% blocktrans %}
-    Additionally, the map contains these layers which will not be downloaded
-    due to security restrictions:
-    {% endblocktrans %}
+      {% blocktrans %}
+        Additionally, the map contains these layers which will not be downloaded
+        due to security restrictions:
+      {% endblocktrans %}
+      <ul>
+        {% for layer in locked_layers %} 
+          <li>{{ layer.name }}</li>
+        {% endfor %} 
+      </ul>
     {% endif %}
-    <ul>
-      {% for layer in locked_layers %} 
-      <li>{{ layer.name }}</li>
-      {% endfor %} 
-    </ul>
-    {% if remote_layers %}
-    {% blocktrans %}
-    Finally, the map contains these layers which will not be downloaded
-    because they are not available directly from this GeoNode:
-    {% endblocktrans %}
+
+	  {% if remote_layers %}
+      {% blocktrans %}
+        Finally, the map contains these layers which will not be downloaded
+        because they are not available directly from this GeoNode:
+      {% endblocktrans %}
+      <ul>
+        {% for layer in remote_layers %} 
+          <li>{{ layer }}</li>
+        {% endfor %} 
+      </ul>
     {% endif %}
-    <ul>
-      {% for layer in remote_layers %} 
-      <li>{{ layer }}</li>
-      {% endfor %} 
-    </ul>
+
     {% if map_status %} 
-        <div id="cancel"> </div>
-        <div id="pb"></div>
-     {% else %} 
-     <form action="." method="POST"> 
-       {% csrf_token %}
-       <input type="submit" value="Start downloading this map" /> 
-     </form>
-     {% endif %} 
+      <div id="cancel"> </div>
+      <div id="pb"></div>
+    {% else %} 
+      <form action="." method="POST"> 
+        {% csrf_token %}
+        <div class="form-actions">
+          <input type="submit" class="btn btn-primary" value="{% trans "Start downloading this map" %}" /> 
+        </div>
+      </form>
+    {% endif %} 
 </div>
 {% endblock %}

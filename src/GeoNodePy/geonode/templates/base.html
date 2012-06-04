@@ -1,0 +1,153 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
+    {% block head %}
+      <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
+      <style>
+        body {
+          padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+        footer {
+          margin-top: 30px;
+          padding-top: 10px;
+          border-top: 1px solid #eee;
+        }
+        .nav-logo {
+          float: left;
+          width: 158px;
+          height: 50px;
+          background: url({{ STATIC_URL }}theme/img/logo-bg.png) no-repeat;
+          overflow: hidden;
+          text-indent: -9999em;
+        }
+        .brand {
+          overflow: hidden;
+          text-indent: -9999em;
+        }
+        .navbar .nav > li > a {
+          padding: 15px 10px 16px;
+        }
+
+      </style>
+      <link href="{{ STATIC_URL }}theme/site.css" rel="stylesheet">
+      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet">
+    {% endblock %}
+
+
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a href="{% url home %}">
+            <span class="nav-logo">
+              <a class="brand">{{ SITENAME }}</a>
+            </span>
+          </a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              
+              <li>
+                <a href="{% url home %}">{% trans "Home" %}</a>
+              </li>
+              <li>
+                <a href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a>
+              </li>
+              <li>
+                <a href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a>
+              </li>
+            </ul>
+            <div class="pull-right">
+              {% if user.is_authenticated %}
+                <p class="navbar-text pull-left">{% trans "Logged in as:" %}</p>
+              {% endif %}
+              <ul class="nav pull-right">
+                {% if user.is_authenticated %}
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                      {{ user.username }}
+                      <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li><a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
+                      {% if user.is_staff %}
+                        <li><a href="{% url admin:index %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
+                      {% endif %}
+                      <li class="divider"></li>
+                      <li><a href="{% url auth_logout %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
+                    </ul>
+                  </li>
+                {% else %}
+                    <li><a href="{% url auth_login %}">{% trans "Sign in" %}</a></li>
+                    {% if REGISTRATION_OPEN %}
+                      <li class="navbar-text">{% trans "or" %}</li>
+                      <li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
+                    {% endif %}
+                {% endif %}
+              </ul>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        {% block body_outer %}
+          <div class="span8">
+            {% block main %}{% endblock %}
+          </div>
+          <div class="span4">
+            {% block sidebar %}{% endblock %}
+          </div>
+        {% endblock %}
+      </div>
+
+      <footer class="footer">
+        {% block footer %}
+          <div class="pull-left">
+            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> |
+            <strong>{% trans "Need Help?" %}</strong>
+            <a href="{% url help %}">{% trans "Help" %}</a> |
+            <a href="{% url dev %}">{% trans "For Developers" %}</a>
+          </div>
+          <div class="pull-right">
+            {% if csrf_token != "NOTPROVIDED" %}
+              {% get_current_language as LANGUAGE %}
+              <form class="form-inline" action="/i18n/setlang/" method="post">
+                {% csrf_token %}
+                <label>{% trans "Language" %}</label>
+                <select class="input" name="language" onchange="javascript:form.submit()">
+                  {% for lang in LANGUAGES %}
+                    <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                      {{ lang.1 }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </form>
+            {% endif %}
+          </div>
+        {% endblock %}
+      </footer>
+    </div>
+
+    <script src="{{ STATIC_URL }}bootstrap/js/jquery-1.7.1.min.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+
+    {% block extra_script %}{% endblock extra_script %}
+
+    <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+    <script type="text/javascript" src="{% url lang %}"></script>
+  </body>
+</html>
