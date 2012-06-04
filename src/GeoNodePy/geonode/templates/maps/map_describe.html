@@ -1,21 +1,28 @@
-{% extends "page_layout.html" %}
-{% load i18n %}
+{% extends "maps/base.html" %}
 
-{% block title %} {{ map.title }} - {{ block.super }} {% endblock %}
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% include "geonode/ext_header.html" %}
-{{ block.super }}
+    {% include "geonode/ext_header.html" %}
+    {{ block.super }}
 {% endblock %}
+
 {% block main %}
-<div class="twocol">
-  <h2> {% trans "Editing details for " %} {{ map.title }} </h2>
-  <form action="/maps/{{map.id}}?describe" method="POST">
+  <form action="{{ map.get_absolute_url }}?describe" method="POST">
+    <legend>
+        {% blocktrans with map.title as map_title %}
+            Updating metadata of {{ map_title }}
+        {% endblocktrans %}
+    </legend>
     {% csrf_token %}
-    <ul class="form">
-      {{ map_form.as_ul }}
-      <input type="submit" value="{% trans "Update" %}"/>
-    </ul>
+    <div class="form-controls">
+        {{ map_form|as_bootstrap }}
+    </div>
+    <div class="form-actions">
+      <input type="submit" class="btn btn-primary" value="{% trans "Update metadata" %}"/>
+    </div>
   </form>
-</div>
 {% endblock %}

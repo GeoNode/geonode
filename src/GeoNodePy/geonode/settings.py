@@ -104,6 +104,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
 
     # Third party apps
+    'django_forms_bootstrap',
     'django_extensions',
     'registration',
     'profiles',
@@ -186,7 +187,6 @@ MIDDLEWARE_CLASSES = (
 # Replacement of default authentication backend in order to support
 # permissions per object.
 AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
-
 
 def get_user_url(u):
     from django.contrib.sites.models import Site
@@ -334,7 +334,6 @@ MAP_BASELAYERS = [{
     ]
 
 }]
-
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/static/geonode/"
