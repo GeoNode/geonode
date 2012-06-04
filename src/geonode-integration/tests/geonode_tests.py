@@ -8,12 +8,12 @@ import json
 from unittest import TestCase
 
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.security.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import AnonymousUser
 
 from geoserver.catalog import FailedRequestError
 
-from geonode.core.models import *
+from geonode.security.models import *
 from geonode.maps.models import Layer
 from geonode.maps.views import set_layer_permissions
 
@@ -32,7 +32,7 @@ TEST_DATA = os.path.join(settings.PROJECT_ROOT, 'geonode_test_data')
 LOGIN_URL=settings.SITEURL + "accounts/login/"
 
 class GeoNodeCoreTest(TestCase):
-    """Tests geonode.core app/module
+    """Tests geonode.security app/module
     """
 
     def setUp(self):

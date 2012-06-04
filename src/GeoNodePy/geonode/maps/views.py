@@ -1,4 +1,4 @@
-from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, \
      get_csw
 from geoserver.resource import FeatureType
