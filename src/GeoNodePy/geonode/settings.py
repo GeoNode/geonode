@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Django settings for the GeoNode project.
-from urllib import urlencode
 import os
 
 #
