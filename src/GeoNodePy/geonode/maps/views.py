@@ -139,8 +139,8 @@ def maps(request): # , mapid=None):
             map_obj.set_default_permissions()
             try:
                 map_obj.update_from_viewer(request.raw_post_data)
-            except ValueError e:
-                return HttpReponse(str(e), status=400)
+            except ValueError, e:
+                return HttpResponse(str(e), status=400)
             else:
                 response = HttpResponse('', status=201)
                 response['Location'] = map_obj.id
