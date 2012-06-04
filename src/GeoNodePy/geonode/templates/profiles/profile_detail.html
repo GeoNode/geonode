@@ -1,36 +1,37 @@
 {% extends "profiles/base.html" %}
+
+{% load i18n avatar_tags %}
+
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {{ block.super }}
 {% endblock %}
-{% load i18n avatar_tags %}
-{% block content %}
-<div class="threecol">
-  <div style="float: right">{% avatar profile.user 70 %}</div>
-  <h2>{{ profile.name }}</h2>
-  {% if user == profile.user %}
-  <h3>{% trans "Actions" %}</h3>
-  <ul>
-    {% if user == profile.user %}
-    <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
-    <li><a href="{% url auth_password_change %}">{% trans "Change password" %}</a></li>
-    {% endif %}
-    <li><a href="{% url data_upload %}">{% trans "Upload new data" %}</a></li>
-    <li><a href="{% url maps_new %}">{% trans "Create a new map" %}</a></li>
-  </ul>
-  <h3>{% trans "Settings" %}</h3>
-  <ul>
-    <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
-  </ul>
-  {% endif %}
-</div>
+
+{% block main %}
+  <h2>{% trans "Maps & Data" %}</h2>
+  <div id="assets"></div>
 {% endblock %}
+
 {% block sidebar %}
-<div class="twocol">
-    <h2> {% trans "Maps & Data" %} </h2>
-    <div id="assets"></div>
-</div>
+  <div class="pull-right">{% avatar profile.user 70 %}</div>
+  <h3>{{ profile.name }}</h3>
+  {% if user == profile.user %}
+    <ul class="nav nav-list">
+      <li class="nav-header">{% trans "Actions" %}</li>
+      {% if user == profile.user %}
+        <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
+        <li><a href="{% url auth_password_change %}">{% trans "Change password" %}</a></li>
+      {% endif %}
+      <li><a href="{% url data_upload %}">{% trans "Upload new data" %}</a></li>
+      <li><a href="{% url maps_new %}">{% trans "Create a new map" %}</a></li>
+      <li class="nav-header">{% trans "Settings" %}</li>
+      <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
+    </ul>
+  {% endif %}
+{% endblock %}
+
+{% block extra_script %}
 <script type="text/javascript">
 Ext.onReady(function() {
     var mapsAndLayers = [];

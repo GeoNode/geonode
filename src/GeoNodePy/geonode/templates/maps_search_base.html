@@ -1,5 +1,6 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
 {% load i18n %}
+{% load bootstrap_tags %}
 
 {% block title %} {% trans "Search Maps" %} - {{ block.super }} {% endblock %}
 
@@ -26,17 +27,14 @@ Ext.onReady(function(){
 {% endblock %}
 
 {% block main %} 
-<div class="twocol">
-  <div class="block">
-    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
+  <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
 
-    <div id="search_results"></div>  
+  <div id="search_results"></div>  
 
-    <p class="explain">{%trans "Click the <b>+</b> on any row to show map abstract." %}
-      {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
-    </p>
-  </div>
-</div>
+  <p class="explain">{%trans "Click the <b>+</b> on any row to show map abstract." %}
+    {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
+  </p>
+
 {% endblock %}
 
 {% block sidebar %}

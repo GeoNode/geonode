@@ -1,9 +1,14 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
+
 {% load i18n %}
-{% block title %} {% trans "OGC Services" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "OGC Services" %} — {{ block.super }} {% endblock %}
 
 {% block main %}
-<div class="twocol">
+  <header class="jumbotron subhead" id="overview">
+    <h1>{% trans "Information for Developers" %}</h1>
+    <p class="lead">{% trans "Useful information for developers interested in GeoNode." %}</p>
+  </header>
+
   <p>The GeoNode is an open service built on open source software. We encourage you to build new applications using the its components and the resources it provides. This page is a starting point for developers interesting in taking full advantage of the GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>
 
   <h4>GeoNode Software</h4>
@@ -40,18 +45,27 @@
 
   <h4>GeoTools Example Code</h4>
   <p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>
-</div>
 {% endblock %}
-{% block sidebar %}
-<div class="threecol">
 
+{% block sidebar %}
   <h3>{% trans "GeoNode's Web Services" %}</h3>
   <p>{% trans "GeoNode's Web Services are available from the following URLs:" %}</p>
-  <ul>
-    <li><strong>{% trans "Dynamic tiles via WMS:" %}</strong> <a href="{{GEOSERVER_BASE_URL}}wms?request=GetCapabilities&version=1.1.1&service=WMS">WMS 1.1.1</a></li>
-    <li><strong>{% trans "Vector data via WFS:" %}</strong> <a href="{{GEOSERVER_BASE_URL}}wfs?request=GetCapabilities&version=1.1.0&service=WFS">WFS 1.1.0</a></li>
-    <li><strong>{% trans "Metadata search via CSW:" %}</strong> <a href="{{GEONETWORK_BASE_URL}}srv/en/csw?request=GetCapabilities&version=2.0.2&service=CSW">CSW 2.0.2</a></li>
-    <li><strong>{% trans "Cached tiles via WMTS:" %}</strong> <a href="{{GEOSERVER_BASE_URL}}gwc/service/wmts?service=WMTS&request=GetCapabilities&version=1.0.0">WMTS 1.0.0</a></li>
-  </ul>
-</div>
+  <table class="table table-striped table-condensed">
+    <tr>
+      <td><strong>{% trans "Dynamic tiles via WMS:" %}</strong></td>
+      <td><a href="{{GEOSERVER_BASE_URL}}wms?request=GetCapabilities&version=1.1.1&service=WMS">WMS 1.1.1</a></td>
+    </tr>
+    <tr>
+      <td><strong>{% trans "Vector data via WFS:" %}</strong></td>
+      <td><a href="{{GEOSERVER_BASE_URL}}wfs?request=GetCapabilities&version=1.1.0&service=WFS">WFS 1.1.0</a></td>
+    </tr>
+    <tr>
+      <td><strong>{% trans "Metadata search via CSW:" %}</strong></td>
+      <td><a href="{{GEONETWORK_BASE_URL}}srv/en/csw?request=GetCapabilities&version=2.0.2&service=CSW">CSW 2.0.2</a></td>
+    </tr>
+    <tr>
+      <td><strong>{% trans "Cached tiles via WMTS:" %}</strong></td>
+      <td><a href="{{GEOSERVER_BASE_URL}}gwc/service/wmts?service=WMTS&request=GetCapabilities&version=1.0.0">WMTS 1.0.0</a></td>
+    </tr>
+  </table>
 {% endblock %}

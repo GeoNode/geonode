@@ -1,4 +1,4 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 
 {% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
@@ -49,7 +49,6 @@ Ext.onReady(function(){
 {% endblock %}
 
 {% block main %} 
-<div class="twocol">
   <div class="block">
     <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
@@ -58,11 +57,9 @@ Ext.onReady(function(){
     {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
     </p>
   </div>
-</div>
 {% endblock %}
 
 {% block sidebar %}
-<div class="threecol">
   <div id="refine" class="block">
     <h3>{% trans "Refine Search" %}</h3>
     <div class="bbox-controls">
@@ -94,5 +91,4 @@ Ext.onReady(function(){
       </form>
     </div>
   </div>
-</div>
 {% endblock %}
