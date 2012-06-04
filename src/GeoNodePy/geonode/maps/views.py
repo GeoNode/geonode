@@ -140,7 +140,7 @@ def maps(request): # , mapid=None):
                 map_obj.set_default_permissions()
                 map_obj.update_from_viewer(request.raw_post_data)
                 response = HttpResponse('', status=201)
-                response['Location'] = map.id
+                response['Location'] = map_obj.id
                 return response
             except json.JSONDecodeError:
                 return HttpResponse(status=400)
