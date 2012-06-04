@@ -134,16 +134,14 @@ def maps(request): # , mapid=None):
                 status=401
             )
         else:
-            try:
-                map_obj = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
-                map_obj.save()
-                map_obj.set_default_permissions()
-                map_obj.update_from_viewer(request.raw_post_data)
-                response = HttpResponse('', status=201)
-                response['Location'] = map_obj.id
-                return response
-            except json.JSONDecodeError:
-                return HttpResponse(status=400)
+            map_obj = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
+            map_obj.save()
+            map_obj.set_default_permissions()
+            map_obj.update_from_viewer(request.raw_post_data)
+            response = HttpResponse('', status=201)
+            response['Location'] = map_obj.id
+            return response
+
 
 def mapJSON(request, mapid):
     if request.method == 'GET':
