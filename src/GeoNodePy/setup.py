@@ -18,7 +18,6 @@ setup(name='GeoNodePy',
           "OWSLib==0.4.0",
           "Django>=1.1",
           "PIL",
-          "simplejson",
           "django-extensions",
           "httplib2"
       ],
