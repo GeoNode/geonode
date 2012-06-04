@@ -1083,13 +1083,17 @@ class UtilsTest(TestCase):
         d = None
         try:
             d = tempfile.mkdtemp()
-            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
+            files = ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.shp", "foo.shx", "foo.prj", "foo.dbf")
+            for f in files:
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
                 open(path, 'w').close()  
 
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+            # Only run the tests if this is a case sensitive OS
+            if len(os.listdir(d)) == len(files):
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -1098,13 +1102,16 @@ class UtilsTest(TestCase):
         d = None
         try:
             d = tempfile.mkdtemp()
-            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.prj"):
+            files = ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.prj")
+            for f in files:
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
                 open(path, 'w').close()  
 
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+            # Only run the tests if this is a case sensitive OS
+            if len(os.listdir(d)) == len(files):
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -1113,13 +1120,16 @@ class UtilsTest(TestCase):
         d = None
         try:
             d = tempfile.mkdtemp()
-            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.SLD", "foo.sld"):
+            files = ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.SLD", "foo.sld")
+            for f in files:
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
                 open(path, 'w').close()  
 
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+            # Only run the tests if this is a case sensitive OS
+            if len(os.listdir(d)) == len(files):
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
             if d is not None:
                 shutil.rmtree(d)
