@@ -12,7 +12,7 @@
  xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd"
  xmlns:ogc="http://www.opengis.net/ogc"> 
  <csw:Update> 
-  {% include "maps/csw/full_metadata.xml" %}
+  {% include "csw/full_metadata.xml" %}
   <csw:Constraint version="1.1.0"> 
    <ogc:Filter> 
     <ogc:PropertyIsEqualTo> 
