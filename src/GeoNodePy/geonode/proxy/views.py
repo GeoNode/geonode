@@ -2,9 +2,7 @@ from django.http import HttpResponse
 from httplib import HTTPConnection
 from urlparse import urlsplit
 import httplib2
-import urllib
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 
 def proxy(request):
     if 'url' not in request.GET:
