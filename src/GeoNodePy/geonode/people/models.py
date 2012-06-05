@@ -48,7 +48,7 @@ class Contact(ProfileBase):
             raise ValidationError('Either name or organization should be provided')
 
     def get_absolute_url(self):
-        return ('profiles_profile_detail', (), { 'username': self.user.username })
+        return ('profile_detail', (), { 'username': self.user.username })
     get_absolute_url = models.permalink(get_absolute_url)
 
     def __unicode__(self):
