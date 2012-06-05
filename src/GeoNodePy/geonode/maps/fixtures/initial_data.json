@@ -53,7 +53,7 @@
 },
 {
     "pk": 1,
-    "model": "core.objectrole",
+    "model": "security.objectrole",
     "fields": {
         "codename": "map_readonly",
         "title": "Read Only",
@@ -66,7 +66,7 @@
 },
 {
     "pk": 2,
-    "model": "core.objectrole",
+    "model": "security.objectrole",
     "fields": {
         "codename": "map_readwrite",
         "title": "Read/Write",
@@ -80,7 +80,7 @@
 },
 {
     "pk": 3,
-    "model": "core.objectrole",
+    "model": "security.objectrole",
     "fields": {
         "codename": "map_admin",
         "title": "Administrative",
@@ -96,7 +96,7 @@
 },
 {
     "pk": 4,
-    "model": "core.objectrole",
+    "model": "security.objectrole",
     "fields": {
         "codename": "layer_readonly",
         "title": "Read Only",
@@ -109,7 +109,7 @@
 },
 {
     "pk": 5,
-    "model": "core.objectrole",
+    "model": "security.objectrole",
     "fields": {
         "codename": "layer_readwrite",
         "title": "Read/Write",
@@ -123,7 +123,7 @@
 },
 {
     "pk": 6,
-    "model": "core.objectrole",
+    "model": "security.objectrole",
     "fields": {
         "codename": "layer_admin",
         "title": "Administrative",
