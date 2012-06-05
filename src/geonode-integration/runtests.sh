@@ -14,7 +14,7 @@ fi
 # How can we test if its already activated?
 # Assumes that geonode and geonode_tests are next to each other
 echo ">>>> Activating VirtualEnv"
-source $GEONODE_HOME/bin/activate
+source ../../bin/activate
 
 # Run the tests
 echo ">>>> Running GeoNode Integration Tests" 
