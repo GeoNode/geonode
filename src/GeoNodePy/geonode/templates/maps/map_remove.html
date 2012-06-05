@@ -1,16 +1,21 @@
-{% extends "page_layout.html" %}
-{% load i18n %}
+{% extends "maps/base.html" %}
 
-{% block title %} {{ map.title }} - {{ block.super }} {% endblock %}
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title %}{% trans "Deleting" %} {{ map.title }} — {{ block.super }}{% endblock %}
 
 {% block main %}
-<h3>{% trans "Are you sure you want to remove"  %} <strong>{{ map.title }}</strong>?</h3>
-
 <form action="/maps/{{map.id}}?remove" method="POST">
-	{% csrf_token %}
-	<input type="submit" value="{% trans "Yes, I am sure"  %}" />
-</form>
-<form action="/maps/{{map.id}}" method="GET">
-    <button type="submit">{% trans "No, don't remove it" %}</button>
+  <legend>
+    {% blocktrans with map.title as map_title %}
+        Are you sure you want to remove {{ map_title }}?
+    {% endblocktrans %}
+  </legend>
+  {% csrf_token %}
+  <div class="form-actions">
+    <input type="submit" class="btn btn-danger" value="{% trans "Yes, I am sure"  %}" />
+    <a href="{{ map.get_absolute_url }}" class="btn">{% trans "No, don't remove it" %}</a>
+  </div>
 </form>
 {% endblock %}

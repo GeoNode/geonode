@@ -2,7 +2,8 @@
 {% load i18n %}
 
 {% block main %}
-<div class="twocol">
-<p>{% trans "Logged out" %}</p>
-</div>
+<header class="jumbotron subhead" id="overview">
+  <h1>{% trans "Logged out" %}</h1>
+  <p class="lead">{% trans "You have been logged out of GeoNode." %}</p>
+</header>
 {% endblock %}
