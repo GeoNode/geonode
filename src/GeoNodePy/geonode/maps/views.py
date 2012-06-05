@@ -644,6 +644,7 @@ def view(request, mapid):
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        'GEONETWORK_BASE_URL' : settings.GEONETWORK_BASE_URL,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
 
