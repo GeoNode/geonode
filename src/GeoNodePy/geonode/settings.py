@@ -117,7 +117,7 @@ INSTALLED_APPS = (
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
-
+    'geonode.people',
 )
 
 LOGGING = {
@@ -226,7 +226,7 @@ SOUTH_MIGRATION_MODULES = {
 }
 
 # For django-profiles
-AUTH_PROFILE_MODULE = 'maps.Contact'
+AUTH_PROFILE_MODULE = 'people.Contact'
 
 # For django-registration
 REGISTRATION_OPEN = False
