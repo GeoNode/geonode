@@ -611,6 +611,67 @@ body.search-results {
   font-size:@baseFontSize - 1;
 }
 
-.info-bar {
+.view {
+  text-align:right;
+
+  a {
+    zoom: 1;
+    filter: alpha(opacity=60);
+    opacity: 0.6;
+  }
+
+  a.current, a:hover {
+    filter: alpha(opacity=100);
+    opacity: 1;
+  }
+}
+
+.well.info-bar {
+  padding:5px 10px;
   background:@grayLighter;
+
+  div.results-counter {
+    float:left;
+    width:40%;
+  }
+
+  a.save-search {
+    display:block;
+    float:left;
+    width:30%;
+  }
+
+  form {
+    float:right;
+    width:25%;
+
+    select {
+      font-size:@baseFontSize - 2;
+      height:20px;
+      width:90px;
+    }
+  }
+}
+
+.search-results {
+  article {
+    overflow:hidden;
+    background:@grayLighter;
+    padding:15px;
+    margin:9px 0;
+
+    h6 {
+      color:@grayDark;
+      font-size:@baseFontSize;
+      margin-bottom:5px;
+    }
+
+    img.thumb {
+      margin:0 15px 15px 0;
+    }
+
+    .actions a {
+      padding-right:30px;
+    }
+  }
 }
