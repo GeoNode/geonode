@@ -3,6 +3,8 @@
 
 {% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
 
+{% block body_class %}search-results{% endblock %}
+
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
@@ -28,67 +30,298 @@ Ext.onReady(function(){
         searchParams: {{init_search}}
     });
     searchTable.hookupSearchButtons('refine');
-    
+
     var dataCart = new GeoNode.DataCart({
       store: searchTable.dataCart,
       renderTo: 'data_cart'
     });
-    
+
     var dataOps = new GeoNode.DataCartOps({
       cart: dataCart,
       renderTo: 'data_ops',
-      
+
       begin_download_url: '{% url data_download %}',
       stop_download_url: '{{site}}geoserver/rest/process/batchDownload/kill/',
       download_url: '{{site}}geoserver/rest/process/batchDownload/download/'
     });
-    
+
     {% endautoescape %}
 });
 </script>
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/datepicker.css" type="text/css" media="screen" />
 {% endblock %}
 
-{% block main %} 
-  <div class="block">
-    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+{% block body_outer %}
+  <aside class="span4 search-filters">
+    <div class="well">
+      <header class="well-header">
+        <h3>{% trans "Refine your search" %}</h3>
+      </header>
+      <section class="selections">
+        <h4>
+          {% trans "Your selections" %}
+          <a href="#" class="pull-right">Clear all</a>
+        </h4>
+        <ul class="unstyled">
+          <li>Lorem ipsum amet <a href="#" class="pull-right">remove</a></li>
+          <li>Sed do eiusmod dolore <a href="#" class="pull-right">remove</a></li>
+          <li>Quis nostrud <a href="#" class="pull-right">remove</a></li>
+        </ul>
+      </section>
 
-    <div id="search_results"></div>  
-    <p class="explain">{%trans "Click the <b>+</b> on any row to show layer metadata or download in PDF, KML, GeoTIFF, or SHP." %}
-    {% trans "To bookmark your current search use this" %} <a href="#" class="permalink">{% trans "permalink" %}</a>
-    </p>
-  </div>
-{% endblock %}
+      <div class="refine-search">
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter1" class="expand-content" data-toggle="collapse">Type <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter1" class="collapse in">
+                <form action="">
+                  <label class="checkbox">
+                    <input type="checkbox" /> Maps <span>(13)</span>
+                  </label>
+                  <label class="checkbox">
+                    <input type="checkbox" /> Data <span>(12)</span>
+                  </label>
+                  <div class="subgroup">
+                    <label class="checkbox">
+                      <input type="checkbox" /> Raster <span>(3)</span>
+                    </label>
+                    <label class="checkbox">
+                      <input type="checkbox" /> Vector <span>(6)</span>
+                    </label>
+                    <label class="checkbox">
+                      <input type="checkbox" /> Document <span>(1)</span>
+                    </label>
+                    <label class="checkbox">
+                      <input type="checkbox" /> Feed <span>(2)</span>
+                    </label>
+                  </div>
+                  <label class="checkbox">
+                    <input type="checkbox" /> User <span>(4)</span>
+                  </label>
+                  <label class="checkbox">
+                    <input type="checkbox" /> Group <span>(3)</span>
+                  </label>
+                </form>
+            </div>
+        </section>
 
-{% block sidebar %}
-  <div id="refine" class="block">
-    <h3>{% trans "Refine Search" %}</h3>
-    <div class="bbox-controls">
-      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
-      <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
-      <div class="bbox-expand">
+        <section>
+          <header>
+              <h4>
+                  <a href="#filter2" class="expand-content" data-toggle="collapse">Spatial Extent <i class="icon-chevron-right pull-right"></i></a>
+              </h4>
+          </header>
+          <div id="filter2" class="collapse in">
+            <form action="">
+              <label class="checkbox">
+                <input type="checkbox" /> Area 1
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" /> Area 2
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" /> Area 3
+              </label>
+            </form>
+          </div>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter3" class="expand-content" data-toggle="collapse">Temporal Extent <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter3" class="collapse in">
+                <p>Limit the search to a specific time period</p>
+                <form action="">
+                    <label for="">Events begin after:</label>
+                    <input data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+                    <label for="">Events begin before:</label>
+                    <input data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+                </form>
+            </div>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter4" class="expand-content" data-toggle="collapse">Category <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter4" class="collapse">
+              <p>Categories</p>
+            </div>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter5" class="expand-content" data-toggle="collapse">Keywords <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter5" class="collapse">
+              <p>Keywords</p>
+            </div>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter6" class="expand-content" data-toggle="collapse">Metadata Date <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter6" class="collapse">
+              <p>Metadata Date</p>
+            </div>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter7" class="expand-content" data-toggle="collapse">Services <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter7" class="collapse">
+              <p>Services</p>
+            </div>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter8" class="expand-content" data-toggle="collapse">Raster Params <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter8" class="collapse">
+              <p>Raster Params</p>
+            </div>
+        </section>
+
+
       </div>
     </div>
-    <div class="search-button">Refine</div>
-  </div>
-  <div class="block">
-  <h3>{% trans "Selected Data" %}</h3>
-    <p><span class="explain">{% blocktrans %}Use the checkboxes in the search results to add data to your selection.{% endblocktrans%}</span></p>
-  <div id="selection">
-    <div id="data_cart"></div>
+  </aside>
+  <div class="span8">
+    <h2 class="page-title">{% trans "Search" %}</h2>
+    <h4>You searched for "lorem ipsum"</h4>
+    <div class="row">
+      <div class="span6">
+        <p class="related-search">
+          <strong>related searches:</strong>
+          <a href="#">consectetur</a>
+          <a href="#">adipisicing elit</a>
+          <a href="#">se eiusmod</a>
+          <a href="#">tempor incididunt</a>
+          <a href="#">abore et dolore</a>
+        </p>
+      </div>
+      <div class="span2">
+        <div class="view">
+          <strong>View:</strong>
+          <a href="#" class="list current"><i class="icon-th-list"></i></a>
+          <a href="#" class="thumb"><i class="icon-th-large"></i></a>
+        </div>
+      </div>
     </div>
-    <div id="data_ops">
-      <ul>
-        <li><a href="#" class="create-map">{% trans "Create a new map" %}</a></li>
-        <li><span class="export">{% trans "Export selected" %}:</span>
-            <a href="#mixed" class="batch-download">Zip</a> 
-        </li>
-    <!--    <li><span class="export">{% trans "Export selected" %}:</span>
-            <a href="#shp" class="batch-download">Shapefile</a>, 
-            <a href="#geotiff" class="batch-download">GeoTiff</a>
-        </li> -->
-      </ul>
-      <form id="create_map_form" action="{% url maps_new %}" method="POST">
+
+    <div class="well info-bar">
+      <div class="results-counter"><strong>396 results</strong> found for <strong>lorem ipsum</strong></div>
+      <a href="#" class="save-search"><i class="icon-star"></i> Save Search</a>
+      <form action="" class="form-inline">
+        <label for="">sort by:</label>
+        <select name="" id="" class="span1">
+          <option value="">Newest</option>
+          <option value="">Popular</option>
+        </select>
       </form>
     </div>
+
+    {% include "_pagination.html" %}
+
+    <div class="search-results">
+      <article>
+        <h6>Map</h6>
+        <img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" />
+        <div class="details">
+          <h5>Title of the Map goes right here</h5>
+          <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+        </div>
+      </article>
+
+      <article>
+        <h6>Map</h6>
+        <img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" />
+        <div class="details">
+          <h5>Title of the Map goes right here</h5>
+          <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+        </div>
+      </article>
+
+      <article>
+        <h6>Data</h6>
+        <img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" />
+        <div class="details">
+          <h5>Title of the Map goes right here</h5>
+          <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+          <p class="actions"><a href="#">Download Data</a> <a href="#">Create Map using this Data</a></p>
+        </div>
+      </article>
+
+      <article>
+        <h6>Data</h6>
+        <img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" />
+        <div class="details">
+          <h5>Title of the Map goes right here</h5>
+          <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+          <p class="actions"><a href="#">Download Data</a> <a href="#">Create Map using this Data</a></p>
+        </div>
+      </article>
+    </div>
+
+    {% include "_pagination.html" %}
+
   </div>
+{% endblock %}
+
+{% block extra_script %}
+    <script src="{{ STATIC_URL }}geonode/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function() {
+          $(".expand-content").click(function(event) {
+              event.preventDefault();
+          });
+          $(".date").datepicker();
+
+          // view
+          $(".view .thumb").click(function(event) {
+              $(this).addClass('current');
+              $('.view .list').removeClass('current');
+              $('.search-results').addClass('row');
+              $('.search-results article').wrap('<div class="span4" />');
+              $('.search-results article img').attr('width', '100%');
+              event.preventDefault();
+          });
+
+          $(".view .list").click(function(event) {
+              $(this).addClass('current');
+              $('.view .thumb').removeClass('current');
+              $('.search-results').removeClass('row');
+              $('.search-results article').unwrap('<div class="span4" />');
+              $('.search-results article img').attr('width', '25%');
+              event.preventDefault();
+          });
+        });
+    </script>
 {% endblock %}
