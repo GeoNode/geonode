@@ -4,8 +4,8 @@ from django.db import models
 from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
-from geonode.core.models import PermissionLevelMixin
-from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.models import PermissionLevelMixin
+from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 from taggit.managers import TaggableManager
