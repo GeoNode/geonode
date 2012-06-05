@@ -1,9 +1,14 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
+
 {% load i18n %}
 {% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
 
 {% block main %} 
-<div class="twocol">
+  <header class="jumbotron subhead" id="overview">
+    <h1>{% trans "GeoNode Help" %}</h1>
+    <p class="lead">{% trans "This page provides helpful information about how to use the GeoNode. You can use the sidebar links to navigate to what you want to know." %}</p>
+  </header>
+
   {% blocktrans %}
   <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>
 
@@ -53,22 +58,16 @@
   </ol>
   <p>You will be able to see your new map when you search for it from the <a href="maps">Maps</a> tab.</p> 
   {% endblocktrans %} 
-</div>
 {% endblock %}
 
 {% block sidebar %}
-<div class="threecol">
-  <h3>{% trans "GeoNode Help" %}</h3>
-  {% blocktrans %} 
-  <p>This page provides helpful information about how to use the GeoNode. You can use the links below to navigate to what you want to know.</p>
-  <ul>
-    <li><a href="#browsing-data">Browsing Data</a></li>
-    <li><a href="#developer-access">Developer Access</a></li>
-    <li><a href="#browsing-maps">Browsing Maps</a></li>
-    <li><a href="#creating-a-map">Creating a Map</a></li>
-    <li><a href="#exporting-a-map">Exporting a Map</a></li>
-    <li><a href="#remixing-a-map">Remixing a Map</a></li>
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans "Sections" %}</li>
+    <li><a href="#browsing-data">{% trans "Browsing Data" %}</a></li>
+    <li><a href="#developer-access">{% trans "Developer Access" %}</a></li>
+    <li><a href="#browsing-maps">{% trans "Browsing Maps" %}</a></li>
+    <li><a href="#creating-a-map">{% trans "Creating a Map" %}</a></li>
+    <li><a href="#exporting-a-map">{% trans "Exporting a Map" %}</a></li>
+    <li><a href="#remixing-a-map">{% trans "Remixing a Map" %}</a></li>
   </ul>
-  {% endblocktrans %}
-</div>
 {% endblock %}

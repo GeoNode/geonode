@@ -1,0 +1,120 @@
+{% extends "maps/base.html" %}
+{% load i18n %}
+
+{% block head %} 
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{{ block.super }}
+<script type="text/javascript">
+{% autoescape off %}
+        {% if map_status %} 
+        var checkStatus, progress, pb, process;
+
+        function update() { 
+            Ext.Ajax.request({ 
+                url : "{% url maps_download_check %}",
+                method: "GET",              
+                success: function(result) { 
+                    process = Ext.util.JSON.decode(result.responseText);
+                    if (process["process"]["status"] === "FINISHED"){ 
+                        location.href = "{{site}}geoserver/rest/process/batchDownload/download/" +  process["process"]["id"] ; ; 
+                        clearInterval(checkStatus); 
+                        pb.updateProgress(1,"Done....",true);
+                    } 
+                    else { 
+                        pb.updateProgress(process["process"]["progress"]/100,"Downloading...",true); 
+                    } 
+                }});                 
+        };
+
+        Ext.onReady(function() {         
+            checkStatus = setInterval("update()",1000);
+            pb = new Ext.ProgressBar({
+                text:'Downloading...',
+                id:'pbar',
+                cls:'left-align',
+                renderTo:'pb'
+            });
+            cancel = new Ext.Button({ 
+                text: 'Cancel',
+                id: 'cancel',
+                renderTo: 'cancel',
+                handler: function() { 
+                    Ext.Ajax.request({ 
+                        url : "{{site}}geoserver/rest/process/batchDownload/kill/" + process["process"]["id"],
+                        method: "GET",
+                        success: function(result) { 
+                            alert("You sucessfuly canceled the download"); 
+                            location.href = "{{site}}maps/{{map.id}}"; 
+                            clearInterval(checkStatus);
+                        },
+                        failure: function(result) { 
+                            console.log(result); 
+                            clearInterval(checkStatus); // break if something fails
+                        } 
+                    }) } }); 
+            
+        });
+        {% endif %} 
+{% endautoescape %}
+</script>
+{% endblock %} 
+
+{% block main %}
+<div class="twocol">
+  <h3>{% trans "Download" %} {{map.title}}</h3>
+  <p>
+    {% blocktrans %}
+      Here you can download all the layers of this map that
+      are hosted on this GeoNode.  The following layers will
+      be downloaded:
+    {% endblocktrans %}
+    <ul>
+      {% for layer in downloadable_layers %} 
+        <li>
+          {% if layer.local %}
+            {{ layer.local_link|safe }}
+          {% else %}
+            {{ layer }}
+          {% endif %}
+        </li>
+      {% endfor %} 
+    </ul>
+   
+    {% if locked_layers %}
+      {% blocktrans %}
+        Additionally, the map contains these layers which will not be downloaded
+        due to security restrictions:
+      {% endblocktrans %}
+      <ul>
+        {% for layer in locked_layers %} 
+          <li>{{ layer.name }}</li>
+        {% endfor %} 
+      </ul>
+    {% endif %}
+
+	  {% if remote_layers %}
+      {% blocktrans %}
+        Finally, the map contains these layers which will not be downloaded
+        because they are not available directly from this GeoNode:
+      {% endblocktrans %}
+      <ul>
+        {% for layer in remote_layers %} 
+          <li>{{ layer }}</li>
+        {% endfor %} 
+      </ul>
+    {% endif %}
+
+    {% if map_status %} 
+      <div id="cancel"> </div>
+      <div id="pb"></div>
+    {% else %} 
+      <form action="." method="POST"> 
+        {% csrf_token %}
+        <div class="form-actions">
+          <input type="submit" class="btn btn-primary" value="{% trans "Start downloading this map" %}" /> 
+        </div>
+      </form>
+    {% endif %} 
+</div>
+{% endblock %}

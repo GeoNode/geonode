@@ -1,99 +1,53 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
-{% block indexclass %} class="here" {% endblock %}
 
-{% block head %} 
-{% include "geonode/ext_header.html" %}
-{{ block.super }}
-<script type="text/javascript">
-Ext.onReady(function(){
-{% autoescape off %}
-
-  var exploreMapButton = new Ext.Button({
-     renderTo: 'explore_map', 
-     text: '{% trans "Explore Maps" %}',
-     handler: function(){ window.location = "{% url maps_search %}"; }
-  });
-
-  var createMapButton = new Ext.Button({
-     renderTo: 'create_map', 
-     text: '{% trans "Create Map" %}',
-     handler: function(){ window.location = "{% url maps_new %}"; }
-  });
-
-  var submitForm = function() {
-      Ext.query('#data_block form')[0].submit();
-  };
-
-  var searchButton = new Ext.Button({renderTo: 'submit_search', text: '{% trans "Search" %}',
-                                     handler: submitForm});
-
-  var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
-
-{% endautoescape %}
-});
-</script>
-{% endblock %}
-
-{% block main %} 
-<div class="twocol">
-<!-- TODO: i18n on the text here -->
-  <div class="block">
-    <h2> {% trans "Welcome" %} </h2>
+{% block body_outer %}
+  <div class="hero-unit">
+    <h1>{% trans "Welcome" %}</h1>
     <p>
-    {% blocktrans %}
-  GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our mailing list by emailing <em>geonode@librelist.com</em>.
-    {% endblocktrans %} 
-  </p>
+      {% blocktrans %}
+        GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our mailing list by emailing <em>geonode@librelist.com</em>.
+      {% endblocktrans %}
+    </p>
+    <p>
+      <a class="btn btn-large" href="{% url maps_search %}">
+        {% trans "Explore Maps" %}
+      </a>
+      <a class="btn btn-large" href="{% url maps_new %}">
+        {% trans "Create Map" %}
+      </a>
+    </p>
   </div>
-  <div class="block">
-    <h2> {% trans "Maps" %} </h2>
-    <p>
-    {% blocktrans %} 
-  GeoNode lets you compose and share maps.  <strong>Create</strong>
-      a map with our cartography tool, or <strong>explore</strong> maps
-      shared by others.
-    {% endblocktrans %} 
-  </p>
-    <div class="selfclear">
-      <div id="explore_map" class="content-button"></div>
-      <div id="create_map" class="content-button"></div>
+  <div class="row">
+    <div class="span4">
+      <h2> {% trans "Maps" %} </h2>
+      <p>
+      {% blocktrans %} 
+        GeoNode lets you compose and share maps.  <strong>Create</strong>
+        a map with our cartography tool, or <strong>explore</strong> maps
+        shared by others.
+      {% endblocktrans %} 
+      </p>
+    </div>
+    <div class="span4">
+      <h2> {% trans "Data" %} </h2>
+      <p>
+      {% blocktrans %} 
+        GeoNode lets you upload, manage, and browse data.  
+        <strong>Search</strong> for data that is valuable to you, or 
+        <strong>upload</strong> your own data.
+      {% endblocktrans %} 
+      </p>
+    </div>
+    <div class="span4">
+        <form class="form-search" action="{% url data_search %}" method="POST">
+		  {% csrf_token %}
+          <input type="text" class="input-medium search-query" name="q">
+          <button type="submit" class="btn btn-small">{% trans "Search" %}</button>
+        </form>
+        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
     </div>
   </div>
-  <div id="data_block" class="block">
-    <h2> {% trans "Data" %} </h2>
-    <p>
-    {% blocktrans %} 
-  GeoNode lets you upload, manage, and browse data.  
-      <strong>Search</strong> for data that is valuable to you, or 
-      <strong>upload</strong> your own data.
-    {% endblocktrans %} 
-    </p>
-
-    <!-- Data search text box and button -->
-
-    <form action="{% url data_search %}" method="POST">
-      {% csrf_token %}
-        <table>
-          <tr>
-            <td>
-              <input type="text" id="search_query" name="q" />
-            </td>
-            <td>
-              <div id="submit_search"></div>
-            </td>
-          </tr>
-        </table>
-        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
-    </form>
-  
-    <!-- Links to specialized views of data -->
-    <!-- Upload data button (link?) -->
-    <a class="layer-upload-link" href="{% url data_upload %}">{% trans "Upload data"  %}</a>
-  </div>
-</div>
-{% endblock %}
-{% block sidebar %}
 {% endblock %}
