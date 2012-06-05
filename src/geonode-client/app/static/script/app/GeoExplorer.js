@@ -468,8 +468,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     }
                 });
             } else {
-                buttons[0].disable();
-                buttons[1].disable();
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].disable();
+                }
             }
         }
     },
