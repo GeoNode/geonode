@@ -8,7 +8,7 @@ import json
 from unittest import TestCase
 
 from django.conf import settings
-from django.security.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import AnonymousUser
 
 from geoserver.catalog import FailedRequestError
