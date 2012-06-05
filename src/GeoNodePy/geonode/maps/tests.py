@@ -743,7 +743,7 @@ community."
         from django.template.loader import get_template
 
         layer = Layer.objects.all()[0]
-        tpl = get_template("maps/csw/transaction_insert.xml")
+        tpl = get_template("csw/transaction_insert.xml")
         ctx = Context({
             'layer': layer,
         })
