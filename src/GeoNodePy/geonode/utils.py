@@ -1,7 +1,5 @@
-import pkg_resources
 from UserDict import DictMixin
 from ConfigParser import ConfigParser, NoOptionError
-from pprint import pformat
 import datetime
 import os
 import subprocess

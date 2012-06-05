@@ -39,12 +39,17 @@ Ext.onReady(function() {
                 id: "feature_manager",
                 paging: false,
                 autoSetLayer: true,
-                autoLoadFeatures: true
+                autoLoadFeatures: true,
+                autoActivate: false,
+                listeners: {
+                    'layerchange': function(mgr, layer, schema) {
+                        app.checkLayerPermissions(layer);
+                        }
+                }
             },
             {
                 ptype: "gxp_featureeditor",
                 id: "gn_layer_editor",
-                outputConfig: {id: "gn_layer_editor"},
                 featureManager: "feature_manager",
                 autoLoadFeature: true
             }{% endif %}],
@@ -57,6 +62,7 @@ Ext.onReady(function() {
         rest: "/maps/",
         homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+        localCSWBaseUrl: "{{ GEONETWORK_BASE_URL }}srv/en/csw",
         csrfToken: "{{ csrf_token }}",
         {% if user.is_authenticated %}
         wfs: "/geoserver/wfs",

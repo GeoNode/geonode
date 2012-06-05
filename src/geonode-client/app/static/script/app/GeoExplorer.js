@@ -56,6 +56,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     localGeoServerBaseUrl: "",
 
     /**
+     * api: config[localCSWBaseUrl]
+     * ``String`` url of the local CS-W instance
+     */
+    localCSWBaseUrl: "",
+
+    /**
      * api: config[useMapOverlay]
      * ``Boolean`` Should we add a scale overlay to the map? Set to false
      * to not add a scale overlay.
@@ -357,6 +363,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
     
     loadConfig: function(config) {
+        config.sources['csw'] = {
+            ptype: "gxp_cataloguesource",
+            url: config.localCSWBaseUrl,
+            proxyOptions: {
+                listeners: {
+                    "beforeload": function(proxy, params) {
+                        params.headers = {
+                            'X-CSRFToken': Ext.util.Cookies.get('csrftoken')
+                        };
+                    }
+                }
+            }
+        };
         config.tools = (config.tools || []).concat({
             ptype: "gxp_zoom",
             actionTarget: {target: "paneltbar", index: 4}
@@ -379,6 +398,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             actionTarget: "treecontent.contextMenu"
         }, {
             ptype: "gxp_addlayers",
+            search: true,
             actionTarget: "treetbar",
             createExpander: function() {
                 return new GeoExplorer.CapabilitiesRowExpander({
@@ -414,33 +434,36 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     //Check permissions for selected layer and enable/disable feature edit buttons accordingly
     checkLayerPermissions:function (layer) {
         var buttons = this.tools["gn_layer_editor"].actions;
-        if (layer == null) {
+
+        //Disable if layer is null or selected layer in tree doesn't match input layer
+        var tree_node =  Ext.getCmp("treecontent").getSelectionModel().getSelectedNode();
+        if (layer == null || tree_node == null || tree_node.layer != layer) {
             buttons[0].disable();
             buttons[1].disable();
         }
         else {
-            var changedLayer = layer.getLayer();
             //Proceed if this is a local queryable WMS layer
-            if (!changedLayer.isBaseLayer && layer.get("queryable") === true) {
+            if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
+                    layer.url.indexOf(this.localGeoServerBaseUrl.replace(this.urlPortRegEx, "$1/")) == 0)) {
                 Ext.Ajax.request({
-                    url:"/data/" + changedLayer.params.LAYERS + "/ajax-edit-check",
+                    url:"/data/" + layer.params.LAYERS + "/ajax-edit-check",
                     method:"POST",
-                    params:{layername:changedLayer.params.LAYERS},
                     success:function (result, request) {
                         if (result.status != 200) {
-                            for (i = 0; i < buttons.length; i++) {
+                            for (var i = 0; i < buttons.length; i++) {
                                 buttons[i].disable();
                             }
                         } else {
-                            changedLayer.displayOutsideMaxExtent = true;
-                            for (i = 0; i < buttons.length; i++) {
+                            layer.displayOutsideMaxExtent = true;
+                            for (var i = 0; i < buttons.length; i++) {
                                 buttons[i].enable();
                             }
                         }
                     },
                     failure:function (result, request) {
-                        buttons[0].disable();
-                        buttons[1].disable();
+                        for (var i = 0; i < buttons.length; i++) {
+                            buttons[i].disable();
+                        }
                     }
                 });
             } else {
@@ -521,6 +544,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
 
             layerTree = Ext.getCmp("treecontent");
+            this.tools["gn_layer_editor"].getFeatureManager().activate();
 
         }, this);
 
@@ -551,13 +575,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled.each(function(item) {
                 item.disable();
             });
-
-            if (this.tools["gn_layer_editor"]) {
-                //this.on("layerselectionchange", this.checkLayerPermissions);
-                this.tools["gn_layer_editor"].getFeatureManager().on('layerchange', function(mgr, layer, schema) {
-                    this.checkLayerPermissions(layer);
-                }, this);
-            }
         }, this);
 
         var showContextMenu;
