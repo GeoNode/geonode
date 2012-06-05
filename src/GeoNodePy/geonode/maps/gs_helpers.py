@@ -8,7 +8,7 @@ logger = logging.getLogger("geonode.maps.gs_helpers")
 _punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
 _foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"]
 _backgrounds = ["#880000", "#008800", "#000088", "#888800", "#008888", "#880088"]
-_marks = ["square", "circle", "star", "cross", "x", "triangle"]
+_marks = ["square", "circle", "cross", "x", "triangle"]
 _style_contexts = izip(cycle(_foregrounds), cycle(_backgrounds), cycle(_marks))
 
 def _add_sld_boilerplate(symbolizer):
@@ -48,6 +48,7 @@ _polygon_template = """
   </Fill>
   <Stroke>
     <CssParameter name="stroke">%(fg)s</CssParameter>
+    <CssParameter name="stroke-width">0.7</CssParameter>
   </Stroke>
 </PolygonSymbolizer>
 """
@@ -56,12 +57,16 @@ _line_template = """
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">%(bg)s</CssParameter>
+    <CssParameter name="stroke-width">3</CssParameter>
   </Stroke>
 </LineSymbolizer>
+</Rule>
+</FeatureTypeStyle>
+<FeatureTypeStyle>
+<Rule>
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">%(fg)s</CssParameter>
-    <CssParameter name="stroke-dasharray">2 2</CssParameter>
   </Stroke>
 </LineSymbolizer>
 """
@@ -129,6 +134,12 @@ def fixup_style(cat, resource, style):
             logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
+    if resource is None:
+        # If there is no associated resource,
+        # this method can not delete anything.
+        # Let's return and make a note in the log.
+        logger.debug('cascading_delete was called with a non existant resource')
+        return
     resource_name = resource.name
     lyr = cat.get_layer(resource_name)
     if(lyr is not None): #Already deleted
@@ -140,7 +151,6 @@ def cascading_delete(cat, resource):
                 cat.delete(s, purge=True)
         cat.delete(resource)
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
-            cat.delete(store)
             delete_from_postgis(resource_name)
         else:
             cat.delete(store)

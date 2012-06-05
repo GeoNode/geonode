@@ -1,0 +1,510 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-15 12:30-0500\n"
+"PO-Revision-Date: 2011-12-16 09:43+0700\n"
+"Last-Translator: Firnas Nadirman <firnas.agrisoft.co.id>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Translated-Using: django-rosetta 0.5.6\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
+msgid "Add user..."
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Who can view and download this data?"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Anyone"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:36 static/geonode/script/GeoNode.js.c:38
+msgid "Any registered user"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Only users who can edit"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:37
+msgid "Who can edit this data?"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:38
+msgid "Only the following users or groups:"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:39
+msgid "Who can manage and edit this data?"
+msgstr ""
+
+#: templates/lang.js:9 templates/lang.js.c:12
+msgid "Add Layers"
+msgstr "Tambah Layer"
+
+#: templates/lang.js:10
+msgid "Area"
+msgstr "Area"
+
+#: templates/lang.js:11
+msgid "Background"
+msgstr "Latar"
+
+#: templates/lang.js:13
+msgid "Done"
+msgstr "Selesai"
+
+#: templates/lang.js:14
+msgid "Available Layers"
+msgstr "Layer yang tersedia"
+
+#: templates/lang.js:15
+msgid "Connection Error"
+msgstr "Koneksi tidak berhasil"
+
+#: templates/lang.js:16
+msgid "The server returned an error"
+msgstr "Server menghasilkan error"
+
+#: templates/lang.js:17
+msgid "Details..."
+msgstr "Detail"
+
+#: templates/lang.js:19 templates/lang.js.c:111
+msgid "Height"
+msgstr "Tinggi"
+
+#: templates/lang.js:20
+msgid "Get Feature Info"
+msgstr "Informasi Feature"
+
+#: templates/lang.js:21 templates/lang.js.c:112
+msgid "Large"
+msgstr "Besar"
+
+#: templates/lang.js:22
+msgid "or add a new server."
+msgstr "atau menambah server baru"
+
+#: templates/lang.js:23
+msgid "Map Layers"
+msgstr "Layer peta"
+
+#: templates/lang.js:24
+msgid "View available data from:"
+msgstr "Lihat data yang tersedia dari:"
+
+#: templates/lang.js:25
+msgid "Data"
+msgstr "Data"
+
+#: templates/lang.js:26
+msgid "Layers"
+msgstr "Layer"
+
+#: templates/lang.js:27
+msgid "Legend"
+msgstr "Legenda"
+
+#: templates/lang.js:28
+msgid "Length"
+msgstr "Panjang"
+
+#: templates/lang.js:29
+msgid "Loading Map..."
+msgstr "Mengambil Peta...."
+
+#: templates/lang.js:30 templates/lang.js.c:113
+msgid "Map Size"
+msgstr "Ukuran Peta"
+
+#: templates/lang.js:31
+msgid "Measure"
+msgstr "Ukuran"
+
+#: templates/lang.js:32
+msgid "About this Map"
+msgstr "Tentang Peta ini"
+
+#: templates/lang.js:33 templates/lang.js.c:86 templates/lang.js.c:155
+msgid "Abstract"
+msgstr "Abstrak"
+
+#: templates/lang.js:34 templates/lang.js.c:87 templates/lang.js.c:153
+msgid "Contact"
+msgstr "Kontak"
+
+#: templates/lang.js:35 templates/lang.js.c:45
+msgid "Permalink"
+msgstr "Permalink"
+
+#: templates/lang.js:36 templates/lang.js.c:226
+msgid "Cancel"
+msgstr "Batal"
+
+#: templates/lang.js:37
+msgid "Save as Copy"
+msgstr "Simpan sebagai salinan"
+
+#: templates/lang.js:38
+msgid "Save"
+msgstr "Simpan"
+
+#: templates/lang.js:39 templates/lang.js.c:90 templates/lang.js.c:99
+#: templates/lang.js:152 templates/lang.js.c:174 templates/lang.js.c:209
+msgid "Title"
+msgstr "Judul"
+
+#: templates/lang.js:40 templates/lang.js.c:114
+msgid "Mini"
+msgstr "Mini"
+
+#: templates/lang.js:41
+msgid "Pan Map"
+msgstr "Geser Peta"
+
+#: templates/lang.js:42
+msgid "Zoom to Next Extent"
+msgstr "Zoom ke Extent berikutnya"
+
+#: templates/lang.js:43
+msgid "Zoom to Previous Extent"
+msgstr "Zoom ke Extent sebelumnya"
+
+#: templates/lang.js:44
+msgid "This map has not yet been saved."
+msgstr "Peta ini belum disimpan"
+
+#: templates/lang.js:46 templates/lang.js.c:115
+msgid "Premium"
+msgstr "Premium"
+
+#: templates/lang.js:47
+msgid "Print Map"
+msgstr "Cetak Peta"
+
+#: templates/lang.js:48
+msgid "Print Preview"
+msgstr "Tampilan Cetak"
+
+#: templates/lang.js:49
+msgid "Properties"
+msgstr "Propiedades"
+
+#: templates/lang.js:50 templates/lang.js.c:116
+msgid "Publish Map"
+msgstr "Publish Peta"
+
+#: templates/lang.js:51 templates/lang.js.c:52
+msgid "Remove Layer"
+msgstr "Hapus Layer"
+
+#: templates/lang.js:53
+msgid "Sorry, your map could not be saved."
+msgstr "Maaf peta anda tidak dapat disimpan"
+
+#: templates/lang.js:54
+msgid "Error While Saving"
+msgstr "Terdapat kesalahan pada saat menyimpan"
+
+#: templates/lang.js:55
+msgid "Save Map"
+msgstr "Simpan Peta"
+
+#: templates/lang.js:56
+msgid "You must be logged in to save this map."
+msgstr "Anda diharuskan login terlebih dahulu untuk menyimpan peta ini."
+
+#: templates/lang.js:57 templates/lang.js.c:118
+msgid "Small"
+msgstr "Kecil"
+
+#: templates/lang.js:58
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr ""
+"Error pada saat berkomunikasi dengan server.\n"
+"Silahkan cek URL yang dimasukkan dan coba lagi."
+
+#: templates/lang.js:59
+msgid "Layer Properties"
+msgstr "Data Layer"
+
+#: templates/lang.js:60
+msgid "Change layer format and style"
+msgstr "Ubah tampilan dan format layer"
+
+#: templates/lang.js:61
+msgid "Edit Styles"
+msgstr "Ubah Tampilan"
+
+#: templates/lang.js:62
+msgid "Edit layer styles"
+msgstr "Ubah tamplan layer"
+
+#: templates/lang.js:63
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "Beralih ke tampilan Google Earth 3D"
+
+#: templates/lang.js:64
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr "Peta yang anda coba muat tidak tersedia. Buatlah peta baru. "
+
+#: templates/lang.js:65
+msgid "Unknown Map"
+msgstr "Map tidak diketahui"
+
+#: templates/lang.js:66 templates/lang.js.c:119
+msgid "Width"
+msgstr "Lebar"
+
+#: templates/lang.js:67
+msgid "Zoom In"
+msgstr "Zoom In"
+
+#: templates/lang.js:68
+msgid "Zoom Out"
+msgstr "Zoom Out"
+
+#: templates/lang.js:69
+msgid "Zoom level"
+msgstr "Zoom level"
+
+#: templates/lang.js:70
+msgid "Zoom Level"
+msgstr "Zoom Level"
+
+#: templates/lang.js:71
+msgid "Zoom to Layer Extent"
+msgstr "Zoom to Layer Extent"
+
+#: templates/lang.js:72
+msgid "Zoom to Visible Extent"
+msgstr "Zoom to Visible Extent"
+
+#: templates/lang.js:78
+msgid "Zoom Level {zoom}"
+msgstr "Zoom Level {zoom}"
+
+#: templates/lang.js:84
+msgid "Create Map"
+msgstr "Buat Peta"
+
+#: templates/lang.js:85
+msgid "Export Map"
+msgstr "Kirim Peta"
+
+#: templates/lang.js:88
+msgid "Map"
+msgstr "Peta"
+
+#: templates/lang.js:89 templates/lang.js.c:156
+msgid "View this Map"
+msgstr "Lihat Peta ini"
+
+#: templates/lang.js:91
+msgid "Open Map"
+msgstr "Buka Peta"
+
+#: templates/lang.js:97 templates/lang.js.c:173
+msgid "Name"
+msgstr "Nama"
+
+#: templates/lang.js:98
+msgid "Queryable"
+msgstr "Dapat di query"
+
+#: templates/lang.js:105
+msgid "No background"
+msgstr "Tidak ada latar"
+
+#: templates/lang.js:117
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+"Peta anda sudah siap untuk di publikasikan ke web! Untuk menyisipkan pada "
+"website silahkan salin kode HTML dibawah ini: "
+
+#: templates/lang.js:126 templates/lang.js.c:192
+msgid "Abstract:"
+msgstr "Abstrak:"
+
+#: templates/lang.js:127 templates/lang.js.c:194
+msgid "No attribution information is provided for this layer."
+msgstr "Tidak ada informasi atribut yang disediakan untuk layer ini"
+
+#: templates/lang.js:128 templates/lang.js.c:195
+msgid "Provided by:"
+msgstr "Disediakan oleh:"
+
+#: templates/lang.js:129 templates/lang.js.c:196
+msgid "Download:"
+msgstr "Unduh:"
+
+#: templates/lang.js:130 templates/lang.js.c:198
+msgid "No keywords are listed for this layer."
+msgstr "Tidak ada kata kunci yang disedikan untuk layer ini."
+
+#: templates/lang.js:131 templates/lang.js.c:199
+msgid "Keywords:"
+msgstr "Kata Kunci:"
+
+#: templates/lang.js:132 templates/lang.js.c:200
+msgid "No metadata URLs are defined for this layer."
+msgstr "Tidak ada URL metadata yang didefinisikan untuk layer ini."
+
+#: templates/lang.js:133 templates/lang.js.c:201
+msgid "Metadata Links:"
+msgstr "Link Metadata:"
+
+#: templates/lang.js:139
+msgid "Paper size:"
+msgstr "Ukuran Kertas:"
+
+#: templates/lang.js:140
+msgid "Resolution:"
+msgstr "Resolusi"
+
+#: templates/lang.js:141
+msgid "Print"
+msgstr "Cetak"
+
+#: templates/lang.js:142
+msgid "Enter map title here."
+msgstr "Masukkan judul peta disini"
+
+#: templates/lang.js:143
+msgid "Include legend?"
+msgstr "termasuk legenda?"
+
+#: templates/lang.js:144
+msgid "Enter comments here."
+msgstr "Tambahkan komentar disini."
+
+#: templates/lang.js:145
+msgid "Creating PDF..."
+msgstr "Membuat PDF..."
+
+#: templates/lang.js:154
+msgid "Last Modified"
+msgstr "Modifikasi Terakhir"
+
+#: templates/lang.js:157 templates/lang.js.c:178
+msgid "Prev"
+msgstr "Sebelumnya"
+
+#: templates/lang.js:158 templates/lang.js.c:179
+msgid "Next"
+msgstr "Selanjutnya"
+
+#: templates/lang.js:159 templates/lang.js.c:180
+msgid "of"
+msgstr "dari"
+
+#: templates/lang.js:160 templates/lang.js.c:181
+msgid "Your search did not match any items."
+msgstr "Pencarian anda tidak ditemukan"
+
+#: templates/lang.js:161
+msgid "Search Maps"
+msgstr "Mencari Peta"
+
+#: templates/lang.js:162 templates/lang.js.c:182
+msgid "Search"
+msgstr "Cari"
+
+#: templates/lang.js:163 templates/lang.js.c:183
+msgid "Showing"
+msgstr "Menampilkan"
+
+#: templates/lang.js:164
+msgid "Loading"
+msgstr "Memuat"
+
+#: templates/lang.js:165 templates/lang.js.c:185
+msgid "permalink"
+msgstr "permalink"
+
+#: templates/lang.js:172
+msgid "Select"
+msgstr "Pilih"
+
+#: templates/lang.js:175
+msgid "Select:"
+msgstr "Pilih:"
+
+#: templates/lang.js:176
+msgid "All"
+msgstr "Seluruhnya"
+
+#: templates/lang.js:177
+msgid "None"
+msgstr "Kosong"
+
+#: templates/lang.js:184
+msgid "Loading..."
+msgstr "Memuat ..."
+
+#: templates/lang.js:186
+msgid "You do not have permission to view this data"
+msgstr "Anda tidak memiliki izin untuk melihat data ini"
+
+#: templates/lang.js:187
+msgid "This data is stored on a remote server"
+msgstr "Data ini disimpan pada server"
+
+#: templates/lang.js:193
+msgid "No abstract is provided for this layer."
+msgstr "Tidak ada abstrak untuk layer ini"
+
+#: templates/lang.js:197
+msgid "No download URLs are definied for this layer."
+msgstr "Tidak ada URL yang didefinisikan untuk mengunduh layer ini"
+
+#: templates/lang.js:207
+msgid "Selected Layers"
+msgstr "Layer terpilih"
+
+#: templates/lang.js:208
+msgid "No Layers Selected"
+msgstr "Tidak ada layer yang terpilih"
+
+#: templates/lang.js:210
+msgid "Clear Selected"
+msgstr "Hapus Pilihan"
+
+#: templates/lang.js:211
+msgid "Clear All"
+msgstr "Hapus semua"
+
+#: templates/lang.js:217
+msgid "Operation Failed"
+msgstr "Operasi Gagal"
+
+#: templates/lang.js:218
+msgid "No layers are currently selected."
+msgstr "Tidak ada layer yang dipilih"
+
+#: templates/lang.js:225
+msgid "Downloading..."
+msgstr "Mengunduh..."
+
+#: templates/lang.js:227
+msgid "Please wait"
+msgstr "Silakan menunggu"

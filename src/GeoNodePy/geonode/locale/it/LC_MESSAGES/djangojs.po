@@ -2,207 +2,237 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 07:43-0600\n"
+"POT-Creation-Date: 2012-05-15 12:30-0500\n"
 "PO-Revision-Date: 2010-12-07 15:34\n"
 "Last-Translator: <>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.5.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: maps/templates/lang.js:5 maps/templates/lang.js.py:8
+#: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
+msgid "Add user..."
+msgstr "Aggiungi utente..."
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Who can view and download this data?"
+msgstr "Chi può visualizzare e scaricare questo dato?"
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Anyone"
+msgstr "Chiunque"
+
+#: static/geonode/script/GeoNode.js:36 static/geonode/script/GeoNode.js.c:38
+msgid "Any registered user"
+msgstr "Qualsiasi utente registrato"
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Only users who can edit"
+msgstr "Solo gli utenti che possono editare"
+
+#: static/geonode/script/GeoNode.js:37
+msgid "Who can edit this data?"
+msgstr "Chi può editare questo dato?"
+
+#: static/geonode/script/GeoNode.js:38
+msgid "Only the following users or groups:"
+msgstr "Solo i seguenti utenti o gruppi:"
+
+#: static/geonode/script/GeoNode.js:39
+msgid "Who can manage and edit this data?"
+msgstr "Chi può gestire e modificare questo dato?"
+
+#: templates/lang.js:9 templates/lang.js.c:12
 msgid "Add Layers"
 msgstr "Aggiungi layer"
 
-#: maps/templates/lang.js:6
+#: templates/lang.js:10
 msgid "Area"
 msgstr "Area"
 
-#: maps/templates/lang.js:7
+#: templates/lang.js:11
 msgid "Background"
 msgstr "Sfondo"
 
-#: maps/templates/lang.js:9
+#: templates/lang.js:13
 msgid "Done"
 msgstr "Fatto"
 
-#: maps/templates/lang.js:10
+#: templates/lang.js:14
 msgid "Available Layers"
 msgstr "Layer disponibili"
 
-#: maps/templates/lang.js:11
+#: templates/lang.js:15
 msgid "Connection Error"
 msgstr "Errore di connessione"
 
-#: maps/templates/lang.js:12
+#: templates/lang.js:16
 msgid "The server returned an error"
 msgstr "Il server ha risposto con un errore"
 
-#: maps/templates/lang.js:13
+#: templates/lang.js:17
 msgid "Details..."
 msgstr "Dettagli..."
 
-#: maps/templates/lang.js:15 maps/templates/lang.js.py:107
+#: templates/lang.js:19 templates/lang.js.c:111
 msgid "Height"
 msgstr "Altezza"
 
-#: maps/templates/lang.js:16
+#: templates/lang.js:20
 msgid "Get Feature Info"
 msgstr "Ottieni informazioni sulla feature"
 
-#: maps/templates/lang.js:17 maps/templates/lang.js.py:108
+#: templates/lang.js:21 templates/lang.js.c:112
 msgid "Large"
 msgstr "Grande"
 
-#: maps/templates/lang.js:18
+#: templates/lang.js:22
 msgid "or add a new server."
 msgstr "o aggiungi un nuovo server."
 
-#: maps/templates/lang.js:19
+#: templates/lang.js:23
 msgid "Map Layers"
 msgstr "Tematismi della mappa"
 
-#: maps/templates/lang.js:20
+#: templates/lang.js:24
 msgid "View available data from:"
 msgstr "Visualizza dati disponbili da:"
 
-#: maps/templates/lang.js:21
+#: templates/lang.js:25
 msgid "Data"
 msgstr "Dato"
 
-#: maps/templates/lang.js:22
+#: templates/lang.js:26
 msgid "Layers"
 msgstr "Tematismi"
 
-#: maps/templates/lang.js:23
+#: templates/lang.js:27
 msgid "Legend"
 msgstr "Legenda"
 
-#: maps/templates/lang.js:24
+#: templates/lang.js:28
 msgid "Length"
 msgstr "Lunghezza"
 
-#: maps/templates/lang.js:25
+#: templates/lang.js:29
 msgid "Loading Map..."
 msgstr "Caricamento della mappa..."
 
-#: maps/templates/lang.js:26 maps/templates/lang.js.py:109
+#: templates/lang.js:30 templates/lang.js.c:113
 msgid "Map Size"
 msgstr "Dimensioni della mappa"
 
-#: maps/templates/lang.js:27
+#: templates/lang.js:31
 msgid "Measure"
 msgstr "Misura"
 
-#: maps/templates/lang.js:28
+#: templates/lang.js:32
 msgid "About this Map"
 msgstr "Riguardo a questa mappa"
 
-#: maps/templates/lang.js:29 maps/templates/lang.js.py:82
-#: maps/templates/lang.js:151
+#: templates/lang.js:33 templates/lang.js.c:86 templates/lang.js.c:155
 msgid "Abstract"
 msgstr "Abstract"
 
-#: maps/templates/lang.js:30 maps/templates/lang.js.py:83
-#: maps/templates/lang.js:149
+#: templates/lang.js:34 templates/lang.js.c:87 templates/lang.js.c:153
 msgid "Contact"
 msgstr "Contatto"
 
-#: maps/templates/lang.js:31 maps/templates/lang.js.py:41
+#: templates/lang.js:35 templates/lang.js.c:45
 msgid "Permalink"
 msgstr "Permalink"
 
-#: maps/templates/lang.js:32 maps/templates/lang.js.py:222
+#: templates/lang.js:36 templates/lang.js.c:226
 msgid "Cancel"
 msgstr "Annulla"
 
-#: maps/templates/lang.js:33
+#: templates/lang.js:37
 msgid "Save as Copy"
 msgstr "Salva come copia"
 
-#: maps/templates/lang.js:34
+#: templates/lang.js:38
 msgid "Save"
 msgstr "Salva"
 
-#: maps/templates/lang.js:35 maps/templates/lang.js.py:86
-#: maps/templates/lang.js:95 maps/templates/lang.js.py:148
-#: maps/templates/lang.js:170 maps/templates/lang.js.py:205
+#: templates/lang.js:39 templates/lang.js.c:90 templates/lang.js.c:99
+#: templates/lang.js:152 templates/lang.js.c:174 templates/lang.js.c:209
 msgid "Title"
 msgstr "Titolo"
 
-#: maps/templates/lang.js:36 maps/templates/lang.js.py:110
+#: templates/lang.js:40 templates/lang.js.c:114
 msgid "Mini"
 msgstr "Mini"
 
-#: maps/templates/lang.js:37
+#: templates/lang.js:41
 msgid "Pan Map"
 msgstr "Pan della mappa"
 
-#: maps/templates/lang.js:38
+#: templates/lang.js:42
 msgid "Zoom to Next Extent"
 msgstr "Zoom all'Estensione Seguente"
 
-#: maps/templates/lang.js:39
+#: templates/lang.js:43
 msgid "Zoom to Previous Extent"
 msgstr "Zoom all'Estensione Precedente"
 
-#: maps/templates/lang.js:40
+#: templates/lang.js:44
 msgid "This map has not yet been saved."
 msgstr "Questa mappa non è stata ancora salvata."
 
-#: maps/templates/lang.js:42 maps/templates/lang.js.py:111
+#: templates/lang.js:46 templates/lang.js.c:115
 msgid "Premium"
 msgstr "Premium"
 
-#: maps/templates/lang.js:43
+#: templates/lang.js:47
 msgid "Print Map"
 msgstr "Stampa Mappa"
 
-#: maps/templates/lang.js:44
+#: templates/lang.js:48
 msgid "Print Preview"
 msgstr "Anteprima di Stampa"
 
-#: maps/templates/lang.js:45
+#: templates/lang.js:49
 msgid "Properties"
 msgstr "Proprietà"
 
-#: maps/templates/lang.js:46 maps/templates/lang.js.py:112
+#: templates/lang.js:50 templates/lang.js.c:116
 msgid "Publish Map"
 msgstr "Puppblica la Mappa"
 
-#: maps/templates/lang.js:47 maps/templates/lang.js.py:48
+#: templates/lang.js:51 templates/lang.js.c:52
 msgid "Remove Layer"
 msgstr "Rimuovi il layer"
 
-#: maps/templates/lang.js:49
+#: templates/lang.js:53
 msgid "Sorry, your map could not be saved."
 msgstr "Mi spiace, la mappa non può essere salvata."
 
-#: maps/templates/lang.js:50
+#: templates/lang.js:54
 msgid "Error While Saving"
 msgstr "Errore durante il salvataggio"
 
-#: maps/templates/lang.js:51
+#: templates/lang.js:55
 msgid "Save Map"
 msgstr "Salva la mappa"
 
-#: maps/templates/lang.js:52
+#: templates/lang.js:56
 msgid "You must be logged in to save this map."
 msgstr "Devi essere registrato per salvare questa mappa."
 
-#: maps/templates/lang.js:53 maps/templates/lang.js.py:114
+#: templates/lang.js:57 templates/lang.js.c:118
 msgid "Small"
 msgstr "Piccola"
 
-#: maps/templates/lang.js:54
+#: templates/lang.js:58
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
@@ -210,267 +240,273 @@ msgstr ""
 "Errore nella connessione con il server.\n"
 "Per favore, verifica l'URL e prova ancora."
 
-#: maps/templates/lang.js:55
+#: templates/lang.js:59
 msgid "Layer Properties"
 msgstr "Proprietà del layer"
 
-#: maps/templates/lang.js:56
+#: templates/lang.js:60
 msgid "Change layer format and style"
 msgstr "Modifica il formato e lo stile del layer"
 
-#: maps/templates/lang.js:57
+#: templates/lang.js:61
 msgid "Edit Styles"
 msgstr "Modifica gli stili"
 
-#: maps/templates/lang.js:58
+#: templates/lang.js:62
 msgid "Edit layer styles"
 msgstr "Modifica gli stili del layer"
 
-#: maps/templates/lang.js:59
+#: templates/lang.js:63
 msgid "Switch to Google Earth 3D Viewer"
 msgstr "Cambiare in Google Earth Viewer 3D"
 
-#: maps/templates/lang.js:60
-msgid "The map that you are trying to load does not exist.  Creating a new map instead."
-msgstr "La mappa che stai cercando di caricare non esiste. Crea una nuova mappa."
+#: templates/lang.js:64
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr ""
+"La mappa che stai cercando di caricare non esiste. Crea una nuova mappa."
 
-#: maps/templates/lang.js:61
+#: templates/lang.js:65
 msgid "Unknown Map"
 msgstr "Mappa sconosciuta"
 
-#: maps/templates/lang.js:62 maps/templates/lang.js.py:115
+#: templates/lang.js:66 templates/lang.js.c:119
 msgid "Width"
 msgstr "Larghezza"
 
-#: maps/templates/lang.js:63
+#: templates/lang.js:67
 msgid "Zoom In"
 msgstr "Ingrandisci"
 
-#: maps/templates/lang.js:64
+#: templates/lang.js:68
 msgid "Zoom Out"
 msgstr "Diminuisci"
 
-#: maps/templates/lang.js:65
+#: templates/lang.js:69
 msgid "Zoom level"
 msgstr "Livello di zoom"
 
-#: maps/templates/lang.js:66
+#: templates/lang.js:70
 msgid "Zoom Level"
 msgstr "Livello di zoom"
 
-#: maps/templates/lang.js:67
+#: templates/lang.js:71
 msgid "Zoom to Layer Extent"
 msgstr "Zoom all'estensione del layer"
 
-#: maps/templates/lang.js:68
+#: templates/lang.js:72
 msgid "Zoom to Visible Extent"
 msgstr "Zoom all'estensione visibile"
 
-#: maps/templates/lang.js:74
-#, perl-brace-format
+#: templates/lang.js:78
 msgid "Zoom Level {zoom}"
 msgstr "Livello di zoom {zoom}"
 
-#: maps/templates/lang.js:80
+#: templates/lang.js:84
 msgid "Create Map"
 msgstr "Crea Mappa"
 
-#: maps/templates/lang.js:81
+#: templates/lang.js:85
 msgid "Export Map"
 msgstr "Esporta mappa "
 
-#: maps/templates/lang.js:84
+#: templates/lang.js:88
 msgid "Map"
 msgstr "Mappa"
 
-#: maps/templates/lang.js:85 maps/templates/lang.js.py:152
+#: templates/lang.js:89 templates/lang.js.c:156
 msgid "View this Map"
 msgstr "Visualizza questa mappa"
 
-#: maps/templates/lang.js:87
+#: templates/lang.js:91
 msgid "Open Map"
 msgstr "Apri mappa"
 
-#: maps/templates/lang.js:93 maps/templates/lang.js.py:169
+#: templates/lang.js:97 templates/lang.js.c:173
 msgid "Name"
 msgstr "Nome"
 
-#: maps/templates/lang.js:94
+#: templates/lang.js:98
 msgid "Queryable"
 msgstr "Interrogabile"
 
-#: maps/templates/lang.js:101
+#: templates/lang.js:105
 msgid "No background"
 msgstr "Nessuno sfondo"
 
-#: maps/templates/lang.js:113
-msgid "Your map is ready to be published to the web!  Simply copy the following HTML to embed the map in your website:"
-msgstr "La tua mappa è pronta per essere pubblicata sul Web! Copia semplicemente il seguente codice HTML per includere la mappa nel tuo sito web:"
+#: templates/lang.js:117
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+"La tua mappa è pronta per essere pubblicata sul Web! Copia semplicemente il "
+"seguente codice HTML per includere la mappa nel tuo sito web:"
 
-#: maps/templates/lang.js:122 maps/templates/lang.js.py:188
+#: templates/lang.js:126 templates/lang.js.c:192
 msgid "Abstract:"
 msgstr "Abstract:"
 
-#: maps/templates/lang.js:123 maps/templates/lang.js.py:190
+#: templates/lang.js:127 templates/lang.js.c:194
 msgid "No attribution information is provided for this layer."
 msgstr "Nessuna attribuzione è fornita per questo layer."
 
-#: maps/templates/lang.js:124 maps/templates/lang.js.py:191
+#: templates/lang.js:128 templates/lang.js.c:195
 msgid "Provided by:"
 msgstr "Fornito da:"
 
-#: maps/templates/lang.js:125 maps/templates/lang.js.py:192
+#: templates/lang.js:129 templates/lang.js.c:196
 msgid "Download:"
 msgstr "Scarica:"
 
-#: maps/templates/lang.js:126 maps/templates/lang.js.py:194
+#: templates/lang.js:130 templates/lang.js.c:198
 msgid "No keywords are listed for this layer."
 msgstr "Nessuna parola chiave elencata per questo layer."
 
-#: maps/templates/lang.js:127 maps/templates/lang.js.py:195
+#: templates/lang.js:131 templates/lang.js.c:199
 msgid "Keywords:"
 msgstr "Parole chiave:"
 
-#: maps/templates/lang.js:128 maps/templates/lang.js.py:196
+#: templates/lang.js:132 templates/lang.js.c:200
 msgid "No metadata URLs are defined for this layer."
 msgstr "Nessun link ai metadati è definito per questo layer."
 
-#: maps/templates/lang.js:129 maps/templates/lang.js.py:197
+#: templates/lang.js:133 templates/lang.js.c:201
 msgid "Metadata Links:"
 msgstr "Link ai metadati:"
 
-#: maps/templates/lang.js:135
+#: templates/lang.js:139
 msgid "Paper size:"
 msgstr "Formato di pagina:"
 
-#: maps/templates/lang.js:136
+#: templates/lang.js:140
 msgid "Resolution:"
 msgstr "Risoluzione:"
 
-#: maps/templates/lang.js:137
+#: templates/lang.js:141
 msgid "Print"
 msgstr "Stampa"
 
-#: maps/templates/lang.js:138
+#: templates/lang.js:142
 msgid "Enter map title here."
 msgstr "Inserisci qui il titolo."
 
-#: maps/templates/lang.js:139
+#: templates/lang.js:143
 msgid "Include legend?"
 msgstr "Includi legenda?"
 
-#: maps/templates/lang.js:140
+#: templates/lang.js:144
 msgid "Enter comments here."
 msgstr "Scrivi qui i commenti."
 
-#: maps/templates/lang.js:141
+#: templates/lang.js:145
 msgid "Creating PDF..."
 msgstr "Creo PDF ..."
 
-#: maps/templates/lang.js:150
+#: templates/lang.js:154
 msgid "Last Modified"
 msgstr "Ultimo modificato"
 
-#: maps/templates/lang.js:153 maps/templates/lang.js.py:174
+#: templates/lang.js:157 templates/lang.js.c:178
 msgid "Prev"
 msgstr "Precedente"
 
-#: maps/templates/lang.js:154 maps/templates/lang.js.py:175
+#: templates/lang.js:158 templates/lang.js.c:179
 msgid "Next"
 msgstr "Prossimo"
 
-#: maps/templates/lang.js:155 maps/templates/lang.js.py:176
+#: templates/lang.js:159 templates/lang.js.c:180
 msgid "of"
 msgstr "di"
 
-#: maps/templates/lang.js:156 maps/templates/lang.js.py:177
+#: templates/lang.js:160 templates/lang.js.c:181
 msgid "Your search did not match any items."
 msgstr "La tua ricerca non ha prodotto risultati."
 
-#: maps/templates/lang.js:157
+#: templates/lang.js:161
 msgid "Search Maps"
 msgstr "Cerca Mappe"
 
-#: maps/templates/lang.js:158 maps/templates/lang.js.py:178
+#: templates/lang.js:162 templates/lang.js.c:182
 msgid "Search"
 msgstr "Cerca"
 
-#: maps/templates/lang.js:159 maps/templates/lang.js.py:179
+#: templates/lang.js:163 templates/lang.js.c:183
 msgid "Showing"
 msgstr "Visualizzo"
 
-#: maps/templates/lang.js:160
+#: templates/lang.js:164
 msgid "Loading"
 msgstr "Carico"
 
-#: maps/templates/lang.js:161 maps/templates/lang.js.py:181
+#: templates/lang.js:165 templates/lang.js.c:185
 msgid "permalink"
 msgstr "permalink"
 
-#: maps/templates/lang.js:168
+#: templates/lang.js:172
 msgid "Select"
 msgstr "Seleziona"
 
-#: maps/templates/lang.js:171
+#: templates/lang.js:175
 msgid "Select:"
 msgstr "Seleziona:"
 
-#: maps/templates/lang.js:172
+#: templates/lang.js:176
 msgid "All"
 msgstr "Tutti"
 
-#: maps/templates/lang.js:173
+#: templates/lang.js:177
 msgid "None"
 msgstr "Nessuno"
 
-#: maps/templates/lang.js:180
+#: templates/lang.js:184
 msgid "Loading..."
 msgstr "Carico ..."
 
-#: maps/templates/lang.js:182
+#: templates/lang.js:186
 msgid "You do not have permission to view this data"
 msgstr "Non hai i permessi per visualizzare questo dato"
 
-#: maps/templates/lang.js:183
+#: templates/lang.js:187
 msgid "This data is stored on a remote server"
 msgstr "Questo dato è memorizzato su un server remoto"
 
-#: maps/templates/lang.js:189
+#: templates/lang.js:193
 msgid "No abstract is provided for this layer."
 msgstr "Nessuna abstract è stato fornito per questo layer."
 
-#: maps/templates/lang.js:193
+#: templates/lang.js:197
 msgid "No download URLs are definied for this layer."
 msgstr "Nessuna URL per il download è stata definita per questo layer"
 
-#: maps/templates/lang.js:203
+#: templates/lang.js:207
 msgid "Selected Layers"
 msgstr "Layer selezionati"
 
-#: maps/templates/lang.js:204
+#: templates/lang.js:208
 msgid "No Layers Selected"
 msgstr "Nessun layer seleionato"
 
-#: maps/templates/lang.js:206
+#: templates/lang.js:210
 msgid "Clear Selected"
 msgstr "Pulisci i selezionati"
 
-#: maps/templates/lang.js:207
+#: templates/lang.js:211
 msgid "Clear All"
 msgstr "Pulisci tutto"
 
-#: maps/templates/lang.js:213
+#: templates/lang.js:217
 msgid "Operation Failed"
 msgstr "Operazione fallita"
 
-#: maps/templates/lang.js:214
+#: templates/lang.js:218
 msgid "No layers are currently selected."
 msgstr "Nessun layer è attualmente selezionato"
 
-#: maps/templates/lang.js:221
+#: templates/lang.js:225
 msgid "Downloading..."
 msgstr "Scarico ..."
 
-#: maps/templates/lang.js:223
+#: templates/lang.js:227
 msgid "Please wait"
 msgstr "Per favore, attendi"
