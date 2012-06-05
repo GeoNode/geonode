@@ -432,17 +432,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
 
     //Check permissions for selected layer and enable/disable feature edit buttons accordingly
-    checkLayerPermissions:function (layer) {
+    checkLayerPermissions:function (layerRecord) {
         var buttons = this.tools["gn_layer_editor"].actions;
 
         //Disable if layer is null or selected layer in tree doesn't match input layer
         var tree_node =  Ext.getCmp("treecontent").getSelectionModel().getSelectedNode();
-        if (layer == null || tree_node == null || tree_node.layer != layer) {
+        if (layerRecord == null || tree_node == null || tree_node.layer != layerRecord.getLayer()) {
             buttons[0].disable();
             buttons[1].disable();
         }
         else {
             //Proceed if this is a local queryable WMS layer
+            var layer = layerRecord.getLayer();
             if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
                     layer.url.indexOf(this.localGeoServerBaseUrl.replace(this.urlPortRegEx, "$1/")) == 0)) {
                 Ext.Ajax.request({
@@ -455,8 +456,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             }
                         } else {
                             layer.displayOutsideMaxExtent = true;
-                                   for (var i = 0; i < buttons.length; i++) {
-                         buttons[i].enable();
+                            for (var i = 0; i < buttons.length; i++) {
+                                buttons[i].enable();
                             }
                         }
                     },
@@ -544,7 +545,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
 
             layerTree = Ext.getCmp("treecontent");
-            this.tools["gn_layer_editor"].getFeatureManager().activate();
+
+
+            if ("gn_layer_editor" in this.tools) {
+                this.tools["gn_layer_editor"].getFeatureManager().activate();
+            }
+
 
         }, this);
 
