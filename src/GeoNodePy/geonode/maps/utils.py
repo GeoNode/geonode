@@ -5,7 +5,6 @@
 import logging
 import re
 import uuid
-import sys
 import os
 import datetime
 import traceback
@@ -14,17 +13,14 @@ import string
 import urllib2
 from lxml import etree
 import glob
-from itertools import cycle, izip
 
 # Django functionality
-from django.db import transaction
-from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.conf import settings
 
 # Geonode functionality
-from geonode.maps.models import Map, Layer, MapLayer
+from geonode.maps.models import Map, Contact, Layer, MapLayer
 from geonode.maps.models import Contact, ContactRole, Role
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
 
@@ -50,7 +46,7 @@ def layer_type(filename):
        returns a gsconfig resource_type string
        that can be either 'featureType' or 'coverage'
     """
-    base_name, extension = os.path.splitext(filename)
+    extension = os.path.splitext(filename)[1]
     if extension.lower() in ['.shp']:
         return FeatureType.resource_type
     elif extension.lower() in ['.tif', '.tiff', '.geotiff', '.geotif']:
@@ -152,7 +148,6 @@ def get_valid_layer_name(layer=None, overwrite=False):
     else:
         return get_valid_name(layer_name)
 
-
 def cleanup(name, uuid):
    """Deletes GeoServer and Catalogue records for a given name.
 
@@ -223,9 +218,8 @@ def cleanup(name, uuid):
    logger.warning('Finished cleanup after failed Catalogue/Django '
                   'import for layer: %s', name)
 
-
 def save(layer, base_file, user, overwrite = True, title=None,
-         abstract=None, permissions=None, keywords = []):
+         abstract=None, permissions=None, keywords = ()):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -287,7 +281,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
                     if existing_type != the_layer_type:
                         msg =  ('Type of uploaded file %s (%s) does not match '
                                 'type of existing resource type '
-                                '%s' % (layer_name,
+                                '%s' % (name,
                                         the_layer_type,
                                         existing_type))
                         logger.info(msg)
@@ -303,7 +297,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
             create_store_and_resource = _create_db_featurestore
         else:
             def create_store_and_resource(name, data, overwrite):
-                ft = cat.create_featurestore(name, data, overwrite=overwrite)
+                cat.create_featurestore(name, data, overwrite=overwrite)
                 return cat.get_store(name), cat.get_resource(name)
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
@@ -312,7 +306,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
             return cat.get_store(name), cat.get_resource(name)
     else:
         msg = ('The layer type for name %s is %s. It should be '
-               '%s or %s,' % (layer_name,
+               '%s or %s,' % (name,
                               the_layer_type,
                               FeatureType.resource_type,
                               Coverage.resource_type))
@@ -412,7 +406,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
         except geoserver.catalog.ConflictingDataError, e:
             msg = ('There was already a style named %s in GeoServer, '
                    'cannot overwrite: "%s"' % (name, str(e)))
-            style = cat.get_style(name)
             logger.warn(msg)
             e.args = (msg,)
 
@@ -538,12 +531,10 @@ def check_geonode_is_up():
     """Verifies all of catalogue, geoserver and the django server are running,
        this is needed to be able to upload.
     """
+    from django.conf import settings
     try:
         Layer.objects.gs_catalog.get_workspaces()
     except:
-        # Cannot connect to GeoNode
-        from django.conf import settings
-
         msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
                'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
         raise GeoNodeException(msg)
@@ -551,13 +542,12 @@ def check_geonode_is_up():
     try:
         Layer.objects.metadata_catalogue.login()
     except:
-        from django.conf import settings
         msg = ("Cannot connect to the Catalogue at %s\n"
                 "Please make sure you have started the CSW." %
                 catalogue_connection['url'])
         raise GeoNodeException(msg)
 
-def file_upload(filename, user=None, title=None, overwrite=True, keywords=[]):
+def file_upload(filename, user=None, title=None, overwrite=True, keywords=()):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -569,7 +559,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords=[]):
 
     # Set a default title that looks nice ...
     if title is None:
-        basename, extension = os.path.splitext(os.path.basename(filename))
+        basename = os.path.splitext(os.path.basename(filename))[0]
         title = basename.title().replace('_', ' ')
 
     # ... and use a url friendly version of that title for the name
@@ -579,16 +569,15 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords=[]):
     # with the data that is being passed.
     try:
         layer = Layer.objects.get(name=name)
-    except Layer.DoesNotExist, e:
+    except Layer.DoesNotExist:
         layer = name
 
     new_layer = save(layer, filename, theuser, overwrite, keywords=keywords)
 
-
     return new_layer
 
 
-def upload(incoming, user=None, overwrite=True, keywords = []):
+def upload(incoming, user=None, overwrite=True, keywords = ()):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -647,7 +636,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     cat = Layer.objects.gs_catalog
     try:
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
-    except FailedRequestError, e:
+    except FailedRequestError:
         ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
         ds.connection_parameters.update(
             host=settings.DB_DATASTORE_HOST,
@@ -662,7 +651,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     try:
         cat.add_data_to_store(ds, name, data, overwrite, charset)
         return ds, cat.get_resource(name, store=ds)
-    except:
+    except Exception:
         delete_from_postgis(name)
         raise
 

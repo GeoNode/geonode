@@ -56,6 +56,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     localGeoServerBaseUrl: "",
 
     /**
+     * api: config[localCSWBaseUrl]
+     * ``String`` url of the local CS-W instance
+     */
+    localCSWBaseUrl: "",
+
+    /**
      * api: config[useMapOverlay]
      * ``Boolean`` Should we add a scale overlay to the map? Set to false
      * to not add a scale overlay.
@@ -357,6 +363,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
     
     loadConfig: function(config) {
+        config.sources['csw'] = {
+            ptype: "gxp_cataloguesource",
+            url: config.localCSWBaseUrl,
+            proxyOptions: {
+                listeners: {
+                    "beforeload": function(proxy, params) {
+                        params.headers = {
+                            'X-CSRFToken': Ext.util.Cookies.get('csrftoken')
+                        };
+                    }
+                }
+            }
+        };
         config.tools = (config.tools || []).concat({
             ptype: "gxp_zoom",
             actionTarget: {target: "paneltbar", index: 4}
@@ -379,6 +398,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             actionTarget: "treecontent.contextMenu"
         }, {
             ptype: "gxp_addlayers",
+            search: true,
             actionTarget: "treetbar",
             createExpander: function() {
                 return new GeoExplorer.CapabilitiesRowExpander({

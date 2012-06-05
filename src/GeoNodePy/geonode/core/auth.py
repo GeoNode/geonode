@@ -1,7 +1,8 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.contenttypes.models import ContentType 
 from django.db import models
-from geonode.core.models import *
+from geonode.core.models import ANONYMOUS_USERS, AUTHENTICATED_USERS, \
+     GenericObjectRoleMapping, Permission, UserObjectRoleMapping
 
 class GranularBackend(ModelBackend):
     """

@@ -1,12 +1,7 @@
-from django.conf import settings
-from geonode.maps.models import Map
 from django import forms
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson as json
 
 class AjaxLoginForm(forms.Form):
