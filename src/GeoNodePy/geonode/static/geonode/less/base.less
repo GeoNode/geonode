@@ -391,6 +391,10 @@ ul.nav-pills.filter {
 .pages a.prev:hover { background:url(../../theme/img/arrows_gr_sm.png) no-repeat 0 -15px; }
 .pages a.next:hover { background:url(../../theme/img/arrows_gr_sm.png) no-repeat -11px -15px; }
 
+ul.space li {
+  margin-bottom:5px;
+}
+
 // Bootstrap overwrite
 .tabs-left .nav-tabs {
   float:none !important;
@@ -538,14 +542,14 @@ body.explore-data article {
 }
 
 /** layer info **/
+.map-actions {
+  margin-top:8px;
+}
+
 .layer-actions {
   border-bottom:1px solid @bdrColor;
   margin-bottom:20px;
   position:relative;
-
-  .map-actions {
-    margin-top:8px;
-  }
 
   a.btn {
     margin-bottom:10px;
@@ -559,4 +563,50 @@ body.layer-info .pointer {
   position:absolute;
   bottom:-1px;
   left:38px;
+}
+
+/** search results **/
+.search-filters .collapse {
+  position:inherit;
+}
+
+input.span2.date {
+  background:url(../../theme/img/silk/calendar_in.png) no-repeat 120px center;
+}
+
+body.search-results {
+  .well > header {
+    background:@grayLighter;
+    margin:-19px -19px 10px -19px;
+    padding:8px 20px 0;
+    -webkit-border-top-left-radius: 6px;
+    -webkit-border-top-right-radius: 6px;
+    -moz-border-radius-topleft: 6px;
+    -moz-border-radius-topright: 6px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom: 1px solid #EEE;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    h3 {
+      margin:0;
+    }
+  }
+
+  aside section {
+    padding-bottom:15px;
+    margin-bottom:15px;
+
+    h4 {
+      line-height:26px;
+    }
+  }
+
+  form .subgroup {
+    padding-left:25px;
+  }
+}
+
+.selections h4 a, .selections ul li a.pull-right {
+  font-size:@baseFontSize - 1;
 }
