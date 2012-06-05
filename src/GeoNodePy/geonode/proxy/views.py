@@ -2,13 +2,8 @@ from django.http import HttpResponse
 from httplib import HTTPConnection
 from urlparse import urlsplit
 import httplib2
-import urllib
-import simplejson 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
 def proxy(request):
     if 'url' not in request.GET:
         return HttpResponse(
@@ -28,6 +23,9 @@ def proxy(request):
     if settings.SESSION_COOKIE_NAME in request.COOKIES:
         headers["Cookie"] = request.META["HTTP_COOKIE"]
 
+    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
+        headers["Content-Type"] = request.META["CONTENT_TYPE"]
+
     conn = HTTPConnection(url.hostname, url.port)
     conn.request(request.method, locator, request.raw_post_data, headers)
     result = conn.getresponse()
@@ -38,7 +36,6 @@ def proxy(request):
             )
     return response
 
-@csrf_exempt
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
     if not request.user.is_authenticated():
         return HttpResponse(

@@ -25,7 +25,7 @@
 <script type="text/javascript">
 Ext.onReady(function(){
 {% autoescape off %}
-  var form_target = "{% url geonode.maps.views.layerController layer.typename %}?update";
+  var form_target = "{% url data_replace layer.typename %}";
   var layer_name = "{{ layer.name|escapejs }}";
   
   var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
@@ -85,7 +85,14 @@ Ext.onReady(function(){
         listeners: listeners
 
     });
-    form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file];
+
+    var csrf_token = new Ext.form.Hidden({
+        id: 'csrfmiddlewaretoken',
+        name: 'csrfmiddlewaretoken',
+        value: '{{csrf_token|escapejs}}'
+    });
+
+    form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file, csrf_token];
   }
   else {
     var base_file = new Ext.ux.form.FileUploadField({
@@ -96,7 +103,12 @@ Ext.onReady(function(){
         allowBlank: false,
         listeners: listeners
     });
-    form_fields = [layer_name, base_file];
+    var csrf_token = new Ext.form.Hidden({
+        id: 'csrf_token',
+        name: 'csrfmiddlewaretoken',
+        value: '{{csrfmiddlewaretoken|escapejs}}'
+    });
+    form_fields = [layer_name, base_file, csrf_token];
   }
 
   var fp = new Ext.FormPanel({

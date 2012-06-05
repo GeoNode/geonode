@@ -27,7 +27,7 @@ Ext.onReady(function(){
 
     <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
-    <form action="{% url search %}" method="POST">
+    <form action="{% url data_search %}" method="POST">
         {% csrf_token %}
         <table>
           <tr>
@@ -40,7 +40,7 @@ Ext.onReady(function(){
           </tr>
         </table>
         <p>
-          <a href="{% url search %}">{% trans "Advanced Search" %}</a>
+          <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
         </p>
     </form>
   </div>
@@ -57,7 +57,7 @@ Ext.onReady(function(){
   <div id="upload" class="block">
     <h2>{% trans "Upload" %}</h2>
     <p>{% trans "We support Shapefile and GeoTIFF uploads." %}
-    <a class="layer-upload-link" href="{% url geonode.maps.views.upload_layer%}">{% trans "Upload a new layer"  %}</a>
+    <a class="layer-upload-link" href="{% url data_upload %}">{% trans "Upload a new layer"  %}</a>
     </p>
   </div>
 
@@ -66,7 +66,7 @@ Ext.onReady(function(){
     {% blocktrans %} 
     If you are interested in information about accessing this information through OGC services, please visit our
     {% endblocktrans %}
-    <a href="{% url geonode.views.developer %}">{% trans "developer page" %}</a>.
+    <a href="{% url dev %}">{% trans "developer page" %}</a>.
   </div>
 </div>
 {% endblock %}

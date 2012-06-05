@@ -1,13 +1,7 @@
 from setuptools import setup, find_packages
-import pkg_resources
-import sys, os
 
-name='GeoNodePy'
-version = "1.1"
-req = pkg_resources.Requirement.parse(name)
-
-setup(name=name,
-      version=version,
+setup(name='GeoNodePy',
+      version= __import__('geonode').get_version(),
       description="Application for serving and sharing geospatial data",
       long_description=open('README.rst').read(),
       classifiers=[
@@ -20,11 +14,10 @@ setup(name=name,
       packages = find_packages(),
       include_package_data=True,
       install_requires = [
-          "gsconfig.py",
+          "gsconfig",
           "OWSLib==0.4.0",
           "Django>=1.1",
           "PIL",
-          "simplejson",
           "django-extensions",
           "httplib2"
       ],

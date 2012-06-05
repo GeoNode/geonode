@@ -1,5 +1,3 @@
-:orphan:
-
 =================
 Extending GeoNode
 =================
@@ -11,7 +9,7 @@ there are other ways to accomplish this, several key existing projects
 now agreed to be the *best* way to extend from GeoNode in order to add 
 functionality or to customize the site. 
 
-TODO: Some notes here about the goal of easily upgrading to new GeoNode Releases
+.. TODO: Some notes here about the goal of easily upgrading to new GeoNode Releases
 
 Existing Projects using this Methodology
 ========================================
@@ -35,15 +33,15 @@ Setup Steps
 1. *Upgrade GeoNode:* First and foremost, you should upgrade GeoNode to the
    latest release. GeoNode releases can be found here 
    http://dev.geonode.org/release/ There are deployment scripts that make
-   this process much easier, they can be found here ??? 
+   this process much easier.
 
-2. *Source GeoNode's virtualenv:* While your new project will be a Django
+2. *Activate GeoNode's virtualenv:* While your new project will be a Django
    project in it own right, it needs to have access to all the dependencies
-   you already installed as part of GeoNode into a virtual environment 
-   (link to venv docs). You can *activate* that virtual environment and make 
+   you already installed as part of GeoNode into a virtual environment. 
+   You can *activate* that virtual environment and make 
    those dependencies available with the following command::
 
-     $ source /var/www/geonode/wsgi/geonode/bin/activate
+     $ source /var/lib/geonode/bin/activate
 
    This may need to be modified if you installed in a non-standard location.
 
@@ -68,9 +66,9 @@ Setup Steps
    created by the startproject management command and issue the following
    commands::
 
-     $ cp /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/settings.py . 
-     $ cp /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/local_settings.py . 
-     $ cp /var/www/geonode/wsgi/geonode/src/GeoNodePy/geonode/urls.py . 
+     $ cp /var/lib/geonode/src/GeoNodePy/geonode/settings.py . 
+     $ cp /var/lib/geonode/src/GeoNodePy/geonode/local_settings.py . 
+     $ cp /var/lib/geonode/src/GeoNodePy/geonode/urls.py . 
 
    You will be modifying these files as part of the process of extending
    GeoNode or customizing it for your own purposes.
@@ -86,7 +84,7 @@ Setup Steps
      PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
      GEONODE_ROOT = os.path.dirname(geonode.__file__) 
 
-   Media settings (ingenieroariel, looking for input here)::
+   Media settings:: 
 
      MEDIA_ROOT = os.path.join(PROJECT_ROOT, "uploads")
      MEDIA_URL = "/uploads/"
@@ -150,31 +148,27 @@ Setup Steps
         'modeltranslation',
      )
 
-7. *Syncdb:* If the additional dependencies you have installed in the steps above
-   are django apps that will use the Django ORM to store and retrieve data in
-   a database, you need to execute the syncdb management command to create the
-   tables in the database. This can be done with the following command::
+7. *Syncdb and migrations:* If the additional dependencies you have installed in the
+   steps above are django apps that will use the Django ORM to store and retrieve data
+   in a database, you need to execute the syncdb management command to create the
+   tables in the database. Additionally, you may need to run the migrate command to
+   execute any migration scripts if the app is being managed by South (a Django
+   tool for migrations). This can be done with the following commands::
 
-     $ django-admin.py syncdb
+     $ python manage.py syncdb && python manage.py migrate
 
 8. *Copy GeoNodes wsgi script and modify it for your project:* The GeoNode application
    is executed and served apache using a wsgi launcher script. You will need to make
    a copy of this launcher script and modify it to execute your newly created project.
-   It is generally a good idea to place this wsgi launcher script in a directory under
-   the main directory of your new project. This can be done with the following commands::
+   This can be done with the following commands::
 
-     $ mkdir wsgi
-     $ cp /var/www/geonode/wsgi/geonode.wsgi wsgi/<new_project_name>.wsgi
+     $ cd /var/www/geonode/wsgi
+     $ cp geonode.wsgi <new_project_name>.wsgi
 
    Replacing <new_project_name> with the name of your newly created project.
 
    Once this file is in place, it needs to be modified to execute your new project when
-   being run via apache. The following line should be added replacing /var/www with the
-   path to where your new project is located::
-
-     site.addsitedir('/var/www')
-
-   The existing line that specifies which settings module to use should be modified
+   being run via apache. The existing line that specifies which settings module to use should be modified
    to point at your settings. <new_project_name> should be replaced by the name of your
    new project::
 
@@ -186,10 +180,9 @@ Setup Steps
    directive will vary. Please consult the :doc:`/intro/install` documentation. This directive
    should be modified to point at your newly created wsgi script::
 
-     WSGIScriptAlias / "/var/www/<new_project_dir>/wsgi/<new_project_name>.wsgi"
+     WSGIScriptAlias / "/var/www/geonode/wsgi/<new_project_name>.wsgi"
 
-   Replacing <new_project_dir> with the path to your newly created project, and
-   <new_project_name> with the name of your project.
+   Replacing <new_project_name> with the name of your project.
 
 9. *Begin Customizing/Extending:* You are now ready to begin modifying GeoNode to extend
    or customize it. You may need to redo some of the steps above if you need to add new
@@ -202,11 +195,100 @@ Types of Customization/Extension
 Branding
 --------
 
-Adding Additional Django Pluggable Apps
----------------------------------------
+The section :doc:`/deploy/customize` describes how to change the Logo, Colors and other branding elements in a GeoNode site.
 
-Adding your own Django Apps
----------------------------
+.. TODO::
+   Add the following two sections:
 
-???
----
+    1. Adding Additional Django Pluggable Apps
+    2. Adding your own Django Apps
+
+Geoprocessing
+-------------
+
+The Process extension to GeoServer helps to define custom geoprocessing
+operations against data managed by GeoServer.  The operations are exposed 
+via a GeoServer RESTlet endpoint.
+
+Some processes are included with the Process extension.  Defining your own
+processes is possible too, but first let's look at how to use the processes
+that are already present.
+
+There are two 'modes' of accessing these processes: *interactive* and *batch*.
+The *interactive* mode is appropriate for fast-running processes and returns
+the result of the operation as the HTTP response to the request that launches
+the process.  The *batch* mode starts a thread on the server and supports
+polling to find out information about progress until the process is completed.
+
+Interactive Mode Processing
+...........................
+
+To use interactive-mode processing: 
+
+  * send an HTTP POST request with the process parameters to
+    /geoserver/rest/process/{process}/ .  The parameters must be formatted as a
+    JSON document.
+
+  * The result of the process will be returned, or an error will be reported
+    via the HTTP status code (500 for a general error, 400 for a badly
+    formatted request, etc.)  While the format of this response varies with the
+    process, JSON should be preferred for structured, machine-accessible
+    responses.
+
+Batch Mode Processing
+.....................
+
+To use batch-mode processing:
+
+  * send an HTTP POST with the process parameters to
+    /geoserver/rest/process/{process}/launch .  The parameters must be
+    formatted as a JSON document as described in the section on interactive
+    mode.  The reponse will contain a document describing the process's
+    progress, including an {id} string that identifies the process for future
+    reference.
+
+  * The process will initially be in a queue.  You can check on its progress by
+    sending an HTTP GET request to /geoserver/rest/processes/{id}/status .
+    When the status is DONE, you can send an HTTP GET request to
+    /geoserver/rest/processes/{id}/result.
+
+  * If you find a reason to cancel (for example, the user closes the JS widget
+    that launched the process request), you can cancel by sending a DELETE
+    request to /geoserver/rest/processes/{id} .  This will free up resources
+    sooner, but in either case GeoServer will automatically delete cached
+    process results after a set period, so you should ensure that you present
+    the results to the user in a prompt fashion via some means or other.
+
+Custom Processes
+................
+
+To create a custom process:
+
+#. Write a Java class that extends the Process interface.  It can use GeoTools,
+   and has access to the GeoServer catalog.  Let's call it
+   ``com.example.custom.Process``.  Aditionally, subclass ``ProcessRestlet`` to
+   create a Restlet that invokes your Process.
+
+#. Include a Spring context XML file called ``applicationContext.xml`` that
+   defines a bean using your process class, and a restlet mapping that attaches
+   your process to a specific URL pattern.  An example would be:
+
+   .. code-block:: xml
+
+       <beans>
+         <bean class="com.example.custom.ProcessRestlet" id="exampleRestlet"/>
+         <bean class="org.geoserver.rest.RESTMapping" id="exampleMapping">
+           <property name="routes">
+             <map>
+               <entry>
+                 <key><value>/process/example</value></key>
+                 <value>exampleRestlet</value>
+               </entry>
+             </map>
+         </bean>
+       </beans>
+
+#. Make sure that the JAR containing your process is on the Java classpath when
+   your application is running by including it in the ``WEB-INF/lib`` directory 
+   of your GeoServer WAR file.
+

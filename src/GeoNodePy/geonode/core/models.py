@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
+from django.core.exceptions import ObjectDoesNotExist
 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
@@ -127,7 +127,7 @@ class PermissionLevelMixin(object):
             my_ct = ContentType.objects.get_for_model(self)
             mapping = UserObjectRoleMapping.objects.get(user=user, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
-        except:
+        except Exception:
             return self.LEVEL_NONE
 
     def set_user_level(self, user, level):
@@ -143,7 +143,7 @@ class PermissionLevelMixin(object):
             # lookup new role...
             try:
                 role = ObjectRole.objects.get(codename=level, content_type=my_ct)
-            except ObjectRole.NotFound: 
+            except ObjectDoesNotExist: 
                 raise PermissionLevelError("Invalid Permission Level (%s)" % level)
             # remove any existing mapping              
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()
@@ -160,7 +160,7 @@ class PermissionLevelMixin(object):
             my_ct = ContentType.objects.get_for_model(self)
             mapping = GenericObjectRoleMapping.objects.get(subject=gen_role, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
-        except:
+        except Exception:
             return self.LEVEL_NONE
 
     def set_gen_level(self, gen_role, level):

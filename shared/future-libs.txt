@@ -1,6 +1,0 @@
-# deployment/later
-jstools
-pastedeploy # required for paste
--e svn+http://svn.pythonpaste.org/Paste/WSGIProxy/trunk#egg=WSGIProxy
--e http://svn.repoze.org/repoze.django/trunk#egg=repoze.django
-
