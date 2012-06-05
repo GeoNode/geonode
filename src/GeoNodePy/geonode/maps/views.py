@@ -123,9 +123,9 @@ LAYER_LEV_NAMES = {
     Layer.LEVEL_ADMIN : _('Administrative')
 }
 
-def maps(request): # , mapid=None):
+def maps(request, template='maps/maps.html'):
     if request.method == 'GET':
-        return render_to_response('maps.html', RequestContext(request))
+        return render_to_response(template, RequestContext(request))
     elif request.method == 'POST':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -273,12 +273,12 @@ def newmap_config(request):
             config = DEFAULT_MAP_CONFIG
     return json.dumps(config)
 
-def newmap(request):
+def newmap(request, template='maps/view.html'):
     config = newmap_config(request)
     if isinstance(config, HttpResponse):
         return config
     else:
-        return render_to_response('maps/view.html', RequestContext(request, {
+        return render_to_response(template, RequestContext(request, {
             'config': config, 
             'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
             'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
@@ -309,7 +309,7 @@ h.authorizations.append(
 
 
 @login_required
-def map_download(request, mapid):
+def map_download(request, mapid, template='maps/download.html'):
     """ 
     Download all the layers of a map as a batch
     XXX To do, remove layer status once progress id done 
@@ -351,7 +351,7 @@ def map_download(request, mapid):
                 else:
                     downloadable_layers.append(lyr)
 
-    return render_to_response('maps/download.html', RequestContext(request, {
+    return render_to_response(template, RequestContext(request, {
          "map_status" : map_status,
          "map" : mapObject,
          "locked_layers": locked_layers,
@@ -532,7 +532,7 @@ def ajax_map_permissions(request, mapid):
 
 
 @login_required
-def deletemap(request, mapid):
+def deletemap(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
     map_obj = get_object_or_404(Map,pk=mapid) 
 
@@ -542,7 +542,7 @@ def deletemap(request, mapid):
                 _("You are not permitted to delete this map.")})), status=401)
 
     if request.method == 'GET':
-        return render_to_response("maps/map_remove.html", RequestContext(request, {
+        return render_to_response(template, RequestContext(request, {
             "map": map_obj
         }))
     elif request.method == 'POST':
@@ -553,7 +553,7 @@ def deletemap(request, mapid):
 
         return HttpResponseRedirect(reverse("geonode.maps.views.maps"))
 
-def mapdetail(request,mapid): 
+def mapdetail(request, mapid, template='maps/mapinfo.html'): 
     '''
     The view that show details of each map
     '''
@@ -566,7 +566,7 @@ def mapdetail(request,mapid):
     config = map_obj.viewer_json()
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id) 
-    return render_to_response("maps/mapinfo.html", RequestContext(request, {
+    return render_to_response(template, RequestContext(request, {
         'config': config, 
         'map': map_obj,
         'layers': layers,
@@ -574,7 +574,7 @@ def mapdetail(request,mapid):
     }))
 
 @login_required
-def describemap(request, mapid):
+def describemap(request, mapid, template='maps/map_describe.html'):
     '''
     The view that displays a form for
     editing map metadata
@@ -602,7 +602,7 @@ def describemap(request, mapid):
         # Show form
         map_form = MapForm(instance=map_obj, prefix="map")
 
-    return render_to_response("maps/map_describe.html", RequestContext(request, {
+    return render_to_response(template, RequestContext(request, {
         "map": map_obj,
         "map_form": map_form
     }))
@@ -620,7 +620,7 @@ def map_controller(request, mapid):
     else:
         return mapdetail(request, mapid)
 
-def view(request, mapid):
+def view(request, mapid, template='maps/view.html'):
     """  
     The view that returns the map composer opened to
     the map with the given map ID.
@@ -632,13 +632,13 @@ def view(request, mapid):
                 _("You are not allowed to view this map.")})), status=401)    
     
     config = map_obj.viewer_json()
-    return render_to_response('maps/view.html', RequestContext(request, {
+    return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
 
-def embed(request, mapid=None):
+def embed(request, mapid=None, template='maps/embed.html'):
     if mapid is None:
         config = default_map_config()[0]
     else:
@@ -647,7 +647,7 @@ def embed(request, mapid=None):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
         
         config = map_obj.viewer_json()
-    return render_to_response('maps/embed.html', RequestContext(request, {
+    return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config)
     }))
 
@@ -670,7 +670,7 @@ class LayerDescriptionForm(forms.Form):
     keywords = forms.CharField(500, required=False)
 
 @login_required
-def layer_metadata(request, layername):
+def layer_metadata(request, layername, template='layers/layer_describe.html'):
     layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.change_layer', obj=layer):
@@ -725,7 +725,7 @@ def layer_metadata(request, layername):
             author_form = ContactForm(prefix="author")
             author_form.hidden=True
 
-        return render_to_response("maps/layer_describe.html", RequestContext(request, {
+        return render_to_response(template, RequestContext(request, {
             "layer": layer,
             "layer_form": layer_form,
             "poc_form": poc_form,
@@ -734,7 +734,7 @@ def layer_metadata(request, layername):
     else: 
         return HttpResponse("Not allowed", status=403)
 
-def layer_remove(request, layername):
+def layer_remove(request, layername, template='layers/layer_remove.html'):
     layer = get_object_or_404(Layer, typename=layername)
     if request.user.is_authenticated():
         if not request.user.has_perm('maps.delete_layer', obj=layer):
@@ -743,7 +743,7 @@ def layer_remove(request, layername):
                     _("You are not permitted to delete this layer")})), status=401)
         
         if (request.method == 'GET'):
-            return render_to_response('maps/layer_remove.html',RequestContext(request, {
+            return render_to_response(template,RequestContext(request, {
                 "layer": layer
             }))
         if (request.method == 'POST'):
@@ -788,7 +788,7 @@ def layer_style(request, layername):
     else:  
         return HttpResponse("Not allowed",status=403)
 
-def layer_detail(request, layername):
+def layer_detail(request, layername, template='layers/layer.html'):
     layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.view_layer', obj=layer):
         return HttpResponse(loader.render_to_string('401.html', 
@@ -803,7 +803,7 @@ def layer_detail(request, layername):
     map_obj = Map(projection="EPSG:900913")
     DEFAULT_BASE_LAYERS = default_map_config()[1]
 
-    return render_to_response('maps/layer.html', RequestContext(request, {
+    return render_to_response(template, RequestContext(request, {
         "layer": layer,
         "metadata": metadata,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
@@ -816,9 +816,9 @@ GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your dat
 Please try again, or contact and administrator if the problem continues.")
 
 @login_required
-def upload_layer(request):
+def upload_layer(request, template='layers/layer_upload.html'):
     if request.method == 'GET':
-        return render_to_response('maps/layer_upload.html',
+        return render_to_response(template,
                                   RequestContext(request, {}))
     elif request.method == 'POST':
         from geonode.maps.forms import NewLayerUploadForm
@@ -855,7 +855,7 @@ def upload_layer(request):
             return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
 @login_required
-def layer_replace(request, layername):
+def layer_replace(request, layername, template='layers/layer_replace.html'):
     layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.change_layer', obj=layer):
         return HttpResponse(loader.render_to_string('401.html', 
@@ -866,7 +866,7 @@ def layer_replace(request, layername):
         info = cat.get_resource(layer.name)
         is_featuretype = info.resource_type == FeatureType.resource_type
         
-        return render_to_response('maps/layer_replace.html',
+        return render_to_response(template,
                                   RequestContext(request, {'layer': layer,
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
@@ -1220,7 +1220,7 @@ def _metadata_search(query, start, limit, **kw):
     
     return result
 
-def search_result_detail(request):
+def search_result_detail(request, template='layers/search_result_snippet.html'):
     uuid = request.GET.get("uuid")
     csw = get_csw()
     csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
@@ -1235,7 +1235,7 @@ def search_result_detail(request):
         layer = None
         layer_is_remote = True
 
-    return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
+    return render_to_response(template, RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
         'layer': layer,
@@ -1350,10 +1350,10 @@ def _build_search_result(doc):
 
     return result
 
-def browse_data(request):
-    return render_to_response('data.html', RequestContext(request, {}))
+def browse_data(request, template='layers/data.html'):
+    return render_to_response(template, RequestContext(request, {}))
 
-def search_page(request):
+def search_page(request, template='layers/search.html'):
     DEFAULT_BASE_LAYERS = default_map_config()[1]
     # for non-ajax requests, render a generic search page
 
@@ -1366,7 +1366,7 @@ def search_page(request):
 
     map_obj = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
 
-    return render_to_response('search.html', RequestContext(request, {
+    return render_to_response(template, RequestContext(request, {
         'init_search': json.dumps(params or {}),
         'viewer_config': json.dumps(map_obj.viewer_json(*DEFAULT_BASE_LAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
@@ -1374,7 +1374,7 @@ def search_page(request):
     }))
 
 
-def change_poc(request, ids, template = 'maps/change_poc.html'):
+def change_poc(request, ids, template = 'layers/change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
     if request.method == 'POST':
         form = PocForm(request.POST)
@@ -1514,7 +1514,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     
     return result
 
-def maps_search_page(request):
+def maps_search_page(request, template='maps/maps_search.html'):
     # for non-ajax requests, render a generic search page
 
     if request.method == 'GET':
@@ -1524,7 +1524,7 @@ def maps_search_page(request):
     else:
         return HttpResponse(status=405)
 
-    return render_to_response('maps_search.html', RequestContext(request, {
+    return render_to_response(template, RequestContext(request, {
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))

@@ -75,7 +75,7 @@ class Catalog(object):
         return response
 
     def create_from_layer(self, layer):
-        self.csw_request(layer, "maps/csw/transaction_insert.xml")
+        self.csw_request(layer, "csw/transaction_insert.xml")
         # TODO: Parse response, check for error report
 
         # Turn on the "view" permission (aka publish) for
@@ -95,11 +95,11 @@ class Catalog(object):
         })
 
     def delete_layer(self, layer):
-        self.csw_request(layer, "maps/csw/transaction_delete.xml")
+        self.csw_request(layer, "csw/transaction_delete.xml")
         # TODO: Parse response, check for error report
 
     def update_layer(self, layer):
-        self.csw_request(layer, "maps/csw/transaction_update.xml")
+        self.csw_request(layer, "csw/transaction_update.xml")
         # TODO: Parse response, check for error report
 
     def set_metadata_privs(self, uuid, privileges):
