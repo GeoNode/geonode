@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from distutils.core import setup
 
 setup(name='GeoNode',
       version= __import__('geonode').get_version(),
@@ -11,8 +11,13 @@ setup(name='GeoNode',
       author_email='dev@geonode.org',
       url='http://geonode.org',
       license='GPL',
-      packages = find_packages(),
-      include_package_data=True,
+      packages = ['geonode',
+                  'geonode.maps',
+                  'geonode.security',
+                  'geonode.proxy',
+                  ],
+      package_dir = {'geonode': 'geonode'},
+      package_data = {'geonode': ['geonode/static/*']},
       install_requires = [
           "gsconfig",
           "OWSLib==0.4.0",
@@ -26,5 +31,3 @@ setup(name='GeoNode',
       # -*- Entry points: -*-
       """,
       )
-
-
