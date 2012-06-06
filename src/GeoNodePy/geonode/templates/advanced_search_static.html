@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}adv-search{% endblock %}
+
+{% block head %}
+  {% include "geonode/ext_header.html" %}
+  {% include "geonode/app_header.html" %}
+  {% include "geonode/geo_header.html" %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/datepicker.css" type="text/css" media="screen" />
+{% endblock %}
+
+{% block body_outer %}
+  <div class="span12">
+    <h2 class="page-title">{% trans "Advanced Search" %}</h2>
+    <form action="" class="form-horizontal advanced-search">
+      <div class="row">
+        <div class="span2">
+          <h3>{% trans "Search for: "%}</h3>
+        </div>
+        <div class="span10">
+          <fieldset class="fieldset1">
+            <div class="span2">
+              <select name="" id="" class="span2">
+                <option value="">All of the words</option>
+              </select>
+            </div>
+            <div class="span7">
+              <div class="control-group">
+                <input type="text" />
+                <button type="submit" class="btn">{% trans "Search "%}</button>
+              </div>
+              <div class="control-group">
+                <label for="">Exclude words from your search<br />
+                  <input type="text" />
+                </label>
+              </div>
+              <div class="control-group">
+                <label for="" class="radio inline">
+                  <input type="radio" checked /> All categories
+                </label>
+                <label for="" class="radio inline">
+                  <input type="radio" /> Maps only
+                </label>
+                <label for="" class="radio inline">
+                  <input type="radio" /> Datasets only
+                </label>
+                <label for="" class="radio inline">
+                  <input type="radio" /> Groups only
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="span2">
+          <h3>{% trans "Type: "%}</h3>
+        </div>
+        <div class="span10">
+          <fieldset>
+            <div class="control-group">
+              <label class="control-label" for="input01">From this site/portal</label>
+              <div class="controls">
+                <input type="text" class="input-xlarge" id="input01">
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="input01">From this group</label>
+              <div class="controls">
+                <input type="text" class="input-xlarge" id="input01">
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="input01">From this organization</label>
+              <div class="controls">
+                <input type="text" class="input-xlarge" id="input01">
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="input01">From this geographic region</label>
+              <div class="controls">
+                <select name="" id="">
+                  <option value=""></option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="span2">
+          <h3>{% trans "Metadata: "%}</h3>
+        </div>
+        <div class="span10">
+          <fieldset>
+            <div class="control-group">
+              <label class="control-label" for="input01">Since this date</label>
+              <div class="controls">
+                <input data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="input01">Until this date</label>
+              <div class="controls">
+                <input data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        
+        <div class="span12">
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">{% trans "Search "%}</button>
+          <button class="btn">{% trans "Cancel "%}</button>
+        </div>
+        </div>
+        
+      </div>
+    </form>
+    
+  </div>
+{% endblock %}
+
+{% block extra_script %}
+    <script src="{{ STATIC_URL }}geonode/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function() {
+          $(".date").datepicker();
+        });
+    </script>
+{% endblock %}
+
