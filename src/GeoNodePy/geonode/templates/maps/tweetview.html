@@ -212,14 +212,14 @@ var employeeStoreProxy = new Ext.data.HttpProxy({
     url : "/tweettrends"
 });
 var remoteStore = new Ext.data.JsonStore({
-    root : 'records',
+    root : 'record',
     autoLoad : true,
     storeId : 'employeeDv',
     proxy : employeeStoreProxy,
-    baseParams: { bounds: config["map"]["maxExtent"], dateStart: tweetDateStartField.getValue(), dateEnd:  tweetDateEndField.getValue()},
+    baseParams: { "bounds": config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd":  new Date(tweetDateEndField.getValue()).format('Y-M-d')},
     fields : [
-        { name : "topic", mapping : "topic" },
-        { name : "count", mapping : "count" }
+        { name : "count", mapping : "count" },
+        { name : "topic", mapping : "topic" }
     ]
 });
 
@@ -249,7 +249,7 @@ var remoteStore = new Ext.data.JsonStore({
         }
 
         remoteStore.load({
-            params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], dateStart: tweetDateStartField.getValue(), dateEnd: tweetDateEndField.getValue()}
+            params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd" : new Date(tweetDateEndField.getValue()).format('Y-M-d')}
         });
 
     };
@@ -378,7 +378,7 @@ var chart = {
 };
 var chartPanel = new Ext.Panel({
     title: "Top 5 Trending Health Terms",
-    width : 350,
+    width : 400,
     height : 150,
     layout : 'fit',
     cls: "chart-overlay",
@@ -445,12 +445,6 @@ tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
 tweetHeatRecord.group = tweetConfig.group;
 
 
-app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
-    remoteStore.load({
-        params: {bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], dateStart: tweetDateStartField.getValue(),  dateStart: tweetDateEndField.getValue()}
-    });
-});
-
 
 app.on("ready", function() {
 
@@ -473,31 +467,33 @@ app.on("ready", function() {
 //    app.addCategoryFolder(tweetPointRecord.get("group"), "true");
 //    app.reorderNodes(tweetPointRecord.getLayer());
 
-});
 
 
-//app.mapPanel.layers.insert(app.mapPanel.layers.data.items.length, [tweetWms] );
-//app.mapPanel.map.addLayers(tweetWms);
-
-app.mapPanel.add(cqlOverlay);
-
-
-    app.on("ready", function() {
-        app.toolbar.items.each(function(item) {
+     app.toolbar.items.each(function(item) {
             if (item.text != undefined && item.text.indexOf(app.publishBtnText) > -1 ) {
                 item.disable();
                 item.hide();
             }
-        });
+     });
 
-        app.mapPanel.layers.each(function (layer) {
+    app.mapPanel.add(cqlOverlay);
+    app.mapPanel.add(chartPanel);
+
+    app.mapPanel.layers.each(function (layer) {
             updateLayer();
+     });
+
+
+    app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
+        remoteStore.load({
+            params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'),  "dateEnd": new Date(tweetDateEndField.getValue()).format('Y-M-d')}
         });
+    });
 
 });
 
 
-app.mapPanel.add(chartPanel);
+
 
 {% endautoescape %}
 }

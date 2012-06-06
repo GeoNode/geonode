@@ -150,7 +150,7 @@ def hglServiceStarter (request, layer):
 def tweetTrendProxy (request):
     tweetUrl = "http://" + settings.AWS_INSTANCE_IP + "?bounds=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
     resultJSON = urllib.urlopen(tweetUrl).read()
-    
+
 #    resultJSON = """
 #    {
 #    "records": [
