@@ -281,6 +281,7 @@ def newmap(request, template='maps/view.html'):
         return render_to_response(template, RequestContext(request, {
             'config': config, 
             'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+            'GEONETWORK_BASE_URL': settings.GEONETWORK_BASE_URL,
             'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
         }))
 
@@ -635,6 +636,7 @@ def view(request, mapid, template='maps/view.html'):
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        'GEONETWORK_BASE_URL' : settings.GEONETWORK_BASE_URL,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
 
