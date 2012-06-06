@@ -148,40 +148,41 @@ def hglServiceStarter (request, layer):
 
 
 def tweetTrendProxy (request):
-    tweetUrl = "" + "?bbox=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
-    #resultJSON = simplejson.loads(urllib.urlopen(tweetUrl).read())
-    resultJSON = """
-    {
-    "records": [
-
-        {
-            "topic" : "Ebola",
-            "count" : $rnd1
-        },
-        {
-            "topic" : "Malaria",
-            "count" : $rnd2
-        },
-        {
-            "topic" : "Flu",
-            "count" : $rnd3
-        },
-        {
-            "topic" : "Plague",
-            "count" : $rnd4
-        },
-        {
-            "topic" : "LymeDisease",
-            "count" : $rnd5
-        }
-    ]
-}
-"""
-    resultJSON = resultJSON.replace("$rnd1", str(random.randrange(50,500,1)))
-    resultJSON = resultJSON.replace("$rnd2", str(random.randrange(50,500,1)))
-    resultJSON = resultJSON.replace("$rnd3", str(random.randrange(50,500,1)))
-    resultJSON = resultJSON.replace("$rnd4", str(random.randrange(50,500,1)))
-    resultJSON = resultJSON.replace("$rnd5", str(random.randrange(50,500,1)))
+    tweetUrl = "http://" + settings.AWS_INSTANCE_IP + "?bounds=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
+    resultJSON = urllib.urlopen(tweetUrl).read()
+    
+#    resultJSON = """
+#    {
+#    "records": [
+#
+#        {
+#            "topic" : "Ebola",
+#            "count" : $rnd1
+#        },
+#        {
+#            "topic" : "Malaria",
+#            "count" : $rnd2
+#        },
+#        {
+#            "topic" : "Flu",
+#            "count" : $rnd3
+#        },
+#        {
+#            "topic" : "Plague",
+#            "count" : $rnd4
+#        },
+#        {
+#            "topic" : "LymeDisease",
+#            "count" : $rnd5
+#        }
+#    ]
+#}
+#"""
+#    resultJSON = resultJSON.replace("$rnd1", str(random.randrange(50,500,1)))
+#    resultJSON = resultJSON.replace("$rnd2", str(random.randrange(50,500,1)))
+#    resultJSON = resultJSON.replace("$rnd3", str(random.randrange(50,500,1)))
+#    resultJSON = resultJSON.replace("$rnd4", str(random.randrange(50,500,1)))
+#    resultJSON = resultJSON.replace("$rnd5", str(random.randrange(50,500,1)))
 
     return HttpResponse(resultJSON, mimetype="application/json")
 

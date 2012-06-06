@@ -1034,16 +1034,13 @@ def tweetview(request):
 
     instanceStarted = twitterInstance.state == 'running'
 
-    #if not instanceStarted:
-    #    redirectPage = 'maps/tweetstartup.html'
+    if not instanceStarted:
+        redirectPage = 'maps/tweetstartup.html'
 
 
 
     first_visit = True
-    if request.session.get('visit' + str(map.id), False):
-        first_visit = False
-    else:
-        request.session['visit' + str(map.id)] = True
+
 
     mapstats, created = MapStats.objects.get_or_create(map=map)
     mapstats.visits += 1

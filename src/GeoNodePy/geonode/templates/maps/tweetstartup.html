@@ -9,24 +9,118 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/fileuploadfield/fileuploadfield.css"
-      xmlns="http://www.w3.org/1999/html"/>
+      xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"/>
 {{ block.super }}
 <script type="text/javascript">
+
+
+
+
+var timeElapsed;
+var nextdue;
+var tick = 1000;
+
+
+
+function parseTime(t) {
+    var tt = ("0:00:"+t);
+    tt = tt.split(":").reverse();
+    return (tt[0] * 1000)+(tt[1] * 60000)+(tt[2] * 3600000);
+}
+
+
+
+function zeroPad(n) {
+    if (n<10) return "0"+n;
+    return ""+n;
+}
+
+
+
+function makeTime(t) {
+    if (t<0) return "00:00";
+    var tt=t+999;
+    return zeroPad(Math.floor(tt/60000)%60)+":"+
+            zeroPad(Math.floor(tt/1000)%60);
+}
+
+
+
+function startTimer() {
+    nextdue = new Date().getTime();
+    timeElapsed = parseTime("00:00:00");
+    runTimer();
+}
+
+Ext.Ajax.timeout = 15000;
+
+function runTimer() {
+
+
+    var seconds = new Date(timeElapsed).getSeconds();
+    if (seconds == 15 || seconds == 30 || seconds == 45 || seconds == 0){
+        Ext.Ajax.request({
+            url : "/proxy?url=http://107.22.230.16/?LAYERS=heatmap&TRANSPARENT=TRUE&FORMAT=image%2Fpng&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG%3A900913&CQL_FILTER=Name%3D'flu'%20AND%20Start_Date%20%3E%20'2012-Jan-26'%20AND%20Start_Date%20%3C%20'2012-Feb-02'&_OLSALT=0.080470155691728&BBOX=-10292704.479336,-769470.05907185,3796168.5722265,3782923.4617673&WIDTH=720&HEIGHT=233",
+            //url : "http://localhost:8000/proxy?url=http://worldmap.harvard.edu/geoserver/wms?STYLES=slccomposite_circa65_ojm&FORMAT=image%2Fpng&TRANSPARENT=TRUE&LAYERS=geonode%3Aslccomposite_circa65_ojm&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&LLBBOX=-90.6618702756674,38.47691591550308,-90.20304422923158,38.819495089300005&URL=http%3A%2F%2Fworldmap.harvard.edu%2Fgeoserver%2Fwms&TILED=true&TILESORIGIN=-10092433.232048197,4647018.843317348&SRS=EPSG%3A900913&BBOX=-10057889.928477,4657155.2587109,-10018754.17,4696291.0171875&WIDTH=256&HEIGHT=256",
+            method: 'GET',
+            success: function() {
+                window.location.reload();
+            },
+            failure: function() {
+                //Do nothing
+            }
+        });
+    }
+
+
+    Ext.get('timeElapsed').update(makeTime(timeElapsed));
+        var timecorr = (new Date().getTime())-nextdue;
+        console.log(timecorr);
+        if (timecorr>0 && timecorr<3000) {
+            timeElapsed += (tick+timecorr);
+            nextdue += tick;
+            if (timeElapsed<1) setTimeout ("runTimer()",tick+timeElapsed);
+            else setTimeout("runTimer()",Math.max(1,tick-timecorr));
+        }
+        else {
+            nextdue=(new Date().getTime())+tick;
+            timeElapsed+=tick;
+            setTimeout("runTimer()",tick);
+        }
+
+
+}
+
 Ext.onReady(function() {
+
+    startTimer();
 
     Ext.Ajax.request({
         url: "/data/start_twitter/",
         method: "POST"
     });
 
+
 });
+
 </script>
 {% endblock %}
 
 {% block main %}
 <div class="twocol" style="min-height:400px">
     <h2>{% trans "Welcome to GEOPS-WorldMap: Collaboration for Big Geodata" %}</h2>
-    <p>The system is now starting up and will take approximately 5 minutes to become active.</p>
+    <div style="font-weight:bold;">
+    <p>The system is now starting up and will take up to 5 minutes to become active.</p>
+
+    <p>Once the server is up the application will automatically be displayed.</p>
+
+    <p>If it does not appear within 5 minutes please contact us at: <a href="mailto:tmostak@fas.harvard.edu">tmostak@fas.harvard.edu</a>.    </p>
+    </div>
+
+
+
+        <div align="center">Time elapsed: <div id="timeElapsed" style="font-size:16pt;font-weight:bold;display:inline"></div><br /><br /></div>
+
 
     <p>We have implemented the system in this way to demonstrate the power of Graphics Processing Units (GPUs) for analyzing large geospatial datasets while we apply for project funding.  The approach allows us to run this application on a minimal budget while also demonstrating a simple method by which any organization can take advantage of Amazon’s   “just in time” infrastructure, firing up sleeping servers as needed.  Our system automatically shuts down after half an hour of non-use.</p>
 

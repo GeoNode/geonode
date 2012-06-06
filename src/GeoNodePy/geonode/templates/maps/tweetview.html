@@ -173,8 +173,8 @@ var init = function() {
         name: 'tweetFilter',
         allowBlank: false,
         value: 'flu',
-        labelStyle:"font-weight:bold;text-align:right"
-
+        labelStyle:"font-weight:bold;text-align:right",
+        width:100
     });
 
     var tweetDateStartField = new Ext.form.DateField({
@@ -182,10 +182,10 @@ var init = function() {
         fieldLabel: 'From',
         labelStyle:"font-weight:bold;text-align:right",
         allowBlank: false,
-        minValue: new Date('2012-01-27'),
-        maxValue: new Date('2012-03-19'),
-        value: new Date('2012-01-27'),
-        width:125,
+        minValue: new Date(2012,0,26),
+        maxValue: new Date(2012,2,25),
+        value: new Date(2012,0,26),
+        width:100,
         listeners: {
             'select': updateArrows
         }
@@ -196,10 +196,10 @@ var tweetDateEndField = new Ext.form.DateField({
     fieldLabel: 'To',
     labelStyle:"font-weight:bold;text-align:right",
     allowBlank: false,
-    minValue: new Date('2012-02-03'),
-    maxValue: new Date('2012-03-26'),
-    value: new Date('2012-02-03'),
-    width:125,
+    minValue: new Date(2012,0,26),
+    maxValue: new Date(2012,2,25),
+    value: new Date(2012,1,2),
+    width:100,
     listeners: {
         'select': updateArrows
     }
@@ -243,7 +243,7 @@ var remoteStore = new Ext.data.JsonStore({
             if (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) {
                 tweetHeatRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
             }
-            tweetHeatRecord["cql_filter"] += "Start_Date > '" + tweetDateStartField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateEndField.getValue().format('Y-M-d') + "'";
+            tweetHeatRecord["cql_filter"] += "Start_Date > '" + new Date(tweetDateStartField.getValue()).format('Y-M-d') + "' AND Start_Date < '" + new Date(tweetDateEndField.getValue()).format('Y-M-d') + "'";
             tweetHeatRecord.getLayer().params["CQL_FILTER"] = tweetHeatRecord["cql_filter"];
             tweetHeatRecord.getLayer().redraw(true);
         }
@@ -298,9 +298,8 @@ var remoteStore = new Ext.data.JsonStore({
     var cqlOverlay = new Ext.FormPanel({
         frame: true,
         title: gettext('Tweet Filter'),
-        autoHeight: true,
         bodyStyle: 'padding: 10px 10px 0 10px;',
-        labelWidth: 50,
+        labelWidth: 70,
         defaults: {
             anchor: '95%',
             msgTarget: 'side'
@@ -312,7 +311,7 @@ var remoteStore = new Ext.data.JsonStore({
         items: [
             {
                 layout:"column",
-                width: 700,
+
                 items:[
                 {
                     columnWidth:0.33,
@@ -353,6 +352,10 @@ var remoteStore = new Ext.data.JsonStore({
                     },
                     {columnWidth:0.33, layout:"form",style:"text-align:left;font-weight:bold", html: "Next date"}
                 ]
+            }
+        ],
+        keys: [
+            { key: [Ext.EventObject.ENTER], handler: updateLayer
             }
         ]
     });
@@ -507,7 +510,7 @@ window.onload = init;
 
 {% block body %}
 
-<div id="container" style="min-width: 400px; height: 100px; margin: 0 auto; position:absolute; z-index:10005; right: 400px; top:200px;"></div>
+
 
 <div id="header-wrapper">
   {{ block.super }}
