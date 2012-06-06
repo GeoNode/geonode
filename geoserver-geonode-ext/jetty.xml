@@ -109,7 +109,7 @@
       <Arg>
         <New class="org.mortbay.jetty.deployer.WebAppDeployer">
           <Set name="contexts"><Ref id="Contexts"/></Set>
-          <Set name="webAppDir"><SystemProperty name="jetty.home" default="../../webapps"/></Set>
+          <Set name="webAppDir"><SystemProperty name="jetty.home" default="../webapps"/></Set>
           <Set name="parentLoaderPriority">true</Set>
 		  <!--  Refer to http://geoserver.org/display/GEOSDOC/Dealing+with+native+JAI 
 		  		for more background on the parentLoaderPriority=True -->
