@@ -98,6 +98,21 @@ This command::
 can be used to create additional administrative user accounts.  The administrative control panel is not
 linked from the main site, but can be accessed at http://localhost:8000/admin/
 
+
+.. Contact/Profile Notes::
+
+    The GeoNode ``Contact`` model has been modified to use Idios
+    in this branch. It has also been moved from the ``geonode.maps``
+    module to ``geonode.people``.
+    
+    In terms of end user interface, there should be no difference.  
+    However, the existing column ``maps_contact.user`` was modified
+    to no longer accept null values.  The admin interface currently
+    uses the class name ``Profiles`` for this model.
+    
+    Also, a ``User Type`` field has been added.  This field does not
+    currently have an associated migration.
+
 Options
 =======
 

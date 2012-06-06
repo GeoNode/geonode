@@ -43,7 +43,7 @@ urlpatterns = patterns('',
     url(r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup',
                                        name='auth_ajax_lookup'),
     (r'^accounts/', include('registration.urls')),
-    (r'^profiles/', include('profiles.urls')),
+    (r'^profiles/', include('idios.urls')),
     (r'^avatar/', include('avatar.urls')),
 
     # Meta

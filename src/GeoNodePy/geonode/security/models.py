@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
@@ -237,3 +239,4 @@ def autologin(sender, **kwargs):
     login(request, user)
 
 user_activated.connect(autologin)
+
