@@ -1,5 +1,6 @@
+-r requirements.txt
+
 werkzeug
-django-extensions
 Paste
 PasteDeploy
 PasteScript
