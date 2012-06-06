@@ -1,0 +1,21 @@
+[submodule "geonode-client/app/static/externals/geoext"]
+	path = geonode-client/app/static/externals/geoext
+	url = git://github.com/geoext/geoext.git
+[submodule "geonode-client/app/static/externals/gxp"]
+	path = geonode-client/app/static/externals/gxp
+	url = git://github.com/opengeo/gxp.git
+[submodule "geonode-client/app/static/externals/openlayers"]
+	path = geonode-client/app/static/externals/openlayers
+	url = git://github.com/openlayers/openlayers.git
+[submodule "geonode-client/app/static/externals/PrintPreview"]
+	path = geonode-client/app/static/externals/PrintPreview
+	url = git://github.com/GeoNode/PrintPreview.git
+[submodule "geonode-client/externals/stick"]
+	path = geonode-client/externals/stick
+	url = git://github.com/hns/stick.git
+[submodule "geonode-client/externals/ringo"]
+	path = geonode-client/externals/ringo
+	url = git://github.com/ringo/ringojs.git
+[submodule "geonode-client/externals/buildkit"]
+	path = geonode-client/externals/buildkit
+	url = git://github.com/tschaub/buildkit.git
