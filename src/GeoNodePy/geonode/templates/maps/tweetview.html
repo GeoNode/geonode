@@ -444,7 +444,8 @@ tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
 ));
 tweetHeatRecord.group = tweetConfig.group;
 
-
+app.mapPanel.add(cqlOverlay);
+app.mapPanel.add(chartPanel);
 
 app.on("ready", function() {
 
@@ -476,12 +477,8 @@ app.on("ready", function() {
             }
      });
 
-    app.mapPanel.add(cqlOverlay);
-    app.mapPanel.add(chartPanel);
 
-    app.mapPanel.layers.each(function (layer) {
-            updateLayer();
-     });
+    updateLayer();
 
 
     app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
