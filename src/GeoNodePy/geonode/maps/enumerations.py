@@ -1,3 +1,6 @@
+# -*- coding: UTF-8 -*-
+from django.utils.translation import ugettext_lazy as _
+
 # Common internationalization choices for shared models.
 COUNTRIES = (
     ('AFG', _('Afghanistan')),
