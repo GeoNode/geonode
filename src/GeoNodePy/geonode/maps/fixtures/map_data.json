@@ -19,6 +19,97 @@
     },
     {
         "fields": {
+            "date_joined": "2010-07-20 13:31:27",
+            "email": "author@admin.admin",
+            "first_name": "Default",
+            "groups": [],
+            "is_active": false,
+            "is_staff": false,
+            "is_superuser": false,
+            "last_login": "2010-07-20 17:26:12",
+            "last_name": "Author",
+            "password": "sha1$6c974$de67ee46336cb3b9bb9e90d53863c3a8d01ce944",
+            "user_permissions": [],
+            "username": "default_author"
+        },
+        "model": "auth.user",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "date_joined": "2010-07-20 13:31:27",
+            "email": "contact@admin.admin",
+            "first_name": "",
+            "groups": [],
+            "is_active": false,
+            "is_staff": false,
+            "is_superuser": false,
+            "last_login": "2010-07-20 17:26:12",
+            "last_name": "",
+            "password": "sha1$6c974$de67ee46336cb3b9bb9e90d53863c3a8d01ce944",
+            "user_permissions": [],
+            "username": "default_contact"
+        },
+        "model": "auth.user",
+        "pk": 4
+    },
+{
+    "pk": 1,
+    "model": "people.contact",
+    "fields": {
+        "city": null,
+        "fax": null,
+        "name": "Default Contact",
+        "area": null,
+        "country": null,
+        "zipcode": null,
+        "delivery": null,
+        "user": 4,
+        "position": null,
+        "organization": "GeoNode",
+        "voice": null,
+        "email": null
+    }
+},
+{
+    "pk": 2,
+    "model": "people.contact",
+    "fields": {
+        "city": null,
+        "fax": null,
+        "name": "Default Author",
+        "area": null,
+        "country": null,
+        "zipcode": null,
+        "delivery": null,
+        "user": 3,
+        "position": null,
+        "organization": "Geonode",
+        "voice": null,
+        "email": null
+    }
+},
+{
+    "pk": 3,
+    "model": "people.contact",
+    "fields": {
+        "city": null,
+        "fax": null,
+        "name": "Admin",
+        "area": null,
+        "country": null,
+        "zipcode": null,
+        "delivery": null,
+        "user": 2,
+        "position": null,
+        "organization": "Geonode",
+        "voice": null,
+        "email": null
+    }
+},
+
+    {
+        "fields": {
             "typename": "base:CA",
             "store": "CA",
             "name": "CA",

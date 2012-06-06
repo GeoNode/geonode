@@ -626,7 +626,7 @@ community."
 
     def test_describe_data_2(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(2, User.objects.all().count())
+        self.assertEqual(4, User.objects.all().count())
         c = Client()
         response = c.get('/data/base:CA/metadata')
         # Since we are not authenticated, we should not be able to access it
@@ -753,7 +753,7 @@ community."
 
     def test_describe_data(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(2, User.objects.all().count())
+        self.assertEqual(4, User.objects.all().count())
         c = Client()
         response = c.get('/data/base:CA/metadata')
         # Since we are not authenticated, we should not be able to access it

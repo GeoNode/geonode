@@ -16,42 +16,6 @@
     }
 },
 {
-    "pk": 1, 
-    "model": "maps.contact", 
-    "fields": {
-        "city": null, 
-        "fax": null, 
-        "name": "Default Contact", 
-        "area": null, 
-        "country": null, 
-        "zipcode": null, 
-        "delivery": null, 
-        "user": null, 
-        "position": null, 
-        "organization": "GeoNode", 
-        "voice": null, 
-        "email": null
-    }
-}, 
-{
-    "pk": 2, 
-    "model": "maps.contact", 
-    "fields": {
-        "city": null, 
-        "fax": null, 
-        "name": "Default Author", 
-        "area": null, 
-        "country": null, 
-        "zipcode": null, 
-        "delivery": null, 
-        "user": null, 
-        "position": null, 
-        "organization": "Geonode", 
-        "voice": null, 
-        "email": null
-    }
-},
-{
     "pk": 1,
     "model": "security.objectrole",
     "fields": {
