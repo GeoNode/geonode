@@ -30,8 +30,8 @@
 </p>
 
 <p><b>{% trans "Keywords:" %}</b>
-{% if keywords %}
-  {{keywords}}
+{% if rec.keywords %}
+  {{rec.keywords|join:","}}
 {% else %}
 <em>{% trans "No keywords are listed for this layer." %}</em>
 {% endif %}

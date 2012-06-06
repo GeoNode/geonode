@@ -1228,16 +1228,10 @@ def search_result_detail(request):
         layer = None
         layer_is_remote = True
 
-    keywords = []
-    if hasattr(rec, 'identification') and hasattr(rec.identification, 'keywords'):
-        for kw in rec.identification.keywords:
-            keywords.extend(kw['keywords'])
-
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
         'metadata_links': catalogue.urls_for_uuid(uuid),
-        'keywords': ','.join(keywords),
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))

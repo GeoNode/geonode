@@ -59,8 +59,14 @@ class Catalogue(CatalogueServiceWeb):
             return None
     
         if hasattr(self, 'records'):
-            recs = self.records
-            return recs.values()[0] if len(recs) > 0 else None
+            if len(self.records) < 1:
+                return None
+            record = self.records.values()[0]
+            record.keywords = []
+            if hasattr(record, 'identification') and hasattr(record.identification, 'keywords'):
+                for kw in record.identification.keywords:
+                    record.keywords.extend(kw['keywords'])
+            return record
         else:
             return None
 
