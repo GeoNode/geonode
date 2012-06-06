@@ -62,7 +62,7 @@ bundle = path('shared/geonode.pybundle')
 dl_cache = "--download-cache=./build"
 dlname = 'geonode.bundle'
 gs_data = "gs-data"
-geoserver_target = path('src/geoserver-geonode-ext/target/geoserver.war')
+geoserver_target = path('geoserver-geonode-ext/target/geoserver.war')
 geonetwork_target = path('webapps/geonetwork.war')
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
 geonode_client_target_war = path('webapps/geonode-client.war')
@@ -174,7 +174,7 @@ def setup_gs_data(options):
 @needs(['setup_gs_data'])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
-    with pushd('src/geoserver-geonode-ext'):
+    with pushd('geoserver-geonode-ext'):
         sh("mvn clean install")
 
 @task
@@ -184,7 +184,7 @@ def setup_geonetwork(options):
     src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file)
     info("geonetwork url: %s" % src_url)
     # where to download the war files. If changed change also
-    # src/geoserver-geonode-ext/jetty.xml accordingly
+    # geoserver-geonode-ext/jetty.xml accordingly
 
     webapps = path("./webapps")
     if not webapps.exists():
@@ -486,7 +486,7 @@ def install_sphinx_conditionally(options):
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
-    with pushd("src/geoserver-geonode-ext"):
+    with pushd("geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
             "-Djetty.host=" + options.host.bind,
