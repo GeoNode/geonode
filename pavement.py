@@ -61,7 +61,6 @@ venv = os.environ.get('VIRTUAL_ENV')
 bundle = path('shared/geonode.pybundle')
 dl_cache = "--download-cache=./build"
 dlname = 'geonode.bundle'
-gs_data = "gs-data"
 geoserver_target = path('geoserver-geonode-ext/target/geoserver.war')
 geonetwork_target = path('webapps/geonetwork.war')
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
@@ -132,22 +131,6 @@ def grab(src, dest):
         urlretrieve(str(src), str(dest))
 
 @task
-def setup_gs_data(options):
-    """Fetch a data directory to use with GeoServer for testing."""
-    src_url = str(options.config.parser.get('geoserver', 'gs_data_url'))
-    shared = path("./shared")
-    if not shared.exists():
-        shared.mkdir()
-
-    dst_url = shared / "geonode-geoserver-data.zip"
-    grab(src_url, dst_url)
-
-    if getattr(options, 'clean', False): path(gs_data).rmtree()
-    if not path(gs_data).exists(): unzip_file(dst_url, gs_data)
-
-
-@task
-@needs(['setup_gs_data'])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     with pushd('geoserver-geonode-ext'):
@@ -509,8 +492,6 @@ def host(options):
         time.sleep(2)
 
     try:
-        sh("django-admin.py updatelayers --settings=geonode.settings")
-        
         info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
         info("The GeoNode is an unstoppable machine")
         info("Press CTRL-C to shut down")
