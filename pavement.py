@@ -205,6 +205,7 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
+    sh('git submodule update --init')
     static = path("./geonode/static/geonode")
 
     with pushd("geonode-client/"):
