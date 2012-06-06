@@ -230,7 +230,7 @@
             "object_id": 1,
             "role": ["map_readonly", "maps", "map"]
         },
-        "model": "core.genericobjectrolemapping",
+        "model": "security.genericobjectrolemapping",
         "pk": 1
     },
     {
@@ -240,7 +240,7 @@
             "object_id": 1,
             "role": ["map_readwrite", "maps", "map"]
         },
-        "model": "core.genericobjectrolemapping",
+        "model": "security.genericobjectrolemapping",
         "pk": 2
     },
     {
@@ -250,7 +250,7 @@
             "object_id": 1,
             "role": ["layer_readonly", "maps", "layer"]
         },
-        "model": "core.genericobjectrolemapping",
+        "model": "security.genericobjectrolemapping",
         "pk": 3
     },
     {
@@ -260,7 +260,7 @@
             "object_id": 1,
             "role": ["layer_readonly", "maps", "layer"]
         },
-        "model": "core.genericobjectrolemapping",
+        "model": "security.genericobjectrolemapping",
         "pk": 4
     },
     {
@@ -270,7 +270,7 @@
             "object_id": 1,
             "role": ["layer_readwrite", "maps", "layer"]
         },
-        "model": "core.userobjectrolemapping",
+        "model": "security.userobjectrolemapping",
         "pk": 1
     }
 ]

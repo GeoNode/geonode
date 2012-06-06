@@ -16,7 +16,7 @@ class Migration(SchemaMigration):
             ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
             ('list_order', self.gf('django.db.models.fields.IntegerField')()),
         ))
-        db.send_create_signal('core', ['ObjectRole'])
+        db.send_create_signal('security', ['ObjectRole'])
 
         # Adding unique constraint on 'ObjectRole', fields ['content_type', 'codename']
         db.create_unique('core_objectrole', ['content_type_id', 'codename'])
@@ -37,7 +37,7 @@ class Migration(SchemaMigration):
             ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('role', self.gf('django.db.models.fields.related.ForeignKey')(related_name='user_mappings', to=orm['core.ObjectRole'])),
         ))
-        db.send_create_signal('core', ['UserObjectRoleMapping'])
+        db.send_create_signal('security', ['UserObjectRoleMapping'])
 
         # Adding unique constraint on 'UserObjectRoleMapping', fields ['user', 'object_ct', 'object_id', 'role']
         db.create_unique('core_userobjectrolemapping', ['user_id', 'object_ct_id', 'object_id', 'role_id'])
@@ -50,7 +50,7 @@ class Migration(SchemaMigration):
             ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('role', self.gf('django.db.models.fields.related.ForeignKey')(related_name='generic_mappings', to=orm['core.ObjectRole'])),
         ))
-        db.send_create_signal('core', ['GenericObjectRoleMapping'])
+        db.send_create_signal('security', ['GenericObjectRoleMapping'])
 
         # Adding unique constraint on 'GenericObjectRoleMapping', fields ['subject', 'object_ct', 'object_id', 'role']
         db.create_unique('core_genericobjectrolemapping', ['subject', 'object_ct_id', 'object_id', 'role_id'])
@@ -144,4 +144,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['core']
+    complete_apps = ['security']

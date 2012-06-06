@@ -115,7 +115,7 @@ INSTALLED_APPS = (
     'south',
 
     # GeoNode internal apps
-    'geonode.core',
+    'geonode.security',
     'geonode.maps',
     'geonode.proxy',
     'geonode.people',
@@ -186,7 +186,7 @@ MIDDLEWARE_CLASSES = (
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
-AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
+AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend',)
 
 def get_user_url(u):
     from django.contrib.sites.models import Site
