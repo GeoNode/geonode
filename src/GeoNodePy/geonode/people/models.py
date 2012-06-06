@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 from idios.models import ProfileBase, create_profile
 
-from geonode.core.models import COUNTRIES
+from geonode.maps.enumerations import COUNTRIES
 
 CONTACT_FIELDS = [
     "name",
