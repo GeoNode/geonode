@@ -70,7 +70,7 @@ geonode_client_target_war = path('webapps/geonode-client.war')
 deploy_req_txt = """
 # NOTE... this file is generated
 -r %(venv)s/shared/requirements.txt
--e %(venv)s/src/GeoNodePy
+-e %(venv)s/.
 """ % locals()
 
 @task
@@ -146,7 +146,7 @@ def install_25_deps(options):
 def post_bootstrap(options):
     """installs the current package"""
     pip = path(options.config.bin) / "pip"
-    sh('%s install -e %s' %(pip, path("src/GeoNodePy")))
+    sh('%s install -e %s' %(pip, path(".")))
 
 
 #TODO Move svn urls out to a config file
@@ -230,7 +230,7 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    static = path("./src/GeoNodePy/geonode/static/geonode")
+    static = path("./geonode/static/geonode")
 
     with pushd("src/geonode-client/"):
         sh("mvn clean compile")
@@ -283,8 +283,7 @@ def package_geonetwork(options):
 @needs('package_dir')
 def package_webapp(options):
     """Package (Python, Django) web application and dependencies."""
-    with pushd('src/GeoNodePy'):
-        sh('python setup.py egg_info sdist')
+    sh('python setup.py egg_info sdist')
         
     req_file = options.deploy.req_file
     req_file.write_text(deploy_req_txt)
@@ -304,10 +303,10 @@ def package_all(options):
 
 
 def create_version_name():
-    # we'll use the geonodepy version as our "official" version number
+    # we'll use the geonode version as our "official" version number
     # for now
     slug = "GeoNode-%s" % (
-        pkg_resources.get_distribution('GeoNodePy').version,
+        pkg_resources.get_distribution('GeoNode').version,
     )
 
     return slug
