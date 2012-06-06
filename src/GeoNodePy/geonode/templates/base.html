@@ -69,7 +69,25 @@
                         </ul>
                       </li>
                     {% else %}
-                        <li><a href="{% url auth_login %}">{% trans "Sign in" %}</a></li>
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
+                          <ul class="dropdown-menu">
+                            <li>
+                                <form action="" class="sign-in">
+                                    <label for="">Username:</label>
+                                    <input type="text" />
+                                    <label for="">Password:</label>
+                                    <input type="password" />
+                                    <label class="checkbox">
+                                        <input type="checkbox" />
+                                        Remember me
+                                    </label>
+                                    <button type="submit" class="btn pull-right">Sign In</button>
+                                    <div>Don't have an account yet? <a href="#">Register now</a></div>
+                                </form>
+                            </li>
+                          </ul>
+                        </li>
                         {% if REGISTRATION_OPEN %}
                           <li class="navbar-text">{% trans "or" %}</li>
                           <li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
