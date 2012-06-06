@@ -1,5 +1,6 @@
 -r requirements.txt
 
+jstools
 werkzeug
 Paste
 PasteDeploy
