@@ -1,0 +1,22 @@
+--extra-index-url=http://dist.pinaxproject.com/alpha/
+
+PIL
+OWSLib==0.4.0
+-r py-base-libs.txt
+-e git+https://github.com/dwins/gsconfig.py.git#egg=gsconfig.py
+#django-registration
+https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
+idios==0.2.a1
+django-cbv==0.2
+Paste
+PasteDeploy
+PasteScript
+dj.paste
+-e git+https://github.com/ericflo/django-avatar.git#egg=avatar
+django-nose
+nose
+nose-cover3
+coverage==3.4
+-e git+https://github.com/cmheisel/nose-xcover.git#egg=nosexcover
+mock
+django-staticfiles

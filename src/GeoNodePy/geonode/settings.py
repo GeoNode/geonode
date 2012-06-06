@@ -118,7 +118,7 @@ INSTALLED_APPS = (
     'geonode.security',
     'geonode.maps',
     'geonode.proxy',
-
+    'geonode.people',
 )
 
 LOGGING = {
@@ -225,7 +225,7 @@ SOUTH_MIGRATION_MODULES = {
 }
 
 # For django-profiles
-AUTH_PROFILE_MODULE = 'maps.Contact'
+AUTH_PROFILE_MODULE = 'people.Contact'
 
 # For django-registration
 REGISTRATION_OPEN = False
@@ -337,7 +337,6 @@ MAP_BASELAYERS = [{
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/static/geonode/"
-
 
 # GeoNode vector data backend configuration.
 
