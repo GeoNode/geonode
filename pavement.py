@@ -200,56 +200,59 @@ def setup_geonode_client(options):
  
     resources = ((
            # Ext resources
-           'app/static/externals/ext',
+           'externals/ext',
            'app/static/externals/ext'
            ),(
-           'app/static/externals/gxp/theme',
+           'externals/gxp/theme',
            'app/static/externals/gxp/src/theme'
            ),(
-           'app/static/externals/PrintPreview/resources',
+           'externals/PrintPreview/resources',
            'app/static/externals/PrintPreview/resources'
            ),(
-           'app/static/externals/geoext/resources',
+           'externals/geoext/resources',
            'app/static/externals/geoext/resources'
            ),(
            # OpenLayers resources
-           'app/static/externals/openlayers/theme',
+           'externals/openlayers/theme',
            'app/static/externals/openlayers/theme'
            ),(
-           'app/static/externals/openlayers/img',
+           'externals/openlayers/img',
            'app/static/externals/openlayers/img'
            ),(
-           'app/static/theme/ux/colorpicker',
+           'theme/ux/colorpicker',
            'app/static/script/ux/colorpicker/color-picker.ux.css'
            ),(
-           'app/static/script/ux/colorpicker',
-           'app/static/script/ux/colorpicker/picker.gif'
+           'script/ux/colorpicker',
+           'script/ux/colorpicker/picker.gif'
            ),(
-           'app/static/script/ux/colorpicker',
+           'script/ux/colorpicker',
            'app/static/script/ux/colorpicker/side_slider.jpg'
            ),(
-           'app/static/script/ux/colorpicker',
+           'script/ux/colorpicker',
            'app/static/script/ux/colorpicker/mask.png'
            ),(
            # GeoExt Resources
-           'app/static/externals/geoext/resource',
+           'externals/geoext/resource',
            'app/static/externals/geoext/resources'
            ),(
-           'app/static/theme/ux/fileuploadfield',
+           'theme/ux/fileuploadfield',
            'app/static/script/ux/fileuploadfield/css'
            ),(
            # gxp resources
-           'app/static/externals/gxp/src/theme',
+           'externals/gxp/src/theme',
            'app/static/externals/gxp/src/theme'
     ))
 
     for t, o in resources:
         origin = os.path.join('geonode-client', o)
         target = os.path.join(static, t)
-        print 'copy', origin, target
-        if not os.path.exists(target):
-            os.makedirs(target)
-        sh('cp -r %s %s' % (origin, target))
+        if os.path.isdir(origin):
+            shutil.rmtree(target, ignore_errors=True)
+            shutil.copytree(origin, target)
+        elif os.path.isfile(origin):
+            if not os.path.exists(target):
+                os.makedirs(target)
+            sh('cp %s %s' % (origin, target))
 
 
 @task
