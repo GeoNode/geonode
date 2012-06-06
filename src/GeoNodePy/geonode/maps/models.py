@@ -8,6 +8,7 @@ from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
 from geonode.people.models import Contact
+from geonode.maps.enumerations import COUNTRIES, ALL_LANGUAGES
 from django.db.models import signals
 from taggit.managers import TaggableManager
 from django.utils import simplejson as json
