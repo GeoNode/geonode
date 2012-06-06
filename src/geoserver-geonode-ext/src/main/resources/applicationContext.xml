@@ -7,12 +7,6 @@
       <map>
         <entry>
           <key>
-            <value>/process/hazard</value>
-          </key>
-          <value>processRestlet</value>
-        </entry>
-        <entry>
-          <key>
             <value>/process/batchDownload/launch</value>
           </key>
           <value>downloadLauncherRestlet</value>
@@ -91,10 +85,6 @@
     </constructor-arg>
   </bean>
 
-  <bean id="processRestlet" class="org.geonode.rest.coveragestats.ProcessRestlet">
-    <!-- the GeoServer catalog -->
-    <constructor-arg ref="catalog" />
-  </bean>
   <bean id="downloadLauncherRestlet" class="org.geonode.rest.batchdownload.DownloadLauncherRestlet">
     <!-- the GeoServer catalog -->
     <constructor-arg ref="catalog" />
