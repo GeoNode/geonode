@@ -11,16 +11,17 @@ import geonode.maps.views
 
 from geonode.layers.models import Layer
 from geonode.layers.forms import JSONField, LayerUploadForm
-from geonode.maps.models import Map
 from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock, patch
 
 import os
 import base64
-import math
 
-from django.test import TestCase
+
+_gs_resource = Mock()
+_gs_resource.native_bbox = [1, 2, 3, 4]
+
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
