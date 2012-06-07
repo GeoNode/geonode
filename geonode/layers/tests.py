@@ -1,10 +1,21 @@
 # -*- coding: utf-8 -*-
+import os
+import base64
+import shutil
+import tempfile
+
+from contextlib import nested
+from mock import Mock, patch
+
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils import simplejson as json
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.template import Context
+from django.template.loader import get_template
+from django.forms import ValidationError
 
 import geonode.maps.models
 import geonode.maps.views
@@ -12,12 +23,15 @@ import geonode.maps.views
 from geonode import GeoNodeException
 from geonode.layers.models import Layer
 from geonode.layers.forms import JSONField, LayerUploadForm
-from geonode.maps.utils import get_valid_user
-
-from mock import Mock, patch
-
-import os
-import base64
+from geonode.people.utils import get_valid_user
+from geonode.maps.utils import save
+from geonode.maps.utils import layer_type
+from geoserver.resource import FeatureType, Coverage
+from geonode.maps.utils import get_files
+from geonode.maps.utils import get_valid_name
+from geonode.maps.utils import get_valid_layer_name
+from geonode.maps.utils import cleanup
+from geoserver.catalog import FailedRequestError
 
 
 _gs_resource = Mock()
@@ -302,8 +316,6 @@ class LayersTest(TestCase):
         self.failUnlessEqual(response.status_code, 200)
 
     def test_search_template(self):
-        from django.template import Context
-        from django.template.loader import get_template
 
         layer = Layer.objects.all()[0]
         tpl = get_template("csw/transaction_insert.xml")
@@ -461,11 +473,6 @@ class LayersTest(TestCase):
             set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
     
     def test_save(self):
-        import shutil
-        import tempfile
-        from contextlib import nested
-        from geonode.maps.utils import save
-
         # Check that including both capital and lowercase SLD (this is special-cased in the implementation) 
         d = None
         try:
@@ -517,8 +524,6 @@ class LayersTest(TestCase):
                 shutil.rmtree(d)
     
     def test_layer_type(self):
-        from geonode.maps.utils import layer_type
-        from geoserver.resource import FeatureType, Coverage
         self.assertEquals(layer_type('foo.shp'), FeatureType.resource_type)
         self.assertEquals(layer_type('foo.SHP'), FeatureType.resource_type)
         self.assertEquals(layer_type('foo.sHp'), FeatureType.resource_type)
@@ -539,9 +544,6 @@ class LayersTest(TestCase):
         self.assertRaises(GeoNodeException, lambda: layer_type('foo.gml'))
 
     def test_get_files(self):
-        from geonode.maps.utils import get_files
-        import shutil
-        import tempfile
 
         # Check that a well-formed Shapefile has its components all picked up
         d = None
@@ -681,7 +683,6 @@ class LayersTest(TestCase):
                 shutil.rmtree(d)
 
     def test_get_valid_name(self):
-        from geonode.maps.utils import get_valid_name
         self.assertEquals(get_valid_name("blug"), "blug")
         self.assertEquals(get_valid_name("<-->"), "_")
         self.assertEquals(get_valid_name("<ab>"), "_ab_")
@@ -689,7 +690,6 @@ class LayersTest(TestCase):
         self.assertEquals(get_valid_name("CA"), "CA_1")
 
     def test_get_valid_layer_name(self):
-        from geonode.maps.utils import get_valid_layer_name
         self.assertEquals(get_valid_layer_name("blug", False), "blug")
         self.assertEquals(get_valid_layer_name("blug", True), "blug")
 
@@ -712,9 +712,6 @@ class LayersTest(TestCase):
         self.assertRaises(GeoNodeException, get_valid_layer_name, 12, True)
 
     def test_cleanup(self):
-        from geonode.maps.utils import cleanup
-        from geoserver.catalog import FailedRequestError
-
         self.assertRaises(GeoNodeException, cleanup, "CA", "1234")
         cleanup("FOO", "1234")
 
@@ -751,8 +748,6 @@ class LayersTest(TestCase):
 
 
     def testJSONField(self):
-        from django.forms import ValidationError
-
         field = JSONField()
         # a valid JSON document should pass
         field.clean('{ "users": [] }')
