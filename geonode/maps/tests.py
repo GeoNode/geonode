@@ -60,123 +60,21 @@ for assembling and publishing web based maps.  After adding layers to the map, \
 use the Save Map button above to contribute your map to the GeoNode \
 community." 
 
-    default_title = "GeoNode Default Map"
+   default_title = "GeoNode Default Map"
 
     # maps/models.py tests
 
-    # maps.models.Layer
-
-#    def test_layer_save_to_geoserver(self):
-#        pass
-
-#    def test_layer_save_to_geonetwork(self):
-#        pass
-
-#    def test_post_save_layer(self):
-#        pass
-
-#    def test_layer_verify(self):
-#        pass
-
-#    def test_layer_download_links(self):
-#        pass
-
-#    def test_layer_maps(self):
-#        pass
-
-#    def test_layer_metadata(self):
-#        pass
-    
-#    def test_layer_metadata_csw(self):
-#        pass
-
-#    def test_layer_attribute_names(self):
-#        pass
-
-#    def test_layer_display_type(self):
-#        pass
-
-#    def test_layer_delete_from_geoserver(self):
-#        pass
-
-#    def test_layer_delete_from_geonetwork(self):
-#        pass
-
-#    def test_delete_layer(self):
-#        pass
-
-#    def test_layer_resource(self):
-#        pass
-
-#    def test_layer_get_metadata_links(self):
-#        pass
-
-#    def test_layer_set_metadata_links(self):
-#        pass
-
-#    def test_layer_get_default_style(self):
-#        pass
-    
-#    def test_layer_set_default_style(self):
-#        pass
-
-#    def test_layer_get_styles(self):
-#        pass
-
-#    def test_layer_set_styles(self):
-#        pass
-
-#    def test_layer_service_type(self):
-#        pass
-
-#    def test_layer_publishing(self):
-#        pass
-
-#    def test_layer_poc_role(self):
-#        pass
-
-#    def test_layer_metadata_author_role(self):
-#        pass
-
-#    def test_layer_set_poc(self):
-#        pass
-
-#    def test_layer_get_poc(self):
-#        pass
-
-#    def test_layer_set_metadata_author(self):
-#        pass
-
-#    def test_layer_get_metadata_author(self):
-#        pass
-
-#    def test_layer_populate_from_gs(self):
-#        pass
-
-#    def test_layer_autopopulate(self):
-#        pass
-
-#    def test_layer_populate_from_gn(self):
-#        pass
-
-#    def test_layer_keyword_list(self):
-#        pass
-
-#    def test_layer_set_bbox(self):
-#        pass
-
-#    def test_layer_get_absolute_url(self):
-#        pass
+    # maps.models
 
     def test_layer_set_default_permissions(self):
         """Verify that Layer.set_default_permissions is behaving as expected
         """
-        
+
         # Get a Layer object to work with 
         layer = Layer.objects.all()[0]
 
         # Should we set some 'current' permissions to do further testing?
-        
+
         # Save the layers Current Permissions
         current_perms = layer.get_all_level_info()
 
@@ -196,19 +94,8 @@ community."
         if layer.owner:
             self.assertEqual(layer.owner, layer.LEVEL_ADMIN)
 
-    # maps.models.Map
 
-#    def test_map_center(self):
-#        pass
-
-#    def test_map_layers(self):
-#        pass
-
-#    def test_map_local_layers(self):
-#        pass
-
-
-    viewer_config_alternative = """
+   viewer_config_alternative = """
     {
       "defaultSourceType": "gx_wmssource",
       "about": {
@@ -237,6 +124,9 @@ community."
     }
     """
 
+
+    # maps.models.Map
+
     def test_map_json(self):
         c = Client()
 
@@ -252,54 +142,6 @@ community."
         self.assertEquals(map_obj.title, "Title2")
         self.assertEquals(map_obj.abstract, "Abstract2")
         self.assertEquals(map_obj.layer_set.all().count(), 1)
-
-#    def test_map_viewer_json(self):
-#        pass
-
-#    def test_map_update_from_viewer(self):
-#        pass
-
-#    def test_map_get_absolute_url(self):
-#        pass
-
-#    def test_map_set_default_permissions(self):
-#        pass
-
-    # maps.models.MapLayerManager
-
-#    def test_mlm_from_viewer_config(self):
-#        pass
-    
-    # maps.models.MapLayer
-
-#    def test_map_layer_from_viewer_config(self):
-#        pass
-
-#    def test_map_layer_source_config(self):
-#        pass
-
-#    def test_map_layer_layer_config(self):
-#        pass
-
-#    def test_map_layer_local_link(self):
-#        pass
-
-    # maps/views.py tests
-
-#    def test_project_center(self):
-#        pass
-
-#    def test_baselayer(self):
-#        pass
-
-#    def test_bbox_to_wkt(self):
-#        pass
-
-#    def test_view_js(self):
-#        pass
-
-#    def test_view(self):
-#        pass
 
     # Maps Tests
 
@@ -334,12 +176,6 @@ community."
       }
     }
     """
-
-#    def test_map_controller(self):
-#        pass
-
-#    def test_new_map(self):
-#        pass
 
     def test_map_save(self):
         """POST /maps -> Test saving a new map"""
@@ -406,29 +242,6 @@ community."
         c = Client() 
         response = c.get("/maps/%s" % map_obj.id)
         self.assertEquals(response.status_code,200) 
-
-#    def test_delete_map(self):
-#        pass
-#    def test_map_detail(self):
-#        pass
-#    def test_describe_map(self):
-#        pass
-#    def test_embed_map(self):
-#        pass
-
-    # Batch Tests    
-    
-#    def test_map_download(self):
-#        pass
-
-#    def test_check_download(self):
-#        pass
-
-#    def test_batch_layer_download(self):
-#        pass
-
-#    def test_batch_delete(self):
-#        pass
 
     # Permissions Tests
 
@@ -592,31 +405,6 @@ community."
         # Test with a Map object
         # TODO
 
-#    def test_perms_info_json(self):
-#        # Should only need to verify that valid json is returned?
-#        pass
-
-#    def test_fix_map_perms_for_editor(self):
-        # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-#        pass
-
-#    def test_handle_perms_edit(self):
-        # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-#        pass
-
-#    def test_get_basic_auth_info(self):
-        # How do we test this? Perhaps as a part of test_layer_acls
-#        pass
-
-#    def test_set_map_permissions(self):
-#        pass
-
-#    def test_ajax_map_permissions(self):
-#        pass
-
-#    def test_batch_permissions(self):
-#        pass
-
     # Data Tests
 
     def test_data(self):
@@ -624,9 +412,6 @@ community."
         c = Client()
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
-
-#    def test_browse_data(self):
-#        pass
 
     def test_describe_data_2(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
@@ -656,40 +441,12 @@ community."
         response = c.get("/data/upload")
         self.assertEquals(response.status_code,200)
 
-#    def test_handle_layer_upload(self):
-#        pass
-
-#    def test_update_layer(self):
-#        pass
-
-#    def test_describe_layer(self):
-#        pass
-
-#    def test_remove_layer(self):
-#        pass
-
-#    def test_change_layer_default_style(self):
-#        pass
-
-#    def test_layer_controller(self):
-#        pass
-
-#    def test_extract_links(self):
-#        pass
-
-    # Search Tests
-    
     def test_search(self):
         '''/data/search/ -> Test accessing the data search page'''
         c = Client()
         response = c.get('/data/search/')
         self.failUnlessEqual(response.status_code, 200)
 
-#    def test_search_page(self):
-#        pass
-
-#    def test_build_search_result(self):
-#        pass
 
     def test_metadata_search(self):
         c = Client()
@@ -711,8 +468,6 @@ community."
             self.assertEqual(call_args[0][1], 5)
             self.assertEqual(call_args[0][2], 10)
 
-#    def test_search_result_detail(self):
-#        pass
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
@@ -1332,4 +1087,3 @@ class UtilsTest(TestCase):
 
         self.assertAlmostEqual(sw[0], -180.0, msg="SW lon is correct")
         self.assertAlmostEqual(sw[1], -90.0, msg="SW lat is correct")
-
