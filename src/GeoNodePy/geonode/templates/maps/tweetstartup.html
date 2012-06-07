@@ -60,11 +60,13 @@ function runTimer() {
     var seconds = new Date(timeElapsed).getSeconds();
     if (seconds == 15 || seconds == 30 || seconds == 45 || seconds == 0){
         Ext.Ajax.request({
-            url : "/proxy?url=http://107.22.230.16/?LAYERS=heatmap&TRANSPARENT=TRUE&FORMAT=image%2Fpng&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG%3A900913&CQL_FILTER=Name%3D'flu'%20AND%20Start_Date%20%3E%20'2012-Jan-26'%20AND%20Start_Date%20%3C%20'2012-Feb-02'&_OLSALT=0.080470155691728&BBOX=-10292704.479336,-769470.05907185,3796168.5722265,3782923.4617673&WIDTH=720&HEIGHT=233",
+            url : "/proxy?url=" + escape("http://107.22.230.16/?LAYERS=heatmap&TRANSPARENT=TRUE&FORMAT=image%2Fpng&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG%3A900913&CQL_FILTER=Name%3D'flu'%20AND%20Start_Date%20%3E%20'2012-Jan-26'%20AND%20Start_Date%20%3C%20'2012-Feb-02'&_OLSALT=0.080470155691728&BBOX=-10292704.479336,-769470.05907185,3796168.5722265,3782923.4617673&WIDTH=720&HEIGHT=233"),
             //url : "http://localhost:8000/proxy?url=http://worldmap.harvard.edu/geoserver/wms?STYLES=slccomposite_circa65_ojm&FORMAT=image%2Fpng&TRANSPARENT=TRUE&LAYERS=geonode%3Aslccomposite_circa65_ojm&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&LLBBOX=-90.6618702756674,38.47691591550308,-90.20304422923158,38.819495089300005&URL=http%3A%2F%2Fworldmap.harvard.edu%2Fgeoserver%2Fwms&TILED=true&TILESORIGIN=-10092433.232048197,4647018.843317348&SRS=EPSG%3A900913&BBOX=-10057889.928477,4657155.2587109,-10018754.17,4696291.0171875&WIDTH=256&HEIGHT=256",
             method: 'GET',
             success: function() {
-                window.location.reload();
+                console.log("success");
+               
+                //window.location.reload();
             },
             failure: function() {
                 //Do nothing
