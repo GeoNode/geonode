@@ -34,7 +34,6 @@ DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
-INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
 MAP_LEV_NAMES = {
     Map.LEVEL_NONE  : _('No Permissions'),
@@ -74,7 +73,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 #### BASIC MAP VIEWS ####
 
-def map_browse(request, template='maps/maps.html'):
+def maps_browse(request, template='maps/maps.html'):
     if request.method == 'GET':
         return render_to_response(template, RequestContext(request))
     elif request.method == 'POST':

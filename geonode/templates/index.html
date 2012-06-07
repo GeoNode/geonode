@@ -15,7 +15,7 @@
       <a class="btn btn-large" href="{% url maps_search %}">
         {% trans "Explore Maps" %}
       </a>
-      <a class="btn btn-large" href="{% url maps_new %}">
+      <a class="btn btn-large" href="{% url new_map %}">
         {% trans "Create Map" %}
       </a>
     </p>
@@ -42,12 +42,12 @@
       </p>
     </div>
     <div class="span4">
-        <form class="form-search" action="{% url data_search %}" method="POST">
+        <form class="form-search" action="{% url layer_search_page %}" method="POST">
 		  {% csrf_token %}
           <input type="text" class="input-medium search-query" name="q">
           <button type="submit" class="btn btn-small">{% trans "Search" %}</button>
         </form>
-        <a href="{% url data_search %}">{% trans "Advanced Search" %}</a>
+        <a href="{% url layer_search_page %}">{% trans "Advanced Search" %}</a>
     </div>
   </div>
 {% endblock %}

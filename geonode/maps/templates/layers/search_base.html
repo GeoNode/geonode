@@ -21,9 +21,9 @@ Ext.onReady(function(){
     var searchTable = new GeoNode.SearchTable({
         renderTo: 'search_results',
         trackSelection: true,
-        permalinkURL: '{% url data_search %}',
-        searchURL: '{% url data_search_api %}',
-        layerDetailURL: '{% url data_search_detail %}',
+        permalinkURL: '{% url layer_search_page %}',
+        searchURL: '{% url layer_search_api %}',
+        layerDetailURL: '{% url layet_search_detail %}',
         constraints: [bbox],
         searchParams: {{init_search}}
     });

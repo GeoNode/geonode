@@ -15,8 +15,9 @@ from django.template.defaultfilters import slugify
 from django.conf import settings
 
 # Geonode functionality
-from geonode.maps.models import Contact, Layer
-from geonode.maps.gs_helpers import cascading_delete, get_sld_for, delete_from_postgis
+from geonode.layers.models import Layer
+from geonode.people.models import Contact
+from geonode.gs_helpers import cascading_delete, get_sld_for, delete_from_postgis
 
 # Geoserver functionality
 import geoserver
