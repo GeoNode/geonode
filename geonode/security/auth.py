@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.contenttypes.models import ContentType 
 from django.db import models

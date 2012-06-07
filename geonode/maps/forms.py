@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import taggit
 from django import forms
 from geonode.maps.models import Map

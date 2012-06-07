@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """GeoNode SDK for managing GeoNode layers and users
 """
 
