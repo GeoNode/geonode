@@ -68,11 +68,11 @@ The following steps should prepare a Python virtual environment for you::
   virtualenv venv
   source venv/bin/activate
   pip install -r shared/dev-requirements.txt
-  paver build
-  django-admin.py createsuperuser --settings=geonode.settings
+  paver setup
   paver start
 
-Once fully started, you should see a message indicating the address of your geonode::
+Once fully started, you should see a message indicating the address of your geonode.
+The default username and password are ``admin`` and ``admin``::
   
   Development GeoNode is running at http://localhost:8000/
   The GeoNode is an unstoppable machine
