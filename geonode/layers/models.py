@@ -15,8 +15,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.geonetwork import Catalog as GeoNetwork
-from geonode.layers.utils import _wms, _user, _password, get_wms, _csw, get_csw
-from geonode.layers.utils import bbox_to_wkt
+from geonode.utils import _wms, _user, _password, get_wms, _csw, get_csw, bbox_to_wkt
 #from geonode.maps.models import MapLayer
 from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 

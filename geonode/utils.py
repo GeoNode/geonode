@@ -16,8 +16,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 from geonode import GeoNodeException
-from geonode.layers.models import Layer
-from geonode.maps.models import Map
+#from geonode.layers.models import Layer
+#from geonode.maps.models import Map
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.models import INVALID_PERMISSION_MESSAGE
 
@@ -148,6 +148,7 @@ def check_geonode_is_up():
     """Verifies all of geonetwork, geoserver and the django server are running,
        this is needed to be able to upload.
     """
+    """
     try:
         Layer.objects.gs_catalog.get_workspaces()
     except:
@@ -162,7 +163,8 @@ def check_geonode_is_up():
                'Please make sure you have started '
                'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
         raise GeoNodeException(msg)
-
+    """
+    pass
 
 def get_wms():
     global _wms
@@ -204,6 +206,7 @@ def _get_basic_auth_info(request):
 
 
 def batch_permissions(request):
+    """
     if not request.user.is_authenticated:
         return HttpResponse("You must log in to change permissions", status=401) 
 
@@ -264,9 +267,11 @@ def batch_permissions(request):
                 m.set_user_level(user, valid_perms.get(user_level, "_none"))
 
     return HttpResponse("Not implemented yet")
-
+    """
+    pass
 
 def batch_delete(request):
+    """
     if not request.user.is_authenticated:
         return HttpResponse("You must log in to delete layers", status=401) 
 
@@ -297,7 +302,8 @@ def batch_delete(request):
     nmaps = len(spec.get('maps', []))
 
     return HttpResponse("Deleted %d layers and %d maps" % (nlayers, nmaps))
-
+    """
+    pass
 
 def _handle_perms_edit(request, obj):
     errors = []
