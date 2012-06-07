@@ -1,15 +1,15 @@
 -r requirements.txt
 
+# minifying javascript
 jstools
-werkzeug
-Paste
-PasteDeploy
-PasteScript
-dj.paste
+
+# testing
 django-nose
 nose
 nose-cover3
 coverage==3.4
 nosexcover
 mock
+
+# documentation
 Sphinx

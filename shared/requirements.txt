@@ -4,6 +4,8 @@
 PIL
 lxml
 
+
+django-devserver
 OWSLib==0.4.0
 Django==1.4
 django-extensions==0.8

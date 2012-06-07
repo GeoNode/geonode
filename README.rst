@@ -65,12 +65,12 @@ The following steps should prepare a Python virtual environment for you::
 
   git clone git://github.com/GeoNode/geonode.git geonode
   cd geonode
-  git submodule update --init
-  python bootstrap.py --no-site-packages # see note below
-  source bin/activate
+  virtualenv venv
+  source venv/bin/activate
+  pip install -r shared/dev-requirements.txt
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
-  paver host 
+  paver start
 
 Once fully started, you should see a message indicating the address of your geonode::
   

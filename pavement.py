@@ -107,7 +107,6 @@ def setup_webapps(options):
 @task
 @needs([
     'setup_webapps',
-    'sync_django_db',
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
@@ -301,7 +300,10 @@ def unzip_file(src, dest):
             out.close()
 
 @task
-@needs(['start_django', 'start_geoserver'])
+@needs(['start_geoserver',
+        'sync_django_db',
+        'setup_geonode_client',
+        'start_django',])
 def start():
     print 'Starting GeoNode on http://localhost:8000'
 
@@ -313,11 +315,12 @@ def stop():
 
 @task
 def start_django():
-    sh('paster serve shared/dev-paste.ini --daemon')
+    with pushd('geonode'):
+        sh('python manage.py runserver &')
 
 @task
 def stop_django():
-    kill('paster', 'daemon')
+    kill('python', 'runserver')
 
 @task
 def start_geoserver():

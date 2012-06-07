@@ -114,6 +114,8 @@ INSTALLED_APPS = (
     'taggit',
     'south',
 
+    'devserver',
+
     # GeoNode internal apps
     'geonode.security',
     'geonode.maps',
