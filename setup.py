@@ -37,12 +37,15 @@ setup(name='GeoNode',
         "South==0.7.3",
         "django-forms-bootstrap==2.0.3.post1",
         "gsconfig==0.5.4",
+        # development server
+        "dj.paste",
         # assembling javascript
         "jstools==0.6",
         # sample and test data
         "gisdata==0.3.8",
         # document generator
         "Sphinx==1.1.3",
+
 
         # testing
         "django-nose",
