@@ -7,7 +7,7 @@ from mock import patch
 from geonode import GeoNodeException
 from maps.utils import forward_mercator, inverse_mercator
 
-class GeoNodeClientTests(TestCase):
+class GeoNodeSmokeTests(TestCase):
     
     fixtures = ['test_data.json']
     GEOSERVER = False
@@ -101,6 +101,14 @@ class GeoNodeClientTests(TestCase):
         c = Client()
         response = c.get('/profiles/')
         self.failUnlessEqual(response.status_code, 200)
+
+class GeoNodeUtilsTests(TestCase):
+    
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
 
     ### Some other Stuff
 
