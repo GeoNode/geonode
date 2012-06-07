@@ -1,5 +1,3 @@
-from __future__ import with_statement 
-from paver import svn
 from paver.easy import *
 from paver.easy import options
 from paver.path25 import pushd
@@ -95,23 +93,6 @@ def setup_geonetwork(options):
     if not deployed_url.exists():
         zip_extractall(zipfile.ZipFile(dst_url), deployed_url)
 
-@task
-@needs([
-    'setup_geoserver',
-    'setup_geonetwork',
-    'setup_geonode_client'
-])
-def setup_webapps(options):
-    sh('pip install -e .')
-
-@task
-@needs([
-    'setup_webapps',
-])
-def build(options):
-    """Get dependencies and generally prepare a GeoNode development environment."""
-    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""") 
-
 
 @task
 def setup_geonode_client(options):
@@ -184,12 +165,27 @@ def setup_geonode_client(options):
                 os.makedirs(target)
             sh('cp %s %s' % (origin, target))
 
+@task
+@needs([
+    'setup_geoserver',
+    'setup_geonetwork',
+    'setup_geonode_client',
+    'package_dir',
+])
+def setup(options):
+    """Get dependencies and generally prepare a GeoNode development environment."""
+    sh('pip install -e .')
+    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""") 
+
+
 
 @task
 def sync_django_db(options):
-    sh("django-admin.py syncdb --settings=geonode.settings --noinput")
-    sh("django-admin.py migrate --settings=geonode.settings --noinput")
+    with pushd('geonode'):
+        sh("python manage.py syncdb --noinput")
+        sh("python manage.py migrate --noinput")
 
+        sh("python manage.py loaddata ../tests/integration/admin.fixture.json")
 
 @task
 def package_dir(options):
@@ -201,21 +197,18 @@ def package_dir(options):
 
 
 @task
-@needs('package_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
     geoserver_target.copy(options.deploy.out_dir)
 
 
 @task
-@needs('package_dir', 'setup_geonetwork')
 def package_geonetwork(options):
     """Package GeoNetwork WAR file for deployment."""
     geonetwork_target.copy(options.deploy.out_dir)
 
 
 @task
-@needs('package_dir')
 def package_webapp(options):
     """Package (Python, Django) web application and dependencies."""
     sh('python setup.py egg_info sdist')
@@ -227,11 +220,9 @@ def package_webapp(options):
 
 @task
 @needs(
-    'build',
     'package_geoserver',
     'package_geonetwork',
     'package_webapp',
-    'package_bootstrap'
 )
 def package_all(options):
     info('all is packaged, ready to deploy')
