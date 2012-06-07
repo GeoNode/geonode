@@ -1,0 +1,5 @@
+--extra-index-url=http://dist.pinaxproject.com/dev
+
+# pinax apps not released to pypi
+dialogos==0.1.dev4
+idios==0.2a2.dev2
