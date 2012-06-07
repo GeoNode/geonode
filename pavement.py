@@ -181,11 +181,9 @@ def setup(options):
 
 @task
 def sync_django_db(options):
-    with pushd('geonode'):
-        sh("python manage.py syncdb --noinput")
-        sh("python manage.py migrate --noinput")
-
-        sh("python manage.py loaddata ../tests/integration/admin.fixture.json")
+    sh("python manage.py syncdb --noinput")
+    sh("python manage.py migrate --noinput")
+    sh("python manage.py loaddata ../tests/integration/admin.fixture.json")
 
 @task
 def package_dir(options):
@@ -306,8 +304,7 @@ def stop():
 
 @task
 def start_django():
-    with pushd('geonode'):
-        sh('python manage.py runserver &')
+    sh('python manage.py runserver &')
 
 @task
 def stop_django():
@@ -324,8 +321,13 @@ def stop_geoserver():
 
 @task
 def test(options):
-    with pushd('geonode'):
-        sh("django-admin.py test --settings=geonode.settings")
+    sh("python manage.py test")
+
+@task
+def setup_sample_data():
+    import gisdata
+    data_dir = gisdata.GOOD_DATA
+    sh("python manage.py importlayers %s" % data_dir)
 
 # include patched versions of zipfile code
 # to extract zipfile dirs in python 2.6.1 and below...

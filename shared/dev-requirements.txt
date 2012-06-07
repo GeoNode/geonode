@@ -11,5 +11,8 @@ coverage==3.4
 nosexcover
 mock
 
+# sample data
+gisdata
+
 # documentation
 Sphinx
