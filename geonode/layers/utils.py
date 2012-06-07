@@ -8,15 +8,11 @@ import re
 import uuid
 import os
 import glob
-import httplib2
-import math
-from urlparse import urlparse
 
 # Django functionality
-from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.conf import settings
-from django.conf import settings
+
 
 # Geonode functionality
 from geonode import GeoNodeException
@@ -30,10 +26,6 @@ from geonode.gs_helpers import cascading_delete, get_sld_for, delete_from_postgi
 import geoserver
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
-
-# OWSLib Functionality
-from owslib.wms import WebMapService
-from owslib.csw import CatalogueServiceWeb
 
 logger = logging.getLogger('geonode.layers.utils')
 
