@@ -52,7 +52,7 @@
       {% endif %}
           | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
           | <a class="" id="mapLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
-          | <a class="" id="dataLink" href="http://about.worldmap.harvard.edu/icb/icb.do?keyword=k28501&tabgroupid=icb.tabgroup143852" target="_blank">Help</a>
+          | <a class="" id="dataLink" href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">Help</a>
       </div>
       </div><!-- /.wrap -->
     </div><!-- /#header -->
