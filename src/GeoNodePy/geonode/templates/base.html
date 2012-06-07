@@ -188,6 +188,17 @@
       function userFormatSelection(user) {
           return user.username;
       }
+
+      var toggle_buttons = function() {
+        if ($("input.asset-selector:checked").length) {
+          $(".asset-modifier").removeClass("disabled");
+        } else {
+          $(".asset-modifier").addClass("disabled");
+        }
+      };
+
+      $("input.asset-selector").live("change", toggle_buttons);
+      toggle_buttons();
     });
     </script>
 
