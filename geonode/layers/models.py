@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import httplib2
 import urllib
 import logging
@@ -19,11 +18,13 @@ from geonode.geonetwork import Catalog as GeoNetwork
 from geonode.layers.utils import _wms, _user, _password, get_wms, _csw, get_csw
 from geonode.layers.utils import bbox_to_wkt
 from geonode.maps.models import MapLayer
-from geonode.maps.enumerations import COUNTRIES, ALL_LANGUAGES, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, SPATIAL_REPRESENTATION_TYPES, TOPIC_CATEGORIES, DEFAULT_SUPPLEMENTAL_INFORMATION
-from geonode.maps.gs_helpers import cascading_delete
+from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role, ContactRole
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \ 
+    UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, SPATIAL_REPRESENTATION_TYPES, \ 
+    TOPIC_CATEGORIES, DEFAULT_SUPPLEMENTAL_INFORMATION
 
 from geoserver.catalog import Catalog
 
