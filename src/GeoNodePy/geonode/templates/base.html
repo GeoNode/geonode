@@ -34,6 +34,7 @@
       </style>
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet">
       <link href="{{ STATIC_URL }}geonode/css/datatables.css" rel="stylesheet">
+      <link href="{{ STATIC_URL }}select2/select2.css" rel="stylesheet"/>
     {% endblock %}
 
 
@@ -149,8 +150,46 @@
     <script src="{{ STATIC_URL }}geonode/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/json2.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
+    <script src="{{ STATIC_URL }}select2/select2.js"></script>
 
     {% block extra_script %}{% endblock extra_script %}
+    <script type="text/javascript">
+    $(function() {
+      $("input.user-select").select2({
+        placeholder: {title: '{% trans "Add User..." %}', id: ""},
+        minimumInputLength: 1,
+        multiple: true,
+        ajax: {
+          url: "{% url auth_ajax_lookup %}",
+          dataType: "json",
+          type: "POST",
+          data: function (term, page) {
+            return {
+              query: term,
+            };
+          },
+          results: function (data, page) {
+            return {results: data.users};
+          }
+        },
+        id: userID,
+        formatResult: userFormatResult,
+        formatSelection: userFormatSelection
+      });
+
+      function userID(user) {
+        return user.username
+      }
+
+      function userFormatResult(user) {
+        return user.username
+      }
+
+      function userFormatSelection(user) {
+          return user.username;
+      }
+    });
+    </script>
 
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script type="text/javascript" src="{% url lang %}"></script>

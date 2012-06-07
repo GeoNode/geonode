@@ -10,15 +10,15 @@
       <div class="control-group">
         <label class="control-label"><strong>{% trans "Who can view and download this data?" %}</strong></label>
         <div class="controls">
-          <label class="radio">
+          <label class="radio inline">
             <input type="radio" name="viewmode" id="perms_view" value="ANYONE">
             {% trans "Anyone" %}
           </label>
-          <label class="radio">
+          <label class="radio inline">
             <input type="radio" name="viewmode" id="perms_view2" value="REGISTERED">
             {% trans "Any registered user" %}
           </label>
-          <label class="radio">
+          <label class="radio inline">
             <input type="radio" name="viewmode" id="perms_view3" value="EDITORS">
             {% trans "Only users who can edit" %}
           </label>
@@ -35,15 +35,15 @@
             <input type="radio" name="editmode" id="perms_edit2" value="LIST">
             {% trans "Only the following users or groups:" %}
           </label>
-          <select name="editusers" class="user-select chosen span4" multiple data-placeholder="{% trans "Choose a user or group..." %}">
-          </select>
+          <input name="editusers" class="user-select" data-placeholder="{% trans "Choose a user or group..." %}">
+          </input>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label"><strong>{% trans "Who can manage and edit this data?" %}</strong></label>
         <div class="controls">
-          <select name="manageusers" class="user-select chosen span4" multiple data-placeholder="{% trans "Choose a user or group..." %}">
-          </select>
+          <input name="manageusers" class="user-select" data-placeholder="{% trans "Choose a user or group..." %}">
+          </input>
         </div>
       </div>
     </div>
