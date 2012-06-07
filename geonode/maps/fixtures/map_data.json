@@ -3,6 +3,25 @@
 
     {
         "fields": {
+            "date_joined": "2010-07-20 13:31:27",
+            "email": "admin@admin.admin",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": true,
+            "is_superuser": true,
+            "last_login": "2010-07-20 17:26:12",
+            "last_name": "",
+            "password": "sha1$6c974$de67ee46336cb3b9bb9e90d53863c3a8d01ce944",
+            "user_permissions": [],
+            "username": "admin"
+        },
+        "model": "auth.user",
+        "pk": 1
+    },
+
+    {
+        "fields": {
             "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
             "center_x": -9428760.8701902702,
             "center_y": 1427430.7410345681,
@@ -15,6 +34,20 @@
         "model": "maps.map",
         "pk": 1
     },
+
+
+    {
+        "fields": {
+            "typename": "base:CA",
+            "store": "CA",
+            "name": "CA",
+            "workspace": "base",
+            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298"
+        },
+        "model": "layers.layer",
+        "pk": 1
+    },
+
 
     {
         "fields": {
@@ -129,29 +162,31 @@
     {
         "fields": {
             "subject": "anonymous",
-            "object_ct": ["maps", "layer"],
+            "object_ct": ["layers", "layer"],
             "object_id": 1,
-            "role": ["layer_readonly", "maps", "layer"]
+            "role": ["layer_readonly", "layers", "layer"]
         },
         "model": "security.genericobjectrolemapping",
         "pk": 3
     },
+
     {
         "fields": {
             "subject": "authenticated",
-            "object_ct": ["maps", "layer"],
+            "object_ct": ["layers", "layer"],
             "object_id": 1,
-            "role": ["layer_readonly", "maps", "layer"]
+            "role": ["layer_readonly", "layers", "layer"]
         },
         "model": "security.genericobjectrolemapping",
         "pk": 4
     },
+
     {
         "fields": {
             "user": 1,
-            "object_ct": ["maps", "layer"],
+            "object_ct": ["layers", "layer"],
             "object_id": 1,
-            "role": ["layer_readwrite", "maps", "layer"]
+            "role": ["layer_readwrite", "layers", "layer"]
         },
         "model": "security.userobjectrolemapping",
         "pk": 1
