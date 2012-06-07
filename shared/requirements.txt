@@ -1,24 +1,22 @@
 --extra-index-url=http://dist.pinaxproject.com/dev
 
-# Extensions with C components
-PIL
-lxml
-
-
-django-devserver
-OWSLib==0.4.0
-Django==1.4
-django-extensions==0.8
-httplib2==0.7.4
-gsconfig==0.5.4
-django-registration==0.8
-django-profiles==0.2
--e git+https://github.com/ericflo/django-avatar.git#egg=avatar
+# pinax apps not released to pypi
 dialogos==0.1.dev4
-agon-ratings==0.2
-South==0.7.3
-django-forms-bootstrap==2.0.3.post1
-django-taggit==0.9.3
-idios
+idios==0.2a2.dev2
 
-Paver
+# minifying javascript
+jstools
+
+# testing
+django-nose
+nose
+nose-cover3
+coverage==3.4
+nosexcover
+mock
+
+# sample data
+gisdata
+
+# documentation
+Sphinx
