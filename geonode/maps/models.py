@@ -16,9 +16,6 @@ from taggit.managers import TaggableManager
 
 logger = logging.getLogger("geonode.maps.models")
 
-class GeoNodeException(Exception):
-    """Base class for exceptions in this module."""
-    pass
 
 class Map(models.Model, PermissionLevelMixin):
     """

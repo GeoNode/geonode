@@ -3,6 +3,8 @@ import math
 from django.test.client import Client
 from django.test import TestCase
 from mock import patch
+
+from geonode import GeoNodeException
 from maps.utils import forward_mercator, inverse_mercator
 
 class GeoNodeClientTests(TestCase):

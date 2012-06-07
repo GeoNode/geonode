@@ -9,9 +9,10 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 import geonode.maps.models
 import geonode.maps.views
 
+from geonode import GeoNodeException
 from geonode.layers.models import Layer
 from geonode.layers.forms import JSONField, LayerUploadForm
-from geonode.maps.utils import get_valid_user, GeoNodeException
+from geonode.maps.utils import get_valid_user
 
 from mock import Mock, patch
 
