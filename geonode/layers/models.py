@@ -14,9 +14,9 @@ from django.db.models import signals
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+from geonode import GeoNodeException
 from geonode.geonetwork import Catalog as GeoNetwork
 from geonode.utils import _wms, _user, _password, get_wms, _csw, get_csw, bbox_to_wkt
-#from geonode.maps.models import MapLayer
 from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 
 from geonode.security.models import PermissionLevelMixin
