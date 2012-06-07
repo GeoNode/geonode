@@ -16,6 +16,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template import Context
 from django.template.loader import get_template
 from django.forms import ValidationError
+from lxml import etree
 
 import geonode.maps.models
 import geonode.maps.views
@@ -57,7 +58,14 @@ DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':
 geonode.maps.views._metadata_search = Mock()
 geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
 
+# we revisit this mock wms object
 
+fake_wms = Mock()
+fake_wms.__getitem__ = Mock()
+fake_wms.contents = []
+
+geonode.layers.models.get_wms = fake_wms
+geonode.layers.models._wms = fake_wms
 
 geonode.layers.models.get_csw = Mock()
 geonode.layers.models.get_csw.return_value.getrecordbyid.return_value = None
@@ -74,10 +82,15 @@ geonode.layers.views.get_csw.return_value.getrecordbyid.return_value = None
 geonode.layers.views.get_csw.return_value.records.values.return_value = [None]
 geonode.layers.views.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
 geonode.layers.views.get_csw.return_value.records.get.return_value.identification.keywords = []
-geonode.layers.views.get_csw.return_value._exml.findall.return_value = [Mock(), Mock()]
 
-geonode.layers.models._extract_links = Mock()
-geonode.layers.models._extract_links.return_value = {}
+geonode.layers.views._extract_links = Mock()
+geonode.layers.views._extract_links.return_value = []
+
+DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
+
+geonode.layers.views._layer_search = Mock()
+geonode.layers.views._layer_search.return_value = DUMMY_RESULT
+
 
 
 class LayersTest(TestCase):
@@ -339,7 +352,7 @@ class LayersTest(TestCase):
 
             c.get("/data/search/api?q=foo&start=5&limit=10")
 
-            call_args = geonode.maps.views._metadata_search.call_args
+            call_args = geonode.layers.views._layer_search.call_args
             self.assertEqual(call_args[0][0], "foo")
             self.assertEqual(call_args[0][1], 5)
             self.assertEqual(call_args[0][2], 10)
@@ -541,7 +554,7 @@ class LayersTest(TestCase):
                     return self.contents[idx]
 
             with nested(
-                patch.object(geonode.maps.models, '_wms', new=MockWMS()),
+                patch.object(geonode.utils, '_wms', new=MockWMS()),
                 patch('geonode.maps.models.Layer.objects.gs_catalog'),
                 patch('geonode.maps.models.Layer.objects.geonetwork')
             ) as (mock_wms, mock_gs, mock_gn):
