@@ -4,12 +4,14 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils import simplejson as json
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 import geonode.maps.models
 import geonode.maps.views
 
-from geonode.maps.models import Map
 from geonode.layers.models import Layer
+from geonode.layers.forms import JSONField, LayerUploadForm
+from geonode.maps.models import Map
 from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock, patch
@@ -843,9 +845,6 @@ class ViewTest(TestCase):
             layer = Layer.objects.all()[0]
             client.get("/maps/new?layer=" + layer.typename)
 
-
-from geonode.maps.forms import JSONField, LayerUploadForm
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 class FormTest(TestCase):
 
