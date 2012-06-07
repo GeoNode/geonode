@@ -9,7 +9,7 @@ from django.contrib.auth.models import User, Permission
 from idios.models import ProfileBase, create_profile
 
 from geonode.layers.enumerations import COUNTRIES
-from geonode.people.enumerations import ROLE_VALUES
+from geonode.people.enumerations import ROLE_VALUES, CONTACT_FIELDS
 
 
 class Contact(ProfileBase):
