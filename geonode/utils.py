@@ -20,6 +20,8 @@ from geonode.maps.models import Map
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.models import INVALID_PERMISSION_MESSAGE
 
+_wms = None
+_csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
 http_client = httplib2.Http()
@@ -139,6 +141,54 @@ def get_git_changeset():
     except ValueError:
         return None
     return timestamp.strftime('%Y%m%d%H%M%S')
+
+
+def check_geonode_is_up():
+    """Verifies all of geonetwork, geoserver and the django server are running,
+       this is needed to be able to upload.
+    """
+    try:
+        Layer.objects.gs_catalog.get_workspaces()
+    except:
+        msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
+               'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
+        raise GeoNodeException(msg)
+
+    try:
+        Layer.objects.gn_catalog.login()
+    except:
+        msg = ('Cannot connect to the GeoNetwork at %s\n'
+               'Please make sure you have started '
+               'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
+        raise GeoNodeException(msg)
+
+
+def get_wms():
+    global _wms
+    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
+    netloc = urlparse(wms_url).netloc
+    http = httplib2.Http()
+    http.add_credentials(_user, _password)
+    http.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user, _password),
+                netloc,
+                wms_url,
+                {},
+                None,
+                None,
+                http
+            )
+        )
+    body = http.request(wms_url)[1]
+    _wms = WebMapService(wms_url, xml=body)
+
+
+def get_csw():
+    global _csw
+    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+    _csw = CatalogueServiceWeb(csw_url)
+    return _csw
 
 
 def _get_basic_auth_info(request):
@@ -307,3 +357,33 @@ def _split_query(query):
     if accum is not None:
         keywords.append(accum)
     return [kw.strip() for kw in keywords if kw.strip()]
+
+
+def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
+    return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
+                            x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+
+
+def forward_mercator(lonlat):
+    """
+        Given geographic coordinates, return a x,y tuple in spherical mercator.
+        
+        If the lat value is out of range, -inf will be returned as the y value
+    """
+    x = lonlat[0] * 20037508.34 / 180
+    n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    if n <= 0:
+        y = float("-inf")
+    else:
+        y = math.log(n) / math.pi * 20037508.34
+    return (x, y)
+
+
+def inverse_mercator(xy):
+    """
+        Given coordinates in spherical mercator, return a lon,lat tuple.
+    """
+    lon = (xy[0] / 20037508.34) * 180
+    lat = (xy[1] / 20037508.34) * 180
+    lat = 180/math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+    return (lon, lat)
