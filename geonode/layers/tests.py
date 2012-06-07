@@ -65,13 +65,16 @@ geonode.layers.models.get_csw.return_value.records.values.return_value = [None]
 geonode.layers.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
 geonode.layers.models.get_csw.return_value.records.get.return_value.identification.keywords = []
 
+# for some reason we need to import views in order to be able to set
+# the value of the get_csw function. FIXME
+from geonode.layers import views
 
 geonode.layers.views.get_csw = Mock()
 geonode.layers.views.get_csw.return_value.getrecordbyid.return_value = None
 geonode.layers.views.get_csw.return_value.records.values.return_value = [None]
 geonode.layers.views.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
 geonode.layers.views.get_csw.return_value.records.get.return_value.identification.keywords = []
-
+geonode.layers.views.get_csw.return_value._exml.findall.return_value = [Mock(), Mock()]
 
 geonode.layers.models._extract_links = Mock()
 geonode.layers.models._extract_links.return_value = {}
@@ -80,6 +83,11 @@ geonode.layers.models._extract_links.return_value = {}
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
     """
+
+    def setUp(self):
+        self.user = 'admin'
+        self.passwd = 'admin'
+
     fixtures = ['map_data.json', 'initial_data.json']
 
     # Permissions Tests
@@ -148,7 +156,8 @@ class LayersTest(TestCase):
         # FIXME Test a comprehensive set of permisssions specifications 
 
         # Set the Permissions
-        geonode.maps.views.set_layer_permissions(layer, self.perm_spec)
+
+        geonode.layers.views.layer_set_permissions(layer, self.perm_spec)
 
         # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
         self.assertEqual(layer.get_gen_level(geonode.security.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
@@ -169,7 +178,7 @@ class LayersTest(TestCase):
         """Verify that the ajax_layer_permissions view is behaving as expected
         """
         
-        # Setup some layer names to work with 
+        # Setup some layer names to work with
         valid_layer_typename = Layer.objects.all()[0].typename
         invalid_layer_typename = "n0ch@nc3"
 
@@ -204,6 +213,7 @@ class LayersTest(TestCase):
         # Login as a user with the proper permission and test the endpoint
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
+
         response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
@@ -259,7 +269,7 @@ class LayersTest(TestCase):
         # Test with a Layer object
         layer = Layer.objects.all()[0]
         layer_info = layer.get_all_level_info()
-        info = geonode.maps.views._perms_info(layer, geonode.maps.views.LAYER_LEV_NAMES)
+        info = geonode.security.views._perms_info(layer, geonode.layers.views.LAYER_LEV_NAMES)
         
         # Test that ANONYMOUS_USERS and AUTHENTICATED_USERS are set properly
         self.assertEqual(info[geonode.maps.models.ANONYMOUS_USERS], layer.LEVEL_READ)
@@ -282,13 +292,13 @@ class LayersTest(TestCase):
 
     def test_describe_data_2(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(4, User.objects.all().count())
+        self.assertEqual(2, User.objects.all().count())
         c = Client()
         response = c.get('/data/base:CA/metadata')
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
-        c.login(username='bobby', password='bob')
+        c.login(username='admin', password='admin')
         # ... all should be good
         response = c.get('/data/base:CA/metadata')
         self.failUnlessEqual(response.status_code, 200)
@@ -368,13 +378,13 @@ class LayersTest(TestCase):
 
     def test_describe_data(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(4, User.objects.all().count())
+        self.assertEqual(2, User.objects.all().count())
         c = Client()
         response = c.get('/data/base:CA/metadata')
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
-        c.login(username='bobby', password='bob')
+        c.login(username='admin', password='admin')
         # ... all should be good
         response = c.get('/data/base:CA/metadata')
         self.failUnlessEqual(response.status_code, 200)
