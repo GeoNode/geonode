@@ -70,15 +70,15 @@
         <h2>{% trans "Maps using this layer" %}</h2>
         <p>{% trans "List of maps using this layer:" %}</p>
         <ul class="unstyled space">
-          <li><a href="#">Lorem ipsum dolor site amet adipiscing elit</a></li>
-          <li><a href="#">Sed do eisumod tempor</a></li>
-          <li><a href="#">Incididnet ut labore et dolor</a></li>
+          <li><a href="{% url mapinfo %}">Lorem ipsum dolor site amet adipiscing elit</a></li>
+          <li><a href="{% url mapinfo %}">Sed do eisumod tempor</a></li>
+          <li><a href="{% url mapinfo %}">Incididnet ut labore et dolor</a></li>
         </ul>
       </section>
       <section>
         <h2>{% trans "Create a map using this layer" %}</h2>
         <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
-        <a href="#" class="btn btn-large">{% trans "Create a Map" %}</a>
+        <a href="{% url maps_new %}" class="btn btn-large">{% trans "Create a Map" %}</a>
       </section>
       <section class="last">
         <h2>{% trans "Styles" %}</h2>
@@ -94,4 +94,34 @@
       {% include "maps/_widget_about_author.html" %}
     </div>
   </aside>
+<div class="modal custom hide" id="download-layer">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
+    </div>
+    <div class="modal-body">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nos-trud exercitation.</p>
+    </div>
+    <div class="modal-footer">
+      <div class="span2 offset1">
+        <ul class="unstyled">
+          <li><a href="#">Zipped Shapefile</a></li>
+          <li><a href="#">JPEG</a></li>
+          <li><a href="#">GML 2.0</a></li>
+          <li><a href="#">PDF</a></li>
+          <li><a href="#">GML 3.1.1</a></li>
+          <li><a href="#">PNG</a></li>
+        </ul>
+      </div>
+      <div class="span2">
+        <ul class="unstyled">
+          <li><a href="#">CSV</a></li>
+          <li><a href="#">KML</a></li>
+          <li><a href="#">Excel</a></li>
+          <li><a href="#">GeoJSON</a></li>
+          <li><a href="#">View in Google Earth</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
 {% endblock %}

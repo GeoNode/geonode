@@ -33,8 +33,8 @@ urlpatterns = patterns('',
     # Temp static pages
     url(r'^mapinfo/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'maps/mapinfo_static.html'}, name='mapinfo'),
-    url(r'^layer/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'maps/layer_static.html'}, name='layer'),
+    url(r'^layerinfo/$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'maps/layer_static.html'}, name='layerinfo'),
     url(r'^advanced-search/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'advanced_search_static.html'}, name='advanced_search'),
 
