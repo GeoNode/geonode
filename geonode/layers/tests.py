@@ -21,17 +21,15 @@ import geonode.maps.models
 import geonode.maps.views
 
 from geonode import GeoNodeException
+
 from geonode.layers.models import Layer
 from geonode.layers.forms import JSONField, LayerUploadForm
+from geonode.layers.utils import save, layer_type, get_files, get_valid_name, \
+                                get_valid_layer_name, cleanup
 from geonode.people.utils import get_valid_user
-from geonode.maps.utils import save
-from geonode.maps.utils import layer_type
-from geoserver.resource import FeatureType, Coverage
-from geonode.maps.utils import get_files
-from geonode.maps.utils import get_valid_name
-from geonode.maps.utils import get_valid_layer_name
-from geonode.maps.utils import cleanup
+
 from geoserver.catalog import FailedRequestError
+from geoserver.resource import FeatureType, Coverage
 
 
 _gs_resource = Mock()
