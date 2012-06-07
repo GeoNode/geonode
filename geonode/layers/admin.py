@@ -32,4 +32,3 @@ class ContactRoleAdmin(admin.ModelAdmin):
 
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
-
