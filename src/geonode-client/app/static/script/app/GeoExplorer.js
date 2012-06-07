@@ -433,13 +433,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     //Check permissions for selected layer and enable/disable feature edit buttons accordingly
     checkLayerPermissions:function (layerRecord) {
+
         var buttons = this.tools["gn_layer_editor"].actions;
+
+        var toggleButtons = function(enabled) {
+            for (var i; i < buttons.length; i++) {
+                enabled ? buttons[i].enable() : buttons[i].disable();
+            }
+        }
 
         //Disable if layer is null or selected layer in tree doesn't match input layer
         var tree_node =  Ext.getCmp("treecontent").getSelectionModel().getSelectedNode();
-        if (layerRecord == null || tree_node == null || tree_node.layer != layerRecord.getLayer()) {
-            buttons[0].disable();
-            buttons[1].disable();
+        if (layerRecord == null) {
+            toggleButtons(false);
         }
         else {
             //Proceed if this is a local queryable WMS layer
@@ -451,26 +457,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     method:"POST",
                     success:function (result, request) {
                         if (result.status != 200) {
-                            for (var i = 0; i < buttons.length; i++) {
-                                buttons[i].disable();
-                            }
+                            toggleButtons(false);
                         } else {
                             layer.displayOutsideMaxExtent = true;
-                            for (var i = 0; i < buttons.length; i++) {
-                                buttons[i].enable();
-                            }
+                            toggleButtons(true);
                         }
                     },
                     failure:function (result, request) {
-                        for (var i = 0; i < buttons.length; i++) {
-                            buttons[i].disable();
-                        }
+                        toggleButtons(false);
                     }
                 });
             } else {
-                for (var i = 0; i < buttons.length; i++) {
-                    buttons[i].disable();
-                }
+                toggleButtons(false);
             }
         }
     },

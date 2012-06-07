@@ -33,7 +33,7 @@ Ext.onReady(function() {
             format: "grid",
             actionTarget: "main.tbar",
             outputConfig: {width: 400, height: 300}
-        }{% if user.is_authenticated and DB_DATASTORE  %},
+            }{% if user.is_authenticated and DB_DATASTORE  %},
             {
                 ptype: "gxp_featuremanager",
                 id: "feature_manager",
