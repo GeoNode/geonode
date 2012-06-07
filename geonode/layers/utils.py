@@ -32,12 +32,9 @@ from geoserver.resource import FeatureType, Coverage
 from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 
-logger = logging.getLogger('geonode.maps.utils')
-_separator = '\n' + ('-' * 100) + '\n'
+logger = logging.getLogger('geonode.layers.utils')
 
-_wms = None
-_csw = None
-_user, _password = settings.GEOSERVER_CREDENTIALS
+_separator = '\n' + ('-' * 100) + '\n'
 
 _viewer_projection_lookup = {
     "EPSG:900913": {
@@ -55,39 +52,6 @@ _viewer_projection_lookup = {
 class GeoNodeException(Exception):
     """Base class for exceptions in this module."""
     pass
-
-
-def get_wms():
-    global _wms
-    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
-    netloc = urlparse(wms_url).netloc
-    http = httplib2.Http()
-    http.add_credentials(_user, _password)
-    http.authorizations.append(
-        httplib2.BasicAuthentication(
-            (_user, _password),
-                netloc,
-                wms_url,
-                {},
-                None,
-                None,
-                http
-            )
-        )
-    body = http.request(wms_url)[1]
-    _wms = WebMapService(wms_url, xml=body)
-
-
-def get_csw():
-    global _csw
-    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    _csw = CatalogueServiceWeb(csw_url)
-    return _csw
-
-
-def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
-    return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
-                            x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
 
 
 def _get_viewer_projection_info(srid):
@@ -542,59 +506,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
     return saved_layer
 
 
-def get_default_user():
-    """Create a default user
-    """
-    try:
-        return User.objects.get(is_superuser=True)
-    except User.DoesNotExist:
-        raise GeoNodeException('You must have an admin account configured '
-                               'before importing data. '
-                               'Try: django-admin.py createsuperuser')
-    except User.MultipleObjectsReturned:
-        raise GeoNodeException('You have multiple admin accounts, '
-                               'please specify which I should use.')
-
-
-def get_valid_user(user=None):
-    """Gets the default user or creates it if it does not exist
-    """
-    if user is None:
-        theuser = get_default_user()
-    elif isinstance(user, basestring):
-        theuser = User.objects.get(username=user)
-    elif user.is_anonymous():
-        raise GeoNodeException('The user uploading files must not '
-                               'be anonymous')
-    else:
-        theuser = user
-
-    #FIXME: Pass a user in the unit tests that is not yet saved ;)
-    assert isinstance(theuser, User)
-
-    return theuser
-
-
-def check_geonode_is_up():
-    """Verifies all of geonetwork, geoserver and the django server are running,
-       this is needed to be able to upload.
-    """
-    try:
-        Layer.objects.gs_catalog.get_workspaces()
-    except:
-        msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-               'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
-        raise GeoNodeException(msg)
-
-    try:
-        Layer.objects.gn_catalog.login()
-    except:
-        msg = ('Cannot connect to the GeoNetwork at %s\n'
-               'Please make sure you have started '
-               'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
-        raise GeoNodeException(msg)
-
-
 def file_upload(filename, user=None, title=None, overwrite=True, keywords=()):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
@@ -703,28 +614,3 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     except Exception:
         delete_from_postgis(name)
         raise
-
-
-def forward_mercator(lonlat):
-    """
-        Given geographic coordinates, return a x,y tuple in spherical mercator.
-        
-        If the lat value is out of range, -inf will be returned as the y value
-    """
-    x = lonlat[0] * 20037508.34 / 180
-    n = math.tan((90 + lonlat[1]) * math.pi / 360)
-    if n <= 0:
-        y = float("-inf")
-    else:
-        y = math.log(n) / math.pi * 20037508.34
-    return (x, y)
-
-
-def inverse_mercator(xy):
-    """
-        Given coordinates in spherical mercator, return a lon,lat tuple.
-    """
-    lon = (xy[0] / 20037508.34) * 180
-    lat = (xy[1] / 20037508.34) * 180
-    lat = 180/math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
-    return (lon, lat)
