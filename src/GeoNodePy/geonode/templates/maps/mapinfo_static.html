@@ -90,6 +90,10 @@
         <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
         <a href="{% url maps_new %}" class="btn btn-large">{% trans "Edit Map" %}</a>
       </section>
+      <section>
+        <h2>{% trans "Permissions" %}</h2>
+        <a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Permissions of this Map" %}</a>
+      </section>
       <section class="last">
         <h2>{% trans "Create a new map" %}</h2>
         <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
@@ -131,6 +135,9 @@
       </div>
     </div>
   </div>
+  {% with "#" as form_action %}
+      {% include "_permissions_form.html" %}
+  {% endwith %}
 {% endblock %}
 
 {# {% block extra_script %} #}

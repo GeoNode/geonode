@@ -1,0 +1,55 @@
+{% load i18n %}
+
+<div class="modal fade" id="modal_perms" style="display:none">
+  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{{ form_action|default:"" }}">
+    <div class="modal-header">
+      <a class="close" data-dismiss="modal">×</a>
+      <h3>{% trans "Permissions" %}</h3>
+    </div>
+    <div class="modal-body">
+      <div class="control-group">
+        <label class="control-label"><strong>{% trans "Who can view and download this data?" %}</strong></label>
+        <div class="controls">
+          <label class="radio inline">
+            <input type="radio" name="viewmode" id="perms_view" value="ANYONE">
+            {% trans "Anyone" %}
+          </label>
+          <label class="radio inline">
+            <input type="radio" name="viewmode" id="perms_view2" value="REGISTERED">
+            {% trans "Any registered user" %}
+          </label>
+          <label class="radio inline">
+            <input type="radio" name="viewmode" id="perms_view3" value="EDITORS">
+            {% trans "Only users who can edit" %}
+          </label>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label"><strong>{% trans "Who can edit this data?" %}</strong></label>
+        <div class="controls">
+          <label class="radio">
+            <input type="radio" name="editmode" id="perms_edit1" value="REGISTERED">
+            {% trans "Any registered user" %}
+          </label>
+          <label class="radio">
+            <input type="radio" name="editmode" id="perms_edit2" value="LIST">
+            {% trans "Only the following users or groups:" %}
+          </label>
+          <input name="editusers" class="user-select" data-placeholder="{% trans "Choose a user or group..." %}">
+          </input>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label"><strong>{% trans "Who can manage and edit this data?" %}</strong></label>
+        <div class="controls">
+          <input name="manageusers" class="user-select" data-placeholder="{% trans "Choose a user or group..." %}">
+          </input>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
+      <a href="#" class="btn btn-primary" data-dismiss="modal">{% trans "Apply Changes" %}</a>
+    </div>
+  </form>
+</div>
