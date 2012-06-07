@@ -1,6 +1,4 @@
 [
-
-
     {
         "fields": {
             "date_joined": "2010-07-20 13:31:27",
@@ -22,6 +20,17 @@
 
     {
         "fields": {
+            "typename": "base:CA",
+            "store": "CA",
+            "name": "CA",
+            "workspace": "base",
+            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298"
+        },
+        "model": "layers.layer",
+        "pk": 1
+    },
+    {
+        "fields": {
             "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
             "center_x": -9428760.8701902702,
             "center_y": 1427430.7410345681,
@@ -34,21 +43,6 @@
         "model": "maps.map",
         "pk": 1
     },
-
-
-    {
-        "fields": {
-            "typename": "base:CA",
-            "store": "CA",
-            "name": "CA",
-            "workspace": "base",
-            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298"
-        },
-        "model": "layers.layer",
-        "pk": 1
-    },
-
-
     {
         "fields": {
             "fixed": false,
@@ -169,7 +163,6 @@
         "model": "security.genericobjectrolemapping",
         "pk": 3
     },
-
     {
         "fields": {
             "subject": "authenticated",
@@ -180,7 +173,6 @@
         "model": "security.genericobjectrolemapping",
         "pk": 4
     },
-
     {
         "fields": {
             "user": 1,
