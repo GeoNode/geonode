@@ -21,6 +21,8 @@ from geonode import GeoNodeException
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.models import INVALID_PERMISSION_MESSAGE
 
+from owslib.csw import CatalogueServiceWeb
+
 _wms = None
 _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
