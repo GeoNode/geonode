@@ -1,0 +1,16 @@
+[
+    {
+        "fields": {
+            "typename": "base:CA",
+            "store": "CA",
+            "name": "CA",
+            "workspace": "base",
+            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298"
+        },
+        "model": "maps.layer",
+        "pk": 1
+    },
+
+
+
+]
