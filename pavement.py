@@ -47,7 +47,7 @@ options(
 
 deploy_req_txt = """
 # NOTE... this file is generated
--r shared/requirements.txt
+-r requirements.txt
 # this line installs GeoNode
 .
 """ % locals()
@@ -304,11 +304,11 @@ def stop():
 
 @task
 def start_django():
-    sh('python manage.py runserver &')
+    sh('paster serve shared/dev-paste.ini --daemon')
 
 @task
 def stop_django():
-    kill('python', 'runserver')
+    kill('paster', 'project.paste')
 
 @task
 def start_geoserver():
