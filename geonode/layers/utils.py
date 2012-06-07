@@ -20,6 +20,7 @@ from django.conf import settings
 
 # Geonode functionality
 from geonode import GeoNodeException
+from geonode.utils import check_geonode_is_up
 from geonode.layers.models import Layer
 from geonode.people.models import Contact
 from geonode.gs_helpers import cascading_delete, get_sld_for, delete_from_postgis
