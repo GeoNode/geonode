@@ -24,7 +24,7 @@ from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
 from geonode.maps.models import MapLayer
 from geonode.maps.views import default_map_config
-from geonode.maps.utils import save
+from geonode.layers.utils import save
 from geonode.people.forms import ContactForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS

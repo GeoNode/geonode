@@ -20,7 +20,7 @@ from django.db.models import Q
 from geonode.utils import _split_query, http_client
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
-from geonode.maps.utils import forward_mercator
+from geonode.utils import forward_mercator
 from geonode.maps.forms import MapForm
 from geonode.people.models import Contact
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
