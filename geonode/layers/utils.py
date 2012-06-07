@@ -1,3 +1,9 @@
+import httplib2
+from urlparse import urlparse
+from django.conf import settings
+from owslib.wms import WebMapService
+from owslib.csw import CatalogueServiceWeb
+
 _wms = None
 _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS

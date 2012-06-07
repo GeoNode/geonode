@@ -4,6 +4,12 @@ from django.utils import simplejson as json
 import os
 import tempfile
 
+from geonode.layers.models import Layer
+from geonode.people.models import Contact
+
+import taggit
+
+
 class JSONField(forms.CharField):
     def clean(self, text):
         text = super(JSONField, self).clean(text)
@@ -11,6 +17,25 @@ class JSONField(forms.CharField):
             return json.loads(text)
         except ValueError:
             raise forms.ValidationError("this field must be valid JSON")
+
+class LayerForm(forms.ModelForm):
+    date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
+    date.widget.widgets[0].attrs = {"class":"date"}
+    date.widget.widgets[1].attrs = {"class":"time"}
+    temporal_extent_start = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
+    temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
+
+    poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
+                                 label = "Point Of Contact", required=False,
+                                 queryset = Contact.objects.exclude(user=None))
+
+    metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
+                                             label = "Metadata Author", required=False,
+                                             queryset = Contact.objects.exclude(user=None))
+    keywords = taggit.forms.TagField()
+    class Meta:
+        model = Layer
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
@@ -65,3 +90,8 @@ class NewLayerUploadForm(LayerUploadForm):
     permissions = JSONField()
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file")
+
+class LayerDescriptionForm(forms.Form):
+    title = forms.CharField(300)
+    abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
+    keywords = forms.CharField(500, required=False)

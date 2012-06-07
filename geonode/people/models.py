@@ -4,11 +4,12 @@ from django.db import models
 from django.db.models import signals
 from django.utils.translation import ugettext as _
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 
 from idios.models import ProfileBase, create_profile
 
-from geonode.maps.enumerations import COUNTRIES
+from geonode.layers.models import Layer
+from geonode.maps.enumerations import COUNTRIES, ROLE_VALUES
 
 CONTACT_FIELDS = [
     "name",
@@ -54,13 +55,6 @@ class Contact(ProfileBase):
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.organization)
 
-def create_user_profile(instance, sender, created, **kwargs):
-    try:
-        profile = Contact.objects.get(user=instance)
-    except Contact.DoesNotExist:
-        profile = Contact(user=instance)
-        profile.name = instance.username
-        profile.save()
 
 class Role(models.Model):
     """
@@ -103,6 +97,7 @@ class ContactRole(models.Model):
 
     class Meta:
         unique_together = (("contact", "layer", "role"),)
+
 
 def create_user_profile(instance, sender, created, **kwargs):
     try:

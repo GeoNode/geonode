@@ -1,11 +1,11 @@
-from geonode.people.models import Contact, ContactRole, Role
 from django.contrib import admin
-
-class ContactAdmin(admin.ModelAdmin):
-    inlines = [ContactRoleInline]
+from geonode.people.models import Contact, ContactRole, Role
 
 class ContactRoleInline(admin.TabularInline):
     model = ContactRole
+
+class ContactAdmin(admin.ModelAdmin):
+    inlines = [ContactRoleInline]
 
 class ContactRoleAdmin(admin.ModelAdmin):
     model = ContactRole
