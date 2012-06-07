@@ -10,14 +10,16 @@ from django.utils.translation import ugettext_lazy as _
 from geonode.layers.models import Layer
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.utils import _get_viewer_projection_info
+from geonode.utils import GXPMapBase
+from geonode.utils import GXPLayerBase
+from geonode.utils import layer_from_viewer_config
 
 from taggit.managers import TaggableManager
 
 logger = logging.getLogger("geonode.maps.models")
 
 
-class Map(models.Model, PermissionLevelMixin):
+class Map(models.Model, PermissionLevelMixin, GXPMapBase):
     """
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
@@ -108,76 +110,6 @@ class Map(models.Model, PermissionLevelMixin):
 
         return json.dumps(map_config)
 
-    def viewer_json(self, *added_layers):
-        """
-        Convert this map to a nested dictionary structure matching the JSON
-        configuration for GXP Viewers.
-
-        The ``added_layers`` parameter list allows a list of extra MapLayer
-        instances to append to the Map's layer list when generating the
-        configuration. These are not persisted; if you want to add layers you
-        should use ``.layer_set.create()``.
-        """
-        layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
-        server_lookup = {}
-        sources = {'local': settings.DEFAULT_LAYER_SOURCE }
-
-        def uniqify(seq):
-            """
-            get a list of unique items from the input sequence.
-            
-            This relies only on equality tests, so you can use it on most
-            things.  If you have a sequence of hashables, list(set(seq)) is
-            better.
-            """
-            results = []
-            for x in seq:
-                if x not in results: results.append(x)
-            return results
-
-        configs = [l.source_config() for l in layers]
-
-        i = 0
-        for source in uniqify(configs):
-            while str(i) in sources: i = i + 1
-            sources[str(i)] = source 
-            server_lookup[json.dumps(source)] = str(i)
-
-        def source_lookup(source):
-            for k, v in sources.iteritems():
-                if v == source: return k
-            return None
-
-        def layer_config(l):
-            cfg = l.layer_config()
-            src_cfg = l.source_config()
-            source = source_lookup(src_cfg)
-            if source: cfg["source"] = source
-            return cfg
-
-        config = {
-            'id': self.id,
-            'about': {
-                'title':    self.title,
-                'abstract': self.abstract
-            },
-            'defaultSourceType': "gxp_wmscsource",
-            'sources': sources,
-            'map': {
-                'layers': [layer_config(l) for l in layers],
-                'center': [self.center_x, self.center_y],
-                'projection': self.projection,
-                'zoom': self.zoom
-            }
-        }
-
-        # Mark the last added layer as selected - important for data page
-        config["map"]["layers"][len(layers)-1]["selected"] = True
-
-        config["map"].update(_get_viewer_projection_info(self.projection))
-
-        return config
-
     def update_from_viewer(self, conf):
         """
         Update this Map's details by parsing a JSON object as produced by
@@ -210,8 +142,8 @@ class Map(models.Model, PermissionLevelMixin):
 
         for ordering, layer in enumerate(layers):
             self.layer_set.add(
-                self.layer_set.from_viewer_config(
-                    self, layer, source_for(layer), ordering
+                layer_from_viewer_config(
+                    MapLayer, layer, source_for(layer), ordering
             ))
         self.save()
 
@@ -252,51 +184,12 @@ class Map(models.Model, PermissionLevelMixin):
             self.set_user_level(self.owner, self.LEVEL_ADMIN)    
 
 
-class MapLayerManager(models.Manager):
-    def from_viewer_config(self, map_model, layer, source, ordering):
-        """
-        Parse a MapLayer object out of a parsed layer configuration from a GXP
-        viewer.
-
-        ``map`` is the Map instance to associate with the new layer
-        ``layer`` is the parsed dict for the layer
-        ``source`` is the parsed dict for the layer's source
-        ``ordering`` is the index of the layer within the map's layer list
-        """
-        layer_cfg = dict(layer)
-        for k in ["format", "name", "opacity", "styles", "transparent",
-                  "fixed", "group", "visibility", "title", "source"]:
-            if k in layer_cfg: del layer_cfg[k]
-
-        source_cfg = dict(source)
-        for k in ["url", "projection"]:
-            if k in source_cfg: del source_cfg[k]
-
-        return self.model(
-            map = map_model,
-            stack_order = ordering,
-            format = layer.get("format", None),
-            name = layer.get("name", None),
-            opacity = layer.get("opacity", 1),
-            styles = layer.get("styles", None),
-            transparent = layer.get("transparent", False),
-            fixed = layer.get("fixed", False),
-            group = layer.get('group', None),
-            visibility = layer.get("visibility", True),
-            ows_url = source.get("url", None),
-            layer_params = json.dumps(layer_cfg),
-            source_params = json.dumps(source_cfg)
-        )
-
-class MapLayer(models.Model):
+class MapLayer(models.Model, GXPLayerBase):
     """
     The MapLayer model represents a layer included in a map.  This doesn't just
     identify the dataset, but also extra options such as which style to load
     and the file format to use for image tiles.
     """
-
-    objects = MapLayerManager()
-    # see :class:`geonode.maps.models.MapLayerManager`
 
     map = models.ForeignKey(Map, related_name="layer_set")
     # The map containing this layer
@@ -363,48 +256,6 @@ class MapLayer(models.Model):
             return Layer.objects.filter(typename=self.name).count() != 0
         else: 
             return False
- 
-    def source_config(self):
-        """
-        Generate a dict that can be serialized to a GXP layer source
-        configuration suitable for loading this layer.
-        """
-        try:
-            cfg = json.loads(self.source_params)
-        except Exception:
-            cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
-
-        if self.ows_url: cfg["url"] = self.ows_url
-
-        return cfg
-
-    def layer_config(self):
-        """
-        Generate a dict that can be serialized to a GXP layer configuration
-        suitable for loading this layer.
-
-        The "source" property will be left unset; the layer is not aware of the
-        name assigned to its source plugin.  See
-        :method:`geonode.maps.models.Map.viewer_json` for an example of
-        generating a full map configuration.
-        """
-        try:
-            cfg = json.loads(self.layer_params)
-        except Exception: 
-            cfg = dict()
-
-        if self.format: cfg['format'] = self.format
-        if self.name: cfg["name"] = self.name
-        if self.opacity: cfg['opacity'] = self.opacity
-        if self.styles: cfg['styles'] = self.styles
-        if self.transparent: cfg['transparent'] = True
-
-        cfg["fixed"] = self.fixed
-        if self.group: cfg["group"] = self.group
-        cfg["visibility"] = self.visibility
-
-        return cfg
-
 
     @property
     def local_link(self): 

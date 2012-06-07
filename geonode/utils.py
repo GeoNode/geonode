@@ -13,6 +13,7 @@ from ConfigParser import ConfigParser, NoOptionError
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.utils import simplejson as json
 from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 
@@ -42,59 +43,8 @@ http_client.authorizations.append(
     )
 )
 
-
-class ConfigMap(DictMixin):
-
-    def __init__(self, parser):
-        self.parser = parser
-        self.sects = parser.sections()
-
-    def __iter__(self):
-        for sname in self.sects:
-            yield sname
-            
-    def __getitem__(self, idx):
-        return OptionMap(self.parser, idx)
-
-    def __setitem__(self, idx, val):
-        for item in val.items():
-            self.parser.set(*(idx,) + item)
-
-    def __delitem__(self, idx):
-        self.parser.remove_section(idx)
-
-    def keys(self):
-        return self.parser.sections()
-
-    def write(self, fn):
-        self.parser.write(fn)
-
-    @classmethod
-    def load(cls, fname):
-        parser = ConfigParser()
-        parser.read(fname)
-        return cls(parser)
-
-
-class OptionMap(DictMixin):
-    def __init__(self, parser, section):
-        self.parser = parser
-        self.section = section
-        
-    def __getitem__(self, idx):
-        try:
-            return self.parser.get(self.section, idx)
-        except NoOptionError, e:
-            raise KeyError(e)
-
-    def __setitem__(self, name, val):
-        self.parser.set(self.section, name, val)
-
-    def __delitem__(self, name):
-        self.parser.remove_option(self.section, name)
-
-    def keys(self):
-        return self.parser.options(self.section)
+DEFAULT_TITLE=""
+DEFAULT_ABSTRACT=""
 
 
 def get_version(version=None):
@@ -395,3 +345,236 @@ def inverse_mercator(xy):
     lat = (xy[1] / 20037508.34) * 180
     lat = 180/math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
     return (lon, lat)
+
+
+def layer_from_viewer_config(model, layer, source, ordering):
+    """
+    Parse an object out of a parsed layer configuration from a GXP
+    viewer.
+
+    ``model`` is the type to instantiate
+    ``layer`` is the parsed dict for the layer
+    ``source`` is the parsed dict for the layer's source
+    ``ordering`` is the index of the layer within the map's layer list
+    """
+    layer_cfg = dict(layer)
+    for k in ["format", "name", "opacity", "styles", "transparent",
+                "fixed", "group", "visibility", "title", "source"]:
+        if k in layer_cfg: del layer_cfg[k]
+
+    source_cfg = dict(source)
+    for k in ["url", "projection"]:
+        if k in source_cfg: del source_cfg[k]
+
+    return model(
+        stack_order = ordering,
+        format = layer.get("format", None),
+        name = layer.get("name", None),
+        opacity = layer.get("opacity", 1),
+        styles = layer.get("styles", None),
+        transparent = layer.get("transparent", False),
+        fixed = layer.get("fixed", False),
+        group = layer.get('group', None),
+        visibility = layer.get("visibility", True),
+        ows_url = source.get("url", None),
+        layer_params = json.dumps(layer_cfg),
+        source_params = json.dumps(source_cfg)
+    )
+
+
+class GXPMapBase(object):
+    
+    def viewer_json(self, *added_layers):
+        """
+        Convert this map to a nested dictionary structure matching the JSON
+        configuration for GXP Viewers.
+
+        The ``added_layers`` parameter list allows a list of extra MapLayer
+        instances to append to the Map's layer list when generating the
+        configuration. These are not persisted; if you want to add layers you
+        should use ``.layer_set.create()``.
+        """
+        
+        layers = list(self.layers)
+        layers.extend(added_layers)
+        
+        server_lookup = {}
+        sources = {'local': settings.DEFAULT_LAYER_SOURCE }
+
+        def uniqify(seq):
+            """
+            get a list of unique items from the input sequence.
+            
+            This relies only on equality tests, so you can use it on most
+            things.  If you have a sequence of hashables, list(set(seq)) is
+            better.
+            """
+            results = []
+            for x in seq:
+                if x not in results: results.append(x)
+            return results
+
+        configs = [l.source_config() for l in layers]
+
+        i = 0
+        for source in uniqify(configs):
+            while str(i) in sources: i = i + 1
+            sources[str(i)] = source 
+            server_lookup[json.dumps(source)] = str(i)
+
+        def source_lookup(source):
+            for k, v in sources.iteritems():
+                if v == source: return k
+            return None
+
+        def layer_config(l):
+            cfg = l.layer_config()
+            src_cfg = l.source_config()
+            source = source_lookup(src_cfg)
+            if source: cfg["source"] = source
+            return cfg
+        
+        config = {
+            'id': self.id,
+            'about': {
+                'title':    self.title,
+                'abstract': self.abstract
+            },
+            'defaultSourceType': "gxp_wmscsource",
+            'sources': sources,
+            'map': {
+                'layers': [layer_config(l) for l in layers],
+                'center': [self.center_x, self.center_y],
+                'projection': self.projection,
+                'zoom': self.zoom
+            }
+        }
+
+        # Mark the last added layer as selected - important for data page
+        config["map"]["layers"][len(layers)-1]["selected"] = True
+
+        config["map"].update(_get_viewer_projection_info(self.projection))
+
+        return config
+    
+    
+class GXPMap(GXPMapBase):
+    
+    def __init__(self, projection=None, title=None, abstract=None, 
+                 center_x = None, center_y = None, zoom = None):
+        self.id = 0
+        self.projection = projection
+        self.title = title or DEFAULT_TITLE
+        self.abstract = abstract or DEFAULT_ABSTRACT
+        _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
+        self.center_x = center_x if center_x is not None else _DEFAULT_MAP_CENTER[0]
+        self.center_y = center_y if center_y is not None else _DEFAULT_MAP_CENTER[1]
+        self.zoom = zoom if zoom is not None else settings.DEFAULT_MAP_ZOOM
+        self.layers = []
+
+
+class GXPLayerBase(object):
+    
+    def source_config(self):
+        """
+        Generate a dict that can be serialized to a GXP layer source
+        configuration suitable for loading this layer.
+        """
+        try:
+            cfg = json.loads(self.source_params)
+        except Exception:
+            cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
+
+        if self.ows_url: cfg["url"] = self.ows_url
+
+        return cfg
+
+    def layer_config(self):
+        """
+        Generate a dict that can be serialized to a GXP layer configuration
+        suitable for loading this layer.
+
+        The "source" property will be left unset; the layer is not aware of the
+        name assigned to its source plugin.  See
+        :method:`geonode.maps.models.Map.viewer_json` for an example of
+        generating a full map configuration.
+        """
+        try:
+            cfg = json.loads(self.layer_params)
+        except Exception: 
+            cfg = dict()
+
+        if self.format: cfg['format'] = self.format
+        if self.name: cfg["name"] = self.name
+        if self.opacity: cfg['opacity'] = self.opacity
+        if self.styles: cfg['styles'] = self.styles
+        if self.transparent: cfg['transparent'] = True
+
+        cfg["fixed"] = self.fixed
+        if self.group: cfg["group"] = self.group
+        cfg["visibility"] = self.visibility
+
+        return cfg
+    
+
+class GXPLayer(GXPLayerBase):
+    '''GXPLayer represents an object to be included in a GXP map.
+    '''
+    def __init__(self, name=None, ows_url=None, **kw):
+        self.format = None
+        self.name = name
+        self.opacity = 1.0
+        self.styles = None
+        self.transparent = False
+        self.fixed = False
+        self.group = None
+        self.visibility = True
+        self.ows_url = ows_url
+        self.layer_params = ""
+        self.source_params = ""
+        for k in kw:
+            setattr(self,k,kw[k])        
+
+
+def default_map_config():
+    _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
+
+    _default_map = GXPMap(
+        title=DEFAULT_TITLE, 
+        abstract=DEFAULT_ABSTRACT,
+        projection="EPSG:900913",
+        center_x=_DEFAULT_MAP_CENTER[0],
+        center_y=_DEFAULT_MAP_CENTER[1],
+        zoom=settings.DEFAULT_MAP_ZOOM
+    )
+    def _baselayer(lyr, order):
+        return layer_from_viewer_config(
+            GXPLayer,
+            layer = lyr,
+            source = lyr["source"],
+            ordering = order
+        )
+
+    DEFAULT_BASE_LAYERS = [_baselayer(lyr, idx) for idx, lyr in enumerate(settings.MAP_BASELAYERS)]
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASE_LAYERS)
+
+    return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
+
+
+_viewer_projection_lookup = {
+    "EPSG:900913": {
+        "maxResolution": 156543.03390625,
+        "units": "m",
+        "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
+    },
+    "EPSG:4326": {
+        "max_resolution": (180 - (-180)) / 256,
+        "units": "degrees",
+        "maxExtent": [-180, -90, 180, 90]
+    }
+}
+
+
+def _get_viewer_projection_info(srid):
+    # TODO: Look up projection details in EPSG database
+    return _viewer_projection_lookup.get(srid, {})
