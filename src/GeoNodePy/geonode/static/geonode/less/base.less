@@ -42,8 +42,7 @@
 
 // Components: Misc
 @import "../../bootstrap/less/thumbnails.less";
-@import "../../bootstrap/less/labels.less";
-@import "../../bootstrap/less/badges.less";
+@import "../../bootstrap/less/labels-badges.less";
 @import "../../bootstrap/less/progress-bars.less";
 @import "../../bootstrap/less/accordion.less";
 @import "../../bootstrap/less/carousel.less";
@@ -64,6 +63,11 @@ body {
 
 h2, h3 {
   margin-bottom:10px !important;
+}
+
+// Fix for openlayers
+img.olTileImage {
+  max-width: none;
 }
 
 // General layout styles
@@ -442,6 +446,11 @@ ul.space li {
   img {
     margin-bottom:10px;
   }
+}
+
+/** map viewer **/
+#paneltbar{
+  margin-top: 60px;
 }
 
 /** map actions **/
