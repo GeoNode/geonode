@@ -1,5 +1,9 @@
 /* Fixes for compatibility issues between extjs and bootstrap */
 
+input.user-select {
+    margin-bottom: 20px;
+}
+
 img {
   max-width: none;
 }
@@ -130,3 +134,7 @@ border-bottom: none;
     border-width: 0;
 }
 */
+
+#modal_perms div.control-group:last-child {
+  margin-bottom:100px;
+}
