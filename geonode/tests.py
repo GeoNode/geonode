@@ -1,6 +1,9 @@
+import os
+import math
 from django.test.client import Client
 from django.test import TestCase
-import os
+from mock import patch
+from maps.utils import forward_mercator, inverse_mercator
 
 class GeoNodeClientTests(TestCase):
     
@@ -191,7 +194,8 @@ class GeoNodeClientTests(TestCase):
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
-        keywords = geonode.maps.views._split_query(query)
+        from geonode.maps.views import _split_query
+        keywords = _split_query(query)
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")
         self.assertEqual(keywords[2], "delta")
