@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 
+from geonode import GeoNodeException
+
 def get_default_user():
     """Create a default user
     """

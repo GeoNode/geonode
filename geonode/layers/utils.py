@@ -49,10 +49,6 @@ _viewer_projection_lookup = {
     }
 }
 
-class GeoNodeException(Exception):
-    """Base class for exceptions in this module."""
-    pass
-
 
 def _get_viewer_projection_info(srid):
     # TODO: Look up projection details in EPSG database

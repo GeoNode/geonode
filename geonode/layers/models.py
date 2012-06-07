@@ -33,10 +33,6 @@ from taggit.managers import TaggableManager
 logger = logging.getLogger("geonode.layers.models")
 
 
-class GeoNodeException(Exception):
-    pass
-
-
 class LayerManager(models.Manager):
     
     def __init__(self):

@@ -15,6 +15,7 @@ from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
+from genode import GeoNodeException
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
