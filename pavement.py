@@ -87,21 +87,6 @@ def auto(options):
     platform_options(options)
 
 @task
-def install_deps(options):
-    """Installs all the python deps from a requirements file"""
-    if bundle.exists():
-        info('using to install python deps bundle')
-        call_task('install_bundle')
-    else:
-        info('Installing from requirements file. '\
-             'Use "paver bundle_deps" to create an install bundle')
-        pip_install("-r shared/%s" % options.config.corelibs)
-        pip_install("-r shared/%s" % options.config.devlibs)
-        if options.config.platform == "win32":
-            info("You will need to install 'PIL' and 'ReportLab' "\
-                 "separately to do PDF generation")
-
-@task
 def bundle_deps(options):
     """
     Create a pybundle of all python dependencies.  If created, this
@@ -141,19 +126,10 @@ def install_25_deps(options):
     pass
 
     
-@task
-@needs(['install_deps'])
-def post_bootstrap(options):
-    """installs the current package"""
-    pip = path(options.config.bin) / "pip"
-    sh('%s install -e %s' %(pip, path(".")))
-
-
-#TODO Move svn urls out to a config file
-
 def grab(src, dest):
     from urllib import urlretrieve
-    urlretrieve(str(src), str(dest))
+    if not os.path.exists(dest):
+        urlretrieve(str(src), str(dest))
 
 @task
 def setup_gs_data(options):
@@ -175,7 +151,7 @@ def setup_gs_data(options):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     with pushd('geoserver-geonode-ext'):
-        sh("mvn clean install")
+        sh("mvn clean install -DskipTests")
 
 @task
 def setup_geonetwork(options):
@@ -211,11 +187,10 @@ def setup_geonetwork(options):
     'setup_geonode_client'
 ])
 def setup_webapps(options):
-    pass
+    sh('pip install -e .')
 
 @task
 @needs([
-    'install_deps',
     'setup_webapps',
     'sync_django_db',
     'package_client'
@@ -232,10 +207,10 @@ def setup_geonode_client(options):
     """
     static = path("./geonode/static/geonode")
 
-    with pushd("src/geonode-client/"):
+    with pushd("geonode-client/"):
         sh("mvn clean compile")
     
-    src_zip = "src/geonode-client/build/geonode-client.zip"
+    src_zip = "geonode-client/build/geonode-client.zip"
     zip_extractall(zipfile.ZipFile(src_zip), static)
 
 
