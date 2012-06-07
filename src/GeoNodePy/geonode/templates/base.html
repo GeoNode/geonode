@@ -8,6 +8,7 @@
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/datatables.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}select2/select2.css" rel="stylesheet"/>
       <script src="{{ STATIC_URL }}geonode/js/cssrefresh.js" type="text/javascript"></script>
     {% endblock %}
     <!--[if lt IE 9]>
@@ -176,6 +177,85 @@
 
     <script src="{{ STATIC_URL }}bootstrap/js/jquery-1.7.1.min.js"></script>
     <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="{{ STATIC_URL }}select2/select2.js"></script>
+    <script type="text/javascript">
+
+      $(function() {
+
+        jQuery(document).ajaxSend(function(event, xhr, settings) {
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            function sameOrigin(url) {
+                // url could be relative or scheme relative or absolute
+                var host = document.location.host; // host + port
+                var protocol = document.location.protocol;
+                var sr_origin = '//' + host;
+                var origin = protocol + sr_origin;
+                // Allow absolute or scheme relative URLs to same origin
+                return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                    (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                    // or any other URL that isn't scheme relative or absolute i.e relative.
+                    !(/^(\/\/|http:|https:).*/.test(url));
+            }
+            function safeMethod(method) {
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        });
+
+
+        $("input.user-select").select2({
+          placeholder: {title: '{% trans "Add User..." %}', id: ""},
+          minimumInputLength: 1,
+          multiple: true,
+          ajax: {
+            url: "{% url auth_ajax_lookup %}",
+            dataType: "json",
+            type: "POST",
+            data: function (term, page) {
+              return {
+                query: term,
+              };
+            },
+            results: function (data, page) {
+              return {results: data.users};
+            }
+          },
+          id: userID,
+          formatResult: userFormatResult,
+          formatSelection: userFormatSelection
+        });
+
+        function userID(user) {
+          return user.username
+        }
+
+        function userFormatResult(user) {
+          return user.username
+        }
+
+        function userFormatSelection(user) {
+            return user.username;
+        }
+      });
+    </script>
 
     {% block extra_script %}{% endblock extra_script %}
 

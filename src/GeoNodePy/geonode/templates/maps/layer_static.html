@@ -80,6 +80,10 @@
         <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
         <a href="{% url maps_new %}" class="btn btn-large">{% trans "Create a Map" %}</a>
       </section>
+      <section>
+        <h2>{% trans "Permissions" %}</h2>
+        <a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Permissions of this layer" %}</a>
+      </section>
       <section class="last">
         <h2>{% trans "Styles" %}</h2>
         <p>{% trans "The following styles are associated with this data set. Choose a style to view it in the preview to the left. Click on a style name to view or edit the style." %}</p>
@@ -124,4 +128,7 @@
       </div>
     </div>
   </div>
+  {% with "#" as form_action %}
+      {% include "_permissions_form.html" %}
+  {% endwith %}
 {% endblock %}
