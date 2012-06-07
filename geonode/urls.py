@@ -32,8 +32,11 @@ urlpatterns = patterns('',
 
     # Data views
     (r'^data/', include('geonode.layers.urls')),
+    
+    # Map views
     (r'^maps/', include('geonode.maps.urls')),
 
+    # Social
     (r'^comments/', include('dialogos.urls')),
     (r'^ratings/', include('agon_ratings.urls')),
 
