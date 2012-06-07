@@ -1,24 +1,15 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
-from django.contrib.auth.models import User, AnonymousUser
 from django.utils import simplejson as json
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 import geonode.maps.models
 import geonode.maps.views
 
 from geonode.layers.models import Layer
-from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.maps.models import Map
-from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock, patch
-
-import os
-import base64
-import math
 
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
@@ -36,7 +27,6 @@ _csw_resource.protocol = "WWW:LINK-1.0-http--link"
 _csw_resource.url = "http://example.com/"
 _csw_resource.description = "example link"
 geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
-from geonode.maps.utils import forward_mercator, inverse_mercator
 
 DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
 
@@ -48,6 +38,7 @@ geonode.maps.views.get_csw.return_value.getrecordbyid.return_value = None
 geonode.maps.views.get_csw.return_value.records.values.return_value = [None]
 geonode.maps.views._extract_links = Mock()
 geonode.maps.views._extract_links.return_value = {}
+
 
 class MapsTest(TestCase):
     """Tests geonode.maps app/module
@@ -133,11 +124,11 @@ community."
         c = Client()
 
         # Test that saving a map when not logged in gives 401
-        response = c.put("/maps/1/data",data=MapTest.viewer_config,content_type="text/json")
+        response = c.put("/maps/1/data",data=self.viewer_config,content_type="text/json")
         self.assertEqual(response.status_code,401)
 
         c.login(username="bobby", password="bob")
-        response = c.put("/maps/1/data",data=MapTest.viewer_config_alternative,content_type="text/json")
+        response = c.put("/maps/1/data",data=self.viewer_config_alternative,content_type="text/json")
         self.assertEqual(response.status_code,204)
 
         map_obj = Map.objects.get(id=1)
@@ -151,12 +142,12 @@ community."
         c = Client()
 
         # Test that saving a map when not logged in gives 401
-        response = c.post("/maps/",data=MapTest.viewer_config,content_type="text/json")
+        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
         self.assertEqual(response.status_code,401)
 
         # Test successful new map creation
         c.login(username="bobby", password="bob")
-        response = c.post("/maps/",data=MapTest.viewer_config,content_type="text/json")
+        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
         c.logout()
@@ -190,8 +181,8 @@ community."
             to a JSON map configuration"""
         map_obj = Map.objects.get(id=1)
         cfg = map_obj.viewer_json()
-        self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
-        self.assertEquals(cfg['about']['title'], MapTest.default_title)
+        self.assertEquals(cfg['about']['abstract'], self.default_abstract)
+        self.assertEquals(cfg['about']['title'], self.default_title)
         def is_wms_layer(x):
             return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
