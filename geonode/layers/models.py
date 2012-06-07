@@ -1,34 +1,33 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
-from django.db import models
-from owslib.wms import WebMapService
-from owslib.csw import CatalogueServiceWeb
-from geoserver.catalog import Catalog
-from geonode.security.models import PermissionLevelMixin
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.geonetwork import Catalog as GeoNetwork
-from geonode.people.models import Contact
-from geonode.maps.enumerations import COUNTRIES, ALL_LANGUAGES
-from django.db.models import signals
-from taggit.managers import TaggableManager
-from django.utils import simplejson as json
 
 import httplib2
 import urllib
-from urlparse import urlparse
-import uuid
-from datetime import datetime
-from django.contrib.auth.models import User, Permission
-from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ValidationError
-from string import lower
-from StringIO import StringIO
-from idios.models import ProfileBase, create_profile
-from lxml import etree
-from geonode.maps.gs_helpers import cascading_delete
 import logging
 import sys
+import uuid
 
+from datetime import datetime
+from lxml import etree
+
+from django.conf import settings
+from django.db import models
+from django.db.models import signals
+from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
+
+from geonode.geonetwork import Catalog as GeoNetwork
+from geonode.layers.utils import _wms, _user, _password, get_wms, _csw, get_csw
+from geonode.layers.utils import bbox_to_wkt
+from geonode.maps.models import MapLayer
+from geonode.maps.enumerations import COUNTRIES, ALL_LANGUAGES, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, SPATIAL_REPRESENTATION_TYPES, TOPIC_CATEGORIES, DEFAULT_SUPPLEMENTAL_INFORMATION
+from geonode.maps.gs_helpers import cascading_delete
+from geonode.people.models import Contact, Role, ContactRole
+from geonode.security.models import PermissionLevelMixin
+from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+
+from geoserver.catalog import Catalog
+
+from taggit.managers import TaggableManager
 
 logger = logging.getLogger("geonode.layers.models")
 

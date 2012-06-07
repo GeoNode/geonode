@@ -68,20 +68,6 @@ CONTACT_FIELDS = [
     "role"
 ]
 
-ROLE_VALUES = [
-    'datasetProvider',
-    'custodian',
-    'owner',
-    'user',
-    'distributor',
-    'originator',
-    'pointOfContact',
-    'principalInvestigator',
-    'processor',
-    'publisher',
-    'author'
-]
-
 DEFAULT_SUPPLEMENTAL_INFORMATION=_(
 'You can customize the template to suit your \
 needs. You can add and remove fields and fill out default \

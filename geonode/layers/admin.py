@@ -1,5 +1,8 @@
-from geonode.layers.models import Layer
 from django.contrib import admin
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from geonode.people.admin import ContactRoleInline
+from geonode.layers.models import Layer
 
 class LayerAdmin(admin.ModelAdmin):
     list_display = ('id', 'typename','service_type','title', 'date', 'topic_category')

@@ -7,7 +7,8 @@ from django.utils import simplejson as json
 import geonode.maps.models
 import geonode.maps.views
 
-from geonode.maps.models import Map, Layer, User
+from geonode.maps.models import Map
+from geonode.layers.models import Layer
 from geonode.maps.utils import get_valid_user, GeoNodeException
 
 from mock import Mock, patch
