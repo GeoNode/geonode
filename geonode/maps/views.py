@@ -154,7 +154,7 @@ def map_metadata(request, mapid, template='maps/map_describe.html'):
 
 
 @login_required
-def map_delete(request, mapid, template='maps/map_remove.html'):
+def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
     map_obj = get_object_or_404(Map,pk=mapid)
 
