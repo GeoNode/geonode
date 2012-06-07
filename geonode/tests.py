@@ -46,27 +46,21 @@ class GeoNodeClientTests(TestCase):
     #### Data/Layer Pages ####
     
     def test_data_page(self):
-        'Test if the data page renders.'
+        'Test if the data home page renders.'
         c = Client()
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_data_acls(self):
-        'Test if the data page renders.'
-        c = Client()
-        response = c.get('/data/acls')
-        self.failUnlessEqual(response.status_code, 200)
-
     def test_data_search(self):
-        'Test if the data page renders.'
+        'Test if the data search page renders.'
         c = Client()
         response = c.get('/data/search')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_data_search_api(self):
-        'Test if the data page renders.'
+    def test_data_acls(self):
+        'Test if the data/acls endpoint renders.'
         c = Client()
-        response = c.get('/data/search/api')
+        response = c.get('/data/acls')
         self.failUnlessEqual(response.status_code, 200)
 
     #### Maps Pages ####
@@ -201,5 +195,3 @@ class GeoNodeClientTests(TestCase):
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")
         self.assertEqual(keywords[2], "delta")
-
-
