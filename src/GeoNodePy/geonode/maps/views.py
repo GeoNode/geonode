@@ -1025,7 +1025,7 @@ def tweetview(request):
     map = get_object_or_404(Map,urlsuffix="tweetmap")
     config = map.viewer_json(request.user)
 
-    redirectPage = 'maps/tweetstartup.html'
+    redirectPage = 'maps/tweetview.html'
 
     #Check if twitter server is running
     ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
