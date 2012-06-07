@@ -22,8 +22,8 @@ from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role, ContactRole
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \ 
-    UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, SPATIAL_REPRESENTATION_TYPES, \ 
+from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
+    UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, SPATIAL_REPRESENTATION_TYPES, \
     TOPIC_CATEGORIES, DEFAULT_SUPPLEMENTAL_INFORMATION
 
 from geoserver.catalog import Catalog
