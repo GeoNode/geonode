@@ -38,7 +38,7 @@ _gs_resource.native_bbox = [1, 2, 3, 4]
 
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
-
+_gs_resource.keywords = [u'keywords', u'saving']
 Layer.objects.geonetwork = Mock()
 Layer.objects.gs_catalog = Mock()
 
@@ -51,12 +51,6 @@ _csw_resource = Mock()
 _csw_resource.protocol = "WWW:LINK-1.0-http--link"
 _csw_resource.url = "http://example.com/"
 _csw_resource.description = "example link"
-
-
-DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
-
-geonode.maps.views._metadata_search = Mock()
-geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
 
 # we revisit this mock wms object
 
@@ -341,7 +335,7 @@ class LayersTest(TestCase):
         c = Client()
 
         #test around _metadata_search helper
-        with patch.object(geonode.maps.views,'_metadata_search') as mock_ms:
+        with patch.object(geonode.layers.views,'_layer_search') as mock_ms:
             result = {
                 'rows' : [{
                         'uuid' : 1214431  # does not exist
