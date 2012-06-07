@@ -31,42 +31,56 @@ from geonode.people.utils import get_valid_user
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 
-# _gs_resource = Mock()
-# _gs_resource.native_bbox = [1, 2, 3, 4]
-
-# Layer.objects.geonetwork = Mock()
-# Layer.objects.gs_catalog = Mock()
-
-# Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
-
-# geonode.maps.models.get_csw = Mock()
-# geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = []
-
-# _csw_resource = Mock()
-# _csw_resource.protocol = "WWW:LINK-1.0-http--link"
-# _csw_resource.url = "http://example.com/"
-# _csw_resource.description = "example link"
-# geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
-
-# DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
-
-# geonode.maps.views._metadata_search = Mock()
-# geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
-
-# geonode.maps.views.get_csw = Mock()
-# geonode.maps.views.get_csw.return_value.getrecordbyid.return_value = None
-# geonode.maps.views.get_csw.return_value.records.values.return_value = [None]
-# geonode.maps.views._extract_links = Mock()
-# geonode.maps.views._extract_links.return_value = {}
+_gs_resource = Mock()
+_gs_resource.native_bbox = [1, 2, 3, 4]
 
 
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
 
+Layer.objects.geonetwork = Mock()
+Layer.objects.gs_catalog = Mock()
+
+Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
+
+# geonode.layers.models.get_csw = Mock()
+
+
+_csw_resource = Mock()
+_csw_resource.protocol = "WWW:LINK-1.0-http--link"
+_csw_resource.url = "http://example.com/"
+_csw_resource.description = "example link"
+
+
+DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
+
+geonode.maps.views._metadata_search = Mock()
+geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
+
+
+
+geonode.layers.models.get_csw = Mock()
+geonode.layers.models.get_csw.return_value.getrecordbyid.return_value = None
+geonode.layers.models.get_csw.return_value.records.values.return_value = [None]
+geonode.layers.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
+geonode.layers.models.get_csw.return_value.records.get.return_value.identification.keywords = []
+
+
+geonode.layers.views.get_csw = Mock()
+geonode.layers.views.get_csw.return_value.getrecordbyid.return_value = None
+geonode.layers.views.get_csw.return_value.records.values.return_value = [None]
+geonode.layers.views.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
+geonode.layers.views.get_csw.return_value.records.get.return_value.identification.keywords = []
+
+
+geonode.layers.models._extract_links = Mock()
+geonode.layers.models._extract_links.return_value = {}
+
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
     """
+    fixtures = ['map_data.json', 'initial_data.json']
 
     # Permissions Tests
 
