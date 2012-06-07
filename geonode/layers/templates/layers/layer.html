@@ -257,7 +257,7 @@
       <li>{% trans "This layer is not currently used in any maps." %}</li>
     {% endfor %}
     <li>
-      <a href="{% url maps_new %}?layer={{layer.typename}}">{% trans "Create new map" %}</a>
+      <a href="{% url new_map %}?layer={{layer.typename}}">{% trans "Create new map" %}</a>
     </li>
   </ul>
 
