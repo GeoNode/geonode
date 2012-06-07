@@ -12,3 +12,4 @@ nose-cover3
 coverage==3.4
 nosexcover
 mock
+Sphinx
