@@ -16,7 +16,7 @@
 {% block body_outer %}
   <div class="span12">
     <h2 class="page-title">{% trans "Advanced Search" %}</h2>
-    <form action="" class="form-horizontal advanced-search">
+    <form action="{% url data_search %}" class="form-horizontal advanced-search">
       <div class="row">
         <div class="span2">
           <h3>{% trans "Search for: "%}</h3>
