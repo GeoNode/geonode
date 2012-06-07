@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from django import forms
-from django.utils import simplejson as json
 import os
 import tempfile
+import taggit
+
+from django import forms
+from django.utils import simplejson as json
 
 from geonode.layers.models import Layer
 from geonode.people.models import Contact
-
-import taggit
 
 
 class JSONField(forms.CharField):
@@ -17,6 +17,7 @@ class JSONField(forms.CharField):
             return json.loads(text)
         except ValueError:
             raise forms.ValidationError("this field must be valid JSON")
+
 
 class LayerForm(forms.ModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
@@ -36,6 +37,7 @@ class LayerForm(forms.ModelForm):
     class Meta:
         model = Layer
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
+
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
@@ -82,6 +84,7 @@ class LayerUploadForm(forms.Form):
                 self.cleaned_data["base_file"].name)
         return tempdir, absolute_base_file
 
+
 class NewLayerUploadForm(LayerUploadForm):
     sld_file = forms.FileField(required=False)
 
@@ -90,6 +93,7 @@ class NewLayerUploadForm(LayerUploadForm):
     permissions = JSONField()
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file")
+
 
 class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)
