@@ -19,25 +19,30 @@ Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
-geonode.maps.models.get_csw = Mock()
-geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = []
+# geonode.layers.models.get_csw = Mock()
+
 
 _csw_resource = Mock()
 _csw_resource.protocol = "WWW:LINK-1.0-http--link"
 _csw_resource.url = "http://example.com/"
 _csw_resource.description = "example link"
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
+
 
 DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
 
 geonode.maps.views._metadata_search = Mock()
 geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
 
-geonode.maps.views.get_csw = Mock()
-geonode.maps.views.get_csw.return_value.getrecordbyid.return_value = None
-geonode.maps.views.get_csw.return_value.records.values.return_value = [None]
-geonode.maps.views._extract_links = Mock()
-geonode.maps.views._extract_links.return_value = {}
+
+
+geonode.layers.models.get_csw = Mock()
+geonode.layers.models.get_csw.return_value.getrecordbyid.return_value = None
+geonode.layers.models.get_csw.return_value.records.values.return_value = [None]
+geonode.layers.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
+geonode.layers.models.get_csw.return_value.records.get.return_value.identification.keywords = []
+
+geonode.layers.models._extract_links = Mock()
+geonode.layers.models._extract_links.return_value = {}
 
 
 class MapsTest(TestCase):
@@ -50,7 +55,7 @@ class MapsTest(TestCase):
     def tearDown(self):
         pass
 
-    fixtures = ['test_data.json', 'map_data.json']
+    fixtures = ['map_data.json', 'initial_data.json']
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
@@ -167,7 +172,7 @@ community."
 
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
-        map_obj = Map.objects.get(id="1")
+        map_obj = Map.objects.get(id=1)
         c = Client()
         response = c.get("/maps/%s/data" % map_obj.id)
         self.assertEquals(response.status_code, 200)
