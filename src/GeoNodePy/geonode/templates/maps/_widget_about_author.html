@@ -1,9 +1,9 @@
 <section class="last">
     <h2>About the Author</h2>
     <img src="{{ STATIC_URL }}theme/img/placeholder3.png" alt="Placeholder3" class="thumb" />
-    <h4><a href="#">Prof. Susan Smith, UC San Diego</a></h4>
+    <h4><a href="{% url profiles_profile_detail "admin" %}">Prof. Susan Smith, UC San Diego</a></h4>
     <p class="clear">Lorem ipsum dolor sit amet, consectetur
     adipisicing elit, sed do eiusmod tempor
     incididunt ut labore et dolore magnn.</p>
-    <a href="#" class="read-more">Read more about this author</a>
+    <a href="{% url profiles_profile_detail "admin" %}" class="read-more">Read more about this author</a>
 </section>

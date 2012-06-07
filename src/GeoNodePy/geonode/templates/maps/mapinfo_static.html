@@ -49,8 +49,8 @@
   </div>
   <div class="span4">
     <p class="hd-actions pull-right">
-      <a href="#download-layer" data-toggle="modal" class="btn btn-large strong"><i class="icon-download-alt"></i> {% trans "Download" %}</a>
-      <a href="#" class="btn btn-large strong"><i class="icon-print"></i> {% trans "Print" %}</a>
+      <a href="#download-layer" data-toggle="modal" class="btn btn-large strong"><i class="icon-download-alt"></i> {% trans "Download Data" %}</a>
+      <a href="#" class="btn btn-large strong"><i class="icon-print"></i> {% trans "Print Map" %}</a>
     </p>
   </div>
   {# <div class="overall_rating" data-rating="{{ map_rating }}"></div> #}
@@ -71,7 +71,7 @@
       is 50 megs, and we have not integrated caching yet <a href="#" class="read-more" data-toggle="collapse" data-target="#abstract-full">Read more</a>
       <div id="abstract-full" class="collapse">More content goes here and is displayed when read more is clicked.</div>
     </article>
-    <p class="meta"><strong>Uploaded by <a href="#">John Smith</a> on Sep 27, 2011</strong></p>
+    <p class="meta"><strong>Uploaded by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a> on Sep 27, 2011</strong></p>
     {% include "maps/_comments.html" %}
   </div>
   <aside class="span4">
@@ -80,20 +80,20 @@
         <h2>{% trans "Layers" %}</h2>
         <p>{% trans "This map uses the following layers:" %}</p>
         <ul class="unstyled space">
-          <li><a href="#">Lorem ipsum dolor site amet adipiscing elit</a></li>
-          <li><a href="#">Sed do eisumod tempor</a></li>
-          <li><a href="#">Incididnet ut labore et dolor</a></li>
+          <li><a href="{% url layerinfo %}">Lorem ipsum dolor site amet adipiscing elit</a></li>
+          <li><a href="{% url layerinfo %}">Sed do eisumod tempor</a></li>
+          <li><a href="{% url layerinfo %}">Incididnet ut labore et dolor</a></li>
         </ul>
       </section>
       <section>
         <h2>{% trans "Edit map" %}</h2>
         <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
-        <a href="#" class="btn btn-large">{% trans "Edit Map" %}</a>
+        <a href="{% url maps_new %}" class="btn btn-large">{% trans "Edit Map" %}</a>
       </section>
       <section class="last">
         <h2>{% trans "Create a new map" %}</h2>
         <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
-        <a href="#" class="btn btn-large">{% trans "Create a New Map" %}</a>
+        <a href="{% url maps_new %}" class="btn btn-large">{% trans "Create a New Map" %}</a>
       </section>
     </div>
     <div class="well">
