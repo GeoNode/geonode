@@ -19,13 +19,42 @@ setup(name='GeoNode',
       package_dir = {'geonode': 'geonode'},
       package_data = {'geonode': ['geonode/static/*']},
       install_requires = [
-          "gsconfig",
-          "OWSLib==0.4.0",
-          "Django>=1.1",
-          "PIL",
-          "django-extensions",
-          "httplib2"
-      ],
+        # setup
+        "Paver",
+        # native dependencies
+        "PIL",
+        "lxml",
+        # python dependencies
+        "OWSLib==0.4.0",
+        "Django==1.4",
+        "django-extensions==0.8",
+        "httplib2==0.7.4",
+        "django-registration==0.8",
+        "django-profiles==0.2",
+        "django-avatar==1.0.4",
+        "agon-ratings==0.2",
+        "django-taggit==0.9.3",
+        "South==0.7.3",
+        "django-forms-bootstrap==2.0.3.post1",
+        "gsconfig==0.5.4",
+        # development server
+        "dj.paste",
+        # assembling javascript
+        "jstools==0.6",
+        # sample and test data
+        "gisdata==0.3.8",
+        # document generator
+        "Sphinx==1.1.3",
+
+
+        # testing
+        "django-nose",
+        "nose",
+        "nose-cover3",
+        "coverage==3.4",
+        "nosexcover",
+        "mock",
+        ],
       zip_safe=False,
       entry_points="""
       # -*- Entry points: -*-
