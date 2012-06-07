@@ -241,21 +241,33 @@ Ext.onReady(function(){
     <div class="search-results">
       <article>
         <h6>Map</h6>
-        <img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" />
+        <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
         <div class="details">
-          <h5>Title of the Map goes right here</h5>
-          <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+          <a href="{% url mapinfo %}"><h5>Title of the Map goes right here</h5></a>
+          <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
           ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+        </div>
+      </article>
+
+      <article>
+        <h6>Data</h6>
+        <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
+        <div class="details">
+          <a href="{% url layerinfo %}"><h5>Title of the Layer goes right here</h5></a>
+          <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
+          <p class="actions"><a href="#download-layer"  data-toggle="modal" class="btn btn-small strong">Download Data</a> <a href="{% url maps_new %}"   data-toggle="modal" class="btn btn-small strong">Create Map</a></p>
         </div>
       </article>
 
       <article>
         <h6>Map</h6>
-        <img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" />
+        <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
         <div class="details">
-          <h5>Title of the Map goes right here</h5>
-          <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+          <a href="{% url mapinfo %}"><h5>Title of the Map goes right here</h5></a>
+          <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
           ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
         </div>
@@ -263,25 +275,13 @@ Ext.onReady(function(){
 
       <article>
         <h6>Data</h6>
-        <img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" />
+        <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
         <div class="details">
-          <h5>Title of the Map goes right here</h5>
-          <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
+          <a href="{% url layerinfo %}"><h5>Title of the Layer goes right here</h5></a>
+          <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
           ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-          <p class="actions"><a href="#">Download Data</a> <a href="#">Create Map using this Data</a></p>
-        </div>
-      </article>
-
-      <article>
-        <h6>Data</h6>
-        <img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" />
-        <div class="details">
-          <h5>Title of the Map goes right here</h5>
-          <div class="meta">by <a href="#">John Smith</a>, 1 month ago</div>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-          <p class="actions"><a href="#">Download Data</a> <a href="#">Create Map using this Data</a></p>
+          <p class="actions"><a href="#download-layer"  data-toggle="modal" class="btn btn-small strong">Download Data</a> <a href="{% url maps_new %}"   data-toggle="modal" class="btn btn-small strong">Create Map</a></p>
         </div>
       </article>
     </div>
@@ -289,6 +289,37 @@ Ext.onReady(function(){
     {% include "_pagination.html" %}
 
   </div>
+<div class="modal custom hide" id="download-layer">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
+    </div>
+    <div class="modal-body">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nos-trud exercitation.</p>
+    </div>
+    <div class="modal-footer">
+      <div class="span2 offset1">
+        <ul class="unstyled">
+          <li><a href="#">Zipped Shapefile</a></li>
+          <li><a href="#">JPEG</a></li>
+          <li><a href="#">GML 2.0</a></li>
+          <li><a href="#">PDF</a></li>
+          <li><a href="#">GML 3.1.1</a></li>
+          <li><a href="#">PNG</a></li>
+        </ul>
+      </div>
+      <div class="span2">
+        <ul class="unstyled">
+          <li><a href="#">CSV</a></li>
+          <li><a href="#">KML</a></li>
+          <li><a href="#">Excel</a></li>
+          <li><a href="#">GeoJSON</a></li>
+          <li><a href="#">View in Google Earth</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block extra_script %}
