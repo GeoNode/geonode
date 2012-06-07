@@ -47,7 +47,7 @@
             <div class="span3">
               <div class="nav-collapse">
                 <div class="pull-right">
-                  <p class="navbar-text pull-left"><a href="#">{% trans "Help" %}</a>&nbsp;|&nbsp;
+                  <p class="navbar-text pull-left"><a href="{% url help %}">{% trans "Help" %}</a>&nbsp;|&nbsp;
                   {% if user.is_authenticated %}
                     {% trans "Logged in as:" %}
                   {% endif %}
@@ -111,16 +111,16 @@
                 <a href="{% url home %}">{% trans "Home" %}</a>
               </li>
               <li>
-                <a href="{% url geonode.maps.views.browse_data %}">{% trans "Explore Data" %}</a>
+                <a href="{% url data_home %}">{% trans "Explore Data" %}</a>
               </li>
               <li>
-                <a href="{% url geonode.maps.views.browse_data %}">{% trans "Upload Data" %}</a>
+                <a href="{% url data_upload %}">{% trans "Upload Data" %}</a>
               </li>
               <li>
-                <a href="{% url geonode.maps.views.maps %}">{% trans "Explore Maps" %}</a>
+                <a href="{% url maps_home %}">{% trans "Explore Maps" %}</a>
               </li>
               <li>
-                <a href="{% url geonode.maps.views.maps %}" class="last">{% trans "Create a New Map" %}</a>
+                <a href="{% url maps_new %}" class="last">{% trans "Create a New Map" %}</a>
               </li>
             </ul>
           </nav>
