@@ -15,17 +15,17 @@
     </p>
     <p class="btns">
       <span>Need help <a href="#">Getting Started?</a></span>
-      <a class="btn btn-large" href="{% url maps_search %}">
-        {% trans "Explore Maps" %}
+      <a class="btn btn-large" href="{% url data_home %}">
+        {% trans "Explore Data" %}
       </a>
-      <a class="btn btn-large" href="{% url maps_new %}">
-        {% trans "Create Map" %}
+      <a class="btn btn-large" href="{% url maps_home %}">
+        {% trans "Explore Maps" %}
       </a>
     </p>
   </div>
   <div class="row">
     <div class="span8">
-      <h2>{% trans "Most Viewed" %}</h2>
+      <h2>{% trans "Featured Maps" %}</h2>
       <section class="map-list">
         <article>
           <img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" />
@@ -99,12 +99,12 @@
           {% endblocktrans %}
           </p>
           <p class="main-actions">
-            <a href="#" class="btn btn-large">Upload Data</a>
-            <a href="#" class="btn btn-large">Download Data</a>
+            <a href="{% url data_upload %}" class="btn btn-large">Upload Data</a>
+            <a href="{% url maps_new %}" class="btn btn-large">Create a Map</a>
           </p>
         </section>
         <section class="article-list last">
-          <h2>{% trans "Latest Layers:" %}</h2>
+          <h2>{% trans "Featured Data:" %}</h2>
           <article>
             <img src="{{ STATIC_URL }}theme/img/placeholder1.png" width="97" height="91" alt="Placeholder1" class="thumb" />
             <div class="details">

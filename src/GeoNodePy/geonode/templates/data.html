@@ -8,10 +8,10 @@
 {% block body_outer %}
     <div class="span8">
       <h2 class="page-title">{% trans "Explore Data" %}</h2>
-      {% include "maps/_filters.html" %}
+      {% include "maps/_data_filters.html" %}
     </div>
     <div class="span4">
-      <p><a href="{% url maps_new %}" class="btn btn-large pull-right strong">{% trans "Download Data" %}</a></p>
+      <p><a href="{% url data_upload %}" class="btn btn-large pull-right strong">{% trans "Upload Data" %}</a></p>
       <div class="pull-right">
         {% include "_pagination.html" %}
       </div>
