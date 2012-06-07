@@ -50,7 +50,8 @@ class MapsTest(TestCase):
     """
 
     def setUp(self):
-        pass
+        self.user = 'admin'
+        self.passwd = 'admin'
 
     def tearDown(self):
         pass
@@ -130,11 +131,11 @@ community."
 
         # Test that saving a map when not logged in gives 401
         response = c.put("/maps/1/data",data=self.viewer_config,content_type="text/json")
-        self.assertEqual(response.status_code,401)
+        self.assertEqual(response.status_code, 401)
 
-        c.login(username="bobby", password="bob")
+        c.login(username=self.user, password=self.passwd)
         response = c.put("/maps/1/data",data=self.viewer_config_alternative,content_type="text/json")
-        self.assertEqual(response.status_code,204)
+        self.assertEqual(response.status_code, 204)
 
         map_obj = Map.objects.get(id=1)
         self.assertEquals(map_obj.title, "Title2")
@@ -151,7 +152,7 @@ community."
         self.assertEqual(response.status_code,401)
 
         # Test successful new map creation
-        c.login(username="bobby", password="bob")
+        c.login(username=self.user, password=self.passwd)
         response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
@@ -165,7 +166,7 @@ community."
         self.assertEquals(map_obj.keyword_list(), ["keywords", "saving"])
 
         # Test an invalid map creation request
-        c.login(username="bobby", password="bob")
+        c.login(username=self.user, password=self.passwd)
         response = c.post("/maps/",data="not a valid viewer config",content_type="text/json")
         self.assertEquals(response.status_code,400)
         c.logout()
@@ -201,9 +202,9 @@ community."
         self.assertEquals(cfg['defaultSourceType'], "gxp_wmscsource")
 
     def test_map_details(self): 
-        """/maps/1 -> Test accessing the detail view of a map"""
+        """/maps/1 -> Test accessing the map browse view function"""
         map_obj = Map.objects.get(id=1) 
-        c = Client() 
+        c = Client()
         response = c.get("/maps/%s" % map_obj.id)
         self.assertEquals(response.status_code,200) 
 
