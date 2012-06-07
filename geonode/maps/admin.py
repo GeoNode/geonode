@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from geonode.maps.models import Map, MapLayer
 from django.contrib import admin
 

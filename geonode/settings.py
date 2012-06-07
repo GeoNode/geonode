@@ -115,10 +115,11 @@ INSTALLED_APPS = (
     'south',
 
     # GeoNode internal apps
-    'geonode.security',
-    'geonode.maps',
-    'geonode.proxy',
     'geonode.people',
+    'geonode.maps',
+    'geonode.layers',
+    'geonode.proxy',
+    'geonode.security',
 )
 
 LOGGING = {

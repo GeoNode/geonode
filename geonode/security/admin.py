@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from geonode.security.models import ObjectRole, UserObjectRoleMapping, GenericObjectRoleMapping
 from django.contrib import admin
 

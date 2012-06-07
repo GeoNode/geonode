@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.security.models import ANONYMOUS_USERS

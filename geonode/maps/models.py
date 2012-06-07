@@ -255,7 +255,6 @@ class Map(models.Model, PermissionLevelMixin):
             self.set_user_level(self.owner, self.LEVEL_ADMIN)    
 
 
-
 class MapLayerManager(models.Manager):
     def from_viewer_config(self, map_model, layer, source, ordering):
         """
