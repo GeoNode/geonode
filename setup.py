@@ -22,8 +22,7 @@ setup(name='GeoNode',
         # setup
         "Paver",
         # native dependencies
-        # Better packaged PIL replacement
-        "Pillow",
+        "PIL",
         "lxml",
         # python dependencies
         "OWSLib==0.4.0",
