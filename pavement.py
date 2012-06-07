@@ -101,7 +101,7 @@ def setup_geonode_client(options):
     """
     sh('git submodule update --init')
     static = os.path.abspath("geonode/static/geonode")
-    scripts_path = os.path.join(static, 'scripts')
+    scripts_path = os.path.join(static, 'script')
 
     if not os.path.exists(scripts_path):
         os.makedirs(scripts_path)
