@@ -1,27 +1,26 @@
-from UserDict import DictMixin
-from ConfigParser import ConfigParser, NoOptionError
 import datetime
 import os
 import subprocess
 import httplib2
 import base64
 import re
+import math
 
 from urlparse import urlparse
+from UserDict import DictMixin
+from ConfigParser import ConfigParser, NoOptionError
 
 from django.conf import settings
-from django.utils import simplejson as json
-from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from owslib.wms import WebMapService
+from owslib.csw import CatalogueServiceWeb
 
 from geonode import GeoNodeException
 #from geonode.layers.models import Layer
 #from geonode.maps.models import Map
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.models import INVALID_PERMISSION_MESSAGE
-
-from owslib.csw import CatalogueServiceWeb
 
 _wms = None
 _csw = None

@@ -8,15 +8,11 @@ import re
 import uuid
 import os
 import glob
-import httplib2
-import math
-from urlparse import urlparse
 
 # Django functionality
-from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.conf import settings
-from django.conf import settings
+
 
 # Geonode functionality
 from geonode import GeoNodeException
@@ -31,31 +27,9 @@ import geoserver
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 
-# OWSLib Functionality
-from owslib.wms import WebMapService
-from owslib.csw import CatalogueServiceWeb
-
 logger = logging.getLogger('geonode.layers.utils')
 
 _separator = '\n' + ('-' * 100) + '\n'
-
-_viewer_projection_lookup = {
-    "EPSG:900913": {
-        "maxResolution": 156543.03390625,
-        "units": "m",
-        "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
-    },
-    "EPSG:4326": {
-        "max_resolution": (180 - (-180)) / 256,
-        "units": "degrees",
-        "maxExtent": [-180, -90, 180, 90]
-    }
-}
-
-
-def _get_viewer_projection_info(srid):
-    # TODO: Look up projection details in EPSG database
-    return _viewer_projection_lookup.get(srid, {})
 
 
 def layer_type(filename):
