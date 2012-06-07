@@ -157,9 +157,6 @@ LOGGING = {
 # Customizations to built in Django settings required by GeoNode
 #
 
-# Setting a custom test runner to avoid running the tests for
-# some problematic 3rd party apps
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -230,6 +227,14 @@ AUTH_PROFILE_MODULE = 'people.Contact'
 
 # For django-registration
 REGISTRATION_OPEN = False
+
+#
+# Test Settings
+#
+
+# Setting a custom test runner to avoid running the tests for
+# some problematic 3rd party apps
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Arguments for the test runner
 NOSE_ARGS = [
@@ -336,7 +341,6 @@ MAP_BASELAYERS = [{
 
 }]
 
-#GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/static/geonode/"
 
 # GeoNode vector data backend configuration.
