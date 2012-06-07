@@ -8,8 +8,8 @@ from django.contrib.auth.models import User, Permission
 
 from idios.models import ProfileBase, create_profile
 
-from geonode.layers.models import Layer
-from geonode.maps.enumerations import COUNTRIES, ROLE_VALUES
+from geonode.layers.enumerations import COUNTRIES
+from geonode.people.enumerations import ROLE_VALUES
 
 CONTACT_FIELDS = [
     "name",
@@ -65,38 +65,6 @@ class Role(models.Model):
 
     def __unicode__(self):
         return self.get_value_display()
-
-
-class ContactRole(models.Model):
-    """
-    ContactRole is an intermediate model to bind Contacts and Layers and apply roles.
-    """
-    contact = models.ForeignKey(Contact)
-    layer = models.ForeignKey(Layer)
-    role = models.ForeignKey(Role)
-
-    def clean(self):
-        """
-        Make sure there is only one poc and author per layer
-        """
-        if (self.role == self.layer.poc_role) or (self.role == self.layer.metadata_author_role):
-            contacts = self.layer.contacts.filter(contactrole__role=self.role)
-            if contacts.count() == 1:
-                # only allow this if we are updating the same contact
-                if self.contact != contacts.get():
-                    raise ValidationError('There can be only one %s for a given layer' % self.role)
-        if self.contact.user is None:
-            # verify that any unbound contact is only associated to one layer
-            bounds = ContactRole.objects.filter(contact=self.contact).count()
-            if bounds > 1:
-                raise ValidationError('There can be one and only one layer linked to an unbound contact' % self.role)
-            elif bounds == 1:
-                # verify that if there was one already, it corresponds to this instace
-                if ContactRole.objects.filter(contact=self.contact).get().id != self.id:
-                    raise ValidationError('There can be one and only one layer linked to an unbound contact' % self.role)
-
-    class Meta:
-        unique_together = (("contact", "layer", "role"),)
 
 
 def create_user_profile(instance, sender, created, **kwargs):

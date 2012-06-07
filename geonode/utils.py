@@ -3,6 +3,24 @@ from ConfigParser import ConfigParser, NoOptionError
 import datetime
 import os
 import subprocess
+import httplib2
+import base64
+import re
+
+from urlparse import urlparse
+
+from django.conf import settings
+from django.utils import simplejson as json
+from django.http import HttpResponse
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
+
+from geonode.layers.models import Layer
+from geonode.maps.models import Map
+from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.models import INVALID_PERMISSION_MESSAGE
+
+_user, _password = settings.GEOSERVER_CREDENTIALS
 
 http_client = httplib2.Http()
 http_client.add_credentials(_user, _password)
@@ -122,6 +140,7 @@ def get_git_changeset():
         return None
     return timestamp.strftime('%Y%m%d%H%M%S')
 
+
 def _get_basic_auth_info(request):
     """
     grab basic auth info
@@ -131,6 +150,7 @@ def _get_basic_auth_info(request):
         raise ValueError
     username, password = base64.b64decode(auth).split(':')
     return username, password
+
 
 def batch_permissions(request):
     if not request.user.is_authenticated:
@@ -194,6 +214,7 @@ def batch_permissions(request):
 
     return HttpResponse("Not implemented yet")
 
+
 def batch_delete(request):
     if not request.user.is_authenticated:
         return HttpResponse("You must log in to delete layers", status=401) 
@@ -225,6 +246,7 @@ def batch_delete(request):
     nmaps = len(spec.get('maps', []))
 
     return HttpResponse("Deleted %d layers and %d maps" % (nlayers, nmaps))
+
 
 def _handle_perms_edit(request, obj):
     errors = []
@@ -260,38 +282,6 @@ def _handle_perms_edit(request, obj):
             obj.set_user_level(user, level)
 
     return errors
-
-def batch_delete(request):
-    if not request.user.is_authenticated:
-        return HttpResponse("You must log in to delete layers", status=401)
-
-    if request.method != "POST":
-        return HttpResponse("Delete API requires POST requests", status=405)
-
-    spec = json.loads(request.raw_post_data)
-
-    if "layers" in spec:
-        lyrs = Layer.objects.filter(pk__in = spec['layers'])
-        for lyr in lyrs:
-            if not request.user.has_perm("maps.delete_layer", obj=lyr):
-                return HttpResponse("User not authorized to delete layer", status=403)
-
-    if "maps" in spec:
-        map_query = Map.objects.filter(pk__in = spec['maps'])
-        for m in map_query:
-            if not request.user.has_perm("maps.delete_map", obj=m):
-                return HttpResponse("User not authorized to delete map", status=403)
-
-    if "layers" in spec:
-        Layer.objects.filter(pk__in = spec["layers"]).delete()
-
-    if "maps" in spec:
-        Map.objects.filter(pk__in = spec["maps"]).delete()
-
-    nlayers = len(spec.get('layers', []))
-    nmaps = len(spec.get('maps', []))
-
-    return HttpResponse("Deleted %d layers and %d maps" % (nlayers, nmaps))
 
 
 def _split_query(query):

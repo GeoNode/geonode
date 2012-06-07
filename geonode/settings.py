@@ -18,7 +18,7 @@ DEBUG = TEMPLATE_DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_ROOT, '..', '..', '..', 'development.db'),
+        'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
     }
 }
 
@@ -115,9 +115,9 @@ INSTALLED_APPS = (
     'south',
 
     # GeoNode internal apps
-    'geonode.people',
     'geonode.maps',
     'geonode.layers',
+    'geonode.people',
     'geonode.proxy',
     'geonode.security',
 )
@@ -170,7 +170,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     # The context processor belows add things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
-    'geonode.maps.context_processors.resource_urls',
+    'geonode.context_processors.resource_urls',
 )
 
 MIDDLEWARE_CLASSES = (

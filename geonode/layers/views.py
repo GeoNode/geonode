@@ -18,16 +18,18 @@ from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
- 
+
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
 from geonode.security.views import _perms_info_json
 from geonode.layers.forms import LayerForm
-from geonode.maps.maps import default_map_config
-from geonode.maps.forms import LayerUploadForm, NewLayerUploadForm
+from geonode.maps.views import default_map_config
+from geonode.layers.forms import LayerUploadForm, NewLayerUploadForm
 from geonode.maps.utils import save
-from geonode.maps.people import ContactForm, PocForm
+from geonode.people.forms import ContactForm, PocForm
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map, Layer, MapLayer, ContactRole, get_csw
+from geonode.layers.models import Layer, ContactRole
+from geonode.maps.models import MapLayer
+from geonode.layers.utils import get_csw
 
 from geoserver.resource import FeatureType
 

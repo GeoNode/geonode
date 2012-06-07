@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from geonode.people.models import Contact, ContactRole, Role
+from geonode.people.models import Contact, Role
+from geonode.layers.models import ContactRole
 
 class ContactRoleInline(admin.TabularInline):
     model = ContactRole
@@ -8,12 +9,5 @@ class ContactRoleInline(admin.TabularInline):
 class ContactAdmin(admin.ModelAdmin):
     inlines = [ContactRoleInline]
 
-class ContactRoleAdmin(admin.ModelAdmin):
-    model = ContactRole
-    list_display_links = ('id',)
-    list_display = ('id','contact', 'layer', 'role')
-    list_editable = ('contact', 'layer', 'role')
-
 admin.site.register(Contact, ContactAdmin)
-admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(Role)

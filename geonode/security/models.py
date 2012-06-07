@@ -15,6 +15,7 @@ GENERIC_GROUP_NAMES = {
     ANONYMOUS_USERS: _('Anonymous Users'),
     AUTHENTICATED_USERS: _('Registered Users')
 }
+INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):

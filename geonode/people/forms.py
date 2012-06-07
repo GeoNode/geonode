@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from geonode.people.models import Contact, ContactRole
+from geonode.people.models import Contact
+from geonode.layers.models import ContactRole
 import taggit
 
 class RoleForm(forms.ModelForm):
