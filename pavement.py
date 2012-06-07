@@ -324,6 +324,14 @@ def test(options):
     sh("python manage.py test")
 
 @task
+@needs(['stop'])
+def reset():
+    sh("rm -rf geonode/development.db")
+    sh("rm -rf build/gs_data")
+    sh("rm -rf build/webapps/geonetwork")
+    setup_geonetwork()
+
+@task
 def setup_sample_data():
     import gisdata
     data_dir = gisdata.GOOD_DATA
