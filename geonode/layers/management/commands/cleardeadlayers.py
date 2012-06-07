@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.db.models.signals import pre_delete
-from geonode.maps.models import Layer, delete_layer
+from geonode.layers.models import Layer, delete_layer
 from urllib2 import URLError
 
 class Command(BaseCommand):
@@ -15,7 +15,7 @@ class Command(BaseCommand):
     @transaction.commit_on_success()
     def handle(self, *args, **keywordargs):
         try:
-            pre_delete.disconnect(delete_layer, sender=Layer)
+            pre_delete.disconnect(layer_delete, sender=Layer)
             cat = Layer.objects.gs_catalog
             storenames = [s.name for s in cat.get_stores()]
             layernames = [l.name for l in cat.get_resources()]
