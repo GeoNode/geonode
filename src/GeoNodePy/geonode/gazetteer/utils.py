@@ -11,6 +11,15 @@ __author__ = 'mbertrand'
 logger = logging.getLogger("geonode.gazetteer.utils")
 
 
+'''
+ALTER TABLE gazetteer_placename ADD COLUMN text_search tsvector;
+UPDATE gazetteer_placename SET text_search =
+     to_tsvector('english', coalesce(place_name,''));
+CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
+  ON gazetteer_placename FOR EACH ROW EXECUTE PROCEDURE
+  tsvector_update_trigger(text_search, 'pg_catalog.english', place_name);
+'''
+
 def get_geometry_type(layer_name):
     """
     Return the geometry type (POINT, POLYGON etc), geometry column name, and projection of a layer
@@ -80,8 +89,9 @@ def getGazetteerResults(place_name, map = None, layer = None, start_date = None,
     elif layer:
         layers = [layer]
 
+    #"select ts_headline(place_name, to_tsquery('" + place_name + "')), layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename, to_tsquery('" + place_name + "') query where query @@ text_search"
 
-    sql_query = "SELECT place_name, layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename WHERE place_name ILIKE '\%" + place_name +"\%'"
+    sql_query = "SELECT place_name, layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename WHERE place_name ILIKE '" + place_name +"\%'"
     if layers:
         layers_str = "'" + "','".join(layers) + "'"
         sql_query += " AND layer_name in (" + layers_str + ")"
