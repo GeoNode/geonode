@@ -61,13 +61,18 @@ GeoNode site.
 Install
 =======
 
+..note:: It is suggested to create and activate a virtual environment
+         for GeoNode before starting::
+
+         virtualenv venv
+         source venv/bin/activate
+
+
 The following steps should prepare a Python virtual environment for you::
 
   git clone git://github.com/GeoNode/geonode.git geonode
+  pip install -e geonode
   cd geonode
-  virtualenv venv
-  source venv/bin/activate
-  pip install -r shared/dev-requirements.txt
   paver setup
   paver start
 
