@@ -11,21 +11,6 @@ from idios.models import ProfileBase, create_profile
 from geonode.layers.enumerations import COUNTRIES
 from geonode.people.enumerations import ROLE_VALUES
 
-CONTACT_FIELDS = [
-    "name",
-    "organization",
-    "position",
-    "voice",
-    "facsimile",
-    "delivery_point",
-    "city",
-    "administrative_area",
-    "postal_code",
-    "country",
-    "email",
-    "role"
-]
-
 
 class Contact(ProfileBase):
     name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True)
