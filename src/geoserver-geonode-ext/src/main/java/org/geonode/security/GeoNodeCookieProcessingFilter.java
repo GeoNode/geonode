@@ -8,23 +8,21 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.geoserver.security.filter.GeoServerAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geotools.util.logging.Logging;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.geoserver.security.filter.GeoServerAuthenticationFilter;
-import org.geoserver.security.filter.GeoServerSecurityFilter;
-import org.geotools.util.logging.Logging;
 
 /**
  * A processing filter that will inspect the cookies and look for the GeoNode single sign on one. If
