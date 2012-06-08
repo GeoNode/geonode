@@ -2,7 +2,7 @@ from django_nose import NoseTestSuiteRunner
 from django.test.simple import reorder_suite, build_suite
 from django.test.simple import build_test as please_build_test
 from django.db.models import get_app, get_apps
-from geonode.maps.utils import check_geonode_is_up
+from geonode.utils import check_geonode_is_up
 
 
 class GeoNodeTestRunner(NoseTestSuiteRunner):
