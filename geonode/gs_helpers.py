@@ -1,4 +1,5 @@
 from itertools import cycle, izip
+from geoserver.catalog import FailedRequestError
 import logging
 import re
 from django.conf import settings
@@ -148,7 +149,13 @@ def cascading_delete(cat, resource):
         cat.delete(lyr)
         for s in styles:
             if s is not None:
-                cat.delete(s, purge=True)
+                try:
+                    cat.delete(s, purge=True)
+                except FailedRequestError as e:
+                    # Trying to delete a shared style will fail
+                    # We'll catch the exception and log it.
+                    logger.debug(e)
+
         cat.delete(resource)
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
