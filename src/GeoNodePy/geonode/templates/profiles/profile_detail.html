@@ -37,8 +37,8 @@
     <a href="#modal_delete" class="btn disabled asset-modifier" data-toggle="modal"><i class="icon-remove"></i> {% trans "Remove selected" %}</a>
   </div>
 
-  <div class="modal fade" id="modal-delete" style="display:none">
-    <form id="delete-form" accept-charset="UTF-8" action="" data-remote="true" method="post" class="modal-form">
+  <div class="modal fade" id="modal_delete" style="display:none">
+    <form id="delete_form" accept-charset="UTF-8" action="{% url data_batch_del %}" data-remote="true" method="post" class="modal-form">
       <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>
         <h3>{% trans "Delete Layers" %}</h3>
@@ -80,6 +80,7 @@
   <script>
     $(function() {
       $("#permission_form").submit(batch_perms_submit);
+      $("#delete_form").submit(batch_delete);
     });
   </script>
 {% endblock %}
