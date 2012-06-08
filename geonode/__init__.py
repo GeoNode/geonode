@@ -5,5 +5,5 @@ class GeoNodeException(Exception):
     pass
 
 def get_version():
-    import geonode.utils
-    return geonode.utils.get_version(__version__)
+    import geonode.version
+    return geonode.version.get_version(__version__)
