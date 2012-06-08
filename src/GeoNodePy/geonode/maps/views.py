@@ -750,7 +750,7 @@ def layer_remove(request, layername):
             }))
         if (request.method == 'POST'):
             layer.delete()
-            return HttpResponseRedirect(reverse("data"))
+            return HttpResponseRedirect(reverse("data_home"))
         else:
             return HttpResponse("Not allowed",status=403) 
     else:  
