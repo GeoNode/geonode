@@ -303,11 +303,10 @@ class Layer(models.Model, PermissionLevelMixin):
         
         # Check the layer is in the wms get capabilities record
         # FIXME: Implement caching of capabilities record site wide
-        if (_wms is None) or (self.typename not in _wms.contents):
-            get_wms()
-        try:
-            _wms[self.typename]
-        except:
+
+        _local_wms = get_wms()
+        record = _local_wms.contents.get(self.typename)
+        if record is None:
             msg = "WMS Record missing for layer [%s]" % self.typename 
             raise GeoNodeException(msg)
         
@@ -326,18 +325,19 @@ class Layer(models.Model, PermissionLevelMixin):
         #    raise GeoNodeException(msg)
  
         # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
-        if(_csw is None): # Might need to re-cache, nothing equivalent to _wms.contents?
-            get_csw()
+        _local_csw = get_csw()
+        get_csw()
+
         try:
-            _csw.getrecordbyid([self.uuid])
-            csw_layer = _csw.records.get(self.uuid)
+            _local_csw.getrecordbyid([self.uuid])
+            csw_layer = _local_csw.records.get(self.uuid)
         except:
             msg = "CSW Record Missing for layer [%s]" % self.typename
             raise GeoNodeException(msg)
 
-        if(csw_layer.uri != self.get_absolute_url()):
-            msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
-            
+        # if(csw_layer.uri != self.get_absolute_url()):
+        #     msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
+
         # Visit get_absolute_url and make sure it does not give a 404
         #logger.info(self.get_absolute_url())
         #response, body = http.request(self.get_absolute_url())
