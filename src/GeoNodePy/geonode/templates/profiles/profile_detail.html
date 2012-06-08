@@ -18,7 +18,7 @@
           <td>{% trans "Layer" %}</td>
           <td><a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></td>
           <td>{{ layer.date|date:"Y-m-d" }}</td>
-          <td><input type="checkbox" class="pull-right" data-id="{{ layer.id }}" data-type="layer"></td>
+          <td><input type="checkbox" class="asset-selector pull-right" data-id="{{ layer.id }}" data-type="layer"></td>
         </tr>
       {% endfor %}
 
