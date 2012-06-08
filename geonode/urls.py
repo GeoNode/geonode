@@ -47,6 +47,7 @@ urlpatterns = patterns('',
                                        name='auth_ajax_lookup'),
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('idios.urls')),
+    (r'^people/', include('geonode.people.urls')),
     (r'^avatar/', include('avatar.urls')),
 
     # Meta

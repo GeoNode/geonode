@@ -214,11 +214,11 @@
           <stopKey>geonode-stop</stopKey>
           <scanIntervalSeconds>30</scanIntervalSeconds>
           <contextPath>/geoserver</contextPath>
-          
+
           <systemProperties>
             <systemProperty>
               <name>GEOSERVER_DATA_DIR</name>
-              <value>../../gs-data/</value>
+              <value>../../build/gs_data/</value>
             </systemProperty>
           </systemProperties>
 

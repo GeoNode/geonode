@@ -22,8 +22,9 @@ from django.utils.html import escape
 from geonode.utils import http_client, _split_query, _get_basic_auth_info, get_csw
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
-from geonode.maps.models import MapLayer
-from geonode.maps.views import default_map_config
+from geonode.utils import default_map_config
+from geonode.utils import GXPLayer
+from geonode.utils import GXPMap
 from geonode.layers.utils import save
 from geonode.people.forms import ContactForm, PocForm
 from geonode.security.views import _perms_info_json
@@ -109,10 +110,10 @@ def layer_detail(request, layername, template='layers/layer.html'):
 
     metadata = layer.metadata_csw()
 
-    maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
+    maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
     # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = Map(projection="EPSG:900913")
+    map_obj = GXPMap(projection="EPSG:900913")
     DEFAULT_BASE_LAYERS = default_map_config()[1]
 
     return render_to_response(template, RequestContext(request, {
@@ -299,7 +300,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             }))
         if (request.method == 'POST'):
             layer.delete()
-            return HttpResponseRedirect(reverse("data"))
+            return HttpResponseRedirect(reverse("data_home"))
         else:
             return HttpResponse("Not allowed",status=403)
     else:
@@ -372,11 +373,11 @@ def layer_search_page(request, template='layers/search.html'):
     else:
         return HttpResponse(status=405)
 
-    #map_obj = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
+    map_obj = GXPMap(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
 
     return render_to_response(template, RequestContext(request, {
         'init_search': json.dumps(params or {}),
-    #    'viewer_config': json.dumps(map_obj.viewer_json(*DEFAULT_BASE_LAYERS)),
+        'viewer_config': json.dumps(map_obj.viewer_json(*DEFAULT_BASE_LAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         "site" : settings.SITEURL
     }))
