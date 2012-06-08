@@ -9,7 +9,7 @@ from urlparse import urlparse
 
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
@@ -25,7 +25,9 @@ from geonode.layers.models import Layer, ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
-from geonode.layers.utils import save
+
+from geonode.layers.utils import save, layer_set_permissions
+
 from geonode.people.forms import ContactForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -652,18 +654,6 @@ def _build_search_result(doc):
 
 
 ### Layer Permissions ####
-
-def layer_set_permissions(layer, perm_spec):
-    if "authenticated" in perm_spec:
-        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-    if "anonymous" in perm_spec:
-        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n[0] for n in perm_spec['users']]
-    layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        layer.set_user_level(user, level)
-
 
 def layer_ajax_permissions(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
