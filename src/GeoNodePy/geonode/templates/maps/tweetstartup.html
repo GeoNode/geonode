@@ -64,9 +64,7 @@ function runTimer() {
             //url : "http://localhost:8000/proxy?url=http://worldmap.harvard.edu/geoserver/wms?STYLES=slccomposite_circa65_ojm&FORMAT=image%2Fpng&TRANSPARENT=TRUE&LAYERS=geonode%3Aslccomposite_circa65_ojm&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&LLBBOX=-90.6618702756674,38.47691591550308,-90.20304422923158,38.819495089300005&URL=http%3A%2F%2Fworldmap.harvard.edu%2Fgeoserver%2Fwms&TILED=true&TILESORIGIN=-10092433.232048197,4647018.843317348&SRS=EPSG%3A900913&BBOX=-10057889.928477,4657155.2587109,-10018754.17,4696291.0171875&WIDTH=256&HEIGHT=256",
             method: 'GET',
             success: function() {
-                console.log("success");
-
-                //window.location.reload();
+                window.location.reload();
             },
             failure: function() {
                 //Do nothing

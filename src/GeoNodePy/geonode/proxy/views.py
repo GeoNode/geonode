@@ -148,36 +148,50 @@ def hglServiceStarter (request, layer):
 
 
 def tweetTrendProxy (request):
-    tweetUrl = "http://" + settings.AWS_INSTANCE_IP + "?bounds=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
+    tweetUrl = "http://" + settings.AWS_INSTANCE_IP + "/trend?bounds=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
     resultJSON = urllib.urlopen(tweetUrl).read()
-
+#    import datetime
+#
+#
+#    startDate = datetime.datetime.strptime(request.POST["dateStart"], "%Y-%b-%d")
+#    endDate = datetime.datetime.strptime(request.POST["dateEnd"], "%Y-%b-%d")
+#
+#    recString = "record: ["
+#
+#    while startDate <= endDate:
+#            recString += "{'date': '$date', 'Ebola$rnd5' : $rnd6, 'Malaria$rnd4' : $rnd7, 'Influenza$rnd3': $rnd8, 'Plague$rnd3': $rnd9, 'Lyme_Disease$rnd1': $rnd10},"
+#            recString = recString.replace("$rnd6", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$rnd7", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$rnd8", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$rnd9", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$rnd10", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$date", datetime.datetime.strftime(startDate, '%Y-%b-%d'))
+#            startDate = startDate + datetime.timedelta(days=1)
+#
+#    recString += "]"
+#
 #    resultJSON = """
 #    {
-#    "records": [
-#
-#        {
-#            "topic" : "Ebola",
-#            "count" : $rnd1
-#        },
-#        {
-#            "topic" : "Malaria",
-#            "count" : $rnd2
-#        },
-#        {
-#            "topic" : "Flu",
-#            "count" : $rnd3
-#        },
-#        {
-#            "topic" : "Plague",
-#            "count" : $rnd4
-#        },
-#        {
-#            "topic" : "LymeDisease",
-#            "count" : $rnd5
-#        }
-#    ]
+#    metaData: {
+#        root: "record",
+#        fields: [
+#            {name: 'date'},
+#            {name: 'Ebola$rnd5'},
+#            {name: 'Malaria$rnd4'},
+#            {name: 'Influenza$rnd3'},
+#            {name: 'Plague$rnd3'},
+#            {name: 'Lyme_Disease$rnd1'}
+#        ],
+#    },
+#    // Reader's configured root
+#    $recString
 #}
 #"""
+#
+#    resultJSON = resultJSON.replace("$recString", recString)
+#
+#
+#
 #    resultJSON = resultJSON.replace("$rnd1", str(random.randrange(50,500,1)))
 #    resultJSON = resultJSON.replace("$rnd2", str(random.randrange(50,500,1)))
 #    resultJSON = resultJSON.replace("$rnd3", str(random.randrange(50,500,1)))

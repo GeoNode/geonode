@@ -208,19 +208,38 @@ var tweetDateEndField = new Ext.form.DateField({
 var tweetPointLayer = null;
 var tweetHeatLayer = null;
 
-var employeeStoreProxy = new Ext.data.HttpProxy({
+var chartColors = ["#FF0000", "#006600", "#0000CC", "#000000", "#FF00FF" ]
+
+var trendStoreProxy = new Ext.data.HttpProxy({
     url : "/tweettrends"
 });
 var remoteStore = new Ext.data.JsonStore({
     root : 'record',
     autoLoad : true,
-    storeId : 'employeeDv',
-    proxy : employeeStoreProxy,
+    storeId : 'trendStore',
+    proxy : trendStoreProxy,
     baseParams: { "bounds": config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd":  new Date(tweetDateEndField.getValue()).format('Y-M-d')},
-    fields : [
-        { name : "count", mapping : "count" },
-        { name : "topic", mapping : "topic" }
-    ]
+    listeners: {
+        'datachanged': function(){
+            if (chart != null) {
+            //create the series based on the metadata returned from the store.
+            var fields = remoteStore.reader.meta.fields;
+            var series = [];
+            for(var i=0;i<fields.length;i++){
+                // console.log(i);
+                if (fields[i].name != "date") {
+                    var newSeries = new Ext.chart.LineSeries({
+                        displayName: fields[i].name.replace("_"," "),
+                        yField: fields[i].name,
+                        style: {color: chartColors[i-1], size: 5, lineSize: 1}
+                    });
+                    series.push(newSeries);
+                }
+            }
+            chart.setSeries(series);
+           }
+        }
+    }
 });
 
 //remoteStore.on('beforeload', function(store){
@@ -251,6 +270,8 @@ var remoteStore = new Ext.data.JsonStore({
         remoteStore.load({
             params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd" : new Date(tweetDateEndField.getValue()).format('Y-M-d')}
         });
+
+        //updateChart();
 
     };
 
@@ -305,7 +326,7 @@ var remoteStore = new Ext.data.JsonStore({
             msgTarget: 'side'
         },
         cls: 'cql-overlay',
-        width: 700,
+        width: 800,
         height: 100,
         layout:"fit",
         items: [
@@ -364,22 +385,41 @@ var remoteStore = new Ext.data.JsonStore({
 Ext.chart.Chart.CHART_URL = '{{ GEONODE_CLIENT_LOCATION }}externals/ext/resources/charts.swf';
 
 
-var chart = {
-    xtype : 'columnchart', // 1
+var chart = new Ext.chart.LineChart({
     store : remoteStore,
-    xField : 'topic', // 2
-    yField : 'count',
+    xField : 'date', // 2
     listeners:{
         'itemclick' : function(obj) {
-            tweetFilterField.setValue(obj.item['topic']);
+            tweetFilterField.setValue(chart.series[obj.seriesIndex].displayName);
+//            var rec=store.getAt(obj.index);
+//            Ext.Msg.alert('Series Index',obj.seriesIndex);
             updateLayer();
         }
-    }
-};
+    },
+    extraStyle: {
+        legend : {
+            display: 'right',
+            padding: 5,
+            spacing: 2
+        },
+        yAxis: {
+            titleRotation: -90
+        }
+    },
+    yAxis: new Ext.chart.NumericAxis({
+        title: "Tweets per Day"
+    }),
+    xAxis: new Ext.chart.CategoryAxis({
+        labelSpacing: 200,
+        calculateCategoryCount: true
+    })
+});
+
+
 var chartPanel = new Ext.Panel({
     title: "Top 5 Trending Health Terms",
-    width : 400,
-    height : 150,
+    width : 800,
+    height : 200,
     layout : 'fit',
     cls: "chart-overlay",
     items : chart
@@ -434,6 +474,7 @@ tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
             tiled: false
         }, {
             singleTile: true,
+            removeBackBufferDelay: 0,
             ratio: tweetConfig.ratio || 1,
             visibility: true,
             opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
@@ -446,6 +487,7 @@ tweetHeatRecord.group = tweetConfig.group;
 
 app.mapPanel.add(cqlOverlay);
 app.mapPanel.add(chartPanel);
+
 
 app.on("ready", function() {
 
@@ -478,14 +520,17 @@ app.on("ready", function() {
      });
 
 
-    updateLayer();
-
+    Ext.getCmp("gx_westPanel").collapse();
+    //cqlOverlay.alignTo(Ext.get(document), 't-t');
+    chartPanel.alignTo(document, 'b-b');
 
     app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
         remoteStore.load({
             params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'),  "dateEnd": new Date(tweetDateEndField.getValue()).format('Y-M-d')}
         });
     });
+
+    //updateLayer();
 
 });
 
