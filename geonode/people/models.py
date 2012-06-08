@@ -1,29 +1,15 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import ugettext as _
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 
 from idios.models import ProfileBase, create_profile
 
-from geonode.maps.enumerations import COUNTRIES
-
-CONTACT_FIELDS = [
-    "name",
-    "organization",
-    "position",
-    "voice",
-    "facsimile",
-    "delivery_point",
-    "city",
-    "administrative_area",
-    "postal_code",
-    "country",
-    "email",
-    "role"
-]
+from geonode.layers.enumerations import COUNTRIES
+from geonode.people.enumerations import ROLE_VALUES, CONTACT_FIELDS
 
 
 class Contact(ProfileBase):
@@ -53,6 +39,18 @@ class Contact(ProfileBase):
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.organization)
+
+
+class Role(models.Model):
+    """
+    Roles are a generic way to create groups of permissions.
+    """
+    value = models.CharField('Role', choices= [(x, x) for x in ROLE_VALUES], max_length=255, unique=True)
+    permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
+
+    def __unicode__(self):
+        return self.get_value_display()
+
 
 def create_user_profile(instance, sender, created, **kwargs):
     try:
