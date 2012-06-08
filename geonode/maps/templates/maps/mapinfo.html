@@ -41,7 +41,7 @@
           permissions: {{ permissions_json }},
           listeners: {
               updated: function(perms) {
-                  var submitTo = "{% url maps_ajax_perm map.id %}";
+                  var submitTo = "{% url map_ajax_permissions map.id %}";
                   Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
               }
           }
@@ -135,10 +135,10 @@
     {% has_obj_perm user map "maps.delete_map" as can_delete %}
     <li><a href="{% url map_view map.id %}">{% trans "View or edit this map" %}</a></li>
     {% if can_change %}
-    <li><a href="{% url maps_controller map.id %}?describe">{% trans "Edit metadata" %}</a></li>
+    <li><a href="{% url map_metadata map.id %}">{% trans "Edit metadata" %}</a></li>
     {% endif %}
     {% if can_delete %}
-    <li><a href="{% url maps_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
+    <li><a href="{% url map_remove map.id %}">{% trans "Delete map" %}</a></li>
     {% endif %}
     <li><a href="{% url new_map %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
 

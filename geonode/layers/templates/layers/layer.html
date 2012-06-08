@@ -238,6 +238,16 @@
 
   <ul class="nav nav-list">
 
+    <li class="nav-header">{% trans "Legend" %}</li>
+    <li>
+    {% comment %}
+    The request below accepts more parameters, like fontName ( fontName=DejaVu ).
+    A full list of options can be found at: http://docs.geoserver.org/latest/en/user/services/wms/get_legend_graphic/legendgraphic.html
+    {% endcomment %}
+    <img src="{{ GEOSERVER_BASE_URL }}wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer={{ layer.typename }}&format=image%2Fpng&legend_options=fontAntiAliasing%3Atrue%3BfontSize%3A12%3BSCALE%3A17471330.182978604" />
+
+    </li>
+
     <li class="nav-header">{% trans "Download Data" %}</li>
     {% for extension, type, link in layer.download_links %}
       <li><a href="{{ link }}">{{ type }}</a></li>
@@ -257,7 +267,7 @@
       <li>{% trans "This layer is not currently used in any maps." %}</li>
     {% endfor %}
     <li>
-      <a href="{% url maps_new %}?layer={{layer.typename}}">{% trans "Create new map" %}</a>
+      <a href="{% url new_map %}?layer={{layer.typename}}">{% trans "Create new map" %}</a>
     </li>
   </ul>
 

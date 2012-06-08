@@ -61,18 +61,23 @@ GeoNode site.
 Install
 =======
 
+..note:: It is suggested to create and activate a virtual environment
+         for GeoNode before starting::
+
+         virtualenv venv
+         source venv/bin/activate
+
+
 The following steps should prepare a Python virtual environment for you::
 
   git clone git://github.com/GeoNode/geonode.git geonode
+  pip install -e geonode
   cd geonode
-  git submodule update --init
-  python bootstrap.py --no-site-packages # see note below
-  source bin/activate
-  paver build
-  django-admin.py createsuperuser --settings=geonode.settings
-  paver host 
+  paver setup
+  paver start
 
-Once fully started, you should see a message indicating the address of your geonode::
+Once fully started, you should see a message indicating the address of your geonode.
+The default username and password are ``admin`` and ``admin``::
   
   Development GeoNode is running at http://localhost:8000/
   The GeoNode is an unstoppable machine
