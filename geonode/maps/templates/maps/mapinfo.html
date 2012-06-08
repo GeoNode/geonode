@@ -121,7 +121,7 @@
 {% block sidebar %}
   <ul class="nav nav-list">
     <li class="nav-header">{% trans "Download" %}</li>
-    <li><a href="{% url maps_download map.id %}">{% trans "Download all layers included in this map" %}</a></li>
+    <li><a href="{% url map_download map.id %}">{% trans "Download all layers included in this map" %}</a></li>
     
     <li class="nav-header">{% trans "Layers" %}</li>
     {% for layer in layers %}
@@ -133,14 +133,14 @@
     <li class="nav-header">{% trans "Manage" %}</li>
     {% has_obj_perm user map "maps.change_map" as can_change %}
     {% has_obj_perm user map "maps.delete_map" as can_delete %}
-    <li><a href="{% url maps_view map.id %}">{% trans "View or edit this map" %}</a></li>
+    <li><a href="{% url map_view map.id %}">{% trans "View or edit this map" %}</a></li>
     {% if can_change %}
     <li><a href="{% url maps_controller map.id %}?describe">{% trans "Edit metadata" %}</a></li>
     {% endif %}
     {% if can_delete %}
     <li><a href="{% url maps_controller map.id %}?remove">{% trans "Delete map" %}</a></li>
     {% endif %}
-    <li><a href="{% url maps_new %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
+    <li><a href="{% url new_map %}?copy={{map.id}}">{% trans "Duplicate map" %}</a></li>
 
     {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
     {% if can_change_permissions %}

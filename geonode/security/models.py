@@ -1,11 +1,21 @@
-# -*- coding: UTF-8 -*-
-from django.contrib.auth import authenticate, get_backends as get_auth_backends
+# -*- coding: utf-8 -*-
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
+from registration.signals import user_activated
+from django.contrib.auth import login
+
+# implicitly defined 'generic' groups of users 
+ANONYMOUS_USERS = 'anonymous'
+AUTHENTICATED_USERS = 'authenticated'
+GENERIC_GROUP_NAMES = {
+    ANONYMOUS_USERS: _('Anonymous Users'),
+    AUTHENTICATED_USERS: _('Registered Users')
+}
+INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
@@ -13,6 +23,7 @@ class ObjectRoleManager(models.Manager):
             codename=codename,
             content_type=ContentType.objects.get_by_natural_key(app_label, model)
         )
+
 
 class ObjectRole(models.Model):
     """
@@ -61,13 +72,6 @@ class UserObjectRoleMapping(models.Model):
     class Meta:
         unique_together = (('user', 'object_ct', 'object_id', 'role'), ) 
 
-# implicitly defined 'generic' groups of users 
-ANONYMOUS_USERS = 'anonymous'
-AUTHENTICATED_USERS = 'authenticated'
-GENERIC_GROUP_NAMES = {
-    ANONYMOUS_USERS: _('Anonymous Users'),
-    AUTHENTICATED_USERS: _('Registered Users')
-}
 
 class GenericObjectRoleMapping(models.Model):
     """
@@ -94,8 +98,10 @@ class GenericObjectRoleMapping(models.Model):
     class Meta:
         unique_together = (('subject', 'object_ct', 'object_id', 'role'), )
 
+
 class PermissionLevelError(Exception):
     pass
+
 
 class PermissionLevelMixin(object):
     """
@@ -226,9 +232,6 @@ class PermissionLevelMixin(object):
 
 # Logic to login a user automatically when it has successfully
 # activated an account:
-from registration.signals import user_activated
-from django.contrib.auth import login
-
 def autologin(sender, **kwargs):
     user = kwargs['user']
     request = kwargs['request']
@@ -239,4 +242,3 @@ def autologin(sender, **kwargs):
     login(request, user)
 
 user_activated.connect(autologin)
-

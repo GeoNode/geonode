@@ -1,7 +1,8 @@
 [
+
 {
     "pk": 1, 
-    "model": "maps.role", 
+    "model": "people.role",
     "fields": {
         "value": "pointOfContact", 
         "permissions": []
@@ -9,7 +10,7 @@
 }, 
 {
     "pk": 2, 
-    "model": "maps.role", 
+    "model": "people.role", 
     "fields": {
         "value": "author", 
         "permissions": []
@@ -42,6 +43,7 @@
         "content_type": ["maps", "map"]
     }
 },
+
 {
     "pk": 3,
     "model": "security.objectrole",
@@ -58,6 +60,7 @@
         "content_type": ["maps", "map"]
     }
 },
+
 {
     "pk": 4,
     "model": "security.objectrole",
@@ -66,9 +69,9 @@
         "title": "Read Only",
         "list_order": 0,
         "permissions": [ 
-            ["view_layer", "maps", "layer"]
+            ["view_layer", "layers", "layer"]
         ],
-        "content_type": ["maps", "layer"]
+        "content_type": ["layers", "layer"]
     }
 },
 {
@@ -79,10 +82,10 @@
         "title": "Read/Write",
         "list_order": 1,
         "permissions": [ 
-            ["view_layer", "maps", "layer"],
-            ["change_layer", "maps", "layer"]
+            ["view_layer", "layers", "layer"],
+            ["change_layer", "layers", "layer"]
         ],
-        "content_type": ["maps", "layer"]
+        "content_type": ["layers", "layer"]
     }
 },
 {
@@ -93,12 +96,12 @@
         "title": "Administrative",
         "list_order": 2,
         "permissions": [ 
-            ["view_layer", "maps", "layer"],
-            ["change_layer", "maps", "layer"],
-            ["delete_layer", "maps", "layer"],
-            ["change_layer_permissions", "maps", "layer"]
+            ["view_layer", "layers", "layer"],
+            ["change_layer", "layers", "layer"],
+            ["delete_layer", "layers", "layer"],
+            ["change_layer_permissions", "layers", "layer"]
         ],
-        "content_type": ["maps", "layer"]
+        "content_type": ["layers", "layer"]
     }
 }
 

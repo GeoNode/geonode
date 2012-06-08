@@ -1,8 +1,47 @@
-from UserDict import DictMixin
-from ConfigParser import ConfigParser, NoOptionError
 import datetime
 import os
 import subprocess
+import httplib2
+import base64
+import re
+import math
+
+from urlparse import urlparse
+from UserDict import DictMixin
+from ConfigParser import ConfigParser, NoOptionError
+
+from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
+from owslib.wms import WebMapService
+from owslib.csw import CatalogueServiceWeb
+
+from geonode import GeoNodeException
+#from geonode.layers.models import Layer
+#from geonode.maps.models import Map
+from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.models import INVALID_PERMISSION_MESSAGE
+
+_wms = None
+_csw = None
+_user, _password = settings.GEOSERVER_CREDENTIALS
+
+http_client = httplib2.Http()
+http_client.add_credentials(_user, _password)
+http_client.add_credentials(_user, _password)
+_netloc = urlparse(settings.GEOSERVER_BASE_URL).netloc
+http_client.authorizations.append(
+    httplib2.BasicAuthentication(
+        (_user, _password),
+        _netloc,
+        settings.GEOSERVER_BASE_URL,
+        {},
+        None,
+        None,
+        http_client
+    )
+)
+
 
 class ConfigMap(DictMixin):
 
@@ -104,3 +143,255 @@ def get_git_changeset():
     except ValueError:
         return None
     return timestamp.strftime('%Y%m%d%H%M%S')
+
+
+def check_geonode_is_up():
+    """Verifies all of geonetwork, geoserver and the django server are running,
+       this is needed to be able to upload.
+    """
+    """
+    try:
+        Layer.objects.gs_catalog.get_workspaces()
+    except:
+        msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
+               'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
+        raise GeoNodeException(msg)
+
+    try:
+        Layer.objects.gn_catalog.login()
+    except:
+        msg = ('Cannot connect to the GeoNetwork at %s\n'
+               'Please make sure you have started '
+               'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
+        raise GeoNodeException(msg)
+    """
+    pass
+
+def get_wms():
+    global _wms
+    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
+    netloc = urlparse(wms_url).netloc
+    http = httplib2.Http()
+    http.add_credentials(_user, _password)
+    http.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user, _password),
+                netloc,
+                wms_url,
+                {},
+                None,
+                None,
+                http
+            )
+        )
+    body = http.request(wms_url)[1]
+    _wms = WebMapService(wms_url, xml=body)
+
+
+def get_csw():
+    global _csw
+    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
+    _csw = CatalogueServiceWeb(csw_url)
+    return _csw
+
+
+def _get_basic_auth_info(request):
+    """
+    grab basic auth info
+    """
+    meth, auth = request.META['HTTP_AUTHORIZATION'].split()
+    if meth.lower() != 'basic':
+        raise ValueError
+    username, password = base64.b64decode(auth).split(':')
+    return username, password
+
+
+def batch_permissions(request):
+    """
+    if not request.user.is_authenticated:
+        return HttpResponse("You must log in to change permissions", status=401) 
+
+    if request.method != "POST":
+        return HttpResponse("Permissions API requires POST requests", status=405)
+
+    spec = json.loads(request.raw_post_data)
+    
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        for lyr in lyrs:
+            if not request.user.has_perm("maps.change_layer_permissions", obj=lyr):
+                return HttpResponse("User not authorized to change layer permissions", status=403)
+
+    if "maps" in spec:
+        map_query = Map.objects.filter(pk__in = spec['maps'])
+        for m in map_query:
+            if not request.user.has_perm("maps.change_map_permissions", obj=m):
+                return HttpResponse("User not authorized to change map permissions", status=403)
+
+    anon_level = spec['permissions'].get("anonymous")
+    auth_level = spec['permissions'].get("authenticated")
+    users = spec['permissions'].get('users', [])
+    user_names = [x[0] for x in users]
+
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        valid_perms = ['layer_readwrite', 'layer_readonly']
+        if anon_level not in valid_perms:
+            anon_level = "_none"
+        if auth_level not in valid_perms:
+            auth_level = "_none"
+        for lyr in lyrs:
+            lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
+            lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
+            lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
+            for user, user_level in users:
+                if user_level not in valid_perms:
+                    user_level = "_none"
+                lyr.set_user_level(user, user_level)
+
+    if "maps" in spec:
+        map_query = Map.objects.filter(pk__in = spec['maps'])
+        valid_perms = ['layer_readwrite', 'layer_readonly']
+        if anon_level not in valid_perms:
+            anon_level = "_none"
+        if auth_level not in valid_perms:
+            auth_level = "_none"
+        anon_level = anon_level.replace("layer", "map")
+        auth_level = auth_level.replace("layer", "map")
+
+        for m in map_query:
+            m.get_user_levels().exclude(user__username__in = user_names + [m.owner.username]).delete()
+            m.set_gen_level(ANONYMOUS_USERS, anon_level)
+            m.set_gen_level(AUTHENTICATED_USERS, auth_level)
+            for user, user_level in spec['permissions'].get("users", []):
+                user_level = user_level.replace("layer", "map")
+                m.set_user_level(user, valid_perms.get(user_level, "_none"))
+
+    return HttpResponse("Not implemented yet")
+    """
+    pass
+
+def batch_delete(request):
+    """
+    if not request.user.is_authenticated:
+        return HttpResponse("You must log in to delete layers", status=401) 
+
+    if request.method != "POST":
+        return HttpResponse("Delete API requires POST requests", status=405)
+
+    spec = json.loads(request.raw_post_data)
+
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        for lyr in lyrs:
+            if not request.user.has_perm("maps.delete_layer", obj=lyr):
+                return HttpResponse("User not authorized to delete layer", status=403)
+
+    if "maps" in spec:
+        map_query = Map.objects.filter(pk__in = spec['maps'])
+        for m in map_query:
+            if not request.user.has_perm("maps.delete_map", obj=m):
+                return HttpResponse("User not authorized to delete map", status=403)
+
+    if "layers" in spec:
+        Layer.objects.filter(pk__in = spec["layers"]).delete()
+
+    if "maps" in spec:
+        Map.objects.filter(pk__in = spec["maps"]).delete()
+
+    nlayers = len(spec.get('layers', []))
+    nmaps = len(spec.get('maps', []))
+
+    return HttpResponse("Deleted %d layers and %d maps" % (nlayers, nmaps))
+    """
+    pass
+
+def _handle_perms_edit(request, obj):
+    errors = []
+    params = request.POST
+    valid_pl = obj.permission_levels
+
+    anon_level = params[ANONYMOUS_USERS]
+    # validate anonymous level, disallow admin level
+    if not anon_level in valid_pl or anon_level == obj.LEVEL_ADMIN:
+        errors.append(_("Anonymous Users") + ": " + INVALID_PERMISSION_MESSAGE)
+
+    all_auth_level = params[AUTHENTICATED_USERS]
+    if not all_auth_level in valid_pl:
+        errors.append(_("Registered Users") + ": " + INVALID_PERMISSION_MESSAGE)
+
+    kpat = re.compile("^u_(.*)_level$")
+    ulevs = {}
+    for k, level in params.items():
+        m = kpat.match(k)
+        if m:
+            username = m.groups()[0]
+            if not level in valid_pl:
+                errors.append(_("User") + " " + username + ": " + INVALID_PERMISSION_MESSAGE)
+            else:
+                ulevs[username] = level
+
+    if len(errors) == 0:
+        obj.set_gen_level(ANONYMOUS_USERS, anon_level)
+        obj.set_gen_level(AUTHENTICATED_USERS, all_auth_level)
+
+        for username, level in ulevs.items():
+            user = User.objects.get(username=username)
+            obj.set_user_level(user, level)
+
+    return errors
+
+
+def _split_query(query):
+    """
+    split and strip keywords, preserve space 
+    separated quoted blocks.
+    """
+
+    qq = query.split(' ')
+    keywords = []
+    accum = None
+    for kw in qq:
+        if accum is None:
+            if kw.startswith('"'):
+                accum = kw[1:]
+            elif kw:
+                keywords.append(kw)
+        else:
+            accum += ' ' + kw
+            if kw.endswith('"'):
+                keywords.append(accum[0:-1])
+                accum = None
+    if accum is not None:
+        keywords.append(accum)
+    return [kw.strip() for kw in keywords if kw.strip()]
+
+
+def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
+    return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
+                            x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+
+
+def forward_mercator(lonlat):
+    """
+        Given geographic coordinates, return a x,y tuple in spherical mercator.
+        
+        If the lat value is out of range, -inf will be returned as the y value
+    """
+    x = lonlat[0] * 20037508.34 / 180
+    n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    if n <= 0:
+        y = float("-inf")
+    else:
+        y = math.log(n) / math.pi * 20037508.34
+    return (x, y)
+
+
+def inverse_mercator(xy):
+    """
+        Given coordinates in spherical mercator, return a lon,lat tuple.
+    """
+    lon = (xy[0] / 20037508.34) * 180
+    lat = (xy[1] / 20037508.34) * 180
+    lat = 180/math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+    return (lon, lat)

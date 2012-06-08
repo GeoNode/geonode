@@ -1,7 +1,83 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.utils.translation import ugettext_lazy as _
 
-# Common internationalization choices for shared models.
+UPDATE_FREQUENCIES = [
+    'annually',
+    'asNeeded',
+    'biannually',
+    'continual',
+    'daily',
+    'fortnightly',
+    'irregular',
+    'monthly',
+    'notPlanned',
+    'quarterly',
+    'unknown',
+    'weekly'
+]
+
+CONSTRAINT_OPTIONS = [
+    'copyright',
+    'intellectualPropertyRights',
+    'license',
+    'otherRestrictions',
+    'patent',
+    'patentPending',
+    'restricted',
+    'trademark'
+]
+
+SPATIAL_REPRESENTATION_TYPES = [
+    'grid', 'steroModel', 'textTable', 'tin', 'vector'
+]
+
+TOPIC_CATEGORIES = [
+    'biota',
+    'boundaries',
+    'climatologyMeteorologicalAtmosphere',
+    'economy',
+    'elevation',
+    'environment',
+    'farming',
+    'geoscientificInformation',
+    'health',
+    'imageryBaseMapsEarthCover',
+    'inlandWaters',
+    'intelligenceMilitary',
+    'location',
+    'oceans',
+    'planningCadastre'
+    'society',
+    'structure',
+    'transportation',
+    'utilitiesCommunication'
+]
+
+CONTACT_FIELDS = [
+    "name",
+    "organization",
+    "position",
+    "voice",
+    "facsimile",
+    "delivery_point",
+    "city",
+    "administrative_area",
+    "postal_code",
+    "country",
+    "email",
+    "role"
+]
+
+DEFAULT_SUPPLEMENTAL_INFORMATION=_(
+'You can customize the template to suit your \
+needs. You can add and remove fields and fill out default \
+information (e.g. contact details). Fields you can not change in \
+the default view may be accessible in the more comprehensive (and \
+more complex) advanced view. You can even use the XML editor to \
+create custom structures, but they have to be validated by the \
+system, so know what you do :-)'
+)
+
 COUNTRIES = (
     ('AFG', _('Afghanistan')),
     ('ALA', _('Aland Islands')),
