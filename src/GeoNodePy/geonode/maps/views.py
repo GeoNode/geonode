@@ -663,7 +663,7 @@ def view_js(request, mapid):
     map_obj = Map.objects.get(pk=mapid)
     if not request.user.has_perm('maps.view_map', obj=map_obj):
         return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
-    config = map.viewer_json()
+    config = map_obj.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 class LayerDescriptionForm(forms.Form):
@@ -1467,7 +1467,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
     keywords = _split_query(query)
 
-    map_query = Map.objects
+    map_query = Map.objects.filter()
     for keyword in keywords:
         map_query = map_query.filter(
               Q(title__icontains=keyword)
@@ -1479,7 +1479,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
     maps_list = []
 
-    for m in maps.all()[start:start+limit]:
+    for m in map_query[start:start+limit]:
         try:
             owner_name = Contact.objects.get(user=m.owner).name
         except Exception:
@@ -1492,7 +1492,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             'detail' : reverse('geonode.maps.views.map_controller', args=(m.id,)),
             'owner' : owner_name,
             'owner_detail' : reverse('profiles.views.profile_detail', args=(m.owner.username,)),
-            'last_modified' : map.last_modified.isoformat()
+            'last_modified' : m.last_modified.isoformat()
             }
         maps_list.append(mapdict)
 
