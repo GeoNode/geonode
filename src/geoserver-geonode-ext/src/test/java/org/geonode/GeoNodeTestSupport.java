@@ -5,9 +5,7 @@ import java.util.Map;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geonode.security.GeoNodeDataAccessManager;
 import org.geoserver.data.test.MockData;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerTestSupport;
 
 public abstract class GeoNodeTestSupport extends GeoServerTestSupport {
