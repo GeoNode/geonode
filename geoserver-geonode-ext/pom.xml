@@ -153,8 +153,8 @@
     </dependency>
   </dependencies>
   <properties>
-    <geotools.version>2.7-SNAPSHOT</geotools.version>
-    <geoserver.version>2.1-SNAPSHOT</geoserver.version>
+    <geotools.version>8-SNAPSHOT</geotools.version>
+    <geoserver.version>2.2-SNAPSHOT</geoserver.version>
     <jetty.version>6.1.8</jetty.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
@@ -196,6 +196,14 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+            <argLine>-XX:MaxPermSize=256m</argLine>
+        </configuration>
+      </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
