@@ -26,12 +26,12 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.util.Assert;
 
 /**
@@ -181,20 +181,16 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
             authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
             String key = "geonode";
             Object principal = "anonymous";
-            GrantedAuthority[] grantedAuthorities = authorities
-                    .toArray(new GrantedAuthority[authorities.size()]);
 
-            authentication = new AnonymousAuthenticationToken(key, principal, grantedAuthorities);
+            authentication = new AnonymousAuthenticationToken(key, principal, authorities);
         } else {
             String userName = "";
             if (json.containsKey("name")) {
                 userName = json.getString("name");
             }
-            GrantedAuthority[] grantedAuthorities = authorities
-                    .toArray(new GrantedAuthority[authorities.size()]);
 
             authentication = new UsernamePasswordAuthenticationToken(userName, credentials,
-                    grantedAuthorities);
+                    authorities);
         }
         return authentication;
     }
