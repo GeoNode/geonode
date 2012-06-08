@@ -320,7 +320,7 @@ def stop_geoserver():
     kill('jetty', 'java')
 
 @task
-def unit_test(options):
+def test(options):
     sh("python manage.py test geonode")
 
 @task
