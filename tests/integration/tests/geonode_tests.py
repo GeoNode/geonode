@@ -1,31 +1,33 @@
-import os, sys
+import os
 import urllib2
 from urlparse import urljoin
 from urllib import urlencode
-import contextlib 
 import json
-
 from unittest import TestCase
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import AnonymousUser
+
 
 from geoserver.catalog import FailedRequestError
 
 from geonode.security.models import *
-from geonode.maps.models import Layer
-from geonode.maps.views import set_layer_permissions
-
-from geonode.maps.utils import upload, file_upload, GeoNodeException
+from geonode.layers.models import Layer
+from geonode.layers.views import layer_set_permissions
+from geonode import GeoNodeException
+from geonode.layers.utils import (
+    upload,
+    file_upload,
+    save
+)
 
 from tests.utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
 
-from geonode.maps.gs_helpers import cascading_delete, fixup_style
+from geonode.gs_helpers import cascading_delete, fixup_style
 
-from django.core.exceptions import ObjectDoesNotExist
+
 
 TEST_DATA = os.path.join(settings.PROJECT_ROOT, 'geonode_test_data')
 
@@ -68,7 +70,6 @@ class NormalUserTest(TestCase):
         """
 
         from django.contrib.auth.models import User
-        from geonode.maps.utils import save
 
         #TODO: Would be nice to ensure the name is available before running the test...
         norman = User.objects.get(username="norman")
@@ -173,7 +174,7 @@ class GeoNodeMapTest(TestCase):
 
         # Clean up and completely delete the layers
         for layer in expected_layers:
-            layer_name = layers[layer]
+            layer_name = layer1s[layer]
             Layer.objects.get(name=layer_name).delete()
 
     def test_extension_not_implemented(self):
@@ -296,17 +297,19 @@ class GeoNodeMapTest(TestCase):
 
         # Test Permissions applied to search from ACLs
 
-        # TODO Write a method to accept a perm_spec and query params and test that query results are returned respecting the perm_spec
+        # TODO Write a method to accept a perm_spec and query params
+        # and test that query results are returned respecting the
+        # perm_spec
 
         # - Test with Anonymous User
         perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
         for layer in Layer.objects.all():
-            set_layer_permissions(layer, perm_spec)
+            layer_set_permissions(layer, perm_spec)
 
         test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL,"", 0, 10)
 
         results = json.loads(get_web_page(test_url))
-        
+
         for layer in results["rows"]:
             if layer["_local"] == False:
                 # Ignore non-local layers
