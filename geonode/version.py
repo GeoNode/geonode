@@ -3,6 +3,7 @@ import os
 import base64
 import re
 import math
+import subprocess
 
 def get_version(version=None):
     "Returns a PEP 386-compliant version number from VERSION."
