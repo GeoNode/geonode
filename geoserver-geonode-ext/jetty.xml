@@ -109,7 +109,7 @@
       <Arg>
         <New class="org.mortbay.jetty.deployer.WebAppDeployer">
           <Set name="contexts"><Ref id="Contexts"/></Set>
-          <Set name="webAppDir"><SystemProperty name="jetty.home" default="../../webapps"/></Set>
+          <Set name="webAppDir"><SystemProperty name="jetty.home" default="../build/webapps"/></Set>
           <Set name="parentLoaderPriority">true</Set>
 		  <!--  Refer to http://geoserver.org/display/GEOSDOC/Dealing+with+native+JAI 
 		  		for more background on the parentLoaderPriority=True -->
@@ -149,7 +149,7 @@
     <Ref id="RequestLog">
       <Set name="requestLog">
         <New id="RequestLogImpl" class="org.mortbay.jetty.NCSARequestLog">
-          <Set name="filename"><SystemProperty name="jetty.logs" default="./target/logs"/>/yyyy_mm_dd.request.log</Set>
+          <Set name="filename"><SystemProperty name="jetty.logs" default="logs"/>/yyyy_mm_dd.request.log</Set>
           <Set name="filenameDateFormat">yyyy_MM_dd</Set>
           <Set name="retainDays">90</Set>
           <Set name="append">true</Set>
