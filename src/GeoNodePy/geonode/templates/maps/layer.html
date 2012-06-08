@@ -232,7 +232,6 @@
 		{% user_rating request.user layer "layer" as user_layer_rating %}
 		<div id="user_rating" class="category-layer"></div>
 	{% endif %}
-	</div>
 
 	{% url ajax_layer_permissions layer.typename as form_action %}
 	{% include "_permissions_form.html" %}
