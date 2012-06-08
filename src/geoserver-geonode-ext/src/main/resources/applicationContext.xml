@@ -113,4 +113,5 @@
     <property name="titleKey" value="GeoNodeAuthProviderPanel.title" />
     <property name="descriptionKey" value="GeoNodeAuthProviderPanel.description"/>
   </bean>
+  <bean class="org.geonode.security.GeoNodeDataAccessManager" />
 </beans>

@@ -16,5 +16,13 @@
       </includes>
       <useTransitiveFiltering>true</useTransitiveFiltering>
     </dependencySet>
+    <dependencySet>
+      <outputDirectory>.</outputDirectory>
+      <unpack>false</unpack>
+      <includes>
+        <include>org.opengeo:geonode-geoserver-ext</include>
+      </includes>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+    </dependencySet>
   </dependencySets>
 </assembly>
