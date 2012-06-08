@@ -21,6 +21,9 @@ from geonode.utils import _split_query, http_client
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import forward_mercator
+from geonode.utils import DEFAULT_TITLE
+from geonode.utils import DEFAULT_ABSTRACT
+from geonode.utils import default_map_config
 from geonode.maps.forms import MapForm
 from geonode.people.models import Contact
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -30,8 +33,6 @@ logger = logging.getLogger("geonode.maps.views")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
-DEFAULT_TITLE = ""
-DEFAULT_ABSTRACT = ""
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
 
@@ -41,30 +42,6 @@ MAP_LEV_NAMES = {
     Map.LEVEL_WRITE : _('Read/Write'),
     Map.LEVEL_ADMIN : _('Administrative')
 }
-
-def default_map_config():
-    _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
-
-    _default_map = Map(
-        title=DEFAULT_TITLE, 
-        abstract=DEFAULT_ABSTRACT,
-        projection="EPSG:900913",
-        center_x=_DEFAULT_MAP_CENTER[0],
-        center_y=_DEFAULT_MAP_CENTER[1],
-        zoom=settings.DEFAULT_MAP_ZOOM
-    )
-    def _baselayer(lyr, order):
-        return MapLayer.objects.from_viewer_config(
-            map_model = _default_map,
-            layer = lyr,
-            source = lyr["source"],
-            ordering = order
-        )
-
-    DEFAULT_BASE_LAYERS = [_baselayer(lyr, idx) for idx, lyr in enumerate(settings.MAP_BASELAYERS)]
-    DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASE_LAYERS)
-
-    return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
@@ -638,10 +615,10 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             'id' : m.id,
             'title' : m.title,
             'abstract' : m.abstract,
-            'detail' : reverse('geonode.maps.views.map_controller', args=(m.id,)),
+            'detail' : reverse('map_detail', args=(m.id,)),
             'owner' : owner_name,
-            'owner_detail' : reverse('profiles.views.profile_detail', args=(m.owner.username,)),
-            'last_modified' : map.last_modified.isoformat()
+            'owner_detail' : reverse('profile_detail', args=(m.owner.username,)),
+            'last_modified' : m.last_modified.isoformat()
             }
         maps_list.append(mapdict)
 
