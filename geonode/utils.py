@@ -51,23 +51,23 @@ def check_geonode_is_up():
     """Verifies all of geonetwork, geoserver and the django server are running,
        this is needed to be able to upload.
     """
-    """
-    try:
-        Layer.objects.gs_catalog.get_workspaces()
-    except:
-        msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-               'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
-        raise GeoNodeException(msg)
 
-    try:
-        Layer.objects.gn_catalog.login()
-    except:
-        msg = ('Cannot connect to the GeoNetwork at %s\n'
-               'Please make sure you have started '
-               'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
-        raise GeoNodeException(msg)
-    """
+    # try:
+    #     Layer.objects.gs_catalog.get_workspaces()
+    # except:
+    #     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
+    #            'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
+    #     raise GeoNodeException(msg)
+
+    # try:
+    #     Layer.objects.gn_catalog.login()
+    # except:
+    #     msg = ('Cannot connect to the GeoNetwork at %s\n'
+    #            'Please make sure you have started '
+    #            'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
+    #     raise GeoNodeException(msg)
     pass
+
 
 def get_wms():
     global _wms
@@ -88,7 +88,7 @@ def get_wms():
         )
     body = http.request(wms_url)[1]
     _wms = WebMapService(wms_url, xml=body)
-
+    return _wms
 
 def get_csw():
     global _csw

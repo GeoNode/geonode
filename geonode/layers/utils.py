@@ -21,7 +21,8 @@ from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.people.models import Contact
 from geonode.gs_helpers import cascading_delete, get_sld_for, delete_from_postgis
-
+from django.contrib.auth.models import User
+from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 # Geoserver functionality
 import geoserver
 from geoserver.catalog import FailedRequestError
@@ -30,6 +31,19 @@ from geoserver.resource import FeatureType, Coverage
 logger = logging.getLogger('geonode.layers.utils')
 
 _separator = '\n' + ('-' * 100) + '\n'
+
+
+def layer_set_permissions(layer, perm_spec):
+    if "authenticated" in perm_spec:
+        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+    if "anonymous" in perm_spec:
+        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    users = [n[0] for n in perm_spec['users']]
+    layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
+    for username, level in perm_spec['users']:
+        user = User.objects.get(username=username)
+        layer.set_user_level(user, level)
+
 
 
 def layer_type(filename):
@@ -437,8 +451,8 @@ def save(layer, base_file, user, overwrite = True, title=None,
     # FIXME: Do this as part of the post_save hook
     logger.info('>>> Step 11. Setting default permissions for [%s]', name)
     if permissions is not None:
-        from geonode.maps.views import set_layer_permissions
-        set_layer_permissions(saved_layer, permissions)
+
+        layer_set_permissions(saved_layer, permissions)
 
     # Step 12. Verify the layer was saved correctly and clean up if needed
     logger.info('>>> Step 12. Verifying the layer [%s] was created '
