@@ -10,15 +10,15 @@ import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import org.geoserver.security.filter.GeoServerSecurityFilter;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.context.SecurityContext;
-import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -29,7 +29,7 @@ import org.geotools.util.logging.Logging;
  * @author Gabriel Roldan - OpenGeo
  * 
  */
-public class GeoNodeAnonymousProcessingFilter implements Filter {
+public class GeoNodeAnonymousProcessingFilter extends GeoServerSecurityFilter {
 
     static final Logger LOGGER = Logging.getLogger(GeoNodeAnonymousProcessingFilter.class);
 
@@ -43,13 +43,6 @@ public class GeoNodeAnonymousProcessingFilter implements Filter {
      * @see javax.servlet.Filter#destroy()
      */
     public void destroy() {
-        // nothing to do here
-    }
-
-    /**
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
-    public void init(FilterConfig filterConfig) throws ServletException {
         // nothing to do here
     }
 
