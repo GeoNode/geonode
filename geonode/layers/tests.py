@@ -164,7 +164,7 @@ class LayersTest(TestCase):
 
         # Set the Permissions
 
-        geonode.layers.views.layer_set_permissions(layer, self.perm_spec)
+        geonode.layers.utils.layer_set_permissions(layer, self.perm_spec)
 
         # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
         self.assertEqual(layer.get_gen_level(geonode.security.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
@@ -250,7 +250,15 @@ class LayersTest(TestCase):
         }
        
         # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json 
-        expected_result = {'rw': [],'ro': [],'name': settings.GEOSERVER_CREDENTIALS[0],'is_superuser':  True,'is_anonymous': False}
+
+        expected_result = {
+            u'rw': [u'base:CA'],
+            u'ro': [],
+            u'name': unicode(settings.GEOSERVER_CREDENTIALS[0]),
+            u'is_superuser': True,
+            u'is_anonymous': False
+        }
+
         c = Client()
         response = c.get('/data/acls', **valid_auth_headers)
         response_json = json.loads(response.content)
