@@ -21,7 +21,7 @@ from geonode.layers.utils import (
     save
 )
 
-from tests.utils import check_layer, get_web_page
+from .utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
 
@@ -174,7 +174,7 @@ class GeoNodeMapTest(TestCase):
 
         # Clean up and completely delete the layers
         for layer in expected_layers:
-            layer_name = layer1s[layer]
+            layer_name = layers[layer]
             Layer.objects.get(name=layer_name).delete()
 
     def test_extension_not_implemented(self):
@@ -338,6 +338,7 @@ class GeoNodeMapTest(TestCase):
     def test_search_result_detail(self):
         # Test with a valid UUID
         uuid=Layer.objects.all()[0].uuid
+
         test_url = "%sdata/search/detail/?uuid=%s"  % (settings.SITEURL, uuid)
         results = get_web_page(test_url)
         
