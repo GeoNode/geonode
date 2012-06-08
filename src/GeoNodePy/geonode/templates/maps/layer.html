@@ -233,7 +233,7 @@
 		<div id="user_rating" class="category-layer"></div>
 	{% endif %}
 
-	{% url ajax_layer_permissions layer.typename as form_action %}
+	{% url data_ajax_perm layer.typename as form_action %}
 	{% include "_permissions_form.html" %}
 {% endblock %}
 
