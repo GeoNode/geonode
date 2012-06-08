@@ -320,8 +320,19 @@ def stop_geoserver():
     kill('jetty', 'java')
 
 @task
-def test(options):
-    sh("python manage.py test")
+def unit_test(options):
+    sh("python manage.py test geonode")
+
+@task
+def integration_test(options):
+    from time import sleep
+    call_task('reset')
+    call_task('start')
+    #FIXME: Check the server is up instead of a blind sleep
+    sleep(60)
+    with pushd('tests/integration'):
+        sh("python manage.py test")
+    call_task('stop')
 
 @task
 @needs(['stop'])
