@@ -68,7 +68,8 @@ def setup_geoserver(options):
 def setup_geonetwork(options):
     """Fetch the geonetwork.war to use with GeoServer for testing."""
     war_file = 'geonetwork.war'
-    src_url = 'http://dev.geonode.org/dev-data/synth/%s' % war_file
+    #src_url = 'http://dev.geonode.org/dev-data/synth/%s' % war_file
+    src_url = 'file:///usr/src/geonetwork/web/target/geonetwork.war'
     info("geonetwork url: %s" % src_url)
     # where to download the war files. If changed change also
     # geoserver-geonode-ext/jetty.xml accordingly
@@ -181,6 +182,9 @@ def setup(options):
 
 @task
 def sync_django_db(options):
+    """
+    Run the syncdb and migrate management commands to create and migrate a DB
+    """
     sh("python manage.py syncdb --noinput")
     sh("python manage.py migrate --noinput")
     sh("python manage.py loaddata ../tests/integration/admin.fixture.json")
@@ -223,6 +227,9 @@ def package_webapp(options):
     'package_webapp',
 )
 def package_all(options):
+    """
+    Package all 3 apps together for deployment
+    """
     info('all is packaged, ready to deploy')
 
 
@@ -244,7 +251,6 @@ def create_version_name():
 def make_release(options):
     """
     Creates a tarball to use for building the system elsewhere
-    (production, distribution, etc)
     """
 
     if not hasattr(options, 'skip_packaging'):
@@ -294,37 +300,61 @@ def unzip_file(src, dest):
         'setup_geonode_client',
         'start_django',])
 def start():
+    """
+    Start the GeoNode app and all its constituent parts (Django, GeoServer & Client)
+    """
     print 'Starting GeoNode on http://localhost:8000'
 
 
 @task
 @needs(['stop_django', 'stop_geoserver'])
 def stop():
+    """
+    Stop GeoNode
+    """
     print 'Stopped GeoNode'
 
 @task
 def start_django():
+    """
+    Start the GeoNode Django application (with paster)
+    """
     sh('paster serve shared/dev-paste.ini --daemon')
 
 @task
 def stop_django():
+    """
+    Stop the GeoNode Django application (with paster)
+    """
     kill('paster', 'project.paste')
 
 @task
 def start_geoserver():
+    """
+    Start GeoNode's Java apps (GeoServer with GeoNode extensions and GeoNetwork)
+    """
     with pushd('geoserver-geonode-ext'):
         sh('./startup.sh &')
 
 @task
 def stop_geoserver():
+    """
+    Stop GeoNode's Java apps (GeoServer and GeoNetwork)
+    """
     kill('jetty', 'java')
 
 @task
 def test(options):
+    """
+    Run GeoNode's Unit Test Suite
+    """
     sh("python manage.py test geonode")
 
 @task
 def integration_test(options):
+    """
+    Run GeoNode's Integration test suite against the external apps
+    """
     from time import sleep
     call_task('reset')
     call_task('start')
@@ -337,13 +367,21 @@ def integration_test(options):
 @task
 @needs(['stop'])
 def reset():
+    """
+    Reset a development environment (Database, GeoServer & GeoNetwork)
+    """
     sh("rm -rf geonode/development.db")
     sh("rm -rf build/gs_data")
+    # TODO: There should be a better way to clean out GeoNetworks data
+    # Rather than just deleting the entire app
     sh("rm -rf build/webapps/geonetwork")
     setup_geonetwork()
 
 @task
 def setup_sample_data():
+    """
+    Import sample data (from gisdata package) into GeoNode
+    """
     import gisdata
     data_dir = gisdata.GOOD_DATA
     sh("python manage.py importlayers %s" % data_dir)
