@@ -265,7 +265,7 @@ def release(options):
 
 @task
 @needs(['start_geoserver',
-        'sync_django_db',
+        'syncdb',
         'setup_client',
         'start_django',])
 def start():
