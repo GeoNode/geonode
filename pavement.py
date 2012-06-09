@@ -187,7 +187,7 @@ def sync_django_db(options):
     """
     sh("python manage.py syncdb --noinput")
     sh("python manage.py migrate --noinput")
-    sh("python manage.py loaddata ../tests/integration/admin.fixture.json")
+    sh("python manage.py loaddata tests/integration/admin.fixture.json")
 
 @task
 def package_dir(options):
