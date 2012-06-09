@@ -179,7 +179,7 @@ def setup(options):
 
 
 @task
-def syncdb(options):
+def sync(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
@@ -265,7 +265,7 @@ def release(options):
 
 @task
 @needs(['start_geoserver',
-        'syncdb',
+        'sync',
         'setup_client',
         'start_django',])
 def start():
