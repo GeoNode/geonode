@@ -95,7 +95,7 @@ def setup_geonetwork(options):
 
 
 @task
-def setup_geonode_client(options):
+def setup_client(options):
     """
     Fetch geonode-client
     """
@@ -169,8 +169,7 @@ def setup_geonode_client(options):
 @needs([
     'setup_geoserver',
     'setup_geonetwork',
-    'setup_geonode_client',
-    'package_dir',
+    'setup_client',
 ])
 def setup(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
@@ -180,7 +179,7 @@ def setup(options):
 
 
 @task
-def sync_django_db(options):
+def syncdb(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
@@ -188,7 +187,7 @@ def sync_django_db(options):
     sh("python manage.py migrate --noinput")
     sh("python manage.py loaddata tests/integration/admin.fixture.json")
 
-@task
+
 def package_dir(options):
     """
     Adds a packaging directory
@@ -197,19 +196,16 @@ def package_dir(options):
         OUTPUT_DIR.mkdir()
 
 
-@task
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
     geoserver_target.copy(options.deploy.out_dir)
 
 
-@task
 def package_geonetwork(options):
     """Package GeoNetwork WAR file for deployment."""
     geonetwork_target.copy(options.deploy.out_dir)
 
 
-@task
 def package_webapp(options):
     """Package (Python, Django) web application and dependencies."""
     sh('python setup.py egg_info sdist')
@@ -218,18 +214,6 @@ def package_webapp(options):
     req_file.write_text(deploy_req_txt)
     pip_bundle("-r %s %s/geonode-webapp.pybundle" % (req_file, options.deploy.out_dir))
 
-
-@task
-@needs(
-    'package_geoserver',
-    'package_geonetwork',
-    'package_webapp',
-)
-def package_all(options):
-    """
-    Package all 3 apps together for deployment
-    """
-    info('all is packaged, ready to deploy')
 
 
 def create_version_name():
@@ -245,15 +229,18 @@ def create_version_name():
 @cmdopts([
     ('name=', 'n', 'Release number or name'),
     ('append_to=', 'a', 'append to release name'),
-    ('skip_packaging', 'y', 'Do not call package_all when creating a release'),
+    ('skip_packaging', 'y', 'Do not call package functions when creating a release'),
 ])
-def make_release(options):
+def release(options):
     """
     Creates a tarball to use for building the system elsewhere
     """
 
     if not hasattr(options, 'skip_packaging'):
-        call_task("package_all")
+        package_dir()
+        package_geoserver()
+        package_geonetwork()
+        package_webapp()
     if hasattr(options, 'name'):
         pkgname = options.name
     else:
@@ -274,29 +261,12 @@ def make_release(options):
 
         out_pkg.rmtree()
         info("%s.tar.gz created" % out_pkg.abspath())
-                            
 
-def unzip_file(src, dest):
-    zip = zipfile.ZipFile(src)
-    if not path(dest).exists():
-        path(dest).makedirs()
-        
-    for name in zip.namelist():
-        if name.endswith("/"):
-            (path(dest) / name).makedirs()
-        else:
-            parent, file = path(name).splitpath()
-            parent = path(dest) / parent
-            if parent and not parent.isdir():
-                path(parent).makedirs()
-            out = open(path(parent) / file, 'wb')
-            out.write(zip.read(name))
-            out.close()
 
 @task
 @needs(['start_geoserver',
         'sync_django_db',
-        'setup_geonode_client',
+        'setup_client',
         'start_django',])
 def start():
     """
@@ -350,7 +320,7 @@ def test(options):
     sh("python manage.py test geonode")
 
 @task
-def integration_test(options):
+def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
@@ -377,13 +347,37 @@ def reset():
     setup_geonetwork()
 
 @task
-def setup_sample_data():
+def setup_data():
     """
     Import sample data (from gisdata package) into GeoNode
     """
     import gisdata
     data_dir = gisdata.GOOD_DATA
     sh("python manage.py importlayers %s" % data_dir)
+
+
+
+
+# Helper functions
+
+def unzip_file(src, dest):
+    zip = zipfile.ZipFile(src)
+    if not path(dest).exists():
+        path(dest).makedirs()
+        
+    for name in zip.namelist():
+        if name.endswith("/"):
+            (path(dest) / name).makedirs()
+        else:
+            parent, file = path(name).splitpath()
+            parent = path(dest) / parent
+            if parent and not parent.isdir():
+                path(parent).makedirs()
+            out = open(path(parent) / file, 'wb')
+            out.write(zip.read(name))
+            out.close()
+
+
 
 # include patched versions of zipfile code
 # to extract zipfile dirs in python 2.6.1 and below...
