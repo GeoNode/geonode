@@ -68,8 +68,7 @@ def setup_geoserver(options):
 def setup_geonetwork(options):
     """Fetch the geonetwork.war to use with GeoServer for testing."""
     war_file = 'geonetwork.war'
-    #src_url = 'http://dev.geonode.org/dev-data/synth/%s' % war_file
-    src_url = 'file:///usr/src/geonetwork/web/target/geonetwork.war'
+    src_url = 'http://dev.geonode.org/dev-data/synth/%s' % war_file
     info("geonetwork url: %s" % src_url)
     # where to download the war files. If changed change also
     # geoserver-geonode-ext/jetty.xml accordingly
