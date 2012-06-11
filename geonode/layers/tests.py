@@ -252,7 +252,7 @@ class LayersTest(TestCase):
         # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json 
 
         expected_result = {
-            u'rw': [u'base:CA'],
+            u'rw': [],
             u'ro': [],
             u'name': unicode(settings.GEOSERVER_CREDENTIALS[0]),
             u'is_superuser': True,
