@@ -8,14 +8,16 @@ from urllib import urlencode
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.conf import settings
-from django.template import RequestContext, loader
+from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.db.models import Q
+from django.views.decorators.http import require_POST
 
 from geonode.utils import _split_query, http_client
 from geonode.layers.models import Layer
@@ -24,6 +26,7 @@ from geonode.utils import forward_mercator
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
+from geonode.utils import resolve_object
 from geonode.maps.forms import MapForm
 from geonode.people.models import Contact
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -42,6 +45,15 @@ MAP_LEV_NAMES = {
     Map.LEVEL_WRITE : _('Read/Write'),
     Map.LEVEL_ADMIN : _('Administrative')
 }
+
+def _resolve_map(request, id, permission='maps.change_map', **kwargs):
+    '''Resolve the Map by the provided typename and check the optional
+    permission.
+    '''
+    if 'permission_msg' not in kwargs:
+        kwargs['permission_msg'] = _('You do not have permissions for this map.')
+    return resolve_object(request, Map, {'pk':id},
+                          permission = permission, **kwargs)
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
@@ -78,11 +90,8 @@ def map_detail(request, mapid, template='maps/mapinfo.html'):
     '''
     The view that show details of each map
     '''
-    map_obj = get_object_or_404(Map,pk=mapid)
-    if not request.user.has_perm('maps.view_map', obj=map_obj):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not allowed to view this map.")})), status=401)
+    msg = _("You are not allowed to view this map.")
+    map_obj = _resolve_map(request, mapid, 'maps.view_map', permission_msg=msg)
 
     config = map_obj.viewer_json()
     config = json.dumps(config)
@@ -101,12 +110,8 @@ def map_metadata(request, mapid, template='maps/map_describe.html'):
     The view that displays a form for
     editing map metadata
     '''
-    map_obj = get_object_or_404(Map,pk=mapid) 
-    if not request.user.has_perm('maps.change_map', obj=map_obj):
-        return HttpResponse(loader.render_to_string('401.html', 
-                            RequestContext(request, {'error_message': 
-                            _("You are not allowed to modify this map's metadata.")})),
-                            status=401)
+    msg = _("You are not allowed to modify this map's metadata.")
+    map_obj = _resolve_map(request, mapid, permission_msg=msg)
 
     if request.method == "POST":
         # Change metadata, return to map info page
@@ -133,12 +138,8 @@ def map_metadata(request, mapid, template='maps/map_describe.html'):
 @login_required
 def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
-    map_obj = get_object_or_404(Map,pk=mapid)
-
-    if not request.user.has_perm('maps.delete_map', obj=map_obj):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not permitted to delete this map.")})), status=401)
+    map_obj = _resolve_map(request, mapid, 'maps.delete_map',
+                           permission_required=True)
 
     if request.method == 'GET':
         return render_to_response(template, RequestContext(request, {
@@ -150,17 +151,14 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             layer.delete()
         map_obj.delete()
 
-        return HttpResponseRedirect(reverse("geonode.maps.views.maps"))
+        return HttpResponseRedirect(reverse("maps_browse"))
 
 
 def map_embed(request, mapid=None, template='maps/embed.html'):
     if mapid is None:
         config = default_map_config()[0]
     else:
-        map_obj = Map.objects.get(pk=mapid)
-        if not request.user.has_perm('maps.view_map', obj=map_obj):
-            return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
-
+        map_obj = _resolve_map(request, mapid, 'maps.view_map')
         config = map_obj.viewer_json()
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config)
@@ -175,11 +173,8 @@ def map_view(request, mapid, template='maps/view.html'):
     The view that returns the map composer opened to
     the map with the given map ID.
     """
-    map_obj = Map.objects.get(pk=mapid)
-    if not request.user.has_perm('maps.view_map', obj=map_obj):
-        return HttpResponse(loader.render_to_string('401.html', 
-            RequestContext(request, {'error_message': 
-                _("You are not allowed to view this map.")})), status=401)    
+    msg = _("You are not allowed to view this map.")
+    map_obj = _resolve_map(request, mapid, 'maps.view_map', permission_msg=msg)
     
     config = map_obj.viewer_json()
     return render_to_response(template, RequestContext(request, {
@@ -191,19 +186,14 @@ def map_view(request, mapid, template='maps/view.html'):
 
 
 def map_view_js(request, mapid):
-    map_obj = Map.objects.get(pk=mapid)
-    if not request.user.has_perm('maps.view_map', obj=map_obj):
-        return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
+    map_obj = _resolve_map(request, mapid, 'maps.view_map')
     config = map.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 
 def map_json(request, mapid):
     if request.method == 'GET':
-        map_obj = get_object_or_404(Map,pk=mapid)
-        if not request.user.has_perm('maps.view_map', obj=map_obj):
-            return HttpResponse(loader.render_to_string('401.html',
-                RequestContext(request, {})), status=401)
+        map_obj = _resolve_map(request, mapid, 'maps.view_map')
         return HttpResponse(json.dumps(map_obj.viewer_json()))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
@@ -212,9 +202,7 @@ def map_json(request, mapid):
                 status=401,
                 mimetype="text/plain"
             )
-        map_obj = get_object_or_404(Map, pk=mapid)
-        if not request.user.has_perm('maps.change_map', obj=map_obj):
-            return HttpResponse("You are not allowed to modify this map.", status=403)
+        map_obj = _resolve_map(request, mapid, 'maps.change_map')
         try:
             map_obj.update_from_viewer(request.raw_post_data)
 
@@ -266,12 +254,7 @@ def new_map_config(request):
 
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
-        map_obj = get_object_or_404(Map,pk=mapid)
-        
-        if not request.user.has_perm('maps.view_map', obj=map_obj):
-            return HttpResponse(loader.render_to_string('401.html', 
-                RequestContext(request, {'error_message': 
-                    _("You are not permitted to view or copy this map.")})), status=401)
+        map_obj = _resolve_map(request, mapid, 'maps.view_map')
 
         map_obj.abstract = DEFAULT_ABSTRACT
         map_obj.title = DEFAULT_TITLE
@@ -358,9 +341,7 @@ def map_download(request, mapid, template='maps/download.html'):
     XXX To do, remove layer status once progress id done 
     This should be fix because 
     """ 
-    mapObject = get_object_or_404(Map,pk=mapid)
-    if not request.user.has_perm('maps.view_map', obj=mapObject):
-        return HttpResponse(_('Not Permitted'), status=401)
+    mapObject = _resolve_map(request, mapid, 'maps.view_map')
 
     map_status = dict()
     if request.method == 'POST': 
@@ -441,44 +422,40 @@ def map_set_permissions(m, perm_spec):
         m.set_user_level(user, level)
 
 
+@require_POST
 def map_ajax_permissions(request, mapid):
-    map_obj = get_object_or_404(Map, pk=mapid)
-
-    if not request.user.has_perm("maps.change_map_permissions", obj=map_obj):
+    try:
+        map_obj = _resolve_map(request, mapid, 'maps.change_map_permissions')
+    except PermissionDenied:
+        # we are handling this differently for the client
         return HttpResponse(
             'You are not allowed to change permissions for this map',
             status=401,
             mimetype='text/plain'
         )
 
-    if not request.method == 'POST':
-        return HttpResponse(
-            'You must use POST for editing map permissions',
-            status=405,
-            mimetype='text/plain'
-        )
 
     spec = json.loads(request.raw_post_data)
     map_set_permissions(map_obj, spec)
 
-    # _perms = {
-    #     Layer.LEVEL_READ: Map.LEVEL_READ,
-    #     Layer.LEVEL_WRITE: Map.LEVEL_WRITE,
-    #     Layer.LEVEL_ADMIN: Map.LEVEL_ADMIN,
-    # }
+    _perms = {
+        Layer.LEVEL_READ: Map.LEVEL_READ,
+        Layer.LEVEL_WRITE: Map.LEVEL_WRITE,
+        Layer.LEVEL_ADMIN: Map.LEVEL_ADMIN,
+    }
 
-    # def perms(x):
-    #     return _perms.get(x, Map.LEVEL_NONE)
+    def perms(x):
+        return _perms.get(x, Map.LEVEL_NONE)
 
-    # if "anonymous" in spec:
-    #     map.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
-    # if "authenticated" in spec:
-    #     map.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
-    # users = [n for (n, p) in spec["users"]]
-    # map.get_user_levels().exclude(user__username__in = users + [map.owner]).delete()
-    # for username, level in spec['users']:
-    #     user = User.objects.get(username = username)
-    #     map.set_user_level(user, perms(level))
+    if "anonymous" in spec:
+        map_obj.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
+    if "authenticated" in spec:
+        map_obj.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
+    users = [n for (n, p) in spec["users"]]
+    map_obj.get_user_levels().exclude(user__username__in = users + [map_obj.owner]).delete()
+    for username, level in spec['users']:
+        user = User.objects.get(username = username)
+        map_obj.set_user_level(user, perms(level))
 
     return HttpResponse(
         "Permissions updated",
