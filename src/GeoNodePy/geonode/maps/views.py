@@ -2194,7 +2194,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
               Q(title__icontains=keyword)
             | Q(abstract__icontains=keyword))
 
-    officialMaps = maps.filter(Q(officialurl__isnull=False))
+    officialMaps = maps.filter(Q(officialurl__isnull=False)).exclude(officialurl='tweetmap')
     maps = maps.filter(Q(officialurl__isnull=True))
 
     if sort_field:

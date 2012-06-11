@@ -426,6 +426,13 @@ var chartPanel = new Ext.Panel({
 });
 
 
+Ext.each(chart.legend.items, function(item) {
+    alert(item);
+    //item.un("mousedown", item.events.mousedown.listeners[0].fn);
+})
+
+
+
 var tweetConfig = {title: "Twitter Trends", source: "local", group: "Twitter", name: "heatmap",
     url: "http://107.22.230.16", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
     singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true
@@ -530,7 +537,7 @@ app.on("ready", function() {
         });
     });
 
-    //updateLayer();
+    updateLayer();
 
 });
 
