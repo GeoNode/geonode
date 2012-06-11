@@ -22,7 +22,7 @@ target
 /src/geoserver-geonode-ext/logs/
 
 # Directory created by collectstatic
-geonode/site_media/
+geonode/static_root/
 
 # OSX specific
 .Python

@@ -11,8 +11,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.DataAccessManager;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * An access manager that uses the special authentication tokens setup by the
