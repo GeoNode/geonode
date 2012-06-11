@@ -105,7 +105,7 @@ def layer_upload(request, template='layers/layer_upload.html'):
 
 def layer_detail(request, layername, template='layers/layer.html'):
     layer = get_object_or_404(Layer, typename=layername)
-    if not request.user.has_perm('maps.view_layer', obj=layer):
+    if not request.user.has_perm('layers.view_layer', obj=layer):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
                 _("You are not permitted to view this layer")})), status=401)
@@ -471,10 +471,10 @@ def layer_search(request):
             layer = Layer.objects.get(uuid=doc['uuid'])
             doc['_local'] = True
             doc['_permissions'] = {
-                'view': request.user.has_perm('maps.view_layer', obj=layer),
-                'change': request.user.has_perm('maps.change_layer', obj=layer),
-                'delete': request.user.has_perm('maps.delete_layer', obj=layer),
-                'change_permissions': request.user.has_perm('maps.change_layer_permissions', obj=layer),
+                'view': request.user.has_perm('layers.view_layer', obj=layer),
+                'change': request.user.has_perm('layers.change_layer', obj=layer),
+                'delete': request.user.has_perm('layers.delete_layer', obj=layer),
+                'change_permissions': request.user.has_perm('layers.change_layer_permissions', obj=layer),
             }
         except Layer.DoesNotExist:
             doc['_local'] = False
@@ -484,23 +484,22 @@ def layer_search(request):
 
 
 def _layer_search(query, start, limit, **kw):
-    
     csw = get_csw()
 
     keywords = _split_query(query)
-    
+
     csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
-    
-    
-    # build results 
-    # XXX this goes directly to the result xml doc to obtain 
+
+
+    # build results
+    # XXX this goes directly to the result xml doc to obtain
     # correct ordering and a fuller view of the result record
     # than owslib currently parses.  This could be improved by
     # improving owslib.
     results = [_build_search_result(doc) for doc in 
                csw._exml.findall('//'+nspath('Record', namespaces['csw']))]
 
-    result = {'rows': results, 
+    result = {'rows': results,
               'total': csw.results['matches']}
 
     result['query_info'] = {
@@ -665,7 +664,7 @@ def layer_ajax_permissions(request, layername):
             mimetype='text/plain'
         )
 
-    if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
+    if not request.user.has_perm("layers.change_layer_permissions", obj=layer):
         return HttpResponse(
             'You are not allowed to change permissions for this layer',
             status=401,
