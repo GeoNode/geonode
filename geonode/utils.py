@@ -7,12 +7,12 @@ import re
 import math
 
 from urlparse import urlparse
-from UserDict import DictMixin
-from ConfigParser import ConfigParser, NoOptionError
 
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
@@ -530,3 +530,25 @@ _viewer_projection_lookup = {
 def _get_viewer_projection_info(srid):
     # TODO: Look up projection details in EPSG database
     return _viewer_projection_lookup.get(srid, {})
+
+
+def resolve_object(request, model, query, permission=None, 
+                   permission_required=False, permission_msg=None):
+    '''Resolve an object using the provided query and check the optional
+    permission. Model views should wrap this function as a shortcut.
+    
+    query - a dict to use for querying the model
+    permission - an optional permission to check
+    permission_required - if True, allow get methods to proceed
+    permission_msg - optional message to use in 403
+    '''
+    
+    obj = get_object_or_404(model, **query)
+    allowed = True
+    if permission:
+        if permission_required or request.method != 'GET':
+            allowed = request.user.has_perm(permission, obj=obj)
+    if not allowed:
+        mesg = permission_msg or _('Permission Denied')
+        raise PermissionDenied(mesg)
+    return obj
