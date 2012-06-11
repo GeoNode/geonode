@@ -52,7 +52,8 @@ Ext.onReady(function() {
                 id: "gn_layer_editor",
                 featureManager: "feature_manager",
                 autoLoadFeature: true
-            }{% endif %}],
+            },
+            { ptype: "gxp_measure" }{% endif %}],
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service 
