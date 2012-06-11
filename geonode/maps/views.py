@@ -46,14 +46,20 @@ MAP_LEV_NAMES = {
     Map.LEVEL_ADMIN : _('Administrative')
 }
 
-def _resolve_map(request, id, permission='maps.change_map', **kwargs):
-    '''Resolve the Map by the provided typename and check the optional
-    permission.
+_PERMISSION_MSG_DELETE = _("You are not permitted to delete this map.")
+_PERMISSION_MSG_GENERIC = _('You do not have permissions for this map.')
+_PERMISSION_MSG_LOGIN = _("You must be logged in to save this map")
+_PERMISSION_MSG_METADATA = _("You are not allowed to modify this map's metadata.")
+_PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
+
+
+def _resolve_map(request, id, permission='maps.change_map',
+                 msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
-    if 'permission_msg' not in kwargs:
-        kwargs['permission_msg'] = _('You do not have permissions for this map.')
-    return resolve_object(request, Map, {'pk':id},
-                          permission = permission, **kwargs)
+    Resolve the Map by the provided typename and check the optional permission.
+    '''
+    return resolve_object(request, Map, {'pk':id}, permission = permission, 
+                          permission_msg=msg, **kwargs)
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
@@ -90,8 +96,7 @@ def map_detail(request, mapid, template='maps/mapinfo.html'):
     '''
     The view that show details of each map
     '''
-    msg = _("You are not allowed to view this map.")
-    map_obj = _resolve_map(request, mapid, 'maps.view_map', permission_msg=msg)
+    map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
 
     config = map_obj.viewer_json()
     config = json.dumps(config)
@@ -110,8 +115,7 @@ def map_metadata(request, mapid, template='maps/map_describe.html'):
     The view that displays a form for
     editing map metadata
     '''
-    msg = _("You are not allowed to modify this map's metadata.")
-    map_obj = _resolve_map(request, mapid, permission_msg=msg)
+    map_obj = _resolve_map(request, mapid, msg=_PERMISSION_MSG_METADATA)
 
     if request.method == "POST":
         # Change metadata, return to map info page
@@ -124,7 +128,7 @@ def map_metadata(request, mapid, template='maps/map_describe.html'):
                 map_obj.keywords.clear()
             map_obj.save()
 
-            return HttpResponseRedirect(reverse('geonode.maps.views.map_controller', args=(map_obj.id,)))
+            return HttpResponseRedirect(reverse('map_detail', args=(map_obj.id,)))
     else:
         # Show form
         map_form = MapForm(instance=map_obj, prefix="map")
@@ -138,8 +142,8 @@ def map_metadata(request, mapid, template='maps/map_describe.html'):
 @login_required
 def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
-    map_obj = _resolve_map(request, mapid, 'maps.delete_map',
-                           permission_required=True)
+    map_obj = _resolve_map(request, mapid, 'maps.delete_map', 
+                           _PERMISSION_MSG_DELETE, permission_required=True)
 
     if request.method == 'GET':
         return render_to_response(template, RequestContext(request, {
@@ -173,8 +177,7 @@ def map_view(request, mapid, template='maps/view.html'):
     The view that returns the map composer opened to
     the map with the given map ID.
     """
-    msg = _("You are not allowed to view this map.")
-    map_obj = _resolve_map(request, mapid, 'maps.view_map', permission_msg=msg)
+    map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
     
     config = map_obj.viewer_json()
     return render_to_response(template, RequestContext(request, {
@@ -198,7 +201,7 @@ def map_json(request, mapid):
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
             return HttpResponse(
-                _("You must be logged in to save this map"),
+                _PERMISSION_MSG_LOGIN,
                 status=401,
                 mimetype="text/plain"
             )
@@ -610,11 +613,11 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     if start > 0: 
         prev = max(start - limit, 0)
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('geonode.maps.views.maps_search') + '?' + params
+        result['prev'] = reverse('maps_search') + '?' + params
 
     next_page = start + limit + 1
     if next_page < map_query.count():
         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-        result['next'] = reverse('geonode.maps.views.maps_search') + '?' + params
+        result['next'] = reverse('maps_search') + '?' + params
     
     return result

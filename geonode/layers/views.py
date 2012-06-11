@@ -39,7 +39,7 @@ from geoserver.resource import FeatureType
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
 
-logger = logging.getLogger("geonode.maps.views")
+logger = logging.getLogger("geonode.layers.views")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
@@ -55,15 +55,20 @@ LAYER_LEV_NAMES = {
     Layer.LEVEL_ADMIN : _('Administrative')
 }
 
+_PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
+_PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
+_PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
+_PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metadata")
+_PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
-def _resolve_layer(request, typename, permission='maps.change_layer', **kwargs):
-    '''Resolve the layer by the provided typename and check the optional
-    permission.
+
+def _resolve_layer(request, typename, permission='maps.change_layer',
+                   msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
-    if 'permission_msg' not in kwargs:
-        kwargs['permission_msg'] = _('You do not have permissions for this layer.')
-    return resolve_object(request, Layer, {'typename':typename},
-                          permission = permission, **kwargs)
+    Resolve the layer by the provided typename and check the optional permission.
+    '''
+    return resolve_object(request, Layer, {'typename':typename}, 
+                          permission = permission, permission_msg=msg, **kwargs)
     
     
 #### Basic Layer Views ####
@@ -116,9 +121,7 @@ def layer_upload(request, template='layers/layer_upload.html'):
 
     
 def layer_detail(request, layername, template='layers/layer.html'):
-    msg = _("You are not permitted to view this layer")
-    layer = _resolve_layer(request, layername, permission='maps.view_layer',
-                           permission_msg=msg)
+    layer = _resolve_layer(request, layername, 'maps.view_layer', _PERMISSION_MSG_VIEW)
     metadata = layer.metadata_csw()
 
     maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
@@ -138,8 +141,7 @@ def layer_detail(request, layername, template='layers/layer.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_describe.html'):
-    msg = _("You are not permitted to modify this layer's metadata")
-    layer = _resolve_layer(request, layername, permission_msg=msg)
+    layer = _resolve_layer(request, layername, _PERMISSION_MSG_METADATA)
         
     poc = layer.poc
     metadata_author = layer.metadata_author
@@ -199,8 +201,7 @@ def layer_metadata(request, layername, template='layers/layer_describe.html'):
 @login_required
 @require_POST
 def layer_style(request, layername):
-    msg = _("You are not permitted to modify this layer")
-    layer = _resolve_layer(request, typename, permission_msg=msg)
+    layer = _resolve_layer(request, typename, _PERMISSION_MSG_MODIFY)
         
     style_name = request.POST.get('defaultStyle')
 
@@ -245,8 +246,7 @@ def layer_change_poc(request, ids, template = 'layers/change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-    msg = _("You are not permitted to modify this layer")
-    layer = _resolve_layer(request, layername, permission_msg=msg)
+    layer = _resolve_layer(request, layername, _PERMISSION_MSG_MODIFY)
     
     if request.method == 'GET':
         cat = Layer.objects.gs_catalog
@@ -286,9 +286,8 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
-    msg =  _("You are not permitted to delete this layer")
     layer = _resolve_layer(request, layername, 'maps.delete_layer',
-                           permission_msg=msg)
+                           _PERMISSION_MSG_DELETE)
 
     if (request.method == 'GET'):
         return render_to_response(template,RequestContext(request, {
@@ -503,12 +502,12 @@ def _layer_search(query, start, limit, **kw):
     if start > 0: 
         prev = max(start - limit, 0)
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('geonode.maps.views.layer_search') + '?' + params
+        result['prev'] = reverse('layer_search') + '?' + params
 
     next_page = csw.results.get('nextrecord', 0) 
     if next_page > 0:
         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-        result['next'] = reverse('geonode.maps.views.layer_search') + '?' + params
+        result['next'] = reverse('layer_search') + '?' + params
     
     return result
 
@@ -662,8 +661,7 @@ def layer_set_permissions(layer, perm_spec):
 @require_POST
 def layer_ajax_permissions(request, layername):
     try:
-        layer = _resolve_layer(request, layername, 
-                               permission='maps.change_layer_permissions')
+        layer = _resolve_layer(request, layername, 'maps.change_layer_permissions')
     except PermissionDenied:
         # we are handling this in a non-standard way
         return HttpResponse(
