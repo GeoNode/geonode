@@ -4,6 +4,8 @@ from urlparse import urljoin
 from urllib import urlencode
 import json
 from unittest import TestCase
+import urllib
+import urllib2
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -29,6 +31,64 @@ from geonode.gs_helpers import cascading_delete, fixup_style
 
 
 
+class _Client(object):
+
+    def __init__(self, url, user, passwd):
+        self.url = url
+        self.user = user
+        self.passwd = passwd
+        self.opener = self._init_url_opener()
+
+    def _init_url_opener(self):
+        auth_handler = urllib2.HTTPBasicAuthHandler()
+        auth_handler.add_password(
+            realm='GeoNode realm',
+            uri='',
+            user=self.user,
+            passwd=self.passwd
+        )
+
+        return urllib2.build_opener(
+            auth_handler,
+            urllib2.HTTPCookieProcessor,
+            # MultipartPostHandler.MultipartPostHandler
+        )
+
+    def parse_cookies(self, cookies):
+        res = {}
+        for part in cookies.split(';'):
+            key, value = part.split('=')
+            res[key] = value
+        return res
+
+    def get_crsf_token(self):
+        """ Method that makes a request against the home page to get
+        the csrf token from the request cookies
+        """
+        resp = self.get('')
+        cookies = self.parse_cookies(resp.headers['set-cookie'])
+        return cookies.get('csrftoken', None)
+
+    def login(self):
+        """ Method to login the GeoNode site"""
+        params = {'csrfmiddlewaretoken': self.get_crsf_token(),
+                  'username': self.user,
+                  'next': '/',
+                  'password': self.passwd}
+        return self._make_request(
+            'accounts/login/',
+            data=urllib.urlencode(params)
+        )
+
+    def _make_request(self, path, data=None):
+        req = urllib2.Request(
+            url=self.url + path, data=data
+        )
+        return self.opener.open(req)
+
+    def get(self, path):
+        return self._make_request(path)
+
 TEST_DATA = os.path.join(settings.PROJECT_ROOT, 'geonode_test_data')
 
 LOGIN_URL=settings.SITEURL + "accounts/login/"
@@ -53,6 +113,7 @@ class GeoNodeProxyTest(TestCase):
     def tearDown(self):
         pass
 
+
 class NormalUserTest(TestCase):
     """
     Tests GeoNode functionality for non-administrative users
@@ -71,16 +132,27 @@ class NormalUserTest(TestCase):
 
         from django.contrib.auth.models import User
 
-        #TODO: Would be nice to ensure the name is available before running the test...
-        norman = User.objects.get(username="norman")
-        save("lembang_schools_by_norman", os.path.join(TEST_DATA, "lembang_schools.shp"), norman,
-                overwrite = False, abstract = "Schools which are in Lembang",
-                title = "Lembang Schools", permissions = {'users': []})
+        client = _Client(
+            settings.SITEURL,
+            user='norman',
+            passwd='norman'
+        )
 
-        # No assertion, but this will raise an error if the permissions don't
-        # allow metadata editing
-        get_web_page(settings.SITEURL + "data/geonode:lembang_schools_by_norman?describe",
-                username="norman", password="norman", login_url=LOGIN_URL)
+        #TODO: Would be nice to ensure the name is available before
+        #running the test...
+        norman = User.objects.get(username="norman")
+        save("lembang_schools_by_norman",
+             os.path.join(TEST_DATA, "lembang_schools.shp"),
+             norman,
+             overwrite=False,
+             abstract="Schools which are in Lembang",
+             title="Lembang Schools",
+             permissions={'users': []}
+        )
+
+        client.login()
+        resp = client.get('data/geonode:lembang_schools_by_norman?describe')
+        self.assertEquals(resp.code, 200)
 
 
 class GeoNodeMapTest(TestCase):
@@ -492,13 +564,15 @@ class GeoNodeMapTest(TestCase):
         assert 'foo' in uploaded.keyword_list(), 'Could not find "foo" in %s' % keywords
         assert 'bar' in uploaded.keyword_list(), 'Could not find "bar" in %s' % keywords
 
-
     def test_empty_bbox(self):
         """Regression-test for failures caused by zero-width bounding boxes"""
         thefile = os.path.join(TEST_DATA, 'single_point.shp')
         uploaded = file_upload(thefile, overwrite=True)
-        detail_page_url = urljoin(settings.SITEURL, uploaded.get_absolute_url())
-        get_web_page(detail_page_url)  # no assertion, but this will fail if the page 500's
-        new_map_url = urljoin(settings.SITEURL, "/maps/new") + "?" + \
-                urlencode(dict(layer=uploaded.typename))
-        get_web_page(new_map_url)  # no assertion, but this will fail if the page 500's
+        client = _Client(
+            settings.SITEURL,
+            user='norman',
+            passwd='norman'
+        )
+        client.login()
+        resp = client.get('/' + uploaded.get_absolute_url())
+        self.assertEquals(resp.code, 200)
