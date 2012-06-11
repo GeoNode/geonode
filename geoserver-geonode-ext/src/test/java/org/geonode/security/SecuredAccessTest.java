@@ -39,7 +39,7 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
     @Override
     protected List<Filter> getFilters() {
         return Collections.singletonList((Filter) GeoServerExtensions
-                .bean("geonodeFilterChainProxy"));
+                .bean("filterChainProxy"));
     }
 
     /**
@@ -68,9 +68,9 @@ public class SecuredAccessTest extends GeoNodeTestSupport {
         filter.setClient(client);
 
         // override the anonymous filter
-        GeoNodeAnonymousProcessingFilter anonFilter = GeoServerExtensions.bean(
-                GeoNodeAnonymousProcessingFilter.class, applicationContext);
-        anonFilter.setClient(client);
+        GeoNodeAnonymousProcessingFilterProvider anonFilterProvider = GeoServerExtensions.bean(
+                GeoNodeAnonymousProcessingFilterProvider.class, applicationContext);
+        anonFilterProvider.setClient(client);
     }
 
     /**
