@@ -511,12 +511,12 @@ def _layer_search(query, start, limit, **kw):
     if start > 0: 
         prev = max(start - limit, 0)
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('geonode.maps.views.layer_search') + '?' + params
+        result['prev'] = reverse('geonode.layers.views.layer_search') + '?' + params
 
     next_page = csw.results.get('nextrecord', 0) 
     if next_page > 0:
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-        result['next'] = reverse('geonode.maps.views.layer_search') + '?' + params
+        params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
+        result['next'] = reverse('geonode.layers.views.layer_search') + '?' + params
     
     return result
 
