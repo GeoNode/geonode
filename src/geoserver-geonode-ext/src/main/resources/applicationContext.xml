@@ -101,7 +101,7 @@
     <constructor-arg ref="processController" />
   </bean>
   <bean class="org.geonode.security.GeoNodeSecurityProvider"/>
-  <bean class="org.geonode.security.GeoNodeDataManager"/>
+  <bean class="org.geonode.security.GeoNodeDataAccessManager"/>
   <bean id="geonodeAuthFilterPanelInfo" class="org.geonode.web.security.GeoNodeAuthFilterPanelInfo">
     <property name="id" value="security.geonodeAuthFilter" />
     <property name="shortTitleKey" value="GeoNodeAuthFilterPanel.short" />
