@@ -516,6 +516,12 @@ class Contact(models.Model):
         return u"%s (%s)" % (self.name, self.organization)
 
 
+def create_user_profile(sender, instance, created, **kwargs):
+    profile, created = Contact.objects.get_or_create(user=instance, defaults={'name': instance.username})
+
+signals.post_save.connect(create_user_profile, sender=User)
+
+
 _viewer_projection_lookup = {
     "EPSG:900913": {
         "maxResolution": 156543.03390625,
