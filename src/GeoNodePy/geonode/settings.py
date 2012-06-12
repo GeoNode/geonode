@@ -304,6 +304,9 @@ GEONODE_CLIENT_LOCATION = "/media/static/"
 # if you do use it replace UA-XXXXXXXX-1 with your own ID
 GOOGLE_ANALYTICS_CODE = ""
 
+GOOGLE_API_KEY = ""
+GOOGLE_SECRET_KEY = ""
+
 #Set name of additional permissions group (besides anonymous and authenticated)
 CUSTOM_GROUP_NAME = 'Organization Users'
 

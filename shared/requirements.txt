@@ -16,7 +16,7 @@ South==0.7.3
 python-memcached
 ordereddict
 #The following are for the gazetteer
-geopy
+-e git+https://github.com/cga-harvard/geopy.git#egg=geopy
 geojson
 https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
 #Uncomment the following to use the django debug toolbar
