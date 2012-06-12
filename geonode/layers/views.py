@@ -497,8 +497,7 @@ def _layer_search(query, start, limit, **kw):
     # than owslib currently parses.  This could be improved by
     # improving owslib.
     results = [_build_search_result(doc) for doc in 
-               csw._exml.findall('//'+nspath('Record', namespaces['csw']))]
-
+               csw._exml.findall('//'+nspath('SummaryRecord', namespaces['csw']))]
     result = {'rows': results,
               'total': csw.results['matches']}
 
@@ -596,14 +595,14 @@ def _build_search_result(doc):
     result['uuid'] = rec.identifier
     result['abstract'] = rec.abstract
     result['keywords'] = [x for x in rec.subjects if x]
-    result['detail'] = rec.uri or ''
+    result['detail'] = rec.uris or ''
 
     # XXX needs indexing ? how
     result['attribution'] = {'title': '', 'href': ''}
 
     # XXX !_! pull out geonode 'typename' if there is one
     # index this directly... 
-    if rec.uri:
+    if rec.uris:
         try:
             result['name'] = urlparse(rec.uri).path.split('/')[-1]
         except Exception: 
