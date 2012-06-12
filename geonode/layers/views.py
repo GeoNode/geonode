@@ -489,7 +489,7 @@ def _layer_search(query, start, limit, **kw):
     # than owslib currently parses.  This could be improved by
     # improving owslib.
     results = [_build_search_result(doc) for doc in 
-               csw._exml.findall('//'+nspath('Record', namespaces['csw']))]
+               csw._exml.findall('//'+nspath('SummaryRecord', namespaces['csw']))]
 
     result = {'rows': results, 
               'total': csw.results['matches']}
@@ -502,12 +502,12 @@ def _layer_search(query, start, limit, **kw):
     if start > 0: 
         prev = max(start - limit, 0)
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('layer_search') + '?' + params
+        result['prev'] = reverse('layer_search_page') + '?' + params
 
     next_page = csw.results.get('nextrecord', 0) 
     if next_page > 0:
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-        result['next'] = reverse('layer_search') + '?' + params
+        params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
+        result['next'] = reverse('layer_search_page') + '?' + params
     
     return result
 
@@ -588,14 +588,14 @@ def _build_search_result(doc):
     result['uuid'] = rec.identifier
     result['abstract'] = rec.abstract
     result['keywords'] = [x for x in rec.subjects if x]
-    result['detail'] = rec.uri or ''
+    result['detail'] = getattr(rec,'uri','')
 
     # XXX needs indexing ? how
     result['attribution'] = {'title': '', 'href': ''}
 
     # XXX !_! pull out geonode 'typename' if there is one
     # index this directly... 
-    if rec.uri:
+    if getattr(rec,'uri',None):
         try:
             result['name'] = urlparse(rec.uri).path.split('/')[-1]
         except Exception:
