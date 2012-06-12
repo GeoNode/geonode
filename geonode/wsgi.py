@@ -1,5 +1,4 @@
 import os
-from paste.proxy import make_proxy
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
