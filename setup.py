@@ -56,7 +56,8 @@ setup(name='GeoNode',
         "mock",
         ],
       zip_safe=False,
-      entry_points="""
-      # -*- Entry points: -*-
+      entry_points="""\
+      [paste.app_factory]
+      main = geonode:main
       """,
       )
