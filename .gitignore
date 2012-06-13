@@ -19,7 +19,7 @@ target
 /geonode/development.db
 /django.log
 /jetty.log
-/src/geoserver-geonode-ext/logs/
+/geoserver-geonode-ext/logs/
 
 # Directory created by collectstatic
 geonode/static_root/
