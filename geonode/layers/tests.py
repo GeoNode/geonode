@@ -204,29 +204,29 @@ class LayersTest(TestCase):
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
-        self.assertEquals(response.status_code, 401) 
+        self.assertEquals(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
-        self.assertEquals(logged_in, True) 
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
+        self.assertEquals(logged_in, True)
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
-        self.assertEquals(response.status_code, 401) 
+        self.assertEquals(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
 
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 
-        # Test that the method returns 200         
-        self.assertEquals(response.status_code, 200) 
+        # Test that the method returns 200
+        self.assertEquals(response.status_code, 200)
 
         # Test that the permissions specification is applied
 
