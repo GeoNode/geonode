@@ -327,18 +327,11 @@ def setup_test_data():
         sh("tar zxvf geonode_test_data.tgz")
 
 @task
-@needs(['setup_test_data'])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
-    from time import sleep
-    call_task('reset')
-    call_task('start')
-    #FIXME: Check the server is up instead of a blind sleep
-    sleep(30)
-    sh("python manage.py test tests.integration")
-    call_task('stop')
+    sh('cat tests/README')
 
 
 @task
