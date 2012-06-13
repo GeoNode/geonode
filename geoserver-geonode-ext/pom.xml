@@ -226,7 +226,7 @@
           <systemProperties>
             <systemProperty>
               <name>GEOSERVER_DATA_DIR</name>
-              <value>../../build/gs_data/</value>
+              <value>../build/gs_data/</value>
             </systemProperty>
           </systemProperties>
 
