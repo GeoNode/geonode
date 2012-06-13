@@ -9,15 +9,17 @@ from urlparse import urlparse
 
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.conf import settings
-from django.template import RequestContext, loader
+from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
+from django.views.decorators.http import require_POST
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info, get_csw
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
@@ -25,9 +27,9 @@ from geonode.layers.models import Layer, ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
-
-from geonode.layers.utils import save, layer_set_permissions
-
+from geonode.layers.utils import save
+from geonode.layers.utils import layer_set_permissions
+from geonode.utils import resolve_object
 from geonode.people.forms import ContactForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -37,7 +39,7 @@ from geoserver.resource import FeatureType
 from owslib.csw import CswRecord, namespaces
 from owslib.util import nspath
 
-logger = logging.getLogger("geonode.maps.views")
+logger = logging.getLogger("geonode.layers.views")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
@@ -53,7 +55,22 @@ LAYER_LEV_NAMES = {
     Layer.LEVEL_ADMIN : _('Administrative')
 }
 
+_PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
+_PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
+_PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
+_PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metadata")
+_PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
+
+def _resolve_layer(request, typename, permission='maps.change_layer',
+                   msg=_PERMISSION_MSG_GENERIC, **kwargs):
+    '''
+    Resolve the layer by the provided typename and check the optional permission.
+    '''
+    return resolve_object(request, Layer, {'typename':typename}, 
+                          permission = permission, permission_msg=msg, **kwargs)
+    
+    
 #### Basic Layer Views ####
 
 
@@ -104,12 +121,7 @@ def layer_upload(request, template='layers/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer.html'):
-    layer = get_object_or_404(Layer, typename=layername)
-    if not request.user.has_perm('layers.view_layer', obj=layer):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not permitted to view this layer")})), status=401)
-
+    layer = _resolve_layer(request, layername, 'maps.view_layer', _PERMISSION_MSG_VIEW)
     metadata = layer.metadata_csw()
 
     maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
@@ -129,105 +141,92 @@ def layer_detail(request, layername, template='layers/layer.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_describe.html'):
-    layer = get_object_or_404(Layer, typename=layername)
-    if request.user.is_authenticated():
-        if not request.user.has_perm('maps.change_layer', obj=layer):
-            return HttpResponse(loader.render_to_string('401.html', 
-                RequestContext(request, {'error_message': 
-                    _("You are not permitted to modify this layer's metadata")})), status=401)
+    layer = _resolve_layer(request, layername, _PERMISSION_MSG_METADATA)
         
-        poc = layer.poc
-        metadata_author = layer.metadata_author
-        ContactRole.objects.get(layer=layer, role=layer.poc_role)
-        ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
+    poc = layer.poc
+    metadata_author = layer.metadata_author
+    ContactRole.objects.get(layer=layer, role=layer.poc_role)
+    ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
 
-        if request.method == "POST":
-            layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
-        else:
-            layer_form = LayerForm(instance=layer, prefix="layer")
+    if request.method == "POST":
+        layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+    else:
+        layer_form = LayerForm(instance=layer, prefix="layer")
 
-        if request.method == "POST" and layer_form.is_valid():
-            new_poc = layer_form.cleaned_data['poc']
-            new_author = layer_form.cleaned_data['metadata_author']
-            new_keywords = layer_form.cleaned_data['keywords']
+    if request.method == "POST" and layer_form.is_valid():
+        new_poc = layer_form.cleaned_data['poc']
+        new_author = layer_form.cleaned_data['metadata_author']
+        new_keywords = layer_form.cleaned_data['keywords']
 
-            if new_poc is None:
-                poc_form = ContactForm(request.POST, prefix="poc")
-                if poc_form.has_changed and poc_form.is_valid():
-                    new_poc = poc_form.save()
+        if new_poc is None:
+            poc_form = ContactForm(request.POST, prefix="poc")
+            if poc_form.has_changed and poc_form.is_valid():
+                new_poc = poc_form.save()
 
-            if new_author is None:
-                author_form = ContactForm(request.POST, prefix="author")
-                if author_form.has_changed and author_form.is_valid():
-                    new_author = author_form.save()
+        if new_author is None:
+            author_form = ContactForm(request.POST, prefix="author")
+            if author_form.has_changed and author_form.is_valid():
+                new_author = author_form.save()
 
-            if new_poc is not None and new_author is not None:
-                the_layer = layer_form.save(commit=False)
-                the_layer.poc = new_poc
-                the_layer.metadata_author = new_author
-                the_layer.keywords.add(*new_keywords)
-                the_layer.save()
-                return HttpResponseRedirect("/data/" + layer.typename)
+        if new_poc is not None and new_author is not None:
+            the_layer = layer_form.save(commit=False)
+            the_layer.poc = new_poc
+            the_layer.metadata_author = new_author
+            the_layer.keywords.add(*new_keywords)
+            the_layer.save()
+            return HttpResponseRedirect("/data/" + layer.typename)
 
-        if poc.user is None:
-            poc_form = ContactForm(instance=poc, prefix="poc")
-        else:
-            layer_form.fields['poc'].initial = poc.id
-            poc_form = ContactForm(prefix="poc")
-            poc_form.hidden=True
+    if poc.user is None:
+        poc_form = ContactForm(instance=poc, prefix="poc")
+    else:
+        layer_form.fields['poc'].initial = poc.id
+        poc_form = ContactForm(prefix="poc")
+        poc_form.hidden=True
 
-        if metadata_author.user is None:
-            author_form = ContactForm(instance=metadata_author, prefix="author")
-        else:
-            layer_form.fields['metadata_author'].initial = metadata_author.id
-            author_form = ContactForm(prefix="author")
-            author_form.hidden=True
+    if metadata_author.user is None:
+        author_form = ContactForm(instance=metadata_author, prefix="author")
+    else:
+        layer_form.fields['metadata_author'].initial = metadata_author.id
+        author_form = ContactForm(prefix="author")
+        author_form.hidden=True
 
-        return render_to_response(template, RequestContext(request, {
-            "layer": layer,
-            "layer_form": layer_form,
-            "poc_form": poc_form,
-            "author_form": author_form,
-        }))
-    else: 
-        return HttpResponse("Not allowed", status=403)
+    return render_to_response(template, RequestContext(request, {
+        "layer": layer,
+        "layer_form": layer_form,
+        "poc_form": poc_form,
+        "author_form": author_form,
+    }))
 
 
+@login_required
+@require_POST
 def layer_style(request, layername):
-    layer = get_object_or_404(Layer, typename=layername)
-    if request.user.is_authenticated():
-        if not request.user.has_perm('maps.change_layer', obj=layer):
-            return HttpResponse(loader.render_to_string('401.html', 
-                RequestContext(request, {'error_message': 
-                    _("You are not permitted to modify this layer")})), status=401)
+    layer = _resolve_layer(request, typename, _PERMISSION_MSG_MODIFY)
         
-        if (request.method == 'POST'):
-            style_name = request.POST.get('defaultStyle')
+    style_name = request.POST.get('defaultStyle')
 
-            # would be nice to implement
-            # better handling of default style switching
-            # in layer model or deeper (gsconfig.py, REST API)
+    # would be nice to implement
+    # better handling of default style switching
+    # in layer model or deeper (gsconfig.py, REST API)
 
-            old_default = layer.default_style
-            if old_default.name == style_name:
-                return HttpResponse("Default style for %s remains %s" % (layer.name, style_name), status=200)
+    old_default = layer.default_style
+    if old_default.name == style_name:
+        return HttpResponse("Default style for %s remains %s" % (layer.name, style_name), status=200)
 
-            # This code assumes without checking
-            # that the new default style name is included
-            # in the list of possible styles.
+    # This code assumes without checking
+    # that the new default style name is included
+    # in the list of possible styles.
 
-            new_style = (style for style in layer.styles if style.name == style_name).next()
+    new_style = (style for style in layer.styles if style.name == style_name).next()
 
-            layer.default_style = new_style
-            layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
-            layer.save()
-            return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
-        else:
-            return HttpResponse("Not allowed",status=403)
-    else:  
-        return HttpResponse("Not allowed",status=403)
+    layer.default_style = new_style
+    layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
+    layer.save()
+    
+    return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
 
 
+@login_required
 def layer_change_poc(request, ids, template = 'layers/change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
     if request.method == 'POST':
@@ -247,11 +246,8 @@ def layer_change_poc(request, ids, template = 'layers/change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-    layer = get_object_or_404(Layer, typename=layername)
-    if not request.user.has_perm('maps.change_layer', obj=layer):
-        return HttpResponse(loader.render_to_string('401.html', 
-            RequestContext(request, {'error_message': 
-                _("You are not permitted to modify this layer")})), status=401)
+    layer = _resolve_layer(request, layername, _PERMISSION_MSG_MODIFY)
+    
     if request.method == 'GET':
         cat = Layer.objects.gs_catalog
         info = cat.get_resource(layer.name)
@@ -288,23 +284,18 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
 
+@login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
-    layer = get_object_or_404(Layer, typename=layername)
-    if request.user.is_authenticated():
-        if not request.user.has_perm('maps.delete_layer', obj=layer):
-            return HttpResponse(loader.render_to_string('401.html',
-                RequestContext(request, {'error_message':
-                    _("You are not permitted to delete this layer")})), status=401)
+    layer = _resolve_layer(request, layername, 'maps.delete_layer',
+                           _PERMISSION_MSG_DELETE)
 
-        if (request.method == 'GET'):
-            return render_to_response(template,RequestContext(request, {
-                "layer": layer
-            }))
-        if (request.method == 'POST'):
-            layer.delete()
-            return HttpResponseRedirect(reverse("data_home"))
-        else:
-            return HttpResponse("Not allowed",status=403)
+    if (request.method == 'GET'):
+        return render_to_response(template,RequestContext(request, {
+            "layer": layer
+        }))
+    if (request.method == 'POST'):
+        layer.delete()
+        return HttpResponseRedirect(reverse("data_home"))
     else:
         return HttpResponse("Not allowed",status=403)
 
@@ -484,22 +475,23 @@ def layer_search(request):
 
 
 def _layer_search(query, start, limit, **kw):
+    
     csw = get_csw()
 
     keywords = _split_query(query)
-
+    
     csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
-
-
-    # build results
-    # XXX this goes directly to the result xml doc to obtain
+    
+    
+    # build results 
+    # XXX this goes directly to the result xml doc to obtain 
     # correct ordering and a fuller view of the result record
     # than owslib currently parses.  This could be improved by
     # improving owslib.
     results = [_build_search_result(doc) for doc in 
                csw._exml.findall('//'+nspath('Record', namespaces['csw']))]
 
-    result = {'rows': results,
+    result = {'rows': results, 
               'total': csw.results['matches']}
 
     result['query_info'] = {
@@ -510,12 +502,12 @@ def _layer_search(query, start, limit, **kw):
     if start > 0: 
         prev = max(start - limit, 0)
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('geonode.layers.views.layer_search') + '?' + params
+        result['prev'] = reverse('layer_search_page') + '?' + params
 
     next_page = csw.results.get('nextrecord', 0) 
     if next_page > 0:
         params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
-        result['next'] = reverse('geonode.layers.views.layer_search') + '?' + params
+        result['next'] = reverse('layer_search_page') + '?' + params
     
     return result
 
@@ -596,17 +588,17 @@ def _build_search_result(doc):
     result['uuid'] = rec.identifier
     result['abstract'] = rec.abstract
     result['keywords'] = [x for x in rec.subjects if x]
-    result['detail'] = rec.uri or ''
+    result['detail'] = getattr(rec,'uri','')
 
     # XXX needs indexing ? how
     result['attribution'] = {'title': '', 'href': ''}
 
     # XXX !_! pull out geonode 'typename' if there is one
     # index this directly... 
-    if rec.uri:
+    if getattr(rec,'uri',None):
         try:
             result['name'] = urlparse(rec.uri).path.split('/')[-1]
-        except Exception: 
+        except Exception:
             pass
     # fallback: use geonetwork uuid
     if not result.get('name', ''):
@@ -654,8 +646,16 @@ def _build_search_result(doc):
 
 ### Layer Permissions ####
 
-def layer_ajax_permissions(request, layername):
-    layer = get_object_or_404(Layer, typename=layername)
+def layer_set_permissions(layer, perm_spec):
+    if "authenticated" in perm_spec:
+        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+    if "anonymous" in perm_spec:
+        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    users = [n[0] for n in perm_spec['users']]
+    layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
+    for username, level in perm_spec['users']:
+        user = User.objects.get(username=username)
+        layer.set_user_level(user, level)
 
     if not request.method == 'POST':
         return HttpResponse(
@@ -664,12 +664,16 @@ def layer_ajax_permissions(request, layername):
             mimetype='text/plain'
         )
 
-    if not request.user.has_perm("layers.change_layer_permissions", obj=layer):
+@require_POST
+def layer_ajax_permissions(request, layername):
+    try:
+        layer = _resolve_layer(request, layername, 'maps.change_layer_permissions')
+    except PermissionDenied:
+        # we are handling this in a non-standard way
         return HttpResponse(
             'You are not allowed to change permissions for this layer',
             status=401,
-            mimetype='text/plain'
-        )
+            mimetype='text/plain')
 
     permission_spec = json.loads(request.raw_post_data)
     layer_set_permissions(layer, permission_spec)
