@@ -644,26 +644,6 @@ def _build_search_result(doc):
     return result
 
 
-### Layer Permissions ####
-
-def layer_set_permissions(layer, perm_spec):
-    if "authenticated" in perm_spec:
-        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-    if "anonymous" in perm_spec:
-        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n[0] for n in perm_spec['users']]
-    layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        layer.set_user_level(user, level)
-
-    if not request.method == 'POST':
-        return HttpResponse(
-            'You must use POST for editing layer permissions',
-            status=405,
-            mimetype='text/plain'
-        )
-
 @require_POST
 def layer_ajax_permissions(request, layername):
     try:
