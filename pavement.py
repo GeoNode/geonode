@@ -275,6 +275,7 @@ def start():
         # If applications did not start in time we will give the user a chance
         # to inspect them and stop them manually.
         print "GeoServer never started properly or timed out. It may still be running in the background."
+        print "The logs are available at geoserver-geonode-ext/jetty.log"
         sys.exit(1)
     else:
         print "GeoNode is now available."
