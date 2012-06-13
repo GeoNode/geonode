@@ -1,7 +1,9 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, \
-     get_csw
-from geoserver.resource import FeatureType
+from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole,Role, get_catalogue
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis
+from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox, namespaces, metadatarecord2dict, _extract_links
+import geoserver
+from geoserver.resource import FeatureType, Coverage
 import base64
 from django import forms
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
@@ -18,8 +20,6 @@ from django.utils import simplejson as json
 
 import math
 import httplib2 
-from owslib.csw import CswRecord, namespaces
-from owslib.util import nspath
 import re
 from urllib import urlencode
 from urlparse import urlparse
@@ -60,10 +60,9 @@ def default_map_config():
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
-
-
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
+
 class ContactForm(forms.ModelForm):
     keywords = taggit.forms.TagField(required=False)
     class Meta:
@@ -100,7 +99,6 @@ class PocForm(forms.Form):
     contact = forms.ModelChoiceField(label = "New point of contact",
                                      queryset = Contact.objects.exclude(user=None))
 
-
 class MapForm(forms.ModelForm):
     keywords = taggit.forms.TagField(required=False)
     class Meta:
@@ -109,8 +107,6 @@ class MapForm(forms.ModelForm):
         widgets = {
             'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
         }
-
-
 
 MAP_LEV_NAMES = {
     Map.LEVEL_NONE  : _('No Permissions'),
@@ -283,7 +279,7 @@ def newmap(request):
         return render_to_response('maps/view.html', RequestContext(request, {
             'config': config, 
             'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-            'GEONETWORK_BASE_URL': settings.GEONETWORK_BASE_URL,
+            'CATALOGUE_BASE_URL': settings.CSW['default']['url'],
             'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
         }))
 
@@ -309,7 +305,6 @@ h.authorizations.append(
         h
     )
 )
-
 
 @login_required
 def map_download(request, mapid):
@@ -638,7 +633,7 @@ def view(request, mapid):
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEONETWORK_BASE_URL' : settings.GEONETWORK_BASE_URL,
+        'CATALOGUE_BASE_URL' : settings.CSW['default']['url'],
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
 
@@ -654,7 +649,6 @@ def embed(request, mapid=None):
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))
-
 
 def data(request):
     return render_to_response('data.html', RequestContext(request, {
@@ -681,7 +675,7 @@ def layer_metadata(request, layername):
             return HttpResponse(loader.render_to_string('401.html', 
                 RequestContext(request, {'error_message': 
                     _("You are not permitted to modify this layer's metadata")})), status=401)
-        
+
         poc = layer.poc
         metadata_author = layer.metadata_author
         ContactRole.objects.get(layer=layer, role=layer.poc_role)
@@ -799,7 +793,7 @@ def layer_detail(request, layername):
             RequestContext(request, {'error_message': 
                 _("You are not permitted to view this layer")})), status=401)
     
-    metadata = layer.metadata_csw()
+    metadata_links = layer.full_metadata_links
 
     maplayer = MapLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
@@ -809,12 +803,11 @@ def layer_detail(request, layername):
 
     return render_to_response('maps/layer.html', RequestContext(request, {
         "layer": layer,
-        "metadata": metadata,
-        "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
+        "metadata_links": metadata_links,
+        "viewer": json.dumps(map.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
-        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
+        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,
     }))
-
 
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
@@ -843,7 +836,9 @@ def upload_layer(request):
                         )
                 return HttpResponse(json.dumps({
                     "success": True,
-                    "redirect_to": reverse('data_metadata', args=[saved_layer.typename])}))
+                    "redirect_to": reverse('data_metadata',
+                        args=[saved_layer.typename])}))
+
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
@@ -930,7 +925,6 @@ def _perms_info(obj, level_names):
     if hasattr(obj, 'owner') and obj.owner is not None:
         info['owner'] = obj.owner.username
     return info
-       
 
 def _perms_info_json(obj, level_names):
     return json.dumps(_perms_info(obj, level_names))
@@ -985,7 +979,6 @@ def _handle_perms_edit(request, obj):
             obj.set_user_level(user, level)
 
     return errors
-
 
 def _get_basic_auth_info(request):
     """
@@ -1061,7 +1054,6 @@ def layer_acls(request):
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
-
 def _split_query(query):
     """
     split and strip keywords, preserve space 
@@ -1086,14 +1078,11 @@ def _split_query(query):
         keywords.append(accum)
     return [kw.strip() for kw in keywords if kw.strip()]
 
-
-
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
 def metadata_search(request):
     """
-    handles a basic search for data using the 
-    GeoNetwork catalog.
+    handles a basic search for data using Catalogue.
 
     the search accepts: 
     q - general query for keywords across all fields
@@ -1188,24 +1177,24 @@ def metadata_search(request):
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
 def _metadata_search(query, start, limit, **kw):
-    
-    csw = get_csw()
+   
+    catalogue = get_catalogue()
 
     keywords = _split_query(query)
-    
-    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
-    
-    
-    # build results 
-    # XXX this goes directly to the result xml doc to obtain 
-    # correct ordering and a fuller view of the result record
-    # than owslib currently parses.  This could be improved by
-    # improving owslib.
-    results = [_build_search_result(doc) for doc in 
-               csw._exml.findall('//'+nspath('Record', namespaces['csw']))]
+   
+    if kw.has_key('bbox'):
+        # ensure proper bbox axis order
+        bbox = normalize_bbox(kw['bbox'])
+    else:
+        bbox = None
+
+    catalogue.search(keywords, start+1, limit, bbox)
+
+    # build results into JSON for API
+    results = [metadatarecord2dict(doc, catalogue) for v, doc in catalogue.records.iteritems()]
 
     result = {'rows': results, 
-              'total': csw.results['matches']}
+              'total': catalogue.results['matches']}
 
     result['query_info'] = {
         'start': start,
@@ -1217,8 +1206,8 @@ def _metadata_search(query, start, limit, **kw):
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
         result['prev'] = reverse('geonode.maps.views.metadata_search') + '?' + params
 
-    next_page = csw.results.get('nextrecord', 0) 
-    if next_page > 0:
+    next = catalogue.results.get('nextrecord', 0) 
+    if next > 0:
         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
     
@@ -1226,12 +1215,14 @@ def _metadata_search(query, start, limit, **kw):
 
 def search_result_detail(request):
     uuid = request.GET.get("uuid")
-    csw = get_csw()
-    csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.records.values()[0]
-    raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
-    extra_links = _extract_links(raw_xml)
-    
+    catalogue = get_catalogue()
+    rec = catalogue.get_by_uuid(uuid)
+
+    if rec is None:
+        return HttpResponse('No metadata found!', status=500)
+
+    extra_links = dict(download=_extract_links(rec))
+
     try:
         layer = Layer.objects.get(uuid=uuid)
         layer_is_remote = False
@@ -1242,6 +1233,7 @@ def search_result_detail(request):
     return render_to_response('maps/search_result_snippet.html', RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
+        'metadata_links': catalogue.urls_for_uuid(uuid),
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))
@@ -1342,7 +1334,7 @@ def _build_search_result(doc):
                 pass
 
     # construct the link to the geonetwork metadata record (not self-indexed)
-    md_link = settings.GEONETWORK_BASE_URL + "srv/en/csw?" + urlencode({
+    md_link = settings.CSW['default']['url'] + '?' + urlencode({
             "request": "GetRecordById",
             "service": "CSW",
             "version": "2.0.2",
@@ -1401,8 +1393,7 @@ DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
 def maps_search(request):
     """
-    handles a basic search for maps using the 
-    GeoNetwork catalog.
+    handles a basic search for maps using the Catalogue.
 
     the search accepts: 
     q - general query for keywords across all fields

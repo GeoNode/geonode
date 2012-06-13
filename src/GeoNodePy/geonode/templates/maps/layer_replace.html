@@ -86,13 +86,8 @@ Ext.onReady(function(){
 
     });
 
-    var csrf_token = new Ext.form.Hidden({
-        id: 'csrfmiddlewaretoken',
-        name: 'csrfmiddlewaretoken',
-        value: '{{csrf_token|escapejs}}'
-    });
-
     form_fields = [layer_name, base_file, dbf_file, shx_file, prj_file, csrf_token];
+
   }
   else {
     var base_file = new Ext.ux.form.FileUploadField({
@@ -165,7 +160,7 @@ Ext.onReady(function(){
 
 
 {% block sidebar %}
-<h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
+<h3>{%trans "Update Layer"  %} "{{ layer.resource.title|default:layer.typename }}"</h3>
 <p>{% trans "This form allows you to update the data for this layer."  %}</p>
 <p>{% blocktrans %}
 If the new dataset omits attributes that were included in the previous version,

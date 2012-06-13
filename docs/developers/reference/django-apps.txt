@@ -105,14 +105,13 @@ GEOSERVER_BASE_URL
   http://example.com/geoserver/web/ , your GEOSERVER_BASE_URL is
   http://example.com/ .
 
-GEONETWORK_CREDENTIALS
-  Similar to GEOSERVER_CREDENTIALS, but for GeoNetwork.  The user must have
-  permissions to create and modify metadata records in GeoNetwork.
-
-GEONETWORK_BASE_URL
-  Similar to GEOSERVER_BASE_URL, but for GeoNetwork.  Again, this is the
-  servlet context URL, or can be determined by stripping the last path
-  component off the url for the GeoNetwork homepage.
+# CSW settings
+CSW
+  A dict with the following keys:
+ * type: The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
+ * url: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+ * username: login credentials (for GeoNetwork)
+ * password: login credentials (for GeoNetwork)
 
 SITEURL
   A base URL for use in creating absolute links to Django views.

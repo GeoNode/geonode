@@ -9,6 +9,7 @@ import geonode.maps.views
 
 from geonode.maps.models import Map, Layer, User
 from geonode.maps.utils import get_valid_user, GeoNodeException
+from geonode.maps.utils import forward_mercator, inverse_mercator
 
 from mock import Mock, patch
 
@@ -19,31 +20,31 @@ import math
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
 
-Layer.objects.geonetwork = Mock()
+Layer.objects.catalogue = Mock()
 Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
-
-geonode.maps.models.get_csw = Mock()
-geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = []
-
-_csw_resource = Mock()
-_csw_resource.protocol = "WWW:LINK-1.0-http--link"
-_csw_resource.url = "http://example.com/"
-_csw_resource.description = "example link"
-geonode.maps.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
-from geonode.maps.utils import forward_mercator, inverse_mercator
 
 DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
 
 geonode.maps.views._metadata_search = Mock()
 geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
 
-geonode.maps.views.get_csw = Mock()
-geonode.maps.views.get_csw.return_value.getrecordbyid.return_value = None
-geonode.maps.views.get_csw.return_value.records.values.return_value = [None]
-geonode.maps.views._extract_links = Mock()
-geonode.maps.views._extract_links.return_value = {}
+_catalogue_resource = Mock()
+_catalogue_resource.protocol = "WWW:LINK-1.0-http--link"
+_catalogue_resource.url = "http://example.com/"
+_catalogue_resource.description = "example link"
+
+mockrecord = Mock()
+mockrecord.identification.keywords = [dict(keywords=["keywords", "saving"])]
+mockrecord.distribution.online = [_catalogue_resource]
+
+geonode.maps.models.get_catalogue = Mock()
+geonode.maps.models.get_catalogue.return_value.get_by_uuid.return_value = mockrecord
+geonode.maps.models.get_catalogue.return_value.records.values.return_value = [mockrecord]
+
+geonode.maps.models._extract_links = Mock()
+geonode.maps.models._extract_links.return_value = {}
 
 class MapTest(TestCase):
     """Tests geonode.maps app/module
@@ -65,7 +66,7 @@ community."
 #    def test_layer_save_to_geoserver(self):
 #        pass
 
-#    def test_layer_save_to_geonetwork(self):
+#    def test_layer_save_to_catalogue(self):
 #        pass
 
 #    def test_post_save_layer(self):
@@ -83,7 +84,7 @@ community."
 #    def test_layer_metadata(self):
 #        pass
     
-#    def test_layer_metadata_csw(self):
+#    def test_layer_metadata_catalogue(self):
 #        pass
 
 #    def test_layer_attribute_names(self):
@@ -95,7 +96,7 @@ community."
 #    def test_layer_delete_from_geoserver(self):
 #        pass
 
-#    def test_layer_delete_from_geonetwork(self):
+#    def test_layer_delete_from_catalogue(self):
 #        pass
 
 #    def test_delete_layer(self):
@@ -152,7 +153,7 @@ community."
 #    def test_layer_autopopulate(self):
 #        pass
 
-#    def test_layer_populate_from_gn(self):
+#    def test_layer_populate_from_catalogue(self):
 #        pass
 
 #    def test_layer_keyword_list(self):
@@ -730,9 +731,9 @@ community."
         '''
         layer = Layer.objects.all()[0]
 
-        # save to geonetwork so we know the uuid is consistent between
-        # django db and geonetwork
-        layer.save_to_geonetwork()
+        # save to catalogue so we know the uuid is consistent between
+        # django db and catalogue
+        layer.save_to_catalogue()
 
         c = Client()
         response = c.get('/data/search/detail', {'uuid':layer.uuid})
@@ -1205,20 +1206,19 @@ class UtilsTest(TestCase):
             self.assertRaises(GeoNodeException, check_geonode_is_up)
 
         with nested(
-            patch('geonode.maps.models.Layer.objects.gs_catalog'),
-            patch('geonode.maps.models.Layer.objects.geonetwork')
-        ) as (mock_gs, mock_gn):
-            mock_gn.login.side_effect = blowup
-            self.assertRaises(GeoNodeException, check_geonode_is_up)
-            self.assertTrue(mock_gs.get_workspaces.called)
+                patch('geonode.maps.models.Layer.objects.gs_catalog'),
+                patch('geonode.maps.models.Layer.objects.catalogue')
+            ) as (mock_gs, mock_gn):
+                mock_gn.login.side_effect = blowup
+                self.assertRaises(GeoNodeException, check_geonode_is_up)
+                self.assertTrue(mock_gs.get_workspaces.called)
 
         with nested(
-            patch('geonode.maps.models.Layer.objects.gs_catalog'),
-            patch('geonode.maps.models.Layer.objects.geonetwork')
-        ) as (mock_gs, mock_gn):
-            # no assertion, this should just run without error
-            check_geonode_is_up()
-
+                patch('geonode.maps.models.Layer.objects.gs_catalog'),
+                patch('geonode.maps.models.Layer.objects.catalogue')
+            ) as (mock_gs, mock_gn):
+                # no assertion, this should just run without error
+                check_geonode_is_up()
 
     def test_save(self):
         import shutil
@@ -1244,34 +1244,34 @@ class UtilsTest(TestCase):
                     return self.contents[idx]
 
             with nested(
-                patch.object(geonode.maps.models, '_wms', new=MockWMS()),
-                patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.maps.models.Layer.objects.geonetwork')
-            ) as (mock_wms, mock_gs, mock_gn):
-                # Setup
-                mock_gs.get_store.return_value.get_resources.return_value = []
-                mock_resource = mock_gs.get_resource.return_value
-                mock_resource.name = 'a_layer'
-                mock_resource.title = 'a_layer'
-                mock_resource.abstract = 'a_layer'
-                mock_resource.store.name = "a_layer"
-                mock_resource.store.resource_type = "dataStore"
-                mock_resource.store.workspace.name = "geonode"
-                mock_resource.native_bbox = ["0", "0", "0", "0"]
-                mock_resource.projection = "EPSG:4326"
-                mock_gn.url_for_uuid.return_value = "http://example.com/metadata"
+                    patch.object(geonode.maps.models, '_wms', new=MockWMS()),
+                    patch('geonode.maps.models.Layer.objects.gs_catalog'),
+                    patch('geonode.maps.models.Layer.objects.catalogue')
+                ) as (mock_wms, mock_gs, mock_gn):
+                    # Setup
+                    mock_gs.get_store.return_value.get_resources.return_value = []
+                    mock_resource = mock_gs.get_resource.return_value
+                    mock_resource.name = 'a_layer'
+                    mock_resource.title = 'a_layer'
+                    mock_resource.abstract = 'a_layer'
+                    mock_resource.store.name = "a_layer"
+                    mock_resource.store.resource_type = "dataStore"
+                    mock_resource.store.workspace.name = "geonode"
+                    mock_resource.native_bbox = ["0", "0", "0", "0"]
+                    mock_resource.projection = "EPSG:4326"
+                    mock_gn.url_for_uuid.return_value = "http://example.com/metadata"
 
-                # Exercise
-                base_file = os.path.join(d, 'foo.shp')
-                owner = User.objects.get(username="admin")
-                save('a_layer', base_file, owner)
+                    # Exercise
+                    base_file = os.path.join(d, 'foo.shp')
+                    owner = User.objects.get(username="admin")
+                    save('a_layer', base_file, owner)
 
-                # Assertions
-                (md_link,) = mock_resource.metadata_links
-                md_mime, md_spec, md_url = md_link
-                self.assertEquals(md_mime, "text/xml")
-                self.assertEquals(md_spec, "TC211")
-                self.assertEquals(md_url,  "http://example.com/metadata")
+                    # Assertions
+                    (md_link,) = mock_resource.metadata_links
+                    md_mime, md_spec, md_url = md_link
+                    self.assertEquals(md_mime, "text/xml")
+                    self.assertEquals(md_spec, "TC211")
+                    self.assertEquals(md_url,  "http://example.com/metadata")
         finally:
             if d is not None:
                 shutil.rmtree(d)

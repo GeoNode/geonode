@@ -268,10 +268,10 @@
         {% endfor %}
     </p>
     <p> <strong>{% trans "Metadata" %}: </strong>
-        {% for mimetype, mdtype, link in layer.metadata_links %}
-            <a href="{{link}}">{{mdtype}}</a>
-        {% empty %}
-            <em> {% trans "No metadata links provided for this data." noop %} </em>
+        {% for mlink in metadata_links %}
+          {% for link in mlink.items %}
+            <a href="{{link.1}}">{{link.0}}</a>
+          {% endfor %}
         {% endfor %}
     </p>
     <h3>{% trans "Maps" %} </h3>
