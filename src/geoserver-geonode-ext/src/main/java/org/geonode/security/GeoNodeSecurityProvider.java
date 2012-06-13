@@ -44,12 +44,8 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
         return new DefaultSecurityClient(baseUrl, httpClient);
     }
     
-    private boolean inInit = false;
-    
     @Override 
     public void init(GeoServerSecurityManager manager) {
-    	if (inInit) return;
-    	inInit = true;
     	try {
     		File cookie = geonodeCookie();
     		if (!cookie.exists()) {
@@ -58,9 +54,7 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
     		}
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to initialize GeoNode settings", e);
-		} finally {
-    		inInit = false;
-    	}
+		}
     }
     
     private static File geonodeCookie() throws IOException {
