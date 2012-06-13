@@ -322,7 +322,6 @@ def test_integration(options):
     call_task('start')
     #FIXME: Check the server is up instead of a blind sleep
     sleep(60)
-    assert 0
     with pushd('tests/integration'):
         sh("python manage.py test")
     call_task('stop')
