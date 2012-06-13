@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson as json
+
 
 import geonode.maps.models
 import geonode.maps.views
@@ -125,6 +127,8 @@ community."
       }
     }
     """
+    
+    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","map_readwrite"]]}
 
     def test_map_json(self):
         c = Client()
@@ -228,3 +232,55 @@ community."
             client = Client()
             layer = Layer.objects.all()[0]
             client.get("/maps/new?layer=" + layer.typename)
+
+    def test_ajax_map_permissions(self):
+        """Verify that the ajax_layer_permissions view is behaving as expected
+        """
+        
+        # Setup some layer names to work with
+        mapid = Map.objects.all()[0].pk
+        invalid_mapid = "42"
+
+        c = Client()
+        
+        url = lambda id: reverse('map_ajax_permissions',args=[id])
+
+        # Test that an invalid layer.typename is handled for properly
+        response = c.post(url(invalid_mapid), 
+                          data=json.dumps(self.perm_spec),
+                          content_type="application/json")
+        self.assertEquals(response.status_code, 404) 
+
+        # Test that POST is required
+        response = c.get(url(mapid))
+        self.assertEquals(response.status_code, 405)
+        
+        # Test that a user is required to have permissions
+
+        # First test un-authenticated
+        response = c.post(url(mapid),
+                          data=json.dumps(self.perm_spec),
+                          content_type="application/json")
+        self.assertEquals(response.status_code, 401)
+
+        # Next Test with a user that does NOT have the proper perms
+        logged_in = c.login(username='bobby', password='bob')
+        self.assertEquals(logged_in, True)
+        response = c.post(url(mapid),
+                          data=json.dumps(self.perm_spec),
+                          content_type="application/json")
+        self.assertEquals(response.status_code, 401)
+
+        # Login as a user with the proper permission and test the endpoint
+        logged_in = c.login(username='admin', password='admin')
+        self.assertEquals(logged_in, True)
+
+        response = c.post(url(mapid),
+                          data=json.dumps(self.perm_spec),
+                          content_type="application/json")
+
+        # Test that the method returns 200
+        self.assertEquals(response.status_code, 200)
+
+        # Test that the permissions specification is applied
+
