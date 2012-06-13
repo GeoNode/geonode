@@ -149,6 +149,10 @@ LOGGING = {
             "handlers": ["console"],
             "level": "WARNING",
         },
+        "gsconfig.catalog": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
     },
 }
 
