@@ -1,28 +1,6 @@
 package org.geonode.security;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.http.Cookie;
-import javax.xml.parsers.ParserConfigurationException;
-
-import junit.framework.Test;
-
-import org.apache.commons.codec.binary.Base64;
-import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geonode.GeoNodeTestSupport;
-import org.geoserver.data.test.MockData;
-import org.geoserver.platform.GeoServerExtensions;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class SecuredAccessTest extends GeoNodeTestSupport {
     public void testTesting() throws Exception {

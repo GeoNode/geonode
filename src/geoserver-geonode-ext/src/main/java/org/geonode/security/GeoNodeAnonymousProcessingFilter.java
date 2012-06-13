@@ -8,18 +8,17 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import org.geoserver.security.filter.GeoServerSecurityFilter;
 
+import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.geotools.util.logging.Logging;
 
 /**
  * A processing filter that will gather the unauthenticated user privileges from GeoNode's access

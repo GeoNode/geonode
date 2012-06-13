@@ -73,7 +73,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
                     // sufficient privileges
                     if (mode == AccessMode.READ
                             || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayerMode.READ_WRITE)) {
-                        if (lga.getLayerNames().contains(resource.getPrefixedName())) {
+                        if (lga.getLayerNames().contains(resource.prefixedName())) {
                             return true;
                         }
                     }
