@@ -6,8 +6,8 @@ import pkg_resources
 import shutil
 import zipfile
 import tarfile
-from urllib import urlretrieve
 
+import urllib
 from subprocess import Popen, PIPE
 
 from paver.easy import *
@@ -17,6 +17,7 @@ from paver.path25 import pushd
 
 OUTPUT_DIR = path(os.path.abspath('dist'))
 BUNDLE = path(os.path.join(OUTPUT_DIR, 'geonode.pybundle'))
+GEOSERVER_TEST_DATA = path(os.path.abspath(os.path.join('build', 'gs_test_data')))
 
 
 assert sys.version_info >= (2,6), \
@@ -49,7 +50,7 @@ deploy_req_txt = """
 
 def grab(src, dest):
     if not os.path.exists(dest):
-        urlretrieve(str(src), str(dest))
+        urllib.urlretrieve(str(src), str(dest))
 
 @task
 def setup_geoserver(options):
@@ -265,16 +266,43 @@ def start():
     """
     Start the GeoNode app and all its constituent parts (Django, GeoServer & Client)
     """
+    from geonode.settings import GEOSERVER_BASE_URL
+ 
     print 'Starting GeoNode on http://localhost:8000'
+    # wait for GeoServer to start
+    started = waitfor(GEOSERVER_BASE_URL)
+    if not started:
+        # If applications did not start in time we will give the user a chance
+        # to inspect them and stop them manually.
+        print "GeoServer never started properly or timed out. It may still be running in the background."
+        sys.exit(1)
+    else:
+        print "GeoNode is now available."
+
+
+def stop_django():
+    """
+    Stop the GeoNode Django application (with paster)
+    """
+    kill('paster', 'project.paste')
+
+
+def stop_geoserver():
+    """
+    Stop GeoNode's Java apps (GeoServer and GeoNetwork)
+    """
+    kill('jetty', 'java')
 
 
 @task
-@needs(['stop_django', 'stop_geoserver'])
 def stop():
     """
     Stop GeoNode
     """
-    print 'Stopped GeoNode'
+    print "Stopping GeoNode ..."
+    stop_django()
+    stop_geoserver()
+
 
 @task
 def start_django():
@@ -283,27 +311,22 @@ def start_django():
     """
     sh('paster serve shared/dev-paste.ini --daemon')
 
-@task
-def stop_django():
-    """
-    Stop the GeoNode Django application (with paster)
-    """
-    kill('paster', 'project.paste')
 
 @task
-def start_geoserver():
+@cmdopts([
+    ('gs_data=', 'd', 'Location of geoserver data directory - must exist')
+])
+def start_geoserver(options):
     """
     Start GeoNode's Java apps (GeoServer with GeoNode extensions and GeoNetwork)
     """
-    with pushd('geoserver-geonode-ext'):
-        sh('./startup.sh &')
+    gs_data = getattr(options,'gs_data','')
 
-@task
-def stop_geoserver():
-    """
-    Stop GeoNode's Java apps (GeoServer and GeoNetwork)
-    """
-    kill('jetty', 'java')
+    with pushd('geoserver-geonode-ext'):
+        if gs_data and not path(gs_data).exists():
+            raise BuildFailure('specified gs_data directory "%s" does not exist' % gs_data)
+        sh('GS_DATA="%s" ./startup.sh &' % gs_data)
+
 
 @task
 def test(options):
@@ -318,13 +341,41 @@ def setup_test_data():
     grab("http://dev.geonode.org/test-data/geonode_test_data.tgz", "build/geonode_test_data.tgz")
     with pushd("build"):
         sh("tar zxvf geonode_test_data.tgz")
+    
+    # cleanout testdata and rebuild datadir
+    if GEOSERVER_TEST_DATA.exists():
+        GEOSERVER_TEST_DATA.rmtree()
+
+    #FIXME(Ariel): How do we know the data dir is really clean before copying it?
+    path('geoserver-geonode-ext/src/main/webapp/data/').copytree(GEOSERVER_TEST_DATA)
+
 
 @task
+@needs(['reset', 'setup_test_data'])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
-    sh('cat tests/README')
+  
+    # start geoserver using test data_dir (relative to geoserver dir)
+    #FIXME(Ariel): Use more robust path handling here.
+    options.gs_data = GEOSERVER_TEST_DATA
+    print "Setting GEOSERVER_DATA_DIR to '%s'" % options.gs_data
+    # Start Django and GeoServer
+    call_task('start') 
+    print "GeoNode is now available, running the tests now."
+    try:
+        sh("python manage.py test tests.integration")
+    except BuildFailure, e:
+        print 'Tests failed! %s' % str(e)
+        fail = True
+    finally:
+        # don't use call task here - it won't run since it already has
+        stop_django()
+        stop_geoserver()
+
+    if fail:
+        sys.exit(1)
 
 
 @task
@@ -485,3 +536,18 @@ def kill(arg1, arg2):
         raise Exception('Could not stop %s: '
                         'Running processes are\n%s'
                         % (arg1, '\n'.join([l.strip() for l in lines])))
+
+
+def waitfor(url):
+    started = False
+    for a in xrange(60):
+        try:
+            resp = urllib.urlopen(url)
+        except IOError, e:
+            pass
+        else:
+            if resp.getcode() == 200:
+                started = True
+                break 
+        time.sleep(1)
+    return started
