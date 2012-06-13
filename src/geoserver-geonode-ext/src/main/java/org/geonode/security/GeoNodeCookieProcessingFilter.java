@@ -39,12 +39,6 @@ public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter
     static final Logger LOGGER = Logging.getLogger(GeoNodeCookieProcessingFilter.class);
     static final String GEONODE_COOKIE_NAME = "sessionid";
 
-    private GeoNodeSecurityClient client;
-
-    public GeoNodeCookieProcessingFilter(GeoNodeSecurityClient client) {
-        this.client = client;
-    }
-
     /**
      * @see javax.servlet.Filter#destroy()
      */
@@ -72,11 +66,13 @@ public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter
         final boolean hasPreviouslyValidatedGeoNodeCookie =
         		(existingAuth instanceof GeoNodeSessionAuthToken) &&
         		existingAuth.getCredentials().equals(gnCookie);
+        
+        if (hasPreviouslyValidatedGeoNodeCookie) existingAuth.setAuthenticated(true);
 
         // if we still need to authenticate and we find the cookie, consult GeoNode for
         // an authentication
         final boolean authenticationRequired =
-            !(alreadyAuthenticated || anonymous || hasPreviouslyValidatedGeoNodeCookie);
+            !(alreadyAuthenticated || anonymous || !hasPreviouslyValidatedGeoNodeCookie);
         
         if (authenticationRequired && gnCookie != null) {
             try {
@@ -111,12 +107,4 @@ public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter
 
         return null;
     }
-
-    /**
-     * @param client
-     */
-    public void setClient(GeoNodeSecurityClient client) {
-        this.client = client;
-    }
-
 }

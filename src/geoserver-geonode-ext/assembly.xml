@@ -6,21 +6,11 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>
     <dependencySet>
-      <useStrictFiltering>true</useStrictFiltering>
-      <outputDirectory>.</outputDirectory>
-      <unpack>false</unpack>
-      <includes>
-        <include>commons-httpclient:commons-httpclient</include>
-        <include>net.sf.json-lib:json-lib</include>
-        <include>org.geotools:gt-process</include>
-      </includes>
-      <useTransitiveFiltering>true</useTransitiveFiltering>
-    </dependencySet>
-    <dependencySet>
       <outputDirectory>.</outputDirectory>
       <unpack>false</unpack>
       <includes>
         <include>org.opengeo:geonode-geoserver-ext</include>
+        <include>org.geotools:gt-process</include>
       </includes>
       <useTransitiveDependencies>false</useTransitiveDependencies>
     </dependencySet>

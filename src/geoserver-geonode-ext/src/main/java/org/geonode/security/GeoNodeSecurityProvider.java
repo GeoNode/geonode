@@ -36,8 +36,7 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
     
     @Override
     public GeoNodeCookieProcessingFilter createFilter(SecurityNamedServiceConfig config) {
-        return new GeoNodeCookieProcessingFilter(
-                configuredClient(((GeoNodeAuthFilterConfig)config).getBaseUrl()));
+        return new GeoNodeCookieProcessingFilter();
     }
     
     private GeoNodeSecurityClient configuredClient(String baseUrl) {
@@ -87,7 +86,6 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
             GeoNodeAuthFilterConfig filterConfig = new GeoNodeAuthFilterConfig();
             filterConfig.setName("geonodeCookieFilter");
             filterConfig.setClassName(GeoNodeCookieProcessingFilter.class.getCanonicalName());
-            filterConfig.setBaseUrl("http://localhost:8000/");
             manager.saveFilter(filterConfig);
         }
 
