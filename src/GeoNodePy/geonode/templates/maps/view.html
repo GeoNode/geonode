@@ -8,7 +8,12 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
-<script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+{% if GOOGLE_API_KEY.find("gme-") == -1 %}
+    <script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+{% else %}
+    <script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+{% endif
+
 <script type="text/javascript">
     google.load("earth", "1");
 </script>
@@ -28,6 +33,8 @@
 var app;
 var init = function() {
 {% autoescape off %}
+
+
     var config = Ext.apply({
         tools:  [{
                     ptype: "gxp_geonodequerytool",
@@ -42,10 +49,12 @@ var init = function() {
                 },
             {
                 ptype: "gxp_coordinatetool",
+                actionTarget:  {target: "paneltbar"}
+            },
+            {
+                ptype: "gxp_gazetteertool",
                 actionTarget:  {target: "paneltbar", index: 7},
-                toolText: '<span class="x-btn-text">Position</span>',
-                iconCls: null,
-                toggleGroup: 'featureGroup',
+                toolText: '<span class="x-btn-text">Gazetteer</span>',
                 pressed: false
             }
         ],
@@ -148,9 +157,9 @@ window.onload = init;
 
                 <div style="position:relative;float:left;">
 
-                    <h3>{%trans "Rectify Images"  %}</h3>    
-                    
-                    <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 3.9.1 in <a target="_blank" href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
+                    <h3>{%trans "Rectify Images"  %}</h3>
+
+                    <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 3.9.1 in <a href="http://localhost:8000/media/docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
                     <br/><br/>
                     <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>
                 </div>

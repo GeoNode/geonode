@@ -1028,11 +1028,11 @@ def tweetview(request):
     redirectPage = 'maps/tweetview.html'
 
     #Check if twitter server is running
-    ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
-    twitterInstance = ec2.get_all_instances(instance_ids=[settings.AWS_INSTANCE_ID])[0].instances[0]
+#    ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+#    twitterInstance = ec2.get_all_instances(instance_ids=[settings.AWS_INSTANCE_ID])[0].instances[0]
 
 
-    instanceStarted = twitterInstance.state == 'running'
+    instanceStarted = True #twitterInstance.state == 'running'
 
     if not instanceStarted:
         redirectPage = 'maps/tweetstartup.html'

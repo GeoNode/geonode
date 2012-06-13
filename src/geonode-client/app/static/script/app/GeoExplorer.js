@@ -1417,7 +1417,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
         if (this.hglSourceKey == null)
         {
-            var hglSource = this.addLayerSource({"config":{"url":"http://dixon.hul.harvard.edu/cgi-bin/tilecache/tilecache.cgi?", "ptype":"gxp_hglsource"}});
+            var hglSource = this.addLayerSource({"config":{"url":"http://hgl.harvard.edu/cgi-bin/tilecache/tilecache.cgi?", "ptype":"gxp_hglsource"}});
             this.hglSourceKey = hglSource.id;
         }
 

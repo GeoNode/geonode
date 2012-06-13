@@ -139,7 +139,8 @@ var init = function() {
 
 
 
-    var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
+
+var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
             return permalinkTemplate.apply({
                 protocol: window.location.protocol,
@@ -242,9 +243,13 @@ var remoteStore = new Ext.data.JsonStore({
     }
 });
 
-//remoteStore.on('beforeload', function(store){
-//    remoteStore.baseParams = { bounds: app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], date: tweetDateField.getValue() };
-//});
+
+    var updateLegend = function() {
+        Ext.getCmp("tweetLegendImg").getEl().dom.src = tweetConfig.url +
+                "?TRANSPARENT=TRUE&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
+                "&LAYER=heatmap&FORMAT=image%2Fgif&CQL_FILTER=" + tweetHeatRecord.getLayer().params["CQL_FILTER"] +
+                "&BBOX=" + (app.mapPanel.map.getExtent() != null ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"]);
+    }
 
     var updateLayer =  function() {
 //        if (tweetPointRecord != null && tweetPointRecord.getLayer().params.LAYERS.indexOf("basic") > -1) {
@@ -271,7 +276,7 @@ var remoteStore = new Ext.data.JsonStore({
             params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd" : new Date(tweetDateEndField.getValue()).format('Y-M-d')}
         });
 
-        //updateChart();
+        updateLegend();
 
     };
 
@@ -426,13 +431,6 @@ var chartPanel = new Ext.Panel({
 });
 
 
-Ext.each(chart.legend.items, function(item) {
-    alert(item);
-    //item.un("mousedown", item.events.mousedown.listeners[0].fn);
-})
-
-
-
 var tweetConfig = {title: "Twitter Trends", source: "local", group: "Twitter", name: "heatmap",
     url: "http://107.22.230.16", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
     singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true
@@ -496,6 +494,15 @@ app.mapPanel.add(cqlOverlay);
 app.mapPanel.add(chartPanel);
 
 
+var legendUrl = ""
+
+//legendUrl = "https://encrypted-tbn0.google.com/tbns/personal?q=tbn:ANd9GcTyCBe7PCREYi_ZHxQ1Mj5iCslnngmTgeJz7K2Bxx6sqtRMf0YOuMEgmyy3-0DEYa6t-Q2GXaAfz5O6UnJkLAcNGeWrRrJjOLM00caVtNYICYBz2WLMNlbfPC4IJrde3pKMMiSjEcWIpZwV2wgPwNMGr9MQ39SSjx5HIw";
+
+var legendImage = new Ext.BoxComponent({id: "tweetLegendImg", autoEl: {tag: 'img', src: legendUrl, style: 'z-index:10050;position:absolute;right:0px;margin:30% 0;border:5px solid #000;width:200px;height:200px;'}});
+app.mapPanel.add(legendImage);
+
+
+
 app.on("ready", function() {
 
     app.mapPanel.layers.each(function (candidate) {
@@ -508,6 +515,10 @@ app.on("ready", function() {
         }
 
     });
+
+    app.legendPanel.filter = function(record) {
+        return record.data.group == undefined || (record.data.group != "Overlays" && record.data.url != "http://107.22.230.16");
+    }
 
     app.mapPanel.layers.add([tweetHeatRecord]);
     app.addCategoryFolder(tweetHeatRecord.get("group"), "true");
@@ -528,16 +539,21 @@ app.on("ready", function() {
 
 
     Ext.getCmp("gx_westPanel").collapse();
-    //cqlOverlay.alignTo(Ext.get(document), 't-t');
-    chartPanel.alignTo(document, 'b-b');
+
+
 
     app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
+
         remoteStore.load({
             params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent().toString() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'),  "dateEnd": new Date(tweetDateEndField.getValue()).format('Y-M-d')}
         });
+
+        updateLegend();
+
     });
 
     updateLayer();
+
 
 });
 
