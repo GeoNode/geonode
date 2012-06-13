@@ -1,24 +1,18 @@
-from paver.easy import *
-from paver.easy import options
-from paver.path25 import pushd
-import functools
 import os
 import sys
 import time
-from datetime import date
-import socket
-import ConfigParser
-import paver.doctools
-import paver.misctasks
+
 import pkg_resources
-import subprocess
 import shutil
-from shutil import move
 import zipfile
 import tarfile
-import urllib
-import glob
+from urllib import urlretrieve
+
 from subprocess import Popen, PIPE
+
+from paver.easy import *
+from paver.easy import options
+from paver.path25 import pushd
 
 
 OUTPUT_DIR = path(os.path.abspath('dist'))
@@ -54,7 +48,6 @@ deploy_req_txt = """
 
 
 def grab(src, dest):
-    from urllib import urlretrieve
     if not os.path.exists(dest):
         urlretrieve(str(src), str(dest))
 

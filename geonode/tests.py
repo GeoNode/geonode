@@ -203,3 +203,6 @@ class GeoNodeUtilsTests(TestCase):
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")
         self.assertEqual(keywords[2], "delta")
+
+class PermissionViewTests(TestCase):
+    pass
