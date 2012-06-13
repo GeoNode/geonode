@@ -9,7 +9,7 @@ import urllib2
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.core.management import call_command
 
 from geoserver.catalog import FailedRequestError
 
@@ -93,6 +93,7 @@ TEST_DATA = os.path.join(settings.PROJECT_ROOT, '..', 'build', 'geonode_test_dat
 
 LOGIN_URL=settings.SITEURL + "accounts/login/"
 
+
 class GeoNodeCoreTest(TestCase):
     """Tests geonode.security app/module
     """
@@ -120,7 +121,7 @@ class NormalUserTest(TestCase):
     """
 
     def setUp(self):
-        pass
+        call_command('loaddata', 'sample_admin', verbosity=0)
 
     def tearDown(self):
         pass
@@ -160,7 +161,7 @@ class GeoNodeMapTest(TestCase):
     """
 
     def setUp(self):
-        pass
+        call_command('loaddata', 'sample_admin', verbosity=0)
 
     def tearDown(self):
         pass

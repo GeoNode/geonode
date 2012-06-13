@@ -178,7 +178,7 @@ def sync(options):
     """
     sh("python manage.py syncdb --noinput")
     sh("python manage.py migrate --noinput")
-    sh("python manage.py loaddata tests/admin.fixture.json")
+    sh("python manage.py loaddata sample_admin.json")
 
 
 def package_dir(options):
