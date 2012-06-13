@@ -89,7 +89,7 @@ class _Client(object):
     def get(self, path):
         return self._make_request(path)
 
-TEST_DATA = os.path.join(settings.PROJECT_ROOT, 'geonode_test_data')
+TEST_DATA = os.path.join(settings.PROJECT_ROOT, '..', 'build', 'geonode_test_data')
 
 LOGIN_URL=settings.SITEURL + "accounts/login/"
 

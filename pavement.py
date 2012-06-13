@@ -185,7 +185,7 @@ def sync(options):
     """
     sh("python manage.py syncdb --noinput")
     sh("python manage.py migrate --noinput")
-    sh("python manage.py loaddata tests/integration/admin.fixture.json")
+    sh("python manage.py loaddata tests/admin.fixture.json")
 
 
 def package_dir(options):
@@ -319,7 +319,15 @@ def test(options):
     """
     sh("python manage.py test geonode")
 
+
 @task
+def setup_test_data():
+    grab("http://dev.geonode.org/test-data/geonode_test_data.tgz", "build/geonode_test_data.tgz")
+    with pushd("build"):
+        sh("tar zxvf geonode_test_data.tgz")
+
+@task
+@needs(['setup_test_data'])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
@@ -328,10 +336,10 @@ def test_integration(options):
     call_task('reset')
     call_task('start')
     #FIXME: Check the server is up instead of a blind sleep
-    sleep(60)
-    with pushd('tests/integration'):
-        sh("python manage.py test")
+    sleep(30)
+    sh("python manage.py test tests.integration")
     call_task('stop')
+
 
 @task
 @needs(['stop'])
