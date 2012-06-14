@@ -379,7 +379,7 @@ def test_integration(options):
         stop_django()
         stop_geoserver()
 
-    if fail:
+    if not success:
         sys.exit(1)
 
 
