@@ -365,11 +365,14 @@ def test_integration(options):
     # Start Django and GeoServer
     call_task('start') 
     print "GeoNode is now available, running the tests now."
+
+    success = False
     try:
         sh("python manage.py test tests.integration")
     except BuildFailure, e:
         print 'Tests failed! %s' % str(e)
-        fail = True
+    else:
+        success = True
     finally:
         # don't use call task here - it won't run since it already has
         stop_django()
