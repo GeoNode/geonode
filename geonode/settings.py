@@ -2,6 +2,9 @@
 # Django settings for the GeoNode project.
 import os
 
+# Do not delete the development database when running tests.
+os.environ['REUSE_DB'] = "1"
+
 #
 # General Django development settings
 #
@@ -19,6 +22,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
+        'TEST_NAME': os.path.join(PROJECT_ROOT, 'development.db'),
     }
 }
 
