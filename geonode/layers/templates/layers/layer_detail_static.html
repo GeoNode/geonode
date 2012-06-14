@@ -1,4 +1,4 @@
-{% extends "maps/base.html" %}
+{% extends "layers/layer_base.html" %}
 {% load geonode_auth %}
 {% load i18n %}
 {% load dialogos_tags %}
@@ -23,7 +23,7 @@
   <div class="span8">
     <div class="row layer-actions">
       <div class="span6">
-        {% include "maps/_actions.html" %}
+        {% include "_actions.html" %}
         <div class="pointer"></div>
         
       </div>
@@ -78,7 +78,7 @@
       <section>
         <h2>{% trans "Create a map using this layer" %}</h2>
         <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
-        <a href="{% url maps_new %}" class="btn btn-large">{% trans "Create a Map" %}</a>
+        <a href="{% url new_map %}" class="btn btn-large">{% trans "Create a Map" %}</a>
       </section>
       <section>
         <h2>{% trans "Permissions" %}</h2>
@@ -95,7 +95,7 @@
       </section>
     </div>
     <div class="well">
-      {% include "maps/_widget_about_author.html" %}
+      {% include "_widget_about_author.html" %}
     </div>
   </aside>
 <div class="modal custom hide" id="download-layer">

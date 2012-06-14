@@ -68,7 +68,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 #### BASIC MAP VIEWS ####
 
-def maps_browse(request, template='maps/maps.html'):
+def maps_browse(request, template='maps/map_list.html'):
     if request.method == 'GET':
         return render_to_response(template, RequestContext(request))
     elif request.method == 'POST':
@@ -92,7 +92,7 @@ def maps_browse(request, template='maps/maps.html'):
                 return response
 
 
-def map_detail(request, mapid, template='maps/mapinfo.html'):
+def map_detail(request, mapid, template='maps/map_detail.html'):
     '''
     The view that show details of each map
     '''
@@ -110,7 +110,7 @@ def map_detail(request, mapid, template='maps/mapinfo.html'):
 
 
 @login_required
-def map_metadata(request, mapid, template='maps/map_describe.html'):
+def map_metadata(request, mapid, template='maps/map_metadata.html'):
     '''
     The view that displays a form for
     editing map metadata
@@ -158,7 +158,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         return HttpResponseRedirect(reverse("maps_browse"))
 
 
-def map_embed(request, mapid=None, template='maps/embed.html'):
+def map_embed(request, mapid=None, template='maps/map_embed.html'):
     if mapid is None:
         config = default_map_config()[0]
     else:
@@ -172,7 +172,7 @@ def map_embed(request, mapid=None, template='maps/embed.html'):
 #### MAPS VIEWER ####
 
 
-def map_view(request, mapid, template='maps/view.html'):
+def map_view(request, mapid, template='maps/map_view.html'):
     """  
     The view that returns the map composer opened to
     the map with the given map ID.
@@ -223,7 +223,7 @@ def map_json(request, mapid):
 
 #### NEW MAPS ####
 
-def new_map(request, template='maps/view.html'):
+def new_map(request, template='maps/map_view.html'):
     config = new_map_config(request)
     if isinstance(config, HttpResponse):
         return config
@@ -338,7 +338,7 @@ def new_map_config(request):
 
 
 @login_required
-def map_download(request, mapid, template='maps/download.html'):
+def map_download(request, mapid, template='maps/map_download.html'):
     """ 
     Download all the layers of a map as a batch
     XXX To do, remove layer status once progress id done 
@@ -486,7 +486,7 @@ def _map_fix_perms_for_editor(info):
 #### MAPS SEARCHING ####
 
 
-def maps_search_page(request, template='maps/maps_search.html'):
+def maps_search_page(request, template='maps/map_search.html'):
     # for non-ajax requests, render a generic search page
 
     if request.method == 'GET':

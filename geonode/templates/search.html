@@ -10,44 +10,6 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 {{ block.super }}
-<script type="text/javascript">
-Ext.onReady(function(){
-   {% autoescape off %}
-
-    var bbox = new GeoNode.BoundingBoxWidget({
-         proxy: "/proxy/?url=",
-         viewerConfig: {{ viewer_config }},
-         renderTo: 'refine'
-    });
-
-    var searchTable = new GeoNode.SearchTable({
-        renderTo: 'search_results',
-        trackSelection: true,
-        permalinkURL: '{% url data_search %}',
-        searchURL: '{% url data_search_api %}',
-        layerDetailURL: '{% url data_search_detail %}',
-        constraints: [bbox],
-        searchParams: {{init_search}}
-    });
-    searchTable.hookupSearchButtons('refine');
-
-    var dataCart = new GeoNode.DataCart({
-      store: searchTable.dataCart,
-      renderTo: 'data_cart'
-    });
-
-    var dataOps = new GeoNode.DataCartOps({
-      cart: dataCart,
-      renderTo: 'data_ops',
-
-      begin_download_url: '{% url data_download %}',
-      stop_download_url: '{{site}}geoserver/rest/process/batchDownload/kill/',
-      download_url: '{{site}}geoserver/rest/process/batchDownload/download/'
-    });
-
-    {% endautoescape %}
-});
-</script>
 <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/datepicker.css" type="text/css" media="screen" />
 {% endblock %}
 
@@ -244,7 +206,7 @@ Ext.onReady(function(){
         <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
         <div class="details">
           <a href="{% url mapinfo %}"><h5>Title of the Map goes right here</h5></a>
-          <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+          <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
           ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
         </div>
@@ -255,10 +217,10 @@ Ext.onReady(function(){
         <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
         <div class="details">
           <a href="{% url layerinfo %}"><h5>Title of the Layer goes right here</h5></a>
-          <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+          <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
           ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-          <p class="actions"><a href="#download-layer"  data-toggle="modal" class="btn btn-small strong">Download Data</a> <a href="{% url maps_new %}"   data-toggle="modal" class="btn btn-small strong">Create Map</a></p>
+          <p class="actions"><a href="#download-layer"  data-toggle="modal" class="btn btn-small strong">Download Data</a> <a href="{% url new_map %}"   data-toggle="modal" class="btn btn-small strong">Create Map</a></p>
         </div>
       </article>
 
@@ -267,7 +229,7 @@ Ext.onReady(function(){
         <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
         <div class="details">
           <a href="{% url mapinfo %}"><h5>Title of the Map goes right here</h5></a>
-          <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+          <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
           ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
         </div>
@@ -278,10 +240,10 @@ Ext.onReady(function(){
         <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
         <div class="details">
           <a href="{% url layerinfo %}"><h5>Title of the Layer goes right here</h5></a>
-          <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+          <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
           ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-          <p class="actions"><a href="#download-layer"  data-toggle="modal" class="btn btn-small strong">Download Data</a> <a href="{% url maps_new %}"   data-toggle="modal" class="btn btn-small strong">Create Map</a></p>
+          <p class="actions"><a href="#download-layer"  data-toggle="modal" class="btn btn-small strong">Download Data</a> <a href="{% url new_map %}"   data-toggle="modal" class="btn btn-small strong">Create Map</a></p>
         </div>
       </article>
     </div>
