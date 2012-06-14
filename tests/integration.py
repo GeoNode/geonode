@@ -152,7 +152,7 @@ class NormalUserTest(TestCase):
         )
 
         client.login()
-        resp = client.get('data/geonode:lembang_schools_by_norman?describe')
+        resp = client.get('data/geonode:lembang_schools_by_norman/metadata')
         self.assertEquals(resp.code, 200)
 
 
