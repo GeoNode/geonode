@@ -9,7 +9,7 @@
     {% include "maps/_maps_filters.html" %}
   </div>
   <div class="span4">
-    <p><a href="{% url maps_new %}" class="btn btn-large pull-right strong">{% trans "Create a New Map" %}</a></p>
+    <p><a href="{% url new_map %}" class="btn btn-large pull-right strong">{% trans "Create a New Map" %}</a></p>
     <div class="pull-right">
       {% include "_pagination.html" %}
     </div>
@@ -36,7 +36,7 @@
               <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="placeholder" /></a>
               <div class="details">
                 <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
               </div>
@@ -45,7 +45,7 @@
               <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="placeholder" /></a>
               <div class="details">
                 <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
               </div>
@@ -54,7 +54,7 @@
               <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="placeholder" /></a>
               <div class="details">
                 <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
               </div>
@@ -63,7 +63,7 @@
               <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="placeholder" /></a>
               <div class="details">
                 <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
               </div>
