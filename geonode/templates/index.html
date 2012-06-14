@@ -15,10 +15,10 @@
     </p>
     <p class="btns">
       <span>Need help <a href="#">Getting Started?</a></span>
-      <a class="btn btn-large" href="{% url data_home %}">
+      <a class="btn btn-large" href="{% url layer_browse %}">
         {% trans "Explore Data" %}
       </a>
-      <a class="btn btn-large" href="{% url maps_home %}">
+      <a class="btn btn-large" href="{% url maps_browse %}">
         {% trans "Explore Maps" %}
       <a class="btn btn-large" href="{% url new_map %}">
         {% trans "Create Map" %}
@@ -33,7 +33,7 @@
           <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" border=0/></a>
           <div class="details">
             <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-            <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+            <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
             ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
             <p class="rating">564 likes</p>
@@ -43,7 +43,7 @@
           <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" border=0/></a>
           <div class="details">
             <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-            <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+            <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
             ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
             <p class="rating">564 likes</p>
@@ -53,7 +53,7 @@
           <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" border=0/></a>
           <div class="details">
             <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-            <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+            <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
             ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
             <p class="rating">564 likes</p>
@@ -63,7 +63,7 @@
           <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" border=0/></a>
           <div class="details">
             <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-            <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+            <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
             ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
             <p class="rating">564 likes</p>
@@ -73,7 +73,7 @@
           <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" border=0/></a>
           <div class="details">
             <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-            <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+            <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
             ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
             <p class="rating">564 likes</p>
@@ -83,7 +83,7 @@
           <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" border=0/></a>
           <div class="details">
             <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-            <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+            <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
             ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
             <p class="rating">564 likes</p>
@@ -93,7 +93,7 @@
           <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" border=0/></a>
           <div class="details">
             <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-            <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+            <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
             ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
             <p class="rating">564 likes</p>
@@ -111,8 +111,8 @@
           {% endblocktrans %}
           </p>
           <p class="main-actions">
-            <a href="{% url data_upload %}" class="btn btn-large">Upload Data</a>
-            <a href="{% url maps_new %}" class="btn btn-large">Create a Map</a>
+            <a href="{% url layer_upload %}" class="btn btn-large">Upload Data</a>
+            <a href="{% url new_map %}" class="btn btn-large">Create a Map</a>
           </p>
         </section>
         <section class="article-list last">
@@ -121,7 +121,7 @@
             <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder1.png" width="97" height="91" alt="Placeholder1" class="thumb" border=0/></a>
             <div class="details">
                 <h6><a href="{% url layerinfo %}">Af/Pak Tribal Dynamics, 1805-2010</a></h6>
-                <a href="{% url profiles_profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
+                <a href="{% url profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
                 <time pubdate datetime="2011-09-27">on Sep 27, 2011</time>
                 <footer>
                     <span class="views">1,205 Views</span>
@@ -133,7 +133,7 @@
             <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder1.png" width="97" height="91" alt="Placeholder1" class="thumb" border=0/></a>
             <div class="details">
                 <h6><a href="{% url layerinfo %}">Af/Pak Tribal Dynamics, 1805-2010</a></h6>
-                <a href="{% url profiles_profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
+                <a href="{% url profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
                 <time pubdate datetime="2011-09-27">on Sep 27, 2011</time>
                 <footer>
                     <span class="views">1,205 Views</span>
@@ -145,7 +145,7 @@
             <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder1.png" width="97" height="91" alt="Placeholder1" class="thumb" border=0/></a>
             <div class="details">
                 <h6><a href="{% url layerinfo %}">Af/Pak Tribal Dynamics, 1805-2010</a></h6>
-                <a href="{% url profiles_profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
+                <a href="{% url profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
                 <time pubdate datetime="2011-09-27">on Sep 27, 2011</time>
                 <footer>
                     <span class="views">1,205 Views</span>
@@ -157,7 +157,7 @@
             <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder1.png" width="97" height="91" alt="Placeholder1" class="thumb" border=0/></a>
             <div class="details">
                 <h6><a href="{% url layerinfo %}">Af/Pak Tribal Dynamics, 1805-2010</a></h6>
-                <a href="{% url profiles_profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
+                <a href="{% url profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
                 <time pubdate datetime="2011-09-27">on Sep 27, 2011</time>
                 <footer>
                     <span class="views">1,205 Views</span>
@@ -169,7 +169,7 @@
             <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder1.png" width="97" height="91" alt="Placeholder1" class="thumb" border=0/></a>
             <div class="details">
                 <h6><a href="{% url layerinfo %}">Af/Pak Tribal Dynamics, 1805-2010</a></h6>
-                <a href="{% url profiles_profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
+                <a href="{% url profile_detail "admin" %}" rel="author">Prof. Susan Smith</a>
                 <time pubdate datetime="2011-09-27">on Sep 27, 2011</time>
                 <footer>
                     <span class="views">1,205 Views</span>
