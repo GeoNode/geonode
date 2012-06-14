@@ -1,25 +1,24 @@
-from __future__ import with_statement 
-from paver import svn
-from paver.easy import *
-from paver.easy import options
-from paver.path25 import pushd
-import functools
 import os
 import sys
 import time
-from datetime import date
-import socket
-import ConfigParser
-import paver.doctools
-import paver.misctasks
+
 import pkg_resources
-import subprocess
 import shutil
-from shutil import move
 import zipfile
 import tarfile
+
 import urllib
-import glob
+from subprocess import Popen, PIPE
+
+from paver.easy import *
+from paver.easy import options
+from paver.path25 import pushd
+
+
+OUTPUT_DIR = path(os.path.abspath('dist'))
+BUNDLE = path(os.path.join(OUTPUT_DIR, 'geonode.pybundle'))
+GEOSERVER_TEST_DATA = path(os.path.abspath(os.path.join('build', 'gs_test_data')))
+
 
 assert sys.version_info >= (2,6), \
        SystemError("GeoNode Build requires python 2.6 or better")
@@ -27,171 +26,57 @@ assert sys.version_info >= (2,6), \
 
 options(
     config=Bunch(
-        ini=path('shared/build.ini'),
         package_dir = path('shared/package')
     ),
-    minilib=Bunch(extra_files=['virtual', 'doctools', 'misctasks']),
     sphinx=Bunch(
         docroot='docs',
         builddir="_build",
         sourcedir="source"
-    ),
-    virtualenv=Bunch(
-        packages_to_install=[
-            'pip',
-            'jstools',
-            'virtualenv'
-        ],
-        dest_dir='./',
-        install_paver=True,
-        script_name='bootstrap.py',
-        paver_command_line='post_bootstrap'
     ),
     deploy=Bunch(
         req_file=path('shared/package/requirements.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
     ),
-    host=Bunch(
-    	bind='localhost'
-    )
 )
-
-venv = os.environ.get('VIRTUAL_ENV')
-bundle = path('shared/geonode.pybundle')
-dl_cache = "--download-cache=./build"
-dlname = 'geonode.bundle'
-gs_data = "gs-data"
-geoserver_target = path('src/geoserver-geonode-ext/target/geoserver.war')
-geonetwork_target = path('webapps/geonetwork.war')
-def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
-geonode_client_target_war = path('webapps/geonode-client.war')
 
 deploy_req_txt = """
 # NOTE... this file is generated
--r %(venv)s/shared/requirements.txt
--e %(venv)s/src/GeoNodePy
+-r requirements.txt
+# this line installs GeoNode
+.
 """ % locals()
 
-@task
-def auto(options):
-    cp = ConfigParser.ConfigParser()
-    cp.read(options.config.ini)
-    options.config.parser = cp
-
-    # set a few vars from the config ns
-    package_dir = options.deploy.out_dir = options.config.package_dir
-    options.deploy.script_name=package_dir / 'bootstrap.py'
-
-    # set windows dependent opts
-    platform_options(options)
-
-@task
-def install_deps(options):
-    """Installs all the python deps from a requirements file"""
-    if bundle.exists():
-        info('using to install python deps bundle')
-        call_task('install_bundle')
-    else:
-        info('Installing from requirements file. '\
-             'Use "paver bundle_deps" to create an install bundle')
-        pip_install("-r shared/%s" % options.config.corelibs)
-        pip_install("-r shared/%s" % options.config.devlibs)
-        if options.config.platform == "win32":
-            info("You will need to install 'PIL' and 'ReportLab' "\
-                 "separately to do PDF generation")
-
-@task
-def bundle_deps(options):
-    """
-    Create a pybundle of all python dependencies.  If created, this
-    will be the default for installing python deps.
-    """
-    pip_bundle("-r shared/requirements.txt %s" % bundle)
-
-
-@task
-@needs(['download_bundle'])
-def install_bundle(options):
-    """
-    Installs a bundle of dependencies located at %s.
-    """ % bundle
-    
-    info('install the bundle')
-    pip_install(bundle)
-
-
-@task
-def download_bundle(options):
-    """
-    Downloads zipped bundle of python dependencies to %s. Does not overwrite.
-    """ % bundle
-    
-    bpath = bundle.abspath()
-    if not bundle.exists():
-        with pushd('shared'):
-            grab("http://dev.capra.opengeo.org/repo/%s.zip" % dlname, bpath)
-    else:
-        info("Skipping download. 'rm bundle  %s' if you need a fresh download. " % bundle)
-
-
-@task
-def install_25_deps(options):
-    """Fetch python 2_5-specific dependencies (not maintained)"""
-    pass
-
-    
-@task
-@needs(['install_deps'])
-def post_bootstrap(options):
-    """installs the current package"""
-    pip = path(options.config.bin) / "pip"
-    sh('%s install -e %s' %(pip, path("src/GeoNodePy")))
-
-
-#TODO Move svn urls out to a config file
 
 def grab(src, dest):
-    from urllib import urlretrieve
-    urlretrieve(str(src), str(dest))
+    if not os.path.exists(dest):
+        urllib.urlretrieve(str(src), str(dest))
 
 @task
-def setup_gs_data(options):
-    """Fetch a data directory to use with GeoServer for testing."""
-    src_url = str(options.config.parser.get('geoserver', 'gs_data_url'))
-    shared = path("./shared")
-    if not shared.exists():
-        shared.mkdir()
-
-    dst_url = shared / "geonode-geoserver-data.zip"
-    grab(src_url, dst_url)
-
-    if getattr(options, 'clean', False): path(gs_data).rmtree()
-    if not path(gs_data).exists(): unzip_file(dst_url, gs_data)
-
-
-@task
-@needs(['setup_gs_data'])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
-    with pushd('src/geoserver-geonode-ext'):
-        sh("mvn clean install")
+    with pushd('geoserver-geonode-ext'):
+        sh("mvn clean install -DskipTests")
 
 @task
 def setup_geonetwork(options):
-    """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
-    war_zip_file = options.config.parser.get('geonetwork', 'geonetwork_zip')
-    src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file)
+    """Fetch the geonetwork.war to use with GeoServer for testing."""
+    war_file = 'geonetwork.war'
+    src_url = 'http://dev.geonode.org/dev-data/synth/%s' % war_file
     info("geonetwork url: %s" % src_url)
     # where to download the war files. If changed change also
-    # src/geoserver-geonode-ext/jetty.xml accordingly
+    # geoserver-geonode-ext/jetty.xml accordingly
 
-    webapps = path("./webapps")
+    build_path = path('build')
+    if not build_path.exists():
+        build_path.mkdir()
+
+    dst_url = os.path.join(build_path, war_file)
+
+    webapps = path("build/webapps")
     if not webapps.exists():
         webapps.mkdir()
 
-    dst_url = webapps / war_zip_file
-    dst_war = webapps / "geonetwork.war"
     deployed_url = webapps / "geonetwork"
 
     if getattr(options, 'clean', False):
@@ -199,193 +84,157 @@ def setup_geonetwork(options):
 
     grab(src_url, dst_url)
 
-    if not dst_war.exists():
-        zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
-        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
+        zip_extractall(zipfile.ZipFile(dst_url), deployed_url)
+
+
+@task
+def setup_client(options):
+    """
+    Fetch geonode-client
+    """
+    sh('git submodule update --init')
+    static = os.path.abspath("geonode/static/geonode")
+    scripts_path = os.path.join(static, 'script')
+
+    if not os.path.exists(scripts_path):
+        os.makedirs(scripts_path)
+    
+    with pushd("geonode-client/"):
+        sh("jsbuild buildjs.cfg -o %s" % scripts_path)
+ 
+    resources = ((
+           # Ext resources
+           'externals/ext',
+           'app/static/externals/ext'
+           ),(
+           'externals/gxp/theme',
+           'app/static/externals/gxp/src/theme'
+           ),(
+           'externals/PrintPreview/resources',
+           'app/static/externals/PrintPreview/resources'
+           ),(
+           'externals/geoext/resources',
+           'app/static/externals/geoext/resources'
+           ),(
+           # OpenLayers resources
+           'externals/openlayers/theme',
+           'app/static/externals/openlayers/theme'
+           ),(
+           'externals/openlayers/img',
+           'app/static/externals/openlayers/img'
+           ),(
+           'theme/ux/colorpicker',
+           'app/static/script/ux/colorpicker/color-picker.ux.css'
+           ),(
+           'script/ux/colorpicker',
+           'script/ux/colorpicker/picker.gif'
+           ),(
+           'script/ux/colorpicker',
+           'app/static/script/ux/colorpicker/side_slider.jpg'
+           ),(
+           'script/ux/colorpicker',
+           'app/static/script/ux/colorpicker/mask.png'
+           ),(
+           # GeoExt Resources
+           'externals/geoext/resource',
+           'app/static/externals/geoext/resources'
+           ),(
+           'theme/ux/fileuploadfield',
+           'app/static/script/ux/fileuploadfield/css'
+           ),(
+           # gxp resources
+           'externals/gxp/src/theme',
+           'app/static/externals/gxp/src/theme'
+    ))
+
+    for t, o in resources:
+        origin = os.path.join('geonode-client', o)
+        target = os.path.join(static, t)
+        if os.path.isdir(origin):
+            shutil.rmtree(target, ignore_errors=True)
+            shutil.copytree(origin, target)
+        elif os.path.isfile(origin):
+            if not os.path.exists(target):
+                os.makedirs(target)
+            sh('cp %s %s' % (origin, target))
 
 @task
 @needs([
     'setup_geoserver',
     'setup_geonetwork',
-    'setup_geonode_client'
+    'setup_client',
 ])
-def setup_webapps(options):
-    pass
-
-@task
-@needs([
-    'install_deps',
-    'setup_webapps',
-    'sync_django_db',
-    'package_client'
-])
-def build(options):
+def setup(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""") 
+    sh('pip install -e .')
+    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""") 
+
 
 
 @task
-def setup_geonode_client(options):
+def sync(options):
     """
-    Fetch geonode-client
+    Run the syncdb and migrate management commands to create and migrate a DB
     """
-    static = path("./src/GeoNodePy/geonode/static/geonode")
-
-    with pushd("src/geonode-client/"):
-        sh("mvn clean compile")
-    
-    src_zip = "src/geonode-client/build/geonode-client.zip"
-    zip_extractall(zipfile.ZipFile(src_zip), static)
+    sh("python manage.py syncdb --noinput")
+    sh("python manage.py migrate --noinput")
+    sh("python manage.py loaddata sample_admin.json")
 
 
-@task
-def sync_django_db(options):
-    sh("django-admin.py syncdb --settings=geonode.settings --noinput")
-    sh("django-admin.py migrate --settings=geonode.settings --noinput")
-
-
-@task
 def package_dir(options):
     """
     Adds a packaging directory
     """
-    if not options.deploy.out_dir.exists():
-        options.config.package_dir.mkdir()
+    if not os.path.exists(OUTPUT_DIR):
+        OUTPUT_DIR.mkdir()
 
 
-@task
-@needs('package_dir', 'setup_geonode_client')
-@cmdopts([
-    ('use_war', 'w', 'Use a war to deploy geonode-client')
-])
-def package_client(options):
-    """Package compressed client resources (JavaScript, CSS, images)."""
-
-    if(hasattr(options, 'use_war')): 
-    	geonode_client_target_war.copy(options.deploy.out_dir)
-
-@task
-@needs('package_dir', 'setup_geoserver')
 def package_geoserver(options):
     """Package GeoServer WAR file with appropriate extensions."""
     geoserver_target.copy(options.deploy.out_dir)
 
 
-@task
-@needs('package_dir', 'setup_geonetwork')
 def package_geonetwork(options):
     """Package GeoNetwork WAR file for deployment."""
     geonetwork_target.copy(options.deploy.out_dir)
 
 
-@task
-@needs('package_dir')
 def package_webapp(options):
     """Package (Python, Django) web application and dependencies."""
-    with pushd('src/GeoNodePy'):
-        sh('python setup.py egg_info sdist')
+    sh('python setup.py egg_info sdist')
         
     req_file = options.deploy.req_file
     req_file.write_text(deploy_req_txt)
     pip_bundle("-r %s %s/geonode-webapp.pybundle" % (req_file, options.deploy.out_dir))
 
 
-@task
-@needs(
-    'build',
-    'package_geoserver',
-    'package_geonetwork',
-    'package_webapp',
-    'package_bootstrap'
-)
-def package_all(options):
-    info('all is packaged, ready to deploy')
-
 
 def create_version_name():
-    # we'll use the geonodepy version as our "official" version number
+    # we'll use the geonode version as our "official" version number
     # for now
     slug = "GeoNode-%s" % (
-        pkg_resources.get_distribution('GeoNodePy').version,
+        pkg_resources.get_distribution('GeoNode').version,
     )
 
     return slug
 
 @task
-def make_devkit(options):
-    import virtualenv
-    from urllib import urlretrieve
-
-    (path("package") / "devkit" / "share").makedirs()
-    pip_bundle("package/devkit/share/geonode-core.pybundle -r shared/devkit.requirements")
-    script = virtualenv.create_bootstrap_script("""
-import os, subprocess, zipfile
-
-def after_install(options, home_dir):
-    if sys.platform == 'win32':
-        bin = 'Scripts'
-    else:
-        bin = 'bin'
-
-    installer_base = os.path.abspath(os.path.dirname(__file__))
-
-    def pip(*args):
-        subprocess.call([os.path.join(home_dir, bin, "pip")] + list(args))
-
-    pip("install", os.path.join(installer_base, "share", "geonode-core.pybundle"))
-    setup_jetty(source=os.path.join(installer_base, "share"), dest=os.path.join(home_dir, "share"))
-
-def setup_jetty(source, dest):
-    jetty_zip = os.path.join(source, "jetty-distribution-7.0.2.v20100331.zip")
-    jetty_dir = os.path.join(dest, "jetty-distribution-7.0.2.v20100331")
-
-    zipfile.ZipFile(jetty_zip).extractall(dest)
-    shutil.rmtree(os.path.join(jetty_dir, "contexts"))
-    shutil.rmtree(os.path.join(jetty_dir, "webapps"))
-    os.mkdir(os.path.join(jetty_dir, "contexts"))
-    os.mkdir(os.path.join(jetty_dir, "webapps"))
-
-    deployments = [
-        ('geoserver', 'geoserver-geonode-dev.war'),
-        ('geonetwork', 'geonetwork.war'),
-        ('media', 'geonode-client.zip')
-    ]
-
-    for context, archive in deployments:
-        src = os.path.join(source, archive)
-        dst = os.path.join(jetty_dir, "webapps", context)
-        zipfile.ZipFile(src).extractall(dst)
-""")
-
-    open((path("package")/"devkit"/"go-geonode.py"), 'w').write(script)
-    urlretrieve(
-        "http://download.eclipse.org/jetty/7.0.2.v20100331/dist/jetty-distribution-7.0.2.v20100331.zip",
-        "package/devkit/share/jetty-distribution-7.0.2.v20100331.zip"
-    )
-    urlretrieve(
-        "http://pypi.python.org/packages/source/p/pip/pip-0.7.1.tar.gz",
-        "package/devkit/share/pip-0.7.1.tar.gz"
-    )
-    geoserver_target.copy("package/devkit/share")
-    geonetwork_target.copy("package/devkit/share")
-    geonode_client_target().copy("package/devkit/share")
-        
-@task
 @cmdopts([
     ('name=', 'n', 'Release number or name'),
-    ('no_svn', 'D', 'Do not append svn version number as part of name '),
     ('append_to=', 'a', 'append to release name'),
-    ('skip_packaging', 'y', 'Do not call package_all when creating a release'),
+    ('skip_packaging', 'y', 'Do not call package functions when creating a release'),
 ])
-def make_release(options):
+def release(options):
     """
     Creates a tarball to use for building the system elsewhere
-    (production, distribution, etc)
     """
 
     if not hasattr(options, 'skip_packaging'):
-        call_task("package_all")
+        package_dir()
+        package_geoserver()
+        package_geonetwork()
+        package_webapp()
     if hasattr(options, 'name'):
         pkgname = options.name
     else:
@@ -406,7 +255,163 @@ def make_release(options):
 
         out_pkg.rmtree()
         info("%s.tar.gz created" % out_pkg.abspath())
-                            
+
+
+@task
+@needs(['start_geoserver',
+        'sync',
+        'setup_client',
+        'start_django',])
+def start():
+    """
+    Start the GeoNode app and all its constituent parts (Django, GeoServer & Client)
+    """
+    from geonode.settings import GEOSERVER_BASE_URL
+ 
+    print 'Starting GeoNode on http://localhost:8000'
+    # wait for GeoServer to start
+    started = waitfor(GEOSERVER_BASE_URL)
+    if not started:
+        # If applications did not start in time we will give the user a chance
+        # to inspect them and stop them manually.
+        print "GeoServer never started properly or timed out. It may still be running in the background."
+        print "The logs are available at geoserver-geonode-ext/jetty.log"
+        sys.exit(1)
+    else:
+        print "GeoNode is now available."
+
+
+def stop_django():
+    """
+    Stop the GeoNode Django application (with paster)
+    """
+    try:
+        sh('paster serve shared/dev-paste.ini --stop-daemon')
+    except BuildFailure, e:
+        kill('paster', 'serve')
+
+
+def stop_geoserver():
+    """
+    Stop GeoNode's Java apps (GeoServer and GeoNetwork)
+    """
+    kill('jetty', 'java')
+
+
+@task
+def stop():
+    """
+    Stop GeoNode
+    """
+    print "Stopping GeoNode ..."
+    stop_django()
+    stop_geoserver()
+
+
+@task
+def start_django():
+    """
+    Start the GeoNode Django application (with paster)
+    """
+    sh('paster serve shared/dev-paste.ini --daemon')
+
+
+@task
+@cmdopts([
+    ('gs_data=', 'd', 'Location of geoserver data directory - must exist')
+])
+def start_geoserver(options):
+    """
+    Start GeoNode's Java apps (GeoServer with GeoNode extensions and GeoNetwork)
+    """
+    gs_data = getattr(options,'gs_data','')
+
+    with pushd('geoserver-geonode-ext'):
+        if gs_data and not path(gs_data).exists():
+            raise BuildFailure('specified gs_data directory "%s" does not exist' % gs_data)
+        sh('GS_DATA="%s" ./startup.sh &' % gs_data)
+
+
+@task
+@needs(['reset', 'sync'])
+def test(options):
+    """
+    Run GeoNode's Unit Test Suite
+    """
+    sh("python manage.py test geonode")
+
+
+@task
+def setup_test_data():
+    grab("http://dev.geonode.org/test-data/geonode_test_data.tgz", "build/geonode_test_data.tgz")
+    with pushd("build"):
+        sh("tar zxvf geonode_test_data.tgz")
+    
+    # cleanout testdata and rebuild datadir
+    if GEOSERVER_TEST_DATA.exists():
+        GEOSERVER_TEST_DATA.rmtree()
+
+    #FIXME(Ariel): How do we know the data dir is really clean before copying it?
+    path('geoserver-geonode-ext/src/main/webapp/data/').copytree(GEOSERVER_TEST_DATA)
+
+
+@task
+@needs(['reset', 'setup_test_data'])
+def test_integration(options):
+    """
+    Run GeoNode's Integration test suite against the external apps
+    """
+  
+    # start geoserver using test data_dir (relative to geoserver dir)
+    #FIXME(Ariel): Use more robust path handling here.
+    options.gs_data = GEOSERVER_TEST_DATA
+    print "Setting GEOSERVER_DATA_DIR to '%s'" % options.gs_data
+    # Start Django and GeoServer
+    call_task('start') 
+    print "GeoNode is now available, running the tests now."
+
+    success = False
+    try:
+        sh("python manage.py test tests.integration")
+    except BuildFailure, e:
+        print 'Tests failed! %s' % str(e)
+    else:
+        success = True
+    finally:
+        # don't use call task here - it won't run since it already has
+        stop_django()
+        stop_geoserver()
+
+    if not success:
+        sys.exit(1)
+
+
+@task
+@needs(['stop'])
+def reset():
+    """
+    Reset a development environment (Database, GeoServer & GeoNetwork)
+    """
+    sh("rm -rf geonode/development.db")
+    sh("rm -rf build/gs_data")
+    # TODO: There should be a better way to clean out GeoNetworks data
+    # Rather than just deleting the entire app
+    sh("rm -rf build/webapps/geonetwork")
+    setup_geonetwork()
+
+@task
+def setup_data():
+    """
+    Import sample data (from gisdata package) into GeoNode
+    """
+    import gisdata
+    data_dir = gisdata.GOOD_DATA
+    sh("python manage.py importlayers %s" % data_dir)
+
+
+
+
+# Helper functions
 
 def unzip_file(src, dest):
     zip = zipfile.ZipFile(src)
@@ -426,161 +431,6 @@ def unzip_file(src, dest):
             out.close()
 
 
-@task
-def checkup_spec(options):
-    parser = options.config.parser
-    svn.checkup(parser.get('doc', 'spec_url'), path('docs') / 'spec')
-
-
-def pip(*args):
-    try:
-        pkg_resources.require('pip>=0.6')
-    except :
-        error("**ATTENTION**: Update your 'pip' to at least 0.6")
-        raise
-
-    full_path_pip = options.config.bin / 'pip'
-
-    sh("%(env)s %(cmd)s %(args)s" % {
-        "env": options.config.pip_flags, 
-        "cmd": full_path_pip,
-        "args": " ".join(args)
-    })
-
-pip_install = functools.partial(pip, 'install', dl_cache)
-pip_bundle = functools.partial(pip, 'bundle', dl_cache)
-
-
-@task
-@needs('package_dir')
-def package_bootstrap(options):
-    """Create a bootstrap script for deployment"""
-
-    try:
-        from paver.virtual import bootstrap
-        options.virtualenv = options.deploy
-        call_task("paver.virtual.bootstrap")
-    except ImportError, e:
-        info("VirtualEnv must be installed to enable 'paver bootstrap'. If you " + 
-             "need this command, run: pip install virtualenv")
-
-
-@task
-def install_sphinx_conditionally(options):
-    """if no sphinx, install it"""
-    try:
-        import sphinx
-    except ImportError:
-        sh("%s install sphinx" % (options.config.bin / 'pip'))
-
-        # have to reload doctools so it will realize sphinx is now
-        # available
-        sys.modules['paver.doctools'] = reload(sys.modules['paver.doctools'])
-
-
-@task
-@needs('package_client')
-@cmdopts([
-    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
-])
-def host(options):
-    jettylog = open("jetty.log", "w")
-    djangolog = open("django.log", "w")
-    with pushd("src/geoserver-geonode-ext"):
-        os.environ["MAVEN_OPTS"] = " ".join([
-            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
-            "-Djetty.host=" + options.host.bind,
-            "-Xmx512M",
-            "-XX:MaxPermSize=128m"
-        ])
-        mvn = subprocess.Popen(
-            ["mvn", "jetty:run"],
-            stdout=jettylog,
-            stderr=jettylog
-        )
-    django = subprocess.Popen([
-            "paster", 
-            "serve",
-            "--reload",
-	        "shared/dev-paste.ini"
-        ],  
-        stdout=djangolog,
-        stderr=djangolog
-    )
-
-    def jetty_is_up():
-        try:
-            urllib.urlopen("http://" + options.host.bind + ":8001/geoserver/web/")
-            return True
-        except Exception, e:
-            return False
-    
-    def django_is_up():
-        try:
-            urllib.urlopen("http://" + options.host.bind + ":8000")
-            return True
-        except Exception, e:
-            return False
-
-    socket.setdefaulttimeout(1)
-
-    info("Django is starting up, please wait...")
-    while not django_is_up():
-        time.sleep(2)
-
-    info("Logging servlet output to jetty.log and django output to django.log...")
-    info("Jetty is starting up, please wait...")
-    while not jetty_is_up():
-        time.sleep(2)
-
-    try:
-        sh("django-admin.py updatelayers --settings=geonode.settings")
-        
-        info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
-        info("The GeoNode is an unstoppable machine")
-        info("Press CTRL-C to shut down")
-        django.wait()
-        info("Django process terminated, see log for details.")
-    finally:
-        info("Shutting down...")
-        try:
-            django.terminate()
-        except: 
-            pass
-        try:
-            mvn.terminate()
-        except: 
-            pass
-
-        django.wait()
-        mvn.wait()
-        sys.exit()
-
-
-@task
-def test(options):
-    sh("django-admin.py test --settings=geonode.settings")
-
-
-def platform_options(options):
-    "Platform specific options"
-    options.config.platform = sys.platform
-    
-    # defaults:
-    pip_flags = ""
-    scripts = "bin"
-    corelibs = "requirements.txt"
-    devlibs = "dev-requirements.txt"
-
-    if sys.platform == "win32":
-        scripts = "Scripts"
-    elif sys.platform == "darwin":
-        pip_flags = "ARCHFLAGS='-arch i386'"
-        
-    options.config.bin = path(scripts)
-    options.config.corelibs = corelibs
-    options.config.devlibs = devlibs
-    options.config.pip_flags = pip_flags
 
 # include patched versions of zipfile code
 # to extract zipfile dirs in python 2.6.1 and below...
@@ -654,3 +504,58 @@ def _zip_extract_member(zf, member, targetpath, pwd):
     target.close()
 
     return targetpath
+
+
+def kill(arg1, arg2):
+    """Stops a proces that contains arg1 and is filtered by arg2
+    """
+
+    # Wait until ready
+    t0 = time.time()
+    time_out = 30 # Wait no more than these many seconds
+    running = True
+
+    while running and time.time()-t0 < time_out:
+        p = Popen('ps aux | grep %s' % arg1, shell=True,
+              stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
+
+        lines = p.stdout.readlines()
+
+        running = False
+        for line in lines:
+
+            if '%s' % arg2 in line:
+                running = True
+
+                # Get pid
+                fields = line.strip().split()
+
+                print 'Stopping %s (process number %s)' % (arg1, fields[1])
+                kill = 'kill -9 %s 2> /dev/null' % fields[1]
+                os.system(kill)
+
+        # Give it a little more time
+        time.sleep(1)
+    else:
+        #print 'There are no process containing "%s" running' % arg1
+        pass
+
+    if running:
+        raise Exception('Could not stop %s: '
+                        'Running processes are\n%s'
+                        % (arg1, '\n'.join([l.strip() for l in lines])))
+
+
+def waitfor(url):
+    started = False
+    for a in xrange(60):
+        try:
+            resp = urllib.urlopen(url)
+        except IOError, e:
+            pass
+        else:
+            if resp.getcode() == 200:
+                started = True
+                break 
+        time.sleep(1)
+    return started
