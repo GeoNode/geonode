@@ -1220,7 +1220,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ascending: false,
             map: this.mapPanel.map,
             filter: function(record) {
-                return record.data.group == undefined || record.data.group != "Overlays";
+                return record.data.group == undefined || (record.data.group != "Overlays" && !(record.data.layer instanceof OpenLayers.Layer.Vector));
             },
             defaults: {cls: 'legend-item'}
         });
@@ -1415,7 +1415,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
         if (this.hglSourceKey == null)
         {
-            var hglSource = this.addLayerSource({"config":{"url":"http://dixon.hul.harvard.edu/cgi-bin/tilecache/tilecache.cgi?", "ptype":"gxp_hglsource"}});
+            var hglSource = this.addLayerSource({"config":{"url":"http://hgl.harvard.edu/cgi-bin/tilecache/tilecache.cgi?", "ptype":"gxp_hglsource"}});
             this.hglSourceKey = hglSource.id;
         }
 

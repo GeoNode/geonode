@@ -33,7 +33,7 @@ GeoExplorer.PicasaFeedOverlay = function(target){
                                displayInLayerSwitcher:false,
                                strategies:[new OpenLayers.Strategy.Fixed()],
                                protocol:new OpenLayers.Protocol.HTTP({
-                                   url:"/picasa/",
+                                   url:"http://picasaweb.google.com/data/feed/base/all",
                                    params:{'KIND': 'photo', 'MAX-RESULTS':'50', 'Q' : keywords, 'BBOX':target.mapPanel.map.getExtent().transform(target.mapPanel.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")).toBBOX()},
                                    format:new OpenLayers.Format.Picasa()
                                }),
@@ -48,7 +48,7 @@ GeoExplorer.PicasaFeedOverlay = function(target){
             
                                                                                                                        
              var feedSource = Ext.ComponentMgr.createPlugin(
-                          picasaConfig, "gx_olsource"
+                          picasaConfig, "gx_rsssource"
              );
              this.picasaRecord = feedSource.createLayerRecord(picasaConfig);
              this.picasaRecord.group = picasaConfig.group;
