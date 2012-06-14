@@ -149,7 +149,7 @@ def hglServiceStarter (request, layer):
 
 def tweetTrendProxy (request):
     tweetUrl = "http://" + settings.AWS_INSTANCE_IP + "/?agg=trend&bounds=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
-    #resultJSON = urllib.urlopen(tweetUrl).read()
+    resultJSON = urllib.urlopen(tweetUrl).read()
 #    import datetime
 #
 #
@@ -198,7 +198,7 @@ def tweetTrendProxy (request):
 #    resultJSON = resultJSON.replace("$rnd4", str(random.randrange(50,500,1)))
 #    resultJSON = resultJSON.replace("$rnd5", str(random.randrange(50,500,1)))
 
-    resultJSON = '{"metaData":{"fields":[{"name":"Tuberculosis"},{"name":"STD"},{"name":"Gastroenteritis"},{"name":"Influenza"},{"name":"Common_Cold"},{"name":"date"}],"root":"record"},"record":[{"Common_Cold":18,"Gastroenteritis":104,"Influenza":76,"STD":121,"Tuberculosis":236,"date":"2012-01-26"},{"Common_Cold":19,"Gastroenteritis":115,"Influenza":114,"STD":146,"Tuberculosis":397,"date":"2012-01-27"},{"Common_Cold":26,"Gastroenteritis":104,"Influenza":83,"STD":137,"Tuberculosis":402,"date":"2012-01-28"},{"Common_Cold":25,"Gastroenteritis":96,"Influenza":76,"STD":141,"Tuberculosis":358,"date":"2012-01-29"},{"Common_Cold":30,"Gastroenteritis":106,"Influenza":87,"STD":158,"Tuberculosis":372,"date":"2012-01-30"},{"Common_Cold":12,"Gastroenteritis":74,"Influenza":44,"STD":116,"Tuberculosis":222,"date":"2012-01-31"}]}'
+#    resultJSON = '{"metaData":{"fields":[{"name":"Tuberculosis"},{"name":"STD"},{"name":"Gastroenteritis"},{"name":"Influenza"},{"name":"Common_Cold"},{"name":"date"}],"root":"record"},"record":[{"Common_Cold":18,"Gastroenteritis":104,"Influenza":76,"STD":121,"Tuberculosis":236,"date":"2012-01-26"},{"Common_Cold":19,"Gastroenteritis":115,"Influenza":114,"STD":146,"Tuberculosis":397,"date":"2012-01-27"},{"Common_Cold":26,"Gastroenteritis":104,"Influenza":83,"STD":137,"Tuberculosis":402,"date":"2012-01-28"},{"Common_Cold":25,"Gastroenteritis":96,"Influenza":76,"STD":141,"Tuberculosis":358,"date":"2012-01-29"},{"Common_Cold":30,"Gastroenteritis":106,"Influenza":87,"STD":158,"Tuberculosis":372,"date":"2012-01-30"},{"Common_Cold":12,"Gastroenteritis":74,"Influenza":44,"STD":116,"Tuberculosis":222,"date":"2012-01-31"}]}'
 
     return HttpResponse(resultJSON, mimetype="application/json")
 
