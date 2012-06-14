@@ -281,11 +281,13 @@ def start():
         print "GeoNode is now available."
 
 
-def stop_django():
+def stop_django(force=True):
     """
     Stop the GeoNode Django application (with paster)
     """
-    kill('paster', 'serve')
+    sh('paster serve shared/dev-paste.ini --stop-daemon')
+    if force:
+        kill('paster', 'serve')
 
 
 def stop_geoserver():
