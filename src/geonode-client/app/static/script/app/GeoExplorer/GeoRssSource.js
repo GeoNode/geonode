@@ -19,6 +19,9 @@ gxp.plugins.GeoRssSource = Ext.extend(gxp.plugins.OLSource, {
     /** Title for source **/
     title: 'GeoRSS Source',
 
+    internalProjection: "EPSG:900913",
+
+    externalProjection: "EPSG:4326",
 
     /** api: method[createLayerRecord]
      *  :arg config:  ``Object``  The application config for this layer.
@@ -29,8 +32,7 @@ gxp.plugins.GeoRssSource = Ext.extend(gxp.plugins.OLSource, {
     createLayerRecord: function(config) {
         var record;
 
-        this.url = "/proxy?url=" + escape(config.url);
-
+        this.url = config.url +"?q=of&kind=photo&max-results=50";
 
         Ext.apply(config, {
             name: config.name,
@@ -38,15 +40,15 @@ gxp.plugins.GeoRssSource = Ext.extend(gxp.plugins.OLSource, {
             buffer: ("buffer" in config) ? config.buffer : 0,
             type:"OpenLayers.Layer.Vector",
             args: [config.title,
-                {   projection: new OpenLayers.Projection("EPSG:4326"),
+                {   projection: "projection" in config ? config.projection : this.externalProjection,
                     displayInLayerSwitcher: true,
-                    strategies:[new OpenLayers.Strategy.Fixed()],
+                    strategies: [new OpenLayers.Strategy.BBOX({resFactor: 1.1})],
                     protocol: new OpenLayers.Protocol.HTTP({
-                        url:"http://picasaweb.google.com/data/feed/base/all",
-                        params:{'KIND': 'photo', 'MAX-RESULTS':'50', 'Q' : "of"},
+                        url: config.url,
+                        params:"params" in config ? config.params : {},
                         format:new OpenLayers.Format.GeoRSS({
-                            internalProjection: "EPSG:900913",
-                            externalProjection: "EPSG:4326"
+                            internalProjection: this.internalProjection,
+                            externalProjection: "projection" in config ? config.projection : this.externalProjection
                         })
                     }),
                     styleMap: new OpenLayers.StyleMap({
@@ -59,6 +61,24 @@ gxp.plugins.GeoRssSource = Ext.extend(gxp.plugins.OLSource, {
         var record = gxp.plugins.GeoRssSource.superclass.createLayerRecord(config);
         return record;
 
+    },
+
+    /** api: method[getConfigForRecord]
+     *  :arg record: :class:`GeoExt.data.LayerRecord`
+     *  :returns: ``Object``
+     *
+     *  Create a config object that can be used to recreate the given record.
+     */
+    getConfigForRecord: function(record) {
+        // get general config
+        var config = gxp.plugins.GeoRssSource.superclass.getConfigForRecord.apply(this, arguments);
+        // add config specific to this source
+        var layer = record.getLayer();
+        return Ext.apply(config, {
+            params: record.get("args").get("protocol").get("params"),
+            group: record.get("group"),
+            args: {}
+        });
     }
 
 });

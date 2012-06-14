@@ -3,12 +3,118 @@
 {% block title %} {% trans "Help" %} - {{ block.super }} {% endblock %}
 {% block head %}
 {% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
+<script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+<script type="text/javascript">
+    google.load("earth", "1");
+</script>
+
+<script type="text/javascript">
+    var map, photos;
+
+    /**
+     * A specific format for parsing Flickr API JSON responses.
+     */
+    OpenLayers.Format.Flickr = OpenLayers.Class(OpenLayers.Format, {
+        read: function(obj) {
+            if(obj.stat === 'fail') {
+                throw new Error(
+                        ['Flickr failure response (',
+                            obj.code,
+                            '): ',
+                            obj.message].join(''));
+            }
+            if(!obj || !obj.photos ||
+                    !OpenLayers.Util.isArray(obj.photos.photo)) {
+                throw new Error(
+                        'Unexpected Flickr response');
+            }
+            var photos = obj.photos.photo, photo,
+                    x, y, point,
+                    feature, features = [];
+            for(var i=0,l=photos.length; i<l; i++) {
+                photo = photos[i];
+                x = photo.longitude;
+                y = photo.latitude;
+                point = new OpenLayers.Geometry.Point(x, y);
+                feature = new OpenLayers.Feature.Vector(point, {
+                    title: photo.title,
+                    img_url: photo.url_s
+                });
+                features.push(feature);
+            }
+            return features;
+        }
+    });
+
+    function init() {
+        map = new OpenLayers.Map('map');
+
+        var base = new OpenLayers.Layer.OSM();
+
+        var style = new OpenLayers.Style({
+            externalGraphic: "${img_url}",
+            pointRadius: 30
+        });
+
+        photos = new OpenLayers.Layer.Vector("Photos", {
+            projection: "EPSG:4326",
+            strategies: [new OpenLayers.Strategy.BBOX({resFactor: 1})],
+            protocol: new OpenLayers.Protocol.Script({
+                url: "http://api.flickr.com/services/rest",
+                params: {
+                    api_key: 'b5e8c0e287e678671c3d8b2c0f3ced85',
+                    format: 'json',
+                    method: 'flickr.photos.search',
+                    extras: 'geo,url_s',
+                    per_page: 10,
+                    page: 1
+                },
+                callbackKey: 'jsoncallback',
+                format: new OpenLayers.Format.Flickr()
+            }),
+            styleMap: new OpenLayers.StyleMap(style)
+        });
+
+
+        wtf = new OpenLayers.Layer.Vector("WTF", {
+            projection: "EPSG:4326",
+            strategies: [new OpenLayers.Strategy.BBOX({resFactor: 1.1})],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: 'http://localhost:8000/picasa',
+                params:{
+                    'q': "of",
+                    'max-results': "50",
+                    'kind': "photo"
+                },
+                format:new OpenLayers.Format.GeoRSS({
+                    internalProjection: "EPSG:900913",
+                    externalProjection: "EPSG:4326"
+                })
+            }),
+            styleMap: new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({pointRadius: 5}),
+                "select": new OpenLayers.Style({pointRadius: 5})
+            })
+        });
+
+        map.addLayers([base, photos, wtf]);
+        map.setCenter(
+                new OpenLayers.LonLat(-567468.5392481,
+                        4950672.5471436), 5);
+    }
+
+</script>
+
 {{ block.super }}
 <script type="text/javascript">
 
 Ext.onReady(function() {
 	var titleTemplate = new Ext.Template("<span>Help</span>");
 	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+    init();
 });
 </script>
 {% endblock %}
@@ -17,39 +123,24 @@ Ext.onReady(function() {
 {% block main %}
 
 
-<div style="margin:20px">
-  <h3>{% trans "Documents" %}</h3>
-  {% blocktrans %}
-  <p>Use the links below to
-navigate to a document.</p>
-
-    <ul>
-    <li><a href="#help">WorldMap Help</a>
-    <li><a href="#tutorial">Tutorial</a>
-    <li><a href="#faq">Frequently Asked Questions (FAQ)</a>
-    </ul>
-
-  {% endblocktrans %}
-
-<p class=MsoNormal><span style='font-size:14.0pt;font-family:Arial'>WorldMap Help Documents</span></p>
-
-
-<p><a name="help"></a><h3>WorldMap Help</h3></p>
-<div style="height:1200px">
-<iframe src="http://docs.google.com/gview?url={{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf&#038;embedded=true" style="width:1024px; height:1000px;" frameborder="0"></iframe>
+<h1 id="title">BBOX Strategy Example</h1>
+<div id="tags">
+    vector, feature, stylemap, bbox, strategy, script, flickr
 </div>
-<p>&nbsp;</p>
-<div style="height:1200px">
- <p><a name="tutorial"></a><h3>Tutorial</h3></p>
-<iframe src="http://docs.google.com/gview?url={{site}}{{ STATIC_URL }}docs/Tutorial.pdf&#038;embedded=true" style="width:1024px; height:1000px;" frameborder="0"></iframe>
-</div>
-<p>&nbsp;</p>
-<div style="height:1200px">
- <p><a name="faq"></a><h3>Frequently Asked Questions</h3></p>
-<iframe src="http://docs.google.com/gview?url={{ site }}{{ STATIC_URL }}docs/FAQ.pdf&#038;embedded=true" style="width:1024px; height:1000px;" frameborder="0"></iframe>
-</div>
-</div>
+<p id="shortdesc">
+    Uses a BBOX strategy to request features within a bounding box.
+</p>
+<div id="map" class="smallmap"></div>
+<div id="docs">
+    <p>The BBOX strategy requests data within a bounding box.  When the
+        previously requested data bounds are invalidated (by browsing to
+        some area not covered by those bounds), another request for data
+        is issued.</p>
 
+    <p>This particular example uses the <a
+            href="http://www.flickr.com/services/api/">Flickr API.</a></p>
+
+</div>
 
 {% endblock %}
 
