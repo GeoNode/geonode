@@ -33,7 +33,7 @@
               </a>
             </div>
             <div class="span6">
-                <form class="form-inline well search-box" action="{% url data_search %}" method="POST">
+                <form class="form-inline well search-box" action="{% url layer_search_page %}" method="POST">
                   {% csrf_token %}
                   <input type="text" class="input-medium" name="q" placeholder="Search" />
                   <select name="" id="" class="span2">
@@ -112,16 +112,16 @@
                 <a href="{% url home %}">{% trans "Home" %}</a>
               </li>
               <li>
-                <a href="{% url data_home %}">{% trans "Explore Data" %}</a>
+                <a href="{% url layer_browse %}">{% trans "Explore Data" %}</a>
               </li>
               <li>
-                <a href="{% url data_upload %}">{% trans "Upload Data" %}</a>
+                <a href="{% url layer_upload %}">{% trans "Upload Data" %}</a>
               </li>
               <li>
-                <a href="{% url maps_home %}">{% trans "Explore Maps" %}</a>
+                <a href="{% url maps_browse %}">{% trans "Explore Maps" %}</a>
               </li>
               <li>
-                <a href="{% url maps_new %}" class="last">{% trans "Create a New Map" %}</a>
+                <a href="{% url new_map %}" class="last">{% trans "Create a New Map" %}</a>
               </li>
             </ul>
           </nav>
