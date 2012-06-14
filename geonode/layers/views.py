@@ -75,12 +75,12 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 
 
 def data(request):
-    return render_to_response('data.html', RequestContext(request, {
+    return render_to_response('layers/layer_list.html', RequestContext(request, {
         'GEOSERVER_BASE_URL':settings.GEOSERVER_BASE_URL
     }))
 
 
-def layer_browse(request, template='layers/data.html'):
+def layer_browse(request, template='layers/layer_list.html'):
     return render_to_response(template, RequestContext(request, {}))
 
 
@@ -120,7 +120,7 @@ def layer_upload(request, template='layers/layer_upload.html'):
             return HttpResponse(json.dumps({ "success": False, "errors": errors}))
 
 
-def layer_detail(request, layername, template='layers/layer.html'):
+def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
     metadata = layer.metadata_csw()
 
@@ -140,7 +140,7 @@ def layer_detail(request, layername, template='layers/layer.html'):
 
 
 @login_required
-def layer_metadata(request, layername, template='layers/layer_describe.html'):
+def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA) 
         
     poc = layer.poc
@@ -227,7 +227,7 @@ def layer_style(request, layername):
 
 
 @login_required
-def layer_change_poc(request, ids, template = 'layers/change_poc.html'):
+def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
     if request.method == 'POST':
         form = PocForm(request.POST)
@@ -355,7 +355,7 @@ def layer_batch_download(request):
 #### Layers Search ####
 
 
-def layer_search_page(request, template='layers/search.html'):
+def layer_search_page(request, template='layers/layer_search.html'):
     DEFAULT_BASE_LAYERS = default_map_config()[1]
     # for non-ajax requests, render a generic search page
 
@@ -512,7 +512,7 @@ def _layer_search(query, start, limit, **kw):
     return result
 
 
-def layer_search_result_detail(request, template='layers/search_result_snippet.html'):
+def layer_search_result_detail(request, template='layers/layer_search_result_snippet.html'):
     uuid = request.GET.get("uuid")
     csw = get_csw()
     csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])

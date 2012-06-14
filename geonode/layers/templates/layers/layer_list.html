@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "layers/layer_base.html" %}
 {% load i18n %}
 
 {% block title %} {% trans "Explore Data" %} - {{ block.super }} {% endblock %}
@@ -8,10 +8,10 @@
 {% block body_outer %}
     <div class="span8">
       <h2 class="page-title">{% trans "Explore Data" %}</h2>
-      {% include "maps/_data_filters.html" %}
+      {% include "layers/_layer_filters.html" %}
     </div>
     <div class="span4">
-      <p><a href="{% url data_upload %}" class="btn btn-large pull-right strong">{% trans "Upload Data" %}</a></p>
+      <p><a href="{% url layer_upload %}" class="btn btn-large pull-right strong">{% trans "Upload Data" %}</a></p>
       <div class="pull-right">
         {% include "_pagination.html" %}
       </div>
@@ -36,7 +36,7 @@
             <article>
               <div class="details">
                 <a href='{% url layerinfo %}'<h3>Title of the Layer goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
                 <p class="rating">564 likes</p>
@@ -45,7 +45,7 @@
             <article>
               <div class="details">
                 <a href='{% url layerinfo %}'<h3>Title of the Layer goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
                 <p class="rating">564 likes</p>
@@ -54,7 +54,7 @@
             <article>
               <div class="details">
                 <a href='{% url layerinfo %}'<h3>Title of the Layer goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
                 <p class="rating">564 likes</p>
@@ -63,7 +63,7 @@
             <article>
               <div class="details">
                 <a href='{% url layerinfo %}'<h3>Title of the Layer goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
                 <p class="rating">564 likes</p>
@@ -72,7 +72,7 @@
             <article>
               <div class="details">
                 <a href='{% url layerinfo %}'<h3>Title of the Layer goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
                 <p class="rating">564 likes</p>
@@ -81,7 +81,7 @@
             <article>
               <div class="details">
                 <a href='{% url layerinfo %}'<h3>Title of the Layer goes right here</h3></a>
-                <div class="meta">by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
+                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
                 <p class="rating">564 likes</p>

@@ -1,4 +1,4 @@
-{% extends "maps/base.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 {% load geonode_auth %}
 {% load dialogos_tags %}
@@ -59,7 +59,7 @@
   <div class="span12">
 	  <div id="embedded_map">
 	    <img src="{{ STATIC_URL }}theme/img/placeholder_map.png" width="100%" alt="Placeholder Map" />
-      {% include "maps/_actions.html" %}
+      {% include "_actions.html" %}
     </div>
   </div>
 
@@ -71,8 +71,8 @@
       is 50 megs, and we have not integrated caching yet <a href="#" class="read-more" data-toggle="collapse" data-target="#abstract-full">Read more</a>
       <div id="abstract-full" class="collapse">More content goes here and is displayed when read more is clicked.</div>
     </article>
-    <p class="meta"><strong>Uploaded by <a href="{% url profiles_profile_detail "admin" %}">John Smith</a> on Sep 27, 2011</strong></p>
-    {% include "maps/_comments.html" %}
+    <p class="meta"><strong>Uploaded by <a href="{% url profile_detail "admin" %}">John Smith</a> on Sep 27, 2011</strong></p>
+    {% include "_comments.html" %}
   </div>
   <aside class="span4">
     <div class="well">
@@ -88,7 +88,7 @@
       <section>
         <h2>{% trans "Edit map" %}</h2>
         <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
-        <a href="{% url maps_new %}" class="btn btn-large">{% trans "Edit Map" %}</a>
+        <a href="{% url new_map %}" class="btn btn-large">{% trans "Edit Map" %}</a>
       </section>
       <section>
         <h2>{% trans "Permissions" %}</h2>
@@ -97,11 +97,11 @@
       <section class="last">
         <h2>{% trans "Create a new map" %}</h2>
         <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
-        <a href="{% url maps_new %}" class="btn btn-large">{% trans "Create a New Map" %}</a>
+        <a href="{% url new_map %}" class="btn btn-large">{% trans "Create a New Map" %}</a>
       </section>
     </div>
     <div class="well">
-      {% include "maps/_widget_about_author.html" %}
+      {% include "_widget_about_author.html" %}
     </div>
   </aside>
 

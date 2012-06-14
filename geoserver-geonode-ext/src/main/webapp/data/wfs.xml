@@ -42,17 +42,17 @@ data.
       </gml>
     </entry>
     <entry>
-      <version>V_11</version>
-      <gml>
-        <srsNameStyle>URN</srsNameStyle>
-        <overrideGMLAttributes>false</overrideGMLAttributes>
-      </gml>
-    </entry>
-    <entry>
       <version>V_10</version>
       <gml>
         <srsNameStyle>XML</srsNameStyle>
         <overrideGMLAttributes>true</overrideGMLAttributes>
+      </gml>
+    </entry>
+    <entry>
+      <version>V_11</version>
+      <gml>
+        <srsNameStyle>URN</srsNameStyle>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
       </gml>
     </entry>
   </gml>

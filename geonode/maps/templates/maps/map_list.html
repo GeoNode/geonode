@@ -6,7 +6,7 @@
 {% block body_outer %}
   <div class="span8">
     <h2 class="page-title">{% trans "Explore Maps" %}</h2>
-    {% include "maps/_maps_filters.html" %}
+    {% include "maps/_map_filters.html" %}
   </div>
   <div class="span4">
     <p><a href="{% url new_map %}" class="btn btn-large pull-right strong">{% trans "Create a New Map" %}</a></p>
@@ -79,11 +79,6 @@
     </div>
   </div>
 
-    <h3>{% trans "Create" %}</h4>
-    <p>
-      {% trans "Use GeoNode's Map Composer application to create your own maps.  Add layers from this GeoNode or remote services, and style them." %}
-    </p>
-    <a href="{% url new_map %}" class="btn">{% trans "Create your own map" %}</a>
 {% endblock %}
 
 {% block extra_body %}
