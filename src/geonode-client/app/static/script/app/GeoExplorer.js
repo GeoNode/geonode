@@ -1220,7 +1220,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ascending: false,
             map: this.mapPanel.map,
             filter: function(record) {
-                return record.data.group == undefined || (record.data.group != "Overlays" && !(record.data.layer instanceof OpenLayers.Layer.Vector));
+               return record.data.group == undefined || (record.data.group != "Overlays" && !(record.data.layer instanceof OpenLayers.Layer.Vector));
             },
             defaults: {cls: 'legend-item'}
         });
