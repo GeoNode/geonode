@@ -285,7 +285,7 @@ def stop_django():
     """
     Stop the GeoNode Django application (with paster)
     """
-    kill('paster', 'project.paste')
+    kill('paster', 'serve')
 
 
 def stop_geoserver():
