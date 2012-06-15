@@ -39,13 +39,9 @@ _gs_resource.native_bbox = [1, 2, 3, 4]
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
 _gs_resource.keywords = [u'keywords', u'saving']
-Layer.objects.geonetwork = Mock()
 Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
-
-# geonode.layers.models.get_csw = Mock()
-
 
 _csw_resource = Mock()
 _csw_resource.protocol = "WWW:LINK-1.0-http--link"
@@ -61,21 +57,20 @@ fake_wms.contents = []
 geonode.layers.models.get_wms = fake_wms
 geonode.layers.models._wms = fake_wms
 
-geonode.layers.models.get_csw = Mock()
-geonode.layers.models.get_csw.return_value.getrecordbyid.return_value = None
-geonode.layers.models.get_csw.return_value.records.values.return_value = [None]
-geonode.layers.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
-geonode.layers.models.get_csw.return_value.records.get.return_value.identification.keywords = []
+geonode.utils.get_catalogue = Mock()
+geonode.utils.get_catalogue.return_value.getrecordbyid.return_value = None
+geonode.utils.get_catalogue.return_value.records.values.return_value = [None]
+geonode.utils.get_catalogue.return_value.records.get.return_value.distribution.online = [_csw_resource]
+geonode.utils.get_catalogue.return_value.records.get.return_value.identification.keywords = []
+geonode.utils.get_catalogue.return_value.connected = True
 
-# for some reason we need to import views in order to be able to set
-# the value of the get_csw function. FIXME
 from geonode.layers import views
 
-geonode.layers.views.get_csw = Mock()
-geonode.layers.views.get_csw.return_value.getrecordbyid.return_value = None
-geonode.layers.views.get_csw.return_value.records.values.return_value = [None]
-geonode.layers.views.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
-geonode.layers.views.get_csw.return_value.records.get.return_value.identification.keywords = []
+geonode.layers.views.get_catalogue = Mock()
+geonode.layers.views.get_catalogue.return_value.getrecordbyid.return_value = None
+geonode.layers.views.get_catalogue.return_value.records.values.return_value = [None]
+geonode.layers.views.get_catalogue.return_value.records.get.return_value.distribution.online = [_csw_resource]
+geonode.layers.views.get_catalogue.return_value.records.get.return_value.identification.keywords = []
 
 geonode.layers.views._extract_links = Mock()
 geonode.layers.views._extract_links.return_value = []
@@ -383,7 +378,7 @@ class LayersTest(TestCase):
     def test_search_template(self):
 
         layer = Layer.objects.all()[0]
-        tpl = get_template("csw/transaction_insert.xml")
+        tpl = get_template("/csw/transaction_insert.xml")
         ctx = Context({
             'layer': layer,
         })

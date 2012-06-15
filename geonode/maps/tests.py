@@ -16,12 +16,11 @@ from mock import Mock, patch
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
 
-Layer.objects.geonetwork = Mock()
 Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
-# geonode.layers.models.get_csw = Mock()
+# geonode.layers.models.get_catalogue = Mock()
 
 
 _csw_resource = Mock()
@@ -37,11 +36,12 @@ geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
 
 
 
-geonode.layers.models.get_csw = Mock()
-geonode.layers.models.get_csw.return_value.getrecordbyid.return_value = None
-geonode.layers.models.get_csw.return_value.records.values.return_value = [None]
-geonode.layers.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
-geonode.layers.models.get_csw.return_value.records.get.return_value.identification.keywords = []
+geonode.utils.get_catalogue = Mock()
+geonode.utils.get_catalogue.return_value.getrecordbyid.return_value = None
+geonode.utils.get_catalogue.return_value.records.values.return_value = [None]
+geonode.utils.get_catalogue.return_value.records.get.return_value.distribution.online = [_csw_resource]
+geonode.utils.get_catalogue.return_value.records.get.return_value.identification.keywords = []
+geonode.utils.get_catalogue.return_value.connected = True
 
 geonode.layers.models._extract_links = Mock()
 geonode.layers.models._extract_links.return_value = {}

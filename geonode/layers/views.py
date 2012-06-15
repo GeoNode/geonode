@@ -490,7 +490,6 @@ def _layer_search(query, start, limit, **kw):
     results = [metadatarecord2dict(doc, catalogue) for v, doc in catalogue.records.iteritems()]
 
     result = {'rows': results,
-              'total': csw.results['matches']}
               'total': catalogue.results['matches']}
 
 
