@@ -48,11 +48,19 @@ SECRET_KEY = 'THE_SECRET_KEY'
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
 GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
 
-# The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = SITEURL + 'geonetwork/'
+# CSW settings
+CSW = {
+    # The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
+    'type': 'pycsw',
+    # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+    'url': 'http://localhost/pycsw/trunk/csw.py',
+    #'url': 'http://localhost:8001/geonetwork/srv/en/csw',
+    #'url': 'http://localhost:8001/deegree-csw-demo-3.0.4/services',
+    # login credentials (for GeoNetwork)
+    'username': 'scott',
+    'password': 'tiger'
+}
 
-# The username and password for a user with write access to GeoNetwork
-GEONETWORK_CREDENTIALS = 'admin', 'admin'
 GEOSERVER_CREDENTIALS = 'geoserver', SECRET_KEY
 
 # A Google Maps API key is needed for the 3D Google Earth view of maps
