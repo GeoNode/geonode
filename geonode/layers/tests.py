@@ -367,9 +367,8 @@ class LayersTest(TestCase):
         '''
         layer = Layer.objects.all()[0]
 
-        # save to geonetwork so we know the uuid is consistent between
-        # django db and geonetwork
-        layer.save_to_geonetwork()
+        # save to catalogue so we know the uuid is consistent
+        layer.save_to_catalogue()
 
         c = Client()
         response = c.get('/data/search/detail', {'uuid':layer.uuid})
@@ -378,12 +377,13 @@ class LayersTest(TestCase):
     def test_search_template(self):
 
         layer = Layer.objects.all()[0]
-        tpl = get_template("/csw/transaction_insert.xml")
+        tpl = get_template("csw/transaction_insert.xml")
         ctx = Context({
             'layer': layer,
         })
         md_doc = tpl.render(ctx)
-        self.assert_("None" not in md_doc, "None in " + md_doc)
+        layer_path = layer.get_absolute_url()
+        self.assert_(layer_path in md_doc, "%s not found in " %  layer_path + md_doc)
 
 
     def test_describe_data(self):
@@ -553,7 +553,7 @@ class LayersTest(TestCase):
             with nested(
                 patch.object(geonode.utils, '_wms', new=MockWMS()),
                 patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.maps.models.Layer.objects.geonetwork')
+                patch('geonode.utils.get_catalogue')
             ) as (mock_wms, mock_gs, mock_gn):
                 # Setup
                 mock_gs.get_store.return_value.get_resources.return_value = []
@@ -566,7 +566,7 @@ class LayersTest(TestCase):
                 mock_resource.store.workspace.name = "geonode"
                 mock_resource.native_bbox = ["0", "0", "0", "0"]
                 mock_resource.projection = "EPSG:4326"
-                mock_gn.url_for_uuid.return_value = "http://example.com/metadata"
+                mock_gn.return_value.url_for_uuid.return_value = "http://example.com/metadata"
 
                 # Exercise
                 base_file = os.path.join(d, 'foo.shp')
