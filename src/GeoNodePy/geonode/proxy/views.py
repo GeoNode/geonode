@@ -2,10 +2,7 @@ from django.http import HttpResponse
 from httplib import HTTPConnection
 from urlparse import urlsplit
 import httplib2
-import urllib
-import simplejson 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 
 def proxy(request):
     if 'url' not in request.GET:
@@ -25,6 +22,9 @@ def proxy(request):
     headers = {}
     if settings.SESSION_COOKIE_NAME in request.COOKIES:
         headers["Cookie"] = request.META["HTTP_COOKIE"]
+
+    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
+        headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     conn = HTTPConnection(url.hostname, url.port)
     conn.request(request.method, locator, request.raw_post_data, headers)
