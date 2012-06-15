@@ -274,15 +274,37 @@ GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 # edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 
+# Catalogue information
 
-# GeoNetwork information
+METADATA_FORMATS = {
+    'DIF': ('dif:DIF', 'http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/'),
+    'Dublin Core': ('csw:Record', 'http://www.opengis.net/cat/csw/2.0.2'),
+    'FGDC': ('fgdc:metadata', 'http://www.opengis.net/cat/csw/csdgm'),
+    'TC211': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd'),
+}
 
-# The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
+# CSW settings
+CSW = {
+    'default': {
+        # The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
+        #'type': 'pycsw',
+        'type': 'geonetwork',
+        #'type': 'deegree',
 
-# The username and password for a user with write access to GeoNetwork
-GEONETWORK_CREDENTIALS = "admin", "admin"
+        # enabled formats
+        #'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
+        'formats': ['TC211'],
 
+        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+        #'url': 'http://localhost/pycsw/trunk/csw.py',
+        'url': 'http://localhost:8001/geonetwork/srv/en/csw',
+        #'url': 'http://localhost:8001/deegree-csw-demo-3.0.4/services',
+    
+        # login credentials (for GeoNetwork)
+        'username': 'admin',
+        'password': 'admin'
+    }
+}
 
 # GeoNode javascript client configuration
 
