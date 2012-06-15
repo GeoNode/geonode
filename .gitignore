@@ -13,29 +13,16 @@ target
 /setuptools-0.6c11-py2.6.egg
 
 # supporting stuff pulled in by paver script
-/src/GeoNodePy/geonode/media/static/
-/src/GeoNodePy/geonode/whoosh_index/
-/geoserver_token
-/development.db
+/geonode/static/geonode/externals
+/geonode/static/geonode/script
+/geonode/static/geonode/theme
+/geonode/development.db
 /django.log
-/gs-data/
 /jetty.log
-/shared/geonode-geoserver-data.zip
-/src/geoserver-geonode-ext/logs/
-/src/gsconfig.py/
-/src/owslib/
-/src/avatar/
-/src/django-haystack/
-/src/nosexcover/
-/webapps/
-/src/GeoNodePy/capra/development.db
-/man
-/share/
-/src/haystack/
-/src/pyelasticsearch/
+/geoserver-geonode-ext/logs/
 
 # Directory created by collectstatic
-src/GeoNodePy/geonode/site_media/
+geonode/static_root/
 
 # OSX specific
 .Python
@@ -49,4 +36,6 @@ pip-log.txt
 
 #Testing output
 .coverage
+.noseids
+geonode_test_data/
 nosetests.xml
