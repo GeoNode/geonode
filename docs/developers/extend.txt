@@ -140,7 +140,7 @@ Setup Steps
         'registration',
         'profiles',
         'avatar',
-        'geonode.core',
+        'geonode.security',
         'geonode.maps',
         'geonode.proxy',
         'rosetta',

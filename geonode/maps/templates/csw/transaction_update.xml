@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<csw:Transaction service="CSW" 
+ version="2.0.2" 
+ xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
+ xmlns:dc="http://www.purl.org/dc/elements/1.1/"
+ xmlns:gmd="http://www.isotc211.org/2005/gmd" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:gts="http://www.isotc211.org/2005/gts"
+ xmlns:gco="http://www.isotc211.org/2005/gco"
+ xmlns:geonet="http://www.fao.org/geonetwork"
+ xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd"
+ xmlns:ogc="http://www.opengis.net/ogc"> 
+ <csw:Update> 
+  {% include "csw/full_metadata.xml" %}
+  <csw:Constraint version="1.1.0"> 
+   <ogc:Filter> 
+    <ogc:PropertyIsEqualTo> 
+     <ogc:PropertyName>dc:identifier</ogc:PropertyName> 
+     <ogc:Literal>{{ layer.uuid }}</ogc:Literal> 
+    </ogc:PropertyIsEqualTo> 
+   </ogc:Filter> 
+  </csw:Constraint> 
+
+ </csw:Update> 
+</csw:Transaction>
