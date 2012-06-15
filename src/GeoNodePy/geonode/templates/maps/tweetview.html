@@ -42,12 +42,13 @@ OpenLayers.Layer.Grid.newRatio = 1.5;
 OpenLayers.Layer.Grid.prototype.setTileSize = function(size) {
     if (this.singleTile) {
         size = this.map.getSize();
+        //console.log("Grid Size: " + size.toString() + " and ratio: " + this.ratio);
         var curWidth = parseInt(size.w * this.ratio);
         var targetWidth = curWidth +  (16 - (curWidth % 16));
         this.newRatio = this.ratio * (targetWidth/curWidth);
         size.h = parseInt(Math.round(size.h * this.newRatio));
         size.w = parseInt(Math.round(size.w * this.newRatio));
-        //console.log("In setTileSize: " + this.newRatio);
+        //console.log("In setTileSize: " + this.newRatio + ":" + size.toString());
 
     }
     OpenLayers.Layer.HTTPRequest.prototype.setTileSize.apply(this, [size]);
@@ -65,6 +66,8 @@ OpenLayers.Layer.Grid.prototype.initSingleTile = function(bounds) {
                     center.lat - (tileHeight/2),
                     center.lon + (tileWidth/2),
                     center.lat + (tileHeight/2));
+
+    //console.log("Grid tileBounds:" + tileBounds.toString());
 
     var px = this.map.getLayerPxFromLonLat({
         lon: tileBounds.left,
@@ -95,10 +98,10 @@ OpenLayers.Layer.Grid.prototype.initSingleTile = function(bounds) {
 
 
 function modifyBounds() {
-    return app.mapPanel.map.getExtent();
+
     var size = app.mapPanel.map.getSize();
     var bounds = app.mapPanel.map.getExtent();
-    var curWidth = parseInt(size.w * 1.5);
+    var curWidth = parseInt(size.w * 1);
     var targetWidth = curWidth +  (16 - (curWidth % 16));
     var newRatio = 1 * (targetWidth/curWidth);
     size.h = parseInt(Math.round(size.h * newRatio));
@@ -113,6 +116,7 @@ function modifyBounds() {
                     center.lon + (tileWidth/2),
                     center.lat + (tileHeight/2));
 
+    //console.log("modifyBounds:" + tileBounds.toString());
     return tileBounds;
 }
 
@@ -185,7 +189,7 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var updateArrows = function() {
         rewindDate.disabled = tweetDateStartField.getValue() <= tweetDateStartField.minValue;
         forwardDate.disabled = tweetDateEndField.getValue() >= tweetDateEndField.maxValue;
-        //console.log (rewindDate.disabled + ":" + forwardDate.disabled);
+        ////console.log (rewindDate.disabled + ":" + forwardDate.disabled);
     };
 
     var tweetFilterField = new Ext.form.TextField({
@@ -247,7 +251,7 @@ var remoteStore = new Ext.data.JsonStore({
             var fields = remoteStore.reader.meta.fields;
             var series = [];
             for(var i=0;i<fields.length;i++){
-                // console.log(i);
+                // //console.log(i);
                 if (fields[i].name != "date") {
                     var newSeries = new Ext.chart.LineSeries({
                         displayName: fields[i].name.replace("_"," "),
@@ -267,7 +271,7 @@ var remoteStore = new Ext.data.JsonStore({
         Ext.getCmp("tweetLegendImg").getEl().dom.src = tweetConfig.url +
                 "?TRANSPARENT=TRUE&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
                 "&LAYER=heatmap&FORMAT=image%2Fgif&CQL_FILTER=" + tweetHeatRecord.getLayer().params["CQL_FILTER"] +
-                "&BBOX=" + mapExtent.toString();
+                "&BBOX=" + modifyBounds();
     }
 
 
@@ -277,8 +281,8 @@ var updateCQL = function() {
         tweetHeatRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
     }
     tweetHeatRecord["cql_filter"] += "Start_Date > '" + new Date(tweetDateStartField.getValue()).format('Y-M-d') + "' AND Start_Date < '" + new Date(tweetDateEndField.getValue()).format('Y-M-d') + "'";
-    tweetHeatRecord["cql_filter"] += "&rndreq=" + randomNum;
     tweetHeatRecord.getLayer().params["CQL_FILTER"] = tweetHeatRecord["cql_filter"];
+    //console.log(tweetHeatRecord.getLayer().params["CQL_FILTER"]);
 }
 
     var updateLayer =  function() {
@@ -292,21 +296,21 @@ var updateCQL = function() {
 //            tweetPointRecord.getLayer().redraw(true);
 //        }
 
-        randomNum = Math.random();
+
 
         if (tweetHeatRecord != null && tweetHeatRecord.getLayer().params.LAYERS.indexOf("heatmap") > -1) {
             updateCQL();
             tweetHeatRecord.getLayer().redraw(true);
+            updateLegend();
         }
 
 
-        var mapExtent = app.mapPanel.map.getExtent() ? modifyBounds(): config["map"]["maxExtent"];
 
         remoteStore.load({
-            params: {"bounds": mapExtent, "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd" : new Date(tweetDateEndField.getValue()).format('Y-M-d')}
+            params: {"bounds": app.mapPanel.map.getExtent() ? modifyBounds(): config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd" : new Date(tweetDateEndField.getValue()).format('Y-M-d')}
         });
 
-        updateLegend(mapExtent);
+
 
     };
 
@@ -536,12 +540,12 @@ app.mapPanel.add(legendImage);
 app.on("ready", function() {
 
     app.mapPanel.layers.each(function (candidate) {
-        //console.log("NAME:" + candidate.get("name"));
+        ////console.log("NAME:" + candidate.get("name"));
         if (candidate.get("name") == "heatmap")
         {
-            //console.log("Remove saved heatmap");
+            ////console.log("Remove saved heatmap");
             app.mapPanel.layers.remove(candidate, true);
-            //console.log("Successfully removed");
+            ////console.log("Successfully removed");
         }
 
     });
@@ -570,22 +574,17 @@ app.on("ready", function() {
 
     Ext.getCmp("gx_westPanel").collapse();
 
-
+    tweetHeatRecord.getLayer().events.register("loadend", tweetHeatRecord.getLayer(), function(e) {
+        updateLegend();
+    });
 
     app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
 
         var mapExtent = app.mapPanel.map.getExtent() ? modifyBounds(): config["map"]["maxExtent"];
 
         remoteStore.load({
-            params: {"bounds": mapExtent, "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'),  "dateEnd": new Date(tweetDateEndField.getValue()).format('Y-M-d')}
+            params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'),  "dateEnd": new Date(tweetDateEndField.getValue()).format('Y-M-d')}
         });
-
-        updateLegend(mapExtent);
-
-        randomNum = Math.random();
-
-        updateCQL();
-
     });
 
     updateLayer();
