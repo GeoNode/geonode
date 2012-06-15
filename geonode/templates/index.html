@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+  <div class="hero-unit">
+    <h1>{% trans "Welcome" %}</h1>
+    <p>
+      {% blocktrans %}
+        GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our mailing list by emailing <em>geonode@librelist.com</em>.
+      {% endblocktrans %}
+    </p>
+    <p>
+      <a class="btn btn-large" href="{% url maps_search %}">
+        {% trans "Explore Maps" %}
+      </a>
+      <a class="btn btn-large" href="{% url new_map %}">
+        {% trans "Create Map" %}
+      </a>
+    </p>
+  </div>
+  <div class="row">
+    <div class="span4">
+      <h2> {% trans "Maps" %} </h2>
+      <p>
+      {% blocktrans %} 
+        GeoNode lets you compose and share maps.  <strong>Create</strong>
+        a map with our cartography tool, or <strong>explore</strong> maps
+        shared by others.
+      {% endblocktrans %} 
+      </p>
+    </div>
+    <div class="span4">
+      <h2> {% trans "Data" %} </h2>
+      <p>
+      {% blocktrans %} 
+        GeoNode lets you upload, manage, and browse data.  
+        <strong>Search</strong> for data that is valuable to you, or 
+        <strong>upload</strong> your own data.
+      {% endblocktrans %} 
+      </p>
+    </div>
+    <div class="span4">
+        <form class="form-search" action="{% url layer_search_page %}" method="POST">
+		  {% csrf_token %}
+          <input type="text" class="input-medium search-query" name="q">
+          <button type="submit" class="btn btn-small">{% trans "Search" %}</button>
+        </form>
+        <a href="{% url layer_search_page %}">{% trans "Advanced Search" %}</a>
+    </div>
+  </div>
+{% endblock %}

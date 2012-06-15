@@ -14,18 +14,6 @@ software installed and in your PATH:
   - If not, you can download one of the installers from http://git-scm.com/ or
     from your operating system provider.
 
-* The Subversion command-line client, version 1.5 or higher.
-  - To verify that is is available, run ``svn --version`` and verify the output
-    starts with something like ``svn, version 1.6.9 (r901367)``
-  - If not, you can find the appropriate installer at
-    http://subversion.apache.org/packages.html
-
-* The GEOS geometry handling library: http://trac.osgeo.org/geos/
-
-* The GDAL geographic raster access library: http://www.gdal.org/
-
-* The OGR geographic vector data access library: http://www.gdal.org/ogr/
-
 * Sun Java Development Kit 1.5 or Higher: 
   - To verify that it is available, run
     ``javac -help -version`` and verify that it reports a list of usage flags,
@@ -40,7 +28,7 @@ software installed and in your PATH:
     ``Python 2.6``
   - If not, download from http://python.org/download/
   - Python must be compiled w/ SSL support and sqlite support to
-    support the geonode development setup.  Installing the sqlite and
+
     openssl development headers before building Python will suffice.
 
 * Apache Maven 2.0.10 or Later:
@@ -64,8 +52,6 @@ The native libraries needed include:
 
 * PIL http://www.pythonware.com/products/pil/
 
-* simplejson http://code.google.com/p/simplejson/
-
 For GCC, packages are available for Mac OSX and all Linux distributions;
 consult your operating system provider for installation instructions.  When
 build PIL from source, ensure that you have development libraries available for
@@ -75,18 +61,24 @@ GeoNode site.
 Install
 =======
 
+..note:: It is suggested to create and activate a virtual environment
+         for GeoNode before starting::
+
+         virtualenv venv
+         source venv/bin/activate
+
+
 The following steps should prepare a Python virtual environment for you::
 
   git clone git://github.com/GeoNode/geonode.git geonode
+  pip install -e geonode
+  pip install -r geonode/requirements.txt
   cd geonode
-  git submodule update --init
-  python bootstrap.py --no-site-packages # see note below
-  source bin/activate
-  paver build
-  django-admin.py createsuperuser --settings=geonode.settings
-  paver host 
+  paver setup
+  paver start
 
-Once fully started, you should see a message indicating the address of your geonode::
+Once fully started, you should see a message indicating the address of your geonode.
+The default username and password are ``admin`` and ``admin``::
   
   Development GeoNode is running at http://localhost:8000/
   The GeoNode is an unstoppable machine
@@ -111,6 +103,21 @@ This command::
 
 can be used to create additional administrative user accounts.  The administrative control panel is not
 linked from the main site, but can be accessed at http://localhost:8000/admin/
+
+
+.. Contact/Profile Notes::
+
+    The GeoNode ``Contact`` model has been modified to use Idios
+    in this branch. It has also been moved from the ``geonode.maps``
+    module to ``geonode.people``.
+    
+    In terms of end user interface, there should be no difference.  
+    However, the existing column ``maps_contact.user`` was modified
+    to no longer accept null values.  The admin interface currently
+    uses the class name ``Profiles`` for this model.
+    
+    Also, a ``User Type`` field has been added.  This field does not
+    currently have an associated migration.
 
 Options
 =======
@@ -274,27 +281,14 @@ DB_DATASTORE_TYPE='postgis'
 Directory Structure
 ===================
 
-* docs/ - ? I think this is to help paver find our docs so whit doesn't have
-  to maintain two checkouts to build them.
-* hazard.json - a data dump for the hazard categories
-* package - this directory is where distributable bundles of the GeoNode pieces
-  end up (in theory? I don't think we used this for the most recent deployment)
-* pavement.py - the main build script for everything
-* paver-minilib.zip - a zip archive of the paver library used by pavement.py
-* setup.py - a shim to make the entire GeoNode source tree look like a Python
-  package.  This probably should not be there since our Python modules have
-  their own source tree with a setup.py now.
-* shared/ - where "build configuration" lives.  This includes some dependency
-  lists for the Python modules and stuff like the ini file with the location
-  of the sample data archive.
-* src/ - where the source code for the actual project lives.  This is divided
-  up like so:
-    * capra-client/ - the JavaScript/CSS for CAPRA-specific extensions
-      (MyHazard) to the GeoNode core
+* docs/ - Documentation based on Sphinx
+* pavement.py - Main build script.
+* shared/ - Configuration files and support files for the installer.
+* src/ - Source code for the java, javascript and python modules. Split in:
+
     * geonode-client/ - the JavaScript/CSS for general apps (the Map editor,
       search, embedded viewer...)
-    * GeoNodePy/ - the Python/Django modules.  Inside, geonode/ is the "core"
-      and capra/ contains CAPRA-specific extensions.
+    * GeoNodePy/ - the Python/Django modules.  Inside, geonode/ is the "core".
     * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
       Actually, the build script for this project is set up to create a WAR
       that includes those extensions, not just a bundle with the extension.
