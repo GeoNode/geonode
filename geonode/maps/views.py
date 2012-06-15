@@ -231,7 +231,7 @@ def new_map(request, template='maps/view.html'):
         return render_to_response(template, RequestContext(request, {
             'config': config,
             'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-            'GEONETWORK_BASE_URL': settings.GEONETWORK_BASE_URL,
+            'CATALOGUE_BASE_URL': settings.CSW['default']['url'],
             'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
         }))
 
@@ -335,7 +335,6 @@ def new_map_config(request):
 
 
 #### MAPS DOWNLOAD ####
-
 
 @login_required
 def map_download(request, mapid, template='maps/download.html'):
@@ -504,8 +503,7 @@ def maps_search_page(request, template='maps/maps_search.html'):
 
 def maps_search(request):
     """
-    handles a basic search for maps using the 
-    GeoNetwork catalog.
+    handles a basic search for maps using the Catalogue.
 
     the search accepts: 
     q - general query for keywords across all fields

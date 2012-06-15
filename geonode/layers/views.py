@@ -21,7 +21,8 @@ from django.utils import simplejson as json
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
 
-from geonode.utils import http_client, _split_query, _get_basic_auth_info, get_csw
+from geonode.utils import http_client, _split_query, _get_basic_auth_info, get_catalogue
+from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox, namespaces, metadatarecord2dict, _extract_links
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
 from geonode.utils import default_map_config
@@ -36,8 +37,6 @@ from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
 from geoserver.resource import FeatureType
 
-from owslib.csw import CswRecord, namespaces
-from owslib.util import nspath
 
 logger = logging.getLogger("geonode.layers.views")
 
@@ -122,7 +121,7 @@ def layer_upload(request, template='layers/layer_upload.html'):
 
 def layer_detail(request, layername, template='layers/layer.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
-    metadata = layer.metadata_csw()
+    metadata_links = layer.full_metadata_links
 
     maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
@@ -132,7 +131,7 @@ def layer_detail(request, layername, template='layers/layer.html'):
 
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
-        "metadata": metadata,
+        "metadata_links": metadata_links,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
@@ -282,7 +281,6 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             for e in form.errors.values():
                 errors.extend([escape(v) for v in e])
             return HttpResponse(json.dumps({ "success": False, "errors": errors}))
-
 
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
@@ -476,23 +474,25 @@ def layer_search(request):
 
 def _layer_search(query, start, limit, **kw):
     
-    csw = get_csw()
+    catalogue = get_catalogue()
 
     keywords = _split_query(query)
-    
-    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None))
-    
-    
-    # build results 
-    # XXX this goes directly to the result xml doc to obtain 
-    # correct ordering and a fuller view of the result record
-    # than owslib currently parses.  This could be improved by
-    # improving owslib.
-    results = [_build_search_result(doc) for doc in 
-               csw._exml.findall('//'+nspath('Record', namespaces['csw']))]
+   
+    if kw.has_key('bbox'):
+        # ensure proper bbox axis order
+        bbox = normalize_bbox(kw['bbox'])
+    else:
+        bbox = None
 
-    result = {'rows': results, 
+    catalogue.search(keywords, start+1, limit, bbox)
+
+    # build results into JSON for API
+    results = [metadatarecord2dict(doc, catalogue) for v, doc in catalogue.records.iteritems()]
+
+    result = {'rows': results,
               'total': csw.results['matches']}
+              'total': catalogue.results['matches']}
+
 
     result['query_info'] = {
         'start': start,
@@ -504,7 +504,7 @@ def _layer_search(query, start, limit, **kw):
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
         result['prev'] = reverse('layer_search_page') + '?' + params
 
-    next_page = csw.results.get('nextrecord', 0) 
+    next_page = catalogue.results.get('nextrecord', 0) 
     if next_page > 0:
         params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
         result['next'] = reverse('layer_search_page') + '?' + params
@@ -514,12 +514,14 @@ def _layer_search(query, start, limit, **kw):
 
 def layer_search_result_detail(request, template='layers/search_result_snippet.html'):
     uuid = request.GET.get("uuid")
-    csw = get_csw()
-    csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.records.values()[0]
-    raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
-    extra_links = _extract_links(raw_xml)
-    
+    catalogue = get_catalogue()
+    rec = catalogue.get_by_uuid(uuid)
+
+    if rec is None:
+        return HttpResponse('No metadata found!', status=500)
+
+    extra_links = dict(download=_extract_links(rec))
+
     try:
         layer = Layer.objects.get(uuid=uuid)
         layer_is_remote = False
@@ -530,6 +532,7 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
     return render_to_response(template, RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
+        'metadata_links': catalogue.urls_for_uuid(uuid),
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))
@@ -631,7 +634,7 @@ def _build_search_result(doc):
                 pass
 
     # construct the link to the geonetwork metadata record (not self-indexed)
-    md_link = settings.GEONETWORK_BASE_URL + "srv/en/csw?" + urlencode({
+    md_link = settings.CSW['default']['url'] + '?' + urlencode({
             "request": "GetRecordById",
             "service": "CSW",
             "version": "2.0.2",
