@@ -56,12 +56,11 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
     
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
 
-    # The extent of the layers in the map
-
     bbox_top = models.FloatField(blank=True,null=True)
     bbox_bottom = models.FloatField(blank=True,null=True)
     bbox_right = models.FloatField(blank=True,null=True)
     bbox_left = models.FloatField(blank=True,null=True)
+    # The extent of the layers in the map
 
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
