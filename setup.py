@@ -37,6 +37,7 @@ setup(name='GeoNode',
         "South==0.7.3",
         "django-forms-bootstrap==2.0.3.post1",
         "gsconfig==0.5.4",
+        "requests",
         # we use paste as an development server
         "pastescript",
         # assembling javascript

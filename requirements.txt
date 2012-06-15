@@ -6,3 +6,6 @@
 # pinax apps not released to pypi
 dialogos==0.1.dev4
 idios==0.2a2.dev2
+
+-e git+https://github.com/toastdriven/django-haystack.git#egg=django-haystack
+-e git+https://github.com/toastdriven/pyelasticsearch.git#egg=pyelasticsearch
