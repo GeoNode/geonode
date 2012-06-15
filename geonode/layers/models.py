@@ -38,15 +38,10 @@ class LayerManager(models.Manager):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
         self.gs_catalog = Catalog(url, _user, _password)
-        self.catalogue = get_catalogue()
 
     @property
     def metadata_catalogue(self):
-        # check if metadata catalogue is geonetwork and is logged in
-        if (self.catalogue.type == 'geonetwork' and not self.catalogue.connected):
-            self.catalogue.login()
-        # Make sure to logout after you have finished using it.
-        return self.catalogue
+        return get_catalogue()
 
     def admin_contact(self):
         # this assumes there is at least one superuser

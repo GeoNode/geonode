@@ -212,7 +212,7 @@ def cleanup(name, uuid):
        except:
            logger.exception("Couldn't delete GeoServer store during cleanup()")
 
-   cat = Layer.objects.catalogue
+   cat = Layer.objects.metadata_catalogue
    catalogue_record = cat.get_by_uuid(uuid)
    if catalogue_record is not None:
        logger.warning('Deleting dangling Catalogue record for [%s] '

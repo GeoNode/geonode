@@ -115,7 +115,7 @@ class Catalogue(CatalogueServiceWeb):
         return response
 
     def create_from_layer(self, layer):
-        response = self.csw_request(layer, "maps/csw/transaction_insert.xml")
+        response = self.csw_request(layer, "csw/transaction_insert.xml")
         # TODO: Parse response, check for error report
 
         if self.type == 'geonetwork':
@@ -137,14 +137,14 @@ class Catalogue(CatalogueServiceWeb):
         return self.url_for_uuid(layer.uuid, namespaces['gmd']) 
 
     def delete_layer(self, layer):
-        response = self.csw_request(layer, "maps/csw/transaction_delete.xml")
+        response = self.csw_request(layer, "csw/transaction_delete.xml")
         # TODO: Parse response, check for error report
 
     def update_layer(self, layer):
-        tmpl = 'maps/csw/transaction_update.xml'
+        tmpl = 'csw/transaction_update.xml'
 
         if self.type == 'geonetwork':
-            tmpl = 'maps/csw/transaction_update_gn.xml'
+            tmpl = 'csw/transaction_update_gn.xml'
 
         response = self.csw_request(layer, tmpl)
 
