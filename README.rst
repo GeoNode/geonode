@@ -72,7 +72,6 @@ The following steps should prepare a Python virtual environment for you::
 
   git clone git://github.com/GeoNode/geonode.git geonode
   pip install -e geonode
-  pip install -r geonode/requirements.txt
   cd geonode
   paver setup
   paver start
