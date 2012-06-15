@@ -89,7 +89,7 @@ Ext.onReady(function(){
 			this.dataOps = new GeoNode.DataCartOps({
 				cart: this.dataCart,
 				renderTo: 'data_ops',
-				begin_download_url: '{% url geonode.maps.views.batch_layer_download %}',
+				begin_download_url: '{% url layer_batch_download %}',
 				stop_download_url: '{{site}}geoserver/rest/process/batchDownload/kill/',
 				download_url: '{{site}}geoserver/rest/process/batchDownload/download/'
 			});

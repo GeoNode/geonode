@@ -1,4 +1,4 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 
 {% block title %} {% trans "Search" %} - {{ block.super }} {% endblock %}
@@ -288,7 +288,7 @@
                 <li><span class="export">{% trans "Export selected" %}:</span> <a href="#mixed" class="batch-download">Zip</a></li>
             </ul>
 
-            <form id="create_map_form" action="{% url geonode.maps.views.newmap %}" method="POST">
+            <form id="create_map_form" action="{% url new_map %}" method="POST">
             </form>
         </div>
     </div>
