@@ -16,7 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 /**
  * An access manager that uses the special authentication tokens setup by the
- * {@link GeonodeSecurityClient} to check if a layer can be accessed, or not
+ * {@link GeoNodeSecurityClient} to check if a layer can be accessed, or not
  * 
  * @author Andrea Aime - OpenGeo
  */
@@ -73,7 +73,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
                     // sufficient privileges
                     if (mode == AccessMode.READ
                             || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayerMode.READ_WRITE)) {
-                        if (lga.getLayerNames().contains(resource.getPrefixedName())) {
+                        if (lga.getLayerNames().contains(resource.prefixedName())) {
                             return true;
                         }
                     }
