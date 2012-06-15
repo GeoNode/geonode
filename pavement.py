@@ -167,8 +167,6 @@ def setup_client(options):
 ])
 def setup(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    sh('pip install -e .')
-
     #FIXME(Ariel): Delete this once the last requirement is available in pypi
     sh('pip install -r requirements.txt')
 
