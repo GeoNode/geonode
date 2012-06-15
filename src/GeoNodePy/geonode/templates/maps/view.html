@@ -8,11 +8,7 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
-{% if GOOGLE_API_KEY.find("gme-") == -1 %}
-    <script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
-{% else %}
-    <script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
-{% endif
+<script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 
 <script type="text/javascript">
     google.load("earth", "1");
@@ -50,12 +46,6 @@ var init = function() {
             {
                 ptype: "gxp_coordinatetool",
                 actionTarget:  {target: "paneltbar"}
-            },
-            {
-                ptype: "gxp_gazetteertool",
-                actionTarget:  {target: "paneltbar", index: 7},
-                toolText: '<span class="x-btn-text">Gazetteer</span>',
-                pressed: false
             }
         ],
         proxy: "/proxy/?url=",
