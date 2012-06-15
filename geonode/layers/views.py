@@ -62,7 +62,7 @@ _PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metad
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
-def _resolve_layer(request, typename, permission='maps.change_layer',
+def _resolve_layer(request, typename, permission='layers.change_layer',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
     Resolve the layer by the provided typename and check the optional permission.
@@ -121,7 +121,7 @@ def layer_upload(request, template='layers/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer.html'):
-    layer = _resolve_layer(request, layername, 'maps.view_layer', _PERMISSION_MSG_VIEW)
+    layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
     metadata = layer.metadata_csw()
 
     maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
@@ -141,7 +141,7 @@ def layer_detail(request, layername, template='layers/layer.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_describe.html'):
-    layer = _resolve_layer(request, layername, _PERMISSION_MSG_METADATA)
+    layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA) 
         
     poc = layer.poc
     metadata_author = layer.metadata_author
@@ -201,7 +201,7 @@ def layer_metadata(request, layername, template='layers/layer_describe.html'):
 @login_required
 @require_POST
 def layer_style(request, layername):
-    layer = _resolve_layer(request, typename, _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, typename, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
         
     style_name = request.POST.get('defaultStyle')
 
@@ -246,7 +246,7 @@ def layer_change_poc(request, ids, template = 'layers/change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-    layer = _resolve_layer(request, layername, _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
     
     if request.method == 'GET':
         cat = Layer.objects.gs_catalog
@@ -286,7 +286,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
-    layer = _resolve_layer(request, layername, 'maps.delete_layer',
+    layer = _resolve_layer(request, layername, 'layers.delete_layer',
                            _PERMISSION_MSG_DELETE)
 
     if (request.method == 'GET'):
@@ -647,7 +647,7 @@ def _build_search_result(doc):
 @require_POST
 def layer_ajax_permissions(request, layername):
     try:
-        layer = _resolve_layer(request, layername, 'maps.change_layer_permissions')
+        layer = _resolve_layer(request, layername, 'layers.change_layer_permissions')
     except PermissionDenied:
         # we are handling this in a non-standard way
         return HttpResponse(
