@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
 from geonode.catalogue.catalogue import Catalogue
-from geonode.utils import _wms, _user, _password, get_wms, _csw, get_csw, bbox_to_wkt
+from geonode.utils import _wms, _user, _password, get_wms, get_catalogue, bbox_to_wkt
 from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 
 from geonode.security.models import PermissionLevelMixin
@@ -38,7 +38,7 @@ class LayerManager(models.Manager):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
         self.gs_catalog = Catalog(url, _user, _password)
-        self.catalogue = Catalogue()
+        self.catalogue = get_catalogue()
 
     @property
     def metadata_catalogue(self):
@@ -724,6 +724,12 @@ def delete_layer(instance, sender, **kwargs):
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
+
+    # If this object was saved via fixtures,
+    # do not do post processing.
+    if kwargs.get('raw', False):
+        return
+
     instance.save_to_geoserver()
 
     if kwargs['created']:
