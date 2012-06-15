@@ -171,6 +171,10 @@ class Layer(models.Model, PermissionLevelMixin):
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True)
     temporal_extent_end = models.DateField(_('temporal extent end'), blank=True, null=True)
     geographic_bounding_box = models.TextField(_('geographic bounding box'))
+    bbox_left = models.FloatField(blank=True, null=True)
+    bbox_right = models.FloatField(blank=True, null=True)
+    bbox_bottom = models.FloatField(blank=True, null=True)
+    bbox_top = models.FloatField(blank=True, null=True)
     supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION)
 
     # Section 6
@@ -562,6 +566,7 @@ class Layer(models.Model, PermissionLevelMixin):
         srs = gs_resource.projection
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
             self.set_bbox(gs_resource.native_bbox, srs=srs)
+            self.set_latlon_bounds(gs_resource.latlon_bbox)
 
     def _autopopulate(self):
         if self.poc is None:
@@ -606,6 +611,15 @@ class Layer(models.Model, PermissionLevelMixin):
         else:
             srid = box[4]
         self.geographic_bounding_box = bbox_to_wkt(box[0], box[1], box[2], box[3], srid=srid )
+
+    def set_latlon_bounds(self,box):
+        """
+        Set the four bounds in lat lon projection
+        """
+        self.bbox_left = box[0]
+        self.bbox_right = box[1]
+        self.bbox_bottom = box[2]
+        self.bbox_top = box[3]
 
     def get_absolute_url(self):
         return "/data/%s" % (self.typename)
