@@ -38,7 +38,7 @@ options(
     ),
     virtualenv=Bunch(
         packages_to_install=[
-            'http://bitbucket.org/ianb/pip/get/2cb1db7b2baf.gz#egg=pip',
+            'pip',
             'jstools',
             'virtualenv'
         ],
@@ -48,12 +48,9 @@ options(
         paver_command_line='post_bootstrap'
     ),
     deploy=Bunch(
-#        pavement=path('shared/package/pavement.py'),
         req_file=path('shared/package/requirements.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
-#        install_paver=True,
-#        paver_command_line='post_bootstrap'      
     ),
     host=Bunch(
     	bind='localhost'
@@ -185,7 +182,7 @@ def setup_geonetwork(options):
     """Fetch the geonetwork.war and intermap.war to use with GeoServer for testing."""
     war_zip_file = options.config.parser.get('geonetwork', 'geonetwork_zip')
     src_url = str(options.config.parser.get('geonetwork', 'geonetwork_war_url') +  war_zip_file)
-    info("geonetwork url: %s" %src_url)
+    info("geonetwork url: %s" % src_url)
     # where to download the war files. If changed change also
     # src/geoserver-geonode-ext/jetty.xml accordingly
 
@@ -199,16 +196,13 @@ def setup_geonetwork(options):
 
     if getattr(options, 'clean', False):
         deployed_url.rmtree()
+
     grab(src_url, dst_url)
+
     if not dst_war.exists():
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
         zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
-
-    src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
-    dst_url = webapps / "intermap.war"
-
-    grab(src_url, dst_url)
 
 @task
 @needs([
@@ -312,9 +306,8 @@ def package_all(options):
 def create_version_name():
     # we'll use the geonodepy version as our "official" version number
     # for now
-    slug = "GeoNode-%s-%s" % (
+    slug = "GeoNode-%s" % (
         pkg_resources.get_distribution('GeoNodePy').version,
-        date.today().isoformat()
     )
 
     return slug

@@ -5,27 +5,17 @@
 import logging
 import re
 import uuid
-import sys
 import os
-import datetime
-import traceback
-import inspect
-import string
-import urllib2
 import glob
-from itertools import cycle, izip
 
 # Django functionality
-from django.db import transaction
-from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.conf import settings
 
 # Geonode functionality
-from geonode.maps.models import Map, Layer, MapLayer
-from geonode.maps.models import Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
+from geonode.maps.models import Contact, Layer
+from geonode.maps.gs_helpers import cascading_delete, get_sld_for, delete_from_postgis
 
 # Geoserver functionality
 import geoserver
@@ -48,7 +38,7 @@ def layer_type(filename):
        returns a gsconfig resource_type string
        that can be either 'featureType' or 'coverage'
     """
-    base_name, extension = os.path.splitext(filename)
+    extension = os.path.splitext(filename)[1]
     if extension.lower() in ['.shp']:
         return FeatureType.resource_type
     elif extension.lower() in ['.tif', '.tiff', '.geotiff', '.geotif']:
@@ -142,79 +132,79 @@ def get_valid_layer_name(layer=None, overwrite=False):
         return get_valid_name(layer_name)
 
 
-def cleanup(name, uuid):
-   """Deletes GeoServer and GeoNetwork records for a given name.
+def cleanup(name, layer_id):
+    """Deletes GeoServer and GeoNetwork records for a given name.
 
-      Useful to clean the mess when something goes terribly wrong.
-      It also verifies if the Django record existed, in which case
-      it performs no action.
-   """
-   try:
-       Layer.objects.get(name=name)
-   except Layer.DoesNotExist, e:
-       pass
-   else:
-       msg = ('Not doing any cleanup because the layer %s exists in the '
-              'Django db.' % name)
-       raise GeoNodeException(msg)
+       Useful to clean the mess when something goes terribly wrong.
+       It also verifies if the Django record existed, in which case
+       it performs no action.
+    """
+    try:
+        Layer.objects.get(name=name)
+    except Layer.DoesNotExist, e:
+        pass
+    else:
+        msg = ('Not doing any cleanup because the layer %s exists in the '
+               'Django db.' % name)
+        raise GeoNodeException(msg)
 
-   cat = Layer.objects.gs_catalog
-   gs_store = None
-   gs_layer = None
-   gs_resource = None
-   # FIXME: Could this lead to someone deleting for example a postgis db
-   # with the same name of the uploaded file?.
-   try:
-       gs_store = cat.get_store(name)
-       if gs_store is not None:
-           gs_layer = cat.get_layer(name)
-           if gs_layer is not None:
-               gs_resource = gs_layer.resource
-       else:
-           gs_layer = None
-           gs_resource = None
-   except FailedRequestError, e:
-       msg = ('Couldn\'t connect to GeoServer while cleaning up layer '
-              '[%s] !!', str(e))
-       logger.error(msg)
+    cat = Layer.objects.gs_catalog
+    gs_store = None
+    gs_layer = None
+    gs_resource = None
+    # FIXME: Could this lead to someone deleting for example a postgis db
+    # with the same name of the uploaded file?.
+    try:
+        gs_store = cat.get_store(name)
+        if gs_store is not None:
+            gs_layer = cat.get_layer(name)
+            if gs_layer is not None:
+                gs_resource = gs_layer.resource
+        else:
+            gs_layer = None
+            gs_resource = None
+    except FailedRequestError, e:
+        msg = ('Couldn\'t connect to GeoServer while cleaning up layer '
+               '[%s] !!', str(e))
+        logger.error(msg)
 
-   if gs_layer is not None:
-       try:
-           cat.delete(gs_layer)
-       except:
-           logger.exception("Couldn't delete GeoServer layer during cleanup()")
-   if gs_resource is not None:
-       try:
-           cat.delete(gs_resource)
-       except:
-           msg = 'Couldn\'t delete GeoServer resource during cleanup()'
-           logger.exception(msg)
-   if gs_store is not None:
-       try:
-           cat.delete(gs_store)
-       except:
-           logger.exception("Couldn't delete GeoServer store during cleanup()")
+    if gs_layer is not None:
+        try:
+            cat.delete(gs_layer)
+        except Exception:
+            logger.exception("Couldn't delete GeoServer layer during cleanup()")
+    if gs_resource is not None:
+        try:
+            cat.delete(gs_resource)
+        except Exception:
+            msg = 'Couldn\'t delete GeoServer resource during cleanup()'
+            logger.exception(msg)
+    if gs_store is not None:
+        try:
+            cat.delete(gs_store)
+        except Exception:
+            logger.exception("Couldn't delete GeoServer store during cleanup()")
 
-   gn = Layer.objects.geonetwork
-   csw_record = gn.get_by_uuid(uuid)
-   if csw_record is not None:
-       logger.warning('Deleting dangling GeoNetwork record for [%s] '
-                      '(no Django record to match)', name)
-       try:
-           # this is a bit hacky, delete_layer expects an instance of the layer
-           # model but it just passes it to a Django template so a dict works
-           # too.
-           gn.delete_layer({ "uuid": uuid })
-       except:
-           logger.exception('Couldn\'t delete GeoNetwork record '
-                            'during cleanup()')
+    gn = Layer.objects.geonetwork
+    csw_record = gn.get_by_uuid(layer_id)
+    if csw_record is not None:
+        logger.warning('Deleting dangling GeoNetwork record for [%s] '
+                       '(no Django record to match)', name)
+        try:
+            # this is a bit hacky, delete_layer expects an instance of the layer
+            # model but it just passes it to a Django template so a dict works
+            # too.
+            gn.delete_layer({ "uuid": layer_id })
+        except Exception:
+            logger.exception('Couldn\'t delete GeoNetwork record '
+                             'during cleanup()')
 
-   logger.warning('Finished cleanup after failed GeoNetwork/Django '
-                  'import for layer: %s', name)
+    logger.warning('Finished cleanup after failed GeoNetwork/Django '
+                   'import for layer: %s', name)
 
 
 def save(layer, base_file, user, overwrite = True, title=None,
-         abstract=None, permissions=None, keywords = []):
+         abstract=None, permissions=None, keywords = ()):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -276,7 +266,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
                     if existing_type != the_layer_type:
                         msg =  ('Type of uploaded file %s (%s) does not match '
                                 'type of existing resource type '
-                                '%s' % (layer_name,
+                                '%s' % (name,
                                         the_layer_type,
                                         existing_type))
                         logger.info(msg)
@@ -292,7 +282,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
             create_store_and_resource = _create_db_featurestore
         else:
             def create_store_and_resource(name, data, overwrite):
-                ft = cat.create_featurestore(name, data, overwrite=overwrite)
+                cat.create_featurestore(name, data, overwrite=overwrite)
                 return cat.get_store(name), cat.get_resource(name)
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
@@ -301,7 +291,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
             return cat.get_store(name), cat.get_resource(name)
     else:
         msg = ('The layer type for name %s is %s. It should be '
-               '%s or %s,' % (layer_name,
+               '%s or %s,' % (name,
                               the_layer_type,
                               FeatureType.resource_type,
                               Coverage.resource_type))
@@ -401,7 +391,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
         except geoserver.catalog.ConflictingDataError, e:
             msg = ('There was already a style named %s in GeoServer, '
                    'cannot overwrite: "%s"' % (name, str(e)))
-            style = cat.get_style(name)
             logger.warn(msg)
             e.args = (msg,)
 
@@ -419,7 +408,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
                     typename=typename,
                     title=title or gs_resource.title,
                     uuid=layer_uuid,
-                    keywords=' '.join(keywords),
                     abstract=abstract or gs_resource.abstract or '',
                     owner=user)
     saved_layer, created = Layer.objects.get_or_create(name=gs_resource.name,
@@ -428,6 +416,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
 
     if created:
         saved_layer.set_default_permissions()
+        saved_layer.keywords.add(*keywords)
 
     # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this
@@ -530,9 +519,6 @@ def check_geonode_is_up():
     try:
         Layer.objects.gs_catalog.get_workspaces()
     except:
-        # Cannot connect to GeoNode
-        from django.conf import settings
-
         msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
                'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
         raise GeoNodeException(msg)
@@ -540,13 +526,12 @@ def check_geonode_is_up():
     try:
         Layer.objects.gn_catalog.login()
     except:
-        from django.conf import settings
         msg = ('Cannot connect to the GeoNetwork at %s\n'
                'Please make sure you have started '
                'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
         raise GeoNodeException(msg)
 
-def file_upload(filename, user=None, title=None, overwrite=True, keywords=[]):
+def file_upload(filename, user=None, title=None, overwrite=True, keywords=()):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -558,7 +543,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords=[]):
 
     # Set a default title that looks nice ...
     if title is None:
-        basename, extension = os.path.splitext(os.path.basename(filename))
+        basename = os.path.splitext(os.path.basename(filename))[0]
         title = basename.title().replace('_', ' ')
 
     # ... and use a url friendly version of that title for the name
@@ -568,16 +553,15 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords=[]):
     # with the data that is being passed.
     try:
         layer = Layer.objects.get(name=name)
-    except Layer.DoesNotExist, e:
+    except Layer.DoesNotExist:
         layer = name
 
     new_layer = save(layer, filename, theuser, overwrite, keywords=keywords)
 
-
     return new_layer
 
 
-def upload(incoming, user=None, overwrite=True, keywords = []):
+def upload(incoming, user=None, overwrite=True, keywords = ()):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -637,7 +621,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     cat = Layer.objects.gs_catalog
     try:
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
-    except FailedRequestError, e:
+    except FailedRequestError:
         ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
         ds.connection_parameters.update(
             host=settings.DB_DATASTORE_HOST,
@@ -652,7 +636,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     try:
         cat.add_data_to_store(ds, name, data, overwrite, charset)
         return ds, cat.get_resource(name, store=ds)
-    except:
+    except Exception:
         delete_from_postgis(name)
         raise
 

@@ -1,0 +1,58 @@
+===============================
+Management Commands for GeoNode
+===============================
+
+GeoNode comes with administrative commands to help with day to day tasks.
+
+Below is the list of the ones that come from the GeoNode application, the full list can be obtained by doing::
+
+  geonode help
+
+
+importlayers
+============
+
+Imports a file or folder with geospatial files to GeoNode.
+
+It supports data in Shapefile and GeoTiff format. It also picks up the styles if a ``.sld`` file is present.
+
+Usage::
+
+    geonode importlayers <data_dir>
+
+Additional options::
+
+ --user=USER           Name of the user account which should own the imported
+                        layers
+ --keywords=KEYWORDS   The default keywords for the imported layer(s). Will
+                        be the same for all imported layers if multiple
+                        imports are done in one command
+
+
+updatelayers
+============
+
+Update the GeoNode application with data from GeoServer.
+
+This is useful to add data in formats that are not supported in GeoNode by default, and for example to link it it to ArcSDE datastores.
+
+Usage::
+
+    geonode updatelayers
+
+Additional options::
+
+  --ignore-errors     Do not stop if errors are encountered.
+
+
+cleardeadlayers
+===============
+
+Deletes layers that do not have a record in GeoServer anymore.
+
+This is useful to fix aborted or partial uploads or situations in which GeoServer is changed through it is UI and GeoNode is left out of sync.
+
+Usage::
+
+    geonode cleardeadlayers
+

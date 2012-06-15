@@ -1,10 +1,8 @@
-import urllib, urllib2, cookielib
-from datetime import date
+import urllib, urllib2
 from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
 from owslib.csw import CatalogueServiceWeb, namespaces
-from owslib.util import nspath
 from lxml import etree
 
 class Catalog(object):
@@ -16,6 +14,7 @@ class Catalog(object):
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
+        self.opener = None
 
 
     def login(self):
@@ -39,7 +38,7 @@ class Catalog(object):
     def logout(self):
         url = "%ssrv/en/xml.user.logout" % self.base
         request = urllib2.Request(url)
-        response = self.opener.open(request)
+        self.opener.open(request)
         self.connected = False
 
     def get_by_uuid(self, uuid):
@@ -76,7 +75,7 @@ class Catalog(object):
         return response
 
     def create_from_layer(self, layer):
-        response = self.csw_request(layer, "maps/csw/transaction_insert.xml")
+        self.csw_request(layer, "maps/csw/transaction_insert.xml")
         # TODO: Parse response, check for error report
 
         # Turn on the "view" permission (aka publish) for
@@ -96,11 +95,11 @@ class Catalog(object):
         })
 
     def delete_layer(self, layer):
-        response = self.csw_request(layer, "maps/csw/transaction_delete.xml")
+        self.csw_request(layer, "maps/csw/transaction_delete.xml")
         # TODO: Parse response, check for error report
 
     def update_layer(self, layer):
-        response = self.csw_request(layer, "maps/csw/transaction_update.xml")
+        self.csw_request(layer, "maps/csw/transaction_update.xml")
         # TODO: Parse response, check for error report
 
     def set_metadata_privs(self, uuid, privileges):

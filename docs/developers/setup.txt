@@ -101,6 +101,18 @@ The following steps should prepare a Python virtual environment for you::
   $ django-admin.py createsuperuser --settings=geonode.settings
   $ paver host 
 
+.. note:: 
+
+  If your firewall does not allow connections to git repositories using git://
+  (TCP port 9418), you may connect using http:// ::
+
+    $ git clone http://github.com/GeoNode/geonode.git geonode
+    $ cd geonode
+    $ git submodule init
+    $ sed -i 's/git:\/\//http:\/\//g' .gitmodules
+    $ git submodule sync
+    $ git submodule update
+
 Once fully started, you should see a message indicating the address of your geonode::
   
   Development GeoNode is running at http://localhost:8000/

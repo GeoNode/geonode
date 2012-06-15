@@ -1,13 +1,18 @@
+--extra-index-url=http://dist.pinaxproject.com/dev
+
+# Extensions with C components
 PIL
+lxml
+
 OWSLib==0.4.0
 Django==1.4
-simplejson # needed for python2.5
-django-extensions
-httplib2
-gsconfig
-django-registration
-django-profiles
+django-extensions==0.8
+httplib2==0.7.4
+gsconfig==0.5.4
+django-registration==0.8
+django-profiles==0.2
 -e git+https://github.com/ericflo/django-avatar.git#egg=avatar
-django-staticfiles
+dialogos==0.1.dev4
+agon-ratings==0.2
 South==0.7.3
-lxml
+django-taggit==0.9.3
