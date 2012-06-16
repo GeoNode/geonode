@@ -5,24 +5,26 @@
 package org.geonode.security;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.geoserver.security.filter.GeoServerAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geotools.util.logging.Logging;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.geotools.util.logging.Logging;
 
 /**
  * A processing filter that will inspect the cookies and look for the GeoNode single sign on one. If
@@ -31,29 +33,16 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - OpenGeo
  * @author Gabriel Roldan - OpenGeo
  */
-public class GeoNodeCookieProcessingFilter implements Filter {
-
+public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter
+    implements GeoServerAuthenticationFilter
+{
     static final Logger LOGGER = Logging.getLogger(GeoNodeCookieProcessingFilter.class);
-
     static final String GEONODE_COOKIE_NAME = "sessionid";
-
-    private GeonodeSecurityClient client;
-
-    public GeoNodeCookieProcessingFilter(GeonodeSecurityClient client) {
-        this.client = client;
-    }
 
     /**
      * @see javax.servlet.Filter#destroy()
      */
     public void destroy() {
-        // nothing to do here
-    }
-
-    /**
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
-    public void init(FilterConfig filterConfig) throws ServletException {
         // nothing to do here
     }
 
@@ -71,35 +60,35 @@ public class GeoNodeCookieProcessingFilter implements Filter {
         final Authentication existingAuth = securityContext.getAuthentication();
 
         final String gnCookie = getGeoNodeCookieValue(httpRequest);
+        
+        final boolean alreadyAuthenticated = existingAuth != null && existingAuth.isAuthenticated();
+        final boolean anonymous = existingAuth instanceof AnonymousAuthenticationToken;
+        final boolean hasPreviouslyValidatedGeoNodeCookie =
+        		(existingAuth instanceof GeoNodeSessionAuthToken) &&
+        		existingAuth.getCredentials().equals(gnCookie);
+        
+        if (hasPreviouslyValidatedGeoNodeCookie) existingAuth.setAuthenticated(true);
 
         // if we still need to authenticate and we find the cookie, consult GeoNode for
         // an authentication
-        final boolean authenticationRequired;
-        if (existingAuth == null || !existingAuth.isAuthenticated()
-                || (existingAuth instanceof AnonymousAuthenticationToken)) {
-            authenticationRequired = true;
-        } else if (existingAuth instanceof GeoNodeSessionAuthToken) {
-            Object credentials = existingAuth.getCredentials();
-            boolean stillValid = gnCookie != null && gnCookie.equals(credentials);
-            existingAuth.setAuthenticated(stillValid);
-            authenticationRequired = !stillValid;
-        } else {
-            authenticationRequired = false;
-        }
-
+        final boolean authenticationRequired =
+            !(alreadyAuthenticated || anonymous || !hasPreviouslyValidatedGeoNodeCookie);
+        
         if (authenticationRequired && gnCookie != null) {
             try {
-                final Authentication authResult;
-                authResult = client.authenticateCookie(gnCookie);
+                Object principal = existingAuth == null ? null : existingAuth.getPrincipal();
+                Collection<? extends GrantedAuthority> authorities = 
+                    existingAuth == null ? null : existingAuth.getAuthorities();
+                Authentication authRequest = 
+                    new GeoNodeSessionAuthToken(principal, gnCookie, authorities);
+                final Authentication authResult = getSecurityManager().authenticate(authRequest);
                 securityContext.setAuthentication(authResult);
-
             } catch (AuthenticationException e) {
                 // we just go ahead and fall back on basic authentication
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
-                        "Error connecting to the GeoNode server for authentication purposes", e);
-                // throw new ServletException("Error connecting to GeoNode authentication server: "
-                // + e.getMessage(), e);
+                LOGGER.log(
+                    Level.WARNING,
+                    "Error connecting to the GeoNode server for authentication purposes",
+                    e);
             }
         }
 
@@ -118,12 +107,4 @@ public class GeoNodeCookieProcessingFilter implements Filter {
 
         return null;
     }
-
-    /**
-     * @param client
-     */
-    public void setClient(GeonodeSecurityClient client) {
-        this.client = client;
-    }
-
 }

@@ -8,18 +8,17 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import org.geoserver.security.filter.GeoServerSecurityFilter;
 
+import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.geotools.util.logging.Logging;
 
 /**
  * A processing filter that will gather the unauthenticated user privileges from GeoNode's access
@@ -33,9 +32,9 @@ public class GeoNodeAnonymousProcessingFilter extends GeoServerSecurityFilter {
 
     static final Logger LOGGER = Logging.getLogger(GeoNodeAnonymousProcessingFilter.class);
 
-    private GeonodeSecurityClient client;
+    private GeoNodeSecurityClient client;
 
-    public GeoNodeAnonymousProcessingFilter(GeonodeSecurityClient client) {
+    public GeoNodeAnonymousProcessingFilter(GeoNodeSecurityClient client) {
         this.client = client;
     }
 
@@ -89,7 +88,7 @@ public class GeoNodeAnonymousProcessingFilter extends GeoServerSecurityFilter {
     /**
      * @param client
      */
-    public void setClient(GeonodeSecurityClient client) {
+    public void setClient(GeoNodeSecurityClient client) {
         this.client = client;
     }
 
