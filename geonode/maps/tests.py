@@ -20,32 +20,6 @@ Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
-# geonode.layers.models.get_catalogue = Mock()
-
-
-_csw_resource = Mock()
-_csw_resource.protocol = "WWW:LINK-1.0-http--link"
-_csw_resource.url = "http://example.com/"
-_csw_resource.description = "example link"
-
-
-DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
-
-geonode.maps.views._metadata_search = Mock()
-geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
-
-
-
-geonode.utils.get_catalogue = Mock()
-geonode.utils.get_catalogue.return_value.getrecordbyid.return_value = None
-geonode.utils.get_catalogue.return_value.records.values.return_value = [None]
-geonode.utils.get_catalogue.return_value.records.get.return_value.distribution.online = [_csw_resource]
-geonode.utils.get_catalogue.return_value.records.get.return_value.identification.keywords = []
-geonode.utils.get_catalogue.return_value.connected = True
-
-geonode.layers.models._extract_links = Mock()
-geonode.layers.models._extract_links.return_value = {}
-
 
 class MapsTest(TestCase):
     """Tests geonode.maps app/module

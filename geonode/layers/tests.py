@@ -38,22 +38,12 @@ from geonode.layers.models import post_save_layer
 
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
-
-
-_gs_resource = Mock()
-_gs_resource.native_bbox = [1, 2, 3, 4]
 _gs_resource.keywords = [u'keywords', u'saving']
 Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
-_csw_resource = Mock()
-_csw_resource.protocol = "WWW:LINK-1.0-http--link"
-_csw_resource.url = "http://example.com/"
-_csw_resource.description = "example link"
-
 # we revisit this mock wms object
-
 fake_wms = Mock()
 fake_wms.__getitem__ = Mock()
 fake_wms.contents = []
@@ -61,28 +51,7 @@ fake_wms.contents = []
 geonode.layers.models.get_wms = fake_wms
 geonode.layers.models._wms = fake_wms
 
-geonode.utils.get_catalogue = Mock()
-geonode.utils.get_catalogue.return_value.getrecordbyid.return_value = None
-geonode.utils.get_catalogue.return_value.records.values.return_value = [None]
-geonode.utils.get_catalogue.return_value.records.get.return_value.distribution.online = [_csw_resource]
-geonode.utils.get_catalogue.return_value.records.get.return_value.identification.keywords = []
-geonode.utils.get_catalogue.return_value.connected = True
-
 from geonode.layers import views
-
-geonode.layers.views.get_catalogue = Mock()
-geonode.layers.views.get_catalogue.return_value.getrecordbyid.return_value = None
-geonode.layers.views.get_catalogue.return_value.records.values.return_value = [None]
-geonode.layers.views.get_catalogue.return_value.records.get.return_value.distribution.online = [_csw_resource]
-geonode.layers.views.get_catalogue.return_value.records.get.return_value.identification.keywords = []
-
-geonode.layers.views._extract_links = Mock()
-geonode.layers.views._extract_links.return_value = []
-
-DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
-
-geonode.layers.views._layer_search = Mock()
-geonode.layers.views._layer_search.return_value = DUMMY_RESULT
 
 def simple_post_save_layer(instance, sender, **kwargs):
         instance._autopopulate()
@@ -558,7 +527,7 @@ class LayersTest(TestCase):
             with nested(
                 patch.object(geonode.utils, '_wms', new=MockWMS()),
                 patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.utils.get_catalogue')
+                patch('geonode.csw.get_catalogue')
             ) as (mock_wms, mock_gs, mock_gn):
                 # Setup
                 mock_gs.get_store.return_value.get_resources.return_value = []
