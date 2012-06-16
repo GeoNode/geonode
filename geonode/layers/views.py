@@ -37,7 +37,6 @@ from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
 from geoserver.resource import FeatureType
 
-
 logger = logging.getLogger("geonode.layers.views")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -535,115 +534,6 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))
-
-
-def _extract_links(xml):
-    download_links = []
-    dl_type_path = "/".join([
-        nspath("CI_OnlineResource", namespaces["gmd"]),
-        nspath("protocol", namespaces["gmd"]),
-        nspath("CharacterString", namespaces["gco"])
-        ])
-
-    dl_name_path = "/".join([
-        nspath("CI_OnlineResource", namespaces["gmd"]),
-        nspath("name", namespaces["gmd"]),
-        nspath("CharacterString", namespaces["gco"])
-        ])
-
-    dl_description_path = "/".join([
-        nspath("CI_OnlineResource", namespaces["gmd"]),
-        nspath("description", namespaces["gmd"]),
-        nspath("CharacterString", namespaces["gco"])
-        ])
-
-    dl_link_path = "/".join([
-        nspath("CI_OnlineResource", namespaces["gmd"]),
-        nspath("linkage", namespaces["gmd"]),
-        nspath("URL", namespaces["gmd"])
-        ])
-
-    format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
-
-    for link in xml.findall("*//" + nspath("onLine", namespaces['gmd'])):
-        dl_type = link.find(dl_type_path)
-        if dl_type is not None and dl_type.text == "WWW:DOWNLOAD-1.0-http--download":
-            extension = link.find(dl_name_path).text.split('.')[-1]
-            data_format = format_re.match(link.find(dl_description_path).text).groups()[0]
-            url = link.find(dl_link_path).text
-            download_links.append((extension, data_format, url))
-    return dict(download=download_links)
-
-
-def _build_search_result(doc):
-    """
-    accepts a node representing a csw result 
-    record and builds a POD structure representing 
-    the search result.
-    """
-    if doc is None:
-        return None
-    # Let owslib do some parsing for us...
-    rec = CswRecord(doc)
-    result = {}
-    result['title'] = rec.title
-    result['uuid'] = rec.identifier
-    result['abstract'] = rec.abstract
-    result['keywords'] = [x for x in rec.subjects if x]
-    result['detail'] = getattr(rec,'uri','')
-
-    # XXX needs indexing ? how
-    result['attribution'] = {'title': '', 'href': ''}
-
-    # XXX !_! pull out geonode 'typename' if there is one
-    # index this directly... 
-    if getattr(rec,'uri',None):
-        try:
-            result['name'] = urlparse(rec.uri).path.split('/')[-1]
-        except Exception:
-            pass
-    # fallback: use geonetwork uuid
-    if not result.get('name', ''):
-        result['name'] = rec.identifier
-
-    # Take BBOX from GeoNetwork Result...
-    # XXX this assumes all our bboxes are in this 
-    # improperly specified SRS.
-    if rec.bbox is not None and rec.bbox.crs == 'urn:ogc:def:crs:::WGS 1984':
-        # slight workaround for ticket 530
-        result['bbox'] = {
-            'minx': min(rec.bbox.minx, rec.bbox.maxx),
-            'maxx': max(rec.bbox.minx, rec.bbox.maxx),
-            'miny': min(rec.bbox.miny, rec.bbox.maxy),
-            'maxy': max(rec.bbox.miny, rec.bbox.maxy)
-        }
-    
-    # XXX these could be exposed in owslib record...
-    # locate all download links
-    format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
-    result['download_links'] = []
-    for link_el in doc.findall(nspath('URI', namespaces['dc'])):
-        if link_el.get('protocol', '') == 'WWW:DOWNLOAD-1.0-http--download':
-            try:
-                extension = link_el.get('name', '').split('.')[-1]
-                data_format = format_re.match(link_el.get('description')).groups()[0]
-                href = link_el.text
-                result['download_links'].append((extension, data_format, href))
-            except Exception:
-                pass
-
-    # construct the link to the geonetwork metadata record (not self-indexed)
-    md_link = settings.CSW['default']['url'] + '?' + urlencode({
-            "request": "GetRecordById",
-            "service": "CSW",
-            "version": "2.0.2",
-            "OutputSchema": "http://www.isotc211.org/2005/gmd",
-            "ElementSetName": "full",
-            "id": rec.identifier
-        })
-    result['metadata_links'] = [("text/xml", "TC211", md_link)]
-
-    return result
 
 
 @require_POST

@@ -32,6 +32,10 @@ from geonode.people.utils import get_valid_user
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 
+from django.db.models import signals
+from geonode.layers.models import post_save_layer
+
+
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
 
@@ -80,7 +84,8 @@ DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':
 geonode.layers.views._layer_search = Mock()
 geonode.layers.views._layer_search.return_value = DUMMY_RESULT
 
-
+def simple_post_save_layer(instance, sender, **kwargs):
+        instance._autopopulate()
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
@@ -89,6 +94,9 @@ class LayersTest(TestCase):
     def setUp(self):
         self.user = 'admin'
         self.passwd = 'admin'
+        signals.post_save.disconnect(post_save_layer, sender=Layer)
+        signals.post_save.connect(simple_post_save_layer, sender=Layer)
+       
 
     fixtures = ['map_data.json', 'initial_data.json']
 
@@ -366,9 +374,6 @@ class LayersTest(TestCase):
         Disabled due to reliance on consistent UUIDs across loads.
         '''
         layer = Layer.objects.all()[0]
-
-        # save to catalogue so we know the uuid is consistent
-        layer.save_to_catalogue()
 
         c = Client()
         response = c.get('/data/search/detail', {'uuid':layer.uuid})
