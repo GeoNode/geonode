@@ -407,10 +407,10 @@ class Layer(models.Model, PermissionLevelMixin):
         return _wms[self.typename]
 
     def metadata_record(self):
-        global _catalogue
-        if(_catalogue is None):
-            _catalogue= get_catalogue()
-        return _catalogue.get_by_uuid(self.uuid)
+        cat = Layer.objects.metadata_catalogue
+        record =  cat.get_by_uuid(self.uuid)
+        cat.logout()
+        return record
 
     @property
     def attribute_names(self):

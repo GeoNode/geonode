@@ -457,16 +457,16 @@ class GeoNodeMapTest(TestCase):
 
         tif_layer.delete()
 
-    def test_layer_delete_from_geonetwork(self):
-        """Verify that layer is correctly deleted from GeoNetwork
+    def test_layer_delete_from_catalogue(self):
+        """Verify that layer is correctly deleted from CSW catalogue
         """
 
-        gn_cat = Layer.objects.gn_catalog
+        gn_cat = Layer.objects.metadata_catalogue
 
         # Test Uploading then Deleting a Shapefile from GeoNetwork
         shp_file = os.path.join(TEST_DATA, 'lembang_schools.shp')
         shp_layer = file_upload(shp_file)
-        shp_layer.delete_from_geonetwork()
+        shp_layer.delete_from_catalogue()
         shp_layer_info = gn_cat.get_by_uuid(shp_layer.uuid)
         assert shp_layer_info == None
 
@@ -476,7 +476,7 @@ class GeoNodeMapTest(TestCase):
         # Test Uploading then Deleting a TIFF file from GeoNetwork
         tif_file = os.path.join(TEST_DATA, 'test_grid.tif')
         tif_layer = file_upload(tif_file)
-        tif_layer.delete_from_geonetwork()
+        tif_layer.delete_from_catalogue()
         tif_layer_info = gn_cat.get_by_uuid(tif_layer.uuid)
         assert tif_layer_info == None
 
@@ -488,7 +488,7 @@ class GeoNodeMapTest(TestCase):
         """
 
         gs_cat = Layer.objects.gs_catalog
-        gn_cat = Layer.objects.gn_catalog
+        gn_cat = Layer.objects.metadata_catalogue
 
         # Upload a Shapefile Layer
         shp_file = os.path.join(TEST_DATA, 'lembang_schools.shp')

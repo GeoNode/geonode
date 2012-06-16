@@ -92,7 +92,9 @@ def get_wms():
     return _wms
 
 def get_catalogue():
-    return Catalogue()
+    cat = Catalogue()
+    cat.login()
+    return cat
 
 
 def _get_basic_auth_info(request):
