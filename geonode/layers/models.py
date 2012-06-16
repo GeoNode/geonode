@@ -15,8 +15,9 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
-from geonode.catalogue.catalogue import Catalogue
-from geonode.utils import _wms, _user, _password, get_wms, get_catalogue, bbox_to_wkt
+from geonode.csw import get_catalogue
+from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
+from geonode.csw import get_catalogue
 from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 
 from geonode.security.models import PermissionLevelMixin
@@ -26,7 +27,6 @@ from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
     TOPIC_CATEGORIES, DEFAULT_SUPPLEMENTAL_INFORMATION
 
 from geoserver.catalog import Catalog
-
 from taggit.managers import TaggableManager
 
 logger = logging.getLogger("geonode.layers.models")
@@ -39,9 +39,6 @@ class LayerManager(models.Manager):
         url = "%srest" % settings.GEOSERVER_BASE_URL
         self.gs_catalog = Catalog(url, _user, _password)
 
-    @property
-    def metadata_catalogue(self):
-        return get_catalogue()
 
     def admin_contact(self):
         # this assumes there is at least one superuser
@@ -350,9 +347,10 @@ class Layer(models.Model, PermissionLevelMixin):
         # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
 
         # Check the layer is in the catalogue and points back to get_absolute_url
-        _local_catalogue = get_catalogue()
+        cat = get_catalogue()
+        cat.login()
         try:
-            catalogue_layer = _local_catalogue.get_by_uuid(self.uuid)
+            catalogue_layer = cat.get_by_uuid(self.uuid)
         except:
             msg = "Catalogue Record Missing for layer [%s]" % self.typename
             raise GeoNodeException(msg)
@@ -365,6 +363,7 @@ class Layer(models.Model, PermissionLevelMixin):
         else:        
             msg = "Catalogue Layer URL not found layer [%s]" % self.typename
 
+        cat.logout()
 
         # if(csw_layer.uri != self.get_absolute_url()):
         #     msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
@@ -407,7 +406,8 @@ class Layer(models.Model, PermissionLevelMixin):
         return _wms[self.typename]
 
     def metadata_record(self):
-        cat = Layer.objects.metadata_catalogue
+        cat = get_catalogue()
+        cat.login()
         record =  cat.get_by_uuid(self.uuid)
         cat.logout()
         return record
@@ -460,12 +460,14 @@ class Layer(models.Model, PermissionLevelMixin):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
 
     def delete_from_catalogue(self):
-        cat = Layer.objects.metadata_catalogue
+        cat = get_catalogue()
+        cat.login()
         cat.delete_layer(self)
         cat.logout()
 
     def save_to_catalogue(self):
-        cat = Layer.objects.metadata_catalogue
+        cat = get_catalogue()
+        cat.login()
         record = cat.get_by_uuid(self.uuid)
         if record is None:
             md_link = cat.create_from_layer(self)
@@ -502,8 +504,11 @@ class Layer(models.Model, PermissionLevelMixin):
            NOTE: we are NOT using the above properties because this will
            break the OGC W*S Capabilities rules
         """
-        cat = Layer.objects.metadata_catalogue
-        return cat.urls_for_uuid(self.uuid)
+        cat = get_catalogue()
+        cat.login()
+        records = cat.urls_for_uuid(self.uuid)
+        cat.logout()
+        return records
 
     def _get_default_style(self):
         return self.publishing.default_style
@@ -580,7 +585,8 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.resource is None:
             return
         if hasattr(self, "_resource_cache"):
-            cat = Layer.objects.metadata_catalogue
+            cat = get_catalogue()
+            cat.login()
             self.resource.title = self.title
             self.resource.abstract = self.abstract
             self.resource.name= self.name

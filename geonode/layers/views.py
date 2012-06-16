@@ -21,8 +21,9 @@ from django.utils import simplejson as json
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
 
-from geonode.utils import http_client, _split_query, _get_basic_auth_info, get_catalogue
-from geonode.catalogue.catalogue import connection as catalogue_connectionm, normalize_bbox, namespaces, metadatarecord2dict, _extract_links
+from geonode.utils import http_client, _split_query, _get_basic_auth_info
+from geonode.csw import get_catalogue
+from geonode.csw.utils import namespaces, metadatarecord2dict, _extract_links
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
 from geonode.utils import default_map_config
@@ -474,12 +475,12 @@ def layer_search(request):
 def _layer_search(query, start, limit, **kw):
     
     catalogue = get_catalogue()
-
+    catalogue.login()
     keywords = _split_query(query)
    
     if kw.has_key('bbox'):
         # ensure proper bbox axis order
-        bbox = normalize_bbox(kw['bbox'])
+        bbox = catalogue.normalize_bbox(kw['bbox'])
     else:
         bbox = None
 

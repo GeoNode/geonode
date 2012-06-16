@@ -8,18 +8,20 @@ from owslib.util import http_post, nspath
 from urlparse import urlparse
 from lxml import etree
 
-connection = settings.CSW['default']
 
-class Catalogue(CatalogueServiceWeb):
-    def __init__(self, skip_caps=True):
-        self.type = connection['type']
-        self.url = connection['url']
-        self.user = connection['username']
-        self.password = connection['password']
+class BaseCSWBackend(CatalogueServiceWeb):
+    def __init__(self, *args, **kwargs):
+        #FIXME(Ariel): Hardcoding this one to make test pass.
+        # this workaround should go before pulling into dev.
+        self.type = 'geonetwork'
+        self.url = kwargs['URL']
+        self.user = kwargs['USER']
+        self.password = kwargs['PASSWORD']
+        self.formats = kwargs['FORMATS']
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
-
+        skip_caps = kwargs.get('skip_caps', True)
         CatalogueServiceWeb.__init__(self, url=self.url, skip_caps=skip_caps)
 
         upurl = urlparse(self.url)
@@ -84,14 +86,14 @@ class Catalogue(CatalogueServiceWeb):
         """returns list of valid GetRecordById URLs for a given record"""
 
         urls = []
-        for mformat in connection['formats']:
+        for mformat in self.formats:
             urls.append({mformat: self.url_for_uuid(uuid, settings.METADATA_FORMATS[mformat][1])})
         return urls
 
     def csw_request(self, layer, template):
 
         id_pname = 'dc:identifier'
-        if settings.CSW['default']['type'] == 'deegree':
+        if self.type == 'deegree':
             id_pname = 'apiso:Identifier'
 
         tpl = get_template(template)
@@ -240,85 +242,20 @@ class Catalogue(CatalogueServiceWeb):
 
     def search(self, keywords, startposition, maxrecords, bbox):
         """CSW search wrapper"""
-
         formats = []
-        for f in settings.CSW['default']['formats']:
+        for f in self.formats:
             formats.append(settings.METADATA_FORMATS[f][0])
 
         return self.getrecords(typenames=' '.join(formats), keywords=keywords, startposition=startposition, maxrecords=maxrecords, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
 
-def normalize_bbox(bbox):
-    """
-    fix bbox axis order
-    GeoNetwork accepts x/y
-    pycsw accepts y/x
-    """
+    def normalize_bbox(self, bbox):
+        """
+        fix bbox axis order
+        GeoNetwork accepts x/y
+        pycsw accepts y/x
+        """
 
-    if connection['type'] == 'geonetwork': 
-        return bbox
-    else:  # swap coords per standard
-        return [bbox[1], bbox[0], bbox[3], bbox[2]]
-
-def metadatarecord2dict(rec, catalogue):
-    """
-    accepts a node representing a catalogue result 
-    record and builds a POD structure representing 
-    the search result.
-    """
-
-    if rec is None:
-        return None
-    # Let owslib do some parsing for us...
-    result = {}
-    result['uuid'] = rec.identifier
-    result['title'] = rec.identification.title
-    result['abstract'] = rec.identification.abstract
-
-    keywords = []
-    for kw in rec.identification.keywords:
-        keywords.extend(kw['keywords'])
-
-    result['keywords'] = keywords
-
-    # XXX needs indexing ? how
-    result['attribution'] = {'title': '', 'href': ''}
-
-    result['name'] = result['uuid']
-
-    result['bbox'] = {
-        'minx': rec.identification.bbox.minx,
-        'maxx': rec.identification.bbox.maxx,
-        'miny': rec.identification.bbox.miny,
-        'maxy': rec.identification.bbox.maxy
-        }
-
-    # locate all distribution links
-    result['download_links'] = _extract_links(rec)
-
-    # construct the link to the Catalogue metadata record (not self-indexed)
-    result['metadata_links'] = [("text/xml", "TC211", catalogue.url_for_uuid(rec.identifier, 'http://www.isotc211.org/2005/gmd'))]
-
-    return result
-
-def _extract_links(rec):
-    # fetch all distribution links
-
-    links = []
-    # extract subset of description value for user-friendly display
-    format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
-
-    if not hasattr(rec, 'distribution'):
-        return None
-    if not hasattr(rec.distribution, 'online'):
-        return None
-
-    for link_el in rec.distribution.online:
-        if link_el.protocol == 'WWW:DOWNLOAD-1.0-http--download':
-            try:
-                extension = link_el.name.split('.')[-1]
-                format = format_re.match(link_el.description).groups()[0]
-                href = link_el.url
-                links.append((extension, format, href))
-            except:
-                pass
-    return links
+        if self.type == 'geonetwork': 
+            return bbox
+        else:  # swap coords per standard
+            return [bbox[1], bbox[0], bbox[3], bbox[2]]

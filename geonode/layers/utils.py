@@ -23,6 +23,7 @@ from django.conf import settings
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.utils import check_geonode_is_up
+from geonode.csw import get_catalogue
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.people.models import Contact
@@ -212,7 +213,7 @@ def cleanup(name, uuid):
        except:
            logger.exception("Couldn't delete GeoServer store during cleanup()")
 
-   cat = Layer.objects.metadata_catalogue
+   cat = get_catalogue()
    catalogue_record = cat.get_by_uuid(uuid)
    if catalogue_record is not None:
        logger.warning('Deleting dangling Catalogue record for [%s] '
