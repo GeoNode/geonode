@@ -59,7 +59,7 @@ def get_catalogue(backend=None):
     return cat
 
 
-class CSWCatalog(object):
+class CSW(object):
 
     def __init__(self):
         self.cat = get_catalogue()
