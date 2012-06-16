@@ -22,7 +22,6 @@ from geonode import GeoNodeException
 #from geonode.maps.models import Map
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.models import INVALID_PERMISSION_MESSAGE
-from geonode.catalogue.catalogue import Catalogue
 
 _wms = None
 _csw = None
@@ -90,11 +89,6 @@ def get_wms():
     body = http.request(wms_url)[1]
     _wms = WebMapService(wms_url, xml=body)
     return _wms
-
-def get_catalogue():
-    cat = Catalogue()
-    cat.login()
-    return cat
 
 
 def _get_basic_auth_info(request):

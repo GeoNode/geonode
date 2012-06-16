@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     'geonode.people',
     'geonode.proxy',
     'geonode.security',
+    'geonode.csw',
 )
 
 LOGGING = {
@@ -286,23 +287,21 @@ METADATA_FORMATS = {
 # CSW settings
 CSW = {
     'default': {
-        # The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
-        #'type': 'pycsw',
-        'type': 'geonetwork',
-        #'type': 'deegree',
+        # The underlying CSW implementation
+        'ENGINE': 'geonode.csw.backends.geonetwork',
 
         # enabled formats
         #'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
-        'formats': ['TC211'],
+        'FORMATS': ['TC211'],
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         #'url': 'http://localhost/pycsw/trunk/csw.py',
-        'url': 'http://localhost:8001/geonetwork/srv/en/csw',
+        'URL': 'http://localhost:8001/geonetwork/srv/en/csw',
         #'url': 'http://localhost:8001/deegree-csw-demo-3.0.4/services',
     
         # login credentials (for GeoNetwork)
-        'username': 'admin',
-        'password': 'admin'
+        'USER': 'admin',
+        'PASSWORD': 'admin'
     }
 }
 

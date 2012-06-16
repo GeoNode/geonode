@@ -26,6 +26,7 @@ from geonode.layers.utils import (
 from .utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
+from geonode.csw import get_catalogue
 
 from geonode.gs_helpers import cascading_delete, fixup_style
 
@@ -461,7 +462,7 @@ class GeoNodeMapTest(TestCase):
         """Verify that layer is correctly deleted from CSW catalogue
         """
 
-        gn_cat = Layer.objects.metadata_catalogue
+        gn_cat = get_catalogue()
 
         # Test Uploading then Deleting a Shapefile from GeoNetwork
         shp_file = os.path.join(TEST_DATA, 'lembang_schools.shp')
@@ -488,7 +489,7 @@ class GeoNodeMapTest(TestCase):
         """
 
         gs_cat = Layer.objects.gs_catalog
-        gn_cat = Layer.objects.metadata_catalogue
+        gn_cat = get_catalogue()
 
         # Upload a Shapefile Layer
         shp_file = os.path.join(TEST_DATA, 'lembang_schools.shp')
