@@ -15,9 +15,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
-from geonode.csw import get_catalogue
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
-from geonode.csw import get_catalogue
+from geonode.csw import CSW
 from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 
 from geonode.security.models import PermissionLevelMixin
@@ -347,13 +346,13 @@ class Layer(models.Model, PermissionLevelMixin):
         # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
 
         # Check the layer is in the catalogue and points back to get_absolute_url
-        cat = get_catalogue()
-        cat.login()
-        try:
-            catalogue_layer = cat.get_by_uuid(self.uuid)
-        except:
-            msg = "Catalogue Record Missing for layer [%s]" % self.typename
-            raise GeoNodeException(msg)
+        catalogue_layer = None
+        with CSW() as csw_cat:
+            try:
+                catalogue_layer = csw_cat.get_by_uuid(self.uuid)
+            except:
+                msg = "Catalogue Record Missing for layer [%s]" % self.typename
+                raise GeoNodeException(msg)
 
         if hasattr(catalogue_layer, 'distribution') and hasattr(catalogue_layer.distribution, 'online'):
             for link in catalogue_layer.distribution.online:
@@ -363,7 +362,6 @@ class Layer(models.Model, PermissionLevelMixin):
         else:        
             msg = "Catalogue Layer URL not found layer [%s]" % self.typename
 
-        cat.logout()
 
         # if(csw_layer.uri != self.get_absolute_url()):
         #     msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
@@ -406,10 +404,8 @@ class Layer(models.Model, PermissionLevelMixin):
         return _wms[self.typename]
 
     def metadata_record(self):
-        cat = get_catalogue()
-        cat.login()
-        record =  cat.get_by_uuid(self.uuid)
-        cat.logout()
+        with CSW() as csw_cat:
+            record =  csw_cat.get_by_uuid(self.uuid)
         return record
 
     @property
@@ -460,21 +456,17 @@ class Layer(models.Model, PermissionLevelMixin):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
 
     def delete_from_catalogue(self):
-        cat = get_catalogue()
-        cat.login()
-        cat.delete_layer(self)
-        cat.logout()
+        with CSW() as csw_cat:
+            csw_cat.delete_layer(self)
 
     def save_to_catalogue(self):
-        cat = get_catalogue()
-        cat.login()
-        record = cat.get_by_uuid(self.uuid)
-        if record is None:
-            md_link = cat.create_from_layer(self)
-            self.metadata_links = [("text/xml", "TC211", md_link)]
-        else:
-            cat.update_layer(self)
-        cat.logout()
+        with CSW() as csw_cat:
+            record = csw_cat.get_by_uuid(self.uuid)
+            if record is None:
+                md_link = csw_cat.create_from_layer(self)
+                self.metadata_links = [("text/xml", "TC211", md_link)]
+            else:
+                csw_cat.update_layer(self)
 
     @property
     def resource(self):
@@ -504,10 +496,9 @@ class Layer(models.Model, PermissionLevelMixin):
            NOTE: we are NOT using the above properties because this will
            break the OGC W*S Capabilities rules
         """
-        cat = get_catalogue()
-        cat.login()
-        records = cat.urls_for_uuid(self.uuid)
-        cat.logout()
+        records = None
+        with CSW() as csw_cat:
+            records = cat.urls_for_uuid(self.uuid)
         return records
 
     def _get_default_style(self):
@@ -585,15 +576,13 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.resource is None:
             return
         if hasattr(self, "_resource_cache"):
-            cat = get_catalogue()
-            cat.login()
-            self.resource.title = self.title
-            self.resource.abstract = self.abstract
-            self.resource.name= self.name
-            self.resource.metadata_links = [('text/xml', 'TC211', cat.url_for_uuid(self.uuid, 'http://www.isotc211.org/2005/gmd'))]
-            self.resource.keywords = self.keyword_list()
-            Layer.objects.gs_catalog.save(self._resource_cache)
-            cat.logout()
+            with CSW() as csw_cat:
+                self.resource.title = self.title
+                self.resource.abstract = self.abstract
+                self.resource.name= self.name
+                self.resource.metadata_links = [('text/xml', 'TC211', csw_cat.url_for_uuid(self.uuid, 'http://www.isotc211.org/2005/gmd'))]
+                self.resource.keywords = self.keyword_list()
+                Layer.objects.gs_catalog.save(self._resource_cache)
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
             profile = Contact.objects.get(user=self.poc.user)
