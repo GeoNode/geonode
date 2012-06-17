@@ -23,7 +23,6 @@ from django.views.decorators.http import require_POST
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
 from geonode.csw import CSW
-from geonode.csw.utils import namespaces, metadatarecord2dict, _extract_links
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
 from geonode.utils import default_map_config
@@ -483,7 +482,7 @@ def _layer_search(query, start, limit, **kw):
         csw_cat.search(keywords, start+1, limit, bbox)
 
         # build results into JSON for API
-        results = [metadatarecord2dict(doc, csw_cat) for v, doc in csw_cat.records.iteritems()]
+        results = [csw_cat.metadatarecord2dict(doc) for v, doc in csw_cat.records.iteritems()]
 
         result = {'rows': results,
                   'total': csw_cat.results['matches']}
@@ -513,11 +512,9 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
     with CSW() as csw_cat:
         rec = csw_cat.get_by_uuid(uuid)
         metadata_links = csw_cat.urls_for_uuid(uuid)
-
+        download_links = csw_cat.extract_links(rec)
     if rec is None:
         return HttpResponse('No metadata found!', status=500)
-
-    extra_links = dict(download=_extract_links(rec))
 
     try:
         layer = Layer.objects.get(uuid=uuid)
@@ -528,7 +525,7 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
 
     return render_to_response(template, RequestContext(request, {
         'rec': rec,
-        'extra_links': extra_links,
+        'download_links': download_links,
         'metadata_links': metadata_links,
         'layer': layer,
         'layer_is_remote': layer_is_remote
