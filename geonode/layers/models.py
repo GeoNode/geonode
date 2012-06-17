@@ -498,7 +498,7 @@ class Layer(models.Model, PermissionLevelMixin):
         """
         records = None
         with CSW() as csw_cat:
-            records = cat.urls_for_uuid(self.uuid)
+            records = csw_cat.urls_for_uuid(self.uuid)
         return records
 
     def _get_default_style(self):
