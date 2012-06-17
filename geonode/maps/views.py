@@ -31,7 +31,7 @@ from geonode.maps.forms import MapForm
 from geonode.people.models import Contact
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
-from geonode.csw import get_catalogue
+from geonode.csw import CSW
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -183,9 +183,6 @@ def map_view(request, mapid, template='maps/view.html'):
     config = map_obj.viewer_json()
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
-        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        'GEONETWORK_BASE_URL' : settings.GEONETWORK_BASE_URL,
-        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
     }))
 
 
@@ -231,9 +228,6 @@ def new_map(request, template='maps/view.html'):
     else:
         return render_to_response(template, RequestContext(request, {
             'config': config,
-            'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-            'CATALOGUE_BASE_URL': get_catalogue().url,
-            'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL
         }))
 
 

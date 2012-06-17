@@ -22,7 +22,7 @@ from django.utils.html import escape
 from django.views.decorators.http import require_POST
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
-from geonode.csw import get_catalogue
+from geonode.csw import CSW
 from geonode.csw.utils import namespaces, metadatarecord2dict, _extract_links
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
@@ -74,9 +74,7 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 
 
 def data(request):
-    return render_to_response('data.html', RequestContext(request, {
-        'GEOSERVER_BASE_URL':settings.GEOSERVER_BASE_URL
-    }))
+    return render_to_response('data.html', RequestContext(request, {}))
 
 
 def layer_browse(request, template='layers/data.html'):
@@ -134,7 +132,6 @@ def layer_detail(request, layername, template='layers/layer.html'):
         "metadata_links": metadata_links,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
-        "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL
     }))
 
 
@@ -473,24 +470,25 @@ def layer_search(request):
 
 
 def _layer_search(query, start, limit, **kw):
-    
-    catalogue = get_catalogue()
-    catalogue.login()
     keywords = _split_query(query)
+    result = {}
+    with CSW() as csw_cat: 
    
-    if kw.has_key('bbox'):
-        # ensure proper bbox axis order
-        bbox = catalogue.normalize_bbox(kw['bbox'])
-    else:
-        bbox = None
+        if kw.has_key('bbox'):
+            # ensure proper bbox axis order
+            bbox = csw_cat.normalize_bbox(kw['bbox'])
+        else:
+            bbox = None
 
-    catalogue.search(keywords, start+1, limit, bbox)
+        csw_cat.search(keywords, start+1, limit, bbox)
 
-    # build results into JSON for API
-    results = [metadatarecord2dict(doc, catalogue) for v, doc in catalogue.records.iteritems()]
+        # build results into JSON for API
+        results = [metadatarecord2dict(doc, csw_cat) for v, doc in csw_cat.records.iteritems()]
 
-    result = {'rows': results,
-              'total': catalogue.results['matches']}
+        result = {'rows': results,
+                  'total': csw_cat.results['matches']}
+
+        next_page = csw_cat.results.get('nextrecord', 0) 
 
 
     result['query_info'] = {
@@ -503,7 +501,6 @@ def _layer_search(query, start, limit, **kw):
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
         result['prev'] = reverse('layer_search_page') + '?' + params
 
-    next_page = catalogue.results.get('nextrecord', 0) 
     if next_page > 0:
         params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
         result['next'] = reverse('layer_search_page') + '?' + params
@@ -513,8 +510,9 @@ def _layer_search(query, start, limit, **kw):
 
 def layer_search_result_detail(request, template='layers/search_result_snippet.html'):
     uuid = request.GET.get("uuid")
-    catalogue = get_catalogue()
-    rec = catalogue.get_by_uuid(uuid)
+    with CSW() as csw_cat:
+        rec = csw_cat.get_by_uuid(uuid)
+        metadata_links = csw_cat.urls_for_uuid(uuid)
 
     if rec is None:
         return HttpResponse('No metadata found!', status=500)
@@ -524,14 +522,14 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
     try:
         layer = Layer.objects.get(uuid=uuid)
         layer_is_remote = False
-    except Exception:
+    except Layer.DoesNotExist, e:
         layer = None
         layer_is_remote = True
 
     return render_to_response(template, RequestContext(request, {
         'rec': rec,
         'extra_links': extra_links,
-        'metadata_links': catalogue.urls_for_uuid(uuid),
+        'metadata_links': metadata_links,
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))

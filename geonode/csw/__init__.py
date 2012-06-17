@@ -61,12 +61,12 @@ def get_catalogue(backend=None):
 
 class CSW(object):
 
-    def __init__(self):
-        self.cat = get_catalogue()
+    def __init__(self, *args, **kwargs):
+        self.csw_cat = get_catalogue()
 
-    def __enter__(self):
-        self.cat.login()
-        return self.cat
+    def __enter__(self, *args, **kwargs):
+        self.csw_cat.login()
+        return self.csw_cat
 
-    def __exit__(self):
-        self.cat.logout()
+    def __exit__(self, *args, **kwargs):
+        self.csw_cat.logout()
