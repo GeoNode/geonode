@@ -107,7 +107,6 @@ final class BatchDownload extends AsyncProcess {
         LOGGER.fine("Building zip file for map " + mapDetails.getTitle());
 
         final StorageManager storageManager = getStorageManager();
-        final int nLayers = layers.size();
 
         final String mapName = mapDetails.getTitle();
         final Resource zipFile = getTargetFileHandle(mapName, storageManager);

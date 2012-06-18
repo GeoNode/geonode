@@ -28,18 +28,29 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
+      <artifactId>main</artifactId>
+      <version>${geoserver.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
       <artifactId>rest</artifactId>
+      <version>${geoserver.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-security</artifactId>
       <version>${geoserver.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>printing</artifactId>
       <version>${geoserver.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>printing2</artifactId>
-      <version>${geoserver.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -47,9 +58,19 @@
       <version>${geoserver.version}</version>
     </dependency>
     <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.7.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>excel</artifactId>
       <version>${geoserver.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opengeo.geoserver</groupId>
+      <artifactId>importer</artifactId>
+      <version>3.0-SNAPSHOT</version>
     </dependency>
     <!--dependency>
       <groupId>org.geoserver.community</groupId>
@@ -75,11 +96,25 @@
       <version>3.1</version>
     </dependency>
     <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-shapefile</artifactId>
-      <version>${geotools.version}</version>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+      <version>3.1.0.RELEASE</version>
     </dependency>
-    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-expression</artifactId>
+      <version>3.1.1.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>3.1.1.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>3.1.1.RELEASE</version>
+    </dependency>
 
     <!-- GeoJSON module dependencies -->
     <dependency>
@@ -106,6 +141,13 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>main</artifactId>
+      <scope>test</scope>
+      <classifier>tests</classifier>
+      <version>${geoserver.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-core</artifactId>
       <scope>test</scope>
       <classifier>tests</classifier>
       <version>${geoserver.version}</version>
@@ -165,6 +207,7 @@
   <properties>
     <geotools.version>8-SNAPSHOT</geotools.version>
     <geoserver.version>2.2-SNAPSHOT</geoserver.version>
+    <geotools.version>8-SNAPSHOT</geotools.version>
     <jetty.version>6.1.8</jetty.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
@@ -245,6 +288,25 @@
           <!-- configure the container                 -->
           <jettyConfig>jetty.xml</jettyConfig>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <descriptors>
+            <descriptor>assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
