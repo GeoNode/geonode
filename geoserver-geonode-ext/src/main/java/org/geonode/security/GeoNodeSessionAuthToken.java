@@ -11,9 +11,9 @@ public class GeoNodeSessionAuthToken extends AbstractAuthenticationToken {
      */
     private static final long serialVersionUID = -3781584924355064548L;
 
-    private Object principal;
+    private final Object principal;
 
-    private Object credentials;
+    private final Object credentials;
 
     public GeoNodeSessionAuthToken(Object principal, Object credentials,
             Collection<? extends GrantedAuthority> authorities) {

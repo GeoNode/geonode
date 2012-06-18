@@ -7,12 +7,6 @@
       <map>
         <entry>
           <key>
-            <value>/process/hazard</value>
-          </key>
-          <value>processRestlet</value>
-        </entry>
-        <entry>
-          <key>
             <value>/process/batchDownload/launch</value>
           </key>
           <value>downloadLauncherRestlet</value>
@@ -91,10 +85,6 @@
     </constructor-arg>
   </bean>
 
-  <bean id="processRestlet" class="org.geonode.rest.coveragestats.ProcessRestlet">
-    <!-- the GeoServer catalog -->
-    <constructor-arg ref="catalog" />
-  </bean>
   <bean id="downloadLauncherRestlet" class="org.geonode.rest.batchdownload.DownloadLauncherRestlet">
     <!-- the GeoServer catalog -->
     <constructor-arg ref="catalog" />
@@ -109,5 +99,19 @@
   </bean>
   <bean id="downloadKillerRestlet" class="org.geonode.rest.batchdownload.DownloadKillerRestlet">
     <constructor-arg ref="processController" />
+  </bean>
+  <bean class="org.geonode.security.GeoNodeSecurityProvider"/>
+  <bean class="org.geonode.security.GeoNodeDataAccessManager"/>
+  <bean id="geonodeAuthFilterPanelInfo" class="org.geonode.web.security.GeoNodeAuthFilterPanelInfo">
+    <property name="id" value="security.geonodeAuthFilter" />
+    <property name="shortTitleKey" value="GeoNodeAuthFilterPanel.short" />
+    <property name="titleKey" value="GeoNodeAuthFilterPanel.title" />
+    <property name="descriptionKey" value="GeoNodeAuthFilterPanel.description"/>
+  </bean>
+  <bean id="geonodeAuthProviderPanelInfo" class="org.geonode.web.security.GeoNodeAuthProviderPanelInfo">
+    <property name="id" value="security.geonodeAuthProvider" />
+    <property name="shortTitleKey" value="GeoNodeAuthProviderPanel.short" />
+    <property name="titleKey" value="GeoNodeAuthProviderPanel.title" />
+    <property name="descriptionKey" value="GeoNodeAuthProviderPanel.description"/>
   </bean>
 </beans>
