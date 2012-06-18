@@ -1,8 +1,63 @@
-var perms_submit = function() {
+jQuery(document).ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function sameOrigin(url) {
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    function safeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    }
+});
+
+var map_perms_submit = function() {
     var form = $(this);
     var action = form.attr("action");
 
-    permissions = permissionsString(form.serializeObject());
+    permissions = permissionsString(form, "maps");
+    $.ajax(
+      {
+        type: "POST",
+        url: action,
+        data: JSON.stringify(permissions),
+        success: function(data) {
+          $("#modal_perms").modal("hide");
+        }
+      }
+    );
+    return false;
+};
+
+var layer_perms_submit = function() {
+    var form = $(this);
+    var action = form.attr("action");
+
+    permissions = permissionsString(form, "layer");
     $.ajax(
       {
         type: "POST",
@@ -58,6 +113,7 @@ var batch_perms_submit = function() {
 
     var postdata = { layers: [], maps: [], permissions: {} };
     var selected = $(".asset-selector:checked");
+
     $.each(selected, function(index, value) {
       var el = $(value);
       if (el.data("type") === "map") {
@@ -66,7 +122,15 @@ var batch_perms_submit = function() {
         postdata.layers.push(el.data("id"));
       }
     });
-    postdata.permissions = permissionsString(form.serializeObject());
+
+    if (postdata.layers.length == 0) {
+      delete postdata.layers;
+    };
+    if (postdata.maps.length == 0) {
+      delete postdata.maps;
+    };
+
+    postdata.permissions = permissionsString(form, "bulk");
     $.ajax(
       {
         type: "POST",
@@ -96,15 +160,26 @@ $.fn.serializeObject = function() {
   return o;
 };
 
-function permissionsString(data) {
+function permissionsString(form, type) {
   var anonymousPermissions, authenticatedPermissions;
 
-  var levels = {
-    'admin': 'layer_admin',
-    'readwrite': 'layer_readwrite',
-    'readonly': 'layer_readonly',
-    'none': '_none'
-  };
+  var data = form.serializeObject();
+
+  if (type == "maps") {
+    var levels = {
+      'readonly': 'map_readonly',
+      'readwrite': 'map_readwrite',
+      'admin': 'map_admin',
+      'none': '_none'
+    };
+  } else {
+    var levels = {
+      'admin': 'layer_admin',
+      'readwrite': 'layer_readwrite',
+      'readonly': 'layer_readonly',
+      'none': '_none'
+    };
+  }
 
   if (data["viewmode"] === "ANYONE") {
     anonymousPermissions = levels['readonly'];
@@ -122,25 +197,24 @@ function permissionsString(data) {
 
   var perUserPermissions = [];
   if (data["editmode"] === "LIST") {
-    if (data["editusers"] instanceof Array) {
-      $.each(data["editusers"], function(index, value) {
+    var editusers = form.find("input[name=editusers]").select2("val");
+    if (editusers instanceof Array) {
+      $.each(editusers, function(index, value) {
         perUserPermissions.push([value, levels["readwrite"]]);
       });
     } else {
-      perUserPermissions.push([data["editusers"], levels["readwrite"]]);
+      perUserPermissions.push([editusers, levels["readwrite"]]);
     };
-    
   }
-  if (data["editusers"]) {
-
-    if (data["editusers"] instanceof Array) {
-      $.each(data["manageusers"], function(index, value) {
+  var manageusers = form.find("input[name=manageusers]").select2("val");
+  if (manageusers) {
+    if (manageusers instanceof Array) {
+      $.each(manageusers, function(index, value) {
         perUserPermissions.push([value, levels["admin"]]);
       });
     } else {
-      perUserPermissions.push([data["manageusers"], levels["admin"]]);
+      perUserPermissions.push([manageusers, levels["admin"]]);
     };
-
   };
 
 
