@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block main %}
-  <form class="form-horizontal" action="{% url data_metadata layer.typename %}" method="POST">
+  <form class="form-horizontal" action="{% url layer_metadata layer.typename %}" method="POST">
     <legend>
       {% blocktrans with layer.typename as layer_title %}
         Editing details for {{ layer_title }}
