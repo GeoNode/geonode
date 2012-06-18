@@ -146,6 +146,10 @@ def setup_client(options):
            # gxp resources
            'externals/gxp/src/theme',
            'app/static/externals/gxp/src/theme'
+           ), (
+           # GeoExplorer resources
+           'theme/app',
+           'app/static/theme/app'
     ))
 
     for t, o in resources:
