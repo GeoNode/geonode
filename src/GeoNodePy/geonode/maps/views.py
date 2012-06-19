@@ -1235,10 +1235,15 @@ def _metadata_search(query, start, limit, **kw):
     return result
 
 def search_result_detail(request):
-    uuid = request.GET.get("uuid")
+    uuid = request.GET.get("uuid", None)
+    if  uuid is None:
+        return HttpResponse(status=404)
     csw = get_csw()
     csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.records.values()[0]
+    recs = csw.records.values()
+    if len(recs) == 0:
+        return HttpResponse(status=404)
+    rec = recs[0]
     raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
     extra_links = _extract_links(rec, raw_xml)
     
