@@ -24,37 +24,46 @@ import org.springframework.util.Assert;
  */
 public class GeoNodeAuthenticationProvider extends GeoServerAuthenticationProvider {
 
-    private GeonodeSecurityClient client;
+    private GeoNodeSecurityClient client;
 
-    public GeoNodeAuthenticationProvider(GeonodeSecurityClient client) {
+    public GeoNodeAuthenticationProvider(GeoNodeSecurityClient client) {
         this.client = client;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication, HttpServletRequest request) throws AuthenticationException {
-        Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, authentication,
-                "authentication shall be a UsernamePasswordAuthenticationToken");
-        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
-        String username = token.getName();
-        String password = (String) token.getCredentials();
-
-        try {
-            return client.authenticateUserPwd(username, password);
-        } catch (IOException e) {
-            throw new AuthenticationServiceException("Communication with GeoNode failed", e);
-        }
+    	if (authentication instanceof UsernamePasswordAuthenticationToken) {
+	        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
+	        String username = token.getName();
+	        String password = (String) token.getCredentials();
+	
+	        try {
+	            return client.authenticateUserPwd(username, password);
+	        } catch (IOException e) {
+	            throw new AuthenticationServiceException("Communication with GeoNode failed", e);
+	        }
+	    } else if (authentication instanceof GeoNodeSessionAuthToken) {
+	    	try {
+	    		return client.authenticateCookie((String) authentication.getCredentials());
+	    	} catch (IOException e) {
+	    		throw new AuthenticationServiceException("Communication with GeoNode failed", e);
+	    	}
+	    } else {
+	    	throw new IllegalArgumentException("GeoNodeAuthenticationProvider accepts only UsernamePasswordAuthenticationToken and GeoNodeSessionAuthToken; received " + authentication);
+	    }
     }
 
     @Override
     public boolean supports(Class<? extends Object> authentication, HttpServletRequest request) {
-        return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
+        return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication) ||
+        	    GeoNodeSessionAuthToken.class.isAssignableFrom(authentication));
     }
 
     /**
      * 
      * @param client
      */
-    public void setClient(GeonodeSecurityClient client) {
+    public void setClient(GeoNodeSecurityClient client) {
         this.client = client;
     }
 

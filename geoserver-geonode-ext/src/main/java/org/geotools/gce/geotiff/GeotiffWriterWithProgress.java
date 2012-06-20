@@ -167,7 +167,6 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
      * org.opengis.coverage.grid.GridCoverageWriter#write(org.opengis.coverage.grid.GridCoverage,
      * org.opengis.parameter.GeneralParameterValue[])
      */
-    @SuppressWarnings("unchecked")
     public void write(final GridCoverage gc, final GeneralParameterValue[] params,
             final ProgressListener monitor) throws IllegalArgumentException, IOException,
             IndexOutOfBoundsException {
@@ -180,10 +179,10 @@ public final class GeotiffWriterWithProgress extends AbstractGridCoverageWriter 
             //
             // /////////////////////////////////////////////////////////////////////
             if (params != null) {
-                Parameter param;
+                Parameter<?> param;
                 final int length = params.length;
                 for (int i = 0; i < length; i++) {
-                    param = (Parameter) params[i];
+                    param = (Parameter<?>) params[i];
                     if (param.getDescriptor().getName()
                             .equals(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName())) {
                         gtParams = (GeoToolsWriteParams) param.getValue();

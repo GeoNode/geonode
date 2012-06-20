@@ -4,7 +4,7 @@
 {% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
 
 {% block main %}
-  <form action="{% url data_remove layer.typename %}" method="POST">
+  <form action="{% url layer_remove layer.typename %}" method="POST">
     <legend>
       {% blocktrans with layer.typename as layer_title %}
         Are you sure you want to remove {{ layer_title }}?
