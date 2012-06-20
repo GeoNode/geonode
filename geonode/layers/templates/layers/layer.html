@@ -80,7 +80,7 @@
             Ext.get(Ext.DomQuery.select("select[@name='default-style']")).on("change", function(evt, elem) {
                 Ext.Ajax.request({
                     method: "post",
-                    url: "{% url data_style layer.typename %}",
+                    url: "{% url layer_style layer.typename %}",
                     params: {"defaultStyle" : elem.value}
                 });
             });
@@ -316,16 +316,16 @@
         <li class="nav-header">{% trans "Manage" %}</li>
         {% if user.is_authenticated %}
           {% if can_change %}
-            <li> <a href="{% url data_metadata layer.typename %}">
+            <li> <a href="{% url layer_metadata layer.typename %}">
                 {% trans "Update the description of this data" %}
             </a> </li>
-            <li> <a href="{% url data_replace layer.typename %}">
+            <li> <a href="{% url layer_replace layer.typename %}">
                 {% trans "Upload a new version of this data" %}
             </a></li>
           {% endif %}
           {% if can_delete %}
             <li>
-              <a href="{% url data_remove layer.typename %}">
+              <a href="{% url layer_remove layer.typename %}">
                 {% trans "Remove" %}
               </a>
             </li>
