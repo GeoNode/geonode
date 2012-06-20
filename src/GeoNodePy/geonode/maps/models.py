@@ -1236,14 +1236,13 @@ class Map(models.Model, PermissionLevelMixin):
 
     def json(self, layer_filter):
         map_layers = MapLayer.objects.filter(map=self.id)
-        layers = [] 
+        layers = []
         for map_layer in map_layers:
             if map_layer.local():   
                 layer =  Layer.objects.get(typename=map_layer.name)
                 layers.append(layer)
             else: 
                 pass 
-
         if layer_filter:
             layers = [l for l in layers if layer_filter(l)]
 
@@ -1520,7 +1519,7 @@ class MapLayer(models.Model):
         paired with the GeoNode site.  Currently this is based on heuristics,
         but we try to err on the side of false negatives.
         """
-        if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
+        if self.ows_url == ("/geoserver/wms"):
             return Layer.objects.filter(typename=self.name).count() != 0
         else: 
             return False
