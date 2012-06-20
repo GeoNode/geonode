@@ -56,7 +56,7 @@ def grab(src, dest):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     with pushd('geoserver-geonode-ext'):
-        sh("mvn clean install -DskipTests")
+        sh("mvn clean install jetty:stop -DskipTests")
 
 @task
 def setup_geonetwork(options):
