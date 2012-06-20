@@ -5,9 +5,7 @@ import java.util.Map;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geonode.security.GeoNodeDataAccessManager;
 import org.geoserver.data.test.MockData;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerTestSupport;
 
 public abstract class GeoNodeTestSupport extends GeoServerTestSupport {
@@ -30,12 +28,12 @@ public abstract class GeoNodeTestSupport extends GeoServerTestSupport {
         namespaces.put(MockData.SF_PREFIX, MockData.SF_URI);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
 
-        // if necessary, disable the authorization subsystem
-        if (!isAuthorizationEnabled()) {
-            GeoNodeDataAccessManager manager = GeoServerExtensions.bean(
-                    GeoNodeDataAccessManager.class, applicationContext);
-            manager.setAuthenticationEnabled(false);
-        }
+        // // if necessary, disable the authorization subsystem
+        // if (!isAuthorizationEnabled()) {
+        //     GeoNodeDataAccessManager manager = GeoServerExtensions.bean(
+        //             GeoNodeDataAccessManager.class, applicationContext);
+        //     manager.setAuthenticationEnabled(false);
+        // }
     }
 
     /**
@@ -47,7 +45,7 @@ public abstract class GeoNodeTestSupport extends GeoServerTestSupport {
     protected String[] getSpringContextLocations() {
         return new String[] {
                 "classpath*:/applicationContext.xml",
-                "classpath*:/geonodeApplicationSecurityContext.xml"
+                "classpath*:/applicationSecurityContext.xml"
             };
     }
     

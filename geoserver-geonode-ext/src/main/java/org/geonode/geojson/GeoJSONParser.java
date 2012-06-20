@@ -6,6 +6,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -71,12 +73,6 @@ public class GeoJSONParser {
         JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(Polygon.class, geomProcessor);
         JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(MultiPolygon.class, geomProcessor);
         JTS_GEOMETRY_CONFIG.registerJsonBeanProcessor(GeometryCollection.class, geomProcessor);
-    }
-
-    private GeoJSONConfig config;
-
-    public GeoJSONParser(final GeoJSONConfig config) {
-        this.config = config;
     }
 
     private static GeometryFactory gf = new GeometryFactory();
@@ -259,6 +255,7 @@ public class GeoJSONParser {
         return typeBuilder.buildFeatureType();
     }
 
+    @SuppressWarnings("unchecked")
     private static SimpleFeature parseFeature(JSONObject obj, SimpleFeatureType type)
             throws JSONException {
         // TODO: This method uses featureType.create() to create new features, which
@@ -278,12 +275,9 @@ public class GeoJSONParser {
 
         // Construct a new array with the attribute values for this feature,
         // skipping the 'type' attribute and the 'id' attribute if it exists.
-        String key;
-        ArrayList values = new ArrayList();
+        List<Object> values = new ArrayList<Object>();
 
-        for (Iterator iter = obj.keys(); iter.hasNext();) {
-            key = (String) iter.next();
-
+        for (String key : (Set<String>)obj.keySet()) {
             if (key.equals("geometry")) {
                 values.add(parseGeometry(obj.getJSONObject(key)));
             } else if (!key.equals("type") && !key.equals("id")) {
@@ -302,14 +296,16 @@ public class GeoJSONParser {
         return feature;
     }
 
-    private static FeatureCollection parseFeatureCollection(JSONObject obj, SimpleFeatureType type)
-            throws JSONException {
+    private static FeatureCollection<SimpleFeatureType, SimpleFeature>
+        parseFeatureCollection(JSONObject obj, SimpleFeatureType type)
+        throws JSONException
+    {
 
         if (!obj.containsKey("features")) {
             throw new JSONException("Missing required attribute 'features'");
         }
 
-        FeatureCollection featureCollection = FeatureCollections.newCollection();
+        FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = FeatureCollections.newCollection();
         JSONArray features = obj.getJSONArray("features");
 
         for (int i = 0; i < features.size(); i++)
