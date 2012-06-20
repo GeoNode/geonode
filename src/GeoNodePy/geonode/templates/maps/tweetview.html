@@ -251,40 +251,34 @@ var remoteStore = new Ext.data.JsonStore({
     }
 
 
-var updateCQL = function() {
-    tweetHeatRecord["cql_filter"] = "";
+var updateCQL = function(layers) {
+    for (var x = 0; x < layers.length; x++) {
+    var layer = layers[x];
+    layer["cql_filter"] = "";
     if (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) {
-        tweetHeatRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
+        layer["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
     }
-    tweetHeatRecord["cql_filter"] += "Start_Date > '" + new Date(tweetDateStartField.getValue()).format('Y-M-d') + "' AND Start_Date < '" + new Date(tweetDateEndField.getValue()).format('Y-M-d') + "'";
-    tweetHeatRecord["cql_filter"] += " AND RND = " + randomNum;
-    tweetHeatRecord.getLayer().params["CQL_FILTER"] = tweetHeatRecord["cql_filter"];
-
+    layer["cql_filter"] += "Start_Date > '" + new Date(tweetDateStartField.getValue()).format('Y-M-d') + "' AND Start_Date < '" + new Date(tweetDateEndField.getValue()).format('Y-M-d') + "'";
+    layer["cql_filter"] += " AND RND = " + randomNum;
+    layer.getLayer().params["CQL_FILTER"] = tweetHeatRecord["cql_filter"];
+}
     //console.log(tweetHeatRecord.getLayer().params["CQL_FILTER"]);
 }
 
     var updateLayer =  function() {
-//        if (tweetPointRecord != null && tweetPointRecord.getLayer().params.LAYERS.indexOf("basic") > -1) {
-//            tweetPointRecord["cql_filter"] = "";
-//            if (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) {
-//                tweetPointRecord["cql_filter"] = "Name='" + tweetFilterField.getValue() + "'" + " AND ";
-//            }
-//            tweetPointRecord["cql_filter"] += "Start_Date > '" + tweetDateStartField.getValue().format('Y-M-d') + "' AND Start_Date < '" + tweetDateEndField.getValue().format('Y-M-d') + "'";
-//            tweetPointRecord.getLayer().params["CQL_FILTER"] = tweetPointRecord["cql_filter"];
-//            tweetPointRecord.getLayer().redraw(true);
-//        }
 
         randomNum = Math.random();
 
         if (tweetHeatRecord != null && tweetHeatRecord.getLayer().params.LAYERS.indexOf("heatmap") > -1) {
-            updateCQL();
+            updateCQL([tweetHeatRecord,tweetPointRecord]);
             tweetHeatRecord.getLayer().redraw(true);
+	    tweetPointRecord.getLayer().redraw(true);
         }
 
 
 
         remoteStore.load({
-            params: {"bounds": app.mapPanel.map.getExtent() ? modifyBounds(): config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd" : new Date(tweetDateEndField.getValue()).format('Y-M-d')}
+            params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd" : new Date(tweetDateEndField.getValue()).format('Y-M-d')}
         });
 
 
@@ -444,10 +438,10 @@ var chartPanel = new Ext.Panel({
 
 var tweetConfig = {title: "Twitter Trends", source: "local", group: "Twitter", name: "heatmap",
     url: "http://107.22.230.16", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
-    singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true
+    singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true, queryable: true
 };
 /*
-var tweetConfig = {title: "Twitter Trends", source: "0", group: "Twitter", name: "basic",
+var tweetConfig = {title: "Twitter Trends", source: "0", group: "Twitter", name: "point",
     url: "http://192.168.1.90:8081", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
     singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true
 };
@@ -458,28 +452,28 @@ var tweetConfig = {title: "Twitter Trends", source: "0", group: "Twitter", name:
 var feedSource = Ext.ComponentMgr.createPlugin(
         tweetConfig, "gx_wmssource"
 );
-//var tweetPointRecord = feedSource.createLazyLayerRecord(tweetConfig);
-//tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
-//        "Tweets",
-//        tweetConfig.url, {
-//            layers: "basic",
-//            transparent: "transparent" in tweetConfig ? tweetConfig.transparent : true,
-//            format: tweetConfig.format,
-//            tiled: false
-//        }, {
-//            singleTile: true,
-//            ratio: tweetConfig.ratio || 1,
-//            visibility: false,
-//            opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
-//            buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
-//            //transitionEffect: 'resize',
-//            projection: 'EPSG:900913'
-//        }
-//));
-//tweetPointRecord.group = tweetConfig.group;
+var tweetPointRecord = feedSource.createLazyLayerRecord(tweetConfig);
+tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
+        "Tweets",
+        tweetConfig.url, {
+            layers: "point",
+            transparent: "transparent" in tweetConfig ? tweetConfig.transparent : true,
+            format: tweetConfig.format,
+            tiled: false
+        }, {
+            singleTile: true,
+            ratio: tweetConfig.ratio || 1,
+            visibility: true,
+            opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
+            buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
+            //transitionEffect: 'resize',
+            projection: 'EPSG:900913'
+        }
+));
+tweetPointRecord.group = tweetConfig.group;
 
 
-
+tweetConfig["queryable"] = false;
 var tweetHeatRecord = feedSource.createLazyLayerRecord(tweetConfig);
 tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
         "Tweet Heatmap",
@@ -509,7 +503,7 @@ var legendUrl = ""
 
 //legendUrl = "https://encrypted-tbn0.google.com/tbns/personal?q=tbn:ANd9GcTyCBe7PCREYi_ZHxQ1Mj5iCslnngmTgeJz7K2Bxx6sqtRMf0YOuMEgmyy3-0DEYa6t-Q2GXaAfz5O6UnJkLAcNGeWrRrJjOLM00caVtNYICYBz2WLMNlbfPC4IJrde3pKMMiSjEcWIpZwV2wgPwNMGr9MQ39SSjx5HIw";
 
-var legendImage = new Ext.BoxComponent({id: "tweetLegendImg", autoEl: {tag: 'img', src: legendUrl, style: 'z-index:10050;position:absolute;right:0px;margin:30% 0;border:5px solid #000;width:200px;height:200px;'}});
+var legendImage = new Ext.BoxComponent({id: "tweetLegendImg", autoEl: {tag: 'img', src: legendUrl, style: 'z-index:10050;position:absolute;top:42%;right:0px;margin-top:-120px;border:1px solid #000;width:200px;height:200px;'}});
 app.mapPanel.add(legendImage);
 
 
@@ -518,7 +512,7 @@ app.on("ready", function() {
 
     app.mapPanel.layers.each(function (candidate) {
         //console.log("NAME:" + candidate.get("name"));
-        if (candidate.get("name") == "heatmap")
+        if (candidate.get("name") == "heatmap" || candidate.get("name") == "point")
         {
             ////console.log("Remove saved heatmap");
             app.mapPanel.layers.remove(candidate, true);
@@ -535,9 +529,9 @@ app.on("ready", function() {
     app.addCategoryFolder(tweetHeatRecord.get("group"), "true");
     app.reorderNodes(tweetHeatRecord.getLayer());
 
-//    app.mapPanel.layers.add([tweetPointRecord]);
-//    app.addCategoryFolder(tweetPointRecord.get("group"), "true");
-//    app.reorderNodes(tweetPointRecord.getLayer());
+    app.mapPanel.layers.add([tweetPointRecord]);
+    app.addCategoryFolder(tweetPointRecord.get("group"), "true");
+    app.reorderNodes(tweetPointRecord.getLayer());
 
 
 
@@ -554,12 +548,13 @@ app.on("ready", function() {
     tweetHeatRecord.getLayer().events.register("loadend", tweetHeatRecord.getLayer(), function(e) {
         updateLegend();
         randomNum = Math.random();
-        updateCQL();
+        updateCQL([tweetHeatRecord,tweetPointRecord]);
     });
+
 
     app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
 
-        var mapExtent = app.mapPanel.map.getExtent() ? modifyBounds(): config["map"]["maxExtent"];
+        var mapExtent = app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"];
 
         remoteStore.load({
             params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'),  "dateEnd": new Date(tweetDateEndField.getValue()).format('Y-M-d')}
