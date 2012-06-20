@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="processRestletMapping" class="org.geoserver.rest.RESTMapping">
+    <property name="routes">
+      <map>
+        <entry>
+          <key>
+            <value>/process/batchDownload/launch</value>
+          </key>
+          <value>downloadLauncherRestlet</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/process/batchDownload/status</value>
+          </key>
+          <value>downloadStatusRestlet</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/process/batchDownload/download</value>
+          </key>
+          <value>downloadReadyRestlet</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/process/batchDownload/kill</value>
+          </key>
+          <value>downloadKillerRestlet</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="processExecutorThreadFactory" class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+    <description>ThreadFactory allowing for customizing the created threads (name, priority, etc)</description>
+    <constructor-arg value="Process Thread" />
+    <property name="threadPriority">
+      <description>Thread priority, value from 1 to 10, defaults to 5, meaning java.lang.Thread#NORM_PRIORITY</description>
+      <value>5</value>
+    </property>
+    <property name="daemon">
+      <description>Specify executor threads to be daemon threads so that they shutdown when the application does</description>
+      <value>true</value>
+    </property>
+  </bean>
+
+  <bean id="processExecutor" class="org.geotools.process.ThreadPoolProcessExecutor">
+    <description>An Executor that provides methods to manage termination and methods that can produce a {@link Progress}
+      for tracking one or more asynchronous tasks.</description>
+    <constructor-arg value="5">
+      <description>Number of process executor threads in the pool</description>
+    </constructor-arg>
+    <constructor-arg ref="processExecutorThreadFactory">
+      <description>Thread factory for this process executor</description>
+    </constructor-arg>
+  </bean>
+
+  <bean id="processStorageManagerFactory" class="org.geonode.process.storage.GeoServerDataDirStorageManagerFactory">
+    <description>A storage manager is a process collaborator that abstracts out the process from the place where it can
+      store temporary files. This one uses a directory inside the GeoServer data directory as the temp directory</description>
+    <constructor-arg ref="resourceLoader">
+      <description>The GeoServerResourceLoader (defined in geoserver's main module) where to get the data directory
+        location from</description>
+    </constructor-arg>
+    <constructor-arg value="process_tmp_dir">
+      <description>The name of the directory inside the geoserver data dir to use as the root for processes' temp data</description>
+    </constructor-arg>
+  </bean>
+
+  <bean id="processController" class="org.geonode.process.control.DefaultProcessController">
+    <description>Global process manager to issue, query and kill asynchronous processes</description>
+    <constructor-arg ref="processExecutor" />
+    <constructor-arg ref="processStorageManagerFactory">
+      <description>factory to create storage managers for each submitted async process</description>
+    </constructor-arg>
+    <constructor-arg value="5">
+      <description>process eviction check period in seconds. Instructs the controller to check for process eviction
+        every X seconds</description>
+    </constructor-arg>
+    <constructor-arg value="10">
+      <description>Process eviction timeout. Instructs the controller to remove dead processes (and any data they may be
+        holding) X MINUTES</description>
+    </constructor-arg>
+  </bean>
+
+  <bean id="downloadLauncherRestlet" class="org.geonode.rest.batchdownload.DownloadLauncherRestlet">
+    <!-- the GeoServer catalog -->
+    <constructor-arg ref="catalog" />
+    <constructor-arg ref="processController" />
+  </bean>
+  <bean id="downloadStatusRestlet" class="org.geonode.rest.batchdownload.DownloadStatusRestlet">
+    <!-- the GeoServer catalog -->
+    <constructor-arg ref="processController" />
+  </bean>
+  <bean id="downloadReadyRestlet" class="org.geonode.rest.batchdownload.DownloadReadyRestlet">
+    <constructor-arg ref="processController" />
+  </bean>
+  <bean id="downloadKillerRestlet" class="org.geonode.rest.batchdownload.DownloadKillerRestlet">
+    <constructor-arg ref="processController" />
+  </bean>
+  <bean class="org.geonode.security.GeoNodeSecurityProvider"/>
+  <bean class="org.geonode.security.GeoNodeDataAccessManager"/>
+  <bean id="geonodeAuthFilterPanelInfo" class="org.geonode.web.security.GeoNodeAuthFilterPanelInfo">
+    <property name="id" value="security.geonodeAuthFilter" />
+    <property name="shortTitleKey" value="GeoNodeAuthFilterPanel.short" />
+    <property name="titleKey" value="GeoNodeAuthFilterPanel.title" />
+    <property name="descriptionKey" value="GeoNodeAuthFilterPanel.description"/>
+  </bean>
+  <bean id="geonodeAuthProviderPanelInfo" class="org.geonode.web.security.GeoNodeAuthProviderPanelInfo">
+    <property name="id" value="security.geonodeAuthProvider" />
+    <property name="shortTitleKey" value="GeoNodeAuthProviderPanel.short" />
+    <property name="titleKey" value="GeoNodeAuthProviderPanel.title" />
+    <property name="descriptionKey" value="GeoNodeAuthProviderPanel.description"/>
+  </bean>
+</beans>
