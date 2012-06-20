@@ -13,6 +13,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.codec.binary.Base64;
 import org.easymock.classextension.EasyMock;
+import org.geonode.GeoNodeTestSupport;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,14 +26,14 @@ import org.springframework.security.core.GrantedAuthority;
  * @author groldan
  * 
  */
-public class DefaultSecurityClientTest extends TestCase {
+public class DefaultSecurityClientTest extends GeoNodeTestSupport {
 
     private HTTPClient mockHttpClient;
 
     private DefaultSecurityClient client;
 
     @Override
-    public void setUp() {
+    public void setUpInternal() {
         mockHttpClient = EasyMock.createNiceMock(HTTPClient.class);
         client = new DefaultSecurityClient("http://localhost:8000/", mockHttpClient);
     }
@@ -109,7 +110,7 @@ public class DefaultSecurityClientTest extends TestCase {
                 ((LayersGrantedAuthority) authorities.get(1)).getLayerNames());
 
         assertTrue(authorities.get(2) instanceof GrantedAuthority);
-        assertEquals(GeoNodeDataAccessManager.ADMIN_ROLE, authorities.get(2).getAuthority());
+        assertEquals(GeoNodeDataAccessManager.getActiveAdminRole(), authorities.get(2).getAuthority());
     }
 
     public void testAuthenticateUserPassword() throws Exception {
