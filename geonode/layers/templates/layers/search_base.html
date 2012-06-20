@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "layers/base.html" %}
 {% load i18n %}
 
 {% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
@@ -25,7 +25,7 @@
 {% block main %} 
   <div class="block">
     <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
-    <form class="geonode-search form-search" action="{% url data_search %}" method="GET" data-results-table="#searchResults" data-search-api="{% url data_search_api %}">
+    <form class="geonode-search form-search" action="{% url layer_search_page %}" method="GET" data-results-table="#searchResults" data-search-api="{% url layer_search_api %}">
       <input type="text" id="search_query" name="q" class="input-large search-query" value="{{ request.get.q }}">
       <button type="submit" class="btn">Search</button>
     </form>
@@ -48,7 +48,7 @@
     </table>
     <div class="pull-right">
       <a href="#" class="btn disabled asset-modifier"><i class="icon-download"></i> {% trans "Export as ZIP " %}</a>
-      <form id="newmap" action="{% url maps_new %}" method="POST" style="display:inline;">
+      <form id="newmap" action="{% url new_map %}" method="POST" style="display:inline;">
         {% csrf_token %}
         <button type="submit" class="btn disabled asset-modifier"><i class="icon-map-marker"></i> {% trans "Create Map" %}</button>
       </form>
