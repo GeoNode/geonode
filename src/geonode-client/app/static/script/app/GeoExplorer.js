@@ -2730,6 +2730,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
 
     initTabPanel: function() {
+//        var feedSourceTab = new gxp.FeedSourceDialog({
+//            target: this,
+//            title: "Feeds",
+//            renderTo: "feedDiv"
+//        });
+
+
         this.dataTabPanel = new Ext.TabPanel({
             renderTo: 'dataTabs',
             activeTab: 0,
