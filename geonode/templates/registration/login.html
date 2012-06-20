@@ -1,0 +1,22 @@
+{% extends "registration/base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title %} {% trans "Log in" %} — {{ block.super }}{% endblock %}
+
+{% block main %}
+  <form method="post" action="{% url auth_login %}">
+    <legend>{{ SITENAME }} {% trans "Log in" %}</legend>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}" />
+    <div class="form-controls">
+      {{ form|as_bootstrap }}
+    </div>
+    <div class="form-actions">
+      <a href="{% url auth_password_reset %}" class="btn">{% trans "Forgot password?" %}</a>
+      <a href="{% url forgot_username %}" class="btn">{% trans "Forgot username?" %}</a>
+      <input type="submit" class="btn btn-primary" value="Log in"/>
+    </div>
+  </form>
+{% endblock %}

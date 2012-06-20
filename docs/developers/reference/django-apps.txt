@@ -12,14 +12,14 @@ these apps for your specific needs.
   .. toctree::
      :maxdepth: 2
   
-     django-apps/core
+     django-apps/security
      django-apps/maps
      django-apps/proxy
   
   .. comment:
   
-      geonode.core
-        Provide site navigation support and other miscellaneous tasks
+      geonode.security
+        Provide django auth backend for providing security system. 
   
       geonode.maps
         manage layers, maps, styles
@@ -27,13 +27,11 @@ these apps for your specific needs.
       geonode.proxy
         support JavaScript applications accessing GeoServer/GeoNetwork
 
-``geonode.core`` - Miscellaneous site utilities
-===============================================
+``geonode.security`` - GeoNode granular Auth Backend 
+====================================================
 
-This Django app provides some basic website features in an extensible fashion.
-For example, many sites should be able to add tabs to the site navigation bar
-without having to modify templates by taking advantage of the navigation
-features provided by this module.
+This app provides a Granular (object level) Django Auth backend for use
+in assigning permissions to individual objects (maps and layers).
 
 ``settings.py`` Entries
 -----------------------

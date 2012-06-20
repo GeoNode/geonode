@@ -1,5 +1,0 @@
-===========
- GeoNodePy
-===========
-
-GeoNode Python Packages

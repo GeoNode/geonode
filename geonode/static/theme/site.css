@@ -1,0 +1,441 @@
+/*-----------------------
+Boilerplate overrides
+-----------------------*/
+table.x-btn td,
+.x-panel td,
+.x-toolbar-ct td {
+border-bottom: 0 none transparent;
+line-height: 1em;
+}
+
+table.x-btn td.x-btn-bc,
+table.x-btn td.x-btn-tc {
+height: 1px;
+}
+
+table.x-btn td.x-btn-tl,
+table.x-btn td.x-btn-tr {
+height: 2px;
+}
+
+table.x-btn td.x-btn-tr i, 
+table.x-btn td.x-btn-tl i {
+height:2px;
+}
+
+form table,
+.x-panel table, 
+.x-toolbar-ct table {
+margin-bottom: 0;
+}
+
+form th,
+form td {
+padding:0;
+border-bottom: 0 none transparent;
+}
+
+.x-toolbar-ct th,
+.x-toolbar-ct td,
+.x-grid3 th,
+.x-grid3 td {
+padding: 0;
+}
+
+form td {
+vertical-align: middle;
+}
+
+.x-date-menu em {
+font-style: normal;
+}
+.x-date-menu ul,
+.x-date-menu ol,
+.x-date-menu table {
+margin: 0;
+}
+.x-date-menu th,
+.x-date-menu td {
+padding: 0;
+vertical-align: middle;
+}
+td.x-date-bottom,
+td.x-date-middle {
+padding: 4px;
+}
+
+ul.x-tab-strip {
+margin: 0;
+}
+
+label {
+font-weight: inherit;
+}
+
+
+/*-----------------------
+Application Styles
+-----------------------*/
+#app-div { 
+width:100%;
+height:85%;
+}
+
+.x-btn .icon-create-map { 
+background-image: url(img/silk/map_add.png);
+}
+
+
+.x-btn .icon-open-map { 
+background-image: url(img/silk/map_magnify.png);
+}
+
+.x-btn .icon-delete { 
+    background-image: url(img/silk/delete.png);
+}
+
+.x-btn .icon-security { 
+    background-image: url(img/silk/lock.png);
+}
+
+a.download { 
+background-repeat:no-repeat;
+padding-left: 18px;
+padding-top: 2px;
+padding-bottom:2px;
+background-image: url(img/silk/page_white.png)
+}
+
+a.download.pdf { 
+background-image: url(img/silk/page_white_acrobat.png)
+}
+
+a.download.kml, 
+a.download.kmz { 
+background-image: url(img/geosilk/kml.png)
+}
+
+a.download.geotiff,
+a.download.tiff,
+a.download.png { 
+background-image: url(img/geosilk/page_white_raster.png)
+}
+
+a.download.shp,
+a.download.zip { 
+background-image: url(img/geosilk/page_white_vector.png)
+}
+
+a.permalink { 
+text-decoration: none;  
+background-repeat:no-repeat;
+padding-left: 18px;
+background-image: url(img/silk/link.png);
+}
+
+a.layer-upload-link {
+text-decoration: none;  
+background-repeat:no-repeat;
+padding-left: 18px;
+margin-top: 1em;
+background-image: url(img/silk/add.png);
+display: block;
+}
+
+#data_ops ul li {
+list-style-type: none;
+padding-bottom: 10px;
+}
+
+#data_ops a {
+text-decoration: none;
+}
+
+#data_ops a.create-map {
+background-repeat:no-repeat;
+padding-left: 25px;
+padding-top: 2px;
+padding-bottom:2px;
+background-image: url(img/silk/map_add.png);
+font-weight: bold;
+}
+
+#data_ops span.export {
+background-repeat:no-repeat;
+padding-left: 25px;
+padding-top: 2px;
+padding-bottom:2px;
+background-image: url(img/geosilk/map_save.png);
+font-weight: bold;
+}
+
+.bbox-controls .bbox-enabled {
+font-weight: bold;
+}
+
+.explain {
+font-size: 0.95em;
+color: #888;
+}
+
+.subtitle {
+font-size: 0.6em;
+padding-left: 0.25em;
+color: #888;
+}
+
+
+/*-----------------------
+Index Elements
+-----------------------*/
+
+.content-button { 
+float:left;
+padding-right:1em;
+}
+
+
+/*-----------------------
+Data Page Search Form
+-----------------------*/
+#search_form table {
+border: none;
+}
+
+#search_form #submit_search {
+padding-left: 5px;
+}
+
+span.remote-layer,
+span.unviewable-layer,
+span.info-layer {
+    background-repeat:no-repeat;
+    padding-left: 18px;
+    padding-top: 2px;
+    padding-bottom:2px;
+}
+
+span.remote-layer {   
+    background-image: url(img/silk/world_link.png)
+}
+span.unviewable-layer {
+    background-image: url(img/silk/lock.png)
+}
+/*span.info-layer {
+    background-image: url(img/silk/information.png)
+}*/
+
+
+
+table.permissions {
+    margin-bottom: 25px;
+    width: 400px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+table.permissions th {
+    font-size: 14px;
+    font-weight: normal;
+    padding: 10px 8px;
+    border-bottom: 2px solid black;
+}
+
+table.permissions td {
+    padding: 9px 8px 0px 8px;
+	border-bottom: 1px solid #ccc;
+}
+
+.login-widget{ 
+margin-top: 30px;
+margin-right: 10px;
+float: right;
+color: #fff;
+}
+.login-widget a { 
+	color: #fff;
+	}
+	
+table 
+/* UTILITY CLASSES */
+
+.selfclear:after {
+content: " ";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+
+.selfclear {
+display: inline-block; /* IE 7 */
+}
+
+.selfclear {
+display: block;
+}
+
+.login-widget a { 
+color: #fff;
+}
+
+
+/*!
+* Ext JS Library 3.2.0
+* Copyright(c) 2006-2010 Ext JS, Inc.
+* licensing@extjs.com
+* http://www.extjs.com/license
+*/
+/*-----------------------
+FileUploadField component styles
+-----------------------*/
+.x-form-file-wrap {
+position: relative;
+height: 22px;
+}
+
+.x-form-file-wrap .x-form-file {
+position: absolute;
+right: 0;
+-moz-opacity: 0;
+filter:alpha(opacity: 0);
+opacity: 0;
+z-index: 2;
+height: 22px;
+}
+
+.x-form-file-wrap .x-form-file-btn {
+position: absolute;
+right: 0;
+z-index: 1;
+}
+
+.x-form-file-wrap .x-form-file-text {
+position: absolute;
+left: 0;
+z-index: 3;
+color: #777;
+}
+
+div#main form ul.form {
+list-style-type: none;
+}
+
+div#main form ul.form li {
+margin-bottom: 1.5em;
+clear: both;
+}
+
+div#main form ul.form li label {
+display: block;
+font-weight: bold;
+text-transform: capitalize;
+}
+
+div#main form ul.form li input {
+}
+
+div#main form ul.form ul.errorlist {
+list-style-type: none;
+margin: 0;
+margin-top: 2px;
+float: right;
+}
+
+div#main form ul.form fieldset {
+border: 1px solid #333;
+padding: 10px;
+margin-bottom: 10px
+}
+
+div#main form ul.form fieldset legend{
+font-weight: bold;
+padding: 0 4px;
+}
+
+/* SLD titles on the layer.html template */
+span.style-title {
+cursor: pointer;
+}
+
+.x-grid3-col .data-type, .x-grid3-col .data-delete, .x-grid3-col .data-edit {
+    height: 16px; width: 16px;
+}
+
+.x-grid3-col .data-type.layer {
+    background-image: url(img/silk/page_green.png); 
+}
+
+.x-grid3-col .data-type.map {
+    background-image: url(img/silk/map.png); 
+}
+
+.x-grid3-col .data-edit {
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    background-image: url(img/silk/pencil.png);
+}
+
+.x-grid3-col .data-delete {
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    background-image: url(img/silk/delete.png);
+}
+
+.x-btn .icon-adduser {
+    background-image: url(img/silk/add.png);
+}
+
+.x-btn .icon-removeuser {
+    background-image: url(img/silk/delete.png);
+}
+
+.user_item button {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+}
+
+.x-list-body dl { margin: 0; }
+
+.langbar {
+     float: right;
+     padding-top: 3px;
+}
+
+/*-----------------------
+Comments
+-----------------------*/
+.comments_container {
+  margin-left: 10px;
+}
+
+.comment_author {
+  margin:0;
+  font-size: 1.2em;
+}
+.comment_content {
+  margin-bottom: 1.5em;
+}
+
+.comment_box textarea {
+  height: 80px;
+  width: 100%;
+}
+
+.comment_post input {
+  border: 1px solid #000;
+  font-size: 1.1em;
+  margin-top: 10px;
+  padding: 5px;
+}
+
+.comment_post input:hover {
+  background-color: #F2FFE6;
+}
+
+#preview_map {
+  margin-bottom: 1em;
+}
