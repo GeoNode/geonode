@@ -20,7 +20,7 @@ GeoExplorer.HglFeedOverlay = function(target){
                     {
                         strategies: [new OpenLayers.Strategy.Fixed()],
                         protocol: new OpenLayers.Protocol.HTTP({
-                                url: "/hglpoint?Q=" + keywords,
+                                url: "/hglpoint?q=" + keywords,
                                 format: new OpenLayers.Format.GeoRSS({internalProjection: new OpenLayers.Projection('EPSG:900913'),
                                     externalProjection:new OpenLayers.Projection('EPSG:4326')})
                             }),

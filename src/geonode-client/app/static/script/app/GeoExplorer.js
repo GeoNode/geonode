@@ -1829,6 +1829,36 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         scope: this
                     });
                 },
+                "rssdialog": function(){
+                    if (!this.feedDialog) {
+                        this.feedDialog = new gxp.FeedSourceDialog({
+                            title:"Add a GeoRSS Feed",
+                            closeAction: "hide",
+                            target: this,
+                            listeners: {
+                                "feed-added": function(ptype, config){
+
+                                    var sourceConfig = {"config":{"ptype":ptype}};
+                                    if (config.url) {
+                                        sourceConfig.config["url"] = config.url;
+                                    }
+                                    var source = this.addLayerSource(sourceConfig);
+                                    config.source = source.id;
+                                    var feedRecord = source.createLayerRecord(config);
+
+
+                                    this.mapPanel.layers.add([feedRecord]);
+                                    this.addCategoryFolder(feedRecord.get("group"), "true");
+                                    this.reorderNodes(feedRecord.getLayer());
+                                    this.treeRoot.findDescendant("layer", feedRecord.getLayer()).select();
+                                }, scope: this
+                            }, scope: this
+                        });
+                    }
+                    this.feedDialog.show();
+                    newSourceWindow.hide();
+                    this.searchWindow.hide();
+                },
                 scope: this
             },
             // hack to get the busy mask so we can close it in case of a
@@ -2027,12 +2057,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var busyMask = null;
         var geoEx = this;
 
-        var picasaOverlay = new GeoExplorer.PicasaFeedOverlay(this);
-        var picasaRecord = null;
-        var youtubeOverlay = new GeoExplorer.YouTubeFeedOverlay(this);
-        var youtubeRecord = null;
-        var hglPointsOverlay = new GeoExplorer.HglFeedOverlay(this);
-        var hglRecord = null;
+
 
 
         var printButton = new Ext.Button({
@@ -2163,74 +2188,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
-        var picasaMenuItem = {
-            text: 'Picasa',
-            scope:this,
-            checkHandler: function(menuItem, checked) {
-                if (checked) {
-                    if (picasaOverlay.picasaRecord !== null) {
-                        picasaOverlay.removeOverlay();
-                    }
-                    picasaOverlay.createOverlay();
-                } else {
-                    picasaOverlay.removeOverlay();
-                    //picasaRecord.getLayer().setVisibility(false);
-                }
-            }
-        };
 
-
-        var youtubeMenuItem = {
-            text: 'YouTube',
-            scope:this,
-            checkHandler: function(menuItem, checked) {
-                if (checked) {
-                    if (youtubeOverlay.youtubeRecord !== null) {
-                        youtubeOverlay.removeOverlay();
-                    }
-                    youtubeOverlay.createOverlay();
-                } else {
-                    youtubeOverlay.removeOverlay();
-                    //youtubeRecord.getLayer().setVisibility(false);
-                }
-            }
-        };
-
-        var hglMenuItem = {
-            text: 'Harvard Geospatial Library',
-            scope:this,
-            checkHandler: function(menuItem, checked) {
-                if (checked) {
-                    if (hglPointsOverlay.hglRecord !== null) {
-                        hglPointsOverlay.removeOverlay();
-                    }
-                    hglPointsOverlay.createOverlay();
-                } else {
-                    hglPointsOverlay.removeOverlay();
-                    //picasaRecord.getLayer().setVisibility(false);
-                }
-            }
-        };
-
-        var moreButton = new Ext.Button({
-            text: 'More...',
-            cls: "more-overlay-element",
-            id: 'moreBtn',
-            menu: {
-                defaults: {
-                    checked: false
-                },
-
-                items: [
-                    picasaMenuItem,
-                    youtubeMenuItem,
-                    hglMenuItem
-                ]
-            }
-        });
-
-
-        this.mapPanel.add(moreButton);
 
         var jumpBar = new GeoExplorer.SocialExplorer(this);
         var svt = new StreetViewPopup({mapPanel: mapPanel, titleHeader: this.streetViewBtnText, popupHeight: 300, popupWidth: 600});

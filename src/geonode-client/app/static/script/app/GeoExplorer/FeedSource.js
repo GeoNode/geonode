@@ -8,14 +8,14 @@
 
 Ext.namespace("gxp.plugins");
 
-gxp.plugins.GeoRssSource = Ext.extend(gxp.plugins.LayerSource, {
+gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
 
-    /** api: ptype = gxp_rsssource */
-    ptype: "gx_rsssource",
+    /** api: ptype = gxp_feedsource */
+    ptype: "gx_feedsource",
 
 
     /** Title for source **/
-    title: 'GeoRSS Source',
+    title: 'Feed Source',
 
     defaultFormat: "OpenLayers.Format.GeoRSS",
 
@@ -106,7 +106,7 @@ gxp.plugins.GeoRssSource = Ext.extend(gxp.plugins.LayerSource, {
      */
     getConfigForRecord: function(record) {
         // get general config
-        var config = gxp.plugins.GeoRssSource.superclass.getConfigForRecord.apply(this, arguments);
+        var config = gxp.plugins.FeedSource.superclass.getConfigForRecord.apply(this, arguments);
         // add config specific to this source
         return Ext.apply(config, {
             title: record.get("title"),
@@ -192,4 +192,4 @@ gxp.plugins.GeoRssSource = Ext.extend(gxp.plugins.LayerSource, {
 
 
 
-Ext.preg(gxp.plugins.GeoRssSource.prototype.ptype, gxp.plugins.GeoRssSource);
+Ext.preg(gxp.plugins.FeedSource.prototype.ptype, gxp.plugins.FeedSource);

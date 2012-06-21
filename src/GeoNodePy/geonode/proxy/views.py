@@ -120,9 +120,12 @@ def hglpoints (request):
     from xml.dom import minidom
     import re
     url = HGL_URL + "/HGLGeoRSS?GeometryType=point"
-    #bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
-    query = request.GET['Q'] if request.method == 'GET' else request.POST['Q']
-    url = url + "&UserQuery=" + query
+    try:
+        bbox = request.GET['bbox'] if request.method == 'GET' else request.POST['bbox']
+    except:
+        bbox = "-180,-90,180,90"
+    query = request.GET['q'] if request.method == 'GET' else request.POST['q']
+    url = url + "&UserQuery=" + query + "&bbox=" + bbox
     dom = minidom.parse(urllib.urlopen(url))
     for node in dom.getElementsByTagName('item'):
         description = node.getElementsByTagName('description')[0]
