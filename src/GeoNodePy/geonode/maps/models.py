@@ -1424,7 +1424,16 @@ class MapLayerManager(models.Manager):
         ``source`` is the parsed dict for the layer's source
         ``ordering`` is the index of the layer within the map's layer list
         """
+
         layer_cfg = dict(layer)
+
+        local = False
+        from geoserver.layer import Layer as GsLayer
+        url = url = "%srest" % settings.GEOSERVER_BASE_URL
+        c = Catalog(url, _user, _password)   
+        if isinstance(c.get_layer(layer_cfg['name']),GsLayer):
+            local = True
+
         for k in ["format", "name", "opacity", "styles", "transparent",
                   "fixed", "group", "visibility", "title", "source"]:
             if k in layer_cfg: del layer_cfg[k]
@@ -1432,7 +1441,7 @@ class MapLayerManager(models.Manager):
         source_cfg = dict(source)
         for k in ["url", "projection"]:
             if k in source_cfg: del source_cfg[k]
-
+        
         return self.model(
             map = map_model,
             stack_order = ordering,
@@ -1446,7 +1455,8 @@ class MapLayerManager(models.Manager):
             visibility = layer.get("visibility", True),
             ows_url = source.get("url", None),
             layer_params = json.dumps(layer_cfg),
-            source_params = json.dumps(source_cfg)
+            source_params = json.dumps(source_cfg),
+            local = local
         )
 
 class MapLayer(models.Model):
@@ -1513,6 +1523,9 @@ class MapLayer(models.Model):
 
     # If this dictionary conflicts with options that are stored in other fields
     # (such as ows_url) then the fields override.
+    
+    local = models.BooleanField()
+    # True if this layer is served by the local geoserver
     
     def local(self): 
         """
@@ -1644,5 +1657,13 @@ def post_save_layer(instance, sender, **kwargs):
         instance._populate_from_gn()
         instance.save(force_update=True)
 
+def pre_save_maplayer(instance, sender, **kw):
+    from geoserver.layer import Layer as GsLayer
+    url = url = "%srest" % settings.GEOSERVER_BASE_URL
+    c = Catalog(url, _user, _password)   
+    instance.local = isinstance(c.get_layer(instance.name),GsLayer)
+    instance.save()
+
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
+signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
