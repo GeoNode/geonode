@@ -848,15 +848,15 @@ def upload_layer(request):
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
                     "success": False,
-                    "errors": ["Unexpected error during upload: " + escape(str(e))]}))
+                    "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
-            errors = []
+            errormsgs = []
             for e in form.errors.values():
-                errors.extend([escape(v) for v in e])
-            return HttpResponse(json.dumps({ "success": False, "errors": errors}))
+                errormsgs.extend([escape(v) for v in e])
+            return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))
 
 @login_required
 def layer_replace(request, layername):
@@ -1225,10 +1225,15 @@ def _metadata_search(query, start, limit, **kw):
     return result
 
 def search_result_detail(request):
-    uuid = request.GET.get("uuid")
+    uuid = request.GET.get("uuid", None)
+    if  uuid is None:
+        return HttpResponse(status=400)
     csw = get_csw()
     csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.records.values()[0]
+    recs = csw.records.values()
+    if len(recs) == 0:
+        return HttpResponse(status=404)
+    rec = recs[0]
     raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
     extra_links = _extract_links(raw_xml)
     
