@@ -1,9 +1,6 @@
 /**
- * Created with PyCharm.
- * User: mbertrand
- * Date: 6/18/12
- * Time: 3:45 PM
- * To change this template use File | Settings | File Templates.
+ * Published under the GNU General Public License
+ * Copyright 2011 © The President and Fellows of Harvard College
  */
 
 Ext.namespace("gxp");
@@ -42,10 +39,10 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
             columns: [500],
             labelWidth: 100,
             items: [
-                {name: 'source_type', inputValue: 'gx_picasasource', boxLabel: this.addPicasaText, checked: true},
+                {name: 'source_type', inputValue: 'gx_picasasource', boxLabel: this.addPicasaText},
                 {name: 'source_type', inputValue: 'gx_youtubesource', boxLabel: this.addYouTubeText},
                 {name: 'source_type', inputValue: 'gx_hglfeedsource', boxLabel: this.addHGLText},
-                {name: 'source_type', inputValue: 'gx_feedsource', boxLabel: this.addRSSText}
+                {name: 'source_type', inputValue: 'gx_feedsource', boxLabel: this.addRSSText, checked: true}
             ],
             listeners: {
                 "change": function(radiogroup, radio) {
@@ -68,7 +65,7 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
         this.urlTextField = new Ext.form.TextField({
             fieldLabel: "URL",
             allowBlank: false,
-            hidden: true,
+            //hidden: true,
             width: 240,
             msgTarget: "right",
             validator: this.urlValidator.createDelegate(this)
@@ -90,6 +87,7 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
 
         this.maxResultsField = new Ext.form.ComboBox({
             fieldLabel: 'Maximum # Results',
+            hidden: true,
             hiddenName: 'max-results',
             store: new Ext.data.ArrayStore({
                 fields: ['max-results'],
@@ -110,13 +108,16 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
         this.symbolizerField = new gxp.PointSymbolizer({
             bodyStyle: {padding: "10px"},
             border: false,
-            hidden: true,
+            hidden: false,
             labelWidth: 70,
             defaults: {
                 labelWidth: 70
             },
             symbolizer: {pointGraphics: "circle", pointRadius: "5"}
         });
+
+
+        this.symbolizerField.find("name", "rotation")[0].hidden = true;
 
         if (this.symbolType === "Point" && this.pointGraphics) {
             cfg.pointGraphics = this.pointGraphics;
@@ -143,8 +144,8 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
                     Ext.apply(config.selectStyle, symbolizer);
                     Ext.apply(config.selectStyle, {
                         fillColor: "Yellow",
-                        pointRadius: symbolizer["pointRadius"] + 2
-                    })
+                        pointRadius: symbolizer["pointRadius"] + 1
+                    });
                 }
 
                 this.fireEvent("feed-added", ptype, config);

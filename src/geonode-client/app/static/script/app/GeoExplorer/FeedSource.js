@@ -1,9 +1,6 @@
 /**
- * Created with PyCharm.
- * User: mbertrand
- * Date: 6/13/12
- * Time: 12:41 PM
- * To change this template use File | Settings | File Templates.
+ * Published under the GNU General Public License
+ * Copyright 2011 © The President and Fellows of Harvard College
  */
 
 Ext.namespace("gxp.plugins");
@@ -17,9 +14,9 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
     /** Title for source **/
     title: 'Feed Source',
 
+    /** Default format of vector layer **/
     defaultFormat: "OpenLayers.Format.GeoRSS",
 
-    internalProjection: "EPSG:900913",
 
     /** api: method[createLayerRecord]
      *  :arg config:  ``Object``  The application config for this layer.
@@ -30,7 +27,7 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
     createLayerRecord: function(config) {
         var record;
 
-
+        //create a vector layer based on config parameters
         var layer = new OpenLayers.Layer.Vector(config.title, {
             projection: "projection" in config ? config.projection : "EPSG:4326",
             visibility: "visibility" in config ? config.visibility : true,
@@ -43,6 +40,7 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
             styleMap: this.getStyleMap(config)
         });
 
+        //configure the popup balloons for feed items
         this.configureInfoPopup(layer);
 
         // create a layer record for this layer
@@ -75,9 +73,9 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
             selectStyle: ("selectStyle" in config) ? config.selectStyle : {}
         };
 
+        //Create a SelectFeature control & add layer to it.
         if (this.target.selectControl == null) {
-            this.target.selectControl = new OpenLayers.Control.SelectFeature([layer], {
-                //hover:true,
+            this.target.selectControl = new OpenLayers.Control.SelectFeature(layer, {
                 clickout: true,
                 scope: this
             });
@@ -85,14 +83,13 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
             this.target.mapPanel.map.addControl(this.target.selectControl);
             this.target.selectControl.activate();
         } else {
-            this.target.selectControl.layers.push(layer);
+            var currentLayers = this.target.selectControl.layers ? this.target.selectControl.layers :
+                (this.target.selectControl.layer ? [this.target.selectControl.layer] : []);
+            currentLayers.push(layer);
+            this.target.selectControl.setLayer(currentLayers);
         }
 
-
-
-
         record = new Record(data, layer.id);
-
         return record;
 
     },
@@ -121,9 +118,13 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
         });
     },
 
-
+    /* api: method[getFormat]
+     *  :arg config:  ``Object``  The application config for this layer.
+     *  :returns: ``OpenLayers.Format``
+     * Create an instance of the layer's format class and return it
+     */
     getFormat: function (config) {
-        // get class based on type in config
+        // get class based on rssFormat in config
         var Class = window;
         var formatConfig = ("rssFormat" in config) ? config.rssFormat : this.defaultFormat;
 
@@ -138,19 +139,24 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
         // TODO: consider static method on OL classes to construct instance with args
         if (Class && Class.prototype && Class.prototype.initialize) {
 
-            // create a constructor for the given layer type
+            // create a constructor for the given layer format
             var Constructor = function() {
                 // this only works for args that can be serialized as JSON
                 Class.prototype.initialize.apply(this);
             };
             Constructor.prototype = Class.prototype;
 
-            // create a new layer given type and args
+            // create a new layer given format
             var format = new Constructor();
             return format;
         }
     },
 
+    /* api: method[getStyleMap]
+     *  :arg config:  ``Object``  The application config for this layer.
+     *  :returns: ``OpenLayers.StyleMap``
+     * Return a style map containing default and select styles
+     */
     getStyleMap: function(config) {
         return new OpenLayers.StyleMap({
             "default": new OpenLayers.Style("defaultStyle" in config ? config.defaultStyle : {graphicName: "circle", pointRadius: 5, fillOpacity: 0.7, fillColor: 'Red'}),
@@ -158,6 +164,10 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
         })
     },
 
+    /* api: method[configureInfoPopup]
+     *  :arg config:  ``Object``  The vector layer
+     * Configure a popup to display information on selected feed item.
+     */
     configureInfoPopup: function(layer) {
         layer.events.on({
             "featureselected": function(featureObject) {
@@ -188,8 +198,4 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
     }
 
 });
-
-
-
-
 Ext.preg(gxp.plugins.FeedSource.prototype.ptype, gxp.plugins.FeedSource);

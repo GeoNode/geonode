@@ -146,6 +146,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorTitleText: "UT:Connection Error",
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
+    feedAdditionLabel: "UT:Add feeds",
     googleEarthBtnText: "UT:Google Earth",
     heightLabel: 'UT: Height',
     helpLabel: 'UT: Help',
@@ -640,7 +641,33 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     },
 
-
+    /**
+     * Remove a feed layer from the SelectFeatureControl (if present) when that layer is removed from the map.
+     * If this is not done, the layer will remain on the map even after the record is deleted.
+     * @param record
+     */
+    removeFromSelectControl:  function(record){
+        if (this.selectControl ) {
+            var recordLayer = record.getLayer();
+            //SelectControl might have layers array or single layer object
+            if (this.selectControl.layers != null){
+                for (var x = 0; x < this.selectControl.layers.length; x++)
+                {
+                    var selectLayer = this.selectControl.layers[x];
+                    var selectLayers = this.selectControl.layers;
+                    if (selectLayer.id === recordLayer.id) {
+                        selectLayers.splice(x,1);
+                        this.selectControl.setLayer(selectLayers);
+                    }
+                }
+            }
+            if (this.selectControl.layer != null) {
+                if (recordLayer.id === this.selectControl.layer.id) {
+                    this.selectControl.setLayer([]);
+                }
+            }
+        }
+    },
 
     initMapPanel: function() {
         this.mapItems = [
@@ -782,6 +809,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             return getRecordFromNode(node);
         };
 
+
         var removeLayerAction = new Ext.Action({
             text: this.removeLayerActionText,
             iconCls: "icon-removelayers",
@@ -790,6 +818,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             handler: function() {
                 var record = getSelectedLayerRecord();
                 if (record) {
+                    this.removeFromSelectControl(record);
                     this.mapPanel.layers.remove(record, true);
                     removeLayerAction.disable();
                 }
@@ -1106,15 +1135,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     return false;
                 }
                 if (node) {
-
                     while (node.childNodes.length > 0) {
                         cnode = node.childNodes[0];
                         record = getRecordFromNode(cnode);
                         if (record) {
+                            this.removeFromSelectControl(record);
                             this.mapPanel.layers.remove(record, true);
                         }
                     }
-                    ;
+
                     parentNode = node.parentNode;
                     parentNode.removeChild(node, true);
                 }
@@ -1804,6 +1833,43 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
+        var addFeedButton = new Ext.Button({
+           text: this.feedAdditionLabel,
+           iconCls: 'icon-add',
+           cls:  'x-btn-link-medium x-btn-text',
+            handler: function() {
+                if (!this.feedDialog) {
+                    this.feedDialog = new gxp.FeedSourceDialog({
+                        title:"Add a GeoRSS Feed",
+                        closeAction: "hide",
+                        target: this,
+                        listeners: {
+                            "feed-added": function(ptype, config){
+
+                                var sourceConfig = {"config":{"ptype":ptype}};
+                                if (config.url) {
+                                    sourceConfig.config["url"] = config.url;
+                                }
+                                var source = this.addLayerSource(sourceConfig);
+                                config.source = source.id;
+                                var feedRecord = source.createLayerRecord(config);
+
+
+                                this.mapPanel.layers.add([feedRecord]);
+                                this.addCategoryFolder(feedRecord.get("group"), "true");
+                                this.reorderNodes(feedRecord.getLayer());
+                                this.treeRoot.findDescendant("layer", feedRecord.getLayer()).select();
+                            }, scope: this
+                        }, scope: this
+                    });
+                }
+                this.feedDialog.show();
+                newSourceWindow.hide();
+                this.searchWindow.hide();
+            },
+            scope: this
+        });
+
         var app = this;
         var newSourceWindow = new gxp.NewSourceWindow({
             modal: true,
@@ -1828,38 +1894,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         },
                         scope: this
                     });
-                },
-                "rssdialog": function(){
-                    if (!this.feedDialog) {
-                        this.feedDialog = new gxp.FeedSourceDialog({
-                            title:"Add a GeoRSS Feed",
-                            closeAction: "hide",
-                            target: this,
-                            listeners: {
-                                "feed-added": function(ptype, config){
-
-                                    var sourceConfig = {"config":{"ptype":ptype}};
-                                    if (config.url) {
-                                        sourceConfig.config["url"] = config.url;
-                                    }
-                                    var source = this.addLayerSource(sourceConfig);
-                                    config.source = source.id;
-                                    var feedRecord = source.createLayerRecord(config);
-
-
-                                    this.mapPanel.layers.add([feedRecord]);
-                                    this.addCategoryFolder(feedRecord.get("group"), "true");
-                                    this.reorderNodes(feedRecord.getLayer());
-                                    this.treeRoot.findDescendant("layer", feedRecord.getLayer()).select();
-                                }, scope: this
-                            }, scope: this
-                        });
-                    }
-                    this.feedDialog.show();
-                    newSourceWindow.hide();
-                    this.searchWindow.hide();
-                },
-                scope: this
+                }
             },
             // hack to get the busy mask so we can close it in case of a
             // communication failure
@@ -1892,7 +1927,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     right: 0
                 }
             }),
-            items: [sourceAdditionLabel, sourceComboBox, {xtype: 'spacer', width:20 }, addWmsButton]
+            items: [sourceAdditionLabel, sourceComboBox, {xtype: 'spacer', width:20 }, addWmsButton, addFeedButton]
         });
 
 
