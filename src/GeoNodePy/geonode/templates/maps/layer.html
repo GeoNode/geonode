@@ -267,6 +267,12 @@
             <a href="{{link}}">{{type}}</a>
         {% endfor %}
     </p>
+    <h3> {% trans "Legend" %}<h3>
+    {% comment %}
+    The request below accepts more parameters, like fontName ( fontName=DejaVu ) and scale ( SCALE=17471330.182978604 ).
+    A full list of options can be found at: http://docs.geoserver.org/latest/en/user/services/wms/get_legend_graphic/legendgraphic.html
+    {% endcomment %}
+    <img src="{{ GEOSERVER_BASE_URL }}wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer={{ layer.typename }}&format=image%2Fpng&legend_options=fontAntiAliasing%3Atrue%3BfontSize%3A12%3B" />
     <p> <strong>{% trans "Metadata" %}: </strong>
         {% for mimetype, mdtype, link in layer.metadata_links %}
             <a href="{{link}}">{{mdtype}}</a>
