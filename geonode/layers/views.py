@@ -513,12 +513,17 @@ def _layer_search(query, start, limit, **kw):
 
 
 def layer_search_result_detail(request, template='layers/search_result_snippet.html'):
-    uuid = request.GET.get("uuid")
-    csw = get_csw()
-    csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.records.values()[0]
-    raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
-    extra_links = _extract_links(raw_xml)
+    uuid = request.GET.get("uuid", None)
+    if  uuid is None:
+        return HttpResponse(status=400)
+    with CSW() as csw_cat: 
+        csw_cat.getrecordbyid([uuid], outputschema=namespaces['gmd'])
+        recs = csw_cat.records.values()
+        if len(recs) == 0:
+            return HttpResponse(status=404)
+        rec = recs[0]
+        raw_xml = csw_cat._exml.find(nspath('MD_Metadata', namespaces['gmd']))
+        extra_links = _extract_links(raw_xml)
     
     try:
         layer = Layer.objects.get(uuid=uuid)

@@ -43,7 +43,12 @@
             "store": "CA",
             "name": "CA",
             "workspace": "base",
-            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298"
+            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298",
+            "owner": 1,
+            "bbox_top": 0,
+            "bbox_bottom": 0,
+            "bbox_right": 0,
+            "bbox_left": 0
         },
         "model": "layers.layer",
         "pk": 1
@@ -57,7 +62,11 @@
             "projection": "EPSG:900913",
             "title": "GeoNode Default Map",
             "last_modified": "2010-07-20 13:31:27",
-            "zoom": 7
+            "zoom": 7,
+            "bbox_top": 0,
+            "bbox_bottom": 0,
+            "bbox_right": 0,
+            "bbox_left": 0
         },
         "model": "maps.map",
         "pk": 1

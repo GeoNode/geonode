@@ -46,7 +46,7 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 		
     def prepare_json(self, obj):
         bbox = obj.resource.latlon_bbox
-        poc_profile = Contact.objects.get(user=obj.poc.user)
+        #poc_profile = Contact.objects.get(user=obj.poc.user)
 		
         data = {
             "_type": self.prepare_type(obj),
@@ -61,25 +61,25 @@ class LayerIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             "title": obj.title,
             "name": obj.typename,
             "description": obj.abstract,
-            "owner": obj.metadata_author.name,
-            "owner_detail": obj.owner.get_absolute_url(),
+            #"owner": obj.metadata_author.name,
+            #"owner_detail": obj.owner.get_absolute_url(),
             "last_modified": obj.date.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "category": obj.topic_category,
             "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [],
             #"thumb": Thumbnail.objects.get_thumbnail(obj),
             "detail_url": obj.get_absolute_url(),  # @@@ Use Sites Framework?
-            "download_links": self.prepare_download_links(obj.download_links()),
-            "metadata_links": obj.metadata_links,
-            "bbox": {
-                "minx": bbox[0],
-                "miny": bbox[2],
-                "maxx": bbox[1],
-                "maxy": bbox[3],
-            },
-            "attribution": {
-                "title": poc_profile.name,
-                "href": poc_profile.get_absolute_url(),
-            },
+            #"download_links": self.prepare_download_links(obj.download_links()),
+            #"metadata_links": obj.metadata_links,
+            #"bbox": {
+            #    "minx": bbox[0],
+            #    "miny": bbox[2],
+            #    "maxx": bbox[1],
+            #    "maxy": bbox[3],
+            #},
+            #"attribution": {
+            #    "title": poc_profile.name,
+            #    "href": poc_profile.get_absolute_url(),
+            #},
         }
 
         if obj.owner:
