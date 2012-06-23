@@ -120,7 +120,7 @@ def layer_upload(request, template='layers/layer_upload.html'):
             return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))
 
 
-def layer_eetail(request, layername, template='layers/layer.html'):
+def layer_detail(request, layername, template='layers/layer.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
     metadata = layer.metadata_csw()
 
