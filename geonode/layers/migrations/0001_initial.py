@@ -34,10 +34,13 @@ class Migration(SchemaMigration):
             ('temporal_extent_start', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('temporal_extent_end', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('geographic_bounding_box', self.gf('django.db.models.fields.TextField')()),
+<<<<<<< HEAD
             ('bbox_left', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('bbox_right', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('bbox_bottom', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('bbox_top', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+=======
+>>>>>>> 1fcda6fb9a0ef785ef59ea4073d9251f436b8cf6
             ('supplemental_information', self.gf('django.db.models.fields.TextField')(default=u'You can customize the template to suit your needs. You can add and remove fields and fill out default information (e.g. contact details). Fields you can not change in the default view may be accessible in the more comprehensive (and more complex) advanced view. You can even use the XML editor to create custom structures, but they have to be validated by the system, so know what you do :-)')),
             ('distribution_url', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('distribution_description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
@@ -86,7 +89,11 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
+<<<<<<< HEAD
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 6, 14, 20, 7, 11, 976393)'}),
+=======
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 6, 22, 19, 29, 16, 241368)'}),
+>>>>>>> 1fcda6fb9a0ef785ef59ea4073d9251f436b8cf6
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -94,7 +101,11 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+<<<<<<< HEAD
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 6, 14, 20, 7, 11, 976239)'}),
+=======
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 6, 22, 19, 29, 16, 241224)'}),
+>>>>>>> 1fcda6fb9a0ef785ef59ea4073d9251f436b8cf6
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -117,10 +128,13 @@ class Migration(SchemaMigration):
         'layers.layer': {
             'Meta': {'object_name': 'Layer'},
             'abstract': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+<<<<<<< HEAD
             'bbox_bottom': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'bbox_left': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'bbox_right': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'bbox_top': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+=======
+>>>>>>> 1fcda6fb9a0ef785ef59ea4073d9251f436b8cf6
             'constraints_other': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'constraints_use': ('django.db.models.fields.CharField', [], {'default': "'copyright'", 'max_length': '255'}),
             'contacts': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['people.Contact']", 'through': "orm['layers.ContactRole']", 'symmetrical': 'False'}),
