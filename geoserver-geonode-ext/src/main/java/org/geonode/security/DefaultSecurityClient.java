@@ -170,7 +170,7 @@ public class DefaultSecurityClient implements GeoNodeSecurityClient {
             authorities.add(new LayersGrantedAuthority(rwLayers, LayerMode.READ_WRITE));
         }
         if (json.getBoolean("is_superuser")) {
-            authorities.add(new SimpleGrantedAuthority(GeoNodeDataAccessManager.ADMIN_ROLE));
+            authorities.add(new SimpleGrantedAuthority(GeoNodeDataAccessManager.getActiveAdminRole()));
         }
 
         final Authentication authentication;
