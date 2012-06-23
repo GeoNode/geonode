@@ -74,6 +74,7 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
         this.keywordTextField = new Ext.form.TextField({
             fieldLabel: this.keywordText,
             allowBlank: true,
+            hidden: true,
             width: 150,
             msgTarget: "right"
         });
