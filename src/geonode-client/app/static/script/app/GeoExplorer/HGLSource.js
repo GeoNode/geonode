@@ -10,7 +10,7 @@ Ext.namespace("gxp.plugins");
 
 gxp.plugins.HGLSource = Ext.extend(gxp.plugins.WMSSource, {
 
-    /** api: ptype = gxp_gnsource */
+    /** api: ptype = gxp_hglsource */
     ptype: "gxp_hglsource",
 
 
