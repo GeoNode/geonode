@@ -11,6 +11,7 @@ from django.db.models import signals
 from django.utils.html import escape
 from taggit.managers import TaggableManager
 from django.utils import simplejson as json
+from django.utils.safestring import mark_safe
 
 import httplib2
 import urllib
@@ -771,7 +772,7 @@ class Layer(models.Model, PermissionLevelMixin):
                     })
                 response, content = client.request(description_url)
                 doc = etree.fromstring(content)
-                extent = doc.find("//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
+                extent = doc.find(".//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
                 low = extent.find("{http://www.opengis.net/gml}low").text.split()
                 high = extent.find("{http://www.opengis.net/gml}high").text.split()
                 w, h = [int(h) - int(l) for (h, l) in zip(high, low)]
@@ -794,8 +795,9 @@ class Layer(models.Model, PermissionLevelMixin):
             except Exception, e:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
-                # TODO: This is a bad idea to eat errors like this.
-                pass 
+                # But at least this indicates a problem
+                notiff = mark_safe("<del>GeoTIFF</del>")
+                links.extend([("tiff",notiff,"#")])
 
         def wms_link(mime):
             return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
