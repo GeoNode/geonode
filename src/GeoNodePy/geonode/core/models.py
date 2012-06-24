@@ -1,4 +1,3 @@
-from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
@@ -126,7 +125,7 @@ class PermissionLevelMixin(object):
             my_ct = ContentType.objects.get_for_model(self)
             mapping = UserObjectRoleMapping.objects.get(user=user, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
-        except:
+        except Exception:
             return self.LEVEL_NONE
 
     def set_user_level(self, user, level):
@@ -159,7 +158,7 @@ class PermissionLevelMixin(object):
             my_ct = ContentType.objects.get_for_model(self)
             mapping = GenericObjectRoleMapping.objects.get(subject=gen_role, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
-        except:
+        except Exception:
             return self.LEVEL_NONE
 
     def set_gen_level(self, gen_role, level):

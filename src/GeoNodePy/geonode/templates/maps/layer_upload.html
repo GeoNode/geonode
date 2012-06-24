@@ -155,8 +155,8 @@ Ext.onReady(function(){
                         },
                         failure: function(fp, o) {
                             error_message = '<ul>';
-                            for (var i = 0; i < o.result.errors.length; i++) {
-                                error_message += '<li>' + o.result.errors[i] + '</li>'
+                            for (var i = 0; i < o.result.errormsgs.length; i++) {
+                                error_message += '<li>' + o.result.errormsgs[i] + '</li>'
                             }
                             error_message += '</ul>'
 

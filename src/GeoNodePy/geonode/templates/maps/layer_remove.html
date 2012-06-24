@@ -7,7 +7,7 @@
 
 <h3>{% trans "Are you sure you want to remove"  %} <strong>{{layer.typename}}</strong>?</h3>
 
-<form action="{% url layer_remove layer.typename %}" method="POST">
+<form action="{% url data_remove layer.typename %}" method="POST">
 	{% csrf_token %}
 	<input type="hidden" value="{{layer.typename}}" /> 
 	<input type="submit" value="{% trans "Yes I am sure"  %}" />
