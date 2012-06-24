@@ -240,14 +240,14 @@ community."
         response = c.put("/maps/1/data",data=MapTest.viewer_config,content_type="text/json")
         self.assertEqual(response.status_code,401)
 
-        log = c.login(username="bobby", password="bob")
+        c.login(username="bobby", password="bob")
         response = c.put("/maps/1/data",data=MapTest.viewer_config_alternative,content_type="text/json")
         self.assertEqual(response.status_code,204)
 
-        map = Map.objects.get(id=1)
-        self.assertEquals(map.title, "Title2")
-        self.assertEquals(map.abstract, "Abstract2")
-        self.assertEquals(map.layer_set.all().count(), 1)
+        map_obj = Map.objects.get(id=1)
+        self.assertEquals(map_obj.title, "Title2")
+        self.assertEquals(map_obj.abstract, "Abstract2")
+        self.assertEquals(map_obj.layer_set.all().count(), 1)
 
 #    def test_map_viewer_json(self):
 #        pass
@@ -347,30 +347,30 @@ community."
         self.assertEqual(response.status_code,401)
 
         # Test successful new map creation
-        log = c.login(username="bobby", password="bob")
+        c.login(username="bobby", password="bob")
         response = c.post("/maps/",data=MapTest.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
         c.logout()
 
         self.assertEquals(map_id,2)
-        map = Map.objects.get(id=map_id)
-        self.assertEquals(map.title, "Title")
-        self.assertEquals(map.abstract, "Abstract")
-        self.assertEquals(map.layer_set.all().count(), 1)
-        self.assertEquals(map.keyword_list(), ["keywords", "saving"])
+        map_obj = Map.objects.get(id=map_id)
+        self.assertEquals(map_obj.title, "Title")
+        self.assertEquals(map_obj.abstract, "Abstract")
+        self.assertEquals(map_obj.layer_set.all().count(), 1)
+        self.assertEquals(map_obj.keyword_list(), ["keywords", "saving"])
 
         # Test an invalid map creation request
-        log = c.login(username="bobby", password="bob")
+        c.login(username="bobby", password="bob")
         response = c.post("/maps/",data="not a valid viewer config",content_type="text/json")
         self.assertEquals(response.status_code,400)
         c.logout()
 
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
-        map = Map.objects.get(id="1")
+        map_obj = Map.objects.get(id="1")
         c = Client()
-        response = c.get("/maps/%s/data" % map.id)
+        response = c.get("/maps/%s/data" % map_obj.id)
         self.assertEquals(response.status_code, 200)
         cfg = json.loads(response.content)
         self.assertEquals(cfg["about"]["abstract"], self.default_abstract) 
@@ -380,8 +380,8 @@ community."
     def test_map_to_json(self):
         """ Make some assertions about the data structure produced for serialization
             to a JSON map configuration"""
-        map = Map.objects.get(id=1)
-        cfg = map.viewer_json()
+        map_obj = Map.objects.get(id=1)
+        cfg = map_obj.viewer_json()
         self.assertEquals(cfg['about']['abstract'], MapTest.default_abstract)
         self.assertEquals(cfg['about']['title'], MapTest.default_title)
         def is_wms_layer(x):
@@ -398,20 +398,17 @@ community."
 
     def test_map_details(self): 
         """/maps/1 -> Test accessing the detail view of a map"""
-        map = Map.objects.get(id=1) 
+        map_obj = Map.objects.get(id=1) 
         c = Client() 
-        response = c.get("/maps/%s" % map.id)
+        response = c.get("/maps/%s" % map_obj.id)
         self.assertEquals(response.status_code,200) 
 
 #    def test_delete_map(self):
 #        pass
-
 #    def test_map_detail(self):
 #        pass
-
 #    def test_describe_map(self):
 #        pass
-
 #    def test_embed_map(self):
 #        pass
 
@@ -464,9 +461,6 @@ community."
         # Get a layer to work with
         layer = Layer.objects.all()[0]
 
-        # Save the Layers current permissions
-        current_perms = layer.get_all_level_info() 
-       
         # FIXME Test a comprehensive set of permisssions specifications 
 
         # Set the Permissions
@@ -478,7 +472,7 @@ community."
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
-        users = [n for (n, p) in self.perm_spec['users']]
+        users = [n[0] for n in self.perm_spec['users']]
         levels = layer.get_user_levels().exclude(user__username__in = users + [layer.owner])
         self.assertEqual(len(levels), 0)
        
@@ -563,10 +557,10 @@ community."
 
         # Test that requesting when supplying invalid credentials returns the appropriate error code
         response = c.get('/data/acls', **invalid_auth_headers)
-        self.assertEquals(response.status_code, 401)  
+        self.assertEquals(response.status_code, 401)
        
         # Test logging in using Djangos normal auth system 
-        logged_in = c.login(username='admin', password='admin')
+        c.login(username='admin', password='admin')
        
         # Basic check that the returned content is at least valid json
         response = c.get("/data/acls")
@@ -630,9 +624,8 @@ community."
 #    def test_browse_data(self):
 #        pass
 
-    def test_describe_data(self):
+    def test_describe_data_2(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
-        from django.contrib.auth.models import User
         self.assertEqual(2, User.objects.all().count())
         c = Client()
         response = c.get('/data/base:CA/metadata')
@@ -707,7 +700,7 @@ community."
                 }
             mock_ms.return_value = result
 
-            response = c.get("/data/search/api?q=foo&start=5&limit=10")
+            c.get("/data/search/api?q=foo&start=5&limit=10")
 
             call_args = geonode.maps.views._metadata_search.call_args
             self.assertEqual(call_args[0][0], "foo")
@@ -760,8 +753,6 @@ community."
 
     def test_describe_data(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
-
-        from django.contrib.auth.models import User
         self.assertEqual(2, User.objects.all().count())
         c = Client()
         response = c.get('/data/base:CA/metadata')
@@ -830,25 +821,28 @@ class ViewTest(TestCase):
     fixtures = ['test_data.json', 'map_data.json']
 
     def test_new_map_without_layers(self):
+        # TODO: Should this test have asserts in it?
         client = Client()
-        response = client.get("/maps/new")
+        client.get("/maps/new")
 
     def test_new_map_with_layer(self):
+        # TODO: Should this test have some assertions in it?
         with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_gs:
             mock_gs.get_resource.return_value.latlon_bbox = ["0", "1", "0", "1"]
             client = Client()
             layer = Layer.objects.all()[0]
-            response = client.get("/maps/new?layer=" + layer.typename)
+            client.get("/maps/new?layer=" + layer.typename)
 
     def test_new_map_with_empty_bbox_layer(self):
+        # TODO: Should this test have assertions in it?
         with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_gs:
             mock_gs.get_resource.return_value.latlon_bbox = ["0", "0", "0", "0"]
             client = Client()
             layer = Layer.objects.all()[0]
-            response = client.get("/maps/new?layer=" + layer.typename)
+            client.get("/maps/new?layer=" + layer.typename)
 
 
-from geonode.maps.forms import JSONField, LayerUploadForm, NewLayerUploadForm
+from geonode.maps.forms import JSONField, LayerUploadForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 class FormTest(TestCase):
@@ -962,7 +956,7 @@ class FormTest(TestCase):
         form = LayerUploadForm(dict(), files)
         self.assertTrue(form.is_valid())
 
-        tempdir, base_file = form.write_files()
+        tempdir = form.write_files()[0]
         self.assertEquals(set(os.listdir(tempdir)),
             set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
 
@@ -1089,13 +1083,17 @@ class UtilsTest(TestCase):
         d = None
         try:
             d = tempfile.mkdtemp()
-            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
+            files = ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.shp", "foo.shx", "foo.prj", "foo.dbf")
+            for f in files:
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
                 open(path, 'w').close()  
 
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+            # Only run the tests if this is a case sensitive OS
+            if len(os.listdir(d)) == len(files):
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -1104,13 +1102,16 @@ class UtilsTest(TestCase):
         d = None
         try:
             d = tempfile.mkdtemp()
-            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.prj"):
+            files = ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.prj")
+            for f in files:
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
                 open(path, 'w').close()  
 
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+            # Only run the tests if this is a case sensitive OS
+            if len(os.listdir(d)) == len(files):
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -1119,13 +1120,16 @@ class UtilsTest(TestCase):
         d = None
         try:
             d = tempfile.mkdtemp()
-            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.SLD", "foo.sld"):
+            files = ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.SLD", "foo.sld")
+            for f in files:
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
                 open(path, 'w').close()  
 
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
-            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
+            # Only run the tests if this is a case sensitive OS
+            if len(os.listdir(d)) == len(files):
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP")))
+                self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -1164,7 +1168,6 @@ class UtilsTest(TestCase):
     def test_cleanup(self):
         from geonode.maps.utils import cleanup
         from geoserver.catalog import FailedRequestError
-        from mock import patch
 
         self.assertRaises(GeoNodeException, cleanup, "CA", "1234")
         cleanup("FOO", "1234")
@@ -1192,7 +1195,6 @@ class UtilsTest(TestCase):
     def test_check_geonode_is_up(self):
         from contextlib import nested
         from geonode.maps.utils import check_geonode_is_up
-        from mock import patch
 
         def blowup():
             raise Exception("BOOM")
@@ -1203,19 +1205,19 @@ class UtilsTest(TestCase):
             self.assertRaises(GeoNodeException, check_geonode_is_up)
 
         with nested(
-                patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.maps.models.Layer.objects.geonetwork')
-            ) as (mock_gs, mock_gn):
-                mock_gn.login.side_effect = blowup
-                self.assertRaises(GeoNodeException, check_geonode_is_up)
-                self.assertTrue(mock_gs.get_workspaces.called)
+            patch('geonode.maps.models.Layer.objects.gs_catalog'),
+            patch('geonode.maps.models.Layer.objects.geonetwork')
+        ) as (mock_gs, mock_gn):
+            mock_gn.login.side_effect = blowup
+            self.assertRaises(GeoNodeException, check_geonode_is_up)
+            self.assertTrue(mock_gs.get_workspaces.called)
 
         with nested(
-                patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.maps.models.Layer.objects.geonetwork')
-            ) as (mock_gs, mock_gn):
-                # no assertion, this should just run without error
-                check_geonode_is_up()
+            patch('geonode.maps.models.Layer.objects.gs_catalog'),
+            patch('geonode.maps.models.Layer.objects.geonetwork')
+        ) as (mock_gs, mock_gn):
+            # no assertion, this should just run without error
+            check_geonode_is_up()
 
 
     def test_save(self):
@@ -1242,34 +1244,34 @@ class UtilsTest(TestCase):
                     return self.contents[idx]
 
             with nested(
-                    patch.object(geonode.maps.models, '_wms', new=MockWMS()),
-                    patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                    patch('geonode.maps.models.Layer.objects.geonetwork')
-                ) as (mock_wms, mock_gs, mock_gn):
-                    # Setup
-                    mock_gs.get_store.return_value.get_resources.return_value = []
-                    mock_resource = mock_gs.get_resource.return_value
-                    mock_resource.name = 'a_layer'
-                    mock_resource.title = 'a_layer'
-                    mock_resource.abstract = 'a_layer'
-                    mock_resource.store.name = "a_layer"
-                    mock_resource.store.resource_type = "dataStore"
-                    mock_resource.store.workspace.name = "geonode"
-                    mock_resource.native_bbox = ["0", "0", "0", "0"]
-                    mock_resource.projection = "EPSG:4326"
-                    mock_gn.url_for_uuid.return_value = "http://example.com/metadata"
+                patch.object(geonode.maps.models, '_wms', new=MockWMS()),
+                patch('geonode.maps.models.Layer.objects.gs_catalog'),
+                patch('geonode.maps.models.Layer.objects.geonetwork')
+            ) as (mock_wms, mock_gs, mock_gn):
+                # Setup
+                mock_gs.get_store.return_value.get_resources.return_value = []
+                mock_resource = mock_gs.get_resource.return_value
+                mock_resource.name = 'a_layer'
+                mock_resource.title = 'a_layer'
+                mock_resource.abstract = 'a_layer'
+                mock_resource.store.name = "a_layer"
+                mock_resource.store.resource_type = "dataStore"
+                mock_resource.store.workspace.name = "geonode"
+                mock_resource.native_bbox = ["0", "0", "0", "0"]
+                mock_resource.projection = "EPSG:4326"
+                mock_gn.url_for_uuid.return_value = "http://example.com/metadata"
 
-                    # Exercise
-                    base_file = os.path.join(d, 'foo.shp')
-                    owner = User.objects.get(username="admin")
-                    save('a_layer', base_file, owner)
+                # Exercise
+                base_file = os.path.join(d, 'foo.shp')
+                owner = User.objects.get(username="admin")
+                save('a_layer', base_file, owner)
 
-                    # Assertions
-                    (md_link,) = mock_resource.metadata_links
-                    md_mime, md_spec, md_url = md_link
-                    self.assertEquals(md_mime, "text/xml")
-                    self.assertEquals(md_spec, "TC211")
-                    self.assertEquals(md_url,  "http://example.com/metadata")
+                # Assertions
+                (md_link,) = mock_resource.metadata_links
+                md_mime, md_spec, md_url = md_link
+                self.assertEquals(md_mime, "text/xml")
+                self.assertEquals(md_spec, "TC211")
+                self.assertEquals(md_url,  "http://example.com/metadata")
         finally:
             if d is not None:
                 shutil.rmtree(d)
