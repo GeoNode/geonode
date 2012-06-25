@@ -7,6 +7,7 @@ from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
+from geoserver.layer import Layer as GsLayer
 from django.db.models import signals
 from taggit.managers import TaggableManager
 from django.utils import simplejson as json
@@ -1637,9 +1638,8 @@ def post_save_layer(instance, sender, **kwargs):
         instance._populate_from_gn()
         instance.save(force_update=True)
 
-def pre_save_maplayer(instance, sender, **kw):
-    from geoserver.layer import Layer as GsLayer
-    url = url = "%srest" % settings.GEOSERVER_BASE_URL
+def pre_save_maplayer(instance, sender, **kw):   
+    url = "%srest" % settings.GEOSERVER_BASE_URL
     c = Catalog(url, _user, _password)   
     instance.local = isinstance(c.get_layer(instance.name),GsLayer)
 
