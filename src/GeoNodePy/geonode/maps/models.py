@@ -1426,14 +1426,6 @@ class MapLayerManager(models.Manager):
         """
 
         layer_cfg = dict(layer)
-
-        local = False
-        from geoserver.layer import Layer as GsLayer
-        url = url = "%srest" % settings.GEOSERVER_BASE_URL
-        c = Catalog(url, _user, _password)   
-        if isinstance(c.get_layer(layer_cfg['name']),GsLayer):
-            local = True
-
         for k in ["format", "name", "opacity", "styles", "transparent",
                   "fixed", "group", "visibility", "title", "source"]:
             if k in layer_cfg: del layer_cfg[k]
@@ -1455,8 +1447,7 @@ class MapLayerManager(models.Manager):
             visibility = layer.get("visibility", True),
             ows_url = source.get("url", None),
             layer_params = json.dumps(layer_cfg),
-            source_params = json.dumps(source_cfg),
-            local = local
+            source_params = json.dumps(source_cfg)
         )
 
 class MapLayer(models.Model):
@@ -1526,17 +1517,6 @@ class MapLayer(models.Model):
     
     local = models.BooleanField()
     # True if this layer is served by the local geoserver
-    
-    def local(self): 
-        """
-        Tests whether this layer is served by the GeoServer instance that is
-        paired with the GeoNode site.  Currently this is based on heuristics,
-        but we try to err on the side of false negatives.
-        """
-        if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
-            return Layer.objects.filter(typename=self.name).count() != 0
-        else: 
-            return False
  
     def source_config(self):
         """
@@ -1582,7 +1562,7 @@ class MapLayer(models.Model):
 
     @property
     def local_link(self): 
-        if self.local():
+        if self.local:
             layer = Layer.objects.get(typename=self.name)
             link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),layer.title)
         else: 
@@ -1662,7 +1642,6 @@ def pre_save_maplayer(instance, sender, **kw):
     url = url = "%srest" % settings.GEOSERVER_BASE_URL
     c = Catalog(url, _user, _password)   
     instance.local = isinstance(c.get_layer(instance.name),GsLayer)
-    instance.save()
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
