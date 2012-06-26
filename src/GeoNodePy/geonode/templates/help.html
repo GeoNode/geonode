@@ -6,10 +6,10 @@
 {{ block.super }}
 <script type="text/javascript">
 
-Ext.onReady(function() {
-	var titleTemplate = new Ext.Template("<span>Help</span>");
-	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
-});
+    Ext.onReady(function() {
+        var titleTemplate = new Ext.Template("<span>Help</span>");
+        Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+    });
 </script>
 {% endblock %}
 
@@ -18,36 +18,36 @@ Ext.onReady(function() {
 
 
 <div style="margin:20px">
-  <h3>{% trans "Documents" %}</h3>
-  {% blocktrans %}
-  <p>Use the links below to
-navigate to a document.</p>
+    <h3>{% trans "Documents" %}</h3>
+    {% blocktrans %}
+    <p>Use the links below to
+        navigate to a document.</p>
 
     <ul>
-    <li><a href="#help">WorldMap Help</a>
-    <li><a href="#tutorial">Tutorial</a>
-    <li><a href="#faq">Frequently Asked Questions (FAQ)</a>
+        <li><a href="#help">WorldMap Help</a>
+        <li><a href="#tutorial">Tutorial</a>
+        <li><a href="#faq">Frequently Asked Questions (FAQ)</a>
     </ul>
 
-  {% endblocktrans %}
+    {% endblocktrans %}
 
-<p class=MsoNormal><span style='font-size:14.0pt;font-family:Arial'>WorldMap Help Documents</span></p>
+    <p class=MsoNormal><span style='font-size:14.0pt;font-family:Arial'>WorldMap Help Documents</span></p>
 
 
-<p><a name="help"></a><h3>WorldMap Help</h3></p>
-<div style="height:1200px">
-<iframe src="http://docs.google.com/gview?url={{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf&#038;embedded=true" style="width:1024px; height:1000px;" frameborder="0"></iframe>
-</div>
-<p>&nbsp;</p>
-<div style="height:1200px">
- <p><a name="tutorial"></a><h3>Tutorial</h3></p>
-<iframe src="http://docs.google.com/gview?url={{site}}{{ STATIC_URL }}docs/Tutorial.pdf&#038;embedded=true" style="width:1024px; height:1000px;" frameborder="0"></iframe>
-</div>
-<p>&nbsp;</p>
-<div style="height:1200px">
- <p><a name="faq"></a><h3>Frequently Asked Questions</h3></p>
-<iframe src="http://docs.google.com/gview?url={{ site }}{{ STATIC_URL }}docs/FAQ.pdf&#038;embedded=true" style="width:1024px; height:1000px;" frameborder="0"></iframe>
-</div>
+    <p><a name="help"></a><h3>WorldMap Help</h3></p>
+    <div style="height:1200px">
+        <iframe src="http://docs.google.com/gview?url={{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf&#038;embedded=true" style="width:1024px; height:1000px;" frameborder="0"></iframe>
+    </div>
+    <p>&nbsp;</p>
+    <div style="height:1200px">
+        <p><a name="tutorial"></a><h3>Tutorial</h3></p>
+        <iframe src="http://docs.google.com/gview?url={{site}}{{ STATIC_URL }}docs/Tutorial.pdf&#038;embedded=true" style="width:1024px; height:1000px;" frameborder="0"></iframe>
+    </div>
+    <p>&nbsp;</p>
+    <div style="height:1200px">
+        <p><a name="faq"></a><h3>Frequently Asked Questions</h3></p>
+        <iframe src="http://docs.google.com/gview?url={{ site }}{{ STATIC_URL }}docs/FAQ.pdf&#038;embedded=true" style="width:1024px; height:1000px;" frameborder="0"></iframe>
+    </div>
 </div>
 
 

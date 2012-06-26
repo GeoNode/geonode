@@ -17,6 +17,7 @@ if (window.GeoExplorer) {
         connErrorText: gettext("The server returned an error"),
         connErrorDetailsText: gettext("Details..."),
         exportDialogMessage: '<p>Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
+        feedAdditionLabel: 'Add Feed',
         googleEarthBtnText: gettext("Google Earth"),
         heightLabel: gettext("Height"),
         helpLabel: gettext("Help"),
