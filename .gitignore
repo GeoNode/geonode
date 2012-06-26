@@ -5,6 +5,9 @@ build
 target
 *.mo
 
+# PIP files
+GeoNode.egg-info
+
 # virtualenv stuff
 /bin
 /include
