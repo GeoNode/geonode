@@ -145,7 +145,7 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
                     Ext.apply(config.selectStyle, symbolizer);
                     Ext.apply(config.selectStyle, {
                         fillColor: "Yellow",
-                        pointRadius: symbolizer["pointRadius"] + 1
+                        pointRadius: parseInt(symbolizer["pointRadius"]) + 2
                     });
                 }
 

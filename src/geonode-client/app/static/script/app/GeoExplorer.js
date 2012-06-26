@@ -14,7 +14,6 @@ Ext.override(Ext.dd.DragTracker, {
         e.preventDefault();
         var xy = e.getXY(), s = this.startXY;
         this.lastXY = xy;
-        this.lastXY = xy;
         if (!this.active) {
             if (Math.abs(s[0] - xy[0]) > this.tolerance || Math.abs(s[1] - xy[1]) > this.tolerance) {
                 this.triggerStart(e);
@@ -491,7 +490,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         layer.events.register("loadend", layer, function() {
             if (geoEx.busyMask) {
                 geoEx.busyMask.hide();
-            }prototype
+            }
         });
     },
 
