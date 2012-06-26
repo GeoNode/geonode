@@ -74,6 +74,7 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
         this.keywordTextField = new Ext.form.TextField({
             fieldLabel: this.keywordText,
             allowBlank: true,
+            hidden: true,
             width: 150,
             msgTarget: "right"
         });
@@ -144,7 +145,7 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
                     Ext.apply(config.selectStyle, symbolizer);
                     Ext.apply(config.selectStyle, {
                         fillColor: "Yellow",
-                        pointRadius: symbolizer["pointRadius"] + 1
+                        pointRadius: parseInt(symbolizer["pointRadius"]) + 2
                     });
                 }
 
