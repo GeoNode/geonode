@@ -11,7 +11,7 @@ from contextlib import contextmanager
 DEFAULT_CSW_ALIAS = 'default'
 
 # GeoNode uses this if the CSW setting is empty (None).
-if not hasattr(settings, 'CSW'):
+if not hasattr(settings, 'GEONODE_CSW'):
     settings.GEONODE_CSW = { DEFAULT_CSW_ALIAS: 'geonode.backends.dummy'}
 
 # If settings.GEONODE_CSW is defined, we expect it to be properly named
@@ -49,6 +49,8 @@ def load_backend(backend_name):
 def default_csw_backend():
     """Get the default bakcend
     """
+    msg = "There is no '%s' backend in GEONODE_CSW" % DEFAULT_CSW_ALIAS
+    assert DEFAULT_CSW_ALIAS in settings.GEONODE_CSW, msg
     return settings.GEONODE_CSW[DEFAULT_CSW_ALIAS]
 
 

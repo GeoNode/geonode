@@ -275,15 +275,6 @@ GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 # edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 
-# Catalogue information
-
-METADATA_FORMATS = {
-    'DIF': ('dif:DIF', 'http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/'),
-    'Dublin Core': ('csw:Record', 'http://www.opengis.net/cat/csw/2.0.2'),
-    'FGDC': ('fgdc:metadata', 'http://www.opengis.net/cat/csw/csdgm'),
-    'TC211': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd'),
-}
-
 # CSW settings
 GEONODE_CSW = {
     'default': {
