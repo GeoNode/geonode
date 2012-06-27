@@ -2,18 +2,17 @@ package org.geonode.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geonode.security.LayersGrantedAuthority.LayerMode;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.geonode.security.LayersGrantedAuthority.LayerMode;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * A mock security client used to test
@@ -21,7 +20,7 @@ import org.geonode.security.LayersGrantedAuthority.LayerMode;
  * @author Andrea Aime - OpenGeo
  * 
  */
-public class MockSecurityClient implements GeonodeSecurityClient {
+public class MockSecurityClient implements GeoNodeSecurityClient {
 
     Map<String, Authentication> cookieAuths;
 
@@ -54,7 +53,7 @@ public class MockSecurityClient implements GeonodeSecurityClient {
         userAuths = new HashMap<String, Authentication>();
         
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(1);
-        authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_ANONYOMOUS"));
         anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous", authorities);
     }
 
@@ -76,7 +75,7 @@ public class MockSecurityClient implements GeonodeSecurityClient {
             List<String> readOnlyLayers, List<String> readWriteLayers) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         if (admin) {
-            authorities.add(new GrantedAuthorityImpl(GeoNodeDataAccessManager.ADMIN_ROLE));
+            authorities.add(new SimpleGrantedAuthority(GeoNodeDataAccessManager.getActiveAdminRole()));
         }
         if (readOnlyLayers != null && readOnlyLayers.size() > 0) {
             authorities.add(new LayersGrantedAuthority(readOnlyLayers, LayerMode.READ_ONLY));
@@ -93,9 +92,9 @@ public class MockSecurityClient implements GeonodeSecurityClient {
     public void setAnonymousRights(boolean admin, List<String> readOnlyLayers,
             List<String> readWriteLayers) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_ANONYMOUS"));
         if (admin) {
-            authorities.add(new GrantedAuthorityImpl(GeoNodeDataAccessManager.ADMIN_ROLE));
+            authorities.add(new SimpleGrantedAuthority(GeoNodeDataAccessManager.getActiveAdminRole()));
         }
         if (readOnlyLayers != null && readOnlyLayers.size() > 0) {
             authorities.add(new LayersGrantedAuthority(readOnlyLayers, LayerMode.READ_ONLY));
