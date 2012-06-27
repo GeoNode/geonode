@@ -74,7 +74,7 @@ def get_record(uuid):
         rec.links['download'] = csw_cat.extract_links(rec)
     return rec
 
-def search(keywords, start, limit, bbox):
+def search_records(keywords, start, limit, bbox):
   with CSW() as csw_cat: 
         bbox = csw_cat.normalize_bbox(kw['bbox'])
         csw_cat.search(keywords, start+1, limit, bbox)

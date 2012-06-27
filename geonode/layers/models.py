@@ -397,9 +397,6 @@ class Layer(models.Model, PermissionLevelMixin):
             # _wms = WebMapService(wms_url, xml=body)
         return _wms[self.typename]
 
-    def metadata_record(self):
-        return get_record(self.uuid)
-
     @property
     def attribute_names(self):
         if self.resource.resource_type == "featureType":
@@ -589,7 +586,7 @@ class Layer(models.Model, PermissionLevelMixin):
             self.title = self.name
 
     def _populate_from_catalogue(self):
-        meta = self.metadata_record()
+        meta = get_record(self.uuid)
         if meta is None:
             return
         kw_list = reduce(
@@ -604,6 +601,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 res = onlineresources[0]
                 self.distribution_url = res.url
                 self.distribution_description = res.description
+
 
     def keyword_list(self):
         keywords_qs = self.keywords.all()
