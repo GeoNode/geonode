@@ -8,23 +8,34 @@ import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.DataAccessManager;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
  * An access manager that uses the special authentication tokens setup by the
- * {@link GeonodeSecurityClient} to check if a layer can be accessed, or not
+ * {@link GeoNodeSecurityClient} to check if a layer can be accessed, or not
  * 
  * @author Andrea Aime - OpenGeo
  */
 public class GeoNodeDataAccessManager implements DataAccessManager {
 
-    public static final String ADMIN_ROLE = "ROLE_ADMINISTRATOR";
-
     boolean authenticationEnabled = true;
+
+    // we need to look up the name of the admin role dynamically
+    public static String getActiveAdminRole() {
+        GeoServerSecurityManager manager = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+        GeoServerRoleService activeRoleService = manager.getActiveRoleService();
+        GeoServerRole adminRole = activeRoleService.getAdminRole();
+        String authority = adminRole.getAuthority();
+        return authority;
+    }
 
     /**
      * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
@@ -73,11 +84,11 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
                     // sufficient privileges
                     if (mode == AccessMode.READ
                             || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayerMode.READ_WRITE)) {
-                        if (lga.getLayerNames().contains(resource.getPrefixedName())) {
+                        if (lga.getLayerNames().contains(resource.prefixedName())) {
                             return true;
                         }
                     }
-                } else if (ADMIN_ROLE.equals(ga.getAuthority())) {
+                } else if (isAdmin(ga.getAuthority())) {
                     // admin is all powerful
                     return true;
                 }
@@ -85,6 +96,11 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
         }
         // if we got here sorry, no luck
         return false;
+    }
+
+    private boolean isAdmin(String authority) {
+        // TODO tests fail unless we have the ROLE_ADMINISTRATOR check
+        return getActiveAdminRole().equals(authority) || "ROLE_ADMINISTRATOR".equals(authority);
     }
 
     /**

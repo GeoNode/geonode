@@ -4,26 +4,21 @@
  */
 package org.geonode.security;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import junit.framework.TestCase;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.apache.commons.codec.binary.Base64;
 import org.easymock.classextension.EasyMock;
+import org.geonode.GeoNodeTestSupport;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
-
-import com.mockrunner.mock.web.MockServletContext;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Unit test suite for {@link DefaultSecurityClient}
@@ -31,36 +26,23 @@ import com.mockrunner.mock.web.MockServletContext;
  * @author groldan
  * 
  */
-public class DefaultSecurityClientTest extends TestCase {
+public class DefaultSecurityClientTest extends GeoNodeTestSupport {
 
     private HTTPClient mockHttpClient;
 
     private DefaultSecurityClient client;
 
     @Override
-    public void setUp() {
+    public void setUpInternal() {
         mockHttpClient = EasyMock.createNiceMock(HTTPClient.class);
-        client = new DefaultSecurityClient(mockHttpClient);
-        client.setApplicationContext(null);
+        client = new DefaultSecurityClient("http://localhost:8000/", mockHttpClient);
     }
 
     public void testSetApplicationContext() throws Exception {
         final String baseUrl = "http://127.0.0.1/fake";
+        DefaultSecurityClient client2 = new DefaultSecurityClient(baseUrl, mockHttpClient);
 
-        final MockServletContext mockServletContext = new MockServletContext();
-        mockServletContext.setInitParameter("GEONODE_BASE_URL", baseUrl);
-        WebApplicationContext appCtx = new XmlWebApplicationContext() {
-            @Override
-            public ServletContext getServletContext() {
-                return mockServletContext;
-            }
-        };
-
-        client.setApplicationContext(null);
-        assertEquals("http://localhost:8000/", client.getBaseUrl());
-
-        client.setApplicationContext(appCtx);
-        assertEquals(baseUrl + "/", client.getBaseUrl());
+        assertEquals(baseUrl, client2.getBaseUrl());
     }
 
     public void testAuthenticateAnonymous() throws Exception {
@@ -116,7 +98,7 @@ public class DefaultSecurityClientTest extends TestCase {
 
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.addAll(authentication.getAuthorities());
-        assertEquals(3, authorities.size());
+        assertEquals(4, authorities.size());
         assertTrue(authorities.get(0) instanceof LayersGrantedAuthority);
         assertEquals(LayerMode.READ_ONLY, ((LayersGrantedAuthority) authorities.get(0)).getAccessMode());
         assertEquals(Collections.singletonList("layer3"),
@@ -128,7 +110,9 @@ public class DefaultSecurityClientTest extends TestCase {
                 ((LayersGrantedAuthority) authorities.get(1)).getLayerNames());
 
         assertTrue(authorities.get(2) instanceof GrantedAuthority);
-        assertEquals(GeoNodeDataAccessManager.ADMIN_ROLE, authorities.get(2).getAuthority());
+        assertEquals("ROLE_ADMINISTRATOR", authorities.get(2).getAuthority());
+        assertTrue(authorities.get(3) instanceof GrantedAuthority);
+        assertEquals(GeoNodeDataAccessManager.getActiveAdminRole(), authorities.get(3).getAuthority());
     }
 
     public void testAuthenticateUserPassword() throws Exception {

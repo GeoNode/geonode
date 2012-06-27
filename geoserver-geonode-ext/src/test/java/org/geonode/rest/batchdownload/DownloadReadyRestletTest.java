@@ -61,7 +61,7 @@ public class DownloadReadyRestletTest extends GeoNodeTestSupport {
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWellKnownCoverageTypes();
+        dataDirectory.addWcs11Coverages();
     }
 
     public void testHTTPMethod() throws Exception {
