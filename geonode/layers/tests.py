@@ -70,8 +70,6 @@ sample_links = {
                 'download': [('png', 'http://google.com/'),],
                }
 record.links = sample_links
-record.identification = Mock()
-record.identification.keywords = ['hello', 'world']
 
 geonode.layers.views.get_record = Mock()
 geonode.layers.views.get_record.return_value = record
@@ -94,8 +92,8 @@ sample_search_result = {
          'next_page': None,
         }
 
-geonode.layers.views.search = Mock()
-geonode.layers.views.search.return_value = sample_search_result
+geonode.layers.views.search_records = Mock()
+geonode.layers.views.search_records.return_value = sample_search_result
 
 from geonode.layers import views
 
