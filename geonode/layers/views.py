@@ -109,15 +109,15 @@ def layer_upload(request, template='layers/layer_upload.html'):
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
                     "success": False,
-                    "errors": ["Unexpected error during upload: " + escape(str(e))]}))
+                    "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
-            errors = []
+            errormsgs = []
             for e in form.errors.values():
-                errors.extend([escape(v) for v in e])
-            return HttpResponse(json.dumps({ "success": False, "errors": errors}))
+                errormsgs.extend([escape(v) for v in e])
+            return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
@@ -512,11 +512,16 @@ def _layer_search(query, start, limit, **kw):
     return result
 
 
-def layer_search_result_detail(request, template='layers/layer_search_result_snippet.html'):
-    uuid = request.GET.get("uuid")
+def layer_search_result_detail(request, template='layers/search_result_snippet.html'):
+    uuid = request.GET.get("uuid", None)
+    if  uuid is None:
+        return HttpResponse(status=400)
     csw = get_csw()
     csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.records.values()[0]
+    recs = csw.records.values()
+    if len(recs) == 0:
+        return HttpResponse(status=404)
+    rec = recs[0]
     raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
     extra_links = _extract_links(raw_xml)
     
