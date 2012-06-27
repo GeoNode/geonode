@@ -285,7 +285,7 @@ METADATA_FORMATS = {
 }
 
 # CSW settings
-CSW = {
+GEONODE_CSW = {
     'default': {
         # The underlying CSW implementation
         'ENGINE': 'geonode.csw.backends.geonetwork',

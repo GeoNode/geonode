@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
-from geonode.csw import CSW
+from geonode.csw import get_record, create_record, remove_record
 from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 
 from geonode.security.models import PermissionLevelMixin
@@ -346,13 +346,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
 
         # Check the layer is in the catalogue and points back to get_absolute_url
-        catalogue_layer = None
-        with CSW() as csw_cat:
-            try:
-                catalogue_layer = csw_cat.get_by_uuid(self.uuid)
-            except:
-                msg = "Catalogue Record Missing for layer [%s]" % self.typename
-                raise GeoNodeException(msg)
+        catalogue_layer = get_record(self.uuid)
 
         if hasattr(catalogue_layer, 'distribution') and hasattr(catalogue_layer.distribution, 'online'):
             for link in catalogue_layer.distribution.online:
@@ -404,9 +398,7 @@ class Layer(models.Model, PermissionLevelMixin):
         return _wms[self.typename]
 
     def metadata_record(self):
-        with CSW() as csw_cat:
-            record =  csw_cat.get_by_uuid(self.uuid)
-        return record
+        return get_record(self.uuid)
 
     @property
     def attribute_names(self):
@@ -455,19 +447,6 @@ class Layer(models.Model, PermissionLevelMixin):
     def delete_from_geoserver(self):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
 
-    def delete_from_catalogue(self):
-        with CSW() as csw_cat:
-            csw_cat.delete_layer(self)
-
-    def save_to_catalogue(self):
-        with CSW() as csw_cat:
-            record = csw_cat.get_by_uuid(self.uuid)
-            if record is None:
-                md_link = csw_cat.create_from_layer(self)
-                self.metadata_links = [("text/xml", "TC211", md_link)]
-            else:
-                csw_cat.update_layer(self)
-
     @property
     def resource(self):
         if not hasattr(self, "_resource_cache"):
@@ -496,10 +475,9 @@ class Layer(models.Model, PermissionLevelMixin):
            NOTE: we are NOT using the above properties because this will
            break the OGC W*S Capabilities rules
         """
-        records = None
-        with CSW() as csw_cat:
-            records = csw_cat.urls_for_uuid(self.uuid)
-        return records
+        record = get_record(self.uuid)
+        metadata_links = record.links['metadata']
+        return metadata_links
 
     def _get_default_style(self):
         return self.publishing.default_style
@@ -576,13 +554,16 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.resource is None:
             return
         if hasattr(self, "_resource_cache"):
-            with CSW() as csw_cat:
-                self.resource.title = self.title
-                self.resource.abstract = self.abstract
-                self.resource.name= self.name
-                self.resource.metadata_links = [('text/xml', 'TC211', csw_cat.url_for_uuid(self.uuid, 'http://www.isotc211.org/2005/gmd'))]
-                self.resource.keywords = self.keyword_list()
-                Layer.objects.gs_catalog.save(self._resource_cache)
+            self.resource.title = self.title
+            self.resource.abstract = self.abstract
+            self.resource.name= self.name
+            self.resource.keywords = self.keyword_list()
+
+            # Get metadata link from csw catalog
+            record = get_record(self.uuid)
+            self.resource.metadata_links = record.links['metadata']
+ 
+            Layer.objects.gs_catalog.save(self._resource_cache)
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
             profile = Contact.objects.get(user=self.poc.user)
@@ -710,7 +691,7 @@ def delete_layer(instance, sender, **kwargs):
     Removes the layer from GeoServer and Catalogue
     """
     instance.delete_from_geoserver()
-    instance.delete_from_catalogue()
+    remove_record(instance)
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
@@ -725,7 +706,7 @@ def post_save_layer(instance, sender, **kwargs):
     if kwargs['created']:
         instance._populate_from_gs()
 
-    instance.save_to_catalogue()
+    create_record(instance)
 
     if kwargs['created']:
         instance._populate_from_catalogue()

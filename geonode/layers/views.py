@@ -22,7 +22,7 @@ from django.utils.html import escape
 from django.views.decorators.http import require_POST
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
-from geonode.csw import CSW
+from geonode.csw import get_record, search
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
 from geonode.utils import default_map_config
@@ -470,37 +470,21 @@ def layer_search(request):
 
 def _layer_search(query, start, limit, **kw):
     keywords = _split_query(query)
-    result = {}
-    with CSW() as csw_cat: 
-   
-        if kw.has_key('bbox'):
-            # ensure proper bbox axis order
-            bbox = csw_cat.normalize_bbox(kw['bbox'])
-        else:
-            bbox = None
-
-        csw_cat.search(keywords, start+1, limit, bbox)
-
-        # build results into JSON for API
-        results = [csw_cat.metadatarecord2dict(doc) for v, doc in csw_cat.records.iteritems()]
-
-        result = {'rows': results,
-                  'total': csw_cat.results['matches']}
-
-        next_page = csw_cat.results.get('nextrecord', 0) 
-
+    bbox = getattr(kw, 'bbox', None)
+    result = search(keywords, start, limit, bbox)
 
     result['query_info'] = {
         'start': start,
         'limit': limit,
         'q': query
     }
+
     if start > 0: 
         prev = max(start - limit, 0)
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
         result['prev'] = reverse('layer_search_page') + '?' + params
 
-    if next_page > 0:
+    if result['next_page'] > 0:
         params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
         result['next'] = reverse('layer_search_page') + '?' + params
     
@@ -511,12 +495,10 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
     uuid = request.GET.get("uuid")
     if  uuid is None:
         return HttpResponse(status=400)
- 
-    with CSW() as csw_cat:
-        rec = csw_cat.get_by_uuid(uuid)
-        metadata_links = csw_cat.urls_for_uuid(uuid)
-        download_links = csw_cat.extract_links(rec)
-    if rec is None:
+
+    record = get_record(uuid)
+
+    if record is None:
         return HttpResponse('No metadata found!', status=500)
 
     try:
@@ -527,9 +509,9 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
         layer_is_remote = True
 
     return render_to_response(template, RequestContext(request, {
-        'rec': rec,
-        'download_links': download_links,
-        'metadata_links': metadata_links,
+        'rec': record,
+        'download_links': record.links['download'],
+        'metadata_links': record.links['metadata'],
         'layer': layer,
         'layer_is_remote': layer_is_remote
     }))
