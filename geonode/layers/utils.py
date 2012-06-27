@@ -23,7 +23,7 @@ from django.conf import settings
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.utils import check_geonode_is_up
-from geonode.csw import CSW
+from geonode.csw import remove_record
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.people.models import Contact
@@ -213,20 +213,10 @@ def cleanup(name, uuid):
        except:
            logger.exception("Couldn't delete GeoServer store during cleanup()")
 
-   with CSW() as csw_cat:
-       catalogue_record = csw_cat.get_by_uuid(uuid)
-       if catalogue_record is not None:
-           logger.warning('Deleting dangling Catalogue record for [%s] '
-                          '(no Django record to match)', name)
-           try:
-               # this is a bit hacky, delete_layer expects an instance of the layer
-               # model but it just passes it to a Django template so a dict works
-               # too.
-               csw_cat.delete_layer({ "uuid": uuid }) 
-           except:
-               logger.exception('Couldn\'t delete Catalogue record '
-                                'during cleanup()')
+   logger.warning('Deleting dangling Catalogue record for [%s] '
+                  '(no Django record to match)', name)
 
+   remove_record(uuid)
    logger.warning('Finished cleanup after failed Catalogue/Django '
                   'import for layer: %s', name)
 
@@ -458,9 +448,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
 
     saved_layer.poc = poc_contact
     saved_layer.metadata_author = author_contact
-
-    # add to CSW catalogue
-    saved_layer.save_to_catalogue()
 
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook

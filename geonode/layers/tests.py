@@ -4,6 +4,8 @@ import base64
 import shutil
 import tempfile
 
+from collections import namedtuple
+
 from contextlib import nested
 from mock import Mock, patch
 
@@ -20,6 +22,7 @@ from lxml import etree
 
 import geonode.maps.models
 import geonode.maps.views
+import geonode.layers.utils
 
 from geonode import GeoNodeException
 
@@ -51,10 +54,48 @@ fake_wms.contents = []
 geonode.layers.models.get_wms = fake_wms
 geonode.layers.models._wms = fake_wms
 
-from geonode.layers import views
+class Record(Mock):
+    def __iter__(self):
+        sample_list = [1, 2, 3]
+        return sample_list.__iter__()
 
-def simple_post_save_layer(instance, sender, **kwargs):
-        instance._autopopulate()
+    def __next__(self):
+        pass
+    def __prev__(self):
+        pass
+
+record = Record()
+sample_links = {
+                'metadata': [('text/xml', 'TC211', 'http://example.com/metadata'),],
+                'download': [('png', 'http://google.com/'),],
+               }
+record.links = sample_links
+
+geonode.layers.views.get_record = Mock()
+geonode.layers.views.get_record.return_value = record
+
+geonode.layers.models.get_record = Mock()
+geonode.layers.models.get_record.return_value = record
+
+geonode.layers.models.create_record = Mock()
+geonode.layers.models.create_record.return_value = Mock()
+
+geonode.layers.models.remove_record = Mock()
+geonode.layers.models.remove_record.return_value = Mock()
+
+geonode.layers.utils.remove_record = Mock()
+geonode.layers.utils.remove_record.return_value = Mock()
+
+sample_search_result = {
+        'rows': [{'uuid': '0'},],
+         'total': 1,
+         'next_page': None,
+        }
+
+geonode.layers.views.search = Mock()
+geonode.layers.views.search.return_value = sample_search_result
+
+from geonode.layers import views
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
@@ -63,9 +104,6 @@ class LayersTest(TestCase):
     def setUp(self):
         self.user = 'admin'
         self.passwd = 'admin'
-        signals.post_save.disconnect(post_save_layer, sender=Layer)
-        signals.post_save.connect(simple_post_save_layer, sender=Layer)
-       
 
     fixtures = ['map_data.json', 'initial_data.json']
 
@@ -378,8 +416,6 @@ class LayersTest(TestCase):
         lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
         self.assertEqual(lyr.keyword_list(), ["keywords", "saving"])
-        self.assertEqual(lyr.resource.keywords, ["keywords", "saving"])
-        self.assertEqual(_gs_resource.keywords, ["keywords", "saving"])
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
@@ -527,8 +563,7 @@ class LayersTest(TestCase):
             with nested(
                 patch.object(geonode.utils, '_wms', new=MockWMS()),
                 patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.csw.get_catalogue')
-            ) as (mock_wms, mock_gs, mock_gn):
+            ) as (mock_wms, mock_gs):
                 # Setup
                 mock_gs.get_store.return_value.get_resources.return_value = []
                 mock_resource = mock_gs.get_resource.return_value
@@ -540,7 +575,6 @@ class LayersTest(TestCase):
                 mock_resource.store.workspace.name = "geonode"
                 mock_resource.native_bbox = ["0", "0", "0", "0"]
                 mock_resource.projection = "EPSG:4326"
-                mock_gn.return_value.url_for_uuid.return_value = "http://example.com/metadata"
 
                 # Exercise
                 base_file = os.path.join(d, 'foo.shp')
@@ -548,7 +582,7 @@ class LayersTest(TestCase):
                 save('a_layer', base_file, owner)
 
                 # Assertions
-                (md_link,) = mock_resource.metadata_links
+                md_link = mock_resource.metadata_links
                 md_mime, md_spec, md_url = md_link
                 self.assertEquals(md_mime, "text/xml")
                 self.assertEquals(md_spec, "TC211")
