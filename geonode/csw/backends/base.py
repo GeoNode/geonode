@@ -9,6 +9,14 @@ from urlparse import urlparse
 from lxml import etree
 
 
+METADATA_FORMATS = {
+    'DIF': ('dif:DIF', 'http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/'),
+    'Dublin Core': ('csw:Record', 'http://www.opengis.net/cat/csw/2.0.2'),
+    'FGDC': ('fgdc:metadata', 'http://www.opengis.net/cat/csw/csdgm'),
+    'TC211': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd'),
+}
+
+
 class BaseCSWBackend(CatalogueServiceWeb):
     def __init__(self, *args, **kwargs):
         #FIXME(Ariel): Hardcoding this one to make test pass.
@@ -87,7 +95,7 @@ class BaseCSWBackend(CatalogueServiceWeb):
 
         urls = []
         for mformat in self.formats:
-            urls.append({mformat: self.url_for_uuid(uuid, settings.METADATA_FORMATS[mformat][1])})
+            urls.append({mformat: self.url_for_uuid(uuid, METADATA_FORMATS[mformat][1])})
         return urls
 
     def csw_request(self, layer, template):
@@ -244,7 +252,7 @@ class BaseCSWBackend(CatalogueServiceWeb):
         """CSW search wrapper"""
         formats = []
         for f in self.formats:
-            formats.append(settings.METADATA_FORMATS[f][0])
+            formats.append(METADATA_FORMATS[f][0])
 
         return self.getrecords(typenames=' '.join(formats), keywords=keywords, startposition=startposition, maxrecords=maxrecords, bbox=bbox, outputschema='http://www.isotc211.org/2005/gmd', esn='full')
 

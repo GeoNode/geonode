@@ -70,6 +70,8 @@ sample_links = {
                 'download': [('png', 'http://google.com/'),],
                }
 record.links = sample_links
+record.identification = Mock()
+record.identification.keywords = ['hello', 'world']
 
 geonode.layers.views.get_record = Mock()
 geonode.layers.views.get_record.return_value = record
