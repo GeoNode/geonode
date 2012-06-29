@@ -1,0 +1,63 @@
+{% extends "upload/base.html" %}
+{% load i18n %}
+
+{% block body_class_extra %}upload-prms{% endblock %}
+
+{% block body %}
+    <h3>{% trans "Permissions" %}</h3>
+    <form action="" class="well">
+        <fieldset>
+            <div class="row">
+                <div class="span8 offset3">
+                    <div class="control-group">
+                      <label class="control-label">Who can view and download this data?</label>
+                      <div class="controls">
+                        <label class="radio">
+                          <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                          Anyone
+                        </label>
+                        <label class="radio">
+                          <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                          Any registered user
+                        </label>
+                        <label class="radio">
+                          <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                          Only users who can edit
+                        </label>
+                      </div>
+                    </div>
+                    <div class="control-group">
+                      <label class="control-label">Who can edit this data?</label>
+                      <div class="controls">
+                        <label class="radio">
+                          <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                          Any registered user
+                        </label>
+                        <label class="radio">
+                          <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                          Only the following users or groups:
+                          <input type="text" placeholder="Add user" class="add-user" />
+                        </label>
+                      </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="input01">Who can manage and edit this data?</label>
+                        <div class="controls">
+                            <input type="text" class="span6" id="input01">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="input01">Your preferred language:</label>
+                        <div class="controls">
+                            <select name="" id="">
+                                <option value="">English</option>
+                                <option value="">French</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-large pull-right">{% trans "Save Upload" %}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}
