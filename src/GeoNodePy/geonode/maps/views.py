@@ -1219,7 +1219,7 @@ def _metadata_search(query, start, limit, **kw):
 
     next_page = csw.results.get('nextrecord', 0) 
     if next_page > 0:
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
+        params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
     
     return result
@@ -1518,7 +1518,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
     next_page = start + limit + 1
     if next_page < map_query.count():
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
+        params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.maps_search') + '?' + params
     
     return result
