@@ -56,7 +56,7 @@ def grab(src, dest):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     with pushd('geoserver-geonode-ext'):
-        sh("mvn clean install jetty:stop -DskipTests")
+        sh("mvn clean install jetty:stop -DskipTests -o")
 
 #FIXME(Ariel): This task is not used at all, should it just be removed?
 @task
@@ -267,7 +267,6 @@ def release(options):
 @task
 @needs(['start_geoserver',
         'sync',
-        'setup_client',
         'start_django',])
 def start():
     """
@@ -332,12 +331,12 @@ def start_geoserver(options):
     Start GeoNode's Java apps (GeoServer with GeoNode extensions and GeoNetwork)
     """
     gs_data = getattr(options, 'gs_data', None)
-    extra_options = ''
+    extra_options = '-o -DskipTests -l jetty.log'
     if gs_data and not gs_data.exists(): 
          path('geoserver-geonode-ext/src/main/webapp/data/').copytree(gs_data)
-         extra_options += '-DGEOSERVER_DATA_DIR=%s' % options.gs_data
+         extra_options += ' -DGEOSERVER_DATA_DIR=%s' % options.gs_data
     with pushd('geoserver-geonode-ext'):
-        sh('mvn jetty:run -o %s &' % extra_options)
+        sh('mvn jetty:run %s &' % extra_options)
 
 
 @task

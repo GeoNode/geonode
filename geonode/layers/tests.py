@@ -42,6 +42,7 @@ from geonode.layers.models import post_save_layer
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
 _gs_resource.keywords = [u'keywords', u'saving']
+_gs_resource.workspace.name = 'workspace'
 Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
@@ -70,6 +71,12 @@ sample_links = {
                 'download': [('png', 'http://google.com/'),],
                }
 record.links = sample_links
+
+item = Mock()
+item.protocol = 'WWW:LINK-1.0-http--link'
+item.url = 'http://google.com/'
+item.description = 'descriptive description'
+record.distribution.online = [item,]
 
 geonode.layers.views.get_record = Mock()
 geonode.layers.views.get_record.return_value = record
@@ -563,7 +570,8 @@ class LayersTest(TestCase):
             with nested(
                 patch.object(geonode.utils, '_wms', new=MockWMS()),
                 patch('geonode.maps.models.Layer.objects.gs_catalog'),
-            ) as (mock_wms, mock_gs):
+                patch('geonode.csw.get_record'),
+            ) as (mock_wms, mock_gs, mock_csw):
                 # Setup
                 mock_gs.get_store.return_value.get_resources.return_value = []
                 mock_resource = mock_gs.get_resource.return_value
@@ -573,8 +581,10 @@ class LayersTest(TestCase):
                 mock_resource.store.name = "a_layer"
                 mock_resource.store.resource_type = "dataStore"
                 mock_resource.store.workspace.name = "geonode"
+                mock_resource.workspace.name = "geonode"
                 mock_resource.native_bbox = ["0", "0", "0", "0"]
                 mock_resource.projection = "EPSG:4326"
+                mock_csw.return_value = record
 
                 # Exercise
                 base_file = os.path.join(d, 'foo.shp')
@@ -582,7 +592,7 @@ class LayersTest(TestCase):
                 save('a_layer', base_file, owner)
 
                 # Assertions
-                md_link = mock_resource.metadata_links
+                md_link = mock_resource.metadata_links[0]
                 md_mime, md_spec, md_url = md_link
                 self.assertEquals(md_mime, "text/xml")
                 self.assertEquals(md_spec, "TC211")

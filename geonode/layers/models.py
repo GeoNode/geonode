@@ -589,12 +589,6 @@ class Layer(models.Model, PermissionLevelMixin):
         meta = get_record(self.uuid)
         if meta is None:
             return
-        kw_list = reduce(
-                lambda x, y: x + y["keywords"],
-                meta.identification.keywords,
-                [])
-        kw_list = [l for l in kw_list if l is not None]
-        self.keywords.add(*kw_list)
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:
