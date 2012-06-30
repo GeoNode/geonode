@@ -30,10 +30,27 @@
 </p>
 
 <p><b>{% trans "Keywords:" %}</b>
+{% comment %} old owslib iso {% endcomment %}
 {% for kw in rec.identification.keywords.list %}
   {{kw}}{% if not forloop.last %}, {% endif %}
 {% empty %}
-<em>{% trans "No keywords are listed for this layer." %}</em>
+  {% comment %} new owslib iso {% endcomment %}
+  {% for kws in rec.identification.keywords %}
+    {% for kw in kws.keywords %}
+      {{kw}}{% if not forloop.last %}, {% endif %}
+      {% if forloop.last and kws.thesaurus.title %}
+        ({{ kws.thesaurus.title }}
+         {% if kws.thesaurus.date %} - {{ kws.thesaurus.date }} {% endif %} 
+         {% if kws.thesaurus.datetype %} - {{ kws.thesaurus.datetype }} {% endif %}
+        )
+      {% endif %}
+    {% empty %}
+      <em>{% trans "No keywords are listed for this layer." %}</em>
+    {% endfor %}
+    {% if not forloop.last %}; {% endif %}
+  {% empty %}
+    <em>{% trans "No keywords are listed for this layer." %}</em>
+  {% endfor %}
 {% endfor %}
 </p>
 
