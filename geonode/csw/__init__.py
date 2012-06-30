@@ -69,7 +69,7 @@ def get_catalogue(backend=None):
 def get_record(uuid):
     with CSW() as csw_cat:
         rec = csw_cat.get_by_uuid(uuid)
-        if rec is not None
+        if rec is not None:
             rec.links = {}
             rec.links['metadata'] = csw_cat.urls_for_uuid(uuid)
             rec.links['download'] = csw_cat.extract_links(rec)
