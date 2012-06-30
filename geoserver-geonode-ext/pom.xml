@@ -279,14 +279,12 @@
           <systemProperties>
             <systemProperty>
               <name>GEOSERVER_DATA_DIR</name>
-              <value>../build/gs_data/</value>
+              <value>${project.build.directory}/geoserver/data</value>
             </systemProperty>
           </systemProperties>
 
           <webApp>${project.build.directory}/geoserver</webApp>
           
-          <!-- configure the container                 -->
-          <jettyConfig>jetty.xml</jettyConfig>
         </configuration>
       </plugin>
 
