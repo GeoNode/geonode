@@ -186,7 +186,7 @@ background-color:white;
 }
 
 div.map-overlay {
-    z-index: 1000; 
+    z-index: 4000;
     position: absolute; 
     right: 10px; 
     bottom: 10px;
@@ -204,6 +204,7 @@ div.overlay-scaleline {
     bottom: 0px;
     left: 0px;
     margin-top: 0px;
+    z-index: 10000;
 }
 
 .olControlAttribution{
