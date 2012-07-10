@@ -126,6 +126,7 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
 
         this.submitButton =  new Ext.Button({
             text: this.addFeedText,
+            iconCls: "gxp-icon-addlayers",
             handler: function() {
                 var ptype = this.sourceTypeRadioList.getValue().inputValue;
                 var config = {
@@ -163,7 +164,22 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
                 this.keywordTextField,
                 this.maxResultsField,
                 this.symbolizerField,
-                this.submitButton
+                {
+                    xtype: 'panel',
+                    frame:false,
+                    border: false,
+                    region: 'south',
+                    layout: new Ext.layout.HBoxLayout({
+                        pack: 'center',
+                        defaultMargins: {
+                            top: 10,
+                            bottom: 10,
+                            left: 10,
+                            right: 0
+                        }
+                    }),
+                    items: [this.submitButton]
+                }
             ],
             layout: "form",
             border: false,

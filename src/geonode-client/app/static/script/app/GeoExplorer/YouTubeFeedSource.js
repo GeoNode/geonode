@@ -33,16 +33,19 @@ gxp.plugins.YouTubeFeedSource = Ext.extend(gxp.plugins.FeedSource, {
 
 
     createLayerRecord: function(config) {
-        if (config.params == null) {
+        if (!config.params) {
             config.params = {"max-results":50, "q":""}
         }
-        if (config.params["max-results"] == "") {
+        if (config.params["max-results"] === "") {
             config.params["max-results"] = 50;
         }
-        if (config.params["q"] == "") {
-            config.params["q"] == ""
+        if (config.params["q"] === "") {
+            config.params["q"] = "";
         }
         config.url = this.url;
+
+        //Youtube doesn't accept more than 50 results
+        config.params["max-results"] = Math.min(config.params["max-results"], 50);
 
         var record = gxp.plugins.YouTubeFeedSource.superclass.createLayerRecord.apply(this, arguments);
         return record;
