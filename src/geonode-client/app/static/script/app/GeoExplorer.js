@@ -1839,34 +1839,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
            iconCls: 'icon-add',
            cls:  'x-btn-link-medium x-btn-text',
             handler: function() {
-                if (!this.feedDialog) {
-                    this.feedDialog = new gxp.FeedSourceDialog({
-                        title:"Add a GeoRSS Feed",
-                        closeAction: "hide",
-                        target: this,
-                        listeners: {
-                            "feed-added": function(ptype, config){
-
-                                var sourceConfig = {"config":{"ptype":ptype}};
-                                if (config.url) {
-                                    sourceConfig.config["url"] = config.url;
-                                }
-                                var source = this.addLayerSource(sourceConfig);
-                                config.source = source.id;
-                                var feedRecord = source.createLayerRecord(config);
-
-
-                                this.mapPanel.layers.add([feedRecord]);
-                                this.addCategoryFolder(feedRecord.get("group"), "true");
-                                this.reorderNodes(feedRecord.getLayer());
-                                this.treeRoot.findDescendant("layer", feedRecord.getLayer()).select();
-                            }, scope: this
-                        }, scope: this
-                    });
-                }
-                this.feedDialog.show();
-                newSourceWindow.hide();
+                this.showFeedDialog();
                 this.searchWindow.hide();
+                newSourceWindow.hide();
+
             },
             scope: this
         });
@@ -2224,7 +2200,48 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
+        var picasaMenuItem = {
+            text: 'Picasa',
+            scope:this,
+            handler: function() {
+                this.showFeedDialog('gx_picasasource')
+            },
+            scope: this
+        };
 
+
+        var youtubeMenuItem = {
+            text: 'YouTube',
+            scope:this,
+            handler: function() {
+                this.showFeedDialog('gx_youtubesource')
+            },
+            scope: this
+        };
+
+        var hglMenuItem = {
+            text: 'Harvard Geospatial Library',
+            scope:this,
+            handler: function() {
+                this.showFeedDialog('gx_hglfeedsource')
+            },
+            scope: this
+        };
+
+        var moreButton = new Ext.Button({
+            text: 'More...',
+            cls: "more-overlay-element",
+            id: 'moreBtn',
+            menu: {
+                items: [
+                    picasaMenuItem,
+                    youtubeMenuItem,
+                    hglMenuItem
+                ]
+            }
+        });
+
+        this.mapPanel.add(moreButton);
 
         var jumpBar = new GeoExplorer.SocialExplorer(this);
         var svt = new StreetViewPopup({mapPanel: mapPanel, titleHeader: this.streetViewBtnText, popupHeight: 300, popupWidth: 600});
@@ -2881,6 +2898,38 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             bodyStyle: 'background-color:#FFF'
         });
 
+    },
+
+    showFeedDialog:function (selectedOption) {
+        if (!this.feedDialog) {
+            this.feedDialog = new gxp.FeedSourceDialog({
+                title:"Add a GeoRSS Feed",
+                closeAction:"hide",
+                target:this,
+                listeners:{
+                    "feed-added":function (ptype, config) {
+
+                        var sourceConfig = {"config":{"ptype":ptype}};
+                        if (config.url) {
+                            sourceConfig.config["url"] = config.url;
+                        }
+                        var source = this.addLayerSource(sourceConfig);
+                        config.source = source.id;
+                        var feedRecord = source.createLayerRecord(config);
+
+
+                        this.mapPanel.layers.add([feedRecord]);
+                        this.addCategoryFolder(feedRecord.get("group"), "true");
+                        this.reorderNodes(feedRecord.getLayer());
+                        this.treeRoot.findDescendant("layer", feedRecord.getLayer()).select();
+                    }, scope:this
+                }, scope:this
+            });
+        }
+        this.feedDialog.show();
+        if (selectedOption) {
+            this.feedDialog.sourceTypeRadioList.setValue(selectedOption);
+        }
     },
 
 
