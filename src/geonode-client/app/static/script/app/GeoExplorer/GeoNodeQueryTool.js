@@ -505,7 +505,10 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
 
     /* Set up display of results in two panels */
     displayXYResults:  function(featureInfo, featureMeta) {
-        var ep = Ext.getCmp(this.featurePanel);
+        if (this.target.selectControl.popup) {
+            return;
+        }
+            var ep = Ext.getCmp(this.featurePanel);
         var gp = Ext.getCmp(this.attributePanel);
 
         if (ep.hidden) {

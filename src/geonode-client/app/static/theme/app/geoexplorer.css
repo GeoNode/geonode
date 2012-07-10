@@ -410,7 +410,7 @@ float:right;
 }
 
 .x-btn .icon-youtube {
-    background-image: url(img/w orldmap/youtube.gif);
+    background-image: url(img/worldmap/youtube.gif);
 }
 
 
@@ -442,7 +442,7 @@ cga-logo-overlay {
     float: left;
     z-index: 4000;
     position: absolute;
-    right: 50px;
+    right: 150px;
     top: 10px;
     height:25px;
     width:50px;
@@ -493,6 +493,7 @@ div.cga-link {
     background-color: #fff !important;
 }
 
+
 div.cql-overlay {
     z-index: 10000;
     position: absolute;
@@ -511,3 +512,15 @@ div.chart-overlay {
     opacity: 1.0
 }
 
+.icon-picasa {
+    background-image: url('img/picasa.png');
+}
+
+.icon-youtube {
+    background-image: url('img/youtube.png');
+}
+
+
+.icon-harvard {
+    background-image: url('img/harvard.png');
+}

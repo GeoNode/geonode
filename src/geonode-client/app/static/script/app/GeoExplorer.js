@@ -1250,7 +1250,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ascending: false,
             map: this.mapPanel.map,
             filter: function(record) {
-                return record.data.group == undefined || (record.data.group != "Overlays" && !(record.data.layer instanceof OpenLayers.Layer.Vector));
+               return record.data.group == undefined || (record.data.group != "Overlays" && !(record.data.layer instanceof OpenLayers.Layer.Vector));
             },
             defaults: {cls: 'legend-item'}
         });
@@ -2202,6 +2202,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var picasaMenuItem = {
             text: 'Picasa',
+            iconCls: "icon-picasa",
             scope:this,
             handler: function() {
                 this.showFeedDialog('gx_picasasource')
@@ -2212,6 +2213,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var youtubeMenuItem = {
             text: 'YouTube',
+            iconCls: "icon-youtube",
             scope:this,
             handler: function() {
                 this.showFeedDialog('gx_youtubesource')
@@ -2221,6 +2223,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var hglMenuItem = {
             text: 'Harvard Geospatial Library',
+            iconCls: "icon-harvard",
             scope:this,
             handler: function() {
                 this.showFeedDialog('gx_hglfeedsource')

@@ -31,10 +31,10 @@ GeoExplorer.PicasaFeedOverlay = function(target){
             		args: ["Picasa Pictures",
                            {   projection:new OpenLayers.Projection("EPSG:4326"),
                                displayInLayerSwitcher:false,
-                               strategies:[new OpenLayers.Strategy.BBOX({resFactor: 1.1})],
+                               strategies:[new OpenLayers.Strategy.Fixed()],
                                protocol:new OpenLayers.Protocol.HTTP({
                                    url:"/picasa/",
-                                   params:{'KIND': 'photo', 'MAX-RESULTS':'50', 'Q' : keywords},
+                                   params:{'KIND': 'photo', 'MAX-RESULTS':'50', 'Q' : keywords, 'BBOX':target.mapPanel.map.getExtent().transform(target.mapPanel.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")).toBBOX()},
                                    format:new OpenLayers.Format.Picasa()
                                }),
                               styleMap: new OpenLayers.StyleMap({
