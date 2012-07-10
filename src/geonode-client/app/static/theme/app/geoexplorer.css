@@ -204,6 +204,7 @@ div.overlay-scaleline {
     bottom: 0px;
     left: 0px;
     margin-top: 0px;
+    z-index: 10000;
 }
 
 .olControlAttribution{
