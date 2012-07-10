@@ -151,6 +151,7 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
                 }
 
                 this.fireEvent("feed-added", ptype, config);
+                this.hide();
 
             },
             scope: this

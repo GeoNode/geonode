@@ -77,6 +77,11 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
         if (this.target.selectControl == null) {
             this.target.selectControl = new OpenLayers.Control.SelectFeature(layer, {
                 clickout: true,
+                listeners: {
+                    'clickoutFeature': function () {
+                        alert('clickout');
+                    }
+                },
                 scope: this
             });
 
@@ -173,7 +178,7 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
             "featureselected": function(featureObject) {
                 var feature = featureObject.feature;
                 var pos = feature.geometry;
-                if (this.target.selectControl.popup != null) {
+                if (this.target.selectControl.popup) {
                     this.target.mapPanel.map.removePopup(this.target.selectControl.popup);
                 }
                 this.target.selectControl.popup = new OpenLayers.Popup.FramedCloud("popup",
@@ -182,16 +187,22 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
                     "<a target='_blank' href=\"" +
                         feature.attributes.link + "\">" +  feature.attributes.title +"</a><p>"+ feature.attributes.description + "</p>",
                     null, true);
-                this.target.selectControl.popup.closeOnMove = false;
-                this.target.selectControl.popup.minSize = new OpenLayers.Size(300,150);
-                this.target.selectControl.popup.maxSize = new OpenLayers.Size(450,600);
-                this.target.selectControl.popup.keepInMap = false;
+                this.target.selectControl.popup.closeOnMove = true;
+                this.target.selectControl.popup.keepInMap = true;
+                this.target.selectControl.popup.panMapIfOutOfView = false;
+                this.target.selectControl.popup.autoSize = true;
                 this.target.mapPanel.map.addPopup(this.target.selectControl.popup);
             },
 
-            "featureunselected" : function(featureObject) {
+            "featureunselected" : function() {
                 this.target.mapPanel.map.removePopup(this.target.selectControl.popup);
                 this.target.selectControl.popup = null;
+            },
+
+            "moveend" :  function(evt) {
+                if (this.target.selectControl) {
+                    this.target.selectControl.popup = null;
+                }
             },
             scope: this
         });

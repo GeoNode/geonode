@@ -2201,6 +2201,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var picasaMenuItem = {
             text: 'Picasa',
+            iconCls: "icon-picasa",
             scope:this,
             handler: function() {
                 this.showFeedDialog('gx_picasasource')
@@ -2211,6 +2212,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var youtubeMenuItem = {
             text: 'YouTube',
+            iconCls: "icon-youtube",
             scope:this,
             handler: function() {
                 this.showFeedDialog('gx_youtubesource')
@@ -2220,6 +2222,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var hglMenuItem = {
             text: 'Harvard Geospatial Library',
+            iconCls: "icon-harvard",
             scope:this,
             handler: function() {
                 this.showFeedDialog('gx_hglfeedsource')
