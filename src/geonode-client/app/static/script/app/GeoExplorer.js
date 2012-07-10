@@ -791,6 +791,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             //Show the info window if it's the first time here
             if (this.config.first_visit)
                 this.showInfoWindow();
+
+            //If there are feeds on the map, there will be a SelectFeature control.
+            //Activate it now.
+            if (this.selectControl)
+                this.selectControl.activate();
         });
 
         var getRecordFromNode = function(node) {
@@ -2924,6 +2929,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         this.addCategoryFolder(feedRecord.get("group"), "true");
                         this.reorderNodes(feedRecord.getLayer());
                         this.treeRoot.findDescendant("layer", feedRecord.getLayer()).select();
+                        this.selectControl.activate();
                     }, scope:this
                 }, scope:this
             });

@@ -86,7 +86,7 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
             });
 
             this.target.mapPanel.map.addControl(this.target.selectControl);
-            this.target.selectControl.activate();
+
         } else {
             var currentLayers = this.target.selectControl.layers ? this.target.selectControl.layers :
                 (this.target.selectControl.layer ? [this.target.selectControl.layer] : []);
