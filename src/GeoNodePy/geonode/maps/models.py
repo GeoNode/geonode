@@ -1762,7 +1762,7 @@ class Map(models.Model, PermissionLevelMixin):
         self.content = despam(x.strip(conf['about']['introtext']))
 
         #self.content = re.sub(r'<script.*(<\/script>|\/>)|javascript:|\$\(|jQuery|Ext\.', r'', conf['about']['introtext']) #Remove any scripts
-        self.keywords = despam(conf['about']['keywords'])
+        #self.keywords = despam(conf['about']['keywords'])
         self.zoom = conf['map']['zoom']
 
         self.center_x = conf['map']['center'][0]
