@@ -133,7 +133,7 @@ class PermissionLevelMixin(object):
             my_ct = ContentType.objects.get_for_model(self)
             mapping = UserObjectRoleMapping.objects.get(user=user, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
-        except:
+        except Exception:
             return self.LEVEL_NONE
 
     def set_user_level(self, user, level):
@@ -141,6 +141,10 @@ class PermissionLevelMixin(object):
         set the user's permission level to the level specified. if 
         level is LEVEL_NONE, any existing level assignment is removed.
         """
+
+        # Object owner should always have admin level
+        if self.owner_id == user.id:
+            level = self.LEVEL_ADMIN
 
         my_ct = ContentType.objects.get_for_model(self)
         if level == self.LEVEL_NONE:
@@ -167,7 +171,7 @@ class PermissionLevelMixin(object):
             my_ct = ContentType.objects.get_for_model(self)
             mapping = GenericObjectRoleMapping.objects.get(subject=gen_role, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
-        except:
+        except Exception:
             return self.LEVEL_NONE
 
     def set_gen_level(self, gen_role, level):
@@ -176,6 +180,7 @@ class PermissionLevelMixin(object):
         users specified.  if level is LEVEL_NONE, any existing assignment is 
         removed.
         """
+
         my_ct = ContentType.objects.get_for_model(self)
         if level == self.LEVEL_NONE:
             GenericObjectRoleMapping.objects.filter(subject=gen_role, object_id=self.id, object_ct=my_ct).delete()
