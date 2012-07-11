@@ -45,7 +45,7 @@ LANGUAGES = (
     ('de', 'Deutsch'),
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
-    ('zh', '中國的'),
+    ('zh', '中文'),
 )
 
 # If you set this to False, Django will make some optimizations so as not
