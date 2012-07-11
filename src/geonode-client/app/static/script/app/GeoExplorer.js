@@ -175,7 +175,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     metadataFormSaveText : "UT:Save",
     metaDataHeader: 'UT:About this Map View',
     metaDataMapAbstract: 'UT:Abstract (brief description)',
-    metaDataMapKeywords: 'UT: Keywords (for Picasa and YouTube overlays)',
     metaDataMapIntroText: 'UT:Introduction (tell visitors more about your map view)',
     metaDataMapTitle: 'UT:Title',
     metaDataMapUrl: 'UT:UserUrl',
@@ -2543,7 +2542,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         geoEx.about["abstract"] = abstractField.getValue();
                         geoEx.about["urlsuffix"] = urlField.getValue();
                         geoEx.about["introtext"] = nicEditors.findEditor('intro_text_area').getContent();
-                        geoEx.about["keywords"] = keywordsField.getValue();
                         geoEx.save(as);
                         geoEx.initInfoTextWindow();
                     }
@@ -2565,11 +2563,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             value: this.about["abstract"]
         });
 
-        var keywordsField = new Ext.form.TextField({
-            width: '95%',
-            fieldLabel: this.metaDataMapKeywords,
-            value: this.about["keywords"]
-        });
 
         var introTextField = new Ext.form.TextArea({
             width: 550,
@@ -2587,7 +2580,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 titleField,
                 urlField,
                 abstractField,
-                keywordsField,
                 introTextField
             ]
         });
@@ -2645,7 +2637,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         abstractField.setValue(this.about["abstract"]);
                         urlField.setValue(this.about["urlsuffix"]);
                         introTextField.setValue(this.about["introtext"]);
-                        keywordsField.setValue(this.about["keywords"]);
                         this.metadataForm.hide();
                     },
                     scope: this
