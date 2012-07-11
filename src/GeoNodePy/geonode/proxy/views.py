@@ -112,7 +112,7 @@ def picasa(request):
     coords[1] = coords[1] if float(coords[1]) > -90 else -90
     coords[3] = coords[3] if float(coords[3])  < 90 else 90
     newbbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
-    url = url + "kind=" + kind + "&max-results=" + maxResults + "&bbox=" + newbbox + "&q=" + query  #+ "&alt=json"
+    url = url + "kind=" + kind + "&max-results=" + maxResults + "&bbox=" + newbbox + "&q=" + urllib.quote(query.encode('utf-8'))  #+ "&alt=json"
 
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
@@ -126,7 +126,7 @@ def hglpoints (request):
     except:
         bbox = "-180,-90,180,90"
     query = request.GET['q'] if request.method == 'GET' else request.POST['q']
-    url = url + "&UserQuery=" + query + "&bbox=" + bbox
+    url = url + "&UserQuery=" + urllib.quote(query.encode('utf-8')) + "&bbox=" + bbox
     dom = minidom.parse(urllib.urlopen(url))
     for node in dom.getElementsByTagName('item'):
         description = node.getElementsByTagName('description')[0]
@@ -226,7 +226,7 @@ def youtube(request):
     right = R*float(coords[2])/180.0/PI;
     radius = (right - left)/2*2;
     radius = 1000 if (radius > 1000) else radius;
-    url = url + "location=" + location + "&max-results=" + maxResults + "&location-radius=" + str(radius) + "km&q=" + query
+    url = url + "location=" + location + "&max-results=" + maxResults + "&location-radius=" + str(radius) + "km&q=" + urllib.quote(query.encode('utf-8'))
 
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
