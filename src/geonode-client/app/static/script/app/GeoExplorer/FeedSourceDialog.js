@@ -27,6 +27,9 @@ gxp.FeedSourceDialog = Ext.extend(Ext.Window, {
      */
     target : null,
 
+    width: 600,
+
+    autoHeight: true,
 
     /** private: method[initComponent]
      */

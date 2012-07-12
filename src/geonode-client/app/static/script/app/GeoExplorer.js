@@ -2926,6 +2926,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
         }
         this.feedDialog.show();
+        this.feedDialog.alignTo(document, 't-t');
         if (selectedOption) {
             this.feedDialog.sourceTypeRadioList.setValue(selectedOption);
         }
