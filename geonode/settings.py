@@ -152,11 +152,11 @@ LOGGING = {
         },
         "geonode": {
             "handlers": ["console"],
-            "level": "WARNING",
+            "level": "ERROR",
         },
         "gsconfig.catalog": {
             "handlers": ["console"],
-            "level": "WARNING",
+            "level": "ERROR",
         },
     },
 }
