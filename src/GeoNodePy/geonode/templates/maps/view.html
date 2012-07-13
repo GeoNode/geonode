@@ -30,21 +30,24 @@ var app;
 var init = function() {
 {% autoescape off %}
 
+    var identifyText = gettext('Identify');
+    var coordinateText = gettext('Map Coordinates - longitude, latitude');
 
     var config = Ext.apply({
         tools:  [{
-                    ptype: "gxp_geonodequerytool",
-                    id: "worldmap_query_tool",
-                    actionTarget:  {target: "paneltbar", index: 5},
-                    toolText: '<span class="x-btn-text">Identify</span>',
-                    iconCls: null,
-                    outputConfig: {width: 400, height: 200, panIn: false},
-                    featurePanel: 'queryPanel',
-                    attributePanel: 'gridWinPanel',
-                    toggleGroup: 'featureGroup'
-                },
+            ptype: "gxp_geonodequerytool",
+            id: "worldmap_query_tool",
+            actionTarget:  {target: "paneltbar", index: 5},
+            toolText: '<span class="x-btn-text">' + identifyText + '</span>',
+            iconCls: null,
+            outputConfig: {width: 400, height: 200, panIn: false},
+            featurePanel: 'queryPanel',
+            attributePanel: 'gridWinPanel',
+            toggleGroup: 'featureGroup'
+        },
             {
                 ptype: "gxp_coordinatetool",
+                title: coordinateText,
                 actionTarget:  {target: "paneltbar"}
             }
         ],
