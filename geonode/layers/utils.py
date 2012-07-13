@@ -194,24 +194,24 @@ def cleanup(name, uuid):
    except FailedRequestError, e:
        msg = ('Couldn\'t connect to GeoServer while cleaning up layer '
               '[%s] !!', str(e))
-       logger.error(msg)
+       logger.warning(msg)
 
    if gs_layer is not None:
        try:
            cat.delete(gs_layer)
        except:
-           logger.exception("Couldn't delete GeoServer layer during cleanup()")
+           logger.warning("Couldn't delete GeoServer layer during cleanup()")
    if gs_resource is not None:
        try:
            cat.delete(gs_resource)
        except:
            msg = 'Couldn\'t delete GeoServer resource during cleanup()'
-           logger.exception(msg)
+           logger.warning(msg)
    if gs_store is not None:
        try:
            cat.delete(gs_store)
        except:
-           logger.exception("Couldn't delete GeoServer store during cleanup()")
+           logger.warning("Couldn't delete GeoServer store during cleanup()")
 
    logger.warning('Deleting dangling Catalogue record for [%s] '
                   '(no Django record to match)', name)
