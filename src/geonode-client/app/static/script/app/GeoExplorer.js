@@ -1570,6 +1570,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var oldLayerChange = gxp.plugins.FeatureEditor.prototype.onLayerChange;
         var localUrl = this.config.localGeoServerBaseUrl;
+
         gxp.plugins.FeatureEditor.prototype.onLayerChange = function (mgr, layer, schema) {
             oldLayerChange.apply(this, [mgr,layer,schema]);
 
@@ -2016,6 +2017,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
                 scope: this
             });
+
+            Ext.getCmp("worldmap_query_tool").toggle(true);
 
             function setScale() {
                 var scale = zoomStore.queryBy(function(record) {
