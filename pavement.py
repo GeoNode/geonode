@@ -344,7 +344,7 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("python manage.py test geonode")
+    sh("python manage.py test geonode --noinput")
 
 
 @task
