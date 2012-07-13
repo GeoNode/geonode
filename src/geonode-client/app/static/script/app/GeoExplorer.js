@@ -2016,6 +2016,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             });
 
+            Ext.getCmp("worldmap_query_tool").toggle(true);
+
             function setScale() {
                 var scale = zoomStore.queryBy(function(record) {
                     return this.mapPanel.map.getZoom() == record.data.level;
