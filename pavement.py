@@ -344,7 +344,7 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("python manage.py test geonode")
+    sh("python manage.py test geonode --noinput")
 
 
 @task
@@ -378,7 +378,7 @@ def test_integration(options):
 
     success = False
     try:
-        sh("python manage.py test tests.integration")
+        sh("python manage.py test tests.integration --noinput")
     except BuildFailure, e:
         print 'Tests failed! %s' % str(e)
     else:
