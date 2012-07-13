@@ -378,7 +378,7 @@ def test_integration(options):
 
     success = False
     try:
-        sh("python manage.py test tests.integration")
+        sh("python manage.py test tests.integration --noinput")
     except BuildFailure, e:
         print 'Tests failed! %s' % str(e)
     else:
