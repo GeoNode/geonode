@@ -194,10 +194,10 @@ GeoServer used for http://geonode.capra.opengeo.org/ is::
 
 
 The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
-in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
+in :file:`src/geoserver-geonode-ext/` is configured to provide a GeoServer
 instance at that port with the following commands::
    
-    cd src/geonode-geoserver-ext/
+    cd src/geoserver-geonodeext/
     sh startup.sh
 
 .. note:: 
