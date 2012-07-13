@@ -76,11 +76,12 @@ def get_files(filename, sldfile):
     files = {'base': filename}
 
     base_name, extension = os.path.splitext(filename)
+    special_chars = r'([\[\]\(\)\{\}])'
     required_extensions = dict(
             shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]', prj = '.[pP][rR][jJ]')
     if extension.lower() == '.shp':
         for ext, pattern in required_extensions.iteritems():
-            matches = glob.glob(base_name + pattern)
+            matches = glob.glob(re.sub(special_chars, r'[\g<1>]', base_name) + pattern)
             if len(matches) == 0:
                 msg = ('Expected helper file %s does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
@@ -107,7 +108,7 @@ def get_files(filename, sldfile):
 
         for ext, pattern in required_extensions.iteritems():
             logger.debug('basename + pattern:%s', base_name+pattern)
-            if re.search(base_name + pattern, zipString) is None:
+            if re.search(re.sub(special_chars, r'\\\g<1>', base_name) + pattern, zipString) is None:
                 msg = ('Expected helper file %s does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
                        '%s') % (base_name + "." + ext,
