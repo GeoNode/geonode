@@ -31,7 +31,6 @@ from geonode.maps.forms import MapForm
 from geonode.people.models import Contact
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
-from geonode.csw import CSW
 
 logger = logging.getLogger("geonode.maps.views")
 

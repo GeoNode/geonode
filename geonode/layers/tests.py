@@ -396,7 +396,7 @@ class LayersTest(TestCase):
     def test_search_template(self):
 
         layer = Layer.objects.all()[0]
-        tpl = get_template("csw/transaction_insert.xml")
+        tpl = get_template("catalogue/transaction_insert.xml")
         ctx = Context({
             'layer': layer,
         })
@@ -570,7 +570,7 @@ class LayersTest(TestCase):
             with nested(
                 patch.object(geonode.utils, '_wms', new=MockWMS()),
                 patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.csw.get_record'),
+                patch('geonode.catalogue.get_record'),
             ) as (mock_wms, mock_gs, mock_csw):
                 # Setup
                 mock_gs.get_store.return_value.get_resources.return_value = []

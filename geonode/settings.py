@@ -124,7 +124,7 @@ INSTALLED_APPS = (
     'geonode.people',
     'geonode.proxy',
     'geonode.security',
-    'geonode.csw',
+    'geonode.catalogue',
 )
 
 LOGGING = {
@@ -277,10 +277,10 @@ GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
 GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 
 # CSW settings
-GEONODE_CSW = {
+CATALOGUE = {
     'default': {
         # The underlying CSW implementation
-        'ENGINE': 'geonode.csw.backends.geonetwork',
+        'ENGINE': 'geonode.catalogue.backends.geonetwork',
 
         # enabled formats
         #'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
