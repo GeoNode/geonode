@@ -17,7 +17,7 @@ METADATA_FORMATS = {
 }
 
 
-class BaseCSWBackend(CatalogueServiceWeb):
+class BaseCatalogueBackend(CatalogueServiceWeb):
     def __init__(self, *args, **kwargs):
         #FIXME(Ariel): Hardcoding this one to make test pass.
         # this workaround should go before pulling into dev.
@@ -125,7 +125,7 @@ class BaseCSWBackend(CatalogueServiceWeb):
         return response
 
     def create_from_layer(self, layer):
-        response = self.csw_request(layer, "csw/transaction_insert.xml")
+        response = self.csw_request(layer, "catalogue/transaction_insert.xml")
         # TODO: Parse response, check for error report
 
         if self.type == 'geonetwork':
@@ -147,14 +147,14 @@ class BaseCSWBackend(CatalogueServiceWeb):
         return self.url_for_uuid(layer.uuid, namespaces['gmd']) 
 
     def delete_layer(self, layer):
-        response = self.csw_request(layer, "csw/transaction_delete.xml")
+        response = self.csw_request(layer, "catalogue/transaction_delete.xml")
         # TODO: Parse response, check for error report
 
     def update_layer(self, layer):
-        tmpl = 'csw/transaction_update.xml'
+        tmpl = 'catalogue/transaction_update.xml'
 
         if self.type == 'geonetwork':
-            tmpl = 'csw/transaction_update_gn.xml'
+            tmpl = 'catalogue/transaction_update_gn.xml'
 
         response = self.csw_request(layer, tmpl)
 

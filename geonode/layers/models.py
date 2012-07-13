@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
-from geonode.csw import get_record, create_record, remove_record
+from geonode.catalogue import get_record, create_record, remove_record
 from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 
 from geonode.security.models import PermissionLevelMixin

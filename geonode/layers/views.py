@@ -22,7 +22,7 @@ from django.utils.html import escape
 from django.views.decorators.http import require_POST
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
-from geonode.csw import get_record, search_records
+from geonode.catalogue import get_record, search_records
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
 from geonode.utils import default_map_config

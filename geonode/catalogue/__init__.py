@@ -8,15 +8,15 @@ from django.utils.importlib import import_module
 from contextlib import contextmanager
 
 
-DEFAULT_CSW_ALIAS = 'default'
+DEFAULT_CATALOGUE_ALIAS = 'default'
 
-# GeoNode uses this if the CSW setting is empty (None).
-if not hasattr(settings, 'GEONODE_CSW'):
-    settings.GEONODE_CSW = { DEFAULT_CSW_ALIAS: 'geonode.backends.dummy'}
+# GeoNode uses this if the CATALOGUE setting is empty (None).
+if not hasattr(settings, 'CATALOGUE'):
+    settings.CATALOGUE = { DEFAULT_CSW_ALIAS: 'geonode.backends.dummy'}
 
-# If settings.GEONODE_CSW is defined, we expect it to be properly named
-if DEFAULT_CSW_ALIAS not in settings.GEONODE_CSW:
-    raise ImproperlyConfigured("You must define a '%s' CSW" % DEFAULT_CSW_ALIAS)
+# If settings.CATALOGUE is defined, we expect it to be properly named
+if DEFAULT_CATALOGUE_ALIAS not in settings.CATALOGUE:
+    raise ImproperlyConfigured("You must define a '%s' CATALOGUE" % DEFAULT_CATALOGUE_ALIAS)
 
 
 def load_backend(backend_name):
@@ -46,55 +46,55 @@ def load_backend(backend_name):
             raise
 
 
-def default_csw_backend():
+def default_catalogue_backend():
     """Get the default bakcend
     """
-    msg = "There is no '%s' backend in GEONODE_CSW" % DEFAULT_CSW_ALIAS
-    assert DEFAULT_CSW_ALIAS in settings.GEONODE_CSW, msg
-    return settings.GEONODE_CSW[DEFAULT_CSW_ALIAS]
+    msg = "There is no '%s' backend in CATALOGUE" % DEFAULT_CATALOGUE_ALIAS
+    assert DEFAULT_CATALOGUE_ALIAS in settings.CATALOGUE, msg
+    return settings.CATALOGUE[DEFAULT_CATALOGUE_ALIAS]
 
 
 def get_catalogue(backend=None):
     """Returns a catalogue object.
     """
-    default_backend_config = backend or default_csw_backend()
+    default_backend_config = backend or default_catalogue_backend()
     backend_name = default_backend_config['ENGINE']
     catalog_module = load_backend(backend_name)
-    assert hasattr(catalog_module, 'CSWBackend'), '%s must define a CSWBackend class'
-    catalog_class = catalog_module.CSWBackend
+    assert hasattr(catalog_module, 'CatalogueBackend'), '%s must define a CatalogueBackend class'
+    catalog_class = catalog_module.CatalogueBackend
     cat = catalog_class(**default_backend_config)
     return cat
 
 
 def get_record(uuid):
-    with CSW() as csw_cat:
-        rec = csw_cat.get_by_uuid(uuid)
+    with Catalogue() as catalogue:
+        rec = catalogue.get_by_uuid(uuid)
         if rec is not None:
             rec.links = {}
-            rec.links['metadata'] = csw_cat.urls_for_uuid(uuid)
-            rec.links['download'] = csw_cat.extract_links(rec)
+            rec.links['metadata'] = catalogue.urls_for_uuid(uuid)
+            rec.links['download'] = catalogue.extract_links(rec)
     return rec
 
 def search_records(keywords, start, limit, bbox):
-  with CSW() as csw_cat: 
-        bbox = csw_cat.normalize_bbox(kw['bbox'])
-        csw_cat.search(keywords, start+1, limit, bbox)
+  with Catalogue() as catalogue: 
+        bbox = catalogue.normalize_bbox(kw['bbox'])
+        catalogue.search(keywords, start+1, limit, bbox)
 
         # build results into JSON for API
-        results = [csw_cat.metadatarecord2dict(doc) for v, doc in csw_cat.records.iteritems()]
+        results = [catalogue.metadatarecord2dict(doc) for v, doc in catalogue.records.iteritems()]
 
         result = {
                   'rows': results,
-                  'total': csw_cat.results['matches'],
-                  'next_page': csw_cat.results.get('nextrecord', 0)
+                  'total': catalogue.results['matches'],
+                  'next_page': catalogue.results.get('nextrecord', 0)
                   }
 
         return result
 
 
 def remove_record(uuid):
-    with CSW() as csw_cat:
-       catalogue_record = csw_cat.get_by_uuid(uuid)
+    with Catalogue() as catalogue:
+       catalogue_record = catalogue.get_by_uuid(uuid)
        if catalogue_record is None:
            return
 
@@ -102,28 +102,28 @@ def remove_record(uuid):
            # this is a bit hacky, delete_layer expects an instance of the layer
            # model but it just passes it to a Django template so a dict works
            # too.
-           csw_cat.delete_layer({ "uuid": uuid })
+           catalogue.delete_layer({ "uuid": uuid })
        except:
            logger.exception('Couldn\'t delete Catalogue record '
                                 'during cleanup()')
 
 def create_record(item):
-    with CSW() as csw_cat:
-        record = csw_cat.get_by_uuid(item.uuid)
+    with Catalogue() as catalogue:
+        record = catalogue.get_by_uuid(item.uuid)
         if record is None:
-            md_link = csw_cat.create_from_layer(item)
+            md_link = catalogue.create_from_layer(item)
             self.metadata_links = [("text/xml", "TC211", md_link)]
         else:
-            csw_cat.update_layer(item)
+            catalogue.update_layer(item)
 
-class CSW(object):
+class Catalogue(object):
 
     def __init__(self, *args, **kwargs):
-        self.csw_cat = get_catalogue()
+        self.catalogue = get_catalogue()
 
     def __enter__(self, *args, **kwargs):
-        self.csw_cat.login()
-        return self.csw_cat
+        self.catalogue.login()
+        return self.catalogue
 
     def __exit__(self, *args, **kwargs):
-        self.csw_cat.logout()
+        self.catalogue.logout()
