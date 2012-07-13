@@ -21,5 +21,9 @@
     </ogc:PropertyIsEqualTo> 
    </ogc:Filter> 
   </csw:Constraint> 
+<<<<<<< HEAD
+=======
+
+>>>>>>> gncore/master
  </csw:Update> 
 </csw:Transaction>

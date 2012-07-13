@@ -11,54 +11,54 @@
 
 {% block main %}
 <div class="twocol">
-  {% if errors %}
-    <div id="errors">
-      {% for error in errors %}
-        <div>{{ error }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
+{% if errors %}
+<div id="errors">
+    {% for error in errors %}
+    <div>{{ error }}</div>
+    {% endfor %}
+</div>
+{% endif %}
 
-    <h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
+<h3>{%trans "Update Layer"  %} "{{layer.name}}"</h3>
 <p>{% trans "This form allows you to update the data for this layer."  %}</p>
 <p>{% blocktrans %}
-If the new dataset omits attributes that were included in the previous version,
-or changes their types, then existing styles for the layer may not work.
-Please check your maps if the new data includes such changes.  Additionally,
-updated data must be the same format as the data already in place, e.g.
-{% endblocktrans %}
-{% if is_featuretype %} a Shapefile. {% else %} a GeoTIFF.  {% endif %}
+    If the new dataset omits attributes that were included in the previous version,
+    or changes their types, then existing styles for the layer may not work.
+    Please check your maps if the new data includes such changes.  Additionally,
+    updated data must be the same format as the data already in place, e.g.
+    {% endblocktrans %}
+    {% if is_featuretype %} a Shapefile. {% else %} a GeoTIFF.  {% endif %}
 </p>
 <p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
 
-  <div id="upload_form">
-  </div>
+<div id="upload_form">
+</div>
 
 <script type="text/javascript">
 Ext.onReady(function(){
-{% autoescape off %}
-  var form_target = "{% url layer_replace layer.typename %}";
-  var layer_name = "{{ layer.name|escapejs }}";
+    {% autoescape off %}
+  var form_target = "{% url data_replace layer.typename %}";
+    var layer_name = "{{ layer.name|escapejs }}";
 
-  var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
+    var is_featuretype = {% if is_featuretype %}true{% else %}false{% endif %};
 
     var layer_title = new Ext.form.TextField({
-      id: 'layer_title',
-      emptyText: layer_title,
-      fieldLabel: gettext('Title'),
-      name: 'layer_title',
-      allowBlank: true,
-      disabled: true
+        id: 'layer_title',
+        emptyText: layer_title,
+        fieldLabel: gettext('Title'),
+        name: 'layer_title',
+        allowBlank: true,
+        disabled: true
     });
 
-  var form_fields = [];
+    var form_fields = [];
 
-  var listeners = {
-      "fileselected": function(cmp, value) {
-          // remove the path from the filename - avoids C:/fakepath etc.
-          cmp.setValue(value.split(/[/\\]/).pop());
-      }
-  };
+    var listeners = {
+        "fileselected": function(cmp, value) {
+            // remove the path from the filename - avoids C:/fakepath etc.
+            cmp.setValue(value.split(/[/\\]/).pop());
+        }
+    };
 
 
     var layer_name = new Ext.form.Hidden({
@@ -127,51 +127,51 @@ Ext.onReady(function(){
     form_fields = [layer_title, layer_name, base_file, dbf_file, shx_file, prj_file, encoding, sld_file];
 
 
-  var fp = new Ext.FormPanel({
-    renderTo: 'upload_form',
-    fileUpload: true,
-    width: 500,
-    frame: true,
-    title: gettext('Update Layer Data'),
-    autoHeight: true,
-    bodyStyle: 'padding: 10px 10px 0 10px;',
-    labelWidth: 50,
-    defaults: {
-        anchor: '95%',
-        msgTarget: 'side'
-    },
-    items: form_fields,
-    buttons: [{
-        text: gettext('Upload'),
-        handler: function(){
-            if(fp.getForm().isValid()) {
-              fp.getForm().submit({
-                  url: form_target,
-                  waitMsg: gettext('Uploading your data...'),
-                  success: function(fp, o) {
-                      document.location = o.result.redirect_to;
-                  },
-                  failure: function(fp, o) {
-                      error_message = '<ul>';
-                      for (var i = 0; i < o.result.errors.length; i++) {
-                          error_message += '<li>' + o.result.errors[i] + '</li>'
-                      }
-                      error_message += '</ul>'
+    var fp = new Ext.FormPanel({
+        renderTo: 'upload_form',
+        fileUpload: true,
+        width: 500,
+        frame: true,
+        title: gettext('Update Layer Data'),
+        autoHeight: true,
+        bodyStyle: 'padding: 10px 10px 0 10px;',
+        labelWidth: 50,
+        defaults: {
+            anchor: '95%',
+            msgTarget: 'side'
+        },
+        items: form_fields,
+        buttons: [{
+            text: gettext('Upload'),
+            handler: function(){
+                if(fp.getForm().isValid()) {
+                    fp.getForm().submit({
+                        url: form_target,
+                        waitMsg: gettext('Uploading your data...'),
+                        success: function(fp, o) {
+                            document.location = o.result.redirect_to;
+                        },
+                        failure: function(fp, o) {
+                            error_message = '<ul>';
+                            for (var i = 0; i < o.result.errors.length; i++) {
+                                error_message += '<li>' + o.result.errors[i] + '</li>'
+                            }
+                            error_message += '</ul>'
 
-                      Ext.Msg.show({
-                          title: gettext("Error"),
-                          msg: error_message,
-                          minWidth: 200,
-                          modal: true,
-                          icon: Ext.Msg.ERROR,
-                          buttons: Ext.Msg.OK
-                      });
-                  }
+                            Ext.Msg.show({
+                                title: gettext("Error"),
+                                msg: error_message,
+                                minWidth: 200,
+                                modal: true,
+                                icon: Ext.Msg.ERROR,
+                                buttons: Ext.Msg.OK
+                            });
+                        }
 
-              });
+                    });
+                }
             }
-          }
-      }]
+        }]
     });
 
 
@@ -209,7 +209,7 @@ Ext.onReady(function(){
         encoding.show();
     };
 
-    
+
     var check_shapefile = function() {
         var main_filename = base_file.getValue();
         if ((/\.shp$/i).test(base_file.getValue())) {
@@ -236,14 +236,14 @@ Ext.onReady(function(){
 
 
 
-var mapCrumb = "";
-if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
-	{
-		mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
-	}
+    var mapCrumb = "";
+    if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
+    {
+        mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
+    }
 
-		var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} </a><span>&nbsp;/&nbsp;Update</span>");
-		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+    var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} </a><span>&nbsp;/&nbsp;Update</span>");
+    Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 });
 {% endautoescape %}
 </script>
@@ -255,27 +255,27 @@ if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
 <div class="threecol">
 
 
-<h3>{% trans "This action affects the following maps:"  %}</h3>
-<p>
-<ul>
-	{% for map in layer.maps %}
-	<li>{{map.title}}</li>
-    {% empty %}
-    <li> {% trans "No maps are using this layer." %} </li>
-	{% endfor %}
-</ul>
-</p>
-<p></p>
+    <h3>{% trans "This action affects the following maps:"  %}</h3>
+    <p>
+    <ul>
+        {% for map in layer.maps %}
+        <li>{{map.title}}</li>
+        {% empty %}
+        <li> {% trans "No maps are using this layer." %} </li>
+        {% endfor %}
+    </ul>
+    </p>
+    <p></p>
 
-<h3>{% trans "Supported Formats"  %}</h3>
+    <h3>{% trans "Supported Formats"  %}</h3>
 
-<ul>
-  {% if is_featuretype %}
-  <li>Shapefile</li>
-  <li>Zipped Shapefile</li>
-  {% else %}
-  <li>GeoTIFF</li>
-  {% endif %}
-<ul>
+    <ul>
+        {% if is_featuretype %}
+        <li>Shapefile</li>
+        <li>Zipped Shapefile</li>
+        {% else %}
+        <li>GeoTIFF</li>
+        {% endif %}
+        <ul>
 </div>
 {% endblock %}

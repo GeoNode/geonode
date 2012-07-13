@@ -4,8 +4,6 @@
  */
 package org.geonode.security;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -13,6 +11,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.DataAccessManager;
+import org.springframework.security.Authentication;
+import org.springframework.security.GrantedAuthority;
 
 /**
  * An access manager that uses the special authentication tokens setup by the
@@ -52,6 +52,19 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
             return true;
         }
 
+        /**
+         * A null user should only come from an internal GeoServer process (such as a GWC seed
+         * thread).
+         * <p>
+         * Care must be taken in setting up the security filter chain so that no request can get
+         * here with a null user. At least an anonymous authentication token must be set.
+         * </p>
+         */
+        if (user == null) {
+            //throw new NullPointerException("user is null");
+            return true;
+        }
+
         if (user != null && user.getAuthorities() != null) {
             for (GrantedAuthority ga : user.getAuthorities()) {
                 if (ga instanceof LayersGrantedAuthority) {
@@ -84,7 +97,6 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
 
     /**
      * Used for testing purposes only
-     *
      * @param authenticationEnabled
      */
     public void setAuthenticationEnabled(boolean authenticationEnabled) {

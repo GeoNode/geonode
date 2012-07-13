@@ -1,4 +1,5 @@
 {% extends "registration/base.html" %}
+<<<<<<< HEAD
 
 {% load i18n %}
 {% block title %} WorldMap Login - {{ block.super }} {% endblock %}
@@ -9,22 +10,38 @@
 {% block main %}
 <div class="twocol">
   <h2>WorldMap Login</h2>
+=======
+{% block title %} GeoNode Login - {{ block.super }} {% endblock %}
+{% block main %}
+<div class="twocol">
+  <h2>GeoNode Login</h2>
+>>>>>>> gncore/master
   {% if form.errors %}
   <p>Your username and password didn't match. Please try again.</p>
   {% endif %}
 
+<<<<<<< HEAD
 
   <p>Don't have an account yet? <a href="{% url registration_register %}">{% trans "Register" %}</a></p>
   <form method="post" action="{% url django.contrib.auth.views.login %}">
+=======
+  <form method="post" action="{% url auth_login %}">
+>>>>>>> gncore/master
     {% csrf_token %}
 	<ul class="form">
 		  {{ form.as_ul }}
 		<li><input type="hidden" name="next" value="{{next}}" /></li>
 	    <li><input type="submit" value="Login"/></li>
+<<<<<<< HEAD
         <li><a href="{% url django.contrib.auth.views.password_reset %}">{% trans "Forgot password" %}? </a></li>
         <li></li><a href="{% url geonode.registration.views.forgotUsername %}">{% trans "Forgot username" %}? </a></li>
 	</ul>
   </form>
 
+=======
+        <li><a href="{% url auth_password_reset %}">Forgot password?</a></li>
+	</ul>
+  </form>
+>>>>>>> gncore/master
 </div>
 {% endblock %}

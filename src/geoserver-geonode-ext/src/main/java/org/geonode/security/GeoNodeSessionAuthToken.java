@@ -23,6 +23,7 @@ public class GeoNodeSessionAuthToken extends AbstractAuthenticationToken {
     }
 
     /**
+     *
      * @see org.springframework.security.Authentication#getCredentials()
      */
     public Object getCredentials() {

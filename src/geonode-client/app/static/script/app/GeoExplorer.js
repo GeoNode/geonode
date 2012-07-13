@@ -55,6 +55,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     localGeoServerBaseUrl: "",
 
+    /**
+     * api: config[localCSWBaseUrl]
+     * ``String`` url of the local CS-W instance
+     */
+    localCSWBaseUrl: "",
+
+    /**
+     * api: config[useMapOverlay]
+     * ``Boolean`` Should we add a scale overlay to the map? Set to false
+     * to not add a scale overlay.
+     */
+    useMapOverlay: null,
+
     siteUrl: "",
 
     /**
@@ -68,12 +81,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * the :class:`GeoExt.MapPanel` instance for the main viewport
      */
     mapPanel: null,
-
-    /**
-     * Property: legendPanel
-     * {GeoExt.LegendPanel} the legend for the main viewport's map
-     */
-    legendPanel: null,
 
     /**
      * Property: toolbar
@@ -99,21 +106,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *     we can insert responses from multiple requests.
      */
     popupCache: null,
-
-    /** private: property[propDlgCache]
-     *  ``Object``
-     */
-    propDlgCache: null,
-
-    /** private: property[stylesDlgCache]
-     *  ``Object``
-     */
-    stylesDlgCache: null,
-
-    /** private: property[busyMask]
-     *  ``Ext.LoadMask``
-     */
-    busyMask: null,
 
     /** private: property[urlPortRegEx]
      *  ``RegExp``
@@ -276,7 +268,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             localUrl), "/geoserver/");
                         return;
                     }
-                    }
+                }
                 // use the proxy for all non-local requests
                 if(this.proxy && options.url.indexOf(this.proxy) !== 0 &&
                     options.url.indexOf(window.location.protocol) === 0) {
@@ -293,7 +285,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 if (options.failure) {
                     // exceptions are handled elsewhere
                 } else {
-                    this.busyMask && this.busyMask.hide();
+                    this.mapPlugins[0].busyMask && this.mapPlugins[0].busyMask.hide();
                     var url = options.url;
                     if (response.status == 401 && url.indexOf("http" != 0) &&
                         url.indexOf(this.proxy) === -1) {
@@ -346,26 +338,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // don't draw window shadows - allows us to use autoHeight: true
         // without using syncShadow on the window
         Ext.Window.prototype.shadow = false;
-
-        // set SLD defaults for symbolizer
-        OpenLayers.Renderer.defaultSymbolizer = {
-            fillColor: "#808080",
-            fillOpacity: 1,
-            strokeColor: "#000000",
-            strokeOpacity: 1,
-            strokeWidth: 1,
-            strokeDashstyle: "solid",
-            pointRadius: 3,
-            graphicName: "square",
-            fontColor: "#000000",
-            fontSize: 10,
-            haloColor: "#FFFFFF",
-            haloOpacity: 1,
-            haloRadius: 1
-        };
-
-        // set maxGetUrlLength to avoid non-compliant GET urls for WMS GetMap
-        OpenLayers.Tile.Image.prototype.maxGetUrlLength = 2048;
 
         if (!config.map) {
             config.map = {};
@@ -528,6 +500,186 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         });
+    },
+
+    loadConfig: function(config) {
+        config.sources['csw'] = {
+            ptype: "gxp_cataloguesource",
+            url: config.localCSWBaseUrl,
+            proxyOptions: {
+                listeners: {
+                    "beforeload": function(proxy, params) {
+                        params.headers = {
+                            'X-CSRFToken': Ext.util.Cookies.get('csrftoken')
+                        };
+                    }
+                }
+            }
+        };
+        config.tools = (config.tools || []).concat(
+            {
+                ptype: "gxp_zoom",
+                actionTarget: {target: "paneltbar", index: 4}
+            }, {
+                ptype: "gxp_navigationhistory",
+                actionTarget: {target: "paneltbar", index: 6}
+            }, {
+                ptype: "gxp_zoomtoextent",
+                actionTarget: {target: "paneltbar", index: 8}
+            },
+            {
+                ptype: "gxp_featuremanager",
+                id: "featuremanager",
+                paging: false,
+                tooltip: this.infoButtonText,
+                toggleGroup: 'featureGroup'
+            },
+            {
+                ptype: "gxp_featureeditor",
+                id: "gn_layer_editor",
+                featureManager: "featuremanager",
+                readOnly: false,
+                autoLoadFeature: true,
+                actionTarget: {target: "main.tbar", index: 4},
+                defaultAction: 1,
+                outputConfig: {panIn: false, height: 220},
+                tooltip: this.infoButtonText,
+                iconClsAdd: null,
+                iconClsEdit: null,
+                createFeatureActionText: '<span class="x-btn-text" >' + "Create Feature" + '</span>',
+                editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
+                toggleGroup: 'featureGroup'
+            }
+        );
+        GeoExplorer.superclass.loadConfig.apply(this, arguments);
+
+        var oldLayerChange = gxp.plugins.FeatureEditor.prototype.onLayerChange;
+        var localUrl = this.config.localGeoServerBaseUrl;
+        gxp.plugins.FeatureEditor.prototype.onLayerChange = function (mgr, layer, schema) {
+            oldLayerChange.apply(this, [mgr,layer,schema]);
+
+            var buttons = this.actions;
+            if (layer == null) {
+                buttons[0].disable();
+                buttons[1].disable();
+            }
+            else if (layer.getLayer().params  && layer.data.layer.url.indexOf(localUrl) > -1 && !buttons[0].disabled) {
+                Ext.Ajax.request({
+                    url: "/data/" + layer.data.layer.params.LAYERS + "/ajax_layer_edit_check/",
+                    method: "POST",
+                    params: {layername:layer.data.layer.params.LAYERS},
+                    success: function(result, request) {
+                        if (result.responseText != "True") {
+                            for (i=0;i< buttons.length;i++) {
+                                buttons[i].disable();
+                            }
+                        } else {
+                            layer.data.layer.displayOutsideMaxExtent = true;
+                            for (i=0;i< buttons.length;i++) {
+                                buttons[i].enable();
+                                buttons[i].items[0].toggle(false);
+                                Ext.getCmp("worldmap_query_tool").toggle(true);
+                            }
+                        }
+                    },
+                    failure: function (result, request) {
+                        buttons[0].disable();
+                        buttons[1].disable();
+                    }
+                });
+            } else {
+                buttons[0].disable();
+                buttons[1].disable();
+            }
+        }
+
+
+        gxp.plugins.FeatureManager.prototype.redrawMatchingLayers = function (record) {
+            var name = record.get("name");
+            var source = record.get("source");
+            var updated = false;
+            this.target.mapPanel.layers.each(function (candidate) {
+                if (candidate.get("source") === source && candidate.get("name") === name) {
+                    var layer = candidate.getLayer();
+                    layer.redraw(true);
+                    if (!updated) {
+                        Ext.Ajax.request({
+                            url:"/data/" + layer.params.LAYERS + "/ajax_layer_update_bounds/",
+                            method:"POST",
+                            params:{layername:layer.params.LAYERS},
+                            success:function (result, request) {
+                                if (result.responseText != "True") {
+                                } else {
+                                }
+                            },
+                            failure:function (result, request) {
+                            }
+                        });
+                    }
+                    updated = true;
+                }
+            });
+        }
+
+        var oldInitComponent = gxp.plugins.FeatureEditorGrid.prototype.initComponent;
+        gxp.plugins.FeatureEditorGrid.prototype.initComponent = function(){
+            oldInitComponent.apply(this);
+            if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined) {
+                this.customEditors["Description"].addListener("startedit",
+                    function(el, value) {
+                        var htmlEditWindow = new Ext.Window({
+                                title: 'HTML Editor',
+                                renderTo: Ext.getBody(),
+                                width: 600,
+                                height: 300,
+                                frame: true,
+                                layout: 'fit',
+                                closeAction: 'destroy',
+                                items: [{
+                                    xtype: "panel",
+                                    layout: "fit",
+                                    style: {height:190},
+                                    items: [{
+                                        xtype: "textarea",
+                                        id: "html_textarea",
+                                        value: this.getValue(),
+                                        style: {height:190}
+                                    }]
+                                }],
+                                bbar: [
+                                    "->",
+                                    //saveAsButton,
+                                    new Ext.Button({
+                                        text: "Save",
+                                        cls:'x-btn-text',
+                                        handler: function() {
+                                            this.editing = true;
+                                            this.setValue(nicEditors.findEditor('html_textarea').getContent());
+                                            this.completeEdit();
+                                            htmlEditWindow.destroy();
+                                        },
+                                        scope: this
+                                    }),
+                                    new Ext.Button({
+                                        text: "Cancel",
+                                        cls:'x-btn-text',
+                                        handler: function() {
+                                            htmlEditWindow.destroy();
+                                        },
+                                        scope: this
+                                    })
+                                ]
+                            }
+                        );
+
+                        htmlEditWindow.show();
+                        var myNicEditor = new nicEditor({fullPanel : true,  maxHeight: 190, iconsPath: nicEditIconsPath}).panelInstance('html_textarea')
+                        return true;
+                    }
+                );
+            }
+        }
+
     },
 
     showLoginWindow: function(options) {
@@ -953,7 +1105,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                                 }
                                             });
                                         },
-                                    scope: this
+                                        scope: this
                                     },
                                     scope: this
                                 }
@@ -975,7 +1127,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     if (isLocal) {
                         prop.items.get(0).items.get(0).add({html: "<a target='_blank' href='/data/" + layer.params.LAYERS + "'>" + this.shareLayerText + "</a>", xtype: "panel"});
                     }
-                            }
+                }
                 prop.show();
             }
         };
@@ -1253,7 +1405,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ascending: false,
             map: this.mapPanel.map,
             filter: function(record) {
-               return record.data.group == undefined || (record.data.group != "Overlays" && !(record.data.layer instanceof OpenLayers.Layer.Vector));
+                return record.data.group == undefined || (record.data.group != "Overlays" && !(record.data.layer instanceof OpenLayers.Layer.Vector));
             },
             defaults: {cls: 'legend-item'}
         });
@@ -1565,162 +1717,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
     },
 
-    loadConfig: function(config) {
 
-        var oldLayerChange = gxp.plugins.FeatureEditor.prototype.onLayerChange;
-        var localUrl = this.config.localGeoServerBaseUrl;
-        gxp.plugins.FeatureEditor.prototype.onLayerChange = function (mgr, layer, schema) {
-            oldLayerChange.apply(this, [mgr,layer,schema]);
-
-            var buttons = this.actions;
-            if (layer == null) {
-                buttons[0].disable();
-                buttons[1].disable();
-            }
-            else if (layer.getLayer().params  && layer.data.layer.url.indexOf(localUrl) > -1 && !buttons[0].disabled) {
-                Ext.Ajax.request({
-                    url: "/data/" + layer.data.layer.params.LAYERS + "/ajax_layer_edit_check/",
-                    method: "POST",
-                    params: {layername:layer.data.layer.params.LAYERS},
-                    success: function(result, request) {
-                        if (result.responseText != "True") {
-                            for (i=0;i< buttons.length;i++) {
-                                buttons[i].disable();
-                            }
-                        } else {
-                            layer.data.layer.displayOutsideMaxExtent = true;
-                            for (i=0;i< buttons.length;i++) {
-                                buttons[i].enable();
-                                buttons[i].items[0].toggle(false);
-                                Ext.getCmp("worldmap_query_tool").toggle(true);
-                            }
-                        }
-                    },
-                    failure: function (result, request) {
-                        buttons[0].disable();
-                        buttons[1].disable();
-                    }
-                });
-            } else {
-                buttons[0].disable();
-                buttons[1].disable();
-            }
-        }
-
-
-        gxp.plugins.FeatureManager.prototype.redrawMatchingLayers = function (record) {
-            var name = record.get("name");
-            var source = record.get("source");
-            var updated = false;
-            this.target.mapPanel.layers.each(function (candidate) {
-                if (candidate.get("source") === source && candidate.get("name") === name) {
-                    var layer = candidate.getLayer();
-                    layer.redraw(true);
-                    if (!updated) {
-                        Ext.Ajax.request({
-                            url:"/data/" + layer.params.LAYERS + "/ajax_layer_update_bounds/",
-                            method:"POST",
-                            params:{layername:layer.params.LAYERS},
-                            success:function (result, request) {
-                                if (result.responseText != "True") {
-                                } else {
-                                }
-                            },
-                            failure:function (result, request) {
-                            }
-                        });
-                    }
-                    updated = true;
-                }
-            });
-        }
-
-        var oldInitComponent = gxp.plugins.FeatureEditorGrid.prototype.initComponent;
-        gxp.plugins.FeatureEditorGrid.prototype.initComponent = function(){
-            oldInitComponent.apply(this);
-            if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined) {
-                this.customEditors["Description"].addListener("startedit",
-                    function(el, value) {
-                        var htmlEditWindow = new Ext.Window({
-                                title: 'HTML Editor',
-                                renderTo: Ext.getBody(),
-                                width: 600,
-                                height: 300,
-                                frame: true,
-                                layout: 'fit',
-                                closeAction: 'destroy',
-                                items: [{
-                                    xtype: "panel",
-                                    layout: "fit",
-                                    style: {height:190},
-                                    items: [{
-                                        xtype: "textarea",
-                                        id: "html_textarea",
-                                        value: this.getValue(),
-                                        style: {height:190}
-                                    }]
-                                }],
-                                bbar: [
-                                    "->",
-                                    //saveAsButton,
-                                    new Ext.Button({
-                                        text: "Save",
-                                        cls:'x-btn-text',
-                                        handler: function() {
-                                            this.editing = true;
-                                            this.setValue(nicEditors.findEditor('html_textarea').getContent());
-                                            this.completeEdit();
-                                            htmlEditWindow.destroy();
-                                        },
-                                        scope: this
-                                    }),
-                                    new Ext.Button({
-                                        text: "Cancel",
-                                        cls:'x-btn-text',
-                                        handler: function() {
-                                            htmlEditWindow.destroy();
-                                        },
-                                        scope: this
-                                    })
-                                ]
-                            }
-                        );
-
-                        htmlEditWindow.show();
-                        var myNicEditor = new nicEditor({fullPanel : true,  maxHeight: 190, iconsPath: nicEditIconsPath}).panelInstance('html_textarea')
-                        return true;
-                    }
-                );
-            }
-        }
-
-        config.tools = (config.tools || []).concat(
-            {
-                ptype: "gxp_featuremanager",
-                id: "featuremanager",
-                paging: false,
-                tooltip: this.infoButtonText,
-                toggleGroup: 'featureGroup'
-            },
-            {
-                ptype: "gxp_featureeditor",
-                id: "gn_layer_editor",
-                featureManager: "featuremanager",
-                readOnly: false,
-                autoLoadFeature: true,
-                actionTarget: {target: "main.tbar", index: 4},
-                defaultAction: 1,
-                outputConfig: {panIn: false, height: 220},
-                tooltip: this.infoButtonText,
-                iconClsAdd: null,
-                iconClsEdit: null,
-                createFeatureActionText: '<span class="x-btn-text" >' + "Create Feature" + '</span>',
-                editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
-                toggleGroup: 'featureGroup'
-            }
-        );
-        GeoExplorer.superclass.loadConfig.apply(this, arguments);
-    },
 
 
     /**
@@ -1838,9 +1835,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
         var addFeedButton = new Ext.Button({
-           text: this.feedAdditionLabel,
-           iconCls: 'icon-add',
-           cls:  'x-btn-link-medium x-btn-text',
+            text: this.feedAdditionLabel,
+            iconCls: 'icon-add',
+            cls:  'x-btn-link-medium x-btn-text',
             handler: function() {
                 this.showFeedDialog();
                 this.searchWindow.hide();

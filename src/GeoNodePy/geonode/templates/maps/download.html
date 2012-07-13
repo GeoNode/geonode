@@ -11,8 +11,8 @@
         var checkStatus, progress, pb, process;
 
         function update() { 
-            Ext.Ajax.request({ 
-                url : "{% url geonode.maps.views.check_download %}",
+            Ext.Ajax.request({
+                url : "{% url maps_download_check %}",
                 method: "GET",              
                 success: function(result) { 
                     process = Ext.util.JSON.decode(result.responseText);
@@ -44,8 +44,8 @@
                         url : "{{site}}geoserver/rest/process/batchDownload/kill/" + process["process"]["id"],
                         method: "GET",
                         success: function(result) { 
-                            alert("You sucessfuly canceled the download"); 
-                            location.href = "{{site}}maps/edit/{{map.id}}"; 
+                            alert("You sucessfuly canceled the download");
+                            location.href = "{{site}}maps/edit/{{map.id}}";
                             clearInterval(checkStatus);
                         },
                         failure: function(result) { 
@@ -78,18 +78,36 @@
       </li>
       {% endfor %} 
     </ul>     
+<<<<<<< HEAD
+=======
+    {% if locked_layers %}
+>>>>>>> gncore/master
     {% blocktrans %}
     Additionally, the map contains these layers which will not be downloaded
     due to security restrictions:
     {% endblocktrans %}
+<<<<<<< HEAD
+=======
+    {% endif %}
+>>>>>>> gncore/master
     <ul>
       {% for layer in locked_layers %} 
       <li>{{ layer.name }}</li>
       {% endfor %} 
+<<<<<<< HEAD
     </ul>{% blocktrans %}
     Finally, the map contains these layers which will not be downloaded
     because they are not available directly from this GeoNode:
     {% endblocktrans %}
+=======
+    </ul>
+    {% if remote_layers %}
+    {% blocktrans %}
+    Finally, the map contains these layers which will not be downloaded
+    because they are not available directly from this GeoNode:
+    {% endblocktrans %}
+    {% endif %}
+>>>>>>> gncore/master
     <ul>
       {% for layer in remote_layers %} 
       <li>{{ layer }}</li>

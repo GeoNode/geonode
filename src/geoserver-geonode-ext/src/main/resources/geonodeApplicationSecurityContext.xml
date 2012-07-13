@@ -11,10 +11,10 @@
   <!-- login page, but get redirected to the origally requested page once login is succefull     -->
   <!-- ========================================================================================= -->
 
-  <!--
+  <!-- 
     This filter delegates a different chain of sub-filters for administration
     console pages and OWS services. Basically, we set up a chain involving basic/anonymous
-    authentication for OWS services, and a form based authentication for  the web console,
+    authentication for OWS services, and a form based authentication for  the web console, 
     so that accessing the console by means of simple calls is still easy.
 
     An attempt at form+basic has been done, that would have eased writing code accessing
@@ -37,7 +37,7 @@
         /wfsv/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
         /wms/**= httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
         /wcs/**= httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,filterInvocationInterceptor
-
+        
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter,gnRestFilterInvocationInterceptor
         #/rest/**=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter
         /rest/process/batchdownload=httpSessionContextIntegrationFilterWithASCFalse,genodeCookieFilter,gnBasicProcessingFilter,gnAnonymousProcessingFilter,geonodeOwsExceptionTranslationFilter
@@ -192,10 +192,16 @@
   <bean id="genodeCookieFilter" class="org.geonode.security.GeoNodeCookieProcessingFilter">
     <constructor-arg index="0" ref="geonodeSecurityClient"/>
   </bean>
-
+  
   <!-- The custom data access manager using the GeoNode granted authorities -->
   <bean id="geonodeAccessManager" class="org.geonode.security.GeoNodeDataAccessManager"/>
-
+  
+  
+  
+  
+  
+  
+  
     <!-- The dao used to deal with layer level security -->
   <bean id="accessRulesDao" class="org.geoserver.security.impl.DataAccessRuleDAO">
   	<constructor-arg ref="dataDirectory"/>
@@ -212,7 +218,6 @@
   <bean id="restRulesDao" class="org.geoserver.security.impl.RESTAccessRuleDAO">
     <constructor-arg ref="dataDirectory"/>
   </bean>
-
   
   <!--
     This callback will be used before calling operations on OWS stuff, and making it secure
@@ -222,7 +227,6 @@
     <constructor-arg ref="serviceRulesDao"/>
   </bean>
 
-  
   <!--
     This filter integrates the authentication information in the http sessions, so it's
     meant to be used only for the administration console, but not for the services.
@@ -236,7 +240,6 @@
     class="org.springframework.security.context.HttpSessionContextIntegrationFilter">
     <property name="allowSessionCreation" value="true" />
   </bean>
-
 
   <!--
     Same as the one above, but this one uses a session if it's already there, otherwise
@@ -265,11 +268,10 @@
       </list>
     </constructor-arg>
   </bean>
-
   
   <!-- 
     This entry point gets called when basic authentication is needed 
-    (or a previous attempt fail) to commence authentication 
+    (or a previous attempt fail) to commence authentication
     with the basic processing filter
   -->
   <bean id="basicProcessingFilterEntryPoint"
@@ -280,7 +282,7 @@
   </bean>
 
   <!-- 
-    The actual authorization checks at the filter level. 
+    The actual authorization checks at the filter level.
     The voters make sure the user is both authenticated (the
     anonymous filter ensures there is at least an anonymous one)
     and have the roles required.
@@ -320,7 +322,6 @@
       <constructor-arg ref="restRulesDao"/>
   </bean>
 
-
   <!--
     During the request execution security exceptions may be thrown, either during the
     authentication or authorization phase. This filter redirects authentication failures
@@ -343,12 +344,10 @@
     </property>
   </bean>
 
-
   <!--
     Double check, this may not be necessary
   -->
   <bean id="securityContextHolderAwareRequestFilter"
     class="org.springframework.security.wrapper.SecurityContextHolderAwareRequestFilter" />
-
 
 </beans>

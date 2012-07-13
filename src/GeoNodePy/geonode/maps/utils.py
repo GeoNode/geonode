@@ -4,40 +4,31 @@
 # Standard Modules
 import logging
 from random import choice
-import re
+# Django functionality
 from django.db import transaction
-from django.utils.html import escape
 from django.utils.translation import ugettext as _
+from django.utils.html import escape
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
+from django.conf import settings
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
 import geoserver
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
+import re
 import uuid
-import sys
 import os
-import datetime
-import traceback
-import inspect
-import string
-import urllib2
+import glob
 from xml.etree.ElementTree import XML
 from zipfile import ZipFile
-import glob
-from itertools import cycle, izip
 
-# Django functionality
-from django.db import transaction
-from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
-from django.conf import settings
 
 # Geonode functionality
 from geonode.maps.models import Map, Layer, MapLayer, LayerAttribute
 from geonode.maps.models import Contact, ContactRole, Role, get_csw
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
+
 
 # Geoserver functionality
 import geoserver
@@ -60,7 +51,7 @@ def layer_type(filename):
        returns a gsconfig resource_type string
        that can be either 'featureType' or 'coverage'
     """
-    base_name, extension = os.path.splitext(filename)
+    extension = os.path.splitext(filename)[1]
     if extension.lower() in ['.shp','.zip']:
         return FeatureType.resource_type
     elif extension.lower() in ['.tif', '.tiff', '.geotiff', '.geotif']:
@@ -68,6 +59,7 @@ def layer_type(filename):
     else:
         msg = ('Saving of extension [%s] is not implemented' % extension)
         raise GeoNodeException(msg)
+
 
 def get_files(filename, sldfile):
     """Converts the data to Shapefiles or Geotiffs and returns
@@ -120,7 +112,6 @@ def get_files(filename, sldfile):
     if sldfile and os.path.exists(sldfile):
         files['sld'] = sldfile
 
-
     return files
 
 
@@ -162,78 +153,79 @@ def get_valid_layer_name(layer=None, overwrite=False):
         return get_valid_name(layer_name)
 
 
-def cleanup(name, uuid):
-   """Deletes GeoServer and GeoNetwork records for a given name.
+def cleanup(name, layer_id):
+    """Deletes GeoServer and GeoNetwork records for a given name.
 
-      Useful to clean the mess when something goes terribly wrong.
-      It also verifies if the Django record existed, in which case
-      it performs no action.
-   """
-   try:
-       Layer.objects.get(name=name)
-   except Layer.DoesNotExist, e:
-       pass
-   else:
-       msg = ('Not doing any cleanup because the layer %s exists in the '
-              'Django db.' % name)
-       raise GeoNodeException(msg)
+       Useful to clean the mess when something goes terribly wrong.
+       It also verifies if the Django record existed, in which case
+       it performs no action.
+    """
+    try:
+        Layer.objects.get(name=name)
+    except Layer.DoesNotExist, e:
+        pass
+    else:
+        msg = ('Not doing any cleanup because the layer %s exists in the '
+               'Django db.' % name)
+        raise GeoNodeException(msg)
 
-   cat = Layer.objects.gs_catalog
-   gs_store = None
-   gs_layer = None
-   gs_resource = None
-   # FIXME: Could this lead to someone deleting for example a postgis db
-   # with the same name of the uploaded file?.
-   try:
-       gs_store = cat.get_store(name)
-       if gs_store is not None:
-           gs_layer = cat.get_layer(name)
-           if gs_layer is not None:
-               gs_resource = gs_layer.resource
-       else:
-           gs_layer = None
-           gs_resource = None
-   except FailedRequestError, e:
-       msg = ('Couldn\'t connect to GeoServer while cleaning up layer '
-              '[%s] !!', str(e))
-       logger.error(msg)
+    cat = Layer.objects.gs_catalog
+    gs_store = None
+    gs_layer = None
+    gs_resource = None
+    # FIXME: Could this lead to someone deleting for example a postgis db
+    # with the same name of the uploaded file?.
+    try:
+        gs_store = cat.get_store(name)
+        if gs_store is not None:
+            gs_layer = cat.get_layer(name)
+            if gs_layer is not None:
+                gs_resource = gs_layer.resource
+        else:
+            gs_layer = None
+            gs_resource = None
+    except FailedRequestError, e:
+        msg = ('Couldn\'t connect to GeoServer while cleaning up layer '
+               '[%s] !!', str(e))
+        logger.error(msg)
 
-   if gs_layer is not None:
-       try:
-           cat.delete(gs_layer)
-       except:
-           logger.exception("Couldn't delete GeoServer layer during cleanup()")
-   if gs_resource is not None:
-       try:
-           cat.delete(gs_resource)
-       except:
-           msg = 'Couldn\'t delete GeoServer resource during cleanup()'
-           logger.exception(msg)
-   if gs_store is not None:
-       try:
-           cat.delete(gs_store)
-       except:
-           logger.exception("Couldn't delete GeoServer store during cleanup()")
+    if gs_layer is not None:
+        try:
+            cat.delete(gs_layer)
+        except Exception:
+            logger.exception("Couldn't delete GeoServer layer during cleanup()")
+    if gs_resource is not None:
+        try:
+            cat.delete(gs_resource)
+        except Exception:
+            msg = 'Couldn\'t delete GeoServer resource during cleanup()'
+            logger.exception(msg)
+    if gs_store is not None:
+        try:
+            cat.delete(gs_store)
+        except Exception:
+            logger.exception("Couldn't delete GeoServer store during cleanup()")
 
-   gn = Layer.objects.geonetwork
-   csw_record = gn.get_by_uuid(uuid)
-   if csw_record is not None:
-       logger.warning('Deleting dangling GeoNetwork record for [%s] '
-                      '(no Django record to match)', name)
-       try:
-           # this is a bit hacky, delete_layer expects an instance of the layer
-           # model but it just passes it to a Django template so a dict works
-           # too.
-           gn.delete_layer({ "uuid": uuid })
-       except:
-           logger.exception('Couldn\'t delete GeoNetwork record '
-                            'during cleanup()')
+    gn = Layer.objects.geonetwork
+    csw_record = gn.get_by_uuid(layer_id)
+    if csw_record is not None:
+        logger.warning('Deleting dangling GeoNetwork record for [%s] '
+                       '(no Django record to match)', name)
+        try:
+            # this is a bit hacky, delete_layer expects an instance of the layer
+            # model but it just passes it to a Django template so a dict works
+            # too.
+            gn.delete_layer({ "uuid": layer_id })
+        except Exception:
+            logger.exception('Couldn\'t delete GeoNetwork record '
+                             'during cleanup()')
 
-   logger.warning('Finished cleanup after failed GeoNetwork/Django '
-                  'import for layer: %s', name)
+    logger.warning('Finished cleanup after failed GeoNetwork/Django '
+                   'import for layer: %s', name)
 
 
-def save(layer, base_file, user, overwrite = True, title = None, abstract = None, permissions = None, keywords = ['none'], charset = 'ISO-8859-1', sldfile = None):
+def save(layer, base_file, user, overwrite = True, title=None,
+         abstract=None, permissions=None, keywords = ()):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -298,7 +290,7 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
                     if existing_type != the_layer_type:
                         msg =  ('Type of uploaded file %s (%s) does not match '
                                 'type of existing resource type '
-                                '%s' % (layer_name,
+                                '%s' % (name,
                                         the_layer_type,
                                         existing_type))
                         logger.info(msg)
@@ -313,17 +305,17 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
         if settings.DB_DATASTORE:
             create_store_and_resource = _create_db_featurestore
         else:
-            def create_store_and_resource(name, data, overwrite, charset):
-                ft = cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
+            def create_store_and_resource(name, data, overwrite):
+                cat.create_featurestore(name, data, overwrite=overwrite)
                 return cat.get_store(name), cat.get_resource(name)
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
-        def create_store_and_resource(name, data, overwrite, charset):
+        def create_store_and_resource(name, data, overwrite):
             cat.create_coveragestore(name, data, overwrite=overwrite)
             return cat.get_store(name), cat.get_resource(name)
     else:
         msg = ('The layer type for name %s is %s. It should be '
-               '%s or %s,' % (layer_name,
+               '%s or %s,' % (name,
                               the_layer_type,
                               FeatureType.resource_type,
                               Coverage.resource_type))
@@ -337,7 +329,6 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
     files = get_files(base_file, sldfile)
 
     data = files
-    logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^BASE FILE:" + data['base'])
 
     #FIXME: DONT DO THIS
     #-------------------
@@ -382,11 +373,10 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
         logger.warn(msg)
         raise GeoNodeException(msg)
 
-
-
     # Step 6. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 6. Creating style for [%s]' % name)
+
     publishing = cat.get_layer(name)
 
     if 'sld' in files:
@@ -411,6 +401,7 @@ def save(layer, base_file, user, overwrite = True, title = None, abstract = None
             style = cat.get_style(name)
             logger.warn(msg)
             e.args = (msg,)
+
         #FIXME: Should we use the fully qualified typename?
         publishing.default_style = cat.get_style(name)
         cat.save(publishing)
@@ -609,9 +600,6 @@ def check_geonode_is_up():
     try:
         Layer.objects.gs_catalog.get_workspaces()
     except:
-        # Cannot connect to GeoNode
-        from django.conf import settings
-
         msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
                'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
         raise GeoNodeException(msg)
@@ -619,11 +607,11 @@ def check_geonode_is_up():
     try:
         Layer.objects.gn_catalog.login()
     except:
-        from django.conf import settings
         msg = ('Cannot connect to the GeoNetwork at %s\n'
                'Please make sure you have started '
                'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
         raise GeoNodeException(msg)
+
 
 def file_upload(filename, user=None, title=None, overwrite=True, keywords = [], charset='ISO-8859-1'):
     """Saves a layer in GeoNode asking as little information as possible.
@@ -637,7 +625,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords = [], 
 
     # Set a default title that looks nice ...
     if title is None:
-        basename, extension = os.path.splitext(os.path.basename(filename))
+        basename = os.path.splitext(os.path.basename(filename))[0]
         title = basename.title().replace('_', ' ')
 
     # ... and use a url friendly version of that title for the name
@@ -652,9 +640,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords = [], 
 
     new_layer = save(layer, filename, theuser, overwrite, title, keywords=keywords, charset=charset)
 
-
     return new_layer
-
 
 
 def upload(incoming, user=None, overwrite=True, keywords = [], charset='ISO-8859-1'):
@@ -718,15 +704,15 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     cat = Layer.objects.gs_catalog
     try:
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
-    except FailedRequestError, e:
+    except FailedRequestError:
         ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
         ds.connection_parameters.update(
             host=settings.DB_DATASTORE_HOST,
-                                    port=settings.DB_DATASTORE_PORT,
-                                    database=settings.DB_DATASTORE_DATABASE,
-                                    user=settings.DB_DATASTORE_USER,
-                                    passwd=settings.DB_DATASTORE_PASSWORD,
-                                    dbtype=settings.DB_DATASTORE_TYPE)
+            port=settings.DB_DATASTORE_PORT,
+            database=settings.DB_DATASTORE_DATABASE,
+            user=settings.DB_DATASTORE_USER,
+            passwd=settings.DB_DATASTORE_PASSWORD,
+            dbtype=settings.DB_DATASTORE_TYPE)
         cat.save(ds)
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
 
@@ -741,11 +727,9 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
             cat.delete(ds, purge=True)
         raise
 
-
 def forward_mercator(lonlat):
     """
         Given geographic coordinates, return a x,y tuple in spherical mercator.
-
         If the lat value is out of range, -inf will be returned as the y value
     """
     x = lonlat[0] * 20037508.34 / 180

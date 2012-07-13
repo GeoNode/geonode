@@ -10,13 +10,16 @@ import time
 from datetime import date
 import socket
 import ConfigParser
+import paver.doctools
+import paver.misctasks
 import pkg_resources
 import subprocess
 import shutil
-from shutil import copy
+from shutil import move, copy
 import zipfile
 import tarfile
 import urllib
+import glob
 
 assert sys.version_info >= (2,6), \
        SystemError("GeoNode Build requires python 2.6 or better")
@@ -35,7 +38,7 @@ options(
     ),
     virtualenv=Bunch(
         packages_to_install=[
-            'http://bitbucket.org/ianb/pip/get/2cb1db7b2baf.gz#egg=pip',
+            'pip',
             'jstools',
             'virtualenv'
         ],
@@ -45,12 +48,9 @@ options(
         paver_command_line='post_bootstrap'
     ),
     deploy=Bunch(
-#        pavement=path('shared/package/pavement.py'),
         req_file=path('shared/package/requirements.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
-#        install_paver=True,
-#        paver_command_line='post_bootstrap'      
     ),
     host=Bunch(
     	bind='localhost'
@@ -198,17 +198,11 @@ def setup_geonetwork(options):
         deployed_url.rmtree()
 
     if not dst_war.exists():
-    	info("getting geoserver.war")
+    	info("getting geonetwork.war")
         grab(src_url, dst_url)
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
         zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
-
-    src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
-    dst_url = webapps / "intermap.war"
-
-    if not dst_url.exists():
-        grab(src_url, dst_url)
 
 @task
 @needs([
@@ -219,17 +213,18 @@ def setup_geonetwork(options):
 def setup_webapps(options):
     pass
 
+
 @task
 @needs([
     'install_deps',
     'setup_webapps',
-    'generate_geoserver_token',
     'sync_django_db',
     'package_client'
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""")
+    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""") 
+
 
 @task
 @needs([
@@ -248,7 +243,7 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    static = path("./src/GeoNodePy/geonode/media/static")
+    static = path("./src/GeoNodePy/geonode/static/geonode")
     if not static.exists():
         static.mkdir()
 
@@ -260,24 +255,12 @@ def setup_geonode_client(options):
     src_zip = "src/geonode-client/build/geonode-client.zip"
     zip_extractall(zipfile.ZipFile(src_zip), static)
 
+
 @task
 def sync_django_db(options):
     sh("django-admin.py syncdb --settings=geonode.settings --noinput")
     sh("django-admin.py migrate --settings=geonode.settings --noinput")
 
-@task
-def generate_geoserver_token(options):
-    gs_token_file = 'geoserver_token'
-    if not os.path.exists(gs_token_file):
-        from random import choice
-        import string
-        chars = string.letters + string.digits + "-_!@#$*"
-        token = ''
-        for i in range(32):
-            token += choice(chars)
-        tf = open('geoserver_token', 'w')
-        tf.write(token)
-        tf.close()
 
 @task
 def package_dir(options):
@@ -349,9 +332,8 @@ def package_all(options):
 def create_version_name():
     # we'll use the geonodepy version as our "official" version number
     # for now
-    slug = "GeoNode-%s-%s" % (
+    slug = "GeoNode-%s" % (
         pkg_resources.get_distribution('GeoNodePy').version,
-        date.today().isoformat()
     )
 
     return slug
@@ -593,7 +575,7 @@ def host(options):
             pass
         try:
             mvn.terminate()
-        except:
+        except: 
             pass
 
         django.wait()

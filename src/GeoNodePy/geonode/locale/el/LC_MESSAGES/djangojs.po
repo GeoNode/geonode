@@ -7,15 +7,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2011-08-23 01:56-0700\n"
 "PO-Revision-Date: 2011-08-23 13:36+0200\n"
 "Last-Translator: MINDoSOFT\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+=======
+"POT-Creation-Date: 2012-05-15 12:29-0500\n"
+"PO-Revision-Date: 2011-08-23 13:36+0200\n"
+"Last-Translator: MINDoSOFT\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+>>>>>>> gncore/master
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+<<<<<<< HEAD
 #: media/static/script/GeoNode.js:45
 msgid "Add user..."
 msgstr "Προσθήκη χρήστη..."
@@ -50,6 +59,41 @@ msgstr "Ποιός μπορεί να διαχειριστεί και να επε
 
 #: templates/lang.js:9
 #: templates/lang.js.py:12
+=======
+#: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
+msgid "Add user..."
+msgstr "Προσθήκη χρήστη..."
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Who can view and download this data?"
+msgstr "Ποιός μπορεί να δει και να κατεβάσει αυτά τα δεδομένα;"
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Anyone"
+msgstr "Όλοι"
+
+#: static/geonode/script/GeoNode.js:36 static/geonode/script/GeoNode.js.c:38
+msgid "Any registered user"
+msgstr "Κάθε εγγεγραμμένος χρήστης"
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Only users who can edit"
+msgstr "Μόνο χρήστες που μπορούν να επεξεργαστούν"
+
+#: static/geonode/script/GeoNode.js:37
+msgid "Who can edit this data?"
+msgstr "Ποιός μπορεί να επεξεργαστεί αυτά τα δεδομένα;"
+
+#: static/geonode/script/GeoNode.js:38
+msgid "Only the following users or groups:"
+msgstr "Μόνο οι ακόλουθοι χρήστες ή ομάδες:"
+
+#: static/geonode/script/GeoNode.js:39
+msgid "Who can manage and edit this data?"
+msgstr "Ποιός μπορεί να διαχειριστεί και να επεξεργαστεί αυτά τα δεδομένα;"
+
+#: templates/lang.js:9 templates/lang.js.c:12
+>>>>>>> gncore/master
 msgid "Add Layers"
 msgstr "Προσθήκη Επιφανειών"
 
@@ -81,8 +125,12 @@ msgstr "Ο εξυπηρετητής επέστρεψε ένα σφάλμα"
 msgid "Details..."
 msgstr "Λεπτομέρειες..."
 
+<<<<<<< HEAD
 #: templates/lang.js:19
 #: templates/lang.js.py:111
+=======
+#: templates/lang.js:19 templates/lang.js.c:111
+>>>>>>> gncore/master
 msgid "Height"
 msgstr "Ύψος"
 
@@ -90,8 +138,12 @@ msgstr "Ύψος"
 msgid "Get Feature Info"
 msgstr "Λήψη Πληροφοριών Χαρακτηριστικού"
 
+<<<<<<< HEAD
 #: templates/lang.js:21
 #: templates/lang.js.py:112
+=======
+#: templates/lang.js:21 templates/lang.js.c:112
+>>>>>>> gncore/master
 msgid "Large"
 msgstr "Μεγάλο"
 
@@ -127,8 +179,12 @@ msgstr "Μήκος"
 msgid "Loading Map..."
 msgstr "Φόρτωση χάρτη..."
 
+<<<<<<< HEAD
 #: templates/lang.js:30
 #: templates/lang.js.py:113
+=======
+#: templates/lang.js:30 templates/lang.js.c:113
+>>>>>>> gncore/master
 msgid "Map Size"
 msgstr "Μέγεθος Χάρτη"
 
@@ -140,6 +196,7 @@ msgstr "Μέτρο"
 msgid "About this Map"
 msgstr "Σχετικά με αυτό το χάρτη"
 
+<<<<<<< HEAD
 #: templates/lang.js:33
 #: templates/lang.js.py:86
 #: templates/lang.js.py:155
@@ -159,6 +216,21 @@ msgstr "Μόνιμος σύνδεσμος"
 
 #: templates/lang.js:36
 #: templates/lang.js.py:226
+=======
+#: templates/lang.js:33 templates/lang.js.c:86 templates/lang.js.c:155
+msgid "Abstract"
+msgstr "Περίληψη"
+
+#: templates/lang.js:34 templates/lang.js.c:87 templates/lang.js.c:153
+msgid "Contact"
+msgstr "Επικοινωνία"
+
+#: templates/lang.js:35 templates/lang.js.c:45
+msgid "Permalink"
+msgstr "Μόνιμος σύνδεσμος"
+
+#: templates/lang.js:36 templates/lang.js.c:226
+>>>>>>> gncore/master
 msgid "Cancel"
 msgstr "Ακύρωση"
 
@@ -170,6 +242,7 @@ msgstr "Αποθήκευση ως Αντίγραφο"
 msgid "Save"
 msgstr "Αποθήκευση"
 
+<<<<<<< HEAD
 #: templates/lang.js:39
 #: templates/lang.js.py:90
 #: templates/lang.js.py:99
@@ -181,6 +254,14 @@ msgstr "Τίτλος"
 
 #: templates/lang.js:40
 #: templates/lang.js.py:114
+=======
+#: templates/lang.js:39 templates/lang.js.c:90 templates/lang.js.c:99
+#: templates/lang.js:152 templates/lang.js.c:174 templates/lang.js.c:209
+msgid "Title"
+msgstr "Τίτλος"
+
+#: templates/lang.js:40 templates/lang.js.c:114
+>>>>>>> gncore/master
 msgid "Mini"
 msgstr "Μικρογραφία"
 
@@ -200,8 +281,12 @@ msgstr "Ζουμ στο προηγούμενο Επίπεδο"
 msgid "This map has not yet been saved."
 msgstr "Ο χάρτης αυτός δεν έχει ακόμη αποθηκευτεί."
 
+<<<<<<< HEAD
 #: templates/lang.js:46
 #: templates/lang.js.py:115
+=======
+#: templates/lang.js:46 templates/lang.js.c:115
+>>>>>>> gncore/master
 msgid "Premium"
 msgstr "Εξαιρετικά ποιοτικό"
 
@@ -217,6 +302,7 @@ msgstr "Προεπισκόπηση εκτύπωσης"
 msgid "Properties"
 msgstr "Επιλογές"
 
+<<<<<<< HEAD
 #: templates/lang.js:50
 #: templates/lang.js.py:116
 msgid "Publish Map"
@@ -224,6 +310,13 @@ msgstr "Δημοσίευση Χάρτη"
 
 #: templates/lang.js:51
 #: templates/lang.js.py:52
+=======
+#: templates/lang.js:50 templates/lang.js.c:116
+msgid "Publish Map"
+msgstr "Δημοσίευση Χάρτη"
+
+#: templates/lang.js:51 templates/lang.js.c:52
+>>>>>>> gncore/master
 msgid "Remove Layer"
 msgstr "Κατάργηση Επιφάνειας"
 
@@ -243,8 +336,12 @@ msgstr "Αποθήκευση Χάρτη"
 msgid "You must be logged in to save this map."
 msgstr "Θα πρέπει να συνδεθείτε για να μπορείτε να σώσετε αυτό το χάρτη."
 
+<<<<<<< HEAD
 #: templates/lang.js:57
 #: templates/lang.js.py:118
+=======
+#: templates/lang.js:57 templates/lang.js.c:118
+>>>>>>> gncore/master
 msgid "Small"
 msgstr "Μικρό"
 
@@ -277,15 +374,28 @@ msgid "Switch to Google Earth 3D Viewer"
 msgstr "Μεταβείτε στο Google Earth 3D Viewer"
 
 #: templates/lang.js:64
+<<<<<<< HEAD
 msgid "The map that you are trying to load does not exist.  Creating a new map instead."
 msgstr "Ο χάρτης που προσπαθείτε να φορτώσετε δεν υπάρχει. Δημιουργήστε ένα νέο χάρτη αντί αυτού."
+=======
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr ""
+"Ο χάρτης που προσπαθείτε να φορτώσετε δεν υπάρχει. Δημιουργήστε ένα νέο "
+"χάρτη αντί αυτού."
+>>>>>>> gncore/master
 
 #: templates/lang.js:65
 msgid "Unknown Map"
 msgstr "Άγνωστος Χάρτης"
 
+<<<<<<< HEAD
 #: templates/lang.js:66
 #: templates/lang.js.py:119
+=======
+#: templates/lang.js:66 templates/lang.js.c:119
+>>>>>>> gncore/master
 msgid "Width"
 msgstr "Πλάτος"
 
@@ -314,7 +424,10 @@ msgid "Zoom to Visible Extent"
 msgstr "Ζουμ σε Ορατή Έκταση"
 
 #: templates/lang.js:78
+<<<<<<< HEAD
 #, perl-brace-format
+=======
+>>>>>>> gncore/master
 msgid "Zoom Level {zoom}"
 msgstr "Επίπεδο ζουμ {zoom}"
 
@@ -330,8 +443,12 @@ msgstr "Εξαγωγή Χάρτη"
 msgid "Map"
 msgstr "Χάρτης"
 
+<<<<<<< HEAD
 #: templates/lang.js:89
 #: templates/lang.js.py:156
+=======
+#: templates/lang.js:89 templates/lang.js.c:156
+>>>>>>> gncore/master
 msgid "View this Map"
 msgstr "Δείτε αυτό το Χάρτη"
 
@@ -339,8 +456,12 @@ msgstr "Δείτε αυτό το Χάρτη"
 msgid "Open Map"
 msgstr "Ανοίξτε Χάρτη"
 
+<<<<<<< HEAD
 #: templates/lang.js:97
 #: templates/lang.js.py:173
+=======
+#: templates/lang.js:97 templates/lang.js.c:173
+>>>>>>> gncore/master
 msgid "Name"
 msgstr "Όνομα"
 
@@ -353,6 +474,7 @@ msgid "No background"
 msgstr "Καθόλου φόντο"
 
 #: templates/lang.js:117
+<<<<<<< HEAD
 msgid "Your map is ready to be published to the web!  Simply copy the following HTML to embed the map in your website:"
 msgstr "Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο! Απλά αντιγράψτε τον παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην ιστοσελίδα σας:"
 
@@ -393,6 +515,44 @@ msgstr "Δεν ορίζονται διευθύνσεις μεταδεδομέν�
 
 #: templates/lang.js:133
 #: templates/lang.js.py:201
+=======
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+"Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο! Απλά αντιγράψτε τον "
+"παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην ιστοσελίδα σας:"
+
+#: templates/lang.js:126 templates/lang.js.c:192
+msgid "Abstract:"
+msgstr "Περίληψη:"
+
+#: templates/lang.js:127 templates/lang.js.c:194
+msgid "No attribution information is provided for this layer."
+msgstr "Δεν υπάρχουν πληροφορίες απόδοσης για αυτή την επιφάνεια."
+
+#: templates/lang.js:128 templates/lang.js.c:195
+msgid "Provided by:"
+msgstr "Παρέχεται από:"
+
+#: templates/lang.js:129 templates/lang.js.c:196
+msgid "Download:"
+msgstr "Λήψη:"
+
+#: templates/lang.js:130 templates/lang.js.c:198
+msgid "No keywords are listed for this layer."
+msgstr "Δεν υπάρχουν λέξεις-κλειδιά για αυτή την επιφάνεια."
+
+#: templates/lang.js:131 templates/lang.js.c:199
+msgid "Keywords:"
+msgstr "Λέξεις-κλειδιά:"
+
+#: templates/lang.js:132 templates/lang.js.c:200
+msgid "No metadata URLs are defined for this layer."
+msgstr "Δεν ορίζονται διευθύνσεις μεταδεδομένων για αυτή την επιφάνεια."
+
+#: templates/lang.js:133 templates/lang.js.c:201
+>>>>>>> gncore/master
 msgid "Metadata Links:"
 msgstr "Σύνδεσμοι Μεταδεδομένων:"
 
@@ -428,6 +588,7 @@ msgstr "Δημιουργία PDF ..."
 msgid "Last Modified"
 msgstr "Τελευταία Τροποποίηση"
 
+<<<<<<< HEAD
 #: templates/lang.js:157
 #: templates/lang.js.py:178
 msgid "Prev"
@@ -445,6 +606,21 @@ msgstr "από"
 
 #: templates/lang.js:160
 #: templates/lang.js.py:181
+=======
+#: templates/lang.js:157 templates/lang.js.c:178
+msgid "Prev"
+msgstr "Προηγούμενη"
+
+#: templates/lang.js:158 templates/lang.js.c:179
+msgid "Next"
+msgstr "Επόμενη"
+
+#: templates/lang.js:159 templates/lang.js.c:180
+msgid "of"
+msgstr "από"
+
+#: templates/lang.js:160 templates/lang.js.c:181
+>>>>>>> gncore/master
 msgid "Your search did not match any items."
 msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αντικείμενο."
 
@@ -452,6 +628,7 @@ msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αν
 msgid "Search Maps"
 msgstr "Αναζήτηση Χάρτες"
 
+<<<<<<< HEAD
 #: templates/lang.js:162
 #: templates/lang.js.py:182
 msgid "Search"
@@ -459,6 +636,13 @@ msgstr "Αναζήτηση"
 
 #: templates/lang.js:163
 #: templates/lang.js.py:183
+=======
+#: templates/lang.js:162 templates/lang.js.c:182
+msgid "Search"
+msgstr "Αναζήτηση"
+
+#: templates/lang.js:163 templates/lang.js.c:183
+>>>>>>> gncore/master
 msgid "Showing"
 msgstr "Έχουν βρεθεί"
 
@@ -466,8 +650,12 @@ msgstr "Έχουν βρεθεί"
 msgid "Loading"
 msgstr "Φόρτωση"
 
+<<<<<<< HEAD
 #: templates/lang.js:165
 #: templates/lang.js.py:185
+=======
+#: templates/lang.js:165 templates/lang.js.c:185
+>>>>>>> gncore/master
 msgid "permalink"
 msgstr "μόνιμος σύνδεσμος"
 
@@ -538,4 +726,7 @@ msgstr "Λήψη..."
 #: templates/lang.js:227
 msgid "Please wait"
 msgstr "Παρακαλώ περιμένετε"
+<<<<<<< HEAD
 
+=======
+>>>>>>> gncore/master

@@ -13,7 +13,6 @@
     google.load("earth", "1");
 </script>
 
-
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
 <style type="text/css">
     #templates { display: none; }
@@ -25,43 +24,43 @@
 {{ block.super }}
 
 <script type="text/javascript">
-var app;
-var init = function() {
-{% autoescape off %}
-    var config = Ext.apply({
-        tools:  [{
-                    ptype: "gxp_geonodequerytool",
-                    id: "worldmap_query_tool",
-                    actionTarget:  {target: "paneltbar", index: 5},
-                    toolText: '<span class="x-btn-text">Identify</span>',
-                    iconCls: null,
-                    outputConfig: {width: 400, height: 200, panIn: false},
-                    featurePanel: 'queryPanel',
-                    attributePanel: 'gridWinPanel',
-                    toggleGroup: 'featureGroup'
-                },
-            {
-                ptype: "gxp_coordinatetool",
-                actionTarget:  {target: "paneltbar", index: 7},
-                toolText: '<span class="x-btn-text">Position</span>',
+    var app;
+    var init = function() {
+        {% autoescape off %}
+        var config = Ext.apply({
+            tools:  [{
+                ptype: "gxp_geonodequerytool",
+                id: "worldmap_query_tool",
+                actionTarget:  {target: "paneltbar", index: 5},
+                toolText: '<span class="x-btn-text">Identify</span>',
                 iconCls: null,
-                toggleGroup: 'featureGroup',
-                pressed: false
-            }
-        ],
-        proxy: "/proxy/?url=",
+                outputConfig: {width: 400, height: 200, panIn: false},
+                featurePanel: 'queryPanel',
+                attributePanel: 'gridWinPanel',
+                toggleGroup: 'featureGroup'
+            },
+                {
+                    ptype: "gxp_coordinatetool",
+                    actionTarget:  {target: "paneltbar", index: 7},
+                    toolText: '<span class="x-btn-text">Position</span>',
+                    iconCls: null,
+                    toggleGroup: 'featureGroup',
+                    pressed: false
+                }
+            ],
+            proxy: "/proxy/?url=",
 
-        /* The URL to a REST map configuration service.  This service
-         * provides listing and, with an authenticated user, saving of
-         * maps on the server for sharing and editing.
-         */
-        rest: "/maps/",
-        homeUrl: "{% url geonode.views.index %}",
-        siteUrl: "{{ SITE_URL }}",
-        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
-        csrfToken: "{{ csrf_token }}",
-        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
-    }, {{ config }});
+            /* The URL to a REST map configuration service.  This service
+             * provides listing and, with an authenticated user, saving of
+             * maps on the server for sharing and editing.
+             */
+            rest: "/maps/",
+        homeUrl: "{% url home %}",
+            localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+        localCSWBaseUrl: "{{ GEONETWORK_BASE_URL }}srv/en/csw",
+            csrfToken: "{{ csrf_token }}",
+            authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
+        }, {{ config }});
 
 
 
@@ -69,12 +68,12 @@ var init = function() {
 
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
-            return permalinkTemplate.apply({
-                protocol: window.location.protocol,
-                host: window.location.host,
-                id: id
-            })
-        };
+        return permalinkTemplate.apply({
+            protocol: window.location.protocol,
+            host: window.location.host,
+            id: id
+        })
+    };
 
 
     var titleTemplate = new Ext.Template("<span>{title}</span>");
@@ -88,10 +87,10 @@ var init = function() {
 
 
     }, this);
-{% endautoescape %}
-}
+    {% endautoescape %}
+    }
 
-window.onload = init;
+    window.onload = init;
 
 </script>
 
@@ -99,47 +98,47 @@ window.onload = init;
 
 {% block body %}
 <div id="header-wrapper">
-  {{ block.super }}
+    {{ block.super }}
 
     <div id="dataTabs" class="x-hidden">
 
-<div id="searchDiv" style="background-color:#fff;width:800px;">
-<div style="float:left;position:relative;margin:10px;width:580px;">
-  <div class="block">
-    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+        <div id="searchDiv" style="background-color:#fff;width:800px;">
+            <div style="float:left;position:relative;margin:10px;width:580px;">
+                <div class="block">
+                    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
-    <div id="search_results"></div>
+                    <div id="search_results"></div>
 
-  </div>
+                </div>
 
-  <div class="block wrap selfclear">
-  <h3>Selected Data</h3>
-  <div id="selection">
-    <div id="data_cart"></div>
-    </div>
-    <div id="data_ops">
-    </div>
-  </div>
-
-
-</div>
+                <div class="block wrap selfclear">
+                    <h3>Selected Data</h3>
+                    <div id="selection">
+                        <div id="data_cart"></div>
+                    </div>
+                    <div id="data_ops">
+                    </div>
+                </div>
 
 
+            </div>
 
-<div style="position:relative;float:right;width:200px">
-  <div id="refine" class="block">
-    <h3>{% trans "Refine Search" %}</h3>
-    <div class="bbox-controls">
-      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
-      <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
-      <div class="bbox-expand">
-      </div>
-    </div>
-    <div class="search-button">Refine</div>
-  </div>
 
-</div>
-</div>
+
+            <div style="position:relative;float:right;width:200px">
+                <div id="refine" class="block">
+                    <h3>{% trans "Refine Search" %}</h3>
+                    <div class="bbox-controls">
+                        <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
+                        <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
+                        <div class="bbox-expand">
+                        </div>
+                    </div>
+                    <div class="search-button">Refine</div>
+                </div>
+
+            </div>
+        </div>
         <div id="externalDiv"></div>
         <div id="uploadDiv"></div>
         <div id="createDiv"></div>
@@ -148,8 +147,8 @@ window.onload = init;
 
                 <div style="position:relative;float:left;">
 
-                    <h3>{%trans "Rectify Images"  %}</h3>    
-                    
+                    <h3>{%trans "Rectify Images"  %}</h3>
+
                     <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 3.9.1 in <a href="http://localhost:8000/media/docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
                     <br/><br/>
                     <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>

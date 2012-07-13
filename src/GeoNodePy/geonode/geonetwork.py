@@ -1,14 +1,9 @@
-import urllib, urllib2, cookielib
-from datetime import date
+import urllib, urllib2
 from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
-from geonode.maps.owslib_csw import CatalogueServiceWeb
-from owslib.csw import namespaces
-from owslib.util import nspath
-from xml.dom import minidom
-from xml.etree.ElementTree import XML
-
+from owslib.csw import CatalogueServiceWeb, namespaces
+from lxml import etree
 
 
 class Catalog(object):
@@ -20,6 +15,7 @@ class Catalog(object):
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
+        self.opener = None
 
 
     def login(self):
@@ -36,15 +32,14 @@ class Catalog(object):
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(),
                 urllib2.HTTPRedirectHandler())
         response = self.opener.open(request)
-        body = response.read()
-        dom = minidom.parseString(body)
-        assert dom.childNodes[0].nodeName == 'ok', "GeoNetwork login failed!"
+        doc = etree.fromstring(response.read())
+        assert doc.tag == 'ok', "GeoNetwork login failed!"
         self.connected = True
 
     def logout(self):
         url = "%ssrv/en/xml.user.logout" % self.base
         request = urllib2.Request(url)
-        response = self.opener.open(request)
+        self.opener.open(request)
         self.connected = False
 
     def get_by_uuid(self, uuid):
@@ -67,7 +62,7 @@ class Catalog(object):
         tpl = get_template(template)
         ctx = Context({
             'layer': layer,
-            'SITEURL': settings.SITEURL,
+            'SITEURL': settings.SITEURL[:-1],
         })
         md_doc = tpl.render(ctx)
         url = "%ssrv/en/csw" % self.base
@@ -81,13 +76,13 @@ class Catalog(object):
         return response
 
     def create_from_layer(self, layer):
-        response = self.csw_request(layer, "maps/csw/transaction_insert.xml")
+        self.csw_request(layer, "maps/csw/transaction_insert.xml")
         # TODO: Parse response, check for error report
 
         # Turn on the "view" permission (aka publish) for
         # the "all" group in GeoNetwork so that the layer
         # will be searchable via CSW without admin login.
-        # all other privileges are set to False for all
+        # all other privileges are set to False for all 
         # groups.
         self.set_metadata_privs(layer.uuid, {"all":  {"view": True}})
 
@@ -101,38 +96,40 @@ class Catalog(object):
         })
 
     def delete_layer(self, layer):
-        response = self.csw_request(layer, "maps/csw/transaction_delete.xml")
+        self.csw_request(layer, "maps/csw/transaction_delete.xml")
         # TODO: Parse response, check for error report
 
     def update_layer(self, layer):
-        response = self.csw_request(layer, "maps/csw/transaction_update.xml")
+        self.csw_request(layer, "maps/csw/transaction_update.xml")
         # TODO: Parse response, check for error report
 
     def set_metadata_privs(self, uuid, privileges):
         """
-        set the full set of geonetwork privileges on the item with the
+        set the full set of geonetwork privileges on the item with the 
         specified uuid based on the dictionary given of the form:
         {
           'group_name1': {'operation1': True, 'operation2': True, ...},
           'group_name2': ...
         }
 
-        all unspecified operations and operations for unspecified groups
+        all unspecified operations and operations for unspecified groups 
         are set to False.
         """
-
-        # XXX This is a fairly ugly workaround that makes
+        
+        # XXX This is a fairly ugly workaround that makes 
         # requests similar to those made by the GeoNetwork
-        # admin based on the recommendation here:
+        # admin based on the recommendation here: 
         # http://bit.ly/ccVEU7
 
+        
 
         get_dbid_url = self.base + 'srv/en/portal.search.present?' + urllib.urlencode({'uuid': uuid})
 
         # get the id of the data.
         request = urllib2.Request(get_dbid_url)
         response = self.urlopen(request)
-        doc = XML(response.read())
+
+        doc = etree.fromstring(response.read())
         data_dbid = doc.find('metadata/{http://www.fao.org/geonetwork}info/id').text
 
         # update group and operation info if needed
@@ -158,8 +155,8 @@ class Catalog(object):
         request = urllib2.Request(update_privs_url)
         response = self.urlopen(request)
 
-        # TODO: check for error report
-
+        # TODO: check for error report  
+        
     def _get_group_ids(self):
         """
         helper to fetch the set of geonetwork
@@ -169,7 +166,7 @@ class Catalog(object):
         get_groups_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'groups'})
         request = urllib2.Request(get_groups_url)
         response = self.urlopen(request)
-        doc = XML(response.read())
+        doc = etree.fromstring(response.read())
         groups = {}
         for gp in doc.findall('groups/group'):
             groups[gp.find('name').text.lower()] = gp.attrib['id']
@@ -177,14 +174,14 @@ class Catalog(object):
 
     def _get_operation_ids(self):
         """
-        helper to fetch the set of geonetwork
+        helper to fetch the set of geonetwork 
         'operations' (privileges)
         """
-        # get the ids of the operations
+        # get the ids of the operations    
         get_ops_url = self.base + "srv/en/xml.info?" + urllib.urlencode({'type': 'operations'})
         request = urllib2.Request(get_ops_url)
         response = self.urlopen(request)
-        doc = XML(response.read())
+        doc = etree.fromstring(response.read())
         ops = {}
         for op in doc.findall('operations/operation'):
             ops[op.find('name').text.lower()] = op.attrib['id']

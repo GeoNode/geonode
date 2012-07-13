@@ -1,39 +1,34 @@
-# -*- coding: UTF-8 -*-
-import threading
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import models
 from owslib.wms import WebMapService
-from geonode.maps.owslib_csw import CatalogueServiceWeb
+from owslib.csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
-from django.utils.html import escape
+from taggit.managers import TaggableManager
+from django.utils import simplejson as json
+
 import httplib2
-import simplejson
+from django.utils.html import escape
 import urllib
 from urlparse import urlparse
 import uuid
 from datetime import datetime
 from django.contrib.auth.models import User, Permission
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
-from string import lower
-from StringIO import StringIO
-from xml.etree.ElementTree import parse, XML
-import re
+from lxml import etree
+from geonode.maps.gs_helpers import cascading_delete
 import logging
+import sys
 from geonode.maps.encode import num_encode
 from django.core.cache import cache
-import sys
 from geonode.maps.encode import despam, xssescape, XssCleaner
 
-
-
 logger = logging.getLogger("geonode.maps.models")
-from gs_helpers import cascading_delete
-
 
 ows_sub = re.compile(re.escape('&SERVICE=WMS|&REQUEST=GetCapabilities'), re.IGNORECASE)
 
@@ -41,6 +36,9 @@ ows_sub = re.compile(re.escape('&SERVICE=WMS|&REQUEST=GetCapabilities'), re.IGNO
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+
+
+
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -295,7 +293,6 @@ COUNTRIES = (
     ('ZMB', _('Zambia')),
     ('ZWE', _('Zimbabwe')),
 )
-
 
 KEYWORD_REGIONS= (
     ('GLO', _('Global')),
@@ -588,6 +585,9 @@ class Contact(models.Model):
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True, unique=False)
+
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
+
     display_email = models.BooleanField(_('Display my email address on my profile'), blank=False, default=False, null=False)
     is_org_member = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
     member_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
@@ -621,7 +621,13 @@ class Contact(models.Model):
         return u"%s (%s)" % (self.name if self.name else self.user.username, self.organization)
 
     def username(self):
-        return u"%s" % (self.name if self.name else self.user.username)
+        return u"%s" % (self.name if self.name else self.user.username,  self.organization)
+
+
+def create_user_profile(sender, instance, created, **kwargs):
+    profile, created = Contact.objects.get_or_create(user=instance, defaults={'name': instance.username})
+
+signals.post_save.connect(create_user_profile, sender=User)
 
 _viewer_projection_lookup = {
     "EPSG:900913": {
@@ -644,6 +650,7 @@ _wms = None
 _csw = None
 _user, _password = settings.GEOSERVER_CREDENTIALS
 
+
 #def get_wms():
 #    global _wms
 #    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
@@ -664,6 +671,7 @@ _user, _password = settings.GEOSERVER_CREDENTIALS
 #    response, body = http.request(wms_url)
 #    _wms = WebMapService(wms_url, xml=body)
 
+
 def get_csw():
     global _csw
     csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
@@ -675,7 +683,6 @@ class LayerManager(models.Manager):
     def __init__(self):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
-        user, password = settings.GEOSERVER_CREDENTIALS
         self.gs_catalog = Catalog(url, _user, _password)
         self.geonetwork = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
 
@@ -693,9 +700,9 @@ class LayerManager(models.Manager):
         superusers = User.objects.filter(is_superuser=True).order_by('id')
         if superusers.count() == 0:
             raise RuntimeError('GeoNode needs at least one admin/superuser set')
-
-        contact, created = Contact.objects.get_or_create(user=superusers[0],
-                                                defaults={"name": "Geonode Admin"})
+        
+        contact = Contact.objects.get_or_create(user=superusers[0], 
+                                                defaults={"name": "Geonode Admin"})[0]
         return contact
 
     def default_poc(self):
@@ -772,7 +779,8 @@ class LayerManager(models.Manager):
                     layer._populate_from_gs()
                     layer.save()
 
-                msg = "[%s] Layer %s (%d/%d)" % (status, name, i, number)
+
+                msg = "[%s] Layer %s (%d/%d)" % (status, name, i+1, number)
                 info = {'name': name, 'status': status}
                 if status == 'failed':
                     info['traceback'] = traceback
@@ -833,12 +841,13 @@ class LayerCategory(models.Model):
         return "%s" % self.name
 
 
+
 class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
     """
 
-    VALID_DATE_TYPES = [(lower(x), _(x)) for x in ['Creation', 'Publication', 'Revision']]
+    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ['Creation', 'Publication', 'Revision']]
 
     # internal fields
     objects = LayerManager()
@@ -859,7 +868,7 @@ class Layer(models.Model, PermissionLevelMixin):
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication')
 
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
-    abstract = models.TextField(_('abstract'), blank=False)
+    abstract = models.TextField(_('abstract'), blank=True)
     purpose = models.TextField(_('purpose'), null=True, blank=True)
     maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
 
@@ -867,7 +876,7 @@ class Layer(models.Model, PermissionLevelMixin):
     # see poc property definition below
 
     # section 3
-    keywords = models.TextField(_('keywords'), blank=False, null=True)
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices=KEYWORD_REGIONS + COUNTRIES, default = 'GLO')
     constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
@@ -932,6 +941,7 @@ class Layer(models.Model, PermissionLevelMixin):
         dx = float(min(180,bbox[2])) - float(max(-180,(bbox[0])))
         dy = float(min(90,bbox[3])) - float(max(-90,bbox[1]))
 
+
         dataAspect = 1 if dy == 0 else dx / dy
 
         height = 550
@@ -946,16 +956,16 @@ class Layer(models.Model, PermissionLevelMixin):
 
         if self.resource.resource_type == "featureType":
             def wfs_link(mime,extra_params):
-                return settings.SITEURL + "download/wfs/" + str(self.id) + "?" + urllib.urlencode({
+                params = {
                     'service': 'WFS',
-                    'version':'1.0.0',
+                    'version': '1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
                     'outputFormat': mime,
                     'format_options': 'charset:UTF-8' #TODO: make this a settings property?
-                })
-                params.update(extra_params)
-                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode(params)
+                }
+                return settings.SITEURL + "download/wfs/" + str(self.id) + "?" + urllib.urlencode(params)
+
 
             types = [
                 ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
@@ -970,14 +980,15 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 client = httplib2.Http()
                 description_url = settings.SITEURL + "download/wcs/" + str(self.id) + "?" + urllib.urlencode({
+
                         "service": "WCS",
                         "version": "1.0.0",
                         "request": "DescribeCoverage",
                         "coverage": self.typename
                     })
-                response, content = client.request(description_url)
-                doc = parse(StringIO(content))
-                extent = doc.find("//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
+                content = client.request(description_url)[1]
+                doc = etree.fromstring(content)
+                extent = doc.find(".//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
                 low = extent.find("{http://www.opengis.net/gml}low").text.split()
                 high = extent.find("{http://www.opengis.net/gml}high").text.split()
                 w, h = [int(h) - int(l) for (h, l) in zip(high, low)]
@@ -997,7 +1008,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
                 types = [("tiff", "GeoTIFF", "geotiff")]
                 links.extend([(ext, name, wcs_link(mime)) for (ext, name, mime) in types])
-            except Exception, e:
+            except Exception:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
                 # TODO: This is a bad idea to eat errors like this.
@@ -1016,7 +1027,6 @@ class Layer(models.Model, PermissionLevelMixin):
             })
 
         types = [
-            ("tiff", _("GeoTIFF"), "image/geotiff"),
             ("jpg", _("JPEG"), "image/jpeg"),
             ("pdf", _("PDF"), "application/pdf"),
             ("png", _("PNG"), "image/png")
@@ -1054,12 +1064,13 @@ class Layer(models.Model, PermissionLevelMixin):
         #    msg = "WMS Record missing for layer [%s]" % self.typename
         #    raise GeoNodeException(msg)
 
+
         # Check the layer is in GeoServer's REST API
         # It would be nice if we could ask for the definition of a layer by name
         # rather than searching for it
         #api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
         #response, body = http.request(api_url)
-        #api_json = simplejson.loads(body)
+        #api_json = json.loads(body)
         #api_layer = None
         #for row in api_json['rows']:
         #    if(row['name'] == self.typename):
@@ -1137,6 +1148,7 @@ class Layer(models.Model, PermissionLevelMixin):
     def __setattr__(self, name, value):
         return super(Layer, self).__setattr__(name, value)
 
+
     def metadata_csw(self):
         global _csw
         if(_csw is None):
@@ -1157,6 +1169,7 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
+
                 netloc = urlparse(dft_url).netloc
                 http.authorizations.append(
                     httplib2.BasicAuthentication(
@@ -1168,8 +1181,8 @@ class Layer(models.Model, PermissionLevelMixin):
                     None,
                     http
                     ))
-                response, body = http.request(dft_url)
-                doc = XML(body)
+                body = http.request(dft_url)[1]
+                doc = etree.fromstring(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
                 atts = OrderedDict({})
                 for n in doc.findall(path):
@@ -1200,7 +1213,7 @@ class Layer(models.Model, PermissionLevelMixin):
                     http
                     ))
                 response, body = http.request(dc_url)
-                doc = XML(body)
+                doc = etree.fromstring(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
                 atts = OrderedDict({})
                 for n in doc.findall(path):
@@ -1303,7 +1316,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # reset any poc asignation to this layer
         ContactRole.objects.filter(role=self.poc_role, layer=self).delete()
         #create the new assignation
-        contact_role = ContactRole.objects.create(role=self.poc_role, layer=self, contact=poc)
+        ContactRole.objects.create(role=self.poc_role, layer=self, contact=poc)
 
     def _get_poc(self):
         try:
@@ -1318,7 +1331,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # reset any metadata_author asignation to this layer
         ContactRole.objects.filter(role=self.metadata_author_role, layer=self).delete()
         #create the new assignation
-        contact_role = ContactRole.objects.create(role=self.metadata_author_role,
+        ContactRole.objects.create(role=self.metadata_author_role,
                                                   layer=self, contact=metadata_author)
 
     def _get_metadata_author(self):
@@ -1352,6 +1365,7 @@ class Layer(models.Model, PermissionLevelMixin):
         gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
         if gs_resource is None:
             return
+
         self.srs = gs_resource.projection
         self.llbbox = str([ max(-180,float(gs_resource.latlon_bbox[0])),max(-90,float(gs_resource.latlon_bbox[2])),min(180,float(gs_resource.latlon_bbox[1])),min(90,float(gs_resource.latlon_bbox[3]))])
 
@@ -1383,22 +1397,26 @@ class Layer(models.Model, PermissionLevelMixin):
                 lambda x, y: x + y["keywords"],
                 meta.identification.keywords,
                 [])
-        kw_list = filter(lambda x: x is not None, kw_list)
-        self.keywords = ' '.join(kw_list)
+
+        kw_list = [l for l in kw_list if l is not None]
+        self.keywords.add(*kw_list)
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:
                 res = onlineresources[0]
                 self.distribution_url = res.url
                 self.distribution_description = res.description
+
         ## Save using filter/update to avoid triggering post_save_layer
         Layer.objects.filter(id=self.id).update(keywords = self.keywords, distribution_url = self.distribution_url, distribution_description=self.distribution_description )
 
+
     def keyword_list(self):
-        if self.keywords is None or len(self.keywords) == 0:
-            return []
+        keywords_qs = self.keywords.all()
+        if keywords_qs:
+            return [kw.name for kw in keywords_qs]
         else:
-            return self.keywords.split()
+            return []
 
     def set_bbox(self, box, srs=None):
         """
@@ -1504,6 +1522,7 @@ class Map(models.Model, PermissionLevelMixin):
     """
 
     title = models.TextField(_('Title'))
+<<<<<<< HEAD
     """
     A display name suitable for search results and page headers
     """
@@ -1574,7 +1593,7 @@ class Map(models.Model, PermissionLevelMixin):
     Whether to show default banner/styles or custom ones.
     """
 
-    keywords = models.CharField(_('Keywords (for Picasa and YouTube overlays)'), blank=True, null=True, max_length=255)
+    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
     """
     Keywords (for Picasa and YouTube overlays)
     """
@@ -1596,6 +1615,7 @@ class Map(models.Model, PermissionLevelMixin):
         return (self.center_x, self.center_y)
 
     @property
+
     def maplayers(self):
         layers = cache.get('maplayerset_' + str(self.id))
         if layers is None:
@@ -1609,6 +1629,11 @@ class Map(models.Model, PermissionLevelMixin):
     def snapshots(self):
         snapshots = MapSnapshot.objects.exclude(user=None).filter(map=self.id)
         return [snapshot for snapshot in snapshots]
+
+    @property
+    def layers(self):
+        layers = MapLayer.objects.filter(map=self.id)
+        return  [layer for layer in layers]
 
     @property
     def local_layers(self):
@@ -1625,7 +1650,7 @@ class Map(models.Model, PermissionLevelMixin):
                 pass
 
         if layer_filter:
-            layers = filter(layer_filter, layers)
+            layers = [l for l in layers if layer_filter(l)]
 
         readme = (
             "Title: %s\n" +
@@ -1641,15 +1666,15 @@ class Map(models.Model, PermissionLevelMixin):
                 "metadataURL": ""
             }
 
-        map = {
+
+        map_config = {
             "map" : { "readme": readme },
             "layers" : [layer_json(lyr) for lyr in layers]
         }
 
-        return simplejson.dumps(map)
+        return json.dumps(map_config)
 
-
-    def viewer_json(self, user=None, *added_layers):
+    def viewer_json(self, *added_layers):
         """
         Convert this map to a nested dictionary structure matching the JSON
         configuration for GXP Viewers.
@@ -1659,14 +1684,11 @@ class Map(models.Model, PermissionLevelMixin):
         configuration. These are not persisted; if you want to add layers you
         should use ``.layer_set.create()``.
         """
-        logger.debug("++++++++++++++++++CALLING viewer_json+++++++++++++++++++++")
-
-        logger.info("ADDED Layers: %s", added_layers)
-
 
         layers = list(self.maplayers) + list(added_layers) #implicitly sorted by stack_order
 
         sejumps = self.jump_set.all()
+
         server_lookup = {}
         sources = {'local': settings.DEFAULT_LAYER_SOURCE }
 
@@ -1686,11 +1708,12 @@ class Map(models.Model, PermissionLevelMixin):
         configs = [l.source_config() for l in layers]
         configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms", "restUrl":"/gs/rest"})
 
+
         i = 0
         for source in uniqify(configs):
             while str(i) in sources: i = i + 1
-            sources[str(i)] = source
-            server_lookup[simplejson.dumps(source)] = str(i)
+            sources[str(i)] = source 
+            server_lookup[json.dumps(source)] = str(i)
 
         def source_lookup(source):
             for k, v in sources.iteritems():
@@ -1700,7 +1723,7 @@ class Map(models.Model, PermissionLevelMixin):
         def layer_config(l, user):
             logger.debug("_________CALLING viewer_json.layer_config for %s", l)
             cfg = l.layer_config(user)
-            src_cfg = l.source_config();
+            src_cfg = l.source_config()
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
             if src_cfg.get("ptype", "gxp_wmscsource") == "gxp_wmscsource"  or src_cfg.get("ptype", "gxp_gnsource") == "gxp_gnsource" : cfg["buffer"] = 0
@@ -1713,7 +1736,6 @@ class Map(models.Model, PermissionLevelMixin):
                 'abstract': self.abstract,
                 'urlsuffix': self.urlsuffix,
                 'introtext' : self.content,
-                'keywords' : self.keywords,
                 'officialurl' : self.officialurl
             },
             'defaultSourceType': "gxp_wmscsource",
@@ -1738,7 +1760,6 @@ class Map(models.Model, PermissionLevelMixin):
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
-
         return config
 
     def update_from_viewer(self, conf):
@@ -1749,7 +1770,7 @@ class Map(models.Model, PermissionLevelMixin):
         This method automatically persists to the database!
         """
         if isinstance(conf, basestring):
-            conf = simplejson.loads(conf)
+            conf = json.loads(conf)
 
         self.title = despam(conf['about']['title'])
         self.abstract = despam(conf['about']['abstract'])
@@ -1758,8 +1779,6 @@ class Map(models.Model, PermissionLevelMixin):
         x = XssCleaner()
         self.content = despam(x.strip(conf['about']['introtext']))
 
-        #self.content = re.sub(r'<script.*(<\/script>|\/>)|javascript:|\$\(|jQuery|Ext\.', r'', conf['about']['introtext']) #Remove any scripts
-        #self.keywords = despam(conf['about']['keywords'])
         self.zoom = conf['map']['zoom']
 
         self.center_x = conf['map']['center'][0]
@@ -1769,17 +1788,18 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.featured = conf['about'].get('featured', False)
 
-        logger.debug("Try to save treeconfig")
-        self.group_params = simplejson.dumps(conf['treeconfig'])
-        logger.debug("Saved treeconfig")
+        self.group_params = json.dumps(conf['treeconfig'])
+
 
         def source_for(layer):
             return conf["sources"][layer["source"]]
 
         layers = [l for l in conf["map"]["layers"]]
-
+        
         for layer in self.layer_set.all():
             layer.delete()
+            
+        self.keywords.add(*conf['map'].get('keywords', []))
 
         for ordering, layer in enumerate(layers):
             self.layer_set.add(
@@ -1798,6 +1818,13 @@ class Map(models.Model, PermissionLevelMixin):
         permissions = (('view_map', 'Can view'),
                        ('change_map_permissions', "Can change permissions"), )
 
+    def keyword_list(self):
+        keywords_qs = self.keywords.all()
+        if keywords_qs:
+            return [kw.name for kw in keywords_qs]
+        else:
+            return []
+
     # Permission Level Constants
     # LEVEL_NONE inherited
     LEVEL_READ  = 'map_readonly'
@@ -1808,6 +1835,7 @@ class Map(models.Model, PermissionLevelMixin):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
         self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
         self.set_gen_level(CUSTOM_GROUP_USERS, self.LEVEL_READ)
+
 
         # remove specific user permissions
         current_perms =  self.get_all_level_info()
@@ -1865,7 +1893,7 @@ class SocialExplorerLocation(models.Model):
         }
 
 class MapLayerManager(models.Manager):
-    def from_viewer_config(self, map, layer, source, ordering):
+    def from_viewer_config(self, map_model, layer, source, ordering):
         """
         Parse a MapLayer object out of a parsed layer configuration from a GXP
         viewer.
@@ -1885,7 +1913,7 @@ class MapLayerManager(models.Manager):
             if k in source_cfg: del source_cfg[k]
 
         return self.model(
-            map = map,
+            map = map_model,
             stack_order = ordering,
             format = layer.get("format", None),
             name = layer.get("name", None),
@@ -1896,8 +1924,8 @@ class MapLayerManager(models.Manager):
             group = layer.get('group', None),
             visibility = layer.get("visibility", True),
             ows_url = source.get("url", None),
-            layer_params = simplejson.dumps(layer_cfg),
-            source_params = simplejson.dumps(source_cfg)
+            layer_params = json.dumps(layer_cfg),
+            source_params = json.dumps(source_cfg)
         )
 
 class MapLayer(models.Model):
@@ -1908,92 +1936,62 @@ class MapLayer(models.Model):
     """
 
     objects = MapLayerManager()
-    """
-    see :class:`geonode.maps.models.MapLayerManager`
-    """
+    # see :class:`geonode.maps.models.MapLayerManager`
 
     map = models.ForeignKey(Map, related_name="layer_set")
-    """
-    The map containing this layer
-    """
+    # The map containing this layer
 
     stack_order = models.IntegerField(_('stack order'))
-    """
-    The z-index of this layer in the map; layers with a higher stack_order will
-    be drawn on top of others.
-    """
+    # The z-index of this layer in the map; layers with a higher stack_order will
+    # be drawn on top of others.
 
     format = models.CharField(_('format'), null=True, max_length=200)
-    """
-    The mimetype of the image format to use for tiles (image/png, image/jpeg,
-    image/gif...)
-    """
+    # The mimetype of the image format to use for tiles (image/png, image/jpeg,
+    # image/gif...)
 
     name = models.CharField(_('name'), null=True, max_length=200)
-    """
-    The name of the layer to load.
+    # The name of the layer to load.
 
-    The interpretation of this name depends on the source of the layer (Google
-    has a fixed set of names, WMS services publish a list of available layers
-    in their capabilities documents, etc.)
-    """
+    # The interpretation of this name depends on the source of the layer (Google
+    # has a fixed set of names, WMS services publish a list of available layers
+    # in their capabilities documents, etc.)
 
     opacity = models.FloatField(_('opacity'), default=1.0)
-    """
-    The opacity with which to render this layer, on a scale from 0 to 1.
-    """
+    # The opacity with which to render this layer, on a scale from 0 to 1.
 
     styles = models.CharField(_('styles'), null=True,max_length=200)
-    """
-    The name of the style to use for this layer (only useful for WMS layers.)
-    """
+    # The name of the style to use for this layer (only useful for WMS layers.)
 
     transparent = models.BooleanField(_('transparent'))
-    """
-    A boolean value, true if we should request tiles with a transparent background.
-    """
+    # A boolean value, true if we should request tiles with a transparent background.
 
     fixed = models.BooleanField(_('fixed'), default=False)
-    """
-    A boolean value, true if we should prevent the user from dragging and
-    dropping this layer in the layer chooser.
-    """
+    # A boolean value, true if we should prevent the user from dragging and
+    # dropping this layer in the layer chooser.
 
     group = models.CharField(_('group'), null=True,max_length=200)
-    """
-    A group label to apply to this layer.  This affects the hierarchy displayed
-    in the map viewer's layer tree.
-    """
+    # A group label to apply to this layer.  This affects the hierarchy displayed
+    # in the map viewer's layer tree.
 
     visibility = models.BooleanField(_('visibility'), default=True)
-    """
-    A boolean value, true if this layer should be visible when the map loads.
-    """
+    # A boolean value, true if this layer should be visible when the map loads.
 
     ows_url = models.URLField(_('ows URL'), null=True)
-    """
-    The URL of the OWS service providing this layer, if any exists.
-    """
-
+    # The URL of the OWS service providing this layer, if any exists.
 
     layer_params = models.TextField(_('layer params'))
-    """
-    A JSON-encoded dictionary of arbitrary parameters for the layer itself when
-    passed to the GXP viewer.
+    # A JSON-encoded dictionary of arbitrary parameters for the layer itself when
+    # passed to the GXP viewer.
 
-    If this dictionary conflicts with options that are stored in other fields
-    (such as format, styles, etc.) then the fields override.
-    """
+    # If this dictionary conflicts with options that are stored in other fields
+    # (such as format, styles, etc.) then the fields override.
 
     source_params = models.TextField(_('source params'))
-    """
-    A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
-    configuration for this layer.
+    # A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
+    # configuration for this layer.
 
-    If this dictionary conflicts with options that are stored in other fields
-    (such as ows_url) then the fields override.
-    """
-
+    # If this dictionary conflicts with options that are stored in other fields
+    # (such as ows_url) then the fields override.
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
@@ -2004,6 +2002,8 @@ class MapLayer(models.Model):
     """
     The last time the object was modified.
     """
+
+
 
     def local(self):
         """
@@ -2026,8 +2026,8 @@ class MapLayer(models.Model):
         configuration suitable for loading this layer.
         """
         try:
-            cfg = simplejson.loads(self.source_params)
-        except:
+            cfg = json.loads(self.source_params)
+        except Exception:
             cfg = dict(ptype = "gxp_gnsource", restUrl="/gs/rest")
 
         if self.ows_url:
@@ -2055,8 +2055,9 @@ class MapLayer(models.Model):
                 return cfg
 
         try:
-            cfg = simplejson.loads(self.layer_params)
+            cfg = json.loads(self.layer_params)
         except:
+
             cfg = dict()
 
         if self.format: cfg['format'] = self.format
@@ -2069,7 +2070,6 @@ class MapLayer(models.Model):
         if self.ows_url:cfg['url'] = ows_sub.sub('', self.ows_url)
         if self.group: cfg["group"] = self.group
         cfg["visibility"] = self.visibility
-
 
         if self.source_params.find( "gxp_gnsource") > -1:
             #Get parameters from GeoNode instead of WMS GetCapabilities
@@ -2110,7 +2110,7 @@ class MapLayer(models.Model):
 
 
     @property
-    def local_link(self):
+    def local_link(self): 
         if self.local():
             layer = Layer.objects.get(typename=self.name)
             link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),layer.title)
@@ -2160,9 +2160,9 @@ class ContactRole(models.Model):
         if (self.role == self.layer.poc_role) or (self.role == self.layer.metadata_author_role):
             contacts = self.layer.contacts.filter(contactrole__role=self.role)
             if contacts.count() == 1:
-                 # only allow this if we are updating the same contact
-                 if self.contact != contacts.get():
-                     raise ValidationError('There can be only one %s for a given layer' % self.role)
+                # only allow this if we are updating the same contact
+                if self.contact != contacts.get():
+                    raise ValidationError('There can be only one %s for a given layer' % self.role)
         if self.contact.user is None:
             # verify that any unbound contact is only associated to one layer
             bounds = ContactRole.objects.filter(contact=self.contact).count()
@@ -2225,3 +2225,4 @@ class LayerStats(models.Model):
     visits = models.IntegerField(_("Visits"), default = 0)
     uniques = models.IntegerField(_("Unique Visitors"), default = 0)
     downloads = models.IntegerField(_("Downloads"), default = 0)
+

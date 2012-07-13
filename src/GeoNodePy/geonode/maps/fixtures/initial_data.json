@@ -1,5 +1,6 @@
 [
 {
+<<<<<<< HEAD
     "pk": 1,
     "model": "maps.role",
     "fields": {
@@ -57,6 +58,57 @@
         "email": null,
         "created_dttm": "2011-01-01",
         "last_modified" : "2011-01-01"
+=======
+    "pk": 1, 
+    "model": "maps.role", 
+    "fields": {
+        "value": "pointOfContact", 
+        "permissions": []
+    }
+}, 
+{
+    "pk": 2, 
+    "model": "maps.role", 
+    "fields": {
+        "value": "author", 
+        "permissions": []
+    }
+},
+{
+    "pk": 1, 
+    "model": "maps.contact", 
+    "fields": {
+        "city": null, 
+        "fax": null, 
+        "name": "Default Contact", 
+        "area": null, 
+        "country": null, 
+        "zipcode": null, 
+        "delivery": null, 
+        "user": null, 
+        "position": null, 
+        "organization": "GeoNode", 
+        "voice": null, 
+        "email": null
+    }
+}, 
+{
+    "pk": 2, 
+    "model": "maps.contact", 
+    "fields": {
+        "city": null, 
+        "fax": null, 
+        "name": "Default Author", 
+        "area": null, 
+        "country": null, 
+        "zipcode": null, 
+        "delivery": null, 
+        "user": null, 
+        "position": null, 
+        "organization": "Geonode", 
+        "voice": null, 
+        "email": null
+>>>>>>> gncore/master
     }
 },
 {
@@ -66,7 +118,11 @@
         "codename": "map_readonly",
         "title": "Read Only",
         "list_order": 0,
+<<<<<<< HEAD
         "permissions": [
+=======
+        "permissions": [ 
+>>>>>>> gncore/master
             ["view_map", "maps", "map"]
         ],
         "content_type": ["maps", "map"]
@@ -79,7 +135,11 @@
         "codename": "map_readwrite",
         "title": "Read/Write",
         "list_order": 1,
+<<<<<<< HEAD
         "permissions": [
+=======
+        "permissions": [ 
+>>>>>>> gncore/master
             ["view_map", "maps", "map"],
             ["change_map", "maps", "map"]
         ],
@@ -93,7 +153,11 @@
         "codename": "map_admin",
         "title": "Administrative",
         "list_order": 2,
+<<<<<<< HEAD
         "permissions": [
+=======
+        "permissions": [ 
+>>>>>>> gncore/master
             ["view_map", "maps", "map"],
             ["change_map", "maps", "map"],
             ["delete_map", "maps", "map"],
@@ -109,7 +173,11 @@
         "codename": "layer_readonly",
         "title": "Read Only",
         "list_order": 0,
+<<<<<<< HEAD
         "permissions": [
+=======
+        "permissions": [ 
+>>>>>>> gncore/master
             ["view_layer", "maps", "layer"]
         ],
         "content_type": ["maps", "layer"]
@@ -122,7 +190,11 @@
         "codename": "layer_readwrite",
         "title": "Read/Write",
         "list_order": 1,
+<<<<<<< HEAD
         "permissions": [
+=======
+        "permissions": [ 
+>>>>>>> gncore/master
             ["view_layer", "maps", "layer"],
             ["change_layer", "maps", "layer"]
         ],
@@ -136,7 +208,11 @@
         "codename": "layer_admin",
         "title": "Administrative",
         "list_order": 2,
+<<<<<<< HEAD
         "permissions": [
+=======
+        "permissions": [ 
+>>>>>>> gncore/master
             ["view_layer", "maps", "layer"],
             ["change_layer", "maps", "layer"],
             ["delete_layer", "maps", "layer"],
@@ -144,6 +220,7 @@
         ],
         "content_type": ["maps", "layer"]
     }
+<<<<<<< HEAD
 },
     {
         "fields": {
@@ -336,4 +413,8 @@
         "model": "maps.layercategory",
         "pk": 19
     }
+=======
+}
+
+>>>>>>> gncore/master
 ]

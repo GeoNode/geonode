@@ -1,11 +1,16 @@
 package org.geotools.gce.geotiff;
 
+import java.util.logging.Logger;
+
 import javax.imageio.ImageWriter;
 import javax.imageio.event.IIOWriteProgressListener;
 
+import org.geotools.util.logging.Logging;
 import org.opengis.util.ProgressListener;
 
 public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
+
+    private static final Logger LOGGER = Logging.getLogger(ProgressListenerWriteAdapter.class);
 
     private final ProgressListener monitor;
 
@@ -34,7 +39,7 @@ public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
      *      int)
      */
     public void imageStarted(ImageWriter source, int imageIndex) {
-        System.err.println("image started");
+        LOGGER.finest("image started");
         monitor.started();
         checkCancelled(source);
     }
@@ -44,7 +49,7 @@ public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
      */
     public void imageComplete(ImageWriter source) {
         if (!checkCancelled(source)) {
-            System.err.println("image complete");
+            LOGGER.finest("image complete");
             monitor.complete();
         }
     }
@@ -53,7 +58,7 @@ public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
      * @see javax.imageio.event.IIOWriteProgressListener#writeAborted(javax.imageio.ImageWriter)
      */
     public void writeAborted(ImageWriter source) {
-        System.err.println("image aborted");
+        LOGGER.finest("image aborted");
         if (!selfAbort) {
             monitor.setCanceled(true);
         }
@@ -65,7 +70,7 @@ public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
      */
     public void imageProgress(ImageWriter source, float percentageDone) {
         if (!checkCancelled(source)) {
-            System.err.println("image progrss: " + percentageDone);
+            LOGGER.finest("image progrss: " + percentageDone);
             monitor.progress(percentageDone);
         }
     }

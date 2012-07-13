@@ -78,6 +78,10 @@ function setup_tomcat_once() {
 # configure tomcat defaults to avoid geonetwork bug and increase the available ram
 cat >> /etc/default/tomcat6 <<- EOF 
 JAVA_OPTS='-Djava.awt.headless=true -Xmx1024m -Xms1024M -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement'
+<<<<<<< HEAD
+=======
+JAVA_HOME=/usr/
+>>>>>>> gncore/master
 EOF
 patch $GEONODE_ETC/geonetwork/config.xml $GEONODE_SHARE/geonetwork.patch
 patch $GEONODE_ETC/geoserver/web.xml $GEONODE_SHARE/geoserver.patch
@@ -125,7 +129,10 @@ function setup_postgres_every_time() {
 
 function setup_django_once() {
     sed -i "s/THE_SECRET_KEY/$secretkey/g" $GEONODE_ETC/local_settings.py
+<<<<<<< HEAD
     sed -i "s/THE_GEOSERVER_PASSWORD/$geoserverpass/g" $GEONODE_ETC/local_settings.py
+=======
+>>>>>>> gncore/master
     sed -i "s/THE_DATABASE_PASSWORD/$psqlpass/g" $GEONODE_ETC/local_settings.py
 }
 
@@ -133,7 +140,11 @@ function setup_django_every_time() {
     pushd $GEONODE_LIB
     easy_install -U virtualenv
     easy_install -U pip
+<<<<<<< HEAD
     virtualenv .
+=======
+    virtualenv . --system-site-packages --never-download
+>>>>>>> gncore/master
 
     if [ ! -f bin/activate ]
     then
@@ -142,7 +153,10 @@ function setup_django_every_time() {
     fi
 
     source bin/activate
+<<<<<<< HEAD
     touch geoserver_token
+=======
+>>>>>>> gncore/master
     pip install geonode-webapp.pybundle
 
     # FIXME: What is this doing here?
@@ -155,6 +169,10 @@ function setup_django_every_time() {
 
     export DJANGO_SETTINGS_MODULE=geonode.settings
     django-admin.py syncdb --noinput
+<<<<<<< HEAD
+=======
+    django-admin.py migrate --noinput
+>>>>>>> gncore/master
     django-admin.py collectstatic -v0 --noinput
     django-admin.py loaddata $GEONODE_SHARE/admin.json
 
@@ -163,25 +181,46 @@ function setup_django_every_time() {
 
 function setup_apache_once() {
 	chown www-data -R $GEONODE_WWW
+<<<<<<< HEAD
 	a2dissite default
+=======
+>>>>>>> gncore/master
 	a2enmod proxy_http
 	sitedir=`$GEONODE_LIB/bin/python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
         
 	sed -i '1d' $APACHE_SITES/geonode
 	sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2 python-path=$sitedir" $APACHE_SITES/geonode
 
+<<<<<<< HEAD
 	a2ensite geonode
         $APACHE_SERVICE restart
 }
 
 function setup_apache_every_time() {
     true
+=======
+	#FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
+	$APACHE_SERVICE restart
+}
+
+function setup_apache_every_time() {
+	a2dissite default
+
+	#FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
+	a2enmod proxy_http
+
+	a2ensite geonode
+	$APACHE_SERVICE restart
+>>>>>>> gncore/master
 }
 
 function one_time_setup() {
     psqlpass=$(randpass 8 0)
     secretkey=$(randpass 18 0)
+<<<<<<< HEAD
     geoserverpass=$(randpass 8 0)
+=======
+>>>>>>> gncore/master
 
     setup_postgres_once
     setup_tomcat_once

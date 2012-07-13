@@ -2,6 +2,7 @@ from itertools import cycle, izip
 from django.conf import settings
 from tempfile import mkstemp
 from zipfile import ZipFile
+from geoserver.catalog import FailedRequestError
 import logging
 import re
 from django.conf import settings
@@ -63,6 +64,18 @@ _line_template = """
     <CssParameter name="stroke-width">3</CssParameter>
   </Stroke>
 </LineSymbolizer>
+<<<<<<< HEAD
+=======
+</Rule>
+</FeatureTypeStyle>
+<FeatureTypeStyle>
+<Rule>
+<LineSymbolizer>
+  <Stroke>
+    <CssParameter name="stroke">%(fg)s</CssParameter>
+  </Stroke>
+</LineSymbolizer>
+>>>>>>> gncore/master
 """
 
 _point_template = """
@@ -109,37 +122,47 @@ def get_sld_for(layer):
         return None
 
 def fixup_style(cat, resource, style):
-    lyr = cat.get_layer(name=resource.name)
-    if lyr:
-        if lyr.default_style and lyr.default_style.name in _style_templates:
+    logger.debug("Creating styles for layers associated with [%s]", resource)
+    layers = cat.get_layers(resource=resource)
+    logger.info("Found %d layers associated with [%s]", len(layers), resource)
+    for lyr in layers:
+        if lyr.default_style.name in _style_templates:
+            logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if style is None:
                 sld = get_sld_for(lyr)
             else: 
                 sld = style.read()
+            logger.info("Creating style [%s]", name)
             style = cat.create_style(name, sld)
             lyr.default_style = cat.get_style(name)
+            logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
+            logger.info("Successfully updated %s", lyr)
 
 def cascading_delete(cat, resource):
-    if resource:
-        resource_name = resource.name
+    if resource is None:
+        # If there is no associated resource,
+        # this method can not delete anything.
+        # Let's return and make a note in the log.
+        logger.debug('cascading_delete was called with a non existant resource')
+        return
+    resource_name = resource.name
+    lyr = cat.get_layer(resource_name)
+    if(lyr is not None): #Already deleted
         store = resource.store
-        lyr = cat.get_layer(resource_name)
-        if(lyr is not None): #Already deleted
-            logger.info("Deleting layer %s and styles", resource_name)
-            styles = lyr.styles + [lyr.default_style]
-            cat.delete(lyr)
-            for s in styles:
-                if s is not None:
-                    try:
-                        cat.delete(s, purge=True)
-                    except:
-                        logger.warn("Could not delete style %s for layer %s", s, resource_name)
-        try:
-            cat.delete(resource)
-        except Exception, e:
-            logger.error("Error deleting resource %s: %s", resource_name, str(e))
+        styles = lyr.styles + [lyr.default_style]
+        cat.delete(lyr)
+        for s in styles:
+            if s is not None:
+                try:
+                    cat.delete(s, purge=True)
+                except FailedRequestError as e:
+                    # Trying to delete a shared style will fail
+                    # We'll catch the exception and log it.
+                    logger.debug(e)
+
+        cat.delete(resource)
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
         else:

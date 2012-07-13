@@ -1,4 +1,3 @@
-from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
@@ -158,7 +157,6 @@ class PermissionLevelMixin(object):
             # remove any existing mapping              
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()
             # grant new level
-            logger.info('USER:%s, OBJECT:%s, ROLE:%s', user, self, role)
             UserObjectRoleMapping.objects.create(user=user, object=self, role=role)
 
     def get_gen_level(self, gen_role):

@@ -1,10 +1,10 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import include, patterns, url
 from django.conf import settings
-from staticfiles.urls import staticfiles_urlpatterns
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
 import geonode.maps.urls
-
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -22,29 +22,43 @@ sitemaps = {
 
 urlpatterns = patterns('',
     # Example:
-    # (r'^geonode/', include('geonode.foo.urls')),
-    (r'^(?:index/?)?$', 'geonode.views.index'),
+    url(r'^$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'index.html'}, name='home'),
+
     (r'^(?P<page>developer|help|maphelp|about|maps\/upload_terms)/?$', 'geonode.views.static'),
-    url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
-               {'template': 'lang.js', 'mimetype': 'text/javascript'}, 'lang'),
-    (r'^maps/', include(geonode.maps.urls.urlpatterns)),
+    # Data views
     (r'^data/', include(geonode.maps.urls.datapatterns)),
-    (r'^admin/', include(admin.site.urls)),
-    (r'^i18n/', include('django.conf.urls.i18n')),
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
-    (r'^accounts/ajax_login$', 'geonode.views.ajax_login'),
-    (r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup'),
+    (r'^maps/', include(geonode.maps.urls.urlpatterns)),
+
+    (r'^comments/', include('dialogos.urls')),
+    (r'^ratings/', include('agon_ratings.urls')),
+
+    # Accounts
+    url(r'^accounts/ajax_login$', 'geonode.views.ajax_login',
+        name='auth_ajax_login'),
+    url(r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup',
+        name='auth_ajax_lookup'),
     (r'^accounts/ajax_lookup_email$', 'geonode.views.ajax_lookup_email'),
+
     (r'^accounts/login', 'django.contrib.auth.views.login'),
     (r'^accounts/logout', 'django.contrib.auth.views.logout'),
     (r'^affiliation/confirm', 'geonode.registration.views.confirm'),
-    (r'^avatar/', include('avatar.urls')),
+
     (r'^accounts/', include('geonode.registration.urls')),
     (r'^profiles/', include('geonode.profiles.urls')),
-    (r'^accounts/', include('registration.urls')),
-    (r'^profiles/', include('profiles.urls')),
-    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    (r'^avatar/', include('avatar.urls')),
+
+
+    # Meta
+    url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
+         {'template': 'lang.js', 'mimetype': 'text/javascript'}, name='lang'),
+    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog',
+        js_info_dict, name='jscat'),
+    url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
+                                  {'sitemaps': sitemaps}, name='sitemap'),
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/?$','geonode.proxy.views.download'),
+    (r'^i18n/', include('django.conf.urls.i18n')),
+    (r'^admin/', include(admin.site.urls)),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
@@ -64,3 +78,8 @@ if settings.SERVE_MEDIA:
         url(r'^site_media/media/(?P<path>.*)$', 'django.views.static.serve', {
             'document_root': settings.MEDIA_ROOT,
         }))
+
+# Serve static files
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

@@ -2,8 +2,11 @@ import os
 import geonode
 
 DEBUG = TEMPLATE_DEBUG = False
+<<<<<<< HEAD
 MINIFIED_RESOURCES = True
 SERVE_MEDIA=False
+=======
+>>>>>>> gncore/master
 
 SITENAME = 'GeoNode'
 SITEURL = 'http://localhost/'
@@ -41,6 +44,7 @@ DB_DATASTORE=True
 LANGUAGE_CODE = 'en'
 
 MEDIA_ROOT = '/var/www/geonode/uploaded'
+<<<<<<< HEAD
 MEDIA_URL = '/uploaded/'
 STATIC_ROOT = '/var/www/geonode/static/'
 STATIC_URL = '/static/'
@@ -49,6 +53,9 @@ GEONODE_CLIENT_LOCATION = STATIC_URL + 'geonode/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATICFILES_STORAGE = 'staticfiles.storage.StaticFilesStorage'
+=======
+STATIC_ROOT = '/var/www/geonode/static/'
+>>>>>>> gncore/master
 
 # secret key used in hashing, should be a long, unique string for each
 # site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
@@ -62,14 +69,21 @@ GEONETWORK_BASE_URL = SITEURL + 'geonetwork/'
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = 'admin', 'admin'
+<<<<<<< HEAD
 GEOSERVER_CREDENTIALS = 'geoserver', 'THE_GEOSERVER_PASSWORD'
+=======
+GEOSERVER_CREDENTIALS = 'geoserver', SECRET_KEY
+>>>>>>> gncore/master
 
 # A Google Maps API key is needed for the 3D Google Earth view of maps
 # See http://code.google.com/apis/maps/signup.html
 GOOGLE_API_KEY = ''
 
+<<<<<<< HEAD
 DEFAULT_LAYERS_OWNER='admin'
 
+=======
+>>>>>>> gncore/master
 GEONODE_ROOT = os.path.dirname(geonode.__file__)
 
 TEMPLATE_DIRS = (
@@ -80,8 +94,14 @@ TEMPLATE_DIRS = (
 # Additional directories which hold static files
 STATICFILES_DIRS = [
     '/etc/geonode/media',
+<<<<<<< HEAD
     os.path.join(GEONODE_ROOT, 'media'),
 ]
+=======
+    os.path.join(GEONODE_ROOT, 'static'),
+]
+
+>>>>>>> gncore/master
 # Uncomment the following to receive emails whenever there are errors in GeoNode
 #ADMINS = (
 #            ('John', 'john@example.com'), 
@@ -97,9 +117,41 @@ STATICFILES_DIRS = [
 # For more information on available settings please consult the Django docs at
 # https://docs.djangoproject.com/en/dev/ref/settings
 
+<<<<<<< HEAD
 import logging
 _logger = logging.getLogger('geonode.maps')
 _logger.addHandler(logging.StreamHandler())
 # available levels: DEBUG, INFO, WARNING, ERROR, CRITICAL.
 # The earlier a level appears in this list, the more output it will produce in the log file.
 _logger.setLevel(logging.WARNING)
+=======
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "null": {
+            "level":"DEBUG",
+            "class":"django.utils.log.NullHandler",
+        },
+        "console":{
+            "level":"DEBUG",
+            "class":"logging.StreamHandler",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "geonode": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+    },
+}
+>>>>>>> gncore/master

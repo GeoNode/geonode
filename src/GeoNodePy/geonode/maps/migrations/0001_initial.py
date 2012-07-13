@@ -7,7 +7,11 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> gncore/master
         # Adding model 'Contact'
         db.create_table('maps_contact', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -23,6 +27,7 @@ class Migration(SchemaMigration):
             ('zipcode', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('country', self.gf('django.db.models.fields.CharField')(max_length=3, null=True, blank=True)),
             ('email', self.gf('django.db.models.fields.EmailField')(max_length=75, null=True, blank=True)),
+<<<<<<< HEAD
             ('display_email', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('is_org_member', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('member_expiration_dt', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2012, 2, 23, 10, 22, 44, 871274))),
@@ -42,6 +47,11 @@ class Migration(SchemaMigration):
             ))
         db.send_create_signal('maps', ['LayerCategory'])
 
+=======
+        ))
+        db.send_create_signal('maps', ['Contact'])
+
+>>>>>>> gncore/master
         # Adding model 'Layer'
         db.create_table('maps_layer', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -56,15 +66,24 @@ class Migration(SchemaMigration):
             ('date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
             ('date_type', self.gf('django.db.models.fields.CharField')(default='publication', max_length=255)),
             ('edition', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+<<<<<<< HEAD
             ('abstract', self.gf('django.db.models.fields.TextField')()),
             ('purpose', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('maintenance_frequency', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('keywords', self.gf('django.db.models.fields.TextField')(null=True)),
             ('keywords_region', self.gf('django.db.models.fields.CharField')(default='GLO', max_length=3)),
+=======
+            ('abstract', self.gf('django.db.models.fields.TextField')(blank=True)),
+            ('purpose', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('maintenance_frequency', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('keywords', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('keywords_region', self.gf('django.db.models.fields.CharField')(default='USA', max_length=3)),
+>>>>>>> gncore/master
             ('constraints_use', self.gf('django.db.models.fields.CharField')(default='copyright', max_length=255)),
             ('constraints_other', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('spatial_representation_type', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('language', self.gf('django.db.models.fields.CharField')(default='eng', max_length=3)),
+<<<<<<< HEAD
             ('topic_category', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['maps.LayerCategory'], null=True, blank=True)),
             ('temporal_extent_start', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('temporal_extent_end', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
@@ -97,6 +116,19 @@ class Migration(SchemaMigration):
             ))
         db.send_create_signal('maps', ['LayerAttribute'])
 
+=======
+            ('topic_category', self.gf('django.db.models.fields.CharField')(default='location', max_length=255)),
+            ('temporal_extent_start', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('temporal_extent_end', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('geographic_bounding_box', self.gf('django.db.models.fields.TextField')()),
+            ('supplemental_information', self.gf('django.db.models.fields.TextField')(default=u'You can customize the template to suit your needs. You can add and remove fields and fill out default information (e.g. contact details). Fields you can not change in the default view may be accessible in the more comprehensive (and more complex) advanced view. You can even use the XML editor to create custom structures, but they have to be validated by the system, so know what you do :-)')),
+            ('distribution_url', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('distribution_description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('data_quality_statement', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+        ))
+        db.send_create_signal('maps', ['Layer'])
+
+>>>>>>> gncore/master
         # Adding model 'Map'
         db.create_table('maps_map', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -107,6 +139,7 @@ class Migration(SchemaMigration):
             ('center_x', self.gf('django.db.models.fields.FloatField')()),
             ('center_y', self.gf('django.db.models.fields.FloatField')()),
             ('owner', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, blank=True)),
+<<<<<<< HEAD
             ('created_dttm', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ('urlsuffix', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
@@ -137,6 +170,12 @@ class Migration(SchemaMigration):
             ))
         db.send_create_signal('maps', ['SocialExplorerLocation'])
 
+=======
+            ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+        ))
+        db.send_create_signal('maps', ['Map'])
+
+>>>>>>> gncore/master
         # Adding model 'MapLayer'
         db.create_table('maps_maplayer', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -153,18 +192,26 @@ class Migration(SchemaMigration):
             ('ows_url', self.gf('django.db.models.fields.URLField')(max_length=200, null=True)),
             ('layer_params', self.gf('django.db.models.fields.TextField')()),
             ('source_params', self.gf('django.db.models.fields.TextField')()),
+<<<<<<< HEAD
             ('created_dttm', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ))
+=======
+        ))
+>>>>>>> gncore/master
         db.send_create_signal('maps', ['MapLayer'])
 
         # Adding model 'Role'
         db.create_table('maps_role', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('value', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
+<<<<<<< HEAD
             ('created_dttm', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ))
+=======
+        ))
+>>>>>>> gncore/master
         db.send_create_signal('maps', ['Role'])
 
         # Adding M2M table for field permissions on 'Role'
@@ -172,7 +219,11 @@ class Migration(SchemaMigration):
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('role', models.ForeignKey(orm['maps.role'], null=False)),
             ('permission', models.ForeignKey(orm['auth.permission'], null=False))
+<<<<<<< HEAD
             ))
+=======
+        ))
+>>>>>>> gncore/master
         db.create_unique('maps_role_permissions', ['role_id', 'permission_id'])
 
         # Adding model 'ContactRole'
@@ -181,12 +232,17 @@ class Migration(SchemaMigration):
             ('contact', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['maps.Contact'])),
             ('layer', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['maps.Layer'])),
             ('role', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['maps.Role'])),
+<<<<<<< HEAD
             ))
+=======
+        ))
+>>>>>>> gncore/master
         db.send_create_signal('maps', ['ContactRole'])
 
         # Adding unique constraint on 'ContactRole', fields ['contact', 'layer', 'role']
         db.create_unique('maps_contactrole', ['contact_id', 'layer_id', 'role_id'])
 
+<<<<<<< HEAD
         # Adding model 'MapStats'
         db.create_table('maps_mapstats', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -209,12 +265,18 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
 
+=======
+
+    def backwards(self, orm):
+        
+>>>>>>> gncore/master
         # Removing unique constraint on 'ContactRole', fields ['contact', 'layer', 'role']
         db.delete_unique('maps_contactrole', ['contact_id', 'layer_id', 'role_id'])
 
         # Deleting model 'Contact'
         db.delete_table('maps_contact')
 
+<<<<<<< HEAD
         # Deleting model 'LayerCategory'
         db.delete_table('maps_layercategory')
 
@@ -233,6 +295,14 @@ class Migration(SchemaMigration):
         # Deleting model 'SocialExplorerLocation'
         db.delete_table('maps_socialexplorerlocation')
 
+=======
+        # Deleting model 'Layer'
+        db.delete_table('maps_layer')
+
+        # Deleting model 'Map'
+        db.delete_table('maps_map')
+
+>>>>>>> gncore/master
         # Deleting model 'MapLayer'
         db.delete_table('maps_maplayer')
 
@@ -245,12 +315,15 @@ class Migration(SchemaMigration):
         # Deleting model 'ContactRole'
         db.delete_table('maps_contactrole')
 
+<<<<<<< HEAD
         # Deleting model 'MapStats'
         db.delete_table('maps_mapstats')
 
         # Deleting model 'LayerStats'
         db.delete_table('maps_layerstats')
 
+=======
+>>>>>>> gncore/master
 
     models = {
         'auth.group': {
@@ -294,6 +367,7 @@ class Migration(SchemaMigration):
             'area': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'country': ('django.db.models.fields.CharField', [], {'max_length': '3', 'null': 'True', 'blank': 'True'}),
+<<<<<<< HEAD
             'created_dttm': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'delivery': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'display_email': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -303,6 +377,12 @@ class Migration(SchemaMigration):
             'is_org_member': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'member_expiration_dt': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2012, 2, 23, 10, 22, 44, 871274)'}),
+=======
+            'delivery': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True', 'blank': 'True'}),
+            'fax': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+>>>>>>> gncore/master
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'organization': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'position': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
@@ -319,12 +399,19 @@ class Migration(SchemaMigration):
         },
         'maps.layer': {
             'Meta': {'object_name': 'Layer'},
+<<<<<<< HEAD
             'abstract': ('django.db.models.fields.TextField', [], {}),
             'bbox': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'constraints_other': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'constraints_use': ('django.db.models.fields.CharField', [], {'default': "'copyright'", 'max_length': '255'}),
             'contacts': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['maps.Contact']", 'through': "orm['maps.ContactRole']", 'symmetrical': 'False'}),
             'created_dttm': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+=======
+            'abstract': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'constraints_other': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'constraints_use': ('django.db.models.fields.CharField', [], {'default': "'copyright'", 'max_length': '255'}),
+            'contacts': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['maps.Contact']", 'through': "orm['maps.ContactRole']", 'symmetrical': 'False'}),
+>>>>>>> gncore/master
             'data_quality_statement': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'date_type': ('django.db.models.fields.CharField', [], {'default': "'publication'", 'max_length': '255'}),
@@ -333,16 +420,23 @@ class Migration(SchemaMigration):
             'edition': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'geographic_bounding_box': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+<<<<<<< HEAD
             'keywords': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'keywords_region': ('django.db.models.fields.CharField', [], {'default': "'GLO'", 'max_length': '3'}),
             'language': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '3'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'llbbox': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+=======
+            'keywords': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'keywords_region': ('django.db.models.fields.CharField', [], {'default': "'USA'", 'max_length': '3'}),
+            'language': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '3'}),
+>>>>>>> gncore/master
             'maintenance_frequency': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'purpose': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'spatial_representation_type': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+<<<<<<< HEAD
             'srs': ('django.db.models.fields.CharField', [], {'default': "'EPSG:4326'", 'max_length': '24', 'null': 'True', 'blank': 'True'}),
             'store': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'storeType': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
@@ -351,10 +445,20 @@ class Migration(SchemaMigration):
             'temporal_extent_start': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'topic_category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['maps.LayerCategory']", 'null': 'True', 'blank': 'True'}),
+=======
+            'store': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'storeType': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'supplemental_information': ('django.db.models.fields.TextField', [], {'default': "u'You can customize the template to suit your needs. You can add and remove fields and fill out default information (e.g. contact details). Fields you can not change in the default view may be accessible in the more comprehensive (and more complex) advanced view. You can even use the XML editor to create custom structures, but they have to be validated by the system, so know what you do :-)'"}),
+            'temporal_extent_end': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'temporal_extent_start': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'topic_category': ('django.db.models.fields.CharField', [], {'default': "'location'", 'max_length': '255'}),
+>>>>>>> gncore/master
             'typename': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128'}),
             'uuid': ('django.db.models.fields.CharField', [], {'max_length': '36'}),
             'workspace': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
+<<<<<<< HEAD
         'maps.layerattribute': {
             'Meta': {'object_name': 'LayerAttribute'},
             'attribute': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
@@ -385,11 +489,14 @@ class Migration(SchemaMigration):
             'uniques': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'visits': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
+=======
+>>>>>>> gncore/master
         'maps.map': {
             'Meta': {'object_name': 'Map'},
             'abstract': ('django.db.models.fields.TextField', [], {}),
             'center_x': ('django.db.models.fields.FloatField', [], {}),
             'center_y': ('django.db.models.fields.FloatField', [], {}),
+<<<<<<< HEAD
             'content': ('django.db.models.fields.TextField', [], {'default': 'u\'<h3>The Harvard WorldMap Project</h3><p>WorldMap is an open source web mapping system that is currentlyunder construction. It is built to assist academic research andteaching as well as the general public and supports discovery,investigation, analysis, visualization, communication and archivingof multi-disciplinary, multi-source and multi-format data,organized spatially and temporally.</p><p>The first instance of WorldMap, focused on the continent ofAfrica, is called AfricaMap. Since its beta release in November of2008, the framework has been implemented in several geographiclocations with different research foci, including metro Boston,East Asia, Vermont, Harvard Forest and the city of Paris. These webmapping applications are used in courses as well as by individualresearchers.</p><h3>Introduction to the WorldMap Project</h3><p>WorldMap solves the problem of discovering where things happen.It draws together an array of public maps and scholarly data tocreate a common source where users can:</p><ol><li>Interact with the best available public data for acity/region/continent</li><li>See the whole of that area yet also zoom in to particularplaces</li><li>Accumulate both contemporary and historical data supplied byresearchers and make it permanently accessible online</li><li>Work collaboratively across disciplines and organizations withspatial information in an online environment</li></ol><p>The WorldMap project aims to accomplish these goals in stages,with public and private support. It draws on the basic insight ofgeographic information systems that spatiotemporal data becomesmore meaningful as more "layers" are added, and makes use of tilingand indexing approaches to facilitate rapid search andvisualization of large volumes of disparate data.</p><p>WorldMap aims to augment existing initiatives for globallysharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial DataInfrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open GeospatialConsortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (WebMap Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>(cached WMS), and standards-based metadata formats, to enableWorldMap data layers to be inserted into existing datainfrastructures.&nbsp;<br><br>All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to useand improve upon.</p>\'', 'null': 'True', 'blank': 'True'}),
             'created_dttm': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'group_params': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
@@ -402,16 +509,29 @@ class Migration(SchemaMigration):
             'title': ('django.db.models.fields.TextField', [], {}),
             'urlsuffix': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'use_custom_template': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+=======
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
+            'projection': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'title': ('django.db.models.fields.TextField', [], {}),
+>>>>>>> gncore/master
             'zoom': ('django.db.models.fields.IntegerField', [], {})
         },
         'maps.maplayer': {
             'Meta': {'ordering': "['stack_order']", 'object_name': 'MapLayer'},
+<<<<<<< HEAD
             'created_dttm': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+=======
+>>>>>>> gncore/master
             'fixed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'format': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
             'group': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+<<<<<<< HEAD
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+=======
+>>>>>>> gncore/master
             'layer_params': ('django.db.models.fields.TextField', [], {}),
             'map': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'layer_set'", 'to': "orm['maps.Map']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
@@ -423,6 +543,7 @@ class Migration(SchemaMigration):
             'transparent': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'visibility': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
         },
+<<<<<<< HEAD
         'maps.mapsnapshot': {
             'Meta': {'object_name': 'MapSnapshot'},
             'config': ('django.db.models.fields.TextField', [], {}),
@@ -452,6 +573,13 @@ class Migration(SchemaMigration):
             'map': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'jump_set'", 'to': "orm['maps.Map']"}),
             'title': ('django.db.models.fields.TextField', [], {}),
             'url': ('django.db.models.fields.URLField', [], {'default': "'http://www.socialexplorer.com/pub/maps/map3.aspx?g=0&mapi=SE0012&themei=B23A1CEE3D8D405BA2B079DDF5DE9402'", 'max_length': '200'})
+=======
+        'maps.role': {
+            'Meta': {'object_name': 'Role'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
+            'value': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'})
+>>>>>>> gncore/master
         }
     }
 

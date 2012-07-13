@@ -17,6 +17,7 @@ if (window.GeoExplorer) {
         connErrorText: gettext("The server returned an error"),
         connErrorDetailsText: gettext("Details..."),
         exportDialogMessage: '<p>Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
+
         feedAdditionLabel: 'Add Feed',
         googleEarthBtnText: gettext("Google Earth"),
         heightLabel: gettext("Height"),
@@ -27,6 +28,7 @@ if (window.GeoExplorer) {
         layerContainerText: gettext("Map Layers"),
         layerSelectionLabel: gettext("View available data from:"),
         layerLocalLabel: gettext("Upload your own data"),
+
         layersContainerText: gettext("Data"),
         layersPanelText: gettext("Layers"),
         legendPanelText: gettext("Legend"),
@@ -40,7 +42,7 @@ if (window.GeoExplorer) {
         metaDataMapAbstract: gettext("Abstract (brief description)"),
         metaDataMapKeywords: gettext("Keywords (for Picasa and YouTube overlays)"),
         metaDataMapIntroText: gettext("Introduction (tell visitors more about your map view)"),
-        metaDataMapContact: gettext("Profile"),
+        metaDataMapContact: gettext("Contact"),
         metaDataMapId: gettext("Permalink"),
         metadataFormCancelText : gettext("Cancel"),
         metadataFormSaveAsCopyText : gettext("Save as Copy"),
@@ -78,7 +80,7 @@ if (window.GeoExplorer) {
         renameCategoryActionText: gettext('Rename Category'),
         renameCategoryActionTipText: gettext('Rename this category'),    
         removeCategoryActionText: gettext('Remove Category'),
-        removeCategoryActionTipText: gettext('Remove this category and layers'),         
+        removeCategoryActionTipText: gettext('Remove this category and layers'),
         layerPropertiesText: gettext('Layer Properties'),
         layerPropertiesTipText: gettext('Change layer format and style'),
         layerStylesText: gettext('Edit Styles'),
@@ -107,7 +109,11 @@ if (window.GeoNode && GeoNode.MapGrid) {
         createMapText : gettext("Create Map"),
         exportMapText: gettext("Export Map"),
         mapAbstractLabelText: gettext("Abstract"),
+<<<<<<< HEAD
         mapContactLabelText: gettext("Profile"),
+=======
+        mapContactLabelText: gettext("Contact"),
+>>>>>>> gncore/master
         mapGridText : gettext("Map"),
         mapLinkLabelText: gettext("View this Map"),
         mapTitleLabelText: gettext("Title"),
@@ -146,7 +152,10 @@ if (window.gxp && gxp.EmbedMapDialog) {
 
 if (window.GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
     Ext.apply(GeoExplorer.CapabilitiesRowExpander.prototype, {
+<<<<<<< HEAD
     	categoryText: gettext("Category:"),
+=======
+>>>>>>> gncore/master
         abstractText: gettext("Abstract:"),
         attributionEmptyText: gettext("No attribution information is provided for this layer."),
         attributionText: gettext("Provided by:"),
@@ -174,7 +183,7 @@ if (window.GeoExt && GeoExt.ux && GeoExt.ux.PrintPreview) {
 if (window.GeoNode && GeoNode.MapSearchTable) {
     Ext.apply(GeoNode.MapSearchTable.prototype, {
         titleHeaderText: gettext('Title'),
-        contactHeaderText: gettext("Profile"),
+        contactHeaderText: gettext("Contact"),
         lastModifiedHeaderText: gettext("Last Modified"),
         mapAbstractLabelText: gettext("Abstract"),
         mapLinkLabelText: gettext("View this Map"),
@@ -213,8 +222,11 @@ if (window.GeoNode && GeoNode.SearchTable) {
 }
 if (window.GeoNode && GeoNode.SearchTableRowExpander) {
     Ext.apply(GeoNode.SearchTableRowExpander.prototype, {
+<<<<<<< HEAD
     	categoryText:gettext("Category"),
     	categoryEmptyText:gettext('No category is provided for this layer.'),
+=======
+>>>>>>> gncore/master
         abstractText: gettext("Abstract:"),
         abstractEmptyText: gettext('No abstract is provided for this layer.'),
         attributionEmptyText: gettext("No attribution information is provided for this layer."),
@@ -234,8 +246,12 @@ if (window.GeoNode && GeoNode.DataCart) {
         emptySelectionText: gettext('No Layers Selected'),
         titleText: gettext('Title'),
         clearSelectedButtonText: gettext('Clear Selected'),
+<<<<<<< HEAD
         clearAllButtonText: gettext('Clear All'),
         addLayersButtonText: gettext('Add Selected Layers')
+=======
+        clearAllButtonText: gettext('Clear All') 
+>>>>>>> gncore/master
     });
 }
 

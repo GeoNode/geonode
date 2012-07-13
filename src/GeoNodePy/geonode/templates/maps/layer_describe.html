@@ -11,101 +11,101 @@
 {{block.super}}
 <script type="text/javascript">
     Ext.onReady(function() {
-{% autoescape off %}
+        {% autoescape off %}
         // get #poc_form and #metadata_form, and add a `onchange` handler
         // that shows the form if the blank option is selected.
-    	/*if (Ext.get('id_layer-topic_category').getValue()!="") {
-    		Ext.get("id_layer-topic_category_new").up("li").hide();
-    	}*/
+        /*if (Ext.get('id_layer-topic_category').getValue()!="") {
+         Ext.get("id_layer-topic_category_new").up("li").hide();
+         }*/
 
         Ext.get('id_layer-poc').on('change', function() {
-	        if (this.getValue()===""){
-			    Ext.get("poc_form").show();
-			}else{
-				Ext.get("poc_form").hide();
-			}
-		   });
-		Ext.get('id_layer-metadata_author').on('change', function() {
-	        if (this.getValue()===""){
-			    Ext.get("metadata_form").show();
-			}else{
-				Ext.get("metadata_form").hide();
-			}
-		});/*
-		Ext.get('id_layer-topic_category').on('change', function() {
-	        if (this.getValue()===""){
-			    Ext.get("id_layer-topic_category_new").up("li").show();
-			}else{
-				Ext.get("id_layer-topic_category_new").up("li").hide();
-			}
-		});	*/
-    	var mapCrumb = "";
-    	if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
-    		{
-    			mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
-    		}
+            if (this.getValue()===""){
+                Ext.get("poc_form").show();
+            }else{
+                Ext.get("poc_form").hide();
+            }
+        });
+        Ext.get('id_layer-metadata_author').on('change', function() {
+            if (this.getValue()===""){
+                Ext.get("metadata_form").show();
+            }else{
+                Ext.get("metadata_form").hide();
+            }
+        });/*
+         Ext.get('id_layer-topic_category').on('change', function() {
+         if (this.getValue()===""){
+         Ext.get("id_layer-topic_category_new").up("li").show();
+         }else{
+         Ext.get("id_layer-topic_category_new").up("li").hide();
+         }
+         });	*/
+        var mapCrumb = "";
+        if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
+        {
+            mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
+        }
 
         var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}}</a><span>&nbsp;/&nbsp;Edit</span>");
-		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+        Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 
-{% endautoescape %}
-	});
+        {% endautoescape %}
+    });
 </script>
 {% endblock %}
 {% block main %}
 <div class="twocol">
-  <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
-  <form action="{% url layer_metadata layer.typename %}" method="POST">
-	  {% csrf_token %}
-      <ul class="form">
-	      {{ layer_form.as_ul }}
+    <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
+    <form action="{% url layer_metadata layer.typename %}" method="POST">
+        {% csrf_token %}
+        <ul class="form">
+            {{ layer_form.as_ul }}
 
 
-      <fieldset id="category_form">
-	  <legend>* {%  trans "Category"  %}</legend>
-      {%  if category_form.errors %}<li>{{ category_form.errors.as_ul }}</li>{%  endif %}
-      <li>
+            <fieldset id="category_form">
+                <legend>* {%  trans "Category"  %}</legend>
+                {%  if category_form.errors %}<li>{{ category_form.errors.as_ul }}</li>{%  endif %}
+                <li>
 
-        {% autoescape off %}
-        {% for choice in category_form.category_choice_field.field.choices %}
-        <div style="width:50%;float:left;padding-bottom:5px;">
-            <input type="radio" name="category_choice_field" value="{{choice.0}}"
-            {% ifequal category_form.initial choice.0 %}
-                checked="checked"
-            {% endifequal %}/>
-            <label for="" style="display:inline">{{choice.1}}</label>
-        </div>
-        {% endfor %}
-      {% endautoescape %}
+                    {% autoescape off %}
+                    {% for choice in category_form.category_choice_field.field.choices %}
+                    <div style="width:50%;float:left;padding-bottom:5px;">
+                        <input type="radio" name="category_choice_field" value="{{choice.0}}"
+                        {% ifequal category_form.initial choice.0 %}
+                        checked="checked"
+                        {% endifequal %}/>
+                        <label for="" style="display:inline">{{choice.1}}</label>
+                    </div>
+                    {% endfor %}
+                    {% endautoescape %}
 
-      </li>
-      </fieldset>
+                </li>
+            </fieldset>
 
-          <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
-	        <legend>Attributes</legend>
-	        {{ attribute_form.management_form }}
-	        <table cellpadding="5" cellspacing="5" width="100%"><tr><th>Attribute</th><th>Display Title</th><th>Display Order</th><th>Visible?</th><th>Searchable?</th>
-	        {% for form in attribute_form.forms %}
-	        	{% if form.attribute %}
-	        	<tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.display_order}}</td><td> {{form.visible}}</td><td> {{form.searchable}}</td></tr>
-	        	{% endif %}
-	        {% endfor %}
-	        </table>
-          </fieldset>
-          <fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
-	        <legend>Point of Contact</legend>
+            <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
+            <legend>Attributes</legend>
+            {{ attribute_form.management_form }}
+            <table cellpadding="5" cellspacing="5" width="100%"><tr><th>Attribute</th><th>Display Title</th><th>Display Order</th><th>Visible?</th><th>Searchable?</th>
+                {% for form in attribute_form.forms %}
+                {% if form.attribute %}
+                <tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.display_order}}</td><td> {{form.visible}}</td><td> {{form.searchable}}</td></tr>
+                {% endif %}
+                {% endfor %}
+            </table>
+            </fieldset>
+            <fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
+            <legend>Point of Contact</legend>
             {{ poc_form.as_ul }}
-          </fieldset>
-          <fieldset id="metadata_form" {% if author_form.hidden %}style="display:none"{% endif %}>
-	        <legend>Metadata Provider</legend>
+            </fieldset>
+            <fieldset id="metadata_form" {% if author_form.hidden %}style="display:none"{% endif %}>
+            <legend>Metadata Provider</legend>
             {{ author_form.as_ul }}
-          </fieldset>
-          <input type="submit" value="{% trans "Update" %}"/>
-      </ul>
-  </form>
+            </fieldset>
+            <input type="submit" value="{% trans "Update" %}"/>
+        </ul>
+    </form>
 </div>
 <script type="text/javascript">
-{% autoescape off %}
+    {% autoescape off %}
     // Extify form fields
     Ext.select("input[type='text']").each(function(el) {
         if (el.hasClass("date")) {
@@ -134,6 +134,6 @@
             Ext.get("metadata_form").setStyle('display','none');
         }
     });
-{% endautoescape %}
+    {% endautoescape %}
 </script>
 {% endblock %}

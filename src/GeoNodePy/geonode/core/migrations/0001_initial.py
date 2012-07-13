@@ -15,7 +15,7 @@ class Migration(SchemaMigration):
             ('codename', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
             ('list_order', self.gf('django.db.models.fields.IntegerField')()),
-            ))
+        ))
         db.send_create_signal('core', ['ObjectRole'])
 
         # Adding unique constraint on 'ObjectRole', fields ['content_type', 'codename']
@@ -26,7 +26,7 @@ class Migration(SchemaMigration):
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('objectrole', models.ForeignKey(orm['core.objectrole'], null=False)),
             ('permission', models.ForeignKey(orm['auth.permission'], null=False))
-            ))
+        ))
         db.create_unique('core_objectrole_permissions', ['objectrole_id', 'permission_id'])
 
         # Adding model 'UserObjectRoleMapping'
@@ -36,7 +36,7 @@ class Migration(SchemaMigration):
             ('object_ct', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
             ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('role', self.gf('django.db.models.fields.related.ForeignKey')(related_name='user_mappings', to=orm['core.ObjectRole'])),
-            ))
+        ))
         db.send_create_signal('core', ['UserObjectRoleMapping'])
 
         # Adding unique constraint on 'UserObjectRoleMapping', fields ['user', 'object_ct', 'object_id', 'role']
@@ -49,7 +49,7 @@ class Migration(SchemaMigration):
             ('object_ct', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
             ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('role', self.gf('django.db.models.fields.related.ForeignKey')(related_name='generic_mappings', to=orm['core.ObjectRole'])),
-            ))
+        ))
         db.send_create_signal('core', ['GenericObjectRoleMapping'])
 
         # Adding unique constraint on 'GenericObjectRoleMapping', fields ['subject', 'object_ct', 'object_id', 'role']

@@ -17,7 +17,6 @@ Ext.onReady(function(){
   var searchButton = new Ext.Button({renderTo: 'submit_search', text: '{% trans "Search" %}',
                                      handler: submitForm});
   var searchInput = new Ext.form.TextField({applyTo: 'search_query', width: 350});
-
   var titleTemplate = new Ext.Template("<span>Search For Maps</span>");
 	Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 
@@ -58,7 +57,7 @@ Ext.onReady(function(){
     <p>{% trans "Use WorldMap to create your own maps.  Add layers from WorldMap or remote services, and style them." %}
     </p>
     <p>
-      <a href="{%url geonode.maps.views.newmap %}">{% trans "Create your own map" %}</a>
+      <a href="{%url maps_new %}">{% trans "Create your own map" %}</a>
     </p>
   </div>
 
