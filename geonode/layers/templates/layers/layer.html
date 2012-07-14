@@ -254,8 +254,10 @@
     {% endfor %}
 
     <li class="nav-header">{% trans "Download Metadata" %}</li>
-    {% for mimetype, mdtype, link in layer.metadata_links %}
-        <li><a href="{{ link }}">{{ mdtype }}</a></li>
+    {% for mlink in metadata_links %}
+          {% for link in mlink.items %}
+           <li><a href="{{link.1}}">{{link.0}}</a></li>
+          {% endfor %}
     {% empty %}
         <li>{% trans "No metadata links provided for this data." %}</li>
     {% endfor %}
