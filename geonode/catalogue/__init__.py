@@ -112,7 +112,7 @@ def create_record(item):
         record = catalogue.get_by_uuid(item.uuid)
         if record is None:
             md_link = catalogue.create_from_layer(item)
-            self.metadata_links = [("text/xml", "TC211", md_link)]
+            item.metadata_links = [("text/xml", "TC211", md_link)]
         else:
             catalogue.update_layer(item)
 
