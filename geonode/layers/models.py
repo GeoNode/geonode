@@ -558,7 +558,8 @@ class Layer(models.Model, PermissionLevelMixin):
 
             # Get metadata link from csw catalog
             record = get_record(self.uuid)
-            self.resource.metadata_links = record.links['metadata']
+            if record is not None:
+                self.resource.metadata_links = record.links['metadata']
  
             Layer.objects.gs_catalog.save(self._resource_cache)
         if self.poc and self.poc.user:
