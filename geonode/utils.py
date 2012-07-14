@@ -90,12 +90,6 @@ def get_wms():
     _wms = WebMapService(wms_url, xml=body)
     return _wms
 
-def get_csw():
-    global _csw
-    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    _csw = CatalogueServiceWeb(csw_url)
-    return _csw
-
 
 def _get_basic_auth_info(request):
     """

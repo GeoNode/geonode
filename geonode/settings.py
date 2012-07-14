@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     'geonode.people',
     'geonode.proxy',
     'geonode.security',
+    'geonode.catalogue',
 )
 
 LOGGING = {
@@ -151,11 +152,11 @@ LOGGING = {
         },
         "geonode": {
             "handlers": ["console"],
-            "level": "WARNING",
+            "level": "ERROR",
         },
         "gsconfig.catalog": {
             "handlers": ["console"],
-            "level": "WARNING",
+            "level": "ERROR",
         },
     },
 }
@@ -255,6 +256,7 @@ NOSE_ARGS = [
       '--cover-tests',
       '--detailed-errors',
       '--with-xunit',
+      '--stop',
       ]
 
 #
@@ -268,21 +270,32 @@ SITEURL = "http://localhost:8000/"
 # GeoServer information
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
+GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
 
 # The username and password for a user that can add and
 # edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 
+# CSW settings
+CATALOGUE = {
+    'default': {
+        # The underlying CSW implementation
+        'ENGINE': 'geonode.catalogue.backends.geonetwork',
 
-# GeoNetwork information
+        # enabled formats
+        #'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
+        'FORMATS': ['TC211'],
 
-# The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
-
-# The username and password for a user with write access to GeoNetwork
-GEONETWORK_CREDENTIALS = "admin", "admin"
-
+        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+        #'url': 'http://localhost/pycsw/trunk/csw.py',
+        'URL': 'http://localhost:8001/geonetwork/srv/en/csw',
+        #'url': 'http://localhost:8001/deegree-csw-demo-3.0.4/services',
+    
+        # login credentials (for GeoNetwork)
+        'USER': 'admin',
+        'PASSWORD': 'admin'
+    }
+}
 
 # GeoNode javascript client configuration
 

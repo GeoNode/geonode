@@ -17,7 +17,7 @@ from paver.path25 import pushd
 
 OUTPUT_DIR = path(os.path.abspath('dist'))
 BUNDLE = path(os.path.join(OUTPUT_DIR, 'geonode.pybundle'))
-GEOSERVER_TEST_DATA = path(os.path.abspath(os.path.join('build', 'gs_test_data')))
+GEOSERVER_TEST_DATA = path(os.path.abspath(os.path.join('geoserver-geonode-ext', 'target', 'data_dir')))
 
 
 assert sys.version_info >= (2,6), \
@@ -58,6 +58,7 @@ def setup_geoserver(options):
     with pushd('geoserver-geonode-ext'):
         sh("mvn clean install jetty:stop")
 
+#FIXME(Ariel): This task is not used at all, should it just be removed?
 @task
 def setup_geonetwork(options):
     """Fetch the geonetwork.war to use with GeoServer for testing."""
@@ -166,7 +167,6 @@ def setup_client(options):
 @task
 @needs([
     'setup_geoserver',
-    'setup_geonetwork',
     'setup_client',
 ])
 def setup(options):
@@ -201,6 +201,8 @@ def package_geoserver(options):
     geoserver_target.copy(options.deploy.out_dir)
 
 
+
+#FIXME(Ariel): This task is not used at all, should it just be removed?
 def package_geonetwork(options):
     """Package GeoNetwork WAR file for deployment."""
     geonetwork_target.copy(options.deploy.out_dir)
@@ -239,7 +241,6 @@ def release(options):
     if not hasattr(options, 'skip_packaging'):
         package_dir()
         package_geoserver()
-        package_geonetwork()
         package_webapp()
     if hasattr(options, 'name'):
         pkgname = options.name
@@ -266,7 +267,6 @@ def release(options):
 @task
 @needs(['start_geoserver',
         'sync',
-        'setup_client',
         'start_django',])
 def start():
     """
@@ -330,12 +330,13 @@ def start_geoserver(options):
     """
     Start GeoNode's Java apps (GeoServer with GeoNode extensions and GeoNetwork)
     """
-    gs_data = getattr(options,'gs_data','')
-
+    gs_data = getattr(options, 'gs_data', None)
+    extra_options = '-o -DskipTests -l jetty.log'
+    if gs_data and not gs_data.exists(): 
+         path('geoserver-geonode-ext/src/main/webapp/data/').copytree(gs_data)
+         extra_options += ' -DGEOSERVER_DATA_DIR=%s' % options.gs_data
     with pushd('geoserver-geonode-ext'):
-        if gs_data and not path(gs_data).exists():
-            raise BuildFailure('specified gs_data directory "%s" does not exist' % gs_data)
-        sh('GS_DATA="%s" ./startup.sh &' % gs_data)
+        sh('mvn jetty:run %s &' % extra_options)
 
 
 @task
@@ -367,6 +368,12 @@ def test_integration(options):
     # start geoserver using test data_dir (relative to geoserver dir)
     #FIXME(Ariel): Use more robust path handling here.
     options.gs_data = GEOSERVER_TEST_DATA
+    
+    # cleanout testdata and rebuild datadir
+    if options.gs_data.exists():
+        options.gs_data.rmtree()
+
+
     print "Setting GEOSERVER_DATA_DIR to '%s'" % options.gs_data
     # Start Django and GeoServer
     call_task('start') 
@@ -396,10 +403,6 @@ def reset():
     """
     sh("rm -rf geonode/development.db")
     sh("rm -rf build/gs_data")
-    # TODO: There should be a better way to clean out GeoNetworks data
-    # Rather than just deleting the entire app
-    sh("rm -rf build/webapps/geonetwork")
-    setup_geonetwork()
 
 @task
 def setup_data():
