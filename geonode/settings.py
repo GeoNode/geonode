@@ -270,7 +270,7 @@ SITEURL = "http://localhost:8000/"
 # GeoServer information
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
+GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 
 # The username and password for a user that can add and
 # edit layer details on GeoServer
