@@ -23,6 +23,7 @@ from lxml import etree
 import geonode.maps.models
 import geonode.maps.views
 import geonode.layers.utils
+import geonode.layers.views
 
 from geonode import GeoNodeException
 
