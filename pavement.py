@@ -268,7 +268,6 @@ def release(options):
 @task
 @needs(['start_geoserver',
         'sync',
-        'setup_client',
         'start_django',])
 def start():
     """
