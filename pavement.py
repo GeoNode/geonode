@@ -350,10 +350,6 @@ def test(options):
 
 @task
 def setup_test_data():
-    grab("http://dev.geonode.org/test-data/geonode_test_data.tgz", "build/geonode_test_data.tgz")
-    with pushd("build"):
-        sh("tar zxvf geonode_test_data.tgz")
-    
     # cleanout testdata and rebuild datadir
     if GEOSERVER_TEST_DATA.exists():
         GEOSERVER_TEST_DATA.rmtree()
