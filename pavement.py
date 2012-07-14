@@ -173,6 +173,8 @@ def setup(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     #FIXME(Ariel): Delete this once the last requirement is available in pypi
     sh('pip install -r requirements.txt')
+    # Needed to re-install in dev mode  after a git clean, better safe than sorry.
+    sh('pip install -e .')
 
     info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""") 
 
@@ -552,9 +554,9 @@ def kill(arg1, arg2):
                         % (arg1, '\n'.join([l.strip() for l in lines])))
 
 
-def waitfor(url):
+def waitfor(url, timeout=120):
     started = False
-    for a in xrange(60):
+    for a in xrange(timeout):
         try:
             resp = urllib.urlopen(url)
         except IOError, e:
