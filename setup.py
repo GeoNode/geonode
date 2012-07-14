@@ -37,7 +37,7 @@ setup(name='GeoNode',
         "dialogos==0.1",
         "South==0.7.3",
         "django-forms-bootstrap==2.0.3.post1",
-        "gsconfig==0.5.4",
+        "gsconfig==0.5.5",
         # we use paste as an development server
         "paste>=1.3",
         "PasteDeploy",
