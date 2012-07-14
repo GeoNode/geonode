@@ -26,7 +26,7 @@ from geonode.layers.utils import (
 from .utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
-from geonode.csw import get_catalogue
+from geonode.catalogue import get_catalogue
 
 from geonode.gs_helpers import cascading_delete, fixup_style
 import gisdata
