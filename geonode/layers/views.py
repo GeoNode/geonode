@@ -485,7 +485,7 @@ def _layer_search(query, start, limit, **kw):
         result['prev'] = reverse('layer_search_page') + '?' + params
 
     if result['next_page'] > 0:
-        params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
+        params = urlencode({'q': query, 'start': result['next_page'] - 1, 'limit': limit})
         result['next'] = reverse('layer_search_page') + '?' + params
     
     return result

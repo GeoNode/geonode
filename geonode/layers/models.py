@@ -559,7 +559,10 @@ class Layer(models.Model, PermissionLevelMixin):
             # Get metadata link from csw catalog
             record = get_record(self.uuid)
             if record is not None:
-                self.resource.metadata_links = record.links['metadata']
+                links = record.links['metadata']
+                for item in links:
+                    key, value = item.popitem()
+                    self.resource.metadata_links.append((key, key, value))
  
             Layer.objects.gs_catalog.save(self._resource_cache)
         if self.poc and self.poc.user:
@@ -684,7 +687,7 @@ def delete_layer(instance, sender, **kwargs):
     Removes the layer from GeoServer and Catalogue
     """
     instance.delete_from_geoserver()
-    remove_record(instance)
+    remove_record(instance.uuid)
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()

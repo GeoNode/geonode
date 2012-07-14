@@ -77,7 +77,7 @@ def get_record(uuid):
 
 def search_records(keywords, start, limit, bbox):
   with Catalogue() as catalogue: 
-        bbox = catalogue.normalize_bbox(kw['bbox'])
+        bbox = catalogue.normalize_bbox(bbox)
         catalogue.search(keywords, start+1, limit, bbox)
 
         # build results into JSON for API
