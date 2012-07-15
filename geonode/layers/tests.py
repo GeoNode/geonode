@@ -20,10 +20,9 @@ from django.template.loader import get_template
 from django.forms import ValidationError
 from lxml import etree
 
-import geonode.maps.models
-import geonode.maps.views
 import geonode.layers.utils
 import geonode.layers.views
+import geonode.layers.models
 
 from geonode import GeoNodeException
 
@@ -571,7 +570,7 @@ class LayersTest(TestCase):
 
             with nested(
                 patch.object(geonode.utils, '_wms', new=MockWMS()),
-                patch('geonode.maps.models.Layer.objects.gs_catalog'),
+                patch('geonode.layers.models.Layer.objects.gs_catalog'),
             ) as (mock_wms, mock_gs):
                 # Setup
                 mock_gs.get_store.return_value.get_resources.return_value = []
@@ -585,7 +584,7 @@ class LayersTest(TestCase):
                 mock_resource.workspace.name = "geonode"
                 mock_resource.native_bbox = ["0", "0", "0", "0"]
                 mock_resource.projection = "EPSG:4326"
-                
+
                 # Exercise
                 base_file = os.path.join(d, 'foo.shp')
                 owner = User.objects.get(username="admin")

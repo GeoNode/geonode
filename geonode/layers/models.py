@@ -562,10 +562,7 @@ class Layer(models.Model, PermissionLevelMixin):
             catalogue = get_catalogue()
             record = catalogue.get_record(self.uuid)
             if record is not None:
-                links = record.links['metadata']
-                for item in links:
-                    self.resource.metadata_links.append(item)
- 
+                self.metadata_links = record.links['metadata']
             Layer.objects.gs_catalog.save(self._resource_cache)
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
