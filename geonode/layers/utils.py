@@ -23,7 +23,7 @@ from django.conf import settings
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.utils import check_geonode_is_up
-from geonode.catalogue import remove_record
+from geonode.catalogue import get_catalogue
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.people.models import Contact
@@ -216,7 +216,8 @@ def cleanup(name, uuid):
    logger.warning('Deleting dangling Catalogue record for [%s] '
                   '(no Django record to match)', name)
 
-   remove_record(uuid)
+   catalogue = get_catalogue()
+   catalogue.remove_record(uuid)
    logger.warning('Finished cleanup after failed Catalogue/Django '
                   'import for layer: %s', name)
 

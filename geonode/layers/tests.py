@@ -73,37 +73,38 @@ sample_links = {
                }
 record.links = sample_links
 
-item = Mock()
-item.protocol = 'WWW:LINK-1.0-http--link'
-item.url = 'http://google.com/'
-item.description = 'descriptive description'
-record.distribution.online = [item,]
-
-geonode.layers.views.get_record = Mock()
-geonode.layers.views.get_record.return_value = record
-
-geonode.layers.models.get_record = Mock()
-geonode.layers.models.get_record.return_value = record
-
-geonode.layers.models.create_record = Mock()
-geonode.layers.models.create_record.return_value = Mock()
-
-geonode.layers.models.remove_record = Mock()
-geonode.layers.models.remove_record.return_value = Mock()
-
-geonode.layers.utils.remove_record = Mock()
-geonode.layers.utils.remove_record.return_value = Mock()
-
 sample_search_result = {
         'rows': [{'uuid': '0'},],
          'total': 1,
          'next_page': None,
         }
 
-geonode.layers.views.search_records = Mock()
-geonode.layers.views.search_records.return_value = sample_search_result
 
-from geonode.layers import views
+item = Mock()
+item.protocol = 'WWW:LINK-1.0-http--link'
+item.url = 'http://google.com/'
+item.description = 'descriptive description'
+record.distribution.online = [item,]
+
+catalogue = Mock()
+catalogue.get_record = Mock()
+catalogue.get_record.return_value = record
+
+catalogue.create_record = Mock()
+catalogue.create_record.return_value = Mock()
+
+catalogue.remove_record = Mock()
+catalogue.remove_record.return_value = Mock()
+
+catalogue.search_records = Mock()
+catalogue.search_records.return_value = sample_search_result
+
+get_catalogue = Mock()
+get_catalogue.return_value = catalogue
+
+geonode.layers.views.get_catalogue = get_catalogue
+geonode.layers.models.get_catalogue = get_catalogue
+geonode.layers.utils.get_catalogue = get_catalogue
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
@@ -571,8 +572,7 @@ class LayersTest(TestCase):
             with nested(
                 patch.object(geonode.utils, '_wms', new=MockWMS()),
                 patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.catalogue.get_record'),
-            ) as (mock_wms, mock_gs, mock_csw):
+            ) as (mock_wms, mock_gs):
                 # Setup
                 mock_gs.get_store.return_value.get_resources.return_value = []
                 mock_resource = mock_gs.get_resource.return_value
@@ -585,8 +585,7 @@ class LayersTest(TestCase):
                 mock_resource.workspace.name = "geonode"
                 mock_resource.native_bbox = ["0", "0", "0", "0"]
                 mock_resource.projection = "EPSG:4326"
-                mock_csw.return_value = record
-
+                
                 # Exercise
                 base_file = os.path.join(d, 'foo.shp')
                 owner = User.objects.get(username="admin")

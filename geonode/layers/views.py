@@ -22,7 +22,7 @@ from django.utils.html import escape
 from django.views.decorators.http import require_POST
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
-from geonode.catalogue import get_record, search_records
+from geonode.catalogue import get_catalogue
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
 from geonode.utils import default_map_config
@@ -471,7 +471,8 @@ def layer_search(request):
 def _layer_search(query, start, limit, **kw):
     keywords = _split_query(query)
     bbox = getattr(kw, 'bbox', None)
-    result = search_records(keywords, start, limit, bbox)
+    catalogue = get_catalogue()
+    result = catalogue.search_records(keywords, start, limit, bbox)
 
     result['query_info'] = {
         'start': start,
@@ -496,7 +497,8 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
     if  uuid is None:
         return HttpResponse(status=400)
 
-    record = get_record(uuid)
+    catalogue = get_catalogue()
+    record = catalogue.get_record(uuid)
 
     if record is None:
         return HttpResponse('No metadata found!', status=500)
