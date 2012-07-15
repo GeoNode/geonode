@@ -26,7 +26,7 @@ from geonode.layers.utils import (
 from .utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
-from geonode.catalogue import get_record, remove_record
+from geonode.catalogue import get_catalogue
 
 from geonode.gs_helpers import cascading_delete, fixup_style
 import gisdata
@@ -460,8 +460,9 @@ class GeoNodeMapTest(TestCase):
         # Test Uploading then Deleting a Shapefile from GeoNetwork
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
-        remove_record(shp_layer.uuid)
-        shp_layer_info = get_record(shp_layer.uuid)
+        catalogue = get_catalogue()
+        catalogue.remove_record(shp_layer.uuid)
+        shp_layer_info = catalogue.get_record(shp_layer.uuid)
         assert shp_layer_info == None
 
         # Clean up and completely delete the layer
@@ -470,8 +471,8 @@ class GeoNodeMapTest(TestCase):
         # Test Uploading then Deleting a TIFF file from GeoNetwork
         tif_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         tif_layer = file_upload(tif_file)
-        remove_record(tif_layer.uuid)
-        tif_layer_info = get_record(tif_layer.uuid)
+        catalogue.remove_record(tif_layer.uuid)
+        tif_layer_info = catalogue.get_record(tif_layer.uuid)
         assert tif_layer_info == None
 
         # Clean up and completely delete the layer
@@ -503,8 +504,10 @@ class GeoNodeMapTest(TestCase):
         self.assertRaises(FailedRequestError,
             lambda: gs_cat.get_store(shp_store_name))
 
+        catalogue = get_catalogue()
+
         # Verify that it no longer exists in GeoNetwork
-        shp_layer_gn_info =get_record(uuid)
+        shp_layer_gn_info = catalogue.get_record(uuid)
         assert shp_layer_gn_info == None
 
         # Check that it was also deleted from GeoNodes DB

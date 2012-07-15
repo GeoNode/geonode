@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
-from geonode.catalogue import get_record, create_record, remove_record
+from geonode.catalogue import get_catalogue
 from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 
 from geonode.security.models import PermissionLevelMixin
@@ -346,7 +346,8 @@ class Layer(models.Model, PermissionLevelMixin):
         # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
 
         # Check the layer is in the catalogue and points back to get_absolute_url
-        catalogue_layer = get_record(self.uuid)
+        catalogue = get_catalogue()
+        catalogue_layer = catalogue.get_record(self.uuid)
 
         if hasattr(catalogue_layer, 'distribution') and hasattr(catalogue_layer.distribution, 'online'):
             for link in catalogue_layer.distribution.online:
@@ -472,7 +473,8 @@ class Layer(models.Model, PermissionLevelMixin):
            NOTE: we are NOT using the above properties because this will
            break the OGC W*S Capabilities rules
         """
-        record = get_record(self.uuid)
+        catalogue = get_catalogue()
+        record = catalogue.get_record(self.uuid)
         metadata_links = record.links['metadata']
         return metadata_links
 
@@ -557,12 +559,12 @@ class Layer(models.Model, PermissionLevelMixin):
             self.resource.keywords = self.keyword_list()
 
             # Get metadata link from csw catalog
-            record = get_record(self.uuid)
+            catalogue = get_catalogue()
+            record = catalogue.get_record(self.uuid)
             if record is not None:
                 links = record.links['metadata']
                 for item in links:
-                    key, value = item.popitem()
-                    self.resource.metadata_links.append((key, key, value))
+                    self.resource.metadata_links.append(item)
  
             Layer.objects.gs_catalog.save(self._resource_cache)
         if self.poc and self.poc.user:
@@ -590,7 +592,8 @@ class Layer(models.Model, PermissionLevelMixin):
             self.title = self.name
 
     def _populate_from_catalogue(self):
-        meta = get_record(self.uuid)
+        catalogue = get_catalogue()
+        meta = catalogue.get_record(self.uuid)
         if meta is None:
             return
         if hasattr(meta.distribution, 'online'):
@@ -687,7 +690,8 @@ def delete_layer(instance, sender, **kwargs):
     Removes the layer from GeoServer and Catalogue
     """
     instance.delete_from_geoserver()
-    remove_record(instance.uuid)
+    catalogue = get_catalogue()
+    catalogue.remove_record(instance.uuid)
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
@@ -702,7 +706,8 @@ def post_save_layer(instance, sender, **kwargs):
     if kwargs['created']:
         instance._populate_from_gs()
 
-    create_record(instance)
+    catalogue = get_catalogue()
+    catalogue.create_record(instance)
 
     if kwargs['created']:
         instance._populate_from_catalogue()
