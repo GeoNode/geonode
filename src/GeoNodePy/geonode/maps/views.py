@@ -363,7 +363,8 @@ def newmap(request):
         'config': config,
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
-        'maptitle': settings.SITENAME
+        'maptitle': settings.SITENAME,
+        'DB_DATASTORE' : settings.DB_DATASTORE
     }))
 
 
@@ -994,6 +995,7 @@ def view(request, mapid, snapshot=None):
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'DB_DATASTORE' : settings.DB_DATASTORE,
         'maptitle': map.title,
         'urlsuffix': get_suffix_if_custom(map),
     }))
