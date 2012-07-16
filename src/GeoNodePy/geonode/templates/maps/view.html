@@ -48,8 +48,37 @@ var init = function() {
             {
                 ptype: "gxp_coordinatetool",
                 title: coordinateText,
-                actionTarget:  {target: "paneltbar"}
-            }
+                iconCls: null,
+                toggleGroup: 'featureGroup',
+                pressed: false
+            }{% if user.is_authenticated and DB_DATASTORE  %},
+            {
+                ptype: "gxp_featuremanager",
+                id: "feature_manager",
+                paging: false,
+                autoSetLayer: true,
+                autoLoadFeatures: true,
+                autoActivate: false,
+                listeners: {
+                    'layerchange': function(mgr, layer, schema) {
+                        app.checkLayerPermissions(layer);
+                    }
+                },
+                actionTarget:  {target: "paneltbar"},
+                toggleGroup: 'featureGroup'
+            },
+            {
+                ptype: "gxp_featureeditor",
+                id: "gn_layer_editor",
+                featureManager: "feature_manager",
+                autoLoadFeature: true,
+                iconClsAdd: null,
+                iconClsEdit: null,
+                createFeatureActionText: '<span class="x-btn-text" >' + "Create Feature" + '</span>',
+                editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
+                actionTarget:  {target: "paneltbar", index: 4},
+                toggleGroup: 'featureGroup'
+            }{% endif %}
         ],
         proxy: "/proxy/?url=",
 
@@ -62,6 +91,9 @@ var init = function() {
         siteUrl: "{{ SITE_URL }}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         csrfToken: "{{ csrf_token }}",
+        {% if user.is_authenticated %}
+        db_datastore: {{ DB_DATASTORE|lower }},
+        {% endif %}
         authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
     }, {{ config }});
 
@@ -144,7 +176,9 @@ window.onload = init;
 </div>
         <div id="externalDiv"></div>
         <div id="uploadDiv"></div>
+        {% if user.is_authenticated and DB_DATASTORE  %}
         <div id="createDiv"></div>
+        {% endif %}
         <div id="warpDiv">
             <div id="tabContainer" style="padding:20px;">
 
