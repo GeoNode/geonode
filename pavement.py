@@ -375,7 +375,7 @@ def test_integration(options):
 
     success = False
     try:
-        sh("python manage.py test tests.integration --noinput")
+        sh("python manage.py test geonode.tests.integration --noinput")
     except BuildFailure, e:
         print 'Tests failed! %s' % str(e)
     else:
