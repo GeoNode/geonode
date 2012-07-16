@@ -36,7 +36,7 @@ Ext.onReady(function() {
         rest: "/maps/",
         homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
-        localCSWBaseUrl: "{{ GEONETWORK_BASE_URL }}srv/en/csw",
+        localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
         csrfToken: "{{ csrf_token }}",
         authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
     }, {{ config }});
