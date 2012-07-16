@@ -10,6 +10,7 @@ pip-log.txt
 geonode/development.db
 geoserver-geonode-ext/jetty.log
 paster.log
+paster.pid
 geoserver-geonode-ext/logs/
 
 # Static media handling
