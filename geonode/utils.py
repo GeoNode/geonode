@@ -64,7 +64,7 @@ def check_geonode_is_up():
     # except:
     #     msg = ('Cannot connect to the GeoNetwork at %s\n'
     #            'Please make sure you have started '
-    #            'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
+    #            'GeoNetwork.' % settings.CATALOGUE['default']['URL'])
     #     raise GeoNodeException(msg)
     pass
 
