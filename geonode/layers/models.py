@@ -13,6 +13,7 @@ from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from geonode import GeoNodeException
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
@@ -278,8 +279,9 @@ class Layer(models.Model, PermissionLevelMixin):
             except Exception:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
-                # TODO: This is a bad idea to eat errors like this.
-                pass 
+                # But at least this indicates a problem
+                notiff = mark_safe("<del>GeoTIFF</del>")
+                links.extend([("tiff",notiff,"#")])
 
         def wms_link(mime):
             return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({

@@ -69,7 +69,24 @@
             config = Ext.apply(config, {{ viewer|safe }});
 
             app = new GeoExplorer.Viewer(config);
-            
+           
+            new GeoNode.PermissionsEditor({
+                levels: {
+                    'admin': 'layer_admin',
+                    'readwrite': 'layer_readwrite',
+                    'readonly': 'layer_readonly',
+                    '_none': '_none'
+                },
+                renderTo: "permissions_form",
+                userLookup: "{% url auth_ajax_lookup %}",
+                permissions: {{ permissions_json }},
+                listeners: {
+                    updated: function(perms) {
+                        var submitTo = "{% url layer_ajax_perm layer.typename %}";
+                        Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
+                    }
+                }
+            })
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
                 app.selectedLayer.getLayer().mergeNewParams({
                     "STYLES": elem.value,
