@@ -1,4 +1,5 @@
 # To run the integration tests, do:
 paver setup_test_data reset start
-python manage.py test tests.integration
+python manage.py test geonode.tests.integration
+python manage.py test geonode.tests.csw
 paver stop
