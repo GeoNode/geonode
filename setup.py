@@ -19,8 +19,6 @@ setup(name='GeoNode',
       package_dir={'geonode': 'geonode'},
       package_data={'geonode': ['geonode/static/*']},
       install_requires=[
-        # setup
-        "Paver",
         # native dependencies
         "PIL",
         "lxml",
@@ -37,7 +35,9 @@ setup(name='GeoNode',
         "dialogos==0.1",
         "South==0.7.3",
         "django-forms-bootstrap==2.0.3.post1",
-        "gsconfig==0.5.4",
+        "gsconfig==0.5.5",
+        # setup
+        "Paver",
         # we use paste as an development server
         "paste>=1.3",
         "PasteDeploy",
@@ -51,9 +51,6 @@ setup(name='GeoNode',
         # testing
         "django-nose",
         "nose",
-        "nose-cover3",
-        "coverage==3.4",
-        "nosexcover",
         "mock",
         ],
       zip_safe=False,
