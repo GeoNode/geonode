@@ -64,7 +64,7 @@ def check_geonode_is_up():
     # except:
     #     msg = ('Cannot connect to the GeoNetwork at %s\n'
     #            'Please make sure you have started '
-    #            'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
+    #            'GeoNetwork.' % settings.CATALOGUE['default']['URL'])
     #     raise GeoNodeException(msg)
     pass
 
@@ -89,12 +89,6 @@ def get_wms():
     body = http.request(wms_url)[1]
     _wms = WebMapService(wms_url, xml=body)
     return _wms
-
-def get_csw():
-    global _csw
-    csw_url = "%ssrv/en/csw" % settings.GEONETWORK_BASE_URL
-    _csw = CatalogueServiceWeb(csw_url)
-    return _csw
 
 
 def _get_basic_auth_info(request):
