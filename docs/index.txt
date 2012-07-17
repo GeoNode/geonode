@@ -59,6 +59,7 @@ Administrators are expected to have some experience with Linux systems but they 
  * :doc:`Changing the Default Language <deploy/language>`
  * :doc:`Backup configuration & data <deploy/backup>`
  * :doc:`Management commands for GeoNode <deploy/commands>`
+ * :doc:`Configuring Alternate CSW Backends <deploy/csw>`
 
 .. toctree::
     :hidden:

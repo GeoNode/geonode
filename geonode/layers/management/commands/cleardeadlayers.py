@@ -15,7 +15,7 @@ class Command(BaseCommand):
     @transaction.commit_on_success()
     def handle(self, *args, **keywordargs):
         try:
-            pre_delete.disconnect(layer_delete, sender=Layer)
+            pre_delete.disconnect(delete_layer, sender=Layer)
             cat = Layer.objects.gs_catalog
             storenames = [s.name for s in cat.get_stores()]
             layernames = [l.name for l in cat.get_resources()]

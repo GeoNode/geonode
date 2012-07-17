@@ -4,38 +4,31 @@
 build
 target
 *.mo
-
-# virtualenv stuff
-/bin
-/include
-/lib/
-/lib64
-/setuptools-0.6c11-py2.6.egg
-
-# supporting stuff pulled in by paver script
-/geonode/static/geonode/externals
-/geonode/static/geonode/script
-/geonode/static/geonode/theme
-/geonode/development.db
-/django.log
-/jetty.log
-/geoserver-geonode-ext/logs/
-
-# Directory created by collectstatic
-geonode/static_root/
-
-# OSX specific
-.Python
-.DS_Store
-
-# pip output files
 pip-log.txt
 
-#Temporary files
-*~
+# supporting stuff pulled in by paver script
+geonode/development.db
+geoserver-geonode-ext/jetty.log
+paster.log
+paster.pid
+geoserver-geonode-ext/logs/
+
+# Static media handling
+geonode/static/geonode/externals/
+geonode/static/geonode/script/
+geonode/static/geonode/theme/
+geonode/static_root/
 
 #Testing output
 .coverage
 .noseids
 geonode_test_data/
 nosetests.xml
+
+#Temporary files
+*~
+*.swp
+
+# OSX specific
+.Python
+.DS_Store

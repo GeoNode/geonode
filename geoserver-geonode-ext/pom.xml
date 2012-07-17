@@ -205,9 +205,8 @@
     </dependency>
   </dependencies>
   <properties>
-    <geotools.version>8-SNAPSHOT</geotools.version>
-    <geoserver.version>2.2-SNAPSHOT</geoserver.version>
-    <geotools.version>8-SNAPSHOT</geotools.version>
+    <geotools.version>8.0-RC2</geotools.version>
+    <geoserver.version>2.2-RC1</geoserver.version>
     <jetty.version>6.1.8</jetty.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
@@ -243,7 +242,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
         <configuration>
+          <encoding>UTF-8</encoding>
           <source>1.5</source>
           <target>1.5</target>
         </configuration>
@@ -252,6 +253,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4</version>
         <configuration>
             <argLine>-XX:MaxPermSize=256m</argLine>
         </configuration>
@@ -312,6 +314,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
+        <version>2.2</version>
         <configuration>
           <warName>geoserver</warName> 
           <webappDirectory>${project.build.directory}/geoserver</webappDirectory> -->

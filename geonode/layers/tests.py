@@ -4,6 +4,8 @@ import base64
 import shutil
 import tempfile
 
+from collections import namedtuple
+
 from contextlib import nested
 from mock import Mock, patch
 
@@ -18,8 +20,9 @@ from django.template.loader import get_template
 from django.forms import ValidationError
 from lxml import etree
 
-import geonode.maps.models
-import geonode.maps.views
+import geonode.layers.utils
+import geonode.layers.views
+import geonode.layers.models
 
 from geonode import GeoNodeException
 
@@ -32,28 +35,19 @@ from geonode.people.utils import get_valid_user
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 
-_gs_resource = Mock()
-_gs_resource.native_bbox = [1, 2, 3, 4]
+from django.db.models import signals
+from geonode.layers.models import post_save_layer
 
 
 _gs_resource = Mock()
 _gs_resource.native_bbox = [1, 2, 3, 4]
 _gs_resource.keywords = [u'keywords', u'saving']
-Layer.objects.geonetwork = Mock()
+_gs_resource.workspace.name = 'workspace'
 Layer.objects.gs_catalog = Mock()
 
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
-# geonode.layers.models.get_csw = Mock()
-
-
-_csw_resource = Mock()
-_csw_resource.protocol = "WWW:LINK-1.0-http--link"
-_csw_resource.url = "http://example.com/"
-_csw_resource.description = "example link"
-
 # we revisit this mock wms object
-
 fake_wms = Mock()
 fake_wms.__getitem__ = Mock()
 fake_wms.contents = []
@@ -61,31 +55,55 @@ fake_wms.contents = []
 geonode.layers.models.get_wms = fake_wms
 geonode.layers.models._wms = fake_wms
 
-geonode.layers.models.get_csw = Mock()
-geonode.layers.models.get_csw.return_value.getrecordbyid.return_value = None
-geonode.layers.models.get_csw.return_value.records.values.return_value = [None]
-geonode.layers.models.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
-geonode.layers.models.get_csw.return_value.records.get.return_value.identification.keywords = []
+class Record(Mock):
+    def __iter__(self):
+        sample_list = [1, 2, 3]
+        return sample_list.__iter__()
 
-# for some reason we need to import views in order to be able to set
-# the value of the get_csw function. FIXME
-from geonode.layers import views
+    def __next__(self):
+        pass
+    def __prev__(self):
+        pass
 
-geonode.layers.views.get_csw = Mock()
-geonode.layers.views.get_csw.return_value.getrecordbyid.return_value = None
-geonode.layers.views.get_csw.return_value.records.values.return_value = [None]
-geonode.layers.views.get_csw.return_value.records.get.return_value.distribution.online = [_csw_resource]
-geonode.layers.views.get_csw.return_value.records.get.return_value.identification.keywords = []
+record = Record()
+sample_links = {
+                'metadata': [('text/xml', 'TC211', 'http://example.com/metadata'),],
+                'download': [('png', 'http://google.com/'),],
+               }
+record.links = sample_links
 
-geonode.layers.views._extract_links = Mock()
-geonode.layers.views._extract_links.return_value = []
-
-DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':''}}
-
-geonode.layers.views._layer_search = Mock()
-geonode.layers.views._layer_search.return_value = DUMMY_RESULT
+sample_search_result = {
+        'rows': [{'uuid': '0'},],
+         'total': 1,
+         'next_page': None,
+        }
 
 
+item = Mock()
+item.protocol = 'WWW:LINK-1.0-http--link'
+item.url = 'http://google.com/'
+item.description = 'descriptive description'
+record.distribution.online = [item,]
+
+catalogue = Mock()
+catalogue.get_record = Mock()
+catalogue.get_record.return_value = record
+
+catalogue.create_record = Mock()
+catalogue.create_record.return_value = Mock()
+
+catalogue.remove_record = Mock()
+catalogue.remove_record.return_value = Mock()
+
+catalogue.search_records = Mock()
+catalogue.search_records.return_value = sample_search_result
+
+get_catalogue = Mock()
+get_catalogue.return_value = catalogue
+
+geonode.layers.views.get_catalogue = get_catalogue
+geonode.layers.models.get_catalogue = get_catalogue
+geonode.layers.utils.get_catalogue = get_catalogue
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
@@ -372,10 +390,6 @@ class LayersTest(TestCase):
         '''
         layer = Layer.objects.all()[0]
 
-        # save to geonetwork so we know the uuid is consistent between
-        # django db and geonetwork
-        layer.save_to_geonetwork()
-
         c = Client()
         response = c.get('/data/search/detail', {'uuid':layer.uuid})
         self.failUnlessEqual(response.status_code, 200)
@@ -383,12 +397,13 @@ class LayersTest(TestCase):
     def test_search_template(self):
 
         layer = Layer.objects.all()[0]
-        tpl = get_template("csw/transaction_insert.xml")
+        tpl = get_template("catalogue/transaction_insert.xml")
         ctx = Context({
             'layer': layer,
         })
         md_doc = tpl.render(ctx)
-        self.assert_("None" not in md_doc, "None in " + md_doc)
+        layer_path = layer.get_absolute_url()
+        self.assert_(layer_path in md_doc, "%s not found in " %  layer_path + md_doc)
 
 
     def test_describe_data(self):
@@ -409,8 +424,6 @@ class LayersTest(TestCase):
         lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
         self.assertEqual(lyr.keyword_list(), ["keywords", "saving"])
-        self.assertEqual(lyr.resource.keywords, ["keywords", "saving"])
-        self.assertEqual(_gs_resource.keywords, ["keywords", "saving"])
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
@@ -557,9 +570,8 @@ class LayersTest(TestCase):
 
             with nested(
                 patch.object(geonode.utils, '_wms', new=MockWMS()),
-                patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.maps.models.Layer.objects.geonetwork')
-            ) as (mock_wms, mock_gs, mock_gn):
+                patch('geonode.layers.models.Layer.objects.gs_catalog'),
+            ) as (mock_wms, mock_gs):
                 # Setup
                 mock_gs.get_store.return_value.get_resources.return_value = []
                 mock_resource = mock_gs.get_resource.return_value
@@ -569,9 +581,9 @@ class LayersTest(TestCase):
                 mock_resource.store.name = "a_layer"
                 mock_resource.store.resource_type = "dataStore"
                 mock_resource.store.workspace.name = "geonode"
+                mock_resource.workspace.name = "geonode"
                 mock_resource.native_bbox = ["0", "0", "0", "0"]
                 mock_resource.projection = "EPSG:4326"
-                mock_gn.url_for_uuid.return_value = "http://example.com/metadata"
 
                 # Exercise
                 base_file = os.path.join(d, 'foo.shp')
@@ -579,7 +591,7 @@ class LayersTest(TestCase):
                 save('a_layer', base_file, owner)
 
                 # Assertions
-                (md_link,) = mock_resource.metadata_links
+                md_link = mock_resource.metadata_links[0]
                 md_mime, md_spec, md_url = md_link
                 self.assertEquals(md_mime, "text/xml")
                 self.assertEquals(md_spec, "TC211")
