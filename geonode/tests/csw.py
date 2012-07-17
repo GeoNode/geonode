@@ -45,7 +45,7 @@ class GeoNodeCSWTest(TestCase):
     def test_csw_search_count(self):
         """Verify that GeoNode can handle search counting"""
 
-        csw = get_catalogue()
+        csw = get_catalogue(skip_caps=False)
 
         for f in csw.catalogue.operations:
             if f.name == 'GetRecords':
@@ -53,27 +53,25 @@ class GeoNodeCSWTest(TestCase):
 
         # get all records
         csw.catalogue.getrecords(typenames=typenames)
-        self.assertEqual(csw.catalogue.results['matches'], 8, 'Expected 8 records')
+        self.assertEqual(csw.catalogue.results['matches'], 9, 'Expected 9 records')
 
         # get all ISO records, test for numberOfRecordsMatched
         csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
-        self.assertEqual(csw.catalogue.results['matches'], 8, 'Expected 8 ISO records')
+        self.assertEqual(csw.catalogue.results['matches'], 9, 'Expected 9 ISO records')
 
     def test_csw_outputschema_dc(self):
         """Verify that GeoNode can handle ISO metadata with Dublin Core outputSchema"""
 
         csw = get_catalogue()
 
-        # search for 'NIC_Rain_100y.grd', output as Dublin Core
+        # search for 'san_andres_y_providencia_location', output as Dublin Core
         csw.catalogue.getrecords(typenames='gmd:MD_Metadata', keywords=['%a%'],
             outputschema='http://www.opengis.net/cat/csw/2.0.2', esn='full')
 
-        print csw.catalogue.request
-        print csw.catalogue.response
         record = csw.catalogue.records.values()[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertEqual(record.title, 'NIC_Rain_1000y.grd',
+        self.assertEqual(record.title, 'san_andres_y_providencia_location',
             'Expected a specific title in Dublin Core model')
 
         # test that the ISO abstract maps correctly in Dublin Core
@@ -89,9 +87,9 @@ class GeoNodeCSWTest(TestCase):
 
         csw = get_catalogue()
         if csw.catalogue.type != 'geonetwork':
-            # search for 'NIC_Rain_100y.grd', output as Dublin Core
+            # search for 'san_andres_y_providencia_location', output as Dublin Core
             csw.catalogue.getrecords(typenames='gmd:MD_Metadata',
-                keywords=['NIC_Rain_1000y.grd'],
+                keywords=['san_andres_y_providencia_location'],
                 outputschema='http://www.opengis.net/cat/csw/2.0.2', esn='full')
 
             record = csw.catalogue.records.values()[0]
