@@ -12,7 +12,7 @@ DEFAULT_CATALOGUE_ALIAS = 'default'
 
 # GeoNode uses this if the CATALOGUE setting is empty (None).
 if not hasattr(settings, 'CATALOGUE'):
-    settings.CATALOGUE = { DEFAULT_CSW_ALIAS: 'geonode.backends.dummy'}
+    settings.CATALOGUE = { DEFAULT_CATALOGUE_ALIAS: 'geonode.backends.dummy'}
 
 # If settings.CATALOGUE is defined, we expect it to be properly named
 if DEFAULT_CATALOGUE_ALIAS not in settings.CATALOGUE:
