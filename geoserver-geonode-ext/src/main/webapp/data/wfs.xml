@@ -35,16 +35,16 @@ data.
   <verbose>false</verbose>
   <gml>
     <entry>
-      <version>V_20</version>
+      <version>V_11</version>
       <gml>
-        <srsNameStyle>URN2</srsNameStyle>
+        <srsNameStyle>URN</srsNameStyle>
         <overrideGMLAttributes>false</overrideGMLAttributes>
       </gml>
     </entry>
     <entry>
-      <version>V_11</version>
+      <version>V_20</version>
       <gml>
-        <srsNameStyle>URN</srsNameStyle>
+        <srsNameStyle>URN2</srsNameStyle>
         <overrideGMLAttributes>false</overrideGMLAttributes>
       </gml>
     </entry>
