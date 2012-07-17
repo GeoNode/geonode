@@ -187,7 +187,11 @@ The key steps for setting up a GeoNode installation are as follows:
 
        Some features of GeoNode require you to set up a web proxy so that GeoServer and the Django application are on the same domain ("example.com" in this example.).
 
-     * ``GEONETWORK_BASE_URL`` the base URL for the GeoNetwork for your GeoNode site, for example `http:/example.com/geonetwork/`.
+     * ``CSW`` A dict with the following keys:
+      * ``type``: The underlying CSW implementation (``pycsw``, ``geonetwork``, ``deegree``)
+      * ``url``: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+      * ``username``: login credentials (for GeoNetwork)
+      * ``password``: login credentials (for GeoNetwork)
 
      * ``GEONODE_CLIENT_LOCATION`` the URL where the static files for GeoNode are published, for example `http://example.com/media/`.  These files can be found on disk in the directory where you installed the Django application under ``src/GeoNodePy/geonode/media/`` .
 

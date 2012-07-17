@@ -56,7 +56,7 @@ def grab(src, dest):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     with pushd('geoserver-geonode-ext'):
-        sh("mvn clean install jetty:stop -DskipTests")
+        sh("mvn clean install jetty:stop")
 
 @task
 def setup_geonetwork(options):
@@ -173,6 +173,8 @@ def setup(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     #FIXME(Ariel): Delete this once the last requirement is available in pypi
     sh('pip install -r requirements.txt')
+    # Needed to re-install in dev mode  after a git clean, better safe than sorry.
+    sh('pip install -e .')
 
     info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""") 
 
@@ -266,7 +268,6 @@ def release(options):
 @task
 @needs(['start_geoserver',
         'sync',
-        'setup_client',
         'start_django',])
 def start():
     """
@@ -344,15 +345,11 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("python manage.py test geonode")
+    sh("python manage.py test geonode --noinput")
 
 
 @task
 def setup_test_data():
-    grab("http://dev.geonode.org/test-data/geonode_test_data.tgz", "build/geonode_test_data.tgz")
-    with pushd("build"):
-        sh("tar zxvf geonode_test_data.tgz")
-    
     # cleanout testdata and rebuild datadir
     if GEOSERVER_TEST_DATA.exists():
         GEOSERVER_TEST_DATA.rmtree()
@@ -378,7 +375,7 @@ def test_integration(options):
 
     success = False
     try:
-        sh("python manage.py test tests.integration")
+        sh("python manage.py test geonode.tests.integration --noinput")
     except BuildFailure, e:
         print 'Tests failed! %s' % str(e)
     else:
@@ -552,9 +549,9 @@ def kill(arg1, arg2):
                         % (arg1, '\n'.join([l.strip() for l in lines])))
 
 
-def waitfor(url):
+def waitfor(url, timeout=180):
     started = False
-    for a in xrange(60):
+    for a in xrange(timeout):
         try:
             resp = urllib.urlopen(url)
         except IOError, e:

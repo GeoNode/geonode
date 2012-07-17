@@ -13,10 +13,11 @@ from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from geonode import GeoNodeException
-from geonode.geonetwork import Catalog as GeoNetwork
-from geonode.utils import _wms, _user, _password, get_wms, _csw, get_csw, bbox_to_wkt
+from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
+from geonode.catalogue import get_catalogue
 from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 
 from geonode.security.models import PermissionLevelMixin
@@ -26,7 +27,6 @@ from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
     TOPIC_CATEGORIES, DEFAULT_SUPPLEMENTAL_INFORMATION
 
 from geoserver.catalog import Catalog
-
 from taggit.managers import TaggableManager
 
 logger = logging.getLogger("geonode.layers.models")
@@ -38,15 +38,7 @@ class LayerManager(models.Manager):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
         self.gs_catalog = Catalog(url, _user, _password)
-        self.geonetwork = GeoNetwork(settings.GEONETWORK_BASE_URL, settings.GEONETWORK_CREDENTIALS[0], settings.GEONETWORK_CREDENTIALS[1])
 
-    @property
-    def gn_catalog(self):
-        # check if geonetwork is logged in
-        if not self.geonetwork.connected:
-            self.geonetwork.login()
-        # Make sure to logout after you have finished using it.
-        return self.geonetwork
 
     def admin_contact(self):
         # this assumes there is at least one superuser
@@ -187,6 +179,34 @@ class Layer(models.Model, PermissionLevelMixin):
     # Section 9
     # see metadata_author property definition below
 
+    def eval_keywords_region(self):
+        """Returns expanded keywords_region tuple'd value"""
+        index = next((i for i,(k,v) in enumerate(COUNTRIES) if k==self.keywords_region),None)
+        if index is not None:
+            return COUNTRIES[index][1]
+        else:
+            return self.keywords_region
+
+    def thumbnail(self):
+        """ Generate a URL representing thumbnail of the resource """
+
+        width = 20
+        height = 20
+
+        bbox = self.resource.latlon_bbox
+        bbox_string = ",".join([bbox[0], bbox[2], bbox[1], bbox[3]])
+
+        return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
+            'service': 'WMS',
+            'version': '1.1.1',
+            'request': 'GetMap',
+            'layers': self.typename,
+            'format': 'image/png',
+            'height': height,
+            'width': width,
+            'srs': 'EPSG:4326',
+            'bbox': bbox_string})
+
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
@@ -263,8 +283,9 @@ class Layer(models.Model, PermissionLevelMixin):
             except Exception:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
-                # TODO: This is a bad idea to eat errors like this.
-                pass 
+                # But at least this indicates a problem
+                notiff = mark_safe("<del>GeoTIFF</del>")
+                links.extend([("tiff",notiff,"#")])
 
         def wms_link(mime):
             return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
@@ -302,7 +323,7 @@ class Layer(models.Model, PermissionLevelMixin):
         return links
 
     def verify(self):
-        """Makes sure the state of the layer is consistent in GeoServer and GeoNetwork.
+        """Makes sure the state of the layer is consistent in GeoServer and Catalogue.
         """
         
         # Check the layer is in the wms get capabilities record
@@ -329,15 +350,19 @@ class Layer(models.Model, PermissionLevelMixin):
         #    raise GeoNodeException(msg)
  
         # Check the layer is in the GeoNetwork catalog and points back to get_absolute_url
-        _local_csw = get_csw()
-        get_csw()
 
-        try:
-            _local_csw.getrecordbyid([self.uuid])
-            csw_layer = _local_csw.records.get(self.uuid)
-        except:
-            msg = "CSW Record Missing for layer [%s]" % self.typename
-            raise GeoNodeException(msg)
+        # Check the layer is in the catalogue and points back to get_absolute_url
+        catalogue = get_catalogue()
+        catalogue_layer = catalogue.get_record(self.uuid)
+
+        if hasattr(catalogue_layer, 'distribution') and hasattr(catalogue_layer.distribution, 'online'):
+            for link in catalogue_layer.distribution.online:
+                if link.protocol == 'WWW:LINK-1.0-http--link':
+                    if(link.url != self.get_absolute_url()):
+                        msg = "Catalogue Layer URL does not match layer URL for layer [%s]" % self.typename
+        else:        
+            msg = "Catalogue Layer URL not found layer [%s]" % self.typename
+
 
         # if(csw_layer.uri != self.get_absolute_url()):
         #     msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
@@ -378,13 +403,6 @@ class Layer(models.Model, PermissionLevelMixin):
             # response, body = http.request(wms_url)
             # _wms = WebMapService(wms_url, xml=body)
         return _wms[self.typename]
-
-    def metadata_csw(self):
-        global _csw
-        if(_csw is None):
-            _csw = get_csw()
-        _csw.getrecordbyid([self.uuid], outputschema = 'http://www.isotc211.org/2005/gmd')
-        return _csw.records.get(self.uuid)
 
     @property
     def attribute_names(self):
@@ -433,21 +451,6 @@ class Layer(models.Model, PermissionLevelMixin):
     def delete_from_geoserver(self):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
 
-    def delete_from_geonetwork(self):
-        gn = Layer.objects.gn_catalog
-        gn.delete_layer(self)
-        gn.logout()
-
-    def save_to_geonetwork(self):
-        gn = Layer.objects.gn_catalog
-        record = gn.get_by_uuid(self.uuid)
-        if record is None:
-            md_link = gn.create_from_layer(self)
-            self.metadata_links = [("text/xml", "TC211", md_link)]
-        else:
-            gn.update_layer(self)
-        gn.logout()
-
     @property
     def resource(self):
         if not hasattr(self, "_resource_cache"):
@@ -469,6 +472,17 @@ class Layer(models.Model, PermissionLevelMixin):
         self.resource.metadata_links = md_links
 
     metadata_links = property(_get_metadata_links, _set_metadata_links)
+
+    @property
+    def full_metadata_links(self):
+        """Returns complete list of dicts of possible Catalogue metadata URLs
+           NOTE: we are NOT using the above properties because this will
+           break the OGC W*S Capabilities rules
+        """
+        catalogue = get_catalogue()
+        record = catalogue.get_record(self.uuid)
+        metadata_links = record.links['metadata']
+        return metadata_links
 
     def _get_default_style(self):
         return self.publishing.default_style
@@ -545,14 +559,17 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.resource is None:
             return
         if hasattr(self, "_resource_cache"):
-            gn = Layer.objects.gn_catalog
             self.resource.title = self.title
             self.resource.abstract = self.abstract
             self.resource.name= self.name
-            self.resource.metadata_links = [('text/xml', 'TC211', gn.url_for_uuid(self.uuid))]
             self.resource.keywords = self.keyword_list()
+
+            # Get metadata link from csw catalog
+            catalogue = get_catalogue()
+            record = catalogue.get_record(self.uuid)
+            if record is not None:
+                self.metadata_links = record.links['metadata']
             Layer.objects.gs_catalog.save(self._resource_cache)
-            gn.logout()
         if self.poc and self.poc.user:
             self.publishing.attribution = str(self.poc.user)
             profile = Contact.objects.get(user=self.poc.user)
@@ -578,22 +595,18 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.title == '' or self.title is None:
             self.title = self.name
 
-    def _populate_from_gn(self):
-        meta = self.metadata_csw()
+    def _populate_from_catalogue(self):
+        catalogue = get_catalogue()
+        meta = catalogue.get_record(self.uuid)
         if meta is None:
             return
-        kw_list = reduce(
-                lambda x, y: x + y["keywords"],
-                meta.identification.keywords,
-                [])
-        kw_list = [l for l in kw_list if l is not None]
-        self.keywords.add(*kw_list)
         if hasattr(meta.distribution, 'online'):
             onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
             if len(onlineresources) == 1:
                 res = onlineresources[0]
                 self.distribution_url = res.url
                 self.distribution_description = res.description
+
 
     def keyword_list(self):
         keywords_qs = self.keywords.all()
@@ -687,22 +700,30 @@ class ContactRole(models.Model):
 
 def delete_layer(instance, sender, **kwargs): 
     """
-    Removes the layer from GeoServer and GeoNetwork
+    Removes the layer from GeoServer and Catalogue
     """
     instance.delete_from_geoserver()
-    instance.delete_from_geonetwork()
+    catalogue = get_catalogue()
+    catalogue.remove_record(instance.uuid)
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
+
+    # If this object was saved via fixtures,
+    # do not do post processing.
+    if kwargs.get('raw', False):
+        return
+
     instance.save_to_geoserver()
 
     if kwargs['created']:
         instance._populate_from_gs()
 
-    instance.save_to_geonetwork()
+    catalogue = get_catalogue()
+    catalogue.create_record(instance)
 
     if kwargs['created']:
-        instance._populate_from_gn()
+        instance._populate_from_catalogue()
         instance.save(force_update=True)
 
 

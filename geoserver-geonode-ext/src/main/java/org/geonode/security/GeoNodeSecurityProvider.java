@@ -58,7 +58,7 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
     
     private static File geonodeCookie() throws IOException {
     	GeoServerDataDirectory directory = GeoserverDataDirectory.accessor();
-    	File geonodeDir = directory.findOrCreateDataDir("geonode");
+    	File geonodeDir = directory.findOrCreateDir("geonode");
     	return new File(geonodeDir, "geonode_initialized");
     }
     

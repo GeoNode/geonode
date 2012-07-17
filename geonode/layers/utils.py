@@ -7,6 +7,12 @@ import logging
 import re
 import uuid
 import os
+import datetime
+import traceback
+import inspect
+import string
+import urllib2
+from lxml import etree
 import glob
 
 # Django functionality
@@ -17,6 +23,7 @@ from django.conf import settings
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.utils import check_geonode_is_up
+from geonode.catalogue import get_catalogue
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.people.models import Contact
@@ -68,12 +75,14 @@ def get_files(filename):
     files = {'base': filename}
 
     base_name, extension = os.path.splitext(filename)
+    #Replace special characters in filenames - []{}()
+    glob_name = re.sub(r'([\[\]\(\)\{\}])', r'[\g<1>]', base_name)
 
     if extension.lower() == '.shp':
         required_extensions = dict(
             shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]')
         for ext, pattern in required_extensions.iteritems():
-            matches = glob.glob(base_name + pattern)
+            matches = glob.glob(glob_name + pattern)
             if len(matches) == 0:
                 msg = ('Expected helper file %s does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
@@ -87,7 +96,7 @@ def get_files(filename):
             else:
                 files[ext] = matches[0]
 
-        matches = glob.glob(base_name + ".[pP][rR][jJ]")
+        matches = glob.glob(glob_name + ".[pP][rR][jJ]")
         if len(matches) == 1:
             files['prj'] = matches[0]
         elif len(matches) > 1:
@@ -95,11 +104,20 @@ def get_files(filename):
                    'distinct by spelling and not just case.') % filename
             raise GeoNodeException(msg)
 
-    matches = glob.glob(base_name + ".[sS][lL][dD]")
+    matches = glob.glob(glob_name + ".[sS][lL][dD]")
     if len(matches) == 1:
         files['sld'] = matches[0]
     elif len(matches) > 1:
         msg = ('Multiple style files for %s exist; they need to be '
+               'distinct by spelling and not just case.') % filename
+        raise GeoNodeException(msg)
+
+    matches = glob.glob(base_name + ".[xX][mM][lL]")
+
+    if len(matches) == 1:
+        files['xml'] = matches[0]
+    elif len(matches) > 1:
+        msg = ('Multiple XML files for %s exist; they need to be '
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
 
@@ -144,77 +162,66 @@ def get_valid_layer_name(layer=None, overwrite=False):
     else:
         return get_valid_name(layer_name)
 
+def cleanup(name, uuid):
+   """Deletes GeoServer and Catalogue records for a given name.
 
-def cleanup(name, layer_id):
-    """Deletes GeoServer and GeoNetwork records for a given name.
+      Useful to clean the mess when something goes terribly wrong.
+      It also verifies if the Django record existed, in which case
+      it performs no action.
+   """
+   try:
+       Layer.objects.get(name=name)
+   except Layer.DoesNotExist, e:
+       pass
+   else:
+       msg = ('Not doing any cleanup because the layer %s exists in the '
+              'Django db.' % name)
+       raise GeoNodeException(msg)
 
-       Useful to clean the mess when something goes terribly wrong.
-       It also verifies if the Django record existed, in which case
-       it performs no action.
-    """
-    try:
-        Layer.objects.get(name=name)
-    except Layer.DoesNotExist, e:
-        pass
-    else:
-        msg = ('Not doing any cleanup because the layer %s exists in the '
-               'Django db.' % name)
-        raise GeoNodeException(msg)
+   cat = Layer.objects.gs_catalog
+   gs_store = None
+   gs_layer = None
+   gs_resource = None
+   # FIXME: Could this lead to someone deleting for example a postgis db
+   # with the same name of the uploaded file?.
+   try:
+       gs_store = cat.get_store(name)
+       if gs_store is not None:
+           gs_layer = cat.get_layer(name)
+           if gs_layer is not None:
+               gs_resource = gs_layer.resource
+       else:
+           gs_layer = None
+           gs_resource = None
+   except FailedRequestError, e:
+       msg = ('Couldn\'t connect to GeoServer while cleaning up layer '
+              '[%s] !!', str(e))
+       logger.warning(msg)
 
-    cat = Layer.objects.gs_catalog
-    gs_store = None
-    gs_layer = None
-    gs_resource = None
-    # FIXME: Could this lead to someone deleting for example a postgis db
-    # with the same name of the uploaded file?.
-    try:
-        gs_store = cat.get_store(name)
-        if gs_store is not None:
-            gs_layer = cat.get_layer(name)
-            if gs_layer is not None:
-                gs_resource = gs_layer.resource
-        else:
-            gs_layer = None
-            gs_resource = None
-    except FailedRequestError, e:
-        msg = ('Couldn\'t connect to GeoServer while cleaning up layer '
-               '[%s] !!', str(e))
-        logger.error(msg)
+   if gs_layer is not None:
+       try:
+           cat.delete(gs_layer)
+       except:
+           logger.warning("Couldn't delete GeoServer layer during cleanup()")
+   if gs_resource is not None:
+       try:
+           cat.delete(gs_resource)
+       except:
+           msg = 'Couldn\'t delete GeoServer resource during cleanup()'
+           logger.warning(msg)
+   if gs_store is not None:
+       try:
+           cat.delete(gs_store)
+       except:
+           logger.warning("Couldn't delete GeoServer store during cleanup()")
 
-    if gs_layer is not None:
-        try:
-            cat.delete(gs_layer)
-        except Exception:
-            logger.exception("Couldn't delete GeoServer layer during cleanup()")
-    if gs_resource is not None:
-        try:
-            cat.delete(gs_resource)
-        except Exception:
-            msg = 'Couldn\'t delete GeoServer resource during cleanup()'
-            logger.exception(msg)
-    if gs_store is not None:
-        try:
-            cat.delete(gs_store)
-        except Exception:
-            logger.exception("Couldn't delete GeoServer store during cleanup()")
+   logger.warning('Deleting dangling Catalogue record for [%s] '
+                  '(no Django record to match)', name)
 
-    gn = Layer.objects.geonetwork
-    csw_record = gn.get_by_uuid(layer_id)
-    if csw_record is not None:
-        logger.warning('Deleting dangling GeoNetwork record for [%s] '
-                       '(no Django record to match)', name)
-        try:
-            # this is a bit hacky, delete_layer expects an instance of the layer
-            # model but it just passes it to a Django template so a dict works
-            # too.
-            gn.delete_layer({ "uuid": layer_id })
-        except Exception:
-            logger.exception('Couldn\'t delete GeoNetwork record '
-                             'during cleanup()')
-
-    logger.warning('Finished cleanup after failed GeoNetwork/Django '
-                   'import for layer: %s', name)
-
+   catalogue = get_catalogue()
+   catalogue.remove_record(uuid)
+   logger.warning('Finished cleanup after failed Catalogue/Django '
+                  'import for layer: %s', name)
 
 def save(layer, base_file, user, overwrite = True, title=None,
          abstract=None, permissions=None, keywords = ()):
@@ -357,8 +364,9 @@ def save(layer, base_file, user, overwrite = True, title=None,
     if gs_resource is not None:
         assert gs_resource.name == name
     else:
-        msg = ('GeoServer returne resource as None for layer %s.'
-               'What does that mean? ' % name)
+        msg = ('GeoNode encounterd problems when creating layer %s.'
+               'It cannot find the Layer that matches this Workspace.'
+               'try renaming your files.' % name)
         logger.warn(msg)
         raise GeoNodeException(msg)
 
@@ -445,8 +453,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
     saved_layer.poc = poc_contact
     saved_layer.metadata_author = author_contact
 
-    saved_layer.save_to_geonetwork()
-
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
     logger.info('>>> Step 11. Setting default permissions for [%s]', name)
@@ -462,7 +468,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
     try:
         Layer.objects.get(name=name)
     except Layer.DoesNotExist, e:
-        msg = ('There was a problem saving the layer %s to GeoNetwork/Django. '
+        msg = ('There was a problem saving the layer %s to Catalogue/Django. '
                'Error is: %s' % (layer, str(e)))
         logger.exception(msg)
         logger.debug('Attempting to clean up after failed save for layer '
@@ -471,10 +477,10 @@ def save(layer, base_file, user, overwrite = True, title=None,
         cleanup(name, layer_uuid)
         raise GeoNodeException(msg)
 
-    # Verify it is correctly linked to GeoServer and GeoNetwork
+    # Verify it is correctly linked to GeoServer and the catalogue
     try:
         # FIXME: Implement a verify method that makes sure it was
-        # saved in both GeoNetwork and GeoServer
+        # saved in both Catalogue and GeoServer
         saved_layer.verify()
     except NotImplementedError, e:
         logger.exception('>>> FIXME: Please, if you can write python code, '
@@ -482,7 +488,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
                          'method in geonode.maps.models.Layer')
     except GeoNodeException, e:
         msg = ('The layer [%s] was not correctly saved to '
-               'GeoNetwork/GeoServer. Error is: %s' % (layer, str(e)))
+               'Catalogue/GeoServer. Error is: %s' % (layer, str(e)))
         logger.exception(msg)
         e.args = (msg,)
         # Deleting the layer
@@ -572,7 +578,6 @@ def upload(incoming, user=None, overwrite=True, keywords = ()):
                     else:
                         results.append({'file': filename, 'name': layer.name})
         return results
-
 
 def _create_db_featurestore(name, data, overwrite = False, charset = None):
     """Create a database store then use it to import a shapefile.
