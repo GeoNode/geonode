@@ -1,4 +1,0 @@
-# To run the integration tests, do:
-paver setup_test_data reset start
-python manage.py test tests.integration
-paver stop
