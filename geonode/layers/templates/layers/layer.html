@@ -69,7 +69,24 @@
             config = Ext.apply(config, {{ viewer|safe }});
 
             app = new GeoExplorer.Viewer(config);
-            
+           
+            new GeoNode.PermissionsEditor({
+                levels: {
+                    'admin': 'layer_admin',
+                    'readwrite': 'layer_readwrite',
+                    'readonly': 'layer_readonly',
+                    '_none': '_none'
+                },
+                renderTo: "permissions_form",
+                userLookup: "{% url auth_ajax_lookup %}",
+                permissions: {{ permissions_json }},
+                listeners: {
+                    updated: function(perms) {
+                        var submitTo = "{% url layer_ajax_perm layer.typename %}";
+                        Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
+                    }
+                }
+            })
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
                 app.selectedLayer.getLayer().mergeNewParams({
                     "STYLES": elem.value,
@@ -254,8 +271,10 @@
     {% endfor %}
 
     <li class="nav-header">{% trans "Download Metadata" %}</li>
-    {% for mimetype, mdtype, link in layer.metadata_links %}
-        <li><a href="{{ link }}">{{ mdtype }}</a></li>
+    {% for mlink in metadata_links %}
+          {% for link in mlink.items %}
+           <li><a href="{{link.1}}">{{link.0}}</a></li>
+          {% endfor %}
     {% empty %}
         <li>{% trans "No metadata links provided for this data." %}</li>
     {% endfor %}
