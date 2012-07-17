@@ -92,6 +92,8 @@ def layer_upload(request, template='layers/layer_upload.html'):
             try:
                 tempdir, base_file = form.write_files()
                 name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+                # Replace dots in filename - GeoServer REST API upload bug
+                name = name.replace(".","_")
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
