@@ -75,12 +75,14 @@ def get_files(filename):
     files = {'base': filename}
 
     base_name, extension = os.path.splitext(filename)
+    #Replace special characters in filenames - []{}()
+    glob_name = re.sub(r'([\[\]\(\)\{\}])', r'[\g<1>]', base_name)
 
     if extension.lower() == '.shp':
         required_extensions = dict(
             shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]')
         for ext, pattern in required_extensions.iteritems():
-            matches = glob.glob(base_name + pattern)
+            matches = glob.glob(glob_name + pattern)
             if len(matches) == 0:
                 msg = ('Expected helper file %s does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
@@ -94,7 +96,7 @@ def get_files(filename):
             else:
                 files[ext] = matches[0]
 
-        matches = glob.glob(base_name + ".[pP][rR][jJ]")
+        matches = glob.glob(glob_name + ".[pP][rR][jJ]")
         if len(matches) == 1:
             files['prj'] = matches[0]
         elif len(matches) > 1:
@@ -102,7 +104,7 @@ def get_files(filename):
                    'distinct by spelling and not just case.') % filename
             raise GeoNodeException(msg)
 
-    matches = glob.glob(base_name + ".[sS][lL][dD]")
+    matches = glob.glob(glob_name + ".[sS][lL][dD]")
     if len(matches) == 1:
         files['sld'] = matches[0]
     elif len(matches) > 1:
