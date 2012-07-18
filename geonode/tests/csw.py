@@ -93,16 +93,17 @@ class GeoNodeCSWTest(TestCase):
                 outputschema='http://www.opengis.net/cat/csw/2.0.2', esn='full')
 
             record = csw.catalogue.records.values()[0]
-    
+
             # test CRS constructs in Dublin Core
             self.assertEqual(record.bbox.crs.code, 4326,
                 'Expected a specific CRS code value in Dublin Core model')
             # test BBOX properties in Dublin Core
-            self.assertEqual(record.bbox.minx, '-88.63',
+            self.assertEqual(record.bbox.minx, '-81.8593555',
                 'Expected a specific minx coordinate value in Dublin Core model')
-            self.assertEqual(record.bbox.miny, '9.98',
+            self.assertEqual(record.bbox.miny, '12.1665322',
                 'Expected a specific minx coordinate value in Dublin Core model')
-            self.assertEqual(record.bbox.maxx, '-82.18',
+            self.assertEqual(record.bbox.maxx, '-81.356409',
                 'Expected a specific maxx coordinate value in Dublin Core model')
-            self.assertEqual(record.bbox.maxy, '15.53',
+            self.assertEqual(record.bbox.maxy, '13.396306',
                 'Expected a specific maxy coordinate value in Dublin Core model')
+
