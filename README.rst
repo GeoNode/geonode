@@ -197,7 +197,7 @@ The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
 in :file:`src/geoserver-geonode-ext/` is configured to provide a GeoServer
 instance at that port with the following commands::
    
-    cd src/geoserver-geonodeext/
+    cd src/geoserver-geonode-ext/
     sh startup.sh
 
 .. note:: 
@@ -209,7 +209,7 @@ instance at that port with the following commands::
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
   
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver-geonode-dev/"
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
 to indicate the GeoServer URL that you want to use. 
 
