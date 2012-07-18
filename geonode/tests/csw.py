@@ -65,7 +65,7 @@ class GeoNodeCSWTest(TestCase):
         csw = get_catalogue()
 
         # search for 'san_andres_y_providencia_location', output as Dublin Core
-        csw.catalogue.getrecords(typenames='gmd:MD_Metadata', keywords=['%a%'],
+        csw.catalogue.getrecords(typenames='gmd:MD_Metadata', keywords=['%san_andres_y_providencia_location%'],
             outputschema='http://www.opengis.net/cat/csw/2.0.2', esn='full')
 
         record = csw.catalogue.records.values()[0]
