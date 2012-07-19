@@ -537,7 +537,7 @@ class GeoNodeMapTest(TestCase):
         
         # Verify that the styles were deleted
         for style in styles:
-            s = gs_cat.get_style(style)
+            s = gs_cat.get_style(style.name)
             assert s == None
         
         # Verify that the resource was deleted
