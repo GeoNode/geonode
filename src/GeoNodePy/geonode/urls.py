@@ -21,12 +21,17 @@ sitemaps = {
 }
 
 urlpatterns = patterns('',
-    # Example:
+
+    # Static pages
     url(r'^$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'index.html'}, name='home'),
-
-    (r'^(?P<page>developer|help|maphelp|about|maps\/upload_terms)/?$', 'geonode.views.static'),
-    # Data views
+    url(r'^help/$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'help.html'}, name='help'),
+    url(r'^developer/$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'developer.html'}, name='dev'),
+    url(r'^maps\/upload_terms/$', 'django.views.generic.simple.direct_to_template',
+            {'template': 'maps/upload_terms.html'}, name='upload_terms'),
+     # Data views
     (r'^data/', include(geonode.maps.urls.datapatterns)),
     (r'^maps/', include(geonode.maps.urls.urlpatterns)),
 
@@ -82,4 +87,3 @@ if settings.SERVE_MEDIA:
 # Serve static files
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

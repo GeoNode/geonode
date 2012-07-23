@@ -1,13 +1,10 @@
 [
 {
-<<<<<<< HEAD
     "pk": 1,
     "model": "maps.role",
     "fields": {
         "value": "pointOfContact",
-        "permissions": [],
-        "created_dttm": "2011-01-01",
-        "last_modified" : "2011-01-01"
+        "permissions": []
     }
 },
 {
@@ -15,9 +12,7 @@
     "model": "maps.role",
     "fields": {
         "value": "author",
-        "permissions": [],
-        "created_dttm": "2011-01-01",
-        "last_modified" : "2011-01-01"
+        "permissions": []
     }
 },
 {
@@ -35,9 +30,7 @@
         "position": null,
         "organization": "GeoNode",
         "voice": null,
-        "email": null,
-        "created_dttm": "2011-01-01",
-        "last_modified" : "2011-01-01"
+        "email": null
     }
 },
 {
@@ -55,60 +48,7 @@
         "position": null,
         "organization": "Geonode",
         "voice": null,
-        "email": null,
-        "created_dttm": "2011-01-01",
-        "last_modified" : "2011-01-01"
-=======
-    "pk": 1, 
-    "model": "maps.role", 
-    "fields": {
-        "value": "pointOfContact", 
-        "permissions": []
-    }
-}, 
-{
-    "pk": 2, 
-    "model": "maps.role", 
-    "fields": {
-        "value": "author", 
-        "permissions": []
-    }
-},
-{
-    "pk": 1, 
-    "model": "maps.contact", 
-    "fields": {
-        "city": null, 
-        "fax": null, 
-        "name": "Default Contact", 
-        "area": null, 
-        "country": null, 
-        "zipcode": null, 
-        "delivery": null, 
-        "user": null, 
-        "position": null, 
-        "organization": "GeoNode", 
-        "voice": null, 
         "email": null
-    }
-}, 
-{
-    "pk": 2, 
-    "model": "maps.contact", 
-    "fields": {
-        "city": null, 
-        "fax": null, 
-        "name": "Default Author", 
-        "area": null, 
-        "country": null, 
-        "zipcode": null, 
-        "delivery": null, 
-        "user": null, 
-        "position": null, 
-        "organization": "Geonode", 
-        "voice": null, 
-        "email": null
->>>>>>> gncore/master
     }
 },
 {
@@ -118,11 +58,7 @@
         "codename": "map_readonly",
         "title": "Read Only",
         "list_order": 0,
-<<<<<<< HEAD
         "permissions": [
-=======
-        "permissions": [ 
->>>>>>> gncore/master
             ["view_map", "maps", "map"]
         ],
         "content_type": ["maps", "map"]
@@ -135,11 +71,7 @@
         "codename": "map_readwrite",
         "title": "Read/Write",
         "list_order": 1,
-<<<<<<< HEAD
         "permissions": [
-=======
-        "permissions": [ 
->>>>>>> gncore/master
             ["view_map", "maps", "map"],
             ["change_map", "maps", "map"]
         ],
@@ -153,11 +85,7 @@
         "codename": "map_admin",
         "title": "Administrative",
         "list_order": 2,
-<<<<<<< HEAD
         "permissions": [
-=======
-        "permissions": [ 
->>>>>>> gncore/master
             ["view_map", "maps", "map"],
             ["change_map", "maps", "map"],
             ["delete_map", "maps", "map"],
@@ -173,11 +101,7 @@
         "codename": "layer_readonly",
         "title": "Read Only",
         "list_order": 0,
-<<<<<<< HEAD
         "permissions": [
-=======
-        "permissions": [ 
->>>>>>> gncore/master
             ["view_layer", "maps", "layer"]
         ],
         "content_type": ["maps", "layer"]
@@ -190,11 +114,7 @@
         "codename": "layer_readwrite",
         "title": "Read/Write",
         "list_order": 1,
-<<<<<<< HEAD
         "permissions": [
-=======
-        "permissions": [ 
->>>>>>> gncore/master
             ["view_layer", "maps", "layer"],
             ["change_layer", "maps", "layer"]
         ],
@@ -208,11 +128,7 @@
         "codename": "layer_admin",
         "title": "Administrative",
         "list_order": 2,
-<<<<<<< HEAD
         "permissions": [
-=======
-        "permissions": [ 
->>>>>>> gncore/master
             ["view_layer", "maps", "layer"],
             ["change_layer", "maps", "layer"],
             ["delete_layer", "maps", "layer"],
@@ -220,23 +136,21 @@
         ],
         "content_type": ["maps", "layer"]
     }
-<<<<<<< HEAD
 },
     {
+        "pk": 1,
+        "model": "maps.layercategory",
         "fields": {
             "title": "Farming & Agriculture",
             "name": "farming",
-            "created_dttm": "2011-01-01",
             "description": "Rearing of animals or cultivation of plants. For example, resources describing irrigation, aquaculture, herding, and pests and diseases affecting crops and livestock."
-        },
-        "model": "maps.layercategory",
-        "pk": 1
+        }
+
     },
     {
         "fields": {
             "title": "Ecology & Biota",
             "name": "biota",
-            "created_dttm": "2011-01-01",
             "description" : "Naturally occurring flora and fauna. For example, resources describing wildlife, biological sciences, ecology, wilderness, sea life, wetlands, and habitats."
         },
         "model": "maps.layercategory",
@@ -246,7 +160,6 @@
         "fields": {
             "title": "Boundaries",
             "name": "boundaries",
-            "created_dttm": "2011-01-01",
             "description" : "Legal land descriptions"
         },
         "model": "maps.layercategory",
@@ -256,8 +169,7 @@
         "fields": {
             "title": "Climate & Weather",
             "name": "climatologyMeteorologyAtmosphere",
-            "description": "Atmospheric processes and phenomena. For example, resources describing cloud cover, weather, atmospheric conditions, climate change, and precipitation.",
-            "created_dttm": "2011-01-01"
+            "description": "Atmospheric processes and phenomena. For example, resources describing cloud cover, weather, atmospheric conditions, climate change, and precipitation."
         },
         "model": "maps.layercategory",
         "pk": 4
@@ -266,7 +178,6 @@
         "fields": {
             "title": "Economic Activities & Employment",
             "name": "economy",
-            "created_dttm": "2011-01-01",
             "description" : "Economic activities or employment. For example, resources describing labor, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, and exploration and exploitation of resources such as minerals, oil, and gas."
         },
         "model": "maps.layercategory",
@@ -276,7 +187,6 @@
         "fields": {
             "title": "Elevation",
             "name": "elevation",
-            "created_dttm": "2011-01-01",
             "description": "Height above or below sea level. For example, resources describing altitude, bathymetry, digital elevation models, slope, and products derived from this information."
         },
         "model": "maps.layercategory",
@@ -286,7 +196,6 @@
         "fields": {
             "title": "Health & Human Ecology",
             "name": "health",
-            "created_dttm": "2011-01-01",
             "description" : "Health services, human ecology, and safety. For example, resources describing human disease and illness, factors affecting health, hygiene, mental and physical health, substance abuse, and health services."
         },
         "model": "maps.layercategory",
@@ -296,7 +205,6 @@
         "fields": {
             "title": "Environmental Resources, Conservation",
             "name": "environment",
-            "created_dttm": "2011-01-01",
             "description" : "Environmental resources, protection, and conservation. For example, resources describing pollution, waste storage and treatment, environmental impact assessment, environmental risk, and nature reserves."
 
         },
@@ -307,7 +215,6 @@
         "fields": {
             "title": "Earth Sciences",
             "name": "geoscientificInformation",
-            "created_dttm": "2011-01-01",
             "description" : "Earth sciences. For example, resources describing geophysical features and processes, minerals, the composition, structure and origin of the earth’s rocks, earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, and erosion."
         },
         "model": "maps.layercategory",
@@ -317,7 +224,6 @@
         "fields": {
             "title": "Imagery & Base Maps",
             "name": "imageryBaseMapsEarthCover",
-            "created_dttm": "2011-01-01",
             "description" : "Base maps. For example, resources describing land cover, topographic maps, and classified and unclassified images."
         },
         "model": "maps.layercategory",
@@ -327,7 +233,6 @@
         "fields": {
             "title": "Rivers, Streams, Lakes",
             "name": "inlandWaters",
-            "created_dttm": "2011-01-01",
             "description" : "Inland water features, drainage systems, and their characteristics. For example, resources describing rivers and glaciers, salt lakes, water use plans, dams, currents, floods, water quality, and hydrographic charts."
         },
         "model": "maps.layercategory",
@@ -337,7 +242,6 @@
         "fields": {
             "title": "Place Locations",
             "name": "location",
-            "created_dttm": "2011-01-01",
             "description" : "positional information and services. For example, resources describing addresses, geodetic networks, postal zones and services, control points, and place names."
         },
         "model": "maps.layercategory",
@@ -347,7 +251,6 @@
         "fields": {
             "title": "Oceans",
             "name": "oceans",
-            "created_dttm": "2011-01-01",
             "description" : "Features and characteristics of salt water bodies excluding inland waters. For example, resources describing tides, tidal waves, coastal information, and reefs."
         },
         "model": "maps.layercategory",
@@ -357,7 +260,6 @@
         "fields": {
             "title": "Planning and Cadastral Data",
             "name": "planningCadastre",
-            "created_dttm": "2011-01-01",
             "description" : "Land use. For example, resources describing zoning maps, cadastral surveys, and land ownership."
         },
         "model": "maps.layercategory",
@@ -367,7 +269,6 @@
         "fields": {
             "title": "Society & Demographics",
             "name": "society",
-            "created_dttm": "2011-01-01",
             "description" : "Characteristics of societies and cultures. For example, resources describing natural settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, crime and justice, recreational areas and activities, social impact assessments, and census information"
         },
         "model": "maps.layercategory",
@@ -377,7 +278,6 @@
         "fields": {
             "title": "Structures",
             "name": "structure",
-            "created_dttm": "2011-01-01",
             "description" : "Man-made construction. For example, resources describing buildings, museums, churches, factories, housing, monuments, and towers."
         },
         "model": "maps.layercategory",
@@ -387,7 +287,6 @@
         "fields": {
             "title": "Transportation",
             "name": "transportation",
-            "created_dttm": "2011-01-01",
             "description" : "Means and aids for conveying people and goods. For example, resources describing roads, airports and airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, and railways."
         },
         "model": "maps.layercategory",
@@ -397,7 +296,6 @@
         "fields": {
             "title": "Utilities & Infrastructure",
             "name": "utilitiesCommunication",
-            "created_dttm": "2011-01-01",
             "description" : " Energy, water and waste systems, and communications infrastructure and services. For example, resources describing hydroelectricity, geothermal, solar, and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, and communication networks."
         },
         "model": "maps.layercategory",
@@ -407,14 +305,9 @@
         "fields": {
             "title": "Military Bases & Activities",
             "name": "intelligenceMilitary",
-            "created_dttm": "2011-01-01",
             "description" : "Military bases, structures, and activities. For example, resources describing barracks, training grounds, military transportation, and information collection."
         },
         "model": "maps.layercategory",
         "pk": 19
     }
-=======
-}
-
->>>>>>> gncore/master
 ]

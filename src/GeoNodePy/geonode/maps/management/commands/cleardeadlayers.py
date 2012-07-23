@@ -17,21 +17,12 @@ class Command(BaseCommand):
         try:
             pre_delete.disconnect(delete_layer, sender=Layer)
             cat = Layer.objects.gs_catalog
-<<<<<<< HEAD
-            gn = Layer.objects.gn_catalog
-=======
->>>>>>> gncore/master
             storenames = [s.name for s in cat.get_stores()]
             layernames = [l.name for l in cat.get_resources()]
             for l in Layer.objects.all():
                 if l.store not in storenames or l.name not in layernames:
-<<<<<<< HEAD
-                    l.delete()
-                    l.delete_from_geonetwork()
-=======
                     l.delete_from_geonetwork()
                     l.delete()
->>>>>>> gncore/master
                     print l
         except URLError:
             print "Couldn't connect to GeoServer; is it running? Make sure the GEOSERVER_BASE_URL setting is set correctly."

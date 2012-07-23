@@ -32,19 +32,11 @@ You may not have a .prj file for your GeoTIFF as it is not needed since the proj
 
 If your .prj file does not look like this, the upload may still work fine.  If it doesn’t, the most likely culprit is the projection.  The best way to fix that is to use an application like ArcGIS or QGIS and reproject your file to Geographic WGS 84.  This can be done for shapefiles or GeoTIFF files.
 
-<<<<<<< HEAD
-**SLD:**  Optionally provide an SLD.  This is an XML document that you would have created using the *AtlasStyler* or the *ArcMap2SLD* tool.
-
-***Abstract:**  Provide a description of your data. More information is better.  At the very least when you add real data, please include a brief description of the data, who created it, for what purpose, and when.  Please also include source materials used to create the data layer.  This information is important both for you to remember what the data is about, and to allow someone else a chance to benefit from your work (assuming you want to make the data available for others to use at some point).
-
-**Permissions:**  Default permissions are set such that the world can view it but only you can change it.  Add individual users to define who can edit (modify the style), or manage (delete layer, change permission settings).  
-=======
 **SLD:**  Optionally provide a Styled Layer Descriptor (SLD) file.  This is an XML document that defines the layer's default style.  For more information on creating SLD files, see `Creating styles with desktop software`_.
 
 ***Abstract:**  Provide a description of your data. More information is better.  At the very least when you add real data, please include a brief description of the data, who created it, for what purpose, and when.  Please also include source materials used to create the data layer.  This information is important both for you to remember what the data is about, and to allow someone else a chance to benefit from your work (assuming you want to make the data available for others to use at some point).
 
 **Permissions:**  Default permissions are set such that the world can view your data but only you can change it.  You may optionally grant layer editing permissions to all registered users or to specific users you choose.  Editors can modify layer styles, edit metadata records, and upload new versions of the data.  Similarly, you can grant layer management permissions to select users.  In addition to editing capabilities, managers can modify layer permission settings or delete the layer entirely.
->>>>>>> gncore/master
 
 .. image:: images/layer_permissions.png
 
@@ -59,19 +51,11 @@ Click *Upload* and once uploaded you will be presented with a metadata form (see
 Metadata
 --------
 
-<<<<<<< HEAD
-.. note:: Users uploading new layers are prompted to fill in optional and required descriptive information about the layer.  Required items include: Title, Abstract, Keyword, thematic category (ISO 19115 format).  Eventually Author, Source, and Date will be included as options in the metadata editor.
-
-.. image:: images/metadata_form.png
-
-Once the file has been uploaded, the only additional required items are Keyword and Category, though there are useful metadata fields here which we strongly encourage you to make use of.  Starred items are required.
-=======
 Once the file has been uploaded, you will see the form below where you will be prompted to fill in descriptive information about the layer.
 
 .. image:: images/metadata_form.png
 
 We strongly encourage you to make use of the many useful metadata fields in the form (* items are required).
->>>>>>> gncore/master
 
 ***Title -** Provide a title for your dataset.  We recommend using the following naming convention:
 
@@ -80,23 +64,13 @@ We strongly encourage you to make use of the many useful metadata fields in the 
 Example: 
 ``africa_ethnographic_1959_2_temp``
 
-<<<<<<< HEAD
-**Date -** This date is filled in automatically with the date of upload, but can be changed.
-
-**Date Type -** (creation/publication/revision) Choose type of date you want to describe. The default type is *creation*.
-
-**Edition -**  Use this field to describe the edition.
-
-**Abstract -**  Give an overview of the dataset. What does the data represent? Who created it and when? What sources were used? 
-=======
 ***Date -** This date is filled in automatically with the date of upload, but can be changed.
 
 ***Date Type -** (creation/publication/revision) Choose type of date you want to describe. The default type is *creation*.
 
 **Edition -**  Use this field to describe the edition.
 
-***Abstract -**  Give an overview of the dataset. What does the data represent? Who created it and when? What sources were used? 
->>>>>>> gncore/master
+***Abstract -**  Give an overview of the dataset. What does the data represent? Who created it and when? What sources were used?
 
 **Purpose -**  Describe briefly how the data can be used.
 
@@ -104,15 +78,9 @@ Example:
 
 **Keywords -**  Add keywords that will be useful handles others can use to find the dataset.  Separate keywords with a space.
 
-<<<<<<< HEAD
-**Keywords Region -** Select a major region of the world.  Other regions in addition to countries will be added.
-
-**Constraints Use -** What are the rules governing the use of this data?  
-=======
 ***Keywords Region -** Select a major region of the world.  Other regions in addition to countries will be added.
 
-***Constraints Use -** What are the rules governing the use of this data?  
->>>>>>> gncore/master
+***Constraints Use -** What are the rules governing the use of this data?
 
 **Constraints Other -**  Include any additional constraints.
 
@@ -124,15 +92,6 @@ Example:
 * **tin -** currently not supported unless stored in a GeoTIFF or Shapefile format
 * **vector –** point, line, or polygon dataset in ESRI Shapefile format.
 
-<<<<<<< HEAD
-**Language -**  Please choose the language closest to the language used in the attribute table if the dataset is a Shapefile and for the language used on the map if the dataset is a GeoTIFF.
-
-**Temporal Extent End -** Use an end date if the data in your layer is best presented by a date range.
-
-**Geographic Bounding Box -**  This describes the theoretical box necessary to enclose the data geographically and is automatically calculated by the system.  It can also be modified here.  The projection system used to define the bounding box is also defined here.
-
-**Supplemental Information -**   Additional information about your data.
-=======
 ***Language -**  Please choose the language closest to the language used in the attribute table if the dataset is a Shapefile and for the language used on the map if the dataset is a GeoTIFF.
 
 ***Topic Category -** Specify the main thematic category (ISO 19115 format) by which your data could be classified.
@@ -142,7 +101,6 @@ Example:
 ***Geographic Bounding Box -**  This describes the theoretical box necessary to enclose the data geographically and is automatically calculated by the system.  It can also be modified here.  The projection system used to define the bounding box is also defined here.
 
 ***Supplemental Information -**   Additional information about your data.
->>>>>>> gncore/master
 
 **Distribution URL -**  This URL is calculated by the system.  This URL displays this data layer along with information about it and is a possible form of citation.
 
@@ -204,16 +162,6 @@ Now click the *Create new map* link in the right hand sidebar.  This will take y
 
 .. image:: images/map_composer_from_layer.png
 
-<<<<<<< HEAD
-Creating styles with desktop software
-=====================================
-
-You can create styles using desktop tools such as `AtlasStyler <http://en.geopublishing.org/AtlasStyler>`_.  This application is currently somewhat limited but you may find it does what you need.
-
-There is also a tool which runs in ArcGIS 9.3 called `ArcMap2SLD <http://wald.intevation.org/projects/arcmap2sld/>`_. This approach allows you to take advantage of much of the symbolization power of ArcGIS and apply it to GeoNode. The adaptation of this tool to ArcGIS 10 is a work in progress.
-
-We will not use AtlasStyler or ArcMap2SLD now but an optional challenge exercise for this is included at the end of the tutorial.
-=======
 
 Creating styles with desktop software
 =====================================
@@ -223,4 +171,3 @@ You can create Styled Layer Descriptor (SLD) files using desktop tools such as `
 * AtlasStyler is an open source Java application that can be run independently to compose SLD files for ESRI Shapefiles, OGC WFS and PostGIS datasources.
 * ArcMap2SLD is an open source Windows application that exports the symbolization of an ArcGIS project to an SLD file.  The application runs in parallel with an open ArcGIS 9.0+ session and requires .NET 2.0.
 * Arc2Earth is a commercially available ArcGIS 9.0+ add-on that also allows users to export symbolization of ArcGIS project data to an SLD file.  The add-on also includes many features unrelated to generating SLD files (eg: SHP to KML conversion).  It is available in several editions, and the `SLD export function <http://help.arc2earth.com/help/kb/arc2earth-desktop/export-map-symbols-to-styled-layer-descriptor-sld>`_ is available in the free Community version.
->>>>>>> gncore/master

@@ -21,6 +21,7 @@
     	  <!--[if lte IE 6]><link rel="stylesheet" href="{{ STATIC_URL }}theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
     {% endif %}
     <script type="text/javascript" src="{% url jscat %}"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}/jquery-1.6.4.min.js"></script>
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
   <script type="text/javascript" src="{% url lang %}"></script>
   {% endblock %}
@@ -29,6 +30,7 @@
     {% endautoescape %}
 </head>
 <body>
+{% block start_body_js %}{% endblock %}
   <div id="header">
     <div class="wrap selfclear">
         	{% block logos %}
@@ -76,5 +78,6 @@
       {% endblock %}
     </div><!-- /.wrap -->
   </div><!-- /#footer -->
+  {% block end_body_js %}{% endblock %}
 </body>
 </html>

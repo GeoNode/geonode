@@ -3,7 +3,7 @@ from httplib import HTTPConnection
 from urlparse import urlsplit
 import httplib2
 import urllib
-import simplejson
+from django.utils import simplejson as json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.html import escape
@@ -141,7 +141,7 @@ def hglpoints (request):
 def hglServiceStarter (request, layer):
     #Check if the layer is accessible to public, if not return 403
     accessUrl = HGL_URL + "/ogpHglLayerInfo.jsp?ValidationKey=" + settings.HGL_VALIDATION_KEY +"&layers=" + layer
-    accessJSON = simplejson.loads(urllib.urlopen(accessUrl).read())
+    accessJSON = json.loads(urllib.urlopen(accessUrl).read())
     if accessJSON[layer]['access'] == 'R':
         return HttpResponse(status=403)
 

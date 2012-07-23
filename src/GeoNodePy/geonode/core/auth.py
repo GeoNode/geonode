@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-from datetime import datetime
-from django.contrib.auth.backends import ModelBackend
-from django.contrib.contenttypes.models import ContentType 
-from django.db import models
-from geonode.core.models import *
-=======
+
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.contenttypes.models import ContentType 
 from django.db import models
 from geonode.core.models import ANONYMOUS_USERS, AUTHENTICATED_USERS, \
      GenericObjectRoleMapping, Permission, UserObjectRoleMapping
->>>>>>> gncore/master
 
 class GranularBackend(ModelBackend):
     """
@@ -83,14 +76,10 @@ class GranularBackend(ModelBackend):
         obj_perms = set()
         generic_roles = [ANONYMOUS_USERS]
         if not user_obj.is_anonymous():
-<<<<<<< HEAD
             generic_roles.append(AUTHENTICATED_USERS)
             profile = user_obj.get_profile()
             if profile and profile.is_org_member and profile.member_expiration_dt >= datetime.today().date():
                 generic_roles.append(CUSTOM_GROUP_USERS)
-=======
-            generic_roles.append(AUTHENTICATED_USERS)        
->>>>>>> gncore/master
         obj_perms.update(self._get_generic_obj_perms(generic_roles, obj))
         
         ct = ContentType.objects.get_for_model(obj)
@@ -117,12 +106,9 @@ class GranularBackend(ModelBackend):
         generic_roles = [ANONYMOUS_USERS]
         if not user_obj.is_anonymous():
             generic_roles.append(AUTHENTICATED_USERS)
-<<<<<<< HEAD
             profile = user_obj.get_profile()
             if profile and profile.is_org_member:
                 generic_roles.append(CUSTOM_GROUP_USERS)
-=======
->>>>>>> gncore/master
             obj_ids.update([x[0] for x in UserObjectRoleMapping.objects.filter(user=user_obj,
                                                                                role__permissions=perm,
                                                                                object_ct=ct).values_list('object_id')])

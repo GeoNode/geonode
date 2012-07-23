@@ -116,19 +116,19 @@
                 userLookup: "{% url geonode.views.ajax_lookup_email %}",
                 customGroup: "{{ customGroup }}",
                 permissions: {{ permissions_json }},
-        levels: {
-            'admin': 'layer_admin',
+                levels: {
+                    'admin': 'layer_admin',
                     'readwrite': 'layer_readwrite',
                     'readonly': 'layer_readonly',
                     'none': '_none'
-        },
-        listeners: {
-            updated: function(perms) {
+                },
+                listeners: {
+                    updated: function(perms) {
                         var submitTo = "{% url data_ajax_perm layer.typename %}";
-                Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
-            }
-        }
-    });
+                        Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
+                    }
+                }
+            });
     {% endif %}
     });
 
@@ -282,7 +282,6 @@
 
 {% block sidebar %}
 <div id="sidebar" class="threecol">
-
     <h3> {% trans "Download" %} </h3>
 
     {%  if layer.download_links %}
@@ -291,6 +290,7 @@
         <a href="{{link}}">{{type}}</a>
         {% endfor %}
     </p>
+    {% endif %}
     <h3> {% trans "Legend" %}<h3>
     {% comment %}
     The request below accepts more parameters, like fontName ( fontName=DejaVu ) and scale ( SCALE=17471330.182978604 ).
@@ -387,12 +387,10 @@
             {% trans "Upload a new version of this data" %}
         </a></li>
         {% endif %}
-        {% if can_change_permissions %}
-        <li><a href="{% url edit_layer_permissions layer.typename %}">
-            {% trans "Edit Permissions" %}
-        </a></li>
-        {% endif %}
         {% if can_delete %}
+            <li><a href="{% url data_ajax_perm_email layer.typename %}">
+                {% trans "Edit Permissions" %}
+            </a></li>
             <li><a href="{% url data_remove layer.typename %}">
             {% trans "Remove" %}
         </a></li>
@@ -410,7 +408,6 @@
     {% endif %}
 </div>
 {% endblock %}
-
 {% block end_body_js %}
 {% if request.user.is_authenticated %}
 	{% user_rating_js request.user layer "layer" %}

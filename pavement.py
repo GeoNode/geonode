@@ -1,4 +1,4 @@
-from __future__ import with_statement 
+from __future__ import with_statement
 from paver import svn
 from paver.easy import *
 from paver.easy import options
@@ -116,7 +116,7 @@ def install_bundle(options):
     """
     Installs a bundle of dependencies located at %s.
     """ % bundle
-    
+
     info('install the bundle')
     pip_install(bundle)
 
@@ -126,7 +126,7 @@ def download_bundle(options):
     """
     Downloads zipped bundle of python dependencies to %s. Does not overwrite.
     """ % bundle
-    
+
     bpath = bundle.abspath()
     if not bundle.exists():
         with pushd('shared'):
@@ -140,7 +140,7 @@ def install_25_deps(options):
     """Fetch python 2_5-specific dependencies (not maintained)"""
     pass
 
-    
+
 @task
 @needs(['install_deps'])
 def post_bootstrap(options):
@@ -223,7 +223,7 @@ def setup_webapps(options):
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""") 
+    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""")
 
 
 @task
@@ -251,7 +251,7 @@ def setup_geonode_client(options):
 
     with pushd("src/geonode-client/"):
         sh("mvn clean compile")
-    
+
     src_zip = "src/geonode-client/build/geonode-client.zip"
     zip_extractall(zipfile.ZipFile(src_zip), static)
 
@@ -279,7 +279,7 @@ def package_dir(options):
 def package_client(options):
     """Package compressed client resources (JavaScript, CSS, images)."""
 
-    if(hasattr(options, 'use_war')): 
+    if(hasattr(options, 'use_war')):
     	geonode_client_target_war.copy(options.deploy.out_dir)
     else:
         # Extract static files to static_location
@@ -311,7 +311,7 @@ def package_webapp(options):
     """Package (Python, Django) web application and dependencies."""
     with pushd('src/GeoNodePy'):
         sh('python setup.py egg_info sdist')
-        
+
     req_file = options.deploy.req_file
     req_file.write_text(deploy_req_txt)
     pip_bundle("-r %s %s/geonode-webapp.pybundle" % (req_file, options.deploy.out_dir))
@@ -396,7 +396,7 @@ def setup_jetty(source, dest):
     geoserver_target.copy("package/devkit/share")
     geonetwork_target.copy("package/devkit/share")
     geonode_client_target().copy("package/devkit/share")
-        
+
 @task
 @cmdopts([
     ('name=', 'n', 'Release number or name'),
@@ -432,13 +432,13 @@ def make_release(options):
 
         out_pkg.rmtree()
         info("%s.tar.gz created" % out_pkg.abspath())
-                            
+
 
 def unzip_file(src, dest):
     zip = zipfile.ZipFile(src)
     if not path(dest).exists():
         path(dest).makedirs()
-        
+
     for name in zip.namelist():
         if name.endswith("/"):
             (path(dest) / name).makedirs()
@@ -468,7 +468,7 @@ def pip(*args):
     full_path_pip = options.config.bin / 'pip'
 
     sh("%(env)s %(cmd)s %(args)s" % {
-        "env": options.config.pip_flags, 
+        "env": options.config.pip_flags,
         "cmd": full_path_pip,
         "args": " ".join(args)
     })
@@ -487,7 +487,7 @@ def package_bootstrap(options):
         options.virtualenv = options.deploy
         call_task("paver.virtual.bootstrap")
     except ImportError, e:
-        info("VirtualEnv must be installed to enable 'paver bootstrap'. If you " + 
+        info("VirtualEnv must be installed to enable 'paver bootstrap'. If you " +
              "need this command, run: pip install virtualenv")
 
 
@@ -525,11 +525,11 @@ def host(options):
             stderr=jettylog
         )
     django = subprocess.Popen([
-            "paster", 
+            "paster",
             "serve",
             "--reload",
 	        "shared/dev-paste.ini"
-        ],  
+        ],
         stdout=djangolog,
         stderr=djangolog
     )
@@ -540,7 +540,7 @@ def host(options):
             return True
         except Exception, e:
             return False
-    
+
     def django_is_up():
         try:
             urllib.urlopen("http://" + options.host.bind + ":8000")
@@ -560,8 +560,8 @@ def host(options):
         time.sleep(2)
 
     try:
-        sh("django-admin.py updatelayers --settings=geonode.settings")
-        
+        #sh("django-admin.py updatelayers --settings=geonode.settings")
+
         info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
         info("The GeoNode is an unstoppable machine")
         info("Press CTRL-C to shut down")
@@ -571,11 +571,11 @@ def host(options):
         info("Shutting down...")
         try:
             django.terminate()
-        except: 
+        except:
             pass
         try:
             mvn.terminate()
-        except: 
+        except:
             pass
 
         django.wait()
@@ -591,7 +591,7 @@ def test(options):
 def platform_options(options):
     "Platform specific options"
     options.config.platform = sys.platform
-    
+
     # defaults:
     pip_flags = ""
     scripts = "bin"
@@ -602,7 +602,7 @@ def platform_options(options):
         scripts = "Scripts"
     elif sys.platform == "darwin":
         pip_flags = "ARCHFLAGS='-arch i386'"
-        
+
     options.config.bin = path(scripts)
     options.config.corelibs = corelibs
     options.config.devlibs = devlibs
@@ -640,7 +640,7 @@ def _zip_extract(zf, member, path=None, pwd=None):
 
     if path is None:
         path = os.getcwd()
-    
+
     return _zip_extract_member(zf, member, path, pwd)
 
 

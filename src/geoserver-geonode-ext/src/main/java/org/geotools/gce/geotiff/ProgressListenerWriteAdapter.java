@@ -11,7 +11,7 @@ import org.opengis.util.ProgressListener;
 public class ProgressListenerWriteAdapter implements IIOWriteProgressListener {
 
     private static final Logger LOGGER = Logging.getLogger(ProgressListenerWriteAdapter.class);
-
+    
     private final ProgressListener monitor;
 
     /**

@@ -55,14 +55,10 @@ Administrators are expected to have some experience with Linux systems but they 
  * :doc:`Configuring GeoNode for Production <deploy/production>`
  * :doc:`Customizing the Look and Feel of GeoNode <deploy/customize>`
  * :doc:`Debugging GeoNode Installations <deploy/debug>`
-<<<<<<< HEAD
-
-=======
  * :doc:`Running GeoNode under SSL <deploy/ssl>`
  * :doc:`Changing the Default Language <deploy/language>`
  * :doc:`Backup configuration & data <deploy/backup>`
  * :doc:`Management commands for GeoNode <deploy/commands>`
->>>>>>> gncore/master
 
 .. toctree::
     :hidden:
@@ -72,12 +68,9 @@ Administrators are expected to have some experience with Linux systems but they 
     deploy/production
     deploy/customize
     deploy/debug
-<<<<<<< HEAD
-=======
     deploy/ssl
     deploy/language
     deploy/backup
->>>>>>> gncore/master
 
 For Developers
 ==============

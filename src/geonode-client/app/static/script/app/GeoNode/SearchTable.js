@@ -66,7 +66,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             this.doSearch();
     },
 
-    
     initFromQuery: function() {
         if (!this.searchParams) {
             this.searchParams = {};
@@ -240,7 +239,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                             detail = '';
                         }
                     }
-                    if (detail && this.linkableTitle) {
+                    if (detail) {
                         detail = '<a href="' + detail + '">' + value + '</a>';
                     }
                     else {

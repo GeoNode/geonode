@@ -77,29 +77,17 @@
         {% endif %}
       </li>
       {% endfor %} 
-    </ul>     
-<<<<<<< HEAD
-=======
+    </ul>
     {% if locked_layers %}
->>>>>>> gncore/master
     {% blocktrans %}
     Additionally, the map contains these layers which will not be downloaded
     due to security restrictions:
     {% endblocktrans %}
-<<<<<<< HEAD
-=======
     {% endif %}
->>>>>>> gncore/master
     <ul>
       {% for layer in locked_layers %} 
       <li>{{ layer.name }}</li>
-      {% endfor %} 
-<<<<<<< HEAD
-    </ul>{% blocktrans %}
-    Finally, the map contains these layers which will not be downloaded
-    because they are not available directly from this GeoNode:
-    {% endblocktrans %}
-=======
+      {% endfor %}
     </ul>
     {% if remote_layers %}
     {% blocktrans %}
@@ -107,7 +95,6 @@
     because they are not available directly from this GeoNode:
     {% endblocktrans %}
     {% endif %}
->>>>>>> gncore/master
     <ul>
       {% for layer in remote_layers %} 
       <li>{{ layer }}</li>

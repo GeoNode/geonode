@@ -4,14 +4,11 @@
 {% block indexclass %} class="here" {% endblock %}
 
 {% block head %}
-{% include "geonode/jquery_header.html" %}
+{{ block.super }}
 <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery.simplemodal.1.4.1.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/simplemodal.css" />
 <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery.nivo.slider.pack.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nivo-slider.css" />
-
-
-{{ block.super }}
 
 <script type="text/javascript">
     $(window).load(function() {

@@ -109,11 +109,7 @@ if (window.GeoNode && GeoNode.MapGrid) {
         createMapText : gettext("Create Map"),
         exportMapText: gettext("Export Map"),
         mapAbstractLabelText: gettext("Abstract"),
-<<<<<<< HEAD
-        mapContactLabelText: gettext("Profile"),
-=======
         mapContactLabelText: gettext("Contact"),
->>>>>>> gncore/master
         mapGridText : gettext("Map"),
         mapLinkLabelText: gettext("View this Map"),
         mapTitleLabelText: gettext("Title"),
@@ -152,10 +148,7 @@ if (window.gxp && gxp.EmbedMapDialog) {
 
 if (window.GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
     Ext.apply(GeoExplorer.CapabilitiesRowExpander.prototype, {
-<<<<<<< HEAD
     	categoryText: gettext("Category:"),
-=======
->>>>>>> gncore/master
         abstractText: gettext("Abstract:"),
         attributionEmptyText: gettext("No attribution information is provided for this layer."),
         attributionText: gettext("Provided by:"),
@@ -222,11 +215,8 @@ if (window.GeoNode && GeoNode.SearchTable) {
 }
 if (window.GeoNode && GeoNode.SearchTableRowExpander) {
     Ext.apply(GeoNode.SearchTableRowExpander.prototype, {
-<<<<<<< HEAD
     	categoryText:gettext("Category"),
     	categoryEmptyText:gettext('No category is provided for this layer.'),
-=======
->>>>>>> gncore/master
         abstractText: gettext("Abstract:"),
         abstractEmptyText: gettext('No abstract is provided for this layer.'),
         attributionEmptyText: gettext("No attribution information is provided for this layer."),
@@ -246,12 +236,8 @@ if (window.GeoNode && GeoNode.DataCart) {
         emptySelectionText: gettext('No Layers Selected'),
         titleText: gettext('Title'),
         clearSelectedButtonText: gettext('Clear Selected'),
-<<<<<<< HEAD
         clearAllButtonText: gettext('Clear All'),
         addLayersButtonText: gettext('Add Selected Layers')
-=======
-        clearAllButtonText: gettext('Clear All') 
->>>>>>> gncore/master
     });
 }
 

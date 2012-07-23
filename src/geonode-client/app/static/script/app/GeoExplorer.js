@@ -221,7 +221,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.config = config;
         this.popupCache = {};
         this.propDlgCache = {};
-        this.stylesDlgCache = {};
         // add any custom application events
         this.addEvents(
             /**
@@ -425,6 +424,34 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 attr.disabled = true;
 
                             }
+                            var legendXType;
+                            // add a WMS legend to each node created
+                            if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
+                                legendXType = "gx_wmslegend";
+                            } else if (OpenLayers.Layer.Vector && attr.layer instanceof OpenLayers.Layer.Vector) {
+                                legendXType = "gx_vectorlegend";
+                            }
+                            if (legendXType) {
+                                Ext.apply(attr, {
+                                    component: {
+                                        xtype: legendXType,
+                                        // TODO these baseParams were only tested with GeoServer,
+                                        // so maybe they should be configurable - and they are
+                                        // only relevant for gx_wmslegend.
+                                        baseParams: {
+                                            transparent: true,
+                                            format: "image/png",
+                                            legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
+                                        },
+                                        layerRecord: this.mapPanel.layers.getByLayer(attr.layer),
+                                        showTitle: false,
+                                        // custom class for css positioning
+                                        // see tree-legend.html
+                                        cls: "legend"
+                                    }
+                                });
+                            }
+
                         }
                         return GeoExt.tree.LayerLoader.prototype.createNode.apply(this, [attr]);
                     }
@@ -692,7 +719,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 success: function(form, action) {
                     this.loginWin.close();
                     this.propDlgCache = {};
-                    this.stylesDlgCache = {};
                     document.cookie = action.response.getResponseHeader("Set-Cookie");
                     if (options) {
                         // resend the original request
@@ -847,6 +873,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 params: {layername:layer.params.LAYERS}
             });
         }
+        this.mapPlugins = [{
+            ptype: "gxp_loadingindicator",
+            onlyShowOnFirstLoad: true
+        }];
 
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
             var layer = e.layer;
@@ -930,7 +960,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
                 "remove": function(store, rec) {
                     this.modified |= 1;
-                    delete this.stylesDlgCache[rec.getLayer().id];
                 },
                 scope: this
             });
@@ -1100,7 +1129,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                                 method: "POST",
                                                 params: {layername:record.getLayer().params.LAYERS},
                                                 callback: function(options, success, response) {
-                                                    cmp.authorized = cmp.editableStyles = (response.responseText == "True");
+                                                    cmp.authorized = cmp.editableStyles = true; //(response.responseText == "True");
                                                     cmp.ownerCt.doLayout();
                                                 }
                                             });
@@ -1181,6 +1210,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 this.selectionChanging = true;
                 changed = geoEx.selectLayer(record);
                 this.selectionChanging = false;
+
+
                 return changed;
 
             } else {
@@ -3038,7 +3069,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         Ext.Msg.alert('Error', response.responseText);
 
                     Ext.getCmp('gx_saveButton').enable();
-                    Ext.getCmp('gx_saveAsButton').enable();
+                    //Ext.getCmp('gx_saveAsButton').enable();
                 },
                 scope: this
             });

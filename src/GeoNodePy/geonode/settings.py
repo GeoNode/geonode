@@ -4,22 +4,20 @@ from urllib import urlencode
 import logging
 import os
 
+#
+# General Django development settings
+#
 
-_ = lambda x: x
+logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'a')
 
-DEBUG = True
-SITENAME = "WorldMap"
-SITEURL = "http://localhost:8000/"
-#TEMPLATE_DEBUG = DEBUG
-TEMPLATE_DEBUG = True
-DEFAULT_FROM_EMAIL="me@me.com"
-NO_REPLY_EMAIL = "do-not-reply@worldmap.harvard.edu"
 
+# Defines the directory that contains the settings file as the PROJECT_ROOT
+# It is used for relative settings elsewhere.
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-ADMINS = (
-# ('Your Name', 'your_email@domain.com'),
-)
+# Setting debug to true makes Django serve static media and
+# present pretty error pages.
+DEBUG = TEMPLATE_DEBUG = True
 
 #Email settings (example gmail account) for registration, passwords, etc
 #DEFAULT_FROM_EMAIL = 'your_email@gmail.com'
@@ -29,23 +27,13 @@ ADMINS = (
 #EMAIL_PORT = 587
 #EMAIL_USE_TLS = True
 
-# FILE_UPLOAD_HANDLERS is only necessary if you want to track upload
-# progress in your Django app -- if you have a front-end proxy like
-# nginx or lighttpd, Django doesn't need to be involved in the upload
-# tracking.
-#FILE_UPLOAD_HANDLERS = ('geonode.maps.upload_handlers.UploadProgressCachedHandler',
-#                        'django.core.files.uploadhandler.MemoryFileUploadHandler',
-#'django.core.files.uploadhandler.TemporaryFileUploadHandler',)
-
-
-MANAGERS = ADMINS
-
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = os.path.join(PROJECT_ROOT,"..","..","..","development.db")
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Not used with sqlite3.
-DATABASE_PORT = ''             # Not used with sqlite3.
+# Defines settings for development
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(PROJECT_ROOT, '..', '..', '..', 'development.db'),
+        }
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -63,37 +51,11 @@ LANGUAGES = (
     ('es', 'Español'),
     ('it', 'Italiano'),
     ('fr', 'Français'),
+    ('de', 'Deutsch'),
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
     ('zh', '中國的'),
     )
-
-SITE_ID = 1
-
-# Setting a custom test runner to avoid running the tests for some problematic 3rd party apps
-TEST_RUNNER='django_nose.NoseTestSuiteRunner'
-
-NOSE_ARGS = [
-    '--verbosity=2',
-    '--cover-erase',
-    '--nocapture',
-    '--with-coverage',
-    '--cover-package=geonode',
-    '--cover-inclusive',
-    '--cover-tests',
-    '--detailed-errors',
-    '--with-xunit',
-
-    # This is very beautiful/usable but requires: pip install rudolf
-    #      '--with-color',
-
-    # The settings below are useful while debugging test failures or errors
-
-    #      '--failed',
-    #      '--pdb-failures',
-    #      '--stop',
-    #      '--pdb',
-]
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -171,20 +133,12 @@ INSTALLED_APPS = (
     #'debug_toolbar',
 
     # GeoNode internal apps
+    'geonode',
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
-    'geonode',
     'geonode.registration',
     'geonode.profiles',
-    )
-
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-    #'django.template.loaders.eggs.load_template_source',
-    'django.template.loaders.app_directories.Loader',
     )
 
 LOGGING = {
@@ -345,6 +299,7 @@ GEONETWORK_CREDENTIALS = "admin", "admin"
 # Google Api Key needed for 3D maps / Google Earth plugin
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 GOOGLE_ANALYTICS_ID = "UA-XXXXXXXX-1"
+GOOGLE_ANALYTICS_CODE=""
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0,0)
@@ -408,7 +363,8 @@ ACCOUNT_ACTIVATION_DAYS = 30
 SERVE_MEDIA = DEBUG;
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
-GEONODE_CLIENT_LOCATION = "/media/static/"
+GEONODE_CLIENT_LOCATION = "/media/static/geonode/"
+GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
 
 
 # GeoNode vector data backend configuration.
@@ -417,7 +373,6 @@ GEONODE_CLIENT_LOCATION = "/media/static/"
 DB_DATASTORE=False
 
 #Database datastore connection settings
-DB_DATASTORE_DATABASE = ''
 DB_DATASTORE_NAME = ''
 DB_DATASTORE_USER = ''
 DB_DATASTORE_PASSWORD = ''

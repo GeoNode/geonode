@@ -47,11 +47,7 @@ it has only been tested in Ubuntu Linux but should work with minimal changes to 
 # First you need to install the OS specific dependencies,
 here is the complete list (the actual package name may vary)::
 
-<<<<<<< HEAD
-    python, python-support, python-dev, sun-java6-jre | openjdk-6-jre, tomcat6, postgresql-8.4, gcc, patch, zip,  python-imaging, gdal-bin, libgeos-dev, python-urlgrabber, python-pastescript, gettext, postgresql-contrib, postgresql-8.4-postgis,libpq-dev, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi
-=======
     python, python-support, python-dev, sun-java6-jre | openjdk-6-jre, tomcat6, postgresql-8.4, gcc, patch, zip,  python-imaging, gdal-bin, libgeos-dev, python-urlgrabber, python-pastescript, gettext, postgresql-contrib, postgresql-8.4-postgis,libpq-dev, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi, libxml2-dev, libxslt1-dev
->>>>>>> gncore/master
 
 # Then you have to edit the config file that is in the support directory with the appropiate paths,
 sample config files for Ubuntu and CentOS are distributed with the release packages.
@@ -68,11 +64,7 @@ sample config files for Ubuntu and CentOS are distributed with the release packa
 
 # After you have installing your GeoNode we recommend you to read the following guide to learn how to create users,
 serve the site on a DNS or IP address and optimize your GeoNode.
-<<<<<<< HEAD
-    http://docs.geonode.org/1.1/deploy/production.html
-=======
-    http://docs.geonode.org/en/1.1/deploy/production.html 
->>>>>>> gncore/master
+    http://docs.geonode.org/en/1.1/deploy/production.html
 
 Note for packagers
 ~~~~~~~~~~~~~~~~~~

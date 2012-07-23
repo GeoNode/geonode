@@ -110,7 +110,4 @@
   <bean id="downloadKillerRestlet" class="org.geonode.rest.batchdownload.DownloadKillerRestlet">
     <constructor-arg ref="processController" />
   </bean>
-  <bean id="layerBoundsTransactionPlugin" class="org.geonode.wfst.LayerBoundsTransactionPlugin" >
-    <constructor-arg ref="catalog" />
-  </bean>
 </beans>

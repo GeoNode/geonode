@@ -12,27 +12,13 @@ class Command(BaseCommand):
             dest='ignore_errors',
             default=False,
             help='Stop after any errors are encountered.'),
-<<<<<<< HEAD
-        make_option('--layer',
-            dest='layer',
-            default=None,
-            help='Specify a layer to update'),
-=======
->>>>>>> gncore/master
         )
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
-<<<<<<< HEAD
-        verbosity = options.get('verbosity')
-        layer = options.get('layer')
-        start = datetime.datetime.now()
-        output = Layer.objects.slurp(ignore_errors, verbosity, layer=layer)
-=======
         verbosity = int(options.get('verbosity'))
         start = datetime.datetime.now()
         output = Layer.objects.slurp(ignore_errors, verbosity=verbosity)
->>>>>>> gncore/master
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']
         failed = [dict_['name'] for dict_ in output if dict_['status']=='failed']

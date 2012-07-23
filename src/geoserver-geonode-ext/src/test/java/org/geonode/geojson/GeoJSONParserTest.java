@@ -219,7 +219,7 @@ public class GeoJSONParserTest extends TestCase {
      * builder.addType(attributeType); attributeType =
      * AttributeTypeFactory.newAttributeType("properties", String.class);
      * builder.addType(attributeType);
-     *
+     * 
      * FeatureType featureType = builder.getFeatureType(); Object[] attributes1 = new Object[] {
      * gf.createPoint(new Coordinate(2.0, 2.0)), "{\"prop\":0}"}; Object[] attributes2 = new
      * Object[] { gf.createLineString(new Coordinate[] { new Coordinate(10, 10), new Coordinate(20,
@@ -230,7 +230,7 @@ public class GeoJSONParserTest extends TestCase {
      * 
      * DefaultFeatureCollection origCollection = new DefaultFeatureCollection("test", featureType);
      * origCollection.add(feature1); origCollection.add(feature2);
-     *
+     * 
      * String jsonStr = "{\"type\": \"FeatureCollection\", \"features\":" +
      * "[{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [2.0, 2.0]},"
      * + "\"properties\": \"{\"prop\":0}}," +
@@ -238,7 +238,7 @@ public class GeoJSONParserTest extends TestCase {
      * ;
      * 
      * FeatureCollection newCollection = (FeatureCollection) GeoJSONParser.parse(jsonStr);
-     *
+     * 
      * assertTrue(false); }
      */
 

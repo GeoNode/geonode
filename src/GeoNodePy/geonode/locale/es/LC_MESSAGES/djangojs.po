@@ -2,62 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-<<<<<<< HEAD
-# 
-=======
 #
->>>>>>> gncore/master
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2011-10-18 12:47-0300\n"
-"PO-Revision-Date: 2011-10-18 10:57\n"
-"Last-Translator:   <mmiranda@xoomcode.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Translated-Using: django-rosetta 0.6.2\n"
-
-#: media/static/script/GeoExplorer.js:64 media/static/script/GeoNode.js:45
-msgid "Add user..."
-msgstr "Agregar usuario..."
-
-#: media/static/script/GeoNode.js:45
-msgid "Who can view and download this data?"
-msgstr "¿Quién puede ver y descargar estos datos?"
-
-#: media/static/script/GeoNode.js:45
-msgid "Anyone"
-msgstr "Cualquiera"
-
-#: media/static/script/GeoNode.js:45
-msgid "Any registered user"
-msgstr "Cualquier usuario registrado"
-
-#: media/static/script/GeoNode.js:45
-msgid "Only users who can edit"
-msgstr "Sólo los usuarios que pueden editar"
-
-#: media/static/script/GeoNode.js:45
-msgid "Who can edit this data?"
-msgstr "¿Quién puede editar estos datos?"
-
-#: media/static/script/GeoNode.js:45
-msgid "Only the following users or groups:"
-msgstr "Sólo los siguientes usuarios o grupos:"
-
-#: media/static/script/GeoNode.js:45
-msgid "Who can manage and edit this data?"
-msgstr "¿Quién puede administrar o editar estos datos?"
-
-#: templates/lang.js:9 templates/lang.js.py:12
-=======
 "POT-Creation-Date: 2012-05-15 12:29-0500\n"
 "PO-Revision-Date: 2011-10-18 10:57\n"
 "Last-Translator:   <mmiranda@xoomcode.com>\n"
@@ -102,7 +52,6 @@ msgid "Who can manage and edit this data?"
 msgstr "¿Quién puede administrar o editar estos datos?"
 
 #: templates/lang.js:9 templates/lang.js.c:12
->>>>>>> gncore/master
 msgid "Add Layers"
 msgstr "Agregar capas"
 
@@ -134,11 +83,7 @@ msgstr "El servidor ha devuelto un error"
 msgid "Details..."
 msgstr "Detalles..."
 
-<<<<<<< HEAD
-#: templates/lang.js:19 templates/lang.js.py:111
-=======
 #: templates/lang.js:19 templates/lang.js.c:111
->>>>>>> gncore/master
 msgid "Height"
 msgstr "Altura"
 
@@ -146,11 +91,7 @@ msgstr "Altura"
 msgid "Get Feature Info"
 msgstr "Obtener información del objeto"
 
-<<<<<<< HEAD
-#: templates/lang.js:21 templates/lang.js.py:112
-=======
 #: templates/lang.js:21 templates/lang.js.c:112
->>>>>>> gncore/master
 msgid "Large"
 msgstr "Grande"
 
@@ -186,11 +127,7 @@ msgstr "Longitud"
 msgid "Loading Map..."
 msgstr "Cargando Mapa ..."
 
-<<<<<<< HEAD
-#: templates/lang.js:30 templates/lang.js.py:113
-=======
 #: templates/lang.js:30 templates/lang.js.c:113
->>>>>>> gncore/master
 msgid "Map Size"
 msgstr "Tamaño del mapa"
 
@@ -202,21 +139,6 @@ msgstr "Medida"
 msgid "About this Map"
 msgstr "Acerca de este Mapa"
 
-<<<<<<< HEAD
-#: templates/lang.js:33 templates/lang.js.py:86 templates/lang.js.py:155
-msgid "Abstract"
-msgstr "Resumen"
-
-#: templates/lang.js:34 templates/lang.js.py:87 templates/lang.js.py:153
-msgid "Contact"
-msgstr "Contacto"
-
-#: templates/lang.js:35 templates/lang.js.py:45
-msgid "Permalink"
-msgstr "Enlace permanente"
-
-#: templates/lang.js:36 templates/lang.js.py:226
-=======
 #: templates/lang.js:33 templates/lang.js.c:86 templates/lang.js.c:155
 msgid "Abstract"
 msgstr "Resumen"
@@ -230,7 +152,6 @@ msgid "Permalink"
 msgstr "Enlace permanente"
 
 #: templates/lang.js:36 templates/lang.js.c:226
->>>>>>> gncore/master
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -242,21 +163,12 @@ msgstr "Guardar copia"
 msgid "Save"
 msgstr "Guardar"
 
-<<<<<<< HEAD
-#: templates/lang.js:39 templates/lang.js.py:90 templates/lang.js.py:99
-#: templates/lang.js:152 templates/lang.js.py:174 templates/lang.js.py:209
-msgid "Title"
-msgstr "Título"
-
-#: templates/lang.js:40 templates/lang.js.py:114
-=======
 #: templates/lang.js:39 templates/lang.js.c:90 templates/lang.js.c:99
 #: templates/lang.js:152 templates/lang.js.c:174 templates/lang.js.c:209
 msgid "Title"
 msgstr "Título"
 
 #: templates/lang.js:40 templates/lang.js.c:114
->>>>>>> gncore/master
 msgid "Mini"
 msgstr "Mini"
 
@@ -276,11 +188,7 @@ msgstr "Zoom a la Extensión Anterior"
 msgid "This map has not yet been saved."
 msgstr "Este mapa no se ha guardado todavía."
 
-<<<<<<< HEAD
-#: templates/lang.js:46 templates/lang.js.py:115
-=======
 #: templates/lang.js:46 templates/lang.js.c:115
->>>>>>> gncore/master
 msgid "Premium"
 msgstr "Premium"
 
@@ -296,19 +204,11 @@ msgstr "Vista previa de Impresión"
 msgid "Properties"
 msgstr "Propiedades"
 
-<<<<<<< HEAD
-#: templates/lang.js:50 templates/lang.js.py:116
-msgid "Publish Map"
-msgstr "Publicar Mapa"
-
-#: templates/lang.js:51 templates/lang.js.py:52
-=======
 #: templates/lang.js:50 templates/lang.js.c:116
 msgid "Publish Map"
 msgstr "Publicar Mapa"
 
 #: templates/lang.js:51 templates/lang.js.c:52
->>>>>>> gncore/master
 msgid "Remove Layer"
 msgstr "Remover Capa"
 
@@ -328,11 +228,7 @@ msgstr "Guardar Mapa"
 msgid "You must be logged in to save this map."
 msgstr "Debes iniciar una sesión para guardar este mapa."
 
-<<<<<<< HEAD
-#: templates/lang.js:57 templates/lang.js.py:118
-=======
 #: templates/lang.js:57 templates/lang.js.c:118
->>>>>>> gncore/master
 msgid "Small"
 msgstr "Pequeñas"
 
@@ -366,24 +262,15 @@ msgstr "Cambiar a Google Earth Viewer 3D"
 
 #: templates/lang.js:64
 msgid ""
-<<<<<<< HEAD
-"The map that you are trying to load does not exist.  Creating a new map"
-" instead."
-=======
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
->>>>>>> gncore/master
 msgstr "El mapa que está intentando cargar no existe. Se creará un mapa."
 
 #: templates/lang.js:65
 msgid "Unknown Map"
 msgstr "Mapa Desconocido"
 
-<<<<<<< HEAD
-#: templates/lang.js:66 templates/lang.js.py:119
-=======
 #: templates/lang.js:66 templates/lang.js.c:119
->>>>>>> gncore/master
 msgid "Width"
 msgstr "Ancho"
 
@@ -412,10 +299,6 @@ msgid "Zoom to Visible Extent"
 msgstr "Zoom a la Extensión Visible"
 
 #: templates/lang.js:78
-<<<<<<< HEAD
-#, perl-brace-format
-=======
->>>>>>> gncore/master
 msgid "Zoom Level {zoom}"
 msgstr "Nivel de zoom {zoom}"
 
@@ -431,11 +314,7 @@ msgstr "Exportar Mapa "
 msgid "Map"
 msgstr "Mapa"
 
-<<<<<<< HEAD
-#: templates/lang.js:89 templates/lang.js.py:156
-=======
 #: templates/lang.js:89 templates/lang.js.c:156
->>>>>>> gncore/master
 msgid "View this Map"
 msgstr "Ver este Mapa"
 
@@ -443,11 +322,7 @@ msgstr "Ver este Mapa"
 msgid "Open Map"
 msgstr "Abrir Mapa"
 
-<<<<<<< HEAD
-#: templates/lang.js:97 templates/lang.js.py:173
-=======
 #: templates/lang.js:97 templates/lang.js.c:173
->>>>>>> gncore/master
 msgid "Name"
 msgstr "Nombre"
 
@@ -461,48 +336,12 @@ msgstr "Sin fondo"
 
 #: templates/lang.js:117
 msgid ""
-<<<<<<< HEAD
-"Your map is ready to be published to the web!  Simply copy the "
-"following HTML to embed the map in your website:"
-=======
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
->>>>>>> gncore/master
 msgstr ""
 "El mapa está listo para ser publicado en la web! Simplemente copia el "
 "siguiente código HTML para incrustar el mapa en tu página web:"
 
-<<<<<<< HEAD
-#: templates/lang.js:126 templates/lang.js.py:192
-msgid "Abstract:"
-msgstr "Resumen:"
-
-#: templates/lang.js:127 templates/lang.js.py:194
-msgid "No attribution information is provided for this layer."
-msgstr "No hay información de atributos para esta capa."
-
-#: templates/lang.js:128 templates/lang.js.py:195
-msgid "Provided by:"
-msgstr "Proporcionado por:"
-
-#: templates/lang.js:129 templates/lang.js.py:196
-msgid "Download:"
-msgstr "Descargar:"
-
-#: templates/lang.js:130 templates/lang.js.py:198
-msgid "No keywords are listed for this layer."
-msgstr "No hay palabras clave para esta capa."
-
-#: templates/lang.js:131 templates/lang.js.py:199
-msgid "Keywords:"
-msgstr "Palabras clave:"
-
-#: templates/lang.js:132 templates/lang.js.py:200
-msgid "No metadata URLs are defined for this layer."
-msgstr "No hay URLs de metadato definidas para esta capa."
-
-#: templates/lang.js:133 templates/lang.js.py:201
-=======
 #: templates/lang.js:126 templates/lang.js.c:192
 msgid "Abstract:"
 msgstr "Resumen:"
@@ -532,7 +371,6 @@ msgid "No metadata URLs are defined for this layer."
 msgstr "No hay URLs de metadato definidas para esta capa."
 
 #: templates/lang.js:133 templates/lang.js.c:201
->>>>>>> gncore/master
 msgid "Metadata Links:"
 msgstr "Links de Metadatos:"
 
@@ -568,21 +406,6 @@ msgstr "Creando PDF ..."
 msgid "Last Modified"
 msgstr "Última Modificación"
 
-<<<<<<< HEAD
-#: templates/lang.js:157 templates/lang.js.py:178
-msgid "Prev"
-msgstr "Anterior"
-
-#: templates/lang.js:158 templates/lang.js.py:179
-msgid "Next"
-msgstr "Siguiente"
-
-#: templates/lang.js:159 templates/lang.js.py:180
-msgid "of"
-msgstr "de"
-
-#: templates/lang.js:160 templates/lang.js.py:181
-=======
 #: templates/lang.js:157 templates/lang.js.c:178
 msgid "Prev"
 msgstr "Anterior"
@@ -596,7 +419,6 @@ msgid "of"
 msgstr "de"
 
 #: templates/lang.js:160 templates/lang.js.c:181
->>>>>>> gncore/master
 msgid "Your search did not match any items."
 msgstr "Tu búsqueda no produjo ningún resultado."
 
@@ -604,19 +426,11 @@ msgstr "Tu búsqueda no produjo ningún resultado."
 msgid "Search Maps"
 msgstr "Mapa de Búsqueda"
 
-<<<<<<< HEAD
-#: templates/lang.js:162 templates/lang.js.py:182
-msgid "Search"
-msgstr "Búsqueda"
-
-#: templates/lang.js:163 templates/lang.js.py:183
-=======
 #: templates/lang.js:162 templates/lang.js.c:182
 msgid "Search"
 msgstr "Búsqueda"
 
 #: templates/lang.js:163 templates/lang.js.c:183
->>>>>>> gncore/master
 msgid "Showing"
 msgstr "Listado"
 
@@ -624,11 +438,7 @@ msgstr "Listado"
 msgid "Loading"
 msgstr "Cargando"
 
-<<<<<<< HEAD
-#: templates/lang.js:165 templates/lang.js.py:185
-=======
 #: templates/lang.js:165 templates/lang.js.c:185
->>>>>>> gncore/master
 msgid "permalink"
 msgstr "Enlace permanente"
 

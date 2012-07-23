@@ -16,8 +16,15 @@
         <ant dir="externals/ringo" target="jar"/>
     </target>
 
-    <target name="buildjs">
+    <target name="patch">
+        <mkdir dir="${build}"/>
+        <echo message="Copying in patched files"/>
+        <copy todir="app/static/externals/openlayers/lib/OpenLayers" overwrite="true">
+            <fileset dir="app/static/patches/openlayers"/>
+        </copy>
+    </target>
 
+    <target name="buildjs">
         <mkdir dir="${build}/${ant.project.name}/WEB-INF/app/static/script"/>
         <java jar="externals/ringo/run.jar" fork="true" failonerror="true">
             <sysproperty key="ringo.home" path="externals/ringo"/>
@@ -27,7 +34,7 @@
 
     </target>
 
-    <target name="dist" depends="init, buildjs, redist"/>
+    <target name="dist" depends="init, patch, buildjs, redist"/>
 
     <target name="redist">
 

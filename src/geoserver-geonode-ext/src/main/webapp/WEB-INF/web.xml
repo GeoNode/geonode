@@ -23,11 +23,7 @@
          FILE
          - outputs to the local filesystem first, before sending it off to the user
       -->
-<<<<<<< HEAD
-    <param-value>PARTIAL-BUFFER2</param-value>
-=======
     <param-value>FILE</param-value>
->>>>>>> gncore/master
   </context-param>
   
   <!-- If true, enable versioning datastore as well -->
@@ -57,11 +53,7 @@
         <param-value>C:\eclipse\workspace\geoserver_trunk\cite\confCiteWFSPostGIS</param-value>
     </context-param> 
    -->
-<<<<<<< HEAD
-
-=======
   
->>>>>>> gncore/master
     <!-- pick up all spring application contexts -->
     <context-param>
         <param-name>contextConfigLocation</param-name>

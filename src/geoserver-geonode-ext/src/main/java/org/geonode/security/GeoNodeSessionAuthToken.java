@@ -6,7 +6,7 @@ import org.springframework.security.providers.AbstractAuthenticationToken;
 public class GeoNodeSessionAuthToken extends AbstractAuthenticationToken {
 
     /**
-     *
+     * 
      */
     private static final long serialVersionUID = -3781584924355064548L;
 
@@ -23,7 +23,7 @@ public class GeoNodeSessionAuthToken extends AbstractAuthenticationToken {
     }
 
     /**
-     *
+     * 
      * @see org.springframework.security.Authentication#getCredentials()
      */
     public Object getCredentials() {

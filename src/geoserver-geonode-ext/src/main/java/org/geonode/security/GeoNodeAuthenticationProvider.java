@@ -18,7 +18,7 @@ import org.springframework.util.Assert;
  * authentication
  * 
  * @author Andrea Aime - OpenGeo
- *
+ * 
  */
 public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
 
@@ -54,7 +54,7 @@ public class GeoNodeAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     *
+     * 
      * @param client
      */
     public void setClient(GeonodeSecurityClient client) {

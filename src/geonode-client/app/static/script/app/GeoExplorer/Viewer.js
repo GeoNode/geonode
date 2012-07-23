@@ -27,17 +27,6 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
      */
 
     loadConfig: function(config) {
-<<<<<<< HEAD:src/geonode-client/app/static/script/app/GeoExplorer/Viewer.js
-/*
-        config.tools = (config.tools || []).concat({
-            ptype: "gxp_styler",
-            id: "styler",
-            rasterStyling: true,
-            actionTarget: undefined
-        });
-*/
-=======
->>>>>>> gncore/master:src/geonode-client/app/static/script/app/GeoExplorer/Viewer.js
         var source;
         for (var s in config.sources) {
             source = config.sources[s];

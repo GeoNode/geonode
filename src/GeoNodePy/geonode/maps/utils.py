@@ -3,32 +3,21 @@
 
 # Standard Modules
 import logging
+from zipfile import ZipFile
 from random import choice
-# Django functionality
-from django.db import transaction
-from django.utils.translation import ugettext as _
-from django.utils.html import escape
-from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
-from django.conf import settings
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
-import geoserver
-from geoserver.catalog import FailedRequestError
-from geoserver.resource import FeatureType, Coverage
 import re
 import uuid
 import os
 import glob
-from xml.etree.ElementTree import XML
-from zipfile import ZipFile
 
+# Django functionality
+from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
+from django.conf import settings
 
 # Geonode functionality
-from geonode.maps.models import Map, Layer, MapLayer, LayerAttribute
-from geonode.maps.models import Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for
-
+from geonode.maps.models import Contact, Layer, LayerAttribute
+from geonode.maps.gs_helpers import cascading_delete, get_sld_for, delete_from_postgis
 
 # Geoserver functionality
 import geoserver
@@ -69,7 +58,7 @@ def get_files(filename, sldfile):
 
     base_name, extension = os.path.splitext(filename)
     required_extensions = dict(
-            shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]', prj = '.[pP][rR][jJ]')
+        shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]', prj = '.[pP][rR][jJ]')
     if extension.lower() == '.shp':
         for ext, pattern in required_extensions.iteritems():
             matches = glob.glob(base_name + pattern)
@@ -111,6 +100,7 @@ def get_files(filename, sldfile):
     # Always upload stylefile if it exist
     if sldfile and os.path.exists(sldfile):
         files['sld'] = sldfile
+
 
     return files
 
@@ -225,7 +215,7 @@ def cleanup(name, layer_id):
 
 
 def save(layer, base_file, user, overwrite = True, title=None,
-         abstract=None, permissions=None, keywords = ()):
+         abstract=None, permissions=None, keywords = (), charset = 'ISO-8859-1', sldfile = None):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -305,12 +295,12 @@ def save(layer, base_file, user, overwrite = True, title=None,
         if settings.DB_DATASTORE:
             create_store_and_resource = _create_db_featurestore
         else:
-            def create_store_and_resource(name, data, overwrite):
-                cat.create_featurestore(name, data, overwrite=overwrite)
+            def create_store_and_resource(name, data, overwrite, charset):
+                cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
                 return cat.get_store(name), cat.get_resource(name)
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
-        def create_store_and_resource(name, data, overwrite):
+        def create_store_and_resource(name, data, overwrite, charset):
             cat.create_coveragestore(name, data, overwrite=overwrite)
             return cat.get_store(name), cat.get_resource(name)
     else:
@@ -373,10 +363,11 @@ def save(layer, base_file, user, overwrite = True, title=None,
         logger.warn(msg)
         raise GeoNodeException(msg)
 
+
+
     # Step 6. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 6. Creating style for [%s]' % name)
-
     publishing = cat.get_layer(name)
 
     if 'sld' in files:
@@ -401,7 +392,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
             style = cat.get_style(name)
             logger.warn(msg)
             e.args = (msg,)
-
         #FIXME: Should we use the fully qualified typename?
         publishing.default_style = cat.get_style(name)
         cat.save(publishing)
@@ -447,24 +437,24 @@ def check_projection(name, resource):
                 cascading_delete(cat, resource)
                 raise GeoNodeException(msg % name)
 
-def create_django_record(user, title, keywords, abstract, resource, permissions):
-    name = resource.name
-    typename = resource.store.workspace.name + ':' + name
+def create_django_record(user, title, keywords, abstract, gs_resource, permissions):
+    name = gs_resource.name
+    typename = gs_resource.store.workspace.name + ':' + name
     layer_uuid = str(uuid.uuid1())
-    defaults = dict(store=resource.store.name,
-                    storeType=resource.store.resource_type,
+    defaults = dict(store=gs_resource.store.name,
+                    storeType=gs_resource.store.resource_type,
                     typename=typename,
-                    title=title or resource.title,
+                    title=title or gs_resource.title,
                     uuid=layer_uuid,
-                    keywords=' '.join(keywords),
-                    abstract=abstract or resource.abstract or '',
+                    abstract=abstract or gs_resource.abstract or '',
                     owner=user)
-    logger.info("User %s about to save django record for %s", user.username, resource.store.name)
-    saved_layer, created = Layer.objects.get_or_create(name=name,
+    saved_layer, created = Layer.objects.get_or_create(name=gs_resource.name,
+                                                       workspace=gs_resource.store.workspace.name,
                                                        defaults=defaults)
-    logger.info("Created django record for %s", resource.store.name)
+
     if created:
         saved_layer.set_default_permissions()
+        saved_layer.keywords.add(*keywords)
 
     try:
         # Step 9. Delete layer attributes if they no longer exist in an updated layer
@@ -520,7 +510,7 @@ def create_django_record(user, title, keywords, abstract, resource, permissions)
     logger.info('>>> Step 11. Setting default permissions for [%s]', name)
     if permissions is not None:
         from geonode.maps.views import set_layer_permissions
-        set_layer_permissions(saved_layer, permissions, True)
+        set_layer_permissions(saved_layer, permissions)
 
     # Step 12. Verify the layer was saved correctly and clean up if needed
     logger.info('>>> Step 12. Verifying the layer [%s] was created '
@@ -550,7 +540,7 @@ def create_django_record(user, title, keywords, abstract, resource, permissions)
                          'method in geonode.maps.models.Layer')
     except GeoNodeException, e:
         msg = ('The layer [%s] was not correctly saved to '
-               'GeoNetwork/GeoServer. Error is: %s' % (saved_layer, str(e)))
+               'GeoNetwork/GeoServer. Error is: %s' % (layer, str(e)))
         logger.exception(msg)
         e.args = (msg,)
         # Deleting the layer
@@ -612,8 +602,7 @@ def check_geonode_is_up():
                'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
         raise GeoNodeException(msg)
 
-
-def file_upload(filename, user=None, title=None, overwrite=True, keywords = [], charset='ISO-8859-1'):
+def file_upload(filename, user=None, title=None, overwrite=True, keywords=(), charset='ISO-8859-1'):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -635,7 +624,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords = [], 
     # with the data that is being passed.
     try:
         layer = Layer.objects.get(name=name)
-    except Layer.DoesNotExist, e:
+    except Layer.DoesNotExist:
         layer = name
 
     new_layer = save(layer, filename, theuser, overwrite, title, keywords=keywords, charset=charset)
@@ -643,7 +632,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords = [], 
     return new_layer
 
 
-def upload(incoming, user=None, overwrite=True, keywords = [], charset='ISO-8859-1'):
+def upload(incoming, user=None, overwrite=True, keywords = (), charset='ISO-8859-1'):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -717,7 +706,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
 
     try:
-        cat.add_data_to_store(ds,name, data, overwrite, charset)
+        cat.add_data_to_store(ds, name, data, overwrite, charset)
         return ds, cat.get_resource(name, store=ds)
     except:
         store_params = ds.connection_parameters
@@ -730,6 +719,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
 def forward_mercator(lonlat):
     """
         Given geographic coordinates, return a x,y tuple in spherical mercator.
+        
         If the lat value is out of range, -inf will be returned as the y value
     """
     x = lonlat[0] * 20037508.34 / 180

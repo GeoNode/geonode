@@ -1,7 +1,4 @@
 from itertools import cycle, izip
-from django.conf import settings
-from tempfile import mkstemp
-from zipfile import ZipFile
 from geoserver.catalog import FailedRequestError
 import logging
 import re
@@ -64,8 +61,6 @@ _line_template = """
     <CssParameter name="stroke-width">3</CssParameter>
   </Stroke>
 </LineSymbolizer>
-<<<<<<< HEAD
-=======
 </Rule>
 </FeatureTypeStyle>
 <FeatureTypeStyle>
@@ -75,7 +70,6 @@ _line_template = """
     <CssParameter name="stroke">%(fg)s</CssParameter>
   </Stroke>
 </LineSymbolizer>
->>>>>>> gncore/master
 """
 
 _point_template = """
@@ -184,7 +178,7 @@ def delete_from_postgis(resource_name):
     except Exception, e:
         logger.error("Error deleting PostGIS table %s:%s", resource_name, str(e))
     finally:
-            conn.close()
+        conn.close()
 
 
 def get_postgis_bbox(resource_name):

@@ -8,10 +8,7 @@ OWSLib==0.4.0
 Django==1.4
 django-extensions==0.8
 httplib2==0.7.4
-
-gsconfig==0.5.4
-#-e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
-
+-e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 django-registration==0.8
 django-profiles==0.2
 -e git+https://github.com/ericflo/django-avatar.git#egg=avatar
@@ -21,8 +18,6 @@ South==0.7.3
 django-taggit==0.9.3
 
 ordereddict
-
-simplejson # needed for python2.5
 psycopg2
 
 #Uncomment the following to use memcached
