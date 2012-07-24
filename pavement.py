@@ -161,7 +161,7 @@ def setup_client(options):
         elif os.path.isfile(origin):
             if not os.path.exists(target):
                 os.makedirs(target)
-            sh('cp %s %s' % (origin, target))
+            shutil.copyfile(origin, target)
 
 @task
 @needs([
