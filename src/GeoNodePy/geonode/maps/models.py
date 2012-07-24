@@ -421,6 +421,13 @@ UPDATE_FREQUENCIES = [
 ]
 
 CONSTRAINT_OPTIONS = [
+    # Shortcuts added for convenience in Open Data cases.
+    'Public Domain Dedication and License (PDDL)',
+    'Attribution License (ODC-By)',
+    'Open Database License (ODC-ODbL)',
+    'CC-BY-SA',
+    
+    # ISO standard constraint options.
     'copyright',
     'intellectualPropertyRights',
     'license',
