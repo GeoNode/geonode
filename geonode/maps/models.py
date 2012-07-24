@@ -17,6 +17,7 @@ from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
+from geonode.utils import default_map_config
 
 from taggit.managers import TaggableManager
 
@@ -202,7 +203,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
         bbox = None
         index = 0
 
-        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = geonode.maps.views.default_map_config()
+        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
         
         for layer in layers:
             try:
@@ -251,7 +252,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
         self.save()
         for bl in DEFAULT_BASE_LAYERS:
             bl.map = self
-            bl.save()
+            #bl.save()
 
         for ml in map_layers:
             ml.map = self # update map_id after saving map
