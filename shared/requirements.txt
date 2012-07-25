@@ -12,7 +12,7 @@ gsconfig==0.5.4
 django-registration==0.8
 django-profiles==0.2
 -e git+https://github.com/ericflo/django-avatar.git#egg=avatar
-dialogos==0.1.dev4
+dialogos==0.1
 agon-ratings==0.2
 South==0.7.3
 django-taggit==0.9.3
