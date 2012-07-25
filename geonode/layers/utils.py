@@ -437,7 +437,8 @@ def save(layer, base_file, user, overwrite = True, title=None,
 
     if created:
         saved_layer.set_default_permissions()
-        saved_layer.keywords.add(*keywords)
+    
+    saved_layer.keywords.add(*keywords)
 
     # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this
