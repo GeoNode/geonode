@@ -50,7 +50,7 @@ setup(name='GeoNode',
         "Sphinx==1.1.3",
         # testing
         "django-nose",
-        "nose",
+        "nose>=1.0",
         "mock",
         ],
       zip_safe=False,
