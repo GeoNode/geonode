@@ -38,7 +38,10 @@ If instead, you are interested in doing development on the source code, here are
     # Start the servers
     paver start
 
-Windows Development Build Instructions
+
+Windows Development Build Instructions::
+
+
     Prerequisites:
     # Java JDK
     # Python 2.6+
