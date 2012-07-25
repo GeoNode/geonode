@@ -211,7 +211,7 @@ def map_json(request, mapid):
                 mimetype="text/plain",
                 status=204
             )
-        except Exception, e:
+        except ValueError, e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
                 mimetype="text/plain",
@@ -362,7 +362,7 @@ def map_download(request, mapid, template='maps/download.html'):
 
     for lyr in mapObject.layer_set.all():
         if lyr.group != "background":
-            if not lyr.local():
+            if not lyr.local:
                 remote_layers.append(lyr)
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
