@@ -211,7 +211,7 @@ def map_json(request, mapid):
                 mimetype="text/plain",
                 status=204
             )
-        except Exception, e:
+        except ValueError, e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
                 mimetype="text/plain",
