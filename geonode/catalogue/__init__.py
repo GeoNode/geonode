@@ -52,7 +52,7 @@ def default_catalogue_backend():
     assert DEFAULT_CATALOGUE_ALIAS in settings.CATALOGUE, msg
     return settings.CATALOGUE[DEFAULT_CATALOGUE_ALIAS]
 
-def get_catalogue(backend=None):
+def get_catalogue(backend=None, skip_caps=True):
     """Returns a catalogue object.
     """
     default_backend_config = backend or default_catalogue_backend()
@@ -60,5 +60,5 @@ def get_catalogue(backend=None):
     catalog_module = load_backend(backend_name)
     assert hasattr(catalog_module, 'CatalogueBackend'), '%s must define a CatalogueBackend class'
     catalog_class = catalog_module.CatalogueBackend
-    cat = catalog_class(**default_backend_config)
+    cat = catalog_class(skip_caps=skip_caps, **default_backend_config)
     return cat

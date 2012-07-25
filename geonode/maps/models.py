@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import math
+import errno
 
 from django.conf import settings
 from django.db import models
@@ -19,8 +20,11 @@ from geonode.utils import layer_from_viewer_config
 
 from taggit.managers import TaggableManager
 
-logger = logging.getLogger("geonode.maps.models")
+from geoserver.catalog import Catalog
+from geoserver.layer import Layer as GsLayer
+from django.db.models import signals
 
+logger = logging.getLogger("geonode.maps.models")
 
 class Map(models.Model, PermissionLevelMixin, GXPMapBase):
     """
@@ -83,7 +87,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
         map_layers = MapLayer.objects.filter(map=self.id)
         layers = [] 
         for map_layer in map_layers:
-            if map_layer.local():   
+            if map_layer.local:   
                 layer =  Layer.objects.get(typename=map_layer.name)
                 layers.append(layer)
             else: 
@@ -314,21 +318,13 @@ class MapLayer(models.Model, GXPLayerBase):
 
     # If this dictionary conflicts with options that are stored in other fields
     # (such as ows_url) then the fields override.
-    
-    def local(self): 
-        """
-        Tests whether this layer is served by the GeoServer instance that is
-        paired with the GeoNode site.  Currently this is based on heuristics,
-        but we try to err on the side of false negatives.
-        """
-        if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
-            return Layer.objects.filter(typename=self.name).count() != 0
-        else: 
-            return False
+
+    local = models.BooleanField(default=False)
+    # True if this layer is served by the local geoserver
 
     @property
     def local_link(self): 
-        if self.local():
+        if self.local:
             layer = Layer.objects.get(typename=self.name)
             link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),layer.title)
         else: 
@@ -340,3 +336,23 @@ class MapLayer(models.Model, GXPLayerBase):
 
     def __unicode__(self):
         return '%s?layers=%s' % (self.ows_url, self.name)
+
+def pre_save_maplayer(instance, sender, **kwargs):
+    # If this object was saved via fixtures,
+    # do not do post processing.
+    if kwargs.get('raw', False):
+        return
+
+    _user, _password = settings.GEOSERVER_CREDENTIALS
+    url = "%srest" % settings.GEOSERVER_BASE_URL
+    try:
+        c = Catalog(url, _user, _password)   
+        instance.local = isinstance(c.get_layer(instance.name),GsLayer)
+    except EnvironmentError, e:
+        if e.errno == errno.ECONNREFUSED:
+            msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
+            logger.warn(msg, e)
+        else:
+            raise e
+
+signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
