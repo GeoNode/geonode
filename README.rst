@@ -57,7 +57,7 @@ Windows Development Build Instructions::
     # Create virtualenv and activate it
     cd <Directory to install the virtualenv & geonode into>
     virtualenv venv
-    venv/scripts/activate
+    venv\scripts\activate
 
     # Install Python native dependencies
     easy_install PIL lxml==2.3
