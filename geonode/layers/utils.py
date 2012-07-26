@@ -435,8 +435,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
                                                        workspace=gs_resource.store.workspace.name,
                                                        defaults=defaults)
 
-    if created:
-        saved_layer.set_default_permissions()
     
     saved_layer.keywords.add(*keywords)
 
@@ -460,6 +458,8 @@ def save(layer, base_file, user, overwrite = True, title=None,
     if permissions is not None:
 
         layer_set_permissions(saved_layer, permissions)
+    else:
+        saved_layer.set_default_permissions()
 
     # Step 12. Verify the layer was saved correctly and clean up if needed
     logger.info('>>> Step 12. Verifying the layer [%s] was created '
