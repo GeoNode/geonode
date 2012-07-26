@@ -433,7 +433,9 @@ def layer_search(request):
 
     for layer in found_entries:
         doc = {}
+        doc['uuid'] = layer.uuid
         doc['name'] = layer.name
+        doc['title'] = layer.title
         doc['abstract'] = layer.abstract
         doc['detail'] = layer.get_absolute_url()
         doc['_local'] = True
@@ -443,7 +445,19 @@ def layer_search(request):
             'delete': request.user.has_perm('layers.delete_layer', obj=layer),
             'change_permissions': request.user.has_perm('layers.change_layer_permissions', obj=layer),
         }
+        download_links = []
+        for link in layer.link_set.download():
+            download_links.append((link.extension, link.name, link.url))
+        doc['download_links'] = download_links
+
+        metadata_links = []
+        for link in layer.link_set.metadata():
+            metadata_links.append((link.mime, link.extension, link.url))
+
+        doc['metadata_links'] = metadata_links
+
         rows.append(doc)
+
     result['rows'] = rows
     result['success'] = True
     return HttpResponse(json.dumps(result), mimetype="application/json")
