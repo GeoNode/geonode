@@ -31,7 +31,6 @@ from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 
 from django.db.models import signals
-from geonode.layers.models import post_save_layer
 
 
 class LayersTest(TestCase):
