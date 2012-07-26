@@ -52,12 +52,6 @@ class LayerManager(models.Manager):
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
 
-    def default_poc(self):
-        return self.admin_contact()
-
-    def default_metadata_author(self):
-        return self.admin_contact()
-
     def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout):
         """Configure the layers available in GeoServer in GeoNode.
 
@@ -236,60 +230,6 @@ class Layer(models.Model, PermissionLevelMixin):
             msg = "WMS Record missing for layer [%s]" % self.typename 
             raise GeoNodeException(msg)
         
-        # Check the layer is in GeoServer's REST API
-        # It would be nice if we could ask for the definition of a layer by name
-        # rather than searching for it
-        #api_url = "%sdata/search/api/?q=%s" % (settings.SITEURL, self.name.replace('_', '%20'))
-        #response, body = http.request(api_url)
-        #api_json = json.loads(body)
-        #api_layer = None
-        #for row in api_json['rows']:
-        #    if(row['name'] == self.typename):
-        #        api_layer = row
-        #if(api_layer == None):
-        #    msg = "API Record missing for layer [%s]" % self.typename
-        #    raise GeoNodeException(msg)
- 
-        # if(csw_layer.uri != self.get_absolute_url()):
-        #     msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
-
-        # Visit get_absolute_url and make sure it does not give a 404
-        #logger.info(self.get_absolute_url())
-        #response, body = http.request(self.get_absolute_url())
-        #if(int(response['status']) != 200):
-        #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
-        #    raise GeoNodeException(msg)
-
-        #FIXME: Add more checks, for example making sure the title, keywords and description
-        # are the same in every database.
-
-    #def maps(self):
-    #    """Return a list of all the maps that use this layer"""
-    #    local_wms = "%swms" % settings.GEOSERVER_BASE_URL
-    #    return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename).select_related()])
-
-    def metadata(self):
-        if (_wms is None) or (self.typename not in _wms.contents):
-            get_wms()
-            # wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
-            # netloc = urlparse(wms_url).netloc
-            # http = httplib2.Http()
-            # http.add_credentials(_user, _password)
-            # http.authorizations.append(
-            #     httplib2.BasicAuthentication(
-            #         (_user, _password), 
-            #         netloc,
-            #         wms_url,
-            #         {},
-            #         None,
-            #         None, 
-            #         http
-            #     )
-            # )
-            # response, body = http.request(wms_url)
-            # _wms = WebMapService(wms_url, xml=body)
-        return _wms[self.typename]
-
     @property
     def attribute_names(self):
         if self.storeType == "dataStore":
@@ -429,17 +369,6 @@ class Layer(models.Model, PermissionLevelMixin):
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
 
-    def _autopopulate(self):
-        if self.poc is None:
-            self.poc = Layer.objects.default_poc()
-        if self.metadata_author is None:
-            self.metadata_author = Layer.objects.default_metadata_author()
-        if self.abstract == '' or self.abstract is None:
-            self.abstract = 'No abstract provided'
-        if self.title == '' or self.title is None:
-            self.title = self.name
-
-
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 
@@ -480,7 +409,7 @@ class ContactRole(models.Model):
     ContactRole is an intermediate model to bind Contacts and Layers and apply roles.
     """
     contact = models.ForeignKey(Contact)
-    layer = models.ForeignKey(Layer)
+    layer = models.ForeignKey(Layer, null=True)
     role = models.ForeignKey(Role)
 
     def clean(self):
@@ -556,17 +485,22 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     instance.delete_from_geoserver()
 
 
-def post_save_layer(instance, sender, **kwargs):
-    instance._autopopulate()
+def pre_save_layer(instance, sender, **kwargs):
+    if instance.abstract == '' or instance.abstract is None:
+        instance.abstract = 'No abstract provided'
+    if instance.title == '' or instance.title is None:
+        instance.title = instance.name
 
-    if kwargs['created']:
-        # The first time the object is saved,
-        # issue a second save operation, in order to
-        # get information from OWS and CSW servers.
+    # Stay away from setting poc or metadata author in the usual way,
+    # it requires the layer to be saved to the database.
+    # By using contact_role_set we bypass that restriction.
+    if instance.poc is None:
+        instance.contactrole_set.create(role=instance.poc_role,
+                                         contact=Layer.objects.admin_contact())
 
-        # FIXME(Ariel): Having to do this is a sign that our
-        # architecture needs improvement.
-        instance.save(force_update=True)
+    if instance.metadata_author is None:
+        instance.contactrole_set.create(role=instance.metadata_author_role,
+                                         contact=Layer.objects.admin_contact())
 
 
 def geoserver_pre_save(instance, sender, **kwargs):
@@ -750,7 +684,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         gs_catalog.save(publishing)
 
 
-signals.post_save.connect(post_save_layer, sender=Layer)
+signals.pre_save.connect(pre_save_layer, sender=Layer)
 
 signals.pre_save.connect(geoserver_pre_save, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
