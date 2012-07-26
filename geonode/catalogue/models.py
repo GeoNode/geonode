@@ -35,20 +35,6 @@ def catalogue_post_save(instance, sender, **kwargs):
 def catalogue_pre_save(instance, sender, **kwargs):
     """Send information to catalogue
     """
-    # If the layer is not yet in the database
-    # do not attempt to do anything.
-    import pdb;pdb.set_trace()
-
-    # If it does not have a pk, it has not been saved ...
-    if not hasattr(instance, 'pk'):
-        return
-
-    # ... but fixtures come with pk's before being saved
-    # so we have to check the database
-    if not Layer.objects.filter(pk=instance.pk).exists():
-        return
-
-
     record = None
     try:
         catalogue = get_catalogue()

@@ -22,12 +22,14 @@ from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Contact, Role 
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.layers.ows import wcs_links, wfs_links, wms_links
 from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
     UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, SPATIAL_REPRESENTATION_TYPES, \
     TOPIC_CATEGORIES, DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 
 from geoserver.catalog import Catalog
 from taggit.managers import TaggableManager
+
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -426,208 +428,6 @@ class Layer(models.Model, PermissionLevelMixin):
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
-    def save_to_geoserver(self):
-        url = "%srest" % settings.GEOSERVER_BASE_URL
-        try:
-            gs_catalog = Catalog(url, _user, _password)
-            gs_resource = gs_catalog.get_resource(self.name)
-        except EnvironmentError, e:
-            gs_resource = None
-            if e.errno == errno.ECONNREFUSED:
-                msg = ('Could not connect to geoserver at "%s"'
-                       'to save information for layer "%s"' % (
-                        settings.GEOSERVER_BASE_URL, self.name)
-                      )
-                logger.warn(msg, e)
-            else:
-                raise e
-
-        if gs_resource is None:
-            return
-        
-        gs_resource.title = self.title
-        gs_resource.abstract = self.abstract
-        gs_resource.name= self.name
-        gs_resource.keywords = self.keyword_list()
-
-        # Get metadata links
-        metadata_links = []
-        for link in self.link_set.metadata():
-            metadata_links.append((link.name, link.mime, link.url))
-
-        gs_resource.metadata_links = metadata_links
-        Layer.objects.gs_catalog.save(gs_resource)
-
-        publishing = gs_catalog.get_layer(self.name)
- 
-        if self.poc and self.poc.user:
-            publishing.attribution = str(self.poc.user)
-            profile = Contact.objects.get(user=self.poc.user)
-            publishing.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
-            Layer.objects.gs_catalog.save(publishing)
-
-    def  _populate_from_gs(self):
-        url = "%srest" % settings.GEOSERVER_BASE_URL
-        try:
-            gs_catalog = Catalog(url, _user, _password)
-            gs_resource = gs_catalog.get_resource(self.name)
-        except EnvironmentError, e:
-            gs_resource = None
-            if e.errno == errno.ECONNREFUSED:
-                msg = ('Could not connect to geoserver at "%s"'
-                       'to get information for layer "%s"' % (
-                        settings.GEOSERVER_BASE_URL, self.name)
-                      )
-                logger.warn(msg, e)
-            else:
-                raise e
-
-        if gs_resource is None:
-            return
-
-        bbox = gs_resource.latlon_bbox
-        self.bbox_x0 = bbox[0]
-        self.bbox_x1 = bbox[1]
-        self.bbox_y0 = bbox[2]
-        self.bbox_y1 = bbox[3]
-
-        dx = float(bbox[1]) - float(bbox[0])
-        dy = float(bbox[3]) - float(bbox[2])
-
-        dataAspect = 1 if dy == 0 else dx / dy
-
-        height = 550
-        width = int(height * dataAspect)
-
-        if self.storeType == "dataStore":
-            def wfs_link(mime, extra_params):
-                params = {
-                    'service': 'WFS',
-                    'version': '1.0.0',
-                    'request': 'GetFeature',
-                    'typename': self.typename,
-                    'outputFormat': mime
-                }
-                params.update(extra_params)
-                return settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode(params)
-
-            types = [
-                ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
-                ("gml", _("GML 2.0"), "gml2", {}),
-                ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
-                ("csv", _("CSV"), "csv", {}),
-                ("excel", _("Excel"), "excel", {}),
-                ("json", _("GeoJSON"), "json", {})
-            ]
-            for ext, name, mime, extra_params in types:
-                Link.objects.create(
-                                    layer=self,
-                                    extension=ext,
-                                    name=name,
-                                    mime=mime,
-                                    url=wfs_link(mime, extra_params),
-                                    link_type='data',
-                )
-
-        elif self.storeType == 'coverageStore':
-            client = httplib2.Http()
-            description_url = settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
-                    "service": "WCS",
-                    "version": "1.0.0",
-                    "request": "DescribeCoverage",
-                    "coverage": self.typename
-                })
-            content = client.request(description_url)[1]
-            doc = etree.fromstring(content)
-            extent = doc.find(".//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
-            if extent is not None:
-                low = extent.find("{http://www.opengis.net/gml}low").text.split()
-                high = extent.find("{http://www.opengis.net/gml}high").text.split()
-                w, h = [int(h) - int(l) for (h, l) in zip(high, low)]
-            else:
-                #FIXME(Ariel): I assume the only thing without extent is a single point.
-                # Is (0, 0) a good default?
-                w, h = (0, 0)
-
-            def wcs_link(mime):
-                return settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
-                    "service": "WCS",
-                    "version": "1.0.0",
-                    "request": "GetCoverage",
-                    "CRS": self.srid,
-                    "height": h,
-                    "width": w,
-                    "coverage": self.typename,
-                    "bbox": self.bbox_string,
-                    "format": mime
-                })
-
-            types = [("tiff", "GeoTIFF", "geotiff")]
-            for ext, name, mime in types:
-                Link.objects.create(
-                                    layer=self,
-                                    extension=ext,
-                                    name=name,
-                                    mime=mime,
-                                    url=wcs_link(mime),
-                                    link_type= 'data',
-                )
-
-
-        def wms_link(mime):
-            return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
-                'service': 'WMS',
-                'request': 'GetMap',
-                'layers': self.typename,
-                'format': mime,
-                'height': height,
-                'width': width,
-                'srs': self.srid,
-                'bbox': self.bbox_string
-            })
-
-        types = [
-            ("jpg", _("JPEG"), "image/jpeg"),
-            ("pdf", _("PDF"), "application/pdf"),
-            ("png", _("PNG"), "image/png")
-        ]
-        for ext, name, mime in types:
-            Link.objects.create(
-                                layer=self,
-                                extension=ext,
-                                name=name,
-                                mime=mime,
-                                url=wms_link(mime),
-                                link_type='image',
-            )
-
-        kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
-            'layers': self.typename,
-            'mode': "download"
-        })
-
-        kml_reflector_link_view = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
-            'layers': self.typename,
-            'mode': "refresh"
-        })
-
-        Link.objects.create(
-                            layer=self,
-                            extension='kml',
-                            name=_("KML"),
-                            mime='text/xml',
-                            url=kml_reflector_link_download,
-                            link_type='data',
-                           )
-        Link.objects.create(
-                            layer=self,
-                            extension='kml',
-                            name=_("View in Google Earth"),
-                            mime='text/xml',
-                            url=kml_reflector_link_view,
-                            link_type='data',
-                           )
-
 
     def _autopopulate(self):
         if self.poc is None:
@@ -762,31 +562,192 @@ def post_save_layer(instance, sender, **kwargs):
     if kwargs['created']:
         # The first time the object is saved,
         # issue a second save operation, in order to
-        # get information from OWS and CSW servers
+        # get information from OWS and CSW servers.
+
+        # FIXME(Ariel): Having to do this is a sign that our
+        # architecture needs improvement.
         instance.save(force_update=True)
 
 
 def geoserver_pre_save(instance, sender, **kwargs):
-    """Get information from geoserver
+    """Get information from geoserver.
+
+       The attributes retrieved include:
+       
+       * Bounding Box
+       * SRID
+       * Download links (WMS, WCS or WFS and KML)
     """
     # If the layer is not yet in the database
     # do not attempt to do anything.
 
-    # If it does not have a pk, it has not been saved ...
-    if not hasattr(instance, 'pk'):
-        return
-
-    # ... but fixtures come with pk's before being saved
+    # Fixtures come with pk's before being saved
     # so we have to check the database
     if not Layer.objects.filter(pk=instance.pk).exists():
         return
 
-    instance._populate_from_gs()
+    url = "%srest" % settings.GEOSERVER_BASE_URL
+    try:
+        gs_catalog = Catalog(url, _user, _password)
+        gs_resource = gs_catalog.get_resource(instance.name)
+    except EnvironmentError, e:
+        gs_resource = None
+        if e.errno == errno.ECONNREFUSED:
+            msg = ('Could not connect to geoserver at "%s"'
+                   'to get information for layer "%s"' % (
+                    settings.GEOSERVER_BASE_URL, instance.name)
+                  )
+            logger.warn(msg, e)
+        else:
+            raise e
+
+    if gs_resource is None:
+        return
+
+    bbox = gs_resource.latlon_bbox
+
+    #FIXME(Ariel): Correct srid setting below
+    #self.srid = gs_resource.src
+
+    # Set bounding box values
+
+    instance.bbox_x0 = bbox[0]
+    instance.bbox_x1 = bbox[1]
+    instance.bbox_y0 = bbox[2]
+    instance.bbox_y1 = bbox[3]
+
+    dx = float(bbox[1]) - float(bbox[0])
+    dy = float(bbox[3]) - float(bbox[2])
+
+    dataAspect = 1 if dy == 0 else dx / dy
+
+    height = 550
+    width = int(height * dataAspect)
+
+    # Set download links for WMS, WCS or WFS and KML
+
+    links = wms_links(settings.GEOSERVER_BASE_URL + 'wms?',
+                    instance.typename, instance.bbox_string,
+                    instance.srid, height, width)
+
+    for ext, name, mime, wms_url in links:
+        Link.objects.create(
+                            layer=instance,
+                            extension=ext,
+                            name=name,
+                            mime=mime,
+                            url=wms_url,
+                            link_type='image',
+        )
+
+
+    if instance.storeType == "dataStore":
+        links = wfs_links(settings.GEOSERVER_BASE_URL + 'wfs?', instance.typename)
+        for ext, name, mime, wfs_url in links:
+            Link.objects.create(
+                            layer=instance,
+                            extension=ext,
+                            name=name,
+                            mime=mime,
+                            url=wfs_url,
+                            link_type='data',
+            )
+
+
+    elif instance.storeType == 'coverageStore':
+        #FIXME(Ariel): This works for public layers, does it work for restricted too?
+        # would those end up with no geotiff links, like, forever?
+        links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename)
+        for ext, name, mime, wcs_url in links:
+            Link.objects.create(
+                                layer=instance,
+                                extension=ext,
+                                name=name,
+                                mime=mime,
+                                url=url,
+                                link_type='data',
+                               )
+
+
+    kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
+        'layers': instance.typename,
+        'mode': "download"
+    })
+
+    Link.objects.create(
+                        layer=instance,
+                        extension='kml',
+                        name=_("KML"),
+                        mime='text/xml',
+                        url=kml_reflector_link_download,
+                        link_type='data',
+                       )
+
+    kml_reflector_link_view = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
+        'layers': instance.typename,
+        'mode': "refresh"
+    })
+
+    Link.objects.create(
+                        layer=instance,
+                        extension='kml',
+                        name=_("View in Google Earth"),
+                        mime='text/xml',
+                        url=kml_reflector_link_view,
+                        link_type='data',
+                       )
+
 
 def geoserver_post_save(instance, sender, **kwargs):
-    """Send information to geoserver
+    """Send information to geoserver.
+
+       The attributes sent include:
+
+        * Title
+        * Abstract
+        * Name
+        * Keywords
+        * Metadata Links,
+        * Point of Contact name and url
     """
-    instance.save_to_geoserver()
+    url = "%srest" % settings.GEOSERVER_BASE_URL
+    try:
+        gs_catalog = Catalog(url, _user, _password)
+        gs_resource = gs_catalog.get_resource(instance.name)
+    except EnvironmentError, e:
+        gs_resource = None
+        if e.errno == errno.ECONNREFUSED:
+            msg = ('Could not connect to geoserver at "%s"'
+                   'to save information for layer "%s"' % (
+                    settings.GEOSERVER_BASE_URL, instance.name)
+                  )
+            logger.warn(msg, e)
+        else:
+            raise e
+
+    if gs_resource is None:
+            return
+        
+    gs_resource.title = instance.title
+    gs_resource.abstract = instance.abstract
+    gs_resource.name= instance.name
+    gs_resource.keywords = instance.keyword_list()
+
+    # Get metadata links
+    metadata_links = []
+    for link in instance.link_set.metadata():
+        metadata_links.append((link.name, link.mime, link.url))
+
+    gs_resource.metadata_links = metadata_links
+    Layer.objects.gs_catalog.save(gs_resource)
+
+    publishing = gs_catalog.get_layer(instance.name)
+ 
+    if instance.poc and instance.poc.user:
+        publishing.attribution = str(instance.poc.user)
+        profile = Contact.objects.get(user=instance.poc.user)
+        publishing.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
+        gs_catalog.save(publishing)
 
 
 signals.post_save.connect(post_save_layer, sender=Layer)
