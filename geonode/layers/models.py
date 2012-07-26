@@ -145,7 +145,7 @@ class Layer(models.Model, PermissionLevelMixin):
     # see poc property definition below
 
     # section 3
-    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
+    keywords = TaggableManager(_('keywords'), blank=True, help_text=_("A space or comma-separated list of keywords"))
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
     constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
@@ -469,8 +469,8 @@ class Link(models.Model):
         * image: For WMS and TMS links
         * metadata: For CSW links
     """
-    layer = models.ForeignKey(Layer)
-    extension = models.CharField(unique=True, max_length=255, help_text='For example "kml"')
+    layer = models.ForeignKey(Layer, null=True)
+    extension = models.CharField(max_length=255, help_text='For example "kml"')
     link_type = models.CharField(max_length=255, choices = [(x, x) for x in LINK_TYPES])
     name = models.CharField(max_length=255, help_text='For example "View in Google Earth"')
     mime = models.CharField(max_length=255, help_text='For example "text/xml"')
@@ -504,22 +504,17 @@ def pre_save_layer(instance, sender, **kwargs):
 
 
 def geoserver_pre_save(instance, sender, **kwargs):
-    """Get information from geoserver.
+    """Send information to geoserver.
 
-       The attributes retrieved include:
-       
-       * Bounding Box
-       * SRID
-       * Download links (WMS, WCS or WFS and KML)
+       The attributes sent include:
+
+        * Title
+        * Abstract
+        * Name
+        * Keywords
+        * Metadata Links,
+        * Point of Contact name and url
     """
-    # If the layer is not yet in the database
-    # do not attempt to do anything.
-
-    # Fixtures come with pk's before being saved
-    # so we have to check the database
-    if not Layer.objects.filter(pk=instance.pk).exists():
-        return
-
     url = "%srest" % settings.GEOSERVER_BASE_URL
     try:
         gs_catalog = Catalog(url, _user, _password)
@@ -528,15 +523,44 @@ def geoserver_pre_save(instance, sender, **kwargs):
         gs_resource = None
         if e.errno == errno.ECONNREFUSED:
             msg = ('Could not connect to geoserver at "%s"'
-                   'to get information for layer "%s"' % (
+                   'to save information for layer "%s"' % (
                     settings.GEOSERVER_BASE_URL, instance.name)
                   )
             logger.warn(msg, e)
+            # If geoserver is not online, there is no need to continue
+            return
         else:
             raise e
 
-    if gs_resource is None:
-        return
+    gs_resource.title = instance.title
+    gs_resource.abstract = instance.abstract
+    gs_resource.name= instance.name
+
+    # Get metadata links
+    metadata_links = []
+    for link in instance.link_set.metadata():
+        metadata_links.append((link.name, link.mime, link.url))
+
+    gs_resource.metadata_links = metadata_links
+    gs_catalog.save(gs_resource)
+
+    publishing = gs_catalog.get_layer(instance.name)
+ 
+    if instance.poc and instance.poc.user:
+        publishing.attribution = str(instance.poc.user)
+        profile = Contact.objects.get(user=instance.poc.user)
+        publishing.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
+        gs_catalog.save(publishing)
+
+    """Get information from geoserver.
+
+       The attributes retrieved include:
+       
+       * Bounding Box
+       * SRID
+       * Download links (WMS, WCS or WFS and KML)
+    """
+    gs_resource = gs_catalog.get_resource(instance.name)
 
     bbox = gs_resource.latlon_bbox
 
@@ -565,8 +589,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
                     instance.srid, height, width)
 
     for ext, name, mime, wms_url in links:
-        Link.objects.create(
-                            layer=instance,
+        instance.link_set.create(
                             extension=ext,
                             name=name,
                             mime=mime,
@@ -578,8 +601,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     if instance.storeType == "dataStore":
         links = wfs_links(settings.GEOSERVER_BASE_URL + 'wfs?', instance.typename)
         for ext, name, mime, wfs_url in links:
-            Link.objects.create(
-                            layer=instance,
+            instance.link_set.create(
                             extension=ext,
                             name=name,
                             mime=mime,
@@ -593,8 +615,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
         # would those end up with no geotiff links, like, forever?
         links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename)
         for ext, name, mime, wcs_url in links:
-            Link.objects.create(
-                                layer=instance,
+            instance.link_set.create(
                                 extension=ext,
                                 name=name,
                                 mime=mime,
@@ -608,8 +629,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
         'mode': "download"
     })
 
-    Link.objects.create(
-                        layer=instance,
+    instance.link_set.create(
                         extension='kml',
                         name=_("KML"),
                         mime='text/xml',
@@ -622,8 +642,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
         'mode': "refresh"
     })
 
-    Link.objects.create(
-                        layer=instance,
+    instance.link_set.create(
                         extension='kml',
                         name=_("View in Google Earth"),
                         mime='text/xml',
@@ -632,60 +651,39 @@ def geoserver_pre_save(instance, sender, **kwargs):
                        )
 
 
+
 def geoserver_post_save(instance, sender, **kwargs):
-    """Send information to geoserver.
+    """Save keywords to GeoServer
 
-       The attributes sent include:
-
-        * Title
-        * Abstract
-        * Name
-        * Keywords
-        * Metadata Links,
-        * Point of Contact name and url
+       The way keywords are implemented require the layer
+       to be saved to the database before accessing them.
     """
     url = "%srest" % settings.GEOSERVER_BASE_URL
+
     try:
         gs_catalog = Catalog(url, _user, _password)
         gs_resource = gs_catalog.get_resource(instance.name)
     except EnvironmentError, e:
-        gs_resource = None
         if e.errno == errno.ECONNREFUSED:
             msg = ('Could not connect to geoserver at "%s"'
                    'to save information for layer "%s"' % (
                     settings.GEOSERVER_BASE_URL, instance.name)
                   )
             logger.warn(msg, e)
+            # If geoserver is not online, there is no need to continue
+            return
         else:
             raise e
 
-    if gs_resource is None:
-            return
-        
-    gs_resource.title = instance.title
-    gs_resource.abstract = instance.abstract
-    gs_resource.name= instance.name
+
     gs_resource.keywords = instance.keyword_list()
+    gs_catalog.save(gs_resource)
 
-    # Get metadata links
-    metadata_links = []
-    for link in instance.link_set.metadata():
-        metadata_links.append((link.name, link.mime, link.url))
 
-    gs_resource.metadata_links = metadata_links
-    Layer.objects.gs_catalog.save(gs_resource)
-
-    publishing = gs_catalog.get_layer(instance.name)
- 
-    if instance.poc and instance.poc.user:
-        publishing.attribution = str(instance.poc.user)
-        profile = Contact.objects.get(user=instance.poc.user)
-        publishing.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
-        gs_catalog.save(publishing)
 
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 
 signals.pre_save.connect(geoserver_pre_save, sender=Layer)
-signals.post_save.connect(geoserver_post_save, sender=Layer)
 signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
+signals.post_save.connect(geoserver_post_save, sender=Layer)
