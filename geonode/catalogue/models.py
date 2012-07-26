@@ -2,11 +2,11 @@ import errno
 import logging
 
 from django.db.models import signals
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Link
 from geonode.catalogue import get_catalogue
 
 
-logger = logging.getLogger("geonode.catalogue.models")
+logger = logging.getLogger(__name__)
 
 def catalogue_pre_delete(instance, sender, **kwargs):
     """Removes the layer from the catalogue
@@ -47,10 +47,10 @@ def catalogue_pre_save(instance, sender, **kwargs):
 def catalogue_post_save(instance, sender, **kwargs):
     """Send information to catalogue
     """
-    meta = None
+    record = None
     try:
         catalogue = get_catalogue()
-        meta = catalogue.get_record(instance.uuid)
+        record = catalogue.get_record(instance.uuid)
     except EnvironmentError, e:
         msg = ('Could not connect to catalogue'
                'to save information for layer "%s"' % (instance.name)
@@ -60,15 +60,27 @@ def catalogue_post_save(instance, sender, **kwargs):
         else:
             raise e
 
-    if meta is None:
+    if record is None:
         return
 
-    if hasattr(meta.distribution, 'online'):
-        onlineresources = [r for r in meta.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+    # Fill in the url for the catalogue
+    if hasattr(record.distribution, 'online'):
+        onlineresources = [r for r in record.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
         if len(onlineresources) == 1:
             res = onlineresources[0]
             instance.distribution_url = res.url
             instance.distribution_description = res.description
+
+    # Create the different metadata links with the available formats
+    for link in record.links['metadata']:
+        Link.objects.create(
+                           layer=instance,
+                           name=link[0],
+                           extension='xml',
+                           mime=link[1],
+                           url=link[2],
+                           link_type='metadata',
+                           )
     #FIXME(Ariel): Is there a commit of some sort needed here for it to be saved in the catalogue?
 
 signals.pre_save.connect(catalogue_pre_save, sender=Layer)
