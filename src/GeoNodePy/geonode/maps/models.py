@@ -636,6 +636,7 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
+                    "owner": User.objects.filter(is_superuser=True).order_by('id')[0],
                     "uuid": str(uuid.uuid4())
                 })
 
