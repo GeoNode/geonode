@@ -7,6 +7,7 @@ from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.geonetwork import Catalog as GeoNetwork
+from geoserver.layer import Layer as GsLayer
 from django.db.models import signals
 from taggit.managers import TaggableManager
 from django.utils import simplejson as json
@@ -1433,6 +1434,7 @@ class MapLayerManager(models.Manager):
         ``source`` is the parsed dict for the layer's source
         ``ordering`` is the index of the layer within the map's layer list
         """
+
         layer_cfg = dict(layer)
         for k in ["format", "name", "opacity", "styles", "transparent",
                   "fixed", "group", "visibility", "title", "source"]:
@@ -1441,7 +1443,7 @@ class MapLayerManager(models.Manager):
         source_cfg = dict(source)
         for k in ["url", "projection"]:
             if k in source_cfg: del source_cfg[k]
-
+        
         return self.model(
             map = map_model,
             stack_order = ordering,
@@ -1523,16 +1525,8 @@ class MapLayer(models.Model):
     # If this dictionary conflicts with options that are stored in other fields
     # (such as ows_url) then the fields override.
     
-    def local(self): 
-        """
-        Tests whether this layer is served by the GeoServer instance that is
-        paired with the GeoNode site.  Currently this is based on heuristics,
-        but we try to err on the side of false negatives.
-        """
-        if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
-            return Layer.objects.filter(typename=self.name).count() != 0
-        else: 
-            return False
+    local = models.BooleanField()
+    # True if this layer is served by the local geoserver
  
     def source_config(self):
         """
@@ -1578,7 +1572,7 @@ class MapLayer(models.Model):
 
     @property
     def local_link(self): 
-        if self.local():
+        if self.local:
             layer = Layer.objects.get(typename=self.name)
             link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),layer.title)
         else: 
@@ -1653,5 +1647,11 @@ def post_save_layer(instance, sender, **kwargs):
         instance._populate_from_gn()
         instance.save(force_update=True)
 
+def pre_save_maplayer(instance, sender, **kw):   
+    url = "%srest" % settings.GEOSERVER_BASE_URL
+    c = Catalog(url, _user, _password)   
+    instance.local = isinstance(c.get_layer(instance.name),GsLayer)
+
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
+signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)

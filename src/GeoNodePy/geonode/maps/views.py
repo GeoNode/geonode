@@ -345,7 +345,7 @@ def map_download(request, mapid):
 
     for lyr in mapObject.layer_set.all():
         if lyr.group != "background":
-            if not lyr.local():
+            if not lyr.local:
                 remote_layers.append(lyr)
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
