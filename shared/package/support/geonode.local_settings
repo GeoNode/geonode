@@ -86,33 +86,3 @@ STATICFILES_DIRS = [
 
 # For more information on available settings please consult the Django docs at
 # https://docs.djangoproject.com/en/dev/ref/settings
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "null": {
-            "level":"DEBUG",
-            "class":"django.utils.log.NullHandler",
-        },
-        "console":{
-            "level":"DEBUG",
-            "class":"logging.StreamHandler",
-        },
-        "mail_admins": {
-            "level": "ERROR",
-            "class": "django.utils.log.AdminEmailHandler",
-        },
-    },
-    "loggers": {
-        "django.request": {
-            "handlers": ["mail_admins"],
-            "level": "ERROR",
-            "propagate": True,
-        },
-        "geonode": {
-            "handlers": ["console"],
-            "level": "WARNING",
-        },
-    },
-}
