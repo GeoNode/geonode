@@ -15,6 +15,7 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
+from django.template.defaultfilters import slugify
 
 import math
 import httplib2 
@@ -834,9 +835,12 @@ def upload_layer(request):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+                name = form.cleaned_data["layer_title"]
+
                 # Replace dots in filename - GeoServer REST API upload bug
-                name = name.replace(".","_")
+                # and avoid any other invalid characters
+                name = slugify(name.replace(".","_"))
+
                 saved_layer = save(name, base_file, request.user, 
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
