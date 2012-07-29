@@ -638,7 +638,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
 
     try:
-        cat.add_data_to_store(ds, name, data, overwrite, charset)
+        cat.add_data_to_store(ds, name, data, overwrite=overwrite, charset=charset)
         return ds, cat.get_resource(name, store=ds)
     except Exception:
         delete_from_postgis(name)
