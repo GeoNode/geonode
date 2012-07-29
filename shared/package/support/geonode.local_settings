@@ -72,6 +72,12 @@ STATICFILES_DIRS = [
     os.path.join(GEONODE_ROOT, 'static'),
 ]
 
+DEFAULT_LAYER_SOURCE = {
+    "ptype": "gxp_wmscsource",
+    "url": GEOSERVER_BASE_URL + "wms",
+    "restUrl": "/gs/rest"
+}
+
 # Uncomment the following to receive emails whenever there are errors in GeoNode
 #ADMINS = (
 #            ('John', 'john@example.com'), 
