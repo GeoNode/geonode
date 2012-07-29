@@ -835,6 +835,8 @@ def upload_layer(request):
             try:
                 tempdir, base_file = form.write_files()
                 name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+                # Replace dots in filename - GeoServer REST API upload bug
+                name = name.replace(".","_")
                 saved_layer = save(name, base_file, request.user, 
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
@@ -1219,7 +1221,7 @@ def _metadata_search(query, start, limit, **kw):
 
     next_page = csw.results.get('nextrecord', 0) 
     if next_page > 0:
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
+        params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
     
     return result
@@ -1518,7 +1520,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
     next_page = start + limit + 1
     if next_page < map_query.count():
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
+        params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.maps_search') + '?' + params
     
     return result
@@ -1578,6 +1580,7 @@ def batch_permissions(request):
             for user, user_level in users:
                 if user_level not in valid_perms:
                     user_level = "_none"
+                user = User.objects.get(username=user)
                 lyr.set_user_level(user, user_level)
 
     if "maps" in spec:
@@ -1596,6 +1599,7 @@ def batch_permissions(request):
             m.set_gen_level(AUTHENTICATED_USERS, auth_level)
             for user, user_level in spec['permissions'].get("users", []):
                 user_level = user_level.replace("layer", "map")
+                user = User.objects.get(username=user)
                 m.set_user_level(user, valid_perms.get(user_level, "_none"))
 
     return HttpResponse("Not implemented yet")

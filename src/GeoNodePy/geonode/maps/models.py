@@ -10,6 +10,7 @@ from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 from taggit.managers import TaggableManager
 from django.utils import simplejson as json
+from django.utils.safestring import mark_safe
 
 import httplib2
 import urllib
@@ -420,6 +421,13 @@ UPDATE_FREQUENCIES = [
 ]
 
 CONSTRAINT_OPTIONS = [
+    # Shortcuts added for convenience in Open Data cases.
+    'Public Domain Dedication and License (PDDL)',
+    'Attribution License (ODC-By)',
+    'Open Database License (ODC-ODbL)',
+    'CC-BY-SA',
+    
+    # ISO standard constraint options.
     'copyright',
     'intellectualPropertyRights',
     'license',
@@ -628,6 +636,7 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
+                    "owner": User.objects.filter(is_superuser=True).order_by('id')[0],
                     "uuid": str(uuid.uuid4())
                 })
 
@@ -796,8 +805,9 @@ class Layer(models.Model, PermissionLevelMixin):
             except Exception:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
-                # TODO: This is a bad idea to eat errors like this.
-                pass 
+                # But at least this indicates a problem
+                notiff = mark_safe("<del>GeoTIFF</del>")
+                links.extend([("tiff",notiff,"#")])
 
         def wms_link(mime):
             return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
