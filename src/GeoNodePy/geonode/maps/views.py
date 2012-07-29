@@ -1580,6 +1580,7 @@ def batch_permissions(request):
             for user, user_level in users:
                 if user_level not in valid_perms:
                     user_level = "_none"
+                user = User.objects.get(username=user)
                 lyr.set_user_level(user, user_level)
 
     if "maps" in spec:
@@ -1598,6 +1599,7 @@ def batch_permissions(request):
             m.set_gen_level(AUTHENTICATED_USERS, auth_level)
             for user, user_level in spec['permissions'].get("users", []):
                 user_level = user_level.replace("layer", "map")
+                user = User.objects.get(username=user)
                 m.set_user_level(user, valid_perms.get(user_level, "_none"))
 
     return HttpResponse("Not implemented yet")

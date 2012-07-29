@@ -296,7 +296,7 @@ DEFAULT_MAP_ZOOM = 0
 
 DEFAULT_LAYER_SOURCE = {
     "ptype": "gxp_wmscsource",
-    "url": "/geoserver/wms",
+    "url": GEOSERVER_BASE_URL + "wms",
     "restUrl": "/gs/rest"
 }
 

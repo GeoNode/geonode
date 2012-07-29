@@ -421,6 +421,13 @@ UPDATE_FREQUENCIES = [
 ]
 
 CONSTRAINT_OPTIONS = [
+    # Shortcuts added for convenience in Open Data cases.
+    'Public Domain Dedication and License (PDDL)',
+    'Attribution License (ODC-By)',
+    'Open Database License (ODC-ODbL)',
+    'CC-BY-SA',
+    
+    # ISO standard constraint options.
     'copyright',
     'intellectualPropertyRights',
     'license',
@@ -629,6 +636,7 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
+                    "owner": User.objects.filter(is_superuser=True).order_by('id')[0],
                     "uuid": str(uuid.uuid4())
                 })
 
