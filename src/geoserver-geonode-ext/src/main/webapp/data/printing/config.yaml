@@ -46,7 +46,14 @@ hosts:
     host: oatile3.mqcdn.com
   - !dnsMatch
     host: oatile4.mqcdn.com
-
+  - !dnsMatch
+    host: otile1.mqcdn.com
+  - !dnsMatch
+    host: otile2.mqcdn.com
+  - !dnsMatch
+    host: otile3.mqcdn.com
+  - !dnsMatch
+    host: otile4.mqcdn.com
 
 layouts:
   Legal:
