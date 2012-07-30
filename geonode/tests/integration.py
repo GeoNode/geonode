@@ -6,6 +6,7 @@ import json
 from unittest import TestCase
 import urllib
 import urllib2
+import time
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -22,7 +23,7 @@ from geonode.layers.utils import (
     file_upload,
     save
 )
-
+from geonode.utils import http_client
 from .utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
@@ -31,6 +32,7 @@ from geonode.catalogue import get_catalogue
 from geonode.gs_helpers import cascading_delete, fixup_style
 import gisdata
 
+import zipfile
 
 class _Client(object):
 
@@ -573,3 +575,41 @@ class GeoNodeMapTest(TestCase):
         client.login()
         resp = client.get('/' + uploaded.get_absolute_url())
         self.assertEquals(resp.code, 200)
+
+    def test_layer_remove(self):
+        """Test layer remove functionality
+        """
+        # Upload Some Data to work with
+               
+        uploaded = upload(gisdata.GOOD_DATA)
+        upload_list = []
+        for item in uploaded:
+            upload_list.append('geonode:' + item['name'])
+        
+        #test a valid user with layer removal permission         
+        from django.test.client import Client
+        c = Client()
+        c.login(username='admin', password='admin')
+         
+        url = '%sdata/%s/remove' % (settings.SITEURL, upload_list.pop())
+        response = c.get(url)
+        self.assertEquals(response.status_code, 200)
+
+        ##################################work on it#######################################
+        #test the post method 
+        response = c.post(url)
+        self.assertEquals(response.status_code, 200)
+        ##################################work on it#######################################
+
+        #test a method other than POST and GET 
+        response = c.head(url)
+        self.assertEquals(response.status_code, 403)
+        
+        #test an invalid user without layer removal permission
+        c.logout()   
+        c.login(username='norman', password='norman')
+          
+        url = '%sdata/%s/remove' % (settings.SITEURL, upload_list.pop())
+        response = c.post(url)
+        self.assertEquals(response.status_code, 403)
+        
