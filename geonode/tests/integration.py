@@ -576,40 +576,101 @@ class GeoNodeMapTest(TestCase):
         resp = client.get('/' + uploaded.get_absolute_url())
         self.assertEquals(resp.code, 200)
 
-    def test_layer_remove(self):
-        """Test layer remove functionality
+    def test_batch_download(self):
+        """Test the batch download functionality
         """
         # Upload Some Data to work with
-               
         uploaded = upload(gisdata.GOOD_DATA)
         upload_list = []
         for item in uploaded:
             upload_list.append('geonode:' + item['name'])
+            #file = item['file']
+            #print(file.split('/')[-1])
         
-        #test a valid user with layer removal permission         
         from django.test.client import Client
         c = Client()
         c.login(username='admin', password='admin')
+
+        response = c.post('/data/download', {'layer': upload_list})
+        if response.status_code == 200:
+            # go for it
+            response_dict = json.loads(response.content)
+            status = response_dict['status']
+            id = response_dict['id']
+            progress = response_dict['progress']
+            while(progress < 100):
+                url = '%sdata/download?id=%s' % (settings.SITEURL, id)
+                response, content = http_client.request(url,'GET')
+                content_dict = json.loads(content) 
+                status = content_dict['process']['status']
+                id = content_dict['process']['id']
+                progress = content_dict['process']['progress']
+                time.sleep(1)
+            download_url = "%srest/process/batchDownload/download/%s" % (settings.GEOSERVER_BASE_URL, id)
+            print download_url
+            
+            # Download the file  #Need work on automatic authentication
+            # Right now it is downloaded to a folder hard coded below, needs change in future           
+            # Unzip it            
+            self.getunzipped(download_url,'/home/nathanwang/Downloads/Temp')
+            
+            # Check that the readme is included
+            try:
+                with open('/home/nathanwang/Downloads/Temp/README.txt') as f: pass
+            except IOError as e:
+                print 'README.txt does NOT exist!'
+
+            # Check that all the files are included
+            for item in uploaded:
+                file = (item['file'].split('/')[-1])
+                try:
+                    with open('/home/nathanwang/Downloads/Temp/' + file) as f: pass
+                except IOError as e:
+                    print file + ' does NOT exist!'    #tiff files have error because of their inconsistent naming rules
+            
+            # Check through each file to see that they are valid
+            #import shapefile            
+
+        else:
+            # TODO deal with some error
+            pass
+
+    #This function download zip file from remote site and unzip it
+    def getunzipped(self, theurl, thedir):
+        name = os.path.join(thedir, 'temp.zip')
+        try:
+            name, hdrs = urllib.urlretrieve(theurl, name)
+        except IOError, e:
+            print "Can't retrieve %r to %r: %s" % (theurl, thedir, e)
+            return
+        try:
+            z = zipfile.ZipFile(name)
+        except zipfile.error, e:
+            print "Bad zipfile (from %r): %s" % (theurl, e)
+            return
+        for n in z.namelist():
+            dest = os.path.join(thedir, n)
+            destdir = os.path.dirname(dest)
+            if not os.path.isdir(destdir):
+                os.makedirs(destdir)
+            data = z.read(n)
+            f = open(dest, 'w')
+            f.write(data)
+            f.close()
+        z.close()
+        os.unlink(name)
          
-        url = '%sdata/%s/remove' % (settings.SITEURL, upload_list.pop())
-        response = c.get(url)
-        self.assertEquals(response.status_code, 200)
-
-        ##################################work on it#######################################
-        #test the post method 
-        response = c.post(url)
-        self.assertEquals(response.status_code, 200)
-        ##################################work on it#######################################
-
-        #test a method other than POST and GET 
-        response = c.head(url)
-        self.assertEquals(response.status_code, 403)
+    def test_wfs_download(self):
         
-        #test an invalid user without layer removal permission
-        c.logout()   
-        c.login(username='norman', password='norman')
-          
-        url = '%sdata/%s/remove' % (settings.SITEURL, upload_list.pop())
-        response = c.post(url)
-        self.assertEquals(response.status_code, 403)
+        url_shape_zip = '%swfs?%s%s%s&outputFormat=%s&version=1.0.0&request=GetFeature&service=WFS' % (settings.GEOSERVER_BASE_URL,'format_options=charset%3AUTF-8&','typename=geonode%3A','san_andres_y_providencia_water','SHAPE-ZIP')
+        
+        url_GML2 = '%swfs?%s%s&outputFormat=%s&version=1.0.0&request=GetFeature&service=WFS' % (settings.GEOSERVER_BASE_URL,'typename=geonode%3A','san_andres_y_providencia_water','gml2')
+        
+        print url_shape_zip
+        print url_GML2
+        return
+    
+        response, content = http_client.request(download_url_GML,'GET')
+        print content
+        #self.getunzipped(download_url,'/home/nathanwang/Downloads/Temp')
         
