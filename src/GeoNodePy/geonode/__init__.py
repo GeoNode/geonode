@@ -1,4 +1,4 @@
-__version__= (1, 2, 0, 'alpha', 0)
+__version__= (1, 2, 0, 'beta', 1)
 
 def get_version():
     import geonode.utils
