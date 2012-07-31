@@ -4,6 +4,8 @@ import base64
 import shutil
 import tempfile
 
+from mock import Mock, patch
+
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
@@ -13,7 +15,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template import Context
 from django.template.loader import get_template
 from django.forms import ValidationError
-from lxml import etree
 
 import geonode.layers.utils
 import geonode.layers.views
@@ -32,6 +33,9 @@ from geoserver.resource import FeatureType, Coverage
 
 from django.db.models import signals
 
+fake_delete = Mock()
+geonode.catalogue.models.catalogue_pre_delete = fake_delete
+geonode.layers.models.geoserver_pre_delete = fake_delete
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
@@ -332,6 +336,45 @@ class LayersTest(TestCase):
         lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
         self.assertEqual(lyr.keyword_list(), ["keywords", "saving"])
+
+    def test_layer_remove(self):
+        """Test layer remove functionality
+        """
+        layer = Layer.objects.all()[0]       
+        url = '%sdata/%s/remove' % (settings.SITEURL, layer.typename)
+
+        c = Client()
+    
+        # test unauthenticated
+        response = c.get(url)
+        self.assertEquals(response.status_code, 302)
+ 
+        #test a user without layer removal permission
+        c = Client()
+        c.login(username='norman', password='norman')
+        response = c.post(url)
+        self.assertEquals(response.status_code, 302)
+        c.logout()   
+
+        # Now test with a valid user
+        c = Client()
+        c.login(username='admin', password='admin')
+        
+        #test a method other than POST and GET 
+        response = c.put(url)
+        self.assertEquals(response.status_code, 403)
+
+        #test the page with a valid user with layer removal permission         
+        response = c.get(url)
+        self.assertEquals(response.status_code, 200)
+
+        #test the post method that actually removes the layer and redirects
+        response = c.post(url)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response['Location'], 'http://testserver/data/') 
+
+        #test that the layer is actually removed
+        self.assertEquals(Layer.objects.filter(pk=layer.pk).count(), 0)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
