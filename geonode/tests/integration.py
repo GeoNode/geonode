@@ -6,7 +6,6 @@ import json
 from unittest import TestCase
 import urllib
 import urllib2
-import time
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -23,6 +22,7 @@ from geonode.layers.utils import (
     file_upload,
     save
 )
+
 from .utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
