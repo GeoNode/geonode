@@ -35,6 +35,13 @@ data.
   <verbose>false</verbose>
   <gml>
     <entry>
+      <version>V_10</version>
+      <gml>
+        <srsNameStyle>XML</srsNameStyle>
+        <overrideGMLAttributes>true</overrideGMLAttributes>
+      </gml>
+    </entry>
+    <entry>
       <version>V_11</version>
       <gml>
         <srsNameStyle>URN</srsNameStyle>
@@ -46,13 +53,6 @@ data.
       <gml>
         <srsNameStyle>URN2</srsNameStyle>
         <overrideGMLAttributes>false</overrideGMLAttributes>
-      </gml>
-    </entry>
-    <entry>
-      <version>V_10</version>
-      <gml>
-        <srsNameStyle>XML</srsNameStyle>
-        <overrideGMLAttributes>true</overrideGMLAttributes>
       </gml>
     </entry>
   </gml>
