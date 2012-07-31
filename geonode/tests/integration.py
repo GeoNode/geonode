@@ -526,7 +526,7 @@ class GeoNodeMapTest(TestCase):
         # Upload a Shapefile
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
-       
+
         # Save the names of the Resource/Store/Styles 
         resource_name = shp_layer.resource.name
         store = shp_layer.resource.store
