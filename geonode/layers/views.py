@@ -20,9 +20,10 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
-from geonode.catalogue import get_catalogue
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
 from geonode.layers.models import Layer, ContactRole
 from geonode.utils import default_map_config
@@ -120,7 +121,6 @@ def layer_upload(request, template='layers/layer_upload.html'):
 
 def layer_detail(request, layername, template='layers/layer.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
-    metadata_links = layer.full_metadata_links
 
     maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
@@ -130,7 +130,6 @@ def layer_detail(request, layername, template='layers/layer.html'):
 
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
-        "metadata_links": metadata_links,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
     }))
@@ -374,124 +373,126 @@ def layer_search_page(request, template='layers/search.html'):
 
 def layer_search(request):
     """
-    handles a basic search for data using the 
-    GeoNetwork catalog.
+    handles a basic search for data
 
-    the search accepts: 
+    the search accepts:
     q - general query for keywords across all fields
     start - skip to this point in the results
     limit - max records to return
 
-    for ajax requests, the search returns a json structure 
-    like this: 
-    
+    for ajax requests, the search returns a json structure
+    like this:
     {
     'total': <total result count>,
     'next': <url for next batch if exists>,
     'prev': <url for previous batch if exists>,
     'query_info': {
-        'start': <integer indicating where this batch starts>,
-        'limit': <integer indicating the batch size used>,
-        'q': <keywords used to query>,
+    'start': <integer indicating where this batch starts>,
+    'limit': <integer indicating the batch size used>,
+    'q': <keywords used to query>,
     },
     'rows': [
-      {
-        'name': <typename>,
-        'abstract': '...',
-        'keywords': ['foo', ...],
-        'detail' = <link to geonode detail page>,
-        'attribution': {
-            'title': <language neutral attribution>,
-            'href': <url>
-        },
-        'download_links': [
-            ['pdf', 'PDF', <url>],
-            ['kml', 'KML', <url>],
-            [<format>, <name>, <url>]
-            ...
-        ],
-        'metadata_links': [
-           ['text/xml', 'TC211', <url>],
-           [<mime>, <name>, <url>],
-           ...
-        ]
-      },
-      ...
+    {
+    'name': <typename>,
+    'abstract': '...',
+    'keywords': ['foo', ...],
+    'detail' = <link to geonode detail page>,
+    'attribution': {
+    'title': <language neutral attribution>,
+    'href': <url>
+    },
+    'download_links': [
+    ['pdf', 'PDF', <url>],
+    ['kml', 'KML', <url>],
+    [<format>, <name>, <url>]
+    ...
+    ],
+    'metadata_links': [
+    ['text/xml', 'TC211', <url>],
+    [<mime>, <name>, <url>],
+    ...
+    ]
+    },
+    ...
     ]}
     """
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
+    query_string = ''
+    found_entries = Layer.objects.all()
+    result = {}
 
-    # grab params directly to implement defaults as
-    # opposed to panicy django forms behavior.
-    query = params.get('q', '')
-    try:
-        start = int(params.get('start', '0'))
-    except Exception:
-        start = 0
-    try:
-        limit = min(int(params.get('limit', DEFAULT_SEARCH_BATCH_SIZE)),
-                    MAX_SEARCH_BATCH_SIZE)
-    except Exception: 
-        limit = DEFAULT_SEARCH_BATCH_SIZE
+    if ('q' in request.GET) and request.GET['q'].strip():
+        query_string = request.GET['q']
+        
+        entry_query = get_query(query_string, ['title', 'abstract',])
+        
+        found_entries = Layer.objects.filter(entry_query)
 
-    advanced = {}
-    bbox = params.get('bbox', None)
-    if bbox:
-        try:
-            bbox = [float(x) for x in bbox.split(',')]
-            if len(bbox) == 4:
-                advanced['bbox'] =  bbox
-        except Exception:
-            # ignore...
-            pass
+    result['total'] = len(found_entries)
 
-    result = _layer_search(query, start, limit, **advanced)
+    rows = []
 
-    # XXX slowdown here to dig out result permissions
-    for doc in result['rows']: 
-        try: 
-            layer = Layer.objects.get(uuid=doc['uuid'])
-            doc['_local'] = True
-            doc['_permissions'] = {
-                'view': request.user.has_perm('layers.view_layer', obj=layer),
-                'change': request.user.has_perm('layers.change_layer', obj=layer),
-                'delete': request.user.has_perm('layers.delete_layer', obj=layer),
-                'change_permissions': request.user.has_perm('layers.change_layer_permissions', obj=layer),
-            }
-        except Layer.DoesNotExist:
-            doc['_local'] = False
+    for layer in found_entries:
+        doc = {}
+        doc['uuid'] = layer.uuid
+        doc['name'] = layer.name
+        doc['title'] = layer.title
+        doc['abstract'] = layer.abstract
+        doc['detail'] = layer.get_absolute_url()
+        doc['_local'] = True
+        doc['_permissions'] = {
+            'view': request.user.has_perm('layers.view_layer', obj=layer),
+            'change': request.user.has_perm('layers.change_layer', obj=layer),
+            'delete': request.user.has_perm('layers.delete_layer', obj=layer),
+            'change_permissions': request.user.has_perm('layers.change_layer_permissions', obj=layer),
+        }
+        download_links = []
+        for link in layer.link_set.download():
+            download_links.append((link.extension, link.name, link.url))
+        doc['download_links'] = download_links
 
+        metadata_links = []
+        for link in layer.link_set.metadata():
+            metadata_links.append((link.mime, link.extension, link.url))
+
+        doc['metadata_links'] = metadata_links
+
+        rows.append(doc)
+
+    result['rows'] = rows
     result['success'] = True
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
 
-def _layer_search(query, start, limit, **kw):
-    keywords = _split_query(query)
-    bbox = getattr(kw, 'bbox', None)
-    catalogue = get_catalogue()
-    result = catalogue.search_records(keywords, start, limit, bbox)
+def normalize_query(query_string,
+                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                    normspace=re.compile(r'\s{2,}').sub):
+    ''' Splits the query string in invidual keywords, getting rid of unecessary spaces
+        and grouping quoted words together.
+        Example:
+        >>> normalize_query(' some random words "with quotes " and spaces')
+        ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
+    '''
+    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
-    result['query_info'] = {
-        'start': start,
-        'limit': limit,
-        'q': query
-    }
-
-    if start > 0: 
-        prev = max(start - limit, 0)
-        params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('layer_search_page') + '?' + params
-
-    if result['next_page'] > 0:
-        params = urlencode({'q': query, 'start': result['next_page'] - 1, 'limit': limit})
-        result['next'] = reverse('layer_search_page') + '?' + params
-    
-    return result
+def get_query(query_string, search_fields):
+    ''' Returns a query, that is a combination of Q objects. That combination
+        aims to search keywords within a model by testing the given search fields.
+    '''
+    query = None # Query to search for every search term
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None # Query to search for a given term in each field
+        for field_name in search_fields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query
 
 
 def layer_search_result_detail(request, template='layers/search_result_snippet.html'):
@@ -499,25 +500,10 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
     if  uuid is None:
         return HttpResponse(status=400)
 
-    catalogue = get_catalogue()
-    record = catalogue.get_record(uuid)
-
-    if record is None:
-        return HttpResponse('No metadata found!', status=500)
-
-    try:
-        layer = Layer.objects.get(uuid=uuid)
-        layer_is_remote = False
-    except Layer.DoesNotExist, e:
-        layer = None
-        layer_is_remote = True
-
+    layer = get_object_or_404(Layer, uuid=uuid)
+ 
     return render_to_response(template, RequestContext(request, {
-        'rec': record,
-        'download_links': record.links['download'],
-        'metadata_links': record.links['metadata'],
         'layer': layer,
-        'layer_is_remote': layer_is_remote
     }))
 
 
