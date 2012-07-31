@@ -154,7 +154,7 @@
              <gco:CharacterString>{{ layer.thumbnail }}</gco:CharacterString>
            </gmd:fileName>
            <gmd:fileDescription>
-             <gco:CharacterString>Thumbnail for '{{layer.resource.title}}'</gco:CharacterString>
+             <gco:CharacterString>Thumbnail for '{{layer.title}}'</gco:CharacterString>
            </gmd:fileDescription>
            <gmd:fileType>
              <gco:CharacterString>image/png</gco:CharacterString>
@@ -227,16 +227,16 @@
            <gmd:geographicElement>
              <gmd:EX_GeographicBoundingBox>
                <gmd:westBoundLongitude>
-                 <gco:Decimal>{{layer.resource.latlon_bbox.0}}</gco:Decimal>
+                 <gco:Decimal>{{layer.bbox_x0}}</gco:Decimal>
                </gmd:westBoundLongitude>
                <gmd:eastBoundLongitude>
-                 <gco:Decimal>{{layer.resource.latlon_bbox.1}}</gco:Decimal>
+                 <gco:Decimal>{{layer.bbox_x1}}</gco:Decimal>
                </gmd:eastBoundLongitude>
                <gmd:southBoundLatitude>
-                 <gco:Decimal>{{layer.resource.latlon_bbox.2}}</gco:Decimal>
+                 <gco:Decimal>{{layer.bbox_y2}}</gco:Decimal>
                </gmd:southBoundLatitude>
                <gmd:northBoundLatitude>
-                 <gco:Decimal>{{layer.resource.latlon_bbox.3}}</gco:Decimal>
+                 <gco:Decimal>{{layer.bbox_y1}}</gco:Decimal>
                </gmd:northBoundLatitude>
              </gmd:EX_GeographicBoundingBox>
            </gmd:geographicElement>
@@ -276,24 +276,24 @@
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
                </gmd:protocol>
                <gmd:description>
-                 <gco:CharacterString>Online link to the '{{layer.resource.title}}' description on GeoNode</gco:CharacterString>
+                 <gco:CharacterString>Online link to the '{{layer.title}}' description on GeoNode</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
-           {% for extension, format, link in layer.download_links %}
+           {% for link in layer.link_set.download %}
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>{{link}}</gmd:URL>
+                 <gmd:URL>{{link.url}}</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>{{layer.name}}.{{extension}}</gco:CharacterString>
+                 <gco:CharacterString>{{layer.name}}.{{link.extension}}</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>{{layer.resource.title}} ({{format}} Format)</gco:CharacterString>
+                 <gco:CharacterString>{{layer.title}} ({{link.name}} Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
