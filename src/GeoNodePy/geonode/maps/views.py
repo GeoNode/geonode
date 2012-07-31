@@ -1198,7 +1198,7 @@ def layer_metadata(request, layername):
                     logger.debug("Saved")
 
 
-                    the_layer.update_gazetteer()
+                    the_layer.queue_gazetteer_update()
 
 
 

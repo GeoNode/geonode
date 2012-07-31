@@ -1482,6 +1482,14 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['styles'] = ''
         return cfg
 
+    def queue_gazetteer_update(self):
+        from geonode.gazetteer.models import GazetteerUpdateJob
+        if GazetteerUpdateJob.objects.filter(layer=self.id).exists() == 0:
+                newJob = GazetteerUpdateJob(layer=self)
+                newJob.save()
+
+
+
     def update_gazetteer(self):
         from geonode.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
         if not self.in_gazetteer:
