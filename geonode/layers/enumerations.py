@@ -69,13 +69,7 @@ CONTACT_FIELDS = [
 ]
 
 DEFAULT_SUPPLEMENTAL_INFORMATION=_(
-'You can customize the template to suit your \
-needs. You can add and remove fields and fill out default \
-information (e.g. contact details). Fields you can not change in \
-the default view may be accessible in the more comprehensive (and \
-more complex) advanced view. You can even use the XML editor to \
-create custom structures, but they have to be validated by the \
-system, so know what you do :-)'
+    _('No information provided')
 )
 
 COUNTRIES = (
@@ -433,3 +427,5 @@ ALL_LANGUAGES = (
     ('zha', 'Zhuang'),
     ('zul', 'Zulu'),
 )
+
+LINK_TYPES = ['original', 'data', 'image', 'metadata']

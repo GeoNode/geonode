@@ -543,7 +543,7 @@ def kill(arg1, arg2):
                         % (arg1, '\n'.join([l.strip() for l in lines])))
 
 
-def waitfor(url, timeout=180):
+def waitfor(url, timeout=300):
     started = False
     for a in xrange(timeout):
         try:
