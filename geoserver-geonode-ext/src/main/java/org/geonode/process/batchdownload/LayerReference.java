@@ -4,6 +4,7 @@ import java.net.URL;
 
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
@@ -22,6 +23,8 @@ public class LayerReference {
     private final AbstractGridCoverage2DReader rasterSource;
 
     private URL metadataURL;
+
+    private ReferencedEnvelope clipBounds;
 
     private URL defaultStyleURL;
 
