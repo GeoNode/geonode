@@ -23,7 +23,6 @@ from geonode.layers.utils import (
     file_upload,
     save
 )
-from geonode.utils import http_client
 from .utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
@@ -32,7 +31,6 @@ from geonode.catalogue import get_catalogue
 from geonode.gs_helpers import cascading_delete, fixup_style
 import gisdata
 
-import zipfile
 
 class _Client(object):
 
