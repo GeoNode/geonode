@@ -22,14 +22,28 @@ def catalogue_post_save(instance, sender, **kwargs):
     try:
         catalogue = get_catalogue()
         catalogue.create_record(instance)
+        record = catalogue.get_record(instance.uuid)
     except EnvironmentError, e:
         msg = ('Could not connect to catalogue'
                'to save information for layer "%s"' % (instance.name)
               )
         if e.reason.errno == errno.ECONNREFUSED:
-            logger.warn(msg, e) 
+            logger.warn(msg, e)
+            return
         else:
             raise e
+
+    # Create the different metadata links with the available formats
+    for mime, name, metadata_url in record.links['metadata']:
+        instance.link_set.get_or_create(url=metadata_url,
+                         defaults=dict(
+                           name=name,
+                           extension='xml',
+                           mime=mime,
+                           link_type='metadata',
+                          )
+                         )
+
 
 
 def catalogue_pre_save(instance, sender, **kwargs):
@@ -58,17 +72,6 @@ def catalogue_pre_save(instance, sender, **kwargs):
             res = onlineresources[0]
             instance.distribution_url = res.url
             instance.distribution_description = res.description
-
-    # Create the different metadata links with the available formats
-    for link in record.links['metadata']:
-        instance.link_set.objects.create(
-                           layer=instance,
-                           name=link[0],
-                           extension='xml',
-                           mime=link[1],
-                           url=link[2],
-                           link_type='metadata',
-                           )
 
 signals.pre_save.connect(catalogue_pre_save, sender=Layer)
 signals.post_save.connect(catalogue_post_save, sender=Layer)

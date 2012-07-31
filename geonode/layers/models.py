@@ -441,19 +441,19 @@ class LinkManager(models.Manager):
     """
 
     def data(self):
-        return super(LinkManager, self).get_query_set().filter(link_type='data')
+        return self.get_query_set().filter(link_type='data')
 
     def image(self):
-        return super(LinkManager, self).get_query_set().filter(link_type='image')
+        return self.get_query_set().filter(link_type='image')
 
     def download(self):
-        return super(LinkManager, self).get_query_set().filter(link_type__in=['image', 'data'])
+        return self.get_query_set().filter(link_type__in=['image', 'data'])
 
     def metadata(self):
-        return super(LinkManager, self).get_query_set().filter(link_type='metadata')
+        return self.get_query_set().filter(link_type='metadata')
 
     def original(self):
-        return super(LinkManager, self).get_query_set().filter(link_type='original')
+        return self.get_query_set().filter(link_type='original')
         
 
 
@@ -469,12 +469,12 @@ class Link(models.Model):
         * image: For WMS and TMS links
         * metadata: For CSW links
     """
-    layer = models.ForeignKey(Layer, null=True)
+    layer = models.ForeignKey(Layer)
     extension = models.CharField(max_length=255, help_text='For example "kml"')
     link_type = models.CharField(max_length=255, choices = [(x, x) for x in LINK_TYPES])
     name = models.CharField(max_length=255, help_text='For example "View in Google Earth"')
     mime = models.CharField(max_length=255, help_text='For example "text/xml"')
-    url = models.URLField()
+    url = models.URLField(unique=True)
 
     objects = LinkManager()
 
@@ -574,81 +574,6 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
 
-    dx = float(bbox[1]) - float(bbox[0])
-    dy = float(bbox[3]) - float(bbox[2])
-
-    dataAspect = 1 if dy == 0 else dx / dy
-
-    height = 550
-    width = int(height * dataAspect)
-
-    # Set download links for WMS, WCS or WFS and KML
-
-    links = wms_links(settings.GEOSERVER_BASE_URL + 'wms?',
-                    instance.typename, instance.bbox_string,
-                    instance.srid, height, width)
-
-    for ext, name, mime, wms_url in links:
-        instance.link_set.create(
-                            extension=ext,
-                            name=name,
-                            mime=mime,
-                            url=wms_url,
-                            link_type='image',
-        )
-
-
-    if instance.storeType == "dataStore":
-        links = wfs_links(settings.GEOSERVER_BASE_URL + 'wfs?', instance.typename)
-        for ext, name, mime, wfs_url in links:
-            instance.link_set.create(
-                            extension=ext,
-                            name=name,
-                            mime=mime,
-                            url=wfs_url,
-                            link_type='data',
-            )
-
-
-    elif instance.storeType == 'coverageStore':
-        #FIXME(Ariel): This works for public layers, does it work for restricted too?
-        # would those end up with no geotiff links, like, forever?
-        links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename)
-        for ext, name, mime, wcs_url in links:
-            instance.link_set.create(
-                                extension=ext,
-                                name=name,
-                                mime=mime,
-                                url=url,
-                                link_type='data',
-                               )
-
-
-    kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
-        'layers': instance.typename,
-        'mode': "download"
-    })
-
-    instance.link_set.create(
-                        extension='kml',
-                        name=_("KML"),
-                        mime='text/xml',
-                        url=kml_reflector_link_download,
-                        link_type='data',
-                       )
-
-    kml_reflector_link_view = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
-        'layers': instance.typename,
-        'mode': "refresh"
-    })
-
-    instance.link_set.create(
-                        extension='kml',
-                        name=_("View in Google Earth"),
-                        mime='text/xml',
-                        url=kml_reflector_link_view,
-                        link_type='data',
-                       )
 
 
 
@@ -679,6 +604,88 @@ def geoserver_post_save(instance, sender, **kwargs):
     gs_resource.keywords = instance.keyword_list()
     gs_catalog.save(gs_resource)
 
+    bbox = gs_resource.latlon_bbox
+    dx = float(bbox[1]) - float(bbox[0])
+    dy = float(bbox[3]) - float(bbox[2])
+
+    dataAspect = 1 if dy == 0 else dx / dy
+
+    height = 550
+    width = int(height * dataAspect)
+
+    # Set download links for WMS, WCS or WFS and KML
+
+    links = wms_links(settings.GEOSERVER_BASE_URL + 'wms?',
+                    instance.typename, instance.bbox_string,
+                    instance.srid, height, width)
+
+    for ext, name, mime, wms_url in links:
+        instance.link_set.get_or_create(url=wms_url,
+                          defaults=dict(
+                            extension=ext,
+                            name=name,
+                            mime=mime,
+                            link_type='image',
+                           )
+        )
+
+
+    if instance.storeType == "dataStore":
+        links = wfs_links(settings.GEOSERVER_BASE_URL + 'wfs?', instance.typename)
+        for ext, name, mime, wfs_url in links:
+            instance.link_set.get_or_create(url=wfs_url,
+                           defaults=dict(
+                            extension=ext,
+                            name=name,
+                            mime=mime,
+                            url=wfs_url,
+                            link_type='data',
+                            )
+            )
+
+
+    elif instance.storeType == 'coverageStore':
+        #FIXME(Ariel): This works for public layers, does it work for restricted too?
+        # would those end up with no geotiff links, like, forever?
+        links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename)
+        for ext, name, mime, wcs_url in links:
+            instance.link_set.get_or_create(url=wcs_url,
+                              defaults=dict(
+                                extension=ext,
+                                name=name,
+                                mime=mime,
+                                link_type='data',
+                                )
+                               )
+
+
+    kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
+        'layers': instance.typename,
+        'mode': "download"
+    })
+
+    instance.link_set.get_or_create(url=kml_reflector_link_download,
+                       defaults=dict(
+                        extension='kml',
+                        name=_("KML"),
+                        mime='text/xml',
+                        link_type='data',
+                        )
+                       )
+
+    kml_reflector_link_view = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
+        'layers': instance.typename,
+        'mode': "refresh"
+    })
+
+    instance.link_set.get_or_create(url=kml_reflector_link_view,
+                       defaults=dict(
+                        extension='kml',
+                        name=_("View in Google Earth"),
+                        mime='text/xml',
+                        link_type='data',
+                        )
+                       )
 
 
 
