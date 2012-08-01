@@ -10,7 +10,7 @@ from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
-from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis, get_postgis_bbox
 import geoserver
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
@@ -764,3 +764,4 @@ def inverse_mercator(xy):
     lat = (xy[1] / 20037508.34) * 180
     lat = 180/math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
     return (lon, lat)
+

@@ -22,5 +22,5 @@ https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
 #Uncomment the following to use the django debug toolbar
 -e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
 #For scheduled tasks
-huey
-redis
+django-celery
+kombu

@@ -640,34 +640,22 @@ def ajax_layer_edit_check(request, layername):
             mimetype='text/plain'
         )
 
-def ajax_layer_update_bounds(request, layername):
-    layer = get_object_or_404(Layer, typename=layername);
 
-    #Get extent for layer from PostGIS
-    bboxes = get_postgis_bbox(layer.name)
-    if len(bboxes) != 1 and len(bboxes[0]) != 2:
-        return
-
-    bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
-    llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
-
-    layer.bbox = [float(l) for l in bbox]
-    layer.llbbox = [float(l) for l in llbbox]
-    layer.set_bbox(bbox, srs=layer.srs)
-
-    # Use update to avoid unnecessary post_save signal
-    Layer.objects.filter(id=layer.id).update(bbox=layer.bbox,llbbox=layer.llbbox,geographic_bounding_box=layer.geographic_bounding_box )
-
-    #Update geonetwork record with latest extent
-    logger.info("Save new bounds to geonetwork")
-    layer = get_object_or_404(Layer, typename=layername);
-    layer.save_to_geonetwork()
+def ajax_layer_update(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
+    if settings.USE_GAZETTEER:
+        if settings.USE_QUEUE:
+            layer.queue_gazetteer_update()
+            layer.queue_bounds_update()
+        else:
+            layer.update_gazetteer()
+            layer.update_bounds()
 
     return HttpResponse(
-            "Bounds updated",
-            status=200,
-            mimetype='text/plain'
-        )
+        "Layer updated",
+        status=200,
+        mimetype='text/plain'
+    )
 
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
@@ -1197,10 +1185,11 @@ def layer_metadata(request, layername):
                     the_layer.save()
                     logger.debug("Saved")
 
-
-                    the_layer.queue_gazetteer_update()
-
-
+                    if settings.USE_GAZETTEER:
+                        if settings.USE_QUEUE:
+                            the_layer.queue_gazetteer_update()
+                        else:
+                            the_layer.update_gazetteer()
 
                 if request.is_ajax():
                     return HttpResponse('success', status=200)

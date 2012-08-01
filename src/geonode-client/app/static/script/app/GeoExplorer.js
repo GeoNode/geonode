@@ -1585,7 +1585,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     layer.redraw(true);
                     if (!updated) {
                         Ext.Ajax.request({
-                            url:"/data/" + layer.params.LAYERS + "/ajax_layer_update_bounds/",
+                            url:"/data/" + layer.params.LAYERS + "/ajax_layer_update/",
                             method:"POST",
                             params:{layername:layer.params.LAYERS},
                             success:function (result, request) {

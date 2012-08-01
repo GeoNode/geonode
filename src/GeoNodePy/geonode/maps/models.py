@@ -2,6 +2,8 @@
 import threading
 from django.conf import settings
 from django.db import models
+from geonode.maps.gs_helpers import get_postgis_bbox
+from geonode.queue.tasks import loadHGL
 from owslib.wms import WebMapService
 from geonode.maps.owslib_csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
@@ -1483,7 +1485,7 @@ class Layer(models.Model, PermissionLevelMixin):
         return cfg
 
     def queue_gazetteer_update(self):
-        from geonode.gazetteer.models import GazetteerUpdateJob
+        from geonode.queue.models import GazetteerUpdateJob
         if GazetteerUpdateJob.objects.filter(layer=self.id).exists() == 0:
                 newJob = GazetteerUpdateJob(layer=self)
                 newJob.save()
@@ -1504,6 +1506,32 @@ class Layer(models.Model, PermissionLevelMixin):
             endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
 
             add_to_gazetteer(self.name, includedAttributes, start_attribute=startAttribute, end_attribute=endAttribute, project=self.gazetteer_project)
+
+    def queue_bounds_update(self):
+        from geonode.queue.models import LayerBoundsUpdateJob
+        if LayerBoundsUpdateJob.objects.filter(layer=self.id).exists() == 0:
+            newJob = LayerBoundsUpdateJob(layer=self)
+            newJob.save()
+
+    def update_bounds(self):
+        #Get extent for layer from PostGIS
+        bboxes = get_postgis_bbox(self.name)
+        if len(bboxes) != 1 and len(bboxes[0]) != 2:
+            return
+
+        bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
+        llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
+
+        self.bbox = [float(l) for l in bbox]
+        self.llbbox = [float(l) for l in llbbox]
+        self.set_bbox(bbox, srs=self.srs)
+
+        # Use update to avoid unnecessary post_save signal
+        Layer.objects.filter(id=self.id).update(bbox=self.bbox,llbbox=self.llbbox,geographic_bounding_box=self.geographic_bounding_box )
+
+        #Update geonetwork record with latest extent
+        logger.info("Save new bounds to geonetwork")
+        self.save_to_geonetwork()
 
 
 class LayerAttribute(models.Model):
@@ -2133,11 +2161,7 @@ class MapLayer(models.Model):
                 logger.error("Could not retrieve Layer with typename of %s : %s", self.name, str(e))
         elif self.source_params.find( "gxp_hglsource") > -1:
             # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
-            from geonode.proxy.views import hglServiceStarter
-            import threading
-            t = threading.Thread(target=hglServiceStarter,
-                args=[None, self.name])
-            t.start()
+            loadHGL(self.name)
 
         #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)
         if self.id is not None:

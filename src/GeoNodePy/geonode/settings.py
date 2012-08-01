@@ -277,7 +277,7 @@ INSTALLED_APPS = (
     'geonode.registration',
     'geonode.profiles',
     'geonode.gazetteer',
-    'huey.djhuey',
+    'geonode.queue',
     #'debug_toolbar',
 )
 
@@ -340,29 +340,6 @@ DEFAULT_WORKSPACE = 'geonode'
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
 
-BROKER_URL = "django://" # tell kombu to use the Django database as the message queue
-
-#CELERY_IMPORTS=("geonode.tasks",)
-#
-#import djcelery
-#djcelery.setup_loader()
-
-
-HUEY_CONFIG = {
-    'QUEUE': 'huey.backends.redis_backend.RedisBlockingQueue',
-    'QUEUE_NAME': 'test-queue',
-    'QUEUE_CONNECTION': {
-        'host': 'localhost',
-        'port': 6379,
-        },
-    'RESULT_STORE': 'huey.backends.redis_backend.RedisDataStore',
-    'RESULT_STORE_CONNECTION': {
-        'host': 'localhost',
-        'port': 6379,
-        },
-    'THREADS': 4,
-    'PERIODIC': True
-    }
 
 try:
     from local_settings import *
