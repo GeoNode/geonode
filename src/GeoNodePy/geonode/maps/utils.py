@@ -362,7 +362,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
         minx, maxx, miny, maxy = [float(a) for a in box]
         if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
            -90  <= miny <= 90  and -90  <= maxy <= 90:
-            logger.warn('GeoServer failed to detect the projection for layer '
+            logger.info('GeoServer failed to detect the projection for layer '
                         '[%s]. Guessing EPSG:4326', name)
             # If GeoServer couldn't figure out the projection, we just
             # assume it's lat/lon to avoid a bad GeoServer configuration
@@ -374,7 +374,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
             msg = ('GeoServer failed to detect the projection for layer '
                    '[%s]. It doesn\'t look like EPSG:4326, so backing out '
                    'the layer.')
-            logger.warn(msg, name)
+            logger.info(msg, name)
             cascading_delete(cat, gs_resource)
             raise GeoNodeException(msg % name)
 
@@ -573,9 +573,6 @@ def upload(incoming, user=None, overwrite=True, keywords = (), ignore_errors=Tru
 
        Supported extensions are: .shp, .tif, and .zip (of a shapfile).
        It catches GeoNodeExceptions and gives a report per file
-       >>> batch_upload('/tmp/mydata')
-           [{'file': 'data1.tiff', 'name': 'geonode:data1' },
-           {'file': 'data2.shp', 'errors': 'Shapefile requires .prj file'}]
     """
     if verbosity > 1:
         print >> console, "Verifying that GeoNode is running ..."
@@ -583,7 +580,13 @@ def upload(incoming, user=None, overwrite=True, keywords = (), ignore_errors=Tru
 
     potential_files = []
     if os.path.isfile(incoming):
-        potential_files.append(incoming)
+        ___, short_filename = os.path.split(incoming)
+        basename, extension = os.path.splitext(short_filename)
+        filename = incoming
+ 
+        if extension in ['.tif', '.shp', '.zip']:
+            potential_files.append((basename, filename))
+
     elif not os.path.isdir(incoming):
         msg = ('Please pass a filename or a directory name as the "incoming" '
                'parameter, instead of %s: %s' % (incoming, type(incoming)))
@@ -598,7 +601,7 @@ def upload(incoming, user=None, overwrite=True, keywords = (), ignore_errors=Tru
                 basename, extension = os.path.splitext(short_filename)
                 filename = os.path.join(root, short_filename)
                 if extension in ['.tif', '.shp', '.zip']:
-                    potential_files.append(filename)
+                    potential_files.append((basename, filename))
 
     # After gathering the list of potential files, let's process them one by one.
     number = len(potential_files)
@@ -607,7 +610,8 @@ def upload(incoming, user=None, overwrite=True, keywords = (), ignore_errors=Tru
         print >> console, msg
 
     output = []
-    for i, filename in enumerate(potential_files):
+    for i, file_pair in enumerate(potential_files):
+        basename, filename = file_pair
         try:
             layer = file_upload(filename,
                                 user=user,
