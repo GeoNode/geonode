@@ -278,6 +278,7 @@ INSTALLED_APPS = (
     'geonode.profiles',
     'geonode.gazetteer',
     'geonode.queue',
+    'djcelery',
     #'debug_toolbar',
 )
 
