@@ -835,11 +835,18 @@ def upload_layer(request):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                name = form.cleaned_data["layer_title"]
+
+                title = form.cleaned_data["layer_title"]
 
                 # Replace dots in filename - GeoServer REST API upload bug
-                # and avoid any other invalid characters
-                name = slugify(name.replace(".","_"))
+                # and avoid any other invalid characters.
+                # Use the title if possible, otherwise default to the filename
+                if title is not None and len(title) > 0:
+                    name_base = title
+                else:
+                    name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+                name = slugify(name_base.replace(".","_"))
 
                 saved_layer = save(name, base_file, request.user, 
                         overwrite = False,
