@@ -340,6 +340,12 @@ DEFAULT_WORKSPACE = 'geonode'
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
 
+USE_GAZETTEER = True
+USE_QUEUE = True
+CELERY_IMPORTS = ("geonode.queue", )
+BROKER_URL = "django://"
+import djcelery
+djcelery.setup_loader()
 
 try:
     from local_settings import *
