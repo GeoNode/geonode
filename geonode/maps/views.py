@@ -281,7 +281,7 @@ def new_map_config(request):
                     # invisible layer, skip inclusion
                     continue
                     
-                layer_bbox = layer.resource.latlon_bbox
+                layer_bbox = layer.bbox
                 # assert False, str(layer_bbox)
                 if bbox is None:
                     bbox = list(layer_bbox[0:4])
