@@ -7,6 +7,7 @@ import re
 import uuid
 import os
 import glob
+import sys
 
 # Django functionality
 from django.contrib.auth.models import User
@@ -565,7 +566,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords=()):
     return new_layer
 
 
-def upload(incoming, user=None, overwrite=True, keywords = ()):
+def upload(incoming, user=None, overwrite=True, keywords = (), ignore_errors=True, verbosity=1, console=sys.stdout):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -576,14 +577,13 @@ def upload(incoming, user=None, overwrite=True, keywords = ()):
            [{'file': 'data1.tiff', 'name': 'geonode:data1' },
            {'file': 'data2.shp', 'errors': 'Shapefile requires .prj file'}]
     """
+    if verbosity > 1:
+        print >> console, "Verifying that GeoNode is running ..."
     check_geonode_is_up()
 
+    potential_files = []
     if os.path.isfile(incoming):
-        layer = file_upload(incoming,
-                            user=user,
-                            overwrite=overwrite,
-                            keywords = keywords)
-        return [{'file': incoming, 'name': layer.name}]
+        potential_files.append(incoming)
     elif not os.path.isdir(incoming):
         msg = ('Please pass a filename or a directory name as the "incoming" '
                'parameter, instead of %s: %s' % (incoming, type(incoming)))
@@ -598,22 +598,47 @@ def upload(incoming, user=None, overwrite=True, keywords = ()):
                 basename, extension = os.path.splitext(short_filename)
                 filename = os.path.join(root, short_filename)
                 if extension in ['.tif', '.shp', '.zip']:
-                    try:
-                        layer = file_upload(filename,
-                                            user=user,
-                                            title=basename,
-                                            overwrite=overwrite,
-                                            keywords=keywords
-                                           )
+                    potential_files.append(filename)
 
-                    except GeoNodeException, e:
-                        msg = ('[%s] could not be uploaded. Error was: '
-                               '%s' % (filename, str(e)))
-                        logger.info(msg)
-                        results.append({'file': filename, 'errors': msg})
-                    else:
-                        results.append({'file': filename, 'name': layer.name})
-        return results
+    # After gathering the list of potential files, let's process them one by one.
+    number = len(potential_files)
+    if verbosity > 1:
+        msg =  "Found %d potential layers, importing now ..." % number
+        print >> console, msg
+
+    output = []
+    for i, filename in enumerate(potential_files):
+        try:
+            layer = file_upload(filename,
+                                user=user,
+                                title=basename,
+                                overwrite=overwrite,
+                                keywords=keywords
+                               )
+            status = 'created'
+        except Exception, e:
+            if ignore_errors:
+                status = 'failed'
+                exception_type, error, traceback = sys.exc_info()
+            else:
+                if verbosity > 0:
+                    msg = "Stopping process because --ignore-errors was not set and an error was found."
+                    print >> sys.stderr, msg
+                    raise Exception('Failed to process %s' % filename, e), None, sys.exc_info()[2]
+
+        msg = "[%s] Layer for '%s' (%d/%d)" % (status, filename, i+1, number)
+        info = {'file': filename, 'status': status}
+        if status == 'failed':
+            info['traceback'] = traceback
+            info['exception_type'] = exception_type
+            info['error'] = error
+        else:
+            info['name'] = layer.name
+
+        output.append(info)
+        if verbosity > 0:
+            print >> console, msg
+    return output
 
 
 def _create_db_featurestore(name, data, overwrite = False, charset = None):
