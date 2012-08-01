@@ -4,9 +4,6 @@ import base64
 import shutil
 import tempfile
 
-from collections import namedtuple
-
-from contextlib import nested
 from mock import Mock, patch
 
 from django.conf import settings
@@ -18,7 +15,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template import Context
 from django.template.loader import get_template
 from django.forms import ValidationError
-from lxml import etree
 
 import geonode.layers.utils
 import geonode.layers.views
@@ -36,74 +32,10 @@ from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 
 from django.db.models import signals
-from geonode.layers.models import post_save_layer
 
-
-_gs_resource = Mock()
-_gs_resource.native_bbox = [1, 2, 3, 4]
-_gs_resource.keywords = [u'keywords', u'saving']
-_gs_resource.workspace.name = 'workspace'
-Layer.objects.gs_catalog = Mock()
-
-Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
-
-# we revisit this mock wms object
-fake_wms = Mock()
-fake_wms.__getitem__ = Mock()
-fake_wms.contents = []
-
-geonode.layers.models.get_wms = fake_wms
-geonode.layers.models._wms = fake_wms
-
-class Record(Mock):
-    def __iter__(self):
-        sample_list = [1, 2, 3]
-        return sample_list.__iter__()
-
-    def __next__(self):
-        pass
-    def __prev__(self):
-        pass
-
-record = Record()
-sample_links = {
-                'metadata': [('text/xml', 'TC211', 'http://example.com/metadata'),],
-                'download': [('png', 'http://google.com/'),],
-               }
-record.links = sample_links
-
-sample_search_result = {
-        'rows': [{'uuid': '0'},],
-         'total': 1,
-         'next_page': None,
-        }
-
-
-item = Mock()
-item.protocol = 'WWW:LINK-1.0-http--link'
-item.url = 'http://google.com/'
-item.description = 'descriptive description'
-record.distribution.online = [item,]
-
-catalogue = Mock()
-catalogue.get_record = Mock()
-catalogue.get_record.return_value = record
-
-catalogue.create_record = Mock()
-catalogue.create_record.return_value = Mock()
-
-catalogue.remove_record = Mock()
-catalogue.remove_record.return_value = Mock()
-
-catalogue.search_records = Mock()
-catalogue.search_records.return_value = sample_search_result
-
-get_catalogue = Mock()
-get_catalogue.return_value = catalogue
-
-geonode.layers.views.get_catalogue = get_catalogue
-geonode.layers.models.get_catalogue = get_catalogue
-geonode.layers.utils.get_catalogue = get_catalogue
+fake_delete = Mock()
+geonode.catalogue.models.catalogue_pre_delete = fake_delete
+geonode.layers.models.geoserver_pre_delete = fake_delete
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
@@ -357,26 +289,6 @@ class LayersTest(TestCase):
         response = c.get('/data/search/')
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_metadata_search(self):
-        c = Client()
-
-        #test around _metadata_search helper
-        with patch.object(geonode.layers.views,'_layer_search') as mock_ms:
-            result = {
-                'rows' : [{
-                        'uuid' : 1214431  # does not exist
-                        }
-                          ]
-                }
-            mock_ms.return_value = result
-
-            c.get("/data/search/api?q=foo&start=5&limit=10")
-
-            call_args = geonode.layers.views._layer_search.call_args
-            self.assertEqual(call_args[0][0], "foo")
-            self.assertEqual(call_args[0][1], 5)
-            self.assertEqual(call_args[0][2], 10)
-
     def test_search_api(self):
         '''/data/search/api -> Test accessing the data search api JSON'''
         c = Client()
@@ -425,6 +337,45 @@ class LayersTest(TestCase):
         lyr.save()
         self.assertEqual(lyr.keyword_list(), ["keywords", "saving"])
 
+    def test_layer_remove(self):
+        """Test layer remove functionality
+        """
+        layer = Layer.objects.all()[0]       
+        url = '%sdata/%s/remove' % (settings.SITEURL, layer.typename)
+
+        c = Client()
+    
+        # test unauthenticated
+        response = c.get(url)
+        self.assertEquals(response.status_code, 302)
+ 
+        #test a user without layer removal permission
+        c = Client()
+        c.login(username='norman', password='norman')
+        response = c.post(url)
+        self.assertEquals(response.status_code, 302)
+        c.logout()   
+
+        # Now test with a valid user
+        c = Client()
+        c.login(username='admin', password='admin')
+        
+        #test a method other than POST and GET 
+        response = c.put(url)
+        self.assertEquals(response.status_code, 403)
+
+        #test the page with a valid user with layer removal permission         
+        response = c.get(url)
+        self.assertEquals(response.status_code, 200)
+
+        #test the post method that actually removes the layer and redirects
+        response = c.post(url)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response['Location'], 'http://testserver/data/') 
+
+        #test that the layer is actually removed
+        self.assertEquals(Layer.objects.filter(pk=layer.pk).count(), 0)
+
     def test_get_valid_user(self):
         # Verify it accepts an admin user
         adminuser = User.objects.get(is_superuser=True)
@@ -451,18 +402,6 @@ class LayersTest(TestCase):
 
         nn = AnonymousUser()
         self.assertRaises(GeoNodeException, get_valid_user, nn)
-
-    def test_layer_generate_links(self):
-        """Verify generating download/image links for a layer"""
-        lyr = Layer.objects.get(pk=1)
-        orig_bbox = lyr.resource.latlon_bbox
-        lyr.resource.latlon_bbox = ["1", "2", "3", "3"]
-        try:
-            lyr.download_links()
-        except ZeroDivisionError:
-            self.fail("Threw division error while generating download links")
-        finally:
-            lyr.resource.latlon_bbox = orig_bbox
 
     def testShapefileValidation(self):
         files = dict(
@@ -550,55 +489,6 @@ class LayersTest(TestCase):
         self.assertEquals(set(os.listdir(tempdir)),
             set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
     
-    def test_save(self):
-        # Check that including both capital and lowercase SLD (this is special-cased in the implementation) 
-        d = None
-        try:
-            d = tempfile.mkdtemp()
-            for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld", "foo.sld"):
-                path = os.path.join(d, f)
-                # open and immediately close to create empty file
-                open(path, 'w').close()  
-
-            class MockWMS(object):
-
-                def __init__(self):
-                    self.contents = { 'geonode:a_layer': 'geonode:a_layer' }
-
-                def __getitem__(self, idx):
-                    return self.contents[idx]
-
-            with nested(
-                patch.object(geonode.utils, '_wms', new=MockWMS()),
-                patch('geonode.layers.models.Layer.objects.gs_catalog'),
-            ) as (mock_wms, mock_gs):
-                # Setup
-                mock_gs.get_store.return_value.get_resources.return_value = []
-                mock_resource = mock_gs.get_resource.return_value
-                mock_resource.name = 'a_layer'
-                mock_resource.title = 'a_layer'
-                mock_resource.abstract = 'a_layer'
-                mock_resource.store.name = "a_layer"
-                mock_resource.store.resource_type = "dataStore"
-                mock_resource.store.workspace.name = "geonode"
-                mock_resource.workspace.name = "geonode"
-                mock_resource.native_bbox = ["0", "0", "0", "0"]
-                mock_resource.projection = "EPSG:4326"
-
-                # Exercise
-                base_file = os.path.join(d, 'foo.shp')
-                owner = User.objects.get(username="admin")
-                save('a_layer', base_file, owner)
-
-                # Assertions
-                md_link = mock_resource.metadata_links[0]
-                md_mime, md_spec, md_url = md_link
-                self.assertEquals(md_mime, "text/xml")
-                self.assertEquals(md_spec, "TC211")
-                self.assertEquals(md_url,  "http://example.com/metadata")
-        finally:
-            if d is not None:
-                shutil.rmtree(d)
     
     def test_layer_type(self):
         self.assertEquals(layer_type('foo.shp'), FeatureType.resource_type)
@@ -787,30 +677,6 @@ class LayersTest(TestCase):
 
         self.assertRaises(GeoNodeException, get_valid_layer_name, 12, False)
         self.assertRaises(GeoNodeException, get_valid_layer_name, 12, True)
-
-    def test_cleanup(self):
-        self.assertRaises(GeoNodeException, cleanup, "CA", "1234")
-        cleanup("FOO", "1234")
-
-        def blowup(self):
-            raise FailedRequestError()
-
-        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_catalog:
-            mock_catalog.get_store.return_value = None
-            cleanup("FOO", "1234")
-
-        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_catalog:
-            mock_catalog.get_store.side_effect = blowup
-
-            cleanup("FOO", "1234")
-
-        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_catalog:
-            mock_catalog.get_layer.return_value = None
-            cleanup("FOO", "1234")
-
-        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_catalog:
-            mock_catalog.delete.side_effect = blowup
-            cleanup("FOO", "1234")
 
     ## NOTE: we don't care about file content for many of these tests (the
     ## forms under test validate based only on file name, and leave actual

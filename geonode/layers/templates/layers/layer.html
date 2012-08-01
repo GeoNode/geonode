@@ -269,15 +269,13 @@
     </li>
 
     <li class="nav-header">{% trans "Download Data" %}</li>
-    {% for extension, type, link in layer.download_links %}
-      <li><a href="{{ link }}">{{ type }}</a></li>
+    {% for link in layer.link_set.download %}
+      <li><a href="{{ link.url }}">{{ link.name }}</a></li>
     {% endfor %}
 
     <li class="nav-header">{% trans "Download Metadata" %}</li>
-    {% for mlink in metadata_links %}
-          {% for link in mlink.items %}
-           <li><a href="{{link.1}}">{{link.0}}</a></li>
-          {% endfor %}
+    {% for link in layer.link_set.metadata %}
+           <li><a href="{{link.url}}">{{link.name}}</a></li>
     {% empty %}
         <li>{% trans "No metadata links provided for this data." %}</li>
     {% endfor %}

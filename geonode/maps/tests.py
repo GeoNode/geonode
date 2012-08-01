@@ -11,15 +11,6 @@ import geonode.maps.views
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 
-from mock import Mock, patch
-
-_gs_resource = Mock()
-_gs_resource.native_bbox = [1, 2, 3, 4]
-
-Layer.objects.gs_catalog = Mock()
-
-Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
-
 
 class MapsTest(TestCase):
     """Tests geonode.maps app/module
@@ -192,20 +183,14 @@ community."
         client.get("/maps/new")
 
     def test_new_map_with_layer(self):
-        # TODO: Should this test have some assertions in it?
-        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_gs:
-            mock_gs.get_resource.return_value.latlon_bbox = ["0", "1", "0", "1"]
-            client = Client()
-            layer = Layer.objects.all()[0]
-            client.get("/maps/new?layer=" + layer.typename)
+        client = Client()
+        layer = Layer.objects.all()[0]
+        client.get("/maps/new?layer=" + layer.typename)
 
     def test_new_map_with_empty_bbox_layer(self):
-        # TODO: Should this test have assertions in it?
-        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_gs:
-            mock_gs.get_resource.return_value.latlon_bbox = ["0", "0", "0", "0"]
-            client = Client()
-            layer = Layer.objects.all()[0]
-            client.get("/maps/new?layer=" + layer.typename)
+        client = Client()
+        layer = Layer.objects.all()[0]
+        client.get("/maps/new?layer=" + layer.typename)
 
     def test_ajax_map_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
