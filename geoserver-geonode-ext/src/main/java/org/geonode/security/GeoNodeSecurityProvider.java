@@ -97,21 +97,11 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
     private static void configureChains(GeoServerSecurityManager manager) throws Exception {
         SecurityManagerConfig config = manager.getSecurityConfig();
         config.getAuthProviderNames().add(0, "geonodeAuthProvider");
+        
 
         GeoServerSecurityFilterChain filterChain = config.getFilterChain();
-        String[] cookieChains = {
-            GeoServerSecurityFilterChain.WEB_CHAIN,
-            GeoServerSecurityFilterChain.REST_CHAIN,
-            GeoServerSecurityFilterChain.GWC_REST_CHAIN,
-            GeoServerSecurityFilterChain.DEFAULT_CHAIN
-        };
 
-        for (String chain : cookieChains) {
-            filterChain.insertAfter(chain, "geonodeCookieFilter", "contextAsc");
-            // if (!inserted) {
-            // 	throw new RuntimeException("Failed to insert filter while configuring GeoNode extension: " + Arrays.toString(filter));
-            // }
-        }
+        filterChain.insertAfter(GeoServerSecurityFilterChain.DEFAULT_CHAIN, "geonodeCookieFilter", "contextNoAsc");
         
         String[] anonymousChains = {
             GeoServerSecurityFilterChain.WEB_CHAIN,
