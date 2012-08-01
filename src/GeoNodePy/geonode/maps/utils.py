@@ -536,7 +536,7 @@ def check_geonode_is_up():
                'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
         raise GeoNodeException(msg)
 
-def file_upload(filename, user=None, title=None, overwrite=True, keywords=()):
+def file_upload(filename, user=None, title=None, skip=True, overwrite=False, keywords=()):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -566,7 +566,7 @@ def file_upload(filename, user=None, title=None, overwrite=True, keywords=()):
     return new_layer
 
 
-def upload(incoming, user=None, overwrite=True, keywords = (), ignore_errors=True, verbosity=1, console=sys.stdout):
+def upload(incoming, user=None, overwrite=False, keywords = (), skip=True, ignore_errors=True, verbosity=1, console=sys.stdout):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -612,23 +612,42 @@ def upload(incoming, user=None, overwrite=True, keywords = (), ignore_errors=Tru
     output = []
     for i, file_pair in enumerate(potential_files):
         basename, filename = file_pair
-        try:
-            layer = file_upload(filename,
-                                user=user,
-                                title=basename,
-                                overwrite=overwrite,
-                                keywords=keywords
-                               )
-            status = 'created'
-        except Exception, e:
-            if ignore_errors:
-                status = 'failed'
-                exception_type, error, traceback = sys.exc_info()
-            else:
-                if verbosity > 0:
-                    msg = "Stopping process because --ignore-errors was not set and an error was found."
-                    print >> sys.stderr, msg
-                    raise Exception('Failed to process %s' % filename, e), None, sys.exc_info()[2]
+
+        existing_layers = Layer.objects.filter(name=basename)
+
+        if existing_layers.count() > 0:
+            existed = True
+        else:
+            existed = False
+
+        if existed and skip:
+            save_it = False
+            status = 'skipped'
+            layer = existing_layers[0]
+        else:
+            save_it = True
+
+        if save_it:
+            try:
+                layer = file_upload(filename,
+                                    user=user,
+                                    title=basename,
+                                    overwrite=overwrite,
+                                    keywords=keywords
+                                   )
+                if not existed:
+                    status = 'created'
+                else:
+                    status = 'updated'
+            except Exception, e:
+                if ignore_errors:
+                    status = 'failed'
+                    exception_type, error, traceback = sys.exc_info()
+                else:
+                    if verbosity > 0:
+                        msg = "Stopping process because --ignore-errors was not set and an error was found."
+                        print >> sys.stderr, msg
+                        raise Exception('Failed to process %s' % filename, e), None, sys.exc_info()[2]
 
         msg = "[%s] Layer for '%s' (%d/%d)" % (status, filename, i+1, number)
         info = {'file': filename, 'status': status}

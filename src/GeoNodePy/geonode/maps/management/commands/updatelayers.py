@@ -8,12 +8,12 @@ import datetime
 class Command(BaseCommand):
     help = 'Update the GeoNode application with data from GeoServer'
     option_list = BaseCommand.option_list + (
-        make_option('--ignore-errors',
+        make_option('-i', '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
             help='Stop after any errors are encountered.'),
-        make_option('--user', dest="user", default=None,
+        make_option('-u', '--user', dest="user", default=None,
             help="Name of the user account which should own the imported layers"),
         )
 

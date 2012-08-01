@@ -12,16 +12,16 @@ class Command(BaseCommand):
     args = 'path [path...]'
 
     option_list = BaseCommand.option_list + (
-            make_option('--user', dest="user", default=None,
+            make_option('-u', '--user', dest="user", default=None,
                 help="Name of the user account which should own the imported layers"),
-            make_option('--ignore-errors',
+            make_option('-i', '--ignore-errors',
                 action='store_true',
                 dest='ignore_errors',
-                default=True,
+                default=False,
                 help='Stop after any errors are encountered.'),
-            make_option('--overwrite', dest='overwrite', default=True, action="store_false",
-                help="Overwrite existing layers if discovered (defaults True)"),
-            make_option('--keywords', dest='keywords', default="", 
+            make_option('-o', '--overwrite', dest='overwrite', default=False, action="store_true",
+                help="Overwrite existing layers if discovered (defaults False)"),
+            make_option('-k', '--keywords', dest='keywords', default="", 
                 help="The default keywords for the imported layer(s). Will be the same for all imported layers if multiple imports are done in one command")
         )
 
@@ -30,11 +30,17 @@ class Command(BaseCommand):
         ignore_errors = options.get('ignore_errors')
         user = options.get('user')
         overwrite = options.get('overwrite')
+
+        if overwrite == True:
+            skip = False
+        else:
+            skip = True
+
         keywords = options.get('keywords').split()
         start = datetime.datetime.now()
         output = []
         for path in args:
-            out = upload(path, user=user, overwrite=overwrite, keywords=keywords, verbosity=verbosity)
+            out = upload(path, user=user, overwrite=overwrite, skip=skip, keywords=keywords, verbosity=verbosity)
             output.extend(out)
 
         updated = [dict_['file'] for dict_ in output if dict_['status']=='updated']
