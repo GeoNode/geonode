@@ -294,13 +294,13 @@ DEFAULT_MAP_CENTER = (0, 0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 0
 
-DEFAULT_LAYER_SOURCE = {
-    "ptype": "gxp_wmscsource",
-    "url": GEOSERVER_BASE_URL + "wms",
-    "restUrl": "/gs/rest"
-}
-
 MAP_BASELAYERS = [{
+    "source": {
+        "ptype": "gxp_wmscsource",
+        "url": GEOSERVER_BASE_URL + "wms",
+        "restUrl": "/gs/rest"
+     }
+  },{
     "source": {"ptype": "gx_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
