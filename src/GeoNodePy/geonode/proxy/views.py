@@ -101,17 +101,17 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
 
 def picasa(request):
     url = "http://picasaweb.google.com/data/feed/base/all?thumbsize=160c&"
-    kind = request.GET['KIND'] if request.method == 'GET' else request.POST['KIND']
-    bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
-    query = request.GET['Q'] if request.method == 'GET' else request.POST['Q']
-    maxResults = request.GET['MAX-RESULTS'] if request.method == 'GET' else request.POST['MAX-RESULTS']
+    kind = request.GET['kind'] if request.method == 'GET' else request.POST['kind']
+    bbox = request.GET['bbox'] if request.method == 'GET' else request.POST['bbox']
+    query = request.GET['q'] if request.method == 'GET' else request.POST['q']
+    maxResults = request.GET['max-results'] if request.method == 'GET' else request.POST['max-results']
     coords = bbox.split(",")
     coords[0] = -180 if float(coords[0]) <= -180 else coords[0]
     coords[2] = 180 if float(coords[2])  >= 180 else coords[2]
     coords[1] = coords[1] if float(coords[1]) > -90 else -90
     coords[3] = coords[3] if float(coords[3])  < 90 else 90
     newbbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
-    url = url + "kind=" + kind + "&max-results=" + maxResults + "&bbox=" + newbbox + "&q=" + query  #+ "&alt=json"
+    url = url + "kind=" + kind + "&max-results=" + maxResults + "&bbox=" + newbbox + "&q=" + urllib.quote(query.encode('utf-8'))  #+ "&alt=json"
 
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
@@ -120,9 +120,12 @@ def hglpoints (request):
     from xml.dom import minidom
     import re
     url = HGL_URL + "/HGLGeoRSS?GeometryType=point"
-    #bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
-    query = request.GET['Q'] if request.method == 'GET' else request.POST['Q']
-    url = url + "&UserQuery=" + query
+    try:
+        bbox = request.GET['bbox'] if request.method == 'GET' else request.POST['bbox']
+    except:
+        bbox = "-180,-90,180,90"
+    query = request.GET['q'] if request.method == 'GET' else request.POST['q']
+    url = url + "&UserQuery=" + urllib.quote(query.encode('utf-8')) + "&bbox=" + bbox
     dom = minidom.parse(urllib.urlopen(url))
     for node in dom.getElementsByTagName('item'):
         description = node.getElementsByTagName('description')[0]
@@ -150,9 +153,9 @@ def hglServiceStarter (request, layer):
 
 def youtube(request):
     url = "http://gdata.youtube.com/feeds/api/videos?v=2&prettyprint=true&"
-    bbox = request.GET['BBOX'] if request.method == 'GET' else request.POST['BBOX']
-    query = request.GET['Q'] if request.method == 'GET' else request.POST['Q']
-    maxResults = request.GET['MAX-RESULTS'] if request.method == 'GET' else request.POST['MAX-RESULTS']
+    bbox = request.GET['bbox'] if request.method == 'GET' else request.POST['bbox']
+    query = request.GET['q'] if request.method == 'GET' else request.POST['q']
+    maxResults = request.GET['max-results'] if request.method == 'GET' else request.POST['max-results']
     coords = bbox.split(",")
     coords[0] = coords[0] if float(coords[0]) > -180 else -180
     coords[2] = coords[2] if float(coords[2])  < 180 else 180
@@ -168,7 +171,7 @@ def youtube(request):
     right = R*float(coords[2])/180.0/PI;
     radius = (right - left)/2*2;
     radius = 1000 if (radius > 1000) else radius;
-    url = url + "location=" + location + "&max-results=" + maxResults + "&location-radius=" + str(radius) + "km&q=" + query
+    url = url + "location=" + location + "&max-results=" + maxResults + "&location-radius=" + str(radius) + "km&q=" + urllib.quote(query.encode('utf-8'))
 
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")

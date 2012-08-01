@@ -3,7 +3,6 @@ import threading
 from django.conf import settings
 from django.db import models
 from geonode.maps.gs_helpers import get_postgis_bbox
-from geonode.queue.tasks import loadHGL
 from owslib.wms import WebMapService
 from geonode.maps.owslib_csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
@@ -1822,7 +1821,7 @@ class Map(models.Model, PermissionLevelMixin):
         self.content = despam(x.strip(conf['about']['introtext']))
 
         #self.content = re.sub(r'<script.*(<\/script>|\/>)|javascript:|\$\(|jQuery|Ext\.', r'', conf['about']['introtext']) #Remove any scripts
-        self.keywords = despam(conf['about']['keywords'])
+        #self.keywords = despam(conf['about']['keywords'])
         self.zoom = conf['map']['zoom']
 
         self.center_x = conf['map']['center'][0]
@@ -2098,7 +2097,6 @@ class MapLayer(models.Model):
 
         if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
             cfg["restUrl"] = "/gs/rest"
-
         return cfg
 
     def layer_config(self, user):
@@ -2161,7 +2159,9 @@ class MapLayer(models.Model):
                 logger.error("Could not retrieve Layer with typename of %s : %s", self.name, str(e))
         elif self.source_params.find( "gxp_hglsource") > -1:
             # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
+            from geonode.queue.tasks import loadHGL
             loadHGL(self.name)
+
 
         #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)
         if self.id is not None:

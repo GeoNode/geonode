@@ -36,6 +36,6 @@ def updateBounds():
 def loadHGL(layername):
     from geonode.proxy.views import hglServiceStarter
     try:
-        hglServiceStarter(layername)
+        hglServiceStarter(None,layername)
     except Exception, e:
             print e

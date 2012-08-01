@@ -186,7 +186,7 @@ background-color:white;
 }
 
 div.map-overlay {
-    z-index: 1000; 
+    z-index: 4000;
     position: absolute; 
     right: 10px; 
     bottom: 10px;
@@ -204,6 +204,7 @@ div.overlay-scaleline {
     bottom: 0px;
     left: 0px;
     margin-top: 0px;
+    z-index: 10000;
 }
 
 .olControlAttribution{
@@ -441,7 +442,7 @@ cga-logo-overlay {
     float: left;
     z-index: 4000;
     position: absolute;
-    right: 50px;
+    right: 150px;
     top: 10px;
     height:25px;
     width:50px;
@@ -490,4 +491,17 @@ div.cga-link {
 
 .nicEdit-button {
     background-color: #fff !important;
+}
+
+.icon-picasa {
+    background-image: url('img/picasa.png');
+}
+
+.icon-youtube {
+    background-image: url('img/youtube.png');
+}
+
+
+.icon-harvard {
+    background-image: url('img/harvard.png');
 }
