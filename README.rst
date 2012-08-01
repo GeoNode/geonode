@@ -38,6 +38,47 @@ If instead, you are interested in doing development on the source code, here are
     # Start the servers
     paver start
 
+
+Windows Development Build Instructions::
+
+
+    Prerequisites:
+    # Java JDK
+    # Python 2.6+
+    # ant (bin directory must be on system PATH)
+    # maven2 (bin directory must be on system PATH)
+    # Python distutils (easy_install)
+    # git
+
+    # Install and configure from the windows command prompt
+    If you don't already have python virtualenv installed, then do it now:
+         easy_install virtualenv
+
+    # Create virtualenv and activate it
+    cd <Directory to install the virtualenv & geonode into>
+    virtualenv venv
+    venv\scripts\activate
+
+    # Install Python native dependencies
+    easy_install PIL lxml==2.3
+    # this command will look for and install binary distributions (pip install will attempt to build and fail)
+
+    # Clone GeoNode and switch to dev branch
+    git clone https://github.com/GeoNode/geonode.git -b dev
+    
+    # Install GeoNode in the local virtualenv
+    pip install -e geonode --use-mirrors
+
+    cd geonode
+
+    # Compile GeoServer
+    paver setup
+    
+    # Start the servers
+    paver start <-- This WON'T work on windows without changes to pavement.py 
+                    and a windows batch script for starting jetty    
+
+
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::
   
