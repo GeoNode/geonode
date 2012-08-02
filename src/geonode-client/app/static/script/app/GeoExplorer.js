@@ -399,7 +399,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }, {
             ptype: "gxp_addlayers",
             search: true,
-            catalogSourceKey: "local",
             actionTarget: "treetbar",
             createExpander: function() {
                 return new GeoExplorer.CapabilitiesRowExpander({
@@ -495,6 +494,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 if (tool.ptype === "gxp_addlayers") {
                     addLayers = tool;
                     addLayers.startSourceId = startSourceId;
+                    addLayers.catalogSourceKey = startSourceId;
                 }
             }
             if (!this.fromLayer && !this.mapID) {
