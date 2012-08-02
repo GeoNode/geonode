@@ -484,7 +484,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             for (var id in this.layerSources) {
                 source = this.layerSources[id];
                 if (source.store && source instanceof gxp.plugins.WMSSource &&
-                                source.url.indexOf("/geoserver/wms" === 0)) {
+                                source.url.indexOf("/geoserver/wms") === 0) {
                     startSourceId = id;
                 }
             }
