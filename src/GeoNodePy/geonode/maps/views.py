@@ -1624,6 +1624,7 @@ def batch_permissions(request):
         result = {'success': True }
         return HttpResponse(json.dumps(result), mimetype="application/json")
     except:
+        logger.exception("Unexpected error during upload. %s" % sys.exc_info()[0])
         result = {'success': False, 'errors': [sys.exc_info()[0]]}
         return HttpResponse(json.dumps(result), mimetype="application/json", status=500)
 
