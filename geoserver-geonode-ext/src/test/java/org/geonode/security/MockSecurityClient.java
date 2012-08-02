@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
+import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * A mock security client used to test
@@ -53,7 +53,7 @@ public class MockSecurityClient implements GeoNodeSecurityClient {
         userAuths = new HashMap<String, Authentication>();
         
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(1);
-        authorities.add(new SimpleGrantedAuthority("ROLE_ANONYOMOUS"));
+        authorities.add(GeoServerRole.ANONYMOUS_ROLE);
         anonymousAuth = new AnonymousAuthenticationToken("geonode", "anonymous", authorities);
     }
 
@@ -75,7 +75,7 @@ public class MockSecurityClient implements GeoNodeSecurityClient {
             List<String> readOnlyLayers, List<String> readWriteLayers) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         if (admin) {
-            authorities.add(new SimpleGrantedAuthority(GeoNodeDataAccessManager.getActiveAdminRole()));
+            authorities.add(GeoNodeDataAccessManager.getAdminRole());
         }
         if (readOnlyLayers != null && readOnlyLayers.size() > 0) {
             authorities.add(new LayersGrantedAuthority(readOnlyLayers, LayerMode.READ_ONLY));
@@ -92,9 +92,9 @@ public class MockSecurityClient implements GeoNodeSecurityClient {
     public void setAnonymousRights(boolean admin, List<String> readOnlyLayers,
             List<String> readWriteLayers) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_ANONYMOUS"));
+        authorities.add(GeoServerRole.ANONYMOUS_ROLE);
         if (admin) {
-            authorities.add(new SimpleGrantedAuthority(GeoNodeDataAccessManager.getActiveAdminRole()));
+            authorities.add(GeoNodeDataAccessManager.getAdminRole());
         }
         if (readOnlyLayers != null && readOnlyLayers.size() > 0) {
             authorities.add(new LayersGrantedAuthority(readOnlyLayers, LayerMode.READ_ONLY));

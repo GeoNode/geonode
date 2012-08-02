@@ -1,14 +1,7 @@
 <wcs>
   <id>wcs</id>
   <enabled>true</enabled>
-  <name>My GeoServer WCS</name>
-  <title>My GeoServer WCS</title>
-  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
-  <abstrct>
-This is a description of your Web Coverage Server.
-     </abstrct>
-  <accessConstraints>NONE</accessConstraints>
-  <fees>NONE</fees>
+  <name>WCS</name>
   <versions>
     <org.geotools.util.Version>
       <version>1.0.0</version>
@@ -17,21 +10,11 @@ This is a description of your Web Coverage Server.
       <version>1.1.1</version>
     </org.geotools.util.Version>
   </versions>
-  <keywords>
-    <string>WCS</string>
-    <string>WMS</string>
-    <string>GEOSERVER</string>
-  </keywords>
-  <metadataLink>
-    <type>undef</type>
-    <about>http://geoserver.sourceforge.net/html/index.php</about>
-    <metadataType>other</metadataType>
-  </metadataLink>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.org</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gmlPrefixing>false</gmlPrefixing>
-  <maxInputMemory>0</maxInputMemory>
-  <maxOutputMemory>0</maxOutputMemory>
+  <maxInputMemory>-1</maxInputMemory>
+  <maxOutputMemory>-1</maxOutputMemory>
+  <subsamplingEnabled>true</subsamplingEnabled>
 </wcs>
