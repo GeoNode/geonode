@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
+{% load avatar_tags %}
 
 {% block title %} {{ layer.resource.title|default:layer.typename }} - {{ block.super }} {% endblock %}
 
@@ -221,15 +222,16 @@
     {% comments layer as comments %}
     {% for comment in comments %}
         <div class="comment">
-            <p class="comment_author">{{ comment.author.get_full_name|default:comment.author|capfirst }}</p>
             <div class="comment_content">
-                {{ comment.comment|escape|urlize|safe }} &mdash; 
-                <span class="comment_ago">
+                {{ comment.comment|escape|urlize|safe }}
+           </div>
+            <p class="comment_author"><a href="comment.author.get_absolute_url">{{ comment.author.get_full_name|default:comment.author|capfirst }}</a>
+                commented <span class="comment_ago">
                 {% blocktrans with comment.submit_date|timesince as age %}
                 {{ age }} ago
                 {% endblocktrans %}
                 </span>
-            </div>
+            </p>
         </div>
     {% endfor %}
 
