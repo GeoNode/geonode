@@ -1,91 +1,47 @@
 {% load i18n %}
 {% load geonode_auth %}
  
+{% if layer.abstract %}
 <p><b>{% trans "Abstract:" %}</b>
-{% if rec.identification.abstract %}
-  {{rec.identification.abstract}}
-{% else %}
-<em>{% trans "No abstract is provided for this layer." %}</em>
-{% endif %}
+  {{ layer.abstract}}
 </p>
+{% endif %}
 
+{% if layer.poc.name %}
 <p><b>{% trans "Provided by:" %}</b>
-{% if rec.contact.name %} {# and rec.attribution.href %} #}
-  {% if rec.contact.onlineresource %}
-    <a href="{{ rec.contact.onlineresource.url }}">{{ rec.contact.name }}</a>
-  {% else %}
-    {{ rec.contact.name }}
-  {% endif %}
-{% else %}
-<em>{% trans "No attribution information is provided for this layer." %}</em>
-{% endif %}
+    <a href="{{ layer.poc.get_absolute_url }}">{{ layer.poc.name }}</a>
 </p>
+{% endif %}
 
 <p><b>{% trans "Metadata Links:" %}</b>
-{% for link in rec.metadata_links %}
-    <a href="{{link.2}}">{{link.1}}</a>
+{% for link in layer.link_set.metadata %}
+    <a href="{{link.url}}">{{link.name}}</a>
 {% empty %}
     <em>{% trans "No metadata URLs are defined for this layer." %}</em>
 {% endfor %}
 </p>
 
 <p><b>{% trans "Keywords:" %}</b>
-{% comment %} old owslib iso {% endcomment %}
-{% for kw in rec.identification.keywords.list %}
-  {{kw}}{% if not forloop.last %}, {% endif %}
+{% for kw in layer.keywords.all %}
+  {{kw.name}}{% if not forloop.last %}, {% endif %}
 {% empty %}
-  {% comment %} new owslib iso {% endcomment %}
-  {% for kws in rec.identification.keywords %}
-    {% for kw in kws.keywords %}
-      {{kw}}{% if not forloop.last %}, {% endif %}
-      {% if forloop.last and kws.thesaurus.title %}
-        ({{ kws.thesaurus.title }}
-         {% if kws.thesaurus.date %} - {{ kws.thesaurus.date }} {% endif %} 
-         {% if kws.thesaurus.datetype %} - {{ kws.thesaurus.datetype }} {% endif %}
-        )
-      {% endif %}
-    {% empty %}
       <em>{% trans "No keywords are listed for this layer." %}</em>
-    {% endfor %}
-    {% if not forloop.last %}; {% endif %}
-  {% empty %}
-    <em>{% trans "No keywords are listed for this layer." %}</em>
-  {% endfor %}
 {% endfor %}
 </p>
 
-{% if layer_is_remote %}
-  <p><b>{% trans "Download:" %}</b>
-  {% for link in extra_links.download %}
-    <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
-  {% empty %}
-  <em>{% trans "No download URLs are defined for this layer." %}</em>
-  {% endfor %}
-  </p>
-
-  {% if rec.distribution.onlineresource.url %}
-  <p><a href="{{ rec.distribution.onlineresource.url }}">
-      {% trans "Visit originating site for more information about this layer." %}
-  </a></p>
-  {% endif %}
-
-{% else %} 
-  {% has_obj_perm user layer "maps.view_layer" as can_view %}
-  {% if can_view %}
+{% has_obj_perm user layer "maps.view_layer" as can_view %}
+{% if can_view %}
     <p><b>{% trans "Download:" %}</b>
-    {% for link in extra_links.download %}
-      <a href="{{link.2}}" class="download {{link.0}}">{{link.1}}</a>
+    {% for link in layer.link_set.download %}
+      <a href="{{link.url}}" class="download {{link.extension}}">{{link.name}}</a>
     {% empty %}
     <em>{% trans "No download URLs are defined for this layer." %}</em>
     {% endfor %}
     </p>
 
-    {% if rec.distribution.onlineresource.url %}
-    <p><a href="{{ rec.distribution.onlineresource.url }}">
+    <p><a href="{{ layer.get_absolute_url }}">
         {% trans "Click here for more information about this layer." %}
     </a></p>
-    {% endif %}
-  {% else %}
+{% else %}
     <p>{% trans "You do not have permission to view or download this layer" %}</p>
-  {% endif %}
 {% endif %}
