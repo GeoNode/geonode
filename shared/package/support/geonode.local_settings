@@ -72,11 +72,46 @@ STATICFILES_DIRS = [
     os.path.join(GEONODE_ROOT, 'static'),
 ]
 
-DEFAULT_LAYER_SOURCE = {
-    "ptype": "gxp_wmscsource",
-    "url": GEOSERVER_BASE_URL + "wms",
-    "restUrl": "/gs/rest"
-}
+MAP_BASELAYERS = [{
+    "source": {
+        "ptype": "gxp_wmscsource",
+        "url": GEOSERVER_BASE_URL + "wms",
+        "restUrl": "/gs/rest"
+     }
+  },{
+    "source": {"ptype": "gx_olsource"},
+    "type":"OpenLayers.Layer",
+    "args":["No background"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  }, {
+    "source": {"ptype": "gx_olsource"},
+    "type":"OpenLayers.Layer.OSM",
+    "args":["OpenStreetMap"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  }, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name":"osm",
+    "group":"background",
+    "visibility": True
+  }, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name":"naip",
+    "group":"background",
+    "visibility": False
+  }, {
+    "source": {"ptype": "gxp_bingsource"},
+    "name": "AerialWithLabels",
+    "fixed": True,
+    "visibility": False,
+    "group":"background"
+  },{
+    "source": {"ptype": "gxp_mapboxsource"},
+  }
+]
 
 # Uncomment the following to receive emails whenever there are errors in GeoNode
 #ADMINS = (
