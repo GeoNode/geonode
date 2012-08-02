@@ -6,6 +6,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.TestPanelSource;
 import org.geonode.security.GeoNodeAuthProviderConfig;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class GeoNodeAuthProviderPanelTest extends GeoServerWicketTestSupport {
     @SuppressWarnings("serial")
@@ -18,6 +19,12 @@ public class GeoNodeAuthProviderPanelTest extends GeoServerWicketTestSupport {
                         new Model<GeoNodeAuthProviderConfig>(config)));
             }
         };
+    }
+    
+    @Override
+    protected void tearDownInternal() throws Exception {
+        super.tearDownInternal();
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     public void testVisitPanel() {

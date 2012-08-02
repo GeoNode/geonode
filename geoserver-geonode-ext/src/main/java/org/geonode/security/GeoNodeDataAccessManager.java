@@ -4,6 +4,9 @@
  */
 package org.geonode.security;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -15,6 +18,7 @@ import org.geoserver.security.DataAccessManager;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -25,18 +29,22 @@ import org.springframework.security.core.GrantedAuthority;
  * @author Andrea Aime - OpenGeo
  */
 public class GeoNodeDataAccessManager implements DataAccessManager {
+    private static final Logger LOG = Logging.getLogger(GeoNodeDataAccessManager.class);
 
     boolean authenticationEnabled = true;
 
-    // we need to look up the name of the admin role dynamically
-    public static String getActiveAdminRole() {
-        GeoServerSecurityManager manager = GeoServerExtensions.bean(GeoServerSecurityManager.class);
-        GeoServerRoleService activeRoleService = manager.getActiveRoleService();
-        GeoServerRole adminRole = activeRoleService.getAdminRole();
-        String authority = adminRole.getAuthority();
-        return authority;
+    public static GeoServerRole getAdminRole() {
+        return roleService().getAdminRole();
     }
-
+    
+    private static GeoServerSecurityManager securityManager() {
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class);
+    }
+    
+    private static GeoServerRoleService roleService() {
+        return securityManager().getActiveRoleService();
+    }
+    
     /**
      * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
      *      org.geoserver.catalog.WorkspaceInfo, org.geoserver.security.AccessMode)
@@ -75,8 +83,12 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
             //throw new NullPointerException("user is null");
             return true;
         }
-
+                
+        if (LOG.isLoggable(Level.FINER))
+            LOG.finer("Checking permissions for " + user +" with authorities " + user.getAuthorities() + " accessing " + resource);
+        
         if (user != null && user.getAuthorities() != null) {
+            GrantedAuthority admin = getAdminRole();
             for (GrantedAuthority ga : user.getAuthorities()) {
                 if (ga instanceof LayersGrantedAuthority) {
                     LayersGrantedAuthority lga = ((LayersGrantedAuthority) ga);
@@ -88,7 +100,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
                             return true;
                         }
                     }
-                } else if (isAdmin(ga.getAuthority())) {
+                } else if (admin.equals(ga)) {
                     // admin is all powerful
                     return true;
                 }
@@ -96,11 +108,6 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
         }
         // if we got here sorry, no luck
         return false;
-    }
-
-    private boolean isAdmin(String authority) {
-        // TODO tests fail unless we have the ROLE_ADMINISTRATOR check
-        return getActiveAdminRole().equals(authority) || "ROLE_ADMINISTRATOR".equals(authority);
     }
 
     /**
