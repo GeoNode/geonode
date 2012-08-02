@@ -435,9 +435,8 @@ def save(layer, base_file, user, overwrite = True, title=None,
                                                        workspace=gs_resource.store.workspace.name,
                                                        defaults=defaults)
 
-    if created:
-        saved_layer.set_default_permissions()
-        saved_layer.keywords.add(*keywords)
+    
+    saved_layer.keywords.add(*keywords)
 
     # Step 9. Create the points of contact records for the layer
     # A user without a profile might be uploading this
@@ -459,6 +458,8 @@ def save(layer, base_file, user, overwrite = True, title=None,
     if permissions is not None:
 
         layer_set_permissions(saved_layer, permissions)
+    else:
+        saved_layer.set_default_permissions()
 
     # Step 12. Verify the layer was saved correctly and clean up if needed
     logger.info('>>> Step 12. Verifying the layer [%s] was created '
@@ -601,7 +602,8 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
 
     try:
-        cat.add_data_to_store(ds, name, data, overwrite, charset)
+        cat.add_data_to_store(ds, name, data,
+            overwrite=overwrite, charset=charset)        
         return ds, cat.get_resource(name, store=ds)
     except Exception:
         delete_from_postgis(name)
