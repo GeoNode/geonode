@@ -153,8 +153,7 @@ def post_bootstrap(options):
 #TODO Move svn urls out to a config file
 
 def grab(src, dest):
-    if not os.path.exists(dest):
-        urlretrieve(str(src), str(dest))
+    urlretrieve(str(src), str(dest))
 
 @task
 def setup_gs_data(options):
