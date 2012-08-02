@@ -76,38 +76,44 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
 
     private static void addServices(GeoServerSecurityManager manager)
         throws IOException, SecurityConfigException
-        {
-            GeoNodeAuthProviderConfig providerConfig = new GeoNodeAuthProviderConfig();
-            providerConfig.setName("geonodeAuthProvider");
-            providerConfig.setClassName(GeoNodeAuthenticationProvider.class.getCanonicalName());
-            providerConfig.setBaseUrl("http://localhost:8000/");
-            manager.saveAuthenticationProvider(providerConfig);
+    {
+        GeoNodeAuthProviderConfig providerConfig = new GeoNodeAuthProviderConfig();
+        providerConfig.setName("geonodeAuthProvider");
+        providerConfig.setClassName(GeoNodeAuthenticationProvider.class.getCanonicalName());
+        providerConfig.setBaseUrl("http://localhost/");
+        manager.saveAuthenticationProvider(providerConfig);
 
-            GeoNodeAuthFilterConfig filterConfig = new GeoNodeAuthFilterConfig();
-            filterConfig.setName("geonodeCookieFilter");
-            filterConfig.setClassName(GeoNodeCookieProcessingFilter.class.getCanonicalName());
-            manager.saveFilter(filterConfig);
-        }
+        GeoNodeAuthFilterConfig filterConfig = new GeoNodeAuthFilterConfig();
+        filterConfig.setName("geonodeCookieFilter");
+        filterConfig.setClassName(GeoNodeCookieProcessingFilter.class.getCanonicalName());
+        manager.saveFilter(filterConfig);
+        
+        GeoNodeAnonymousAuthFilterConfig anonymousFilterConfig = new GeoNodeAnonymousAuthFilterConfig();
+        anonymousFilterConfig.setName("geonodeAnonymousFilter");
+        anonymousFilterConfig.setClassName(GeoNodeAnonymousProcessingFilter.class.getCanonicalName());
+        manager.saveFilter(anonymousFilterConfig);
+    }
 
     private static void configureChains(GeoServerSecurityManager manager) throws Exception {
         SecurityManagerConfig config = manager.getSecurityConfig();
         config.getAuthProviderNames().add(0, "geonodeAuthProvider");
+        
 
         GeoServerSecurityFilterChain filterChain = config.getFilterChain();
-        String[][] filters = {
-            { GeoServerSecurityFilterChain.WEB_CHAIN, "geonodeCookieFilter" },
-            { GeoServerSecurityFilterChain.REST_CHAIN, "geonodeCookieFilter" },
-            { GeoServerSecurityFilterChain.GWC_REST_CHAIN, "geonodeCookieFilter" },
-            { GeoServerSecurityFilterChain.DEFAULT_CHAIN, "geonodeCookieFilter" },
+
+        filterChain.insertAfter(GeoServerSecurityFilterChain.DEFAULT_CHAIN, "geonodeCookieFilter", "contextNoAsc");
+        
+        String[] anonymousChains = {
+            GeoServerSecurityFilterChain.WEB_CHAIN,
+            GeoServerSecurityFilterChain.REST_CHAIN,
+            GeoServerSecurityFilterChain.GWC_REST_CHAIN,
+            GeoServerSecurityFilterChain.DEFAULT_CHAIN
         };
-
-        for (String[] filter : filters) {
-            filterChain.insertFirst(filter[0], filter[1]);
-            // if (!inserted) {
-            // 	throw new RuntimeException("Failed to insert filter while configuring GeoNode extension: " + Arrays.toString(filter));
-            // }
+        
+        for (String chain : anonymousChains) {
+            filterChain.insertBefore(chain, "geonodeAnonymousFilter", "anonymous");
         }
-
+        
         manager.saveSecurityConfig(config);
     }
 }

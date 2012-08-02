@@ -28,12 +28,14 @@ import org.geonode.process.batchdownload.LayerReference;
 import org.geonode.process.batchdownload.MapMetadata;
 import org.geonode.process.control.AsyncProcess;
 import org.geonode.process.control.ProcessController;
+import org.geonode.security.GeoNodeDataAccessManager;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
@@ -61,9 +63,9 @@ public class DownloadReadyRestletTest extends GeoNodeTestSupport {
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWcs11Coverages();
+        dataDirectory.addWellKnownCoverageTypes();
     }
-
+    
     public void testHTTPMethod() throws Exception {
         MockHttpServletResponse r = postAsServletResponse(RESTLET_PATH, "");
         assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, Status.valueOf(r.getStatusCode()));
@@ -115,7 +117,6 @@ public class DownloadReadyRestletTest extends GeoNodeTestSupport {
     }
 
     public void testCoverageContents() throws Exception {
-
         final Long processId = issueProcessAndWaitForTermination();
 
         final String request = RESTLET_PATH + "/" + processId.longValue();

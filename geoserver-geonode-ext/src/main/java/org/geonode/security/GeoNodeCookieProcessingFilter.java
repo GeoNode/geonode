@@ -62,7 +62,7 @@ public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter
         final String gnCookie = getGeoNodeCookieValue(httpRequest);
         
         final boolean alreadyAuthenticated = existingAuth != null && existingAuth.isAuthenticated();
-        final boolean anonymous = existingAuth instanceof AnonymousAuthenticationToken;
+        final boolean anonymous = existingAuth == null || existingAuth instanceof AnonymousAuthenticationToken;
         final boolean hasPreviouslyValidatedGeoNodeCookie =
         		(existingAuth instanceof GeoNodeSessionAuthToken) &&
         		existingAuth.getCredentials().equals(gnCookie);
@@ -72,14 +72,14 @@ public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter
         // if we still need to authenticate and we find the cookie, consult GeoNode for
         // an authentication
         final boolean authenticationRequired =
-            !(alreadyAuthenticated || anonymous || !hasPreviouslyValidatedGeoNodeCookie);
+            (!alreadyAuthenticated || anonymous || !hasPreviouslyValidatedGeoNodeCookie);
         
         if (authenticationRequired && gnCookie != null) {
             try {
                 Object principal = existingAuth == null ? null : existingAuth.getPrincipal();
                 Collection<? extends GrantedAuthority> authorities = 
                     existingAuth == null ? null : existingAuth.getAuthorities();
-                Authentication authRequest = 
+                Authentication authRequest =
                     new GeoNodeSessionAuthToken(principal, gnCookie, authorities);
                 final Authentication authResult = getSecurityManager().authenticate(authRequest);
                 securityContext.setAuthentication(authResult);
@@ -91,7 +91,7 @@ public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter
                     e);
             }
         }
-
+        
         // move forward along the chain
         chain.doFilter(request, response);
     }

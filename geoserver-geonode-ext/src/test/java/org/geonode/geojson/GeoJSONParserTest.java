@@ -32,6 +32,22 @@ public class GeoJSONParserTest extends TestCase {
 
     private static final WKTReader wkt = new WKTReader();
 
+    private GeoJSONParser parser;
+
+    /**
+     * TODO: change this to a GeoTools config when the GeoJSONConfig interface is abstracted out
+     */
+    private GeoJSONConfig config = new GeoJSONConfig();
+
+    @Override
+    public void setUp() throws Exception {
+        parser = new GeoJSONParser(config);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+    }
+
     public void testPoint() throws Exception {
         Point origPoint = (Point) wkt.read("POINT(120 0)");
 

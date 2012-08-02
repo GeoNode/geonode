@@ -1,18 +1,7 @@
 <wfs>
   <id>wfs</id>
   <enabled>true</enabled>
-  <name>My GeoServer WFS</name>
-  <title>My GeoServer WFS</title>
-  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
-  <abstrct>
-This is a description of your Web Feature Server.
-
-The GeoServer is a full transactional Web Feature Server, you may wish to limit
-GeoServer to a Basic service level to prevent modificaiton of your geographic
-data.
-     </abstrct>
-  <accessConstraints>NONE</accessConstraints>
-  <fees>NONE</fees>
+  <name>WFS</name>
   <versions>
     <org.geotools.util.Version>
       <version>1.0.0</version>
@@ -24,21 +13,15 @@ data.
       <version>2.0.0</version>
     </org.geotools.util.Version>
   </versions>
-  <keywords>
-    <string>WFS</string>
-    <string>WMS</string>
-    <string>GEOSERVER</string>
-  </keywords>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.org</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gml>
     <entry>
-      <version>V_11</version>
+      <version>V_10</version>
       <gml>
-        <srsNameStyle>URN</srsNameStyle>
-        <overrideGMLAttributes>false</overrideGMLAttributes>
+        <srsNameStyle>XML</srsNameStyle>
+        <overrideGMLAttributes>true</overrideGMLAttributes>
       </gml>
     </entry>
     <entry>
@@ -49,16 +32,16 @@ data.
       </gml>
     </entry>
     <entry>
-      <version>V_10</version>
+      <version>V_11</version>
       <gml>
-        <srsNameStyle>XML</srsNameStyle>
-        <overrideGMLAttributes>true</overrideGMLAttributes>
+        <srsNameStyle>URN</srsNameStyle>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
       </gml>
     </entry>
   </gml>
   <serviceLevel>COMPLETE</serviceLevel>
-  <maxFeatures>1000000</maxFeatures>
-  <featureBounding>false</featureBounding>
+  <maxFeatures>2147483647</maxFeatures>
+  <featureBounding>true</featureBounding>
   <canonicalSchemaLocation>false</canonicalSchemaLocation>
   <encodeFeatureMember>false</encodeFeatureMember>
 </wfs>
