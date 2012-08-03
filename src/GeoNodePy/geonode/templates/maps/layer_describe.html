@@ -48,7 +48,34 @@
 			}else{
 				Ext.get("metadata_form").hide();
 			}
-		});/*
+		});
+
+        var types = {{ datatypes }};
+
+        function toggleFormat(dateField, formatFieldName) {
+            if (dateField.getValue() != "" && types[dateField.getValue()].indexOf("xsd:date") == -1) {
+                Ext.get(formatFieldName).show();
+            } else {
+                Ext.get(formatFieldName).hide();
+            }
+        }
+
+        Ext.get('id_startDate').on('change', function() {
+                toggleFormat(this, 'startDateFormatCell');
+        });
+
+        Ext.get('id_endDate').on('change', function() {
+            toggleFormat(this, 'endDateFormatCell');
+        });
+
+
+        toggleFormat(Ext.get('id_startDate'), 'startDateFormatCell');
+        toggleFormat(Ext.get('id_endDate'), 'endDateFormatCell');
+
+		/*
+
+
+
 		Ext.get('id_layer-topic_category').on('change', function() {
 	        if (this.getValue()===""){
 			    Ext.get("id_layer-topic_category_new").up("li").show();
@@ -107,7 +134,19 @@
             {% endif %} onclick="showGazetteerOptions(this);">Include in gazetteer</div>
             <div class="su_only_gaz">
                 Optional:
-                    {{ gazetteer_form.as_ul }}
+                    <table cellpadding="5" cellspacing="5" style="margin-left:20px;">
+                        <tr><td colspan="2">{{gazetteer_form.project.label_tag}}: {{gazetteer_form.project}}</td></tr>
+
+                        <tr id="start_date">
+                            <td id="startDateCell" align="right" style="padding-right:10px">{{gazetteer_form.startDate.label_tag}}: {{gazetteer_form.startDate}}</td>
+                            <td id="startDateFormatCell" style="display:none">{{gazetteer_form.startDateFormat.label_tag}}: {{gazetteer_form.startDateFormat}}  {%  trans "Examples: 'YYYY', 'MM/DD/YYYY', 'YYYY/MM/DD'"  %}</td>
+                        </tr>
+
+                        <tr id="end_date">
+                            <td id="endDateCell" align="right" style="padding-right:10px">{{gazetteer_form.endDate.label_tag}}: {{gazetteer_form.endDate}}</td>
+                            <td id="endDateFormatCell" style="display:none">{{gazetteer_form.endDateFormat.label_tag}}: {{gazetteer_form.endDateFormat}} {%  trans "Examples: 'YYYY', 'MM/DD/YYYY', 'YYYY/MM/DD'"  %} </td>
+                        </tr>
+                    </table>
             </div>
           </p>
           <legend>Attributes</legend>

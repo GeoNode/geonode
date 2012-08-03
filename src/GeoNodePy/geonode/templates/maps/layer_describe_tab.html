@@ -1,12 +1,19 @@
 {% load i18n %}
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/boilerplate-min.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css"  media="screen" />
+<!--[if lte IE 6]><link rel="stylesheet" href="{{ STATIC_URL }}theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+
 
 <style type="text/css" >
     #tab {
         padding:20px;
+        width:100%;
     }
 
     #tab .wrap {
-    padding: 10px 0 0;
+        padding: 10px 0 0;
     }
 
     p{line-height:2em;}
@@ -32,99 +39,124 @@
 
 
 </script>
-
+</head>
+<body>
 
 <div id="tab" style="padding:20px">
-<h3> {% trans "Upload Layer, Step 2: Edit details for " %} {{ layer.title|default:layer.typename }} </h3>
+    <h3> {% trans "Upload Layer, Step 2: Edit details for " %} {{ layer.title|default:layer.typename }} </h3>
 
-  <p style="font-weight:bold">{%  trans "Please complete and submit this form, after which your layer will be added to the map." %}</p>
+    <p style="font-weight:bold">{%  trans "Please complete and submit this form, after which your layer will be added to the map." %}</p>
 
-  <p style="font-weight:bold;color:Red;">{%  trans "Fields marked with an asterisk(*) are required." %}</p>
+    <p style="font-weight:bold;color:Red;">{%  trans "Fields marked with an asterisk(*) are required." %}</p>
 
-  <form action="/data/{{layer.typename}}?describe" method="POST" id="worldmap_describe_form">
-	  {% csrf_token %}
-      <ul class="form" id="worldmap_describe_form_ul">
+    <form action="/data/{{layer.typename}}?describe" method="POST" id="worldmap_describe_form" >
+        {% csrf_token %}
+        <ul class="form" id="worldmap_describe_form_ul">
 
-	      {{ layer_form.as_ul }}
+            {{ layer_form.as_ul }}
 
-      <input type="hidden" id="hiddentab" name="tab" value="{{ tab }}" />
+            <input type="hidden" id="hiddentab" name="tab" value="{{ tab }}" />
 
-      <fieldset id="category_form">
-	  <legend>* {%  trans "Category"  %}</legend>
-      {%  if category_form.errors %}<li>{{ category_form.errors.as_ul }}</li>{%  endif %}
-      <li>
-        {% autoescape off %}
-        {% for choice in category_form.category_choice_field.field.choices %}
-        <div style="width:49%;float:left;padding-bottom:10px;padding-right:2px;">
-            <input type="radio" name="category_choice_field" value="{{choice.0}}"
-            {% ifequal category_form.initial choice.0 %}
-                checked="checked"
-            {% endifequal %}/>
-            <label for="" style="display:inline">{{choice.1}}</label>
-        </div>
-        {% endfor %}
-      {% endautoescape %}
+            <fieldset id="category_form" style="width:700px;">
+                <legend>* {%  trans "Category"  %}</legend>
+                {%  if category_form.errors %}<li>{{ category_form.errors.as_ul }}</li>{%  endif %}
+                <li>
+                    {% autoescape off %}
+                    {% for choice in category_form.category_choice_field.field.choices %}
+                    <div style="width:49%;float:left;padding-bottom:10px;padding-right:2px;">
+                        <input type="radio" name="category_choice_field" value="{{choice.0}}"
+                        {% ifequal category_form.initial choice.0 %}
+                        checked="checked"
+                        {% endifequal %}/>
+                        <label for="" style="display:inline">{{choice.1}}</label>
+                    </div>
+                    {% endfor %}
+                    {% endautoescape %}
 
-      </li>
-      </fieldset>
+                </li>
+            </fieldset>
 
-          <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% endif %}>
-          <p>
+            <fieldset id="attribute_form" style="{% if attribute_form.hidden %}display:none;{% endif %};width:700px;">
+            <p>
             <div {% if not superuser  %} style="display:none" {% endif %}><input type="checkbox" value="include" name="gazetteer_include" id="gazetteer_include"
             {% if layer.in_gazetteer %}
-                checked="checked"
+            checked="checked"
             {% endif %} onclick="showGazetteerOptions(this);">Include in gazetteer</div>
-            <div class="su_only_gaz">
-                Optional:
-                {{ gazetteer_form.as_ul }}
-            </div>
-            </p>
-	        <legend>Attributes</legend>
-	        {{ attribute_form.management_form }}
-	        <table cellpadding="5" cellspacing="5" width="100%"><tr><th>Attribute</th><th>Display Title</th><th>Display Order</th><th>Visible?</th><th>Searchable?</th><th class="su_only_gaz">Add to Gazetteer?</th>
-	        {% for form in attribute_form.forms %}
-	        	{% if form.attribute %}
-	        	<tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.display_order}}</td><td> {{form.visible}}</td><td> {{form.searchable}}</td><td class="su_only_gaz">{{form.in_gazetteer}}</td></tr>
-	        	{% endif %}
-	        {% endfor %}
-	        </table>
-          </fieldset>
-          <fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
-	        <legend>Point of Contact</legend>
-            {{ poc_form.as_ul }}
-          </fieldset>
-          <fieldset id="metadata_form" {% if author_form.hidden %}style="display:none"{% endif %}>
-	        <legend>Metadata Provider</legend>
-            {{ author_form.as_ul }}
-          </fieldset>
-      </ul>
-       <div align="center">
-            <input type="submit" value="{% trans "Update" %}" onclick="ajaxSubmit();return false;"/>
-       </div>
-  </form>
+<div class="su_only_gaz">
+    Optional:
+    <table cellpadding="5" cellspacing="5" style="margin-left:20px;">
+        <tr>
+            <td colspan="2">{{gazetteer_form.project.label_tag}}: {{gazetteer_form.project}}</td>
+        </tr>
 
+        <tr id="start_date">
+            <td id="startDateCell" align="right" style="padding-right:10px">{{gazetteer_form.startDate.label_tag}}:
+                {{gazetteer_form.startDate}}
+            </td>
+            <td id="startDateFormatCell" style="display:none">{{gazetteer_form.startDateFormat.label_tag}}:
+                {{gazetteer_form.startDateFormat}} {% trans "Examples: 'YYYY', 'MM/DD/YYYY'" %}
+            </td>
+        </tr>
+
+        <tr id="end_date">
+            <td id="endDateCell" align="right" style="padding-right:10px">{{gazetteer_form.endDate.label_tag}}:
+                {{gazetteer_form.endDate}}
+            </td>
+            <td id="endDateFormatCell" style="display:none">{{gazetteer_form.endDateFormat.label_tag}}:
+                {{gazetteer_form.endDateFormat}} {% trans "Examples: 'YYYY', 'MM/DD/YYYY'" %}
+            </td>
+        </tr>
+    </table>
+</div>
+</p>
+<legend>Attributes</legend>
+{{ attribute_form.management_form }}
+<table cellpadding="5" cellspacing="5" width="100%"><tr><th>Attribute</th><th>Display Title</th><th>Display Order</th><th>Visible?</th><th>Searchable?</th><th class="su_only_gaz">Add to Gazetteer?</th>
+    {% for form in attribute_form.forms %}
+    {% if form.attribute %}
+    <tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.display_order}}</td><td> {{form.visible}}</td><td> {{form.searchable}}</td><td class="su_only_gaz">{{form.in_gazetteer}}</td></tr>
+    {% endif %}
+    {% endfor %}
+</table>
+</fieldset>
+<fieldset id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
+<legend>Point of Contact</legend>
+{{ poc_form.as_ul }}
+</fieldset>
+<fieldset id="metadata_form" {% if author_form.hidden %}style="display:none"{% endif %}>
+<legend>Metadata Provider</legend>
+{{ author_form.as_ul }}
+</fieldset>
+</ul>
+<div align="center">
+    <input type="submit" value="{% trans "Update" %}" onclick="ajaxSubmit();return false;"/>
+</div>
+</form>
+
+</div>
 <script type="text/javascript">
-{% autoescape off %}
-            // get #poc_form and #metadata_form, and add a `onchange` handler
-        // that shows the form if the blank option is selected.
-    	/*if (Ext.get('id_layer-topic_category').getValue()!="") {
-    		Ext.get("id_layer-topic_category_new").up("li").hide();
-    	}*/
 
-        Ext.get('id_layer-poc').on('change', function() {
-	        if (this.getValue()===""){
-			    Ext.get("poc_form").show();
-			}else{
-				Ext.get("poc_form").hide();
-			}
-		   });
-		Ext.get('id_layer-metadata_author').on('change', function() {
-	        if (this.getValue()===""){
-			    Ext.get("metadata_form").show();
-			}else{
-				Ext.get("metadata_form").hide();
-			}
-		});
+    {% autoescape off %}
+    // get #poc_form and #metadata_form, and add a `onchange` handler
+    // that shows the form if the blank option is selected.
+    /*if (Ext.get('id_layer-topic_category').getValue()!="") {
+     Ext.get("id_layer-topic_category_new").up("li").hide();
+     }*/
+
+    Ext.get('id_layer-poc').on('change', function() {
+        if (this.getValue()===""){
+            Ext.get("poc_form").show();
+        }else{
+            Ext.get("poc_form").hide();
+        }
+    });
+    Ext.get('id_layer-metadata_author').on('change', function() {
+        if (this.getValue()===""){
+            Ext.get("metadata_form").show();
+        }else{
+            Ext.get("metadata_form").hide();
+        }
+    });
 
     // Extify form fields
     Ext.select("input[type='text']").each(function(el) {
@@ -134,71 +166,79 @@
             new Ext.form.TimeField({applyTo: el.id, format: "H:i:s"})
         }
     });
-    // get #poc_form and #metadata_form, and add a `onchange` handler
-    // that shows the form if the blank option is selected.
-	Ext.get('id_layer-poc').on('change', function() {
-        if (this.getValue()===""){
-		    Ext.get("poc_form").show();
-		}else{
-			Ext.get("poc_form").hide();
-		}
-	});
-	Ext.get('id_layer-metadata_author').on('change', function() {
-        if (this.getValue()===""){
-		    Ext.get("metadata_form").show();
-		}else{
-			Ext.get("metadata_form").hide();
-		}
-	});
+
+    var types = {{ datatypes }};
+
+    function toggleFormat(dateField, formatFieldName) {
+        if (dateField.getValue() != "" && types[dateField.getValue()].indexOf("xsd:date") == -1) {
+            Ext.get(formatFieldName).show();
+        } else {
+            Ext.get(formatFieldName).hide();
+        }
+    }
+
+    Ext.get('id_startDate').on('change', function() {
+        toggleFormat(this, 'startDateFormatCell');
+    });
+
+    Ext.get('id_endDate').on('change', function() {
+        toggleFormat(this, 'endDateFormatCell');
+    });
+
+
+    toggleFormat(Ext.get('id_startDate'), 'startDateFormatCell');
+    toggleFormat(Ext.get('id_endDate'), 'endDateFormatCell');
+
 
     Ext.Ajax.timeout = 120000;
     var ajaxSubmit = function() {
-               Ext.MessageBox.wait('Saving ...');
-     		   Ext.Ajax.request({
-                    url: "/data/{{layer.typename}}/metadata",
-                    method: 'POST',
-                    params : Ext.Ajax.serializeForm(Ext.get("worldmap_describe_form")),
-                    success: function(response, options) {
-                             try {
-                                var panelName = "{{ tab }}"
-                                var uPanel = Ext.getCmp(panelName);
-                                switch (panelName) {
-                                        case "worldmap_update_panel":
-                                                uPanel.load({url:'/data/upload?tab=true'});
-                                                break;
-                                        case "worldmap_create_panel":
-                                                uPanel.load({url:'/data/create_pg_layer?tab=true'});
-                                                break;
-                                }
-                                var geoEx = window.app;
-                                var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name', name: 'tiled'}]);
-                                var thisLayerRec = new LayerRec({title: '{{ layer.title|escape }}', name: '{{ layer.typename }}', tiled: true});
-                                //geoEx.reloadWorldMapSource([thisLayerRec]);
-                                geoEx.addWorldMapLayers([thisLayerRec]);
-                             } catch (Exception) {
-                                 Ext.Msg.alert("Layer Error", "An unexpected problem occurred and your layer could not be loaded.")
-                             }
-                            Ext.MessageBox.hide();
-                    },
-                    failure: function(response, options)
-                    {
-                            Ext.MessageBox.hide();
-                            var uPanel = Ext.getCmp("{{ tab }}");
-                            uPanel.update(response.responseText, true);
+        Ext.MessageBox.wait('Saving ...');
+        Ext.Ajax.request({
+            url: "/data/{{layer.typename}}/metadata",
+            method: 'POST',
+            params : Ext.Ajax.serializeForm(Ext.get("worldmap_describe_form")),
+            success: function(response, options) {
+                try {
+                    var panelName = "{{ tab }}"
+                    var uPanel = Ext.getCmp(panelName);
+                    switch (panelName) {
+                        case "worldmap_update_panel":
+                            uPanel.load({url:'/data/upload?tab=true'});
+                            break;
+                        case "worldmap_create_panel":
+                            uPanel.load({url:'/data/create_pg_layer?tab=true'});
+                            break;
+                    }
+                    var geoEx = window.app;
+                    var LayerRec = Ext.data.Record.create([{name: 'title', name: 'name', name: 'tiled'}]);
+                    var thisLayerRec = new LayerRec({title: '{{ layer.title|escape }}', name: '{{ layer.typename }}', tiled: true});
+                    //geoEx.reloadWorldMapSource([thisLayerRec]);
+                    geoEx.addWorldMapLayers([thisLayerRec]);
+                } catch (Exception) {
+                    Ext.Msg.alert("Layer Error", "An unexpected problem occurred and your layer could not be loaded.")
+                }
+                Ext.MessageBox.hide();
+            },
+            failure: function(response, options)
+            {
+                Ext.MessageBox.hide();
+                var uPanel = Ext.getCmp("{{ tab }}");
+                uPanel.update(response.responseText, true);
 
-                            Ext.Msg.show({
-                                title: gettext("Error"),
-                                msg: gettext("Please review your submission and correct the indicated problems."),
-                                minWidth: 200,
-                                modal: true,
-                                icon: Ext.Msg.ERROR,
-                                buttons: Ext.Msg.OK
-                            });
-                    uPanel.body.scrollTo('top',0);
-                    },
-                    scope: this
+                Ext.Msg.show({
+                    title: gettext("Error"),
+                    msg: gettext("Please review your submission and correct the indicated problems."),
+                    minWidth: 200,
+                    modal: true,
+                    icon: Ext.Msg.ERROR,
+                    buttons: Ext.Msg.OK
                 });
+                uPanel.body.scrollTo('top',0);
+            },
+            scope: this
+        });
     }
-{% endautoescape %}
+    {% endautoescape %}
 </script>
-</div>
+</body>
+</html>

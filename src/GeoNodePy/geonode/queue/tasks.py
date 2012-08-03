@@ -5,7 +5,7 @@ from models import *
 
 __author__ = 'mbertrand'
 
-@periodic_task(run_every=crontab(minute='*/5'))
+@periodic_task(run_every=crontab(minute='*/1'))
 def updateGazetteer():
     print "start updateGazetteer"
     gazetteerJobs = GazetteerUpdateJob.objects.all()
@@ -20,7 +20,7 @@ def updateGazetteer():
             job.save()
     #print "end updateGazetteer"
 
-@periodic_task(run_every=crontab(minute='*/5'))
+@periodic_task(run_every=crontab(minute='*/1'))
 def updateBounds():
     boundsJobs = LayerBoundsUpdateJob.objects.all()
     for job in boundsJobs:

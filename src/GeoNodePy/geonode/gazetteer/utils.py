@@ -1,10 +1,16 @@
 import logging
+from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+#from geonode.gazetteer.models import GazetteerEntry
+#from psycopg2 import extras
+from geonode.gazetteer.models import GazetteerEntry
 from geopy import geocoders
 from django.conf import settings
 import psycopg2
 from geonode.maps.models import Layer, LayerAttribute, MapLayer, Map
+
+GAZETTEER_TABLE = 'gazetteer_gazetteerentry'
 
 __author__ = 'mbertrand'
 
@@ -40,19 +46,22 @@ def get_geometry_type(layer_name):
 
 
 def getGazetteerEntry(id):
-    sql_query = "SELECT  place_name, layer_name, latitude, longitude, id from gazetteer_placename WHERE id = %d" % id
-    conn = psycopg2.connect(
-        "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+
+    #sql_query = "SELECT  place_name, layer_name, latitude, longitude, id from gazetteer_placename WHERE id = %d" % id
+    #conn = psycopg2.connect(
+    #    "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
-        cur = conn.cursor()
-        cur.execute(sql_query)
-        results = cur.fetchall()
+        #cur = conn.cursor()
+        #cur.execute(sql_query)
+        #results = cur.fetchall()
+
+        results = GazetteerEntry.objects.filter(id__exact=id)
 
         posts = []
-        for result in results:
+        for entry in results:
             #(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
-            posts.append({'placename': result[0], 'coordinates': (result[2], result[3]),
-                          'source': formatSourceLink(result[1]), 'id': result[4]})
+            posts.append({'placename': entry.place_name, 'coordinates': (entry.longitude, entry.latitude),
+                          'source': formatSourceLink(entry.layer_name), 'id': entry.id})
         return posts
     except Exception, e:
         logger.error("Error retrieving results for gazetteer by id %d:%s", id, str(e))
@@ -91,51 +100,82 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
     elif layer:
         layers = [layer]
 
-    #"select ts_headline(place_name, to_tsquery('" + place_name + "')), layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename, to_tsquery('" + place_name + "') query where query @@ text_search"
+    matchingEntries = GazetteerEntry.objects.filter(place_name__istartswith=place_name)
 
-    sql_query = "SELECT place_name, layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename WHERE place_name ILIKE '" + place_name + "\%'"
     if layers:
-        layers_str = "'" + "','".join(layers) + "'"
-        sql_query += " AND layer_name in (" + layers_str + ")"
+        matchingEntries.filter(layer_name__in=layers)
 
     if start_date: #Select records whose end_date is >= the specified start date (or no end date)
-        sql_query += " AND (end_date is null or end_date >= CAST('" + start_date + "' as date))"
+        matchingEntries.filter(start_date__gte=start_date)
 
     if end_date: #Select records whose start date is <= the specified end date (or no start date)
-        sql_query += " AND (start_date is null or start_date <= CAST('" + end_date + "' as date) )"
+        matchingEntries.filter(end_date__lte=start_date)
 
     if project:
-        sql_query += " AND project = '" + project + "'"
+        matchingEntries.filter(project__exact=project)
 
-    #print("SQL QUERY IS: %s", sql_query)
+    posts = []
+    for entry in matchingEntries:
+        #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
+        posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
+            'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
+            'gazetteer_id': entry.id})
+    return posts
 
-    conn = psycopg2.connect(
-        "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
-    try:
-        cur = conn.cursor()
-        cur.execute(sql_query)
-        results = cur.fetchall()
 
-        posts = []
-        for result in results:
-            #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
-            posts.append({'placename': result[0], 'coordinates': (result[2], result[3]),
-                          'source': formatSourceLink(result[1]), 'start_date': result[4], 'end_date': result[5],
-                          'gazetteer_id': result[6]})
-            #posts.append({"type": "Feature", "geometry": {"type": "Point", "coordinates":[result[2], result[3]]}, "properties": {'placename': result[0], 'source': result[1], 'start_date': result[4], 'end_date': result[5], 'gazetteer_id': result[6]}})
-        return posts
-    except Exception, e:
-        logger.error("Error retrieving type for PostGIS table %s:%s", layer, str(e))
-        raise
-    finally:
-        conn.close()
+    return posts
+
+
+
+    #"select ts_headline(place_name, to_tsquery('" + place_name + "')), layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename, to_tsquery('" + place_name + "') query where query @@ text_search"
+
+#    sql_query = "SELECT place_name, layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename WHERE place_name ILIKE '" + place_name + "\%'"
+#    if layers:
+#        layers_str = "'" + "','".join(layers) + "'"
+#        sql_query += " AND layer_name in (" + layers_str + ")"
+#
+#    if start_date: #Select records whose end_date is >= the specified start date (or no end date)
+#        sql_query += " AND (end_date is null or end_date >= CAST('" + start_date + "' as date))"
+#
+#    if end_date: #Select records whose start date is <= the specified end date (or no start date)
+#        sql_query += " AND (start_date is null or start_date <= CAST('" + end_date + "' as date) )"
+#
+#    if project:
+#        sql_query += " AND project = '" + project + "'"
+#
+#    #print("SQL QUERY IS: %s", sql_query)
+#
+#    conn = psycopg2.connect(
+#        "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+#    try:
+#        cur = conn.cursor()
+#        cur.execute(sql_query)
+#        results = cur.fetchall()
+#
+#        posts = []
+#        for result in results:
+#            #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
+#            posts.append({'placename': result[0], 'coordinates': (result[2], result[3]),
+#                          'source': formatSourceLink(result[1]), 'start_date': result[4], 'end_date': result[5],
+#                          'gazetteer_id': result[6]})
+#            #posts.append({"type": "Feature", "geometry": {"type": "Point", "coordinates":[result[2], result[3]]}, "properties": {'placename': result[0], 'source': result[1], 'start_date': result[4], 'end_date': result[5], 'gazetteer_id': result[6]}})
+#        return posts
+#    except Exception, e:
+#        logger.error("Error retrieving type for PostGIS table %s:%s", layer, str(e))
+#        raise
+#    finally:
+#        conn.close()
 
 
 def delete_from_gazetteer(layer_name):
     """
     Delete all placenames for a layer
     """
-    delete_query = "DELETE FROM gazetteer_placename WHERE layer_name = '%s'" % layer_name
+
+#    If this were to use a django objemt model....
+#    GazetteerEntry.objects.filter(layer_name__exact=layer_name).delete()
+
+    delete_query = "DELETE FROM " + GAZETTEER_TABLE + " WHERE layer_name = '%s'" % layer_name
     print delete_query
     conn = psycopg2.connect(
         "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
@@ -159,6 +199,17 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
     project: Name of project that layer will be associated with
     """
 
+    def getDateFormat(date_attribute):
+        date_format = "l.\"" + date_attribute.attribute + "\""
+        if "xsd:date" not in date_attribute.attribute_type and date_attribute.date_format is not None:
+            #This could be in any of multiple formats, and postgresql needs a format pattern to convert it.
+            #User should supply this format when adding the layer attribute to the gazetteer
+            date_format = "TO_DATE(CAST(" + date_format + " AS TEXT), '" + date_attribute.date_format + "')"
+        elif not "xsd:date" in start_attribute_obj.attribute_type:
+            #It's not a date, it's not an int, and no format was specified if it's a string - so don't use it
+            date_format = None
+        return date_format
+
     layer = get_object_or_404(Layer, name=layer_name)
     layer_type, geocolumn, projection = get_geometry_type(layer_name)
 
@@ -167,7 +218,7 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
     """
     Delete layer placenames where the FID is no longer in the original table or the layer_attribute is not in the list of name attributes.
     """
-    delete_query = "DELETE FROM gazetteer_placename WHERE layer_name = '" + str(
+    delete_query = "DELETE FROM " + GAZETTEER_TABLE + " WHERE layer_name = '" + str(
         layer.name) + "' AND (feature_fid NOT IN (SELECT fid from \"" + layer.name + "\") OR layer_attribute NOT IN (" + namelist + "))"
     #print delete_query
 
@@ -183,17 +234,27 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
     if "POINT" not in layer_type:
         coord_query = "ST_Centroid(" + geom_query + ")"
 
+    start_format = None
+    if start_attribute is not None:
+        start_attribute_obj = get_object_or_404(LayerAttribute, layer=layer, attribute=start_attribute)
+        start_format = getDateFormat(start_attribute_obj)
+
+    end_format = None
+    if end_attribute is not None:
+        end_attribute_obj = get_object_or_404(LayerAttribute, layer=layer, attribute=end_attribute)
+        end_format = getDateFormat(end_attribute_obj)
+
     for name in name_attributes:
         #print("Attribute:" + name + " for " + layer.name)
         attribute = get_object_or_404(LayerAttribute, layer=layer, attribute=name)
         """
         Update layer placenames where placename FID = layer FID and placename layer attribute = name attribute
         """
-        updateQueries.append("UPDATE gazetteer_placename SET layer_attribute = '" + str(
+        updateQueries.append("UPDATE " + GAZETTEER_TABLE + " SET layer_attribute = '" + str(
             attribute.attribute) + "', feature = " + geom_query + ", feature_type = '" + layer_type +\
-                             "', place_name = l.\"" + attribute.attribute + "\"" + (
-        ", start_date = l.\"" + start_attribute + "\"" if start_attribute else "") +\
-                             (", end_date = l.\"" + end_attribute + "\"" if end_attribute else "") +\
+                             "', place_name = l.\"" + attribute.attribute + "\"" +
+        ", start_date = " + (start_format if start_format else "null") +\
+                             ", end_date = " + (end_format if end_format else "null") +\
                              ", project = " + ("'" + project + "'" if project else "null") +\
                              ", longitude = ST_X(" + coord_query + "), latitude = ST_Y(" + coord_query + ")" +\
                              " FROM \"" + layer_name + "\" as l WHERE layer_name = '" + layer_name + "' AND" +\
@@ -203,17 +264,17 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         Insert any new placenames
         """
         insertQueries.append(
-            "INSERT INTO gazetteer_placename (layer_name, layer_attribute, feature_type, feature_fid, place_name, start_date, end_date, project, feature, longitude, latitude) (SELECT '" + str(
-                layer.name) + "' as layer_name,'" + str(
-                attribute.attribute) + "' as layer_attribute,'" + layer_type + "' as feature_type,fid as feature_fid,"\
-            + "\"" + attribute.attribute + "\" as place_name," +\
-            (('\"' + start_attribute + '\"') if start_attribute else 'null') + " as start_attribute," +\
-            (('\"' + end_attribute + '\"') if end_attribute else 'null') + " as end_attribute," +\
-            ("'" + project + "'" if project else 'null') + " as project" +\
-            "," + geom_query + " as feature," +\
+            "INSERT INTO " + GAZETTEER_TABLE + " (layer_name, layer_attribute, feature_type, feature_fid, place_name, start_date, end_date, project, feature, longitude, latitude) (SELECT '" + str(
+                    layer.name) + "' as layer_name,'" + str(
+                    attribute.attribute) + "' as layer_attribute,'" + layer_type + "' as feature_type,fid as feature_fid,"\
+                + "\"" + attribute.attribute + "\" as place_name," +\
+                (start_format.replace("l.","") if start_format else 'null') + " as start_attribute," +\
+                (end_format.replace("l.","") if end_format else 'null') + " as end_attribute," +\
+                ("'" + project + "'" if project else 'null') + " as project" +\
+                "," + geom_query + " as feature," +\
             "ST_X(" + coord_query + "), ST_Y(" + coord_query + ") from " + layer_name +\
             " as l WHERE  l.\"" + attribute.attribute + "\" is not null AND " +\
-            "fid not in (SELECT feature_fid from gazetteer_placename where layer_name = '" + layer_name + "' and layer_attribute = '" + attribute.attribute + "'))")
+            "fid not in (SELECT feature_fid from " + GAZETTEER_TABLE + " where layer_name = '" + layer_name + "' and layer_attribute = '" + attribute.attribute + "'))")
 
     conn = psycopg2.connect(
         "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
@@ -239,6 +300,38 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         raise
     finally:
         conn.close()
+
+
+#def alternateUpdateGazetteer():
+#    #If this were to use a django object model....
+#    matchingEntries = GazetteerEntry.objects.filter(place_name__ilike(place_name))
+#
+#    if layers:
+#        matchingEntries.filter(layer_name__in=layers)
+#
+#    if start_date: #Select records whose end_date is >= the specified start date (or no end date)
+#        matchingEntries.filter(start_date__gte=start_date)
+#
+#    if end_date: #Select records whose start date is <= the specified end date (or no start date)
+#        matchingEntries.filter(end_date__lte=start_date)
+#
+#    if project:
+#        matchingEntries.filter(project__exact=project)
+#
+#    return matchingEntries
+
+#def addGazetteerEntry(row):
+#    entry,created = GazetteerEntry.objects.get_or_create(layer_name=row['layer_name'], layer_attribute=row['layer_attribute'],
+#        feature_fid=row['feature_fid'], defaults={'feature_type':row['feature_type'],
+#        'latitude':row['latitude'], 'longitude':row['longitude'], 'place_name':row['place_name'],
+#         'project':row['project'], 'feature':GEOSGeometry(row['feature'])
+#        })
+#    try:
+#        entry.save()
+#    except Exception, e:
+#        logger.error(str(e))
+
+
 
 
 def getExternalServiceResults(place_name, services):

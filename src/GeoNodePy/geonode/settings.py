@@ -306,8 +306,8 @@ GEONODE_CLIENT_LOCATION = "/media/static/"
 # if you do use it replace UA-XXXXXXXX-1 with your own ID
 GOOGLE_ANALYTICS_CODE = ""
 
-GOOGLE_API_KEY = ""
-GOOGLE_SECRET_KEY = ""
+GOOGLE_API_KEY = None
+GOOGLE_SECRET_KEY = None
 
 #Set name of additional permissions group (besides anonymous and authenticated)
 CUSTOM_GROUP_NAME = 'Organization Users'
@@ -333,6 +333,29 @@ DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
 
+
+# Defines settings for databases,
+# only use if PostGIS integration enabled
+#DATABASES = {
+#    'default': {
+#        'ENGINE': DATABASE_ENGINE,
+#        'NAME': DATABASE_NAME,
+#        'USER' : DATABASE_USER,
+#        'PASSWORD': DATABASE_PASSWORD,
+#        'PORT': DATABASE_PORT,
+#        'HOST': DATABASE_HOST
+#    },
+#    'wmdata': {
+#        'ENGINE': DATABASE_ENGINE,
+#        'NAME': DB_DATASTORE_DATABASE,
+#        'USER' : DB_DATASTORE_USER,
+#        'PASSWORD': DB_DATASTORE_PASSWORD,
+#        'PORT': DB_DATASTORE_PORT,
+#        'HOST': DATABASE_HOST
+#    }
+#
+#}
+
 SOUTH_MIGRATION_MODULES = {
 }
 
@@ -341,7 +364,7 @@ DEFAULT_WORKSPACE = 'geonode'
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
 
-USE_GAZETTEER = True
+USE_GAZETTEER = False
 USE_QUEUE = True
 CELERY_IMPORTS = ("geonode.queue", )
 BROKER_URL = "django://"

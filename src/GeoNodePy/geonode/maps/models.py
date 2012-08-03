@@ -1544,6 +1544,7 @@ class LayerAttribute(models.Model):
     in_gazetteer = models.BooleanField(_('In Gazetteer?'), default=False)
     is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
     is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
+    date_format = models.CharField(_('Date Format'), max_length=255, blank=True, null=True)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
