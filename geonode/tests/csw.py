@@ -78,6 +78,25 @@ class GeoNodeCSWTest(TestCase):
         self.assertEqual(record.abstract, 'No abstract provided',
             'Expected a specific abstract in Dublin Core model')
 
+    def test_csw_outputschema_iso(self):
+        """Verify that GeoNode can handle ISO metadata with ISO outputSchema"""
+
+        csw = get_catalogue()
+
+        # search for 'san_andres_y_providencia_location', output as Dublin Core
+        csw.catalogue.getrecords(typenames='gmd:MD_Metadata', keywords=['%san_andres_y_providencia_location%'],
+            outputschema='http://www.isotc211.org/2005/gmd', esn='full')
+
+        record = csw.catalogue.records.values()[0]
+
+        # test that the ISO title maps correctly in Dublin Core
+        self.assertEqual(record.identification.title, 'san_andres_y_providencia_location',
+            'Expected a specific title in Dublin Core model')
+
+        # test that the ISO abstract maps correctly in Dublin Core
+        self.assertEqual(record.identification.abstract, 'No abstract provided',
+            'Expected a specific abstract in Dublin Core model')
+
     def test_csw_outputschema_dc_bbox(self):
         """Verify that GeoNode can handle ISO metadata BBOX model with Dublin Core outputSchema"""
 
