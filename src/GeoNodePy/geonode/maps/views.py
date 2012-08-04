@@ -1102,7 +1102,7 @@ def layer_metadata(request, layername):
 
 
         fieldTypes = {}
-        attributeOptions = layer.attribute_set.filter(attribute_type__in={'xsd:dateTime','xsd:date','xsd:int','xsd:string','xsd:bigint', 'xsd:double'})
+        attributeOptions = layer.attribute_set.filter(attribute_type__in=['xsd:dateTime','xsd:date','xsd:int','xsd:string','xsd:bigint', 'xsd:double'])
         for option in attributeOptions:
             try:
                 fieldTypes[option.id] = option.attribute_type

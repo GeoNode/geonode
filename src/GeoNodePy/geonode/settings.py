@@ -355,6 +355,7 @@ DB_DATASTORE_TYPE=''
 #    }
 #
 #}
+#DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
 
 SOUTH_MIGRATION_MODULES = {
 }
