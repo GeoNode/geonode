@@ -176,7 +176,7 @@ def youtube(request):
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
 
-def download(request, service, layer):
+def download(request, service, layer, format):
     params = request.GET
     #mimetype = params.get("outputFormat") if service == "wfs" else params.get("format")
 
@@ -202,6 +202,8 @@ def download(request, service, layer):
         response = HttpResponse(content, mimetype = mimetype)
         if content_disposition is not None:
             response['Content-Disposition'] = content_disposition
+        else:
+            response['Content-Disposition'] = "attachment; filename=" + layerObj.name + "." + format
         return response
     else:
         return HttpResponse(status=403)

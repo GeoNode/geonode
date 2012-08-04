@@ -44,7 +44,7 @@ urlpatterns = patterns('',
     (r'^accounts/', include('registration.urls')),
     (r'^profiles/', include('profiles.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
-    (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/?$','geonode.proxy.views.download'),
+    (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
