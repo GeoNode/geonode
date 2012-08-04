@@ -1990,7 +1990,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             });
 
-            Ext.getCmp("worldmap_query_tool").toggle(true);
+            var queryTool = Ext.getCmp("worldmap_query_tool")
+            if (queryTool)
+                queryTool.toggle(true);
 
             function setScale() {
                 var scale = zoomStore.queryBy(function(record) {
