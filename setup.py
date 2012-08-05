@@ -44,8 +44,8 @@ setup(name='GeoNode',
         "pastescript",
         # assembling javascript
         "jstools==0.6",
-        # sample and test data
-        "gisdata==0.3.8",
+        # sample and test data / metadata
+        "gisdata==0.4.4",
         # document generator
         "Sphinx==1.1.3",
         # testing
