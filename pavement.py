@@ -358,7 +358,10 @@ def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
-  
+    # Reset data dir
+    sh('git clean -xdf geoserver-geonode-ext/src/main/webapp/data')
+    sh('git checkout geoserver-geonode-ext/src/main/webapp/data')
+
     # start geoserver using test data_dir (relative to geoserver dir)
     #FIXME(Ariel): Use more robust path handling here.
     options.gs_data = GEOSERVER_TEST_DATA
