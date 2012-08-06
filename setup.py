@@ -24,7 +24,7 @@ setup(name='GeoNode',
         "lxml==2.3",
         # python dependencies
         "gsconfig==0.6",
-        "OWSLib==0.5.0",
+        "OWSLib==0.5.1",
         "Django==1.4",
         "django-extensions==0.8",
         "httplib2>=0.7",
