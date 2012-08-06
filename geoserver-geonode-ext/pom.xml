@@ -268,17 +268,7 @@
           <scanIntervalSeconds>30</scanIntervalSeconds>
           <contextPath>/geoserver</contextPath>
           
-          <systemProperties>
-            <systemProperty>
-              <name>GEOSERVER_DATA_DIR</name>
-              <value>../../gs-data/</value>
-            </systemProperty>
-          </systemProperties>
-
           <webApp>${project.build.directory}/geoserver</webApp>
-          
-          <!-- configure the container                 -->
-          <jettyConfig>jetty.xml</jettyConfig>
         </configuration>
       </plugin>
 
