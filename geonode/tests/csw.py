@@ -247,3 +247,28 @@ class GeoNodeCSWTest(TestCase):
             for i in identifiers:
                 csw.transaction(ttype='delete', identifier=i)
 
+
+    def test_layer_delete_from_catalogue(self):
+        """Verify that layer is correctly deleted from CSW catalogue
+        """
+
+        # Test Uploading then Deleting a Shapefile from GeoNetwork
+        shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
+        shp_layer = file_upload(shp_file)
+        catalogue = get_catalogue()
+        catalogue.remove_record(shp_layer.uuid)
+        shp_layer_info = catalogue.get_record(shp_layer.uuid)
+        assert shp_layer_info == None
+
+        # Clean up and completely delete the layer
+        shp_layer.delete()
+
+        # Test Uploading then Deleting a TIFF file from GeoNetwork
+        tif_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
+        tif_layer = file_upload(tif_file)
+        catalogue.remove_record(tif_layer.uuid)
+        tif_layer_info = catalogue.get_record(tif_layer.uuid)
+        assert tif_layer_info == None
+
+        # Clean up and completely delete the layer
+        tif_layer.delete()

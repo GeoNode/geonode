@@ -17,7 +17,6 @@ from paver.path25 import pushd
 
 OUTPUT_DIR = path(os.path.abspath('dist'))
 BUNDLE = path(os.path.join(OUTPUT_DIR, 'geonode.pybundle'))
-GEOSERVER_TEST_DATA = path(os.path.abspath(os.path.join('build', 'gs_test_data')))
 
 
 assert sys.version_info >= (2,6), \
@@ -160,7 +159,6 @@ def setup_client(options):
 @task
 @needs([
     'setup_geoserver',
-    'setup_geonetwork',
     'setup_client',
 ])
 def setup(options):
@@ -318,19 +316,13 @@ def start_django():
 
 
 @task
-@cmdopts([
-    ('gs_data=', 'd', 'Location of geoserver data directory - must exist')
-])
 def start_geoserver(options):
     """
     Start GeoNode's Java apps (GeoServer with GeoNode extensions and GeoNetwork)
     """
-    gs_data = getattr(options,'gs_data','')
 
     with pushd('geoserver-geonode-ext'):
-        if gs_data and not path(gs_data).exists():
-            raise BuildFailure('specified gs_data directory "%s" does not exist' % gs_data)
-        sh('GS_DATA="%s" ./startup.sh &' % gs_data)
+        sh('MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=256m" mvn jetty:run > /dev/null &')
 
 
 @task
@@ -343,17 +335,7 @@ def test(options):
 
 
 @task
-def setup_test_data():
-    # cleanout testdata and rebuild datadir
-    if GEOSERVER_TEST_DATA.exists():
-        GEOSERVER_TEST_DATA.rmtree()
-
-    #FIXME(Ariel): How do we know the data dir is really clean before copying it?
-    path('geoserver-geonode-ext/src/main/webapp/data/').copytree(GEOSERVER_TEST_DATA)
-
-
-@task
-@needs(['reset', 'setup_test_data'])
+@needs(['reset',])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
@@ -362,10 +344,6 @@ def test_integration(options):
     sh('git clean -xdf geoserver-geonode-ext/src/main/webapp/data')
     sh('git checkout geoserver-geonode-ext/src/main/webapp/data')
 
-    # start geoserver using test data_dir (relative to geoserver dir)
-    #FIXME(Ariel): Use more robust path handling here.
-    options.gs_data = GEOSERVER_TEST_DATA
-    print "Setting GEOSERVER_DATA_DIR to '%s'" % options.gs_data
     # Start Django and GeoServer
     call_task('start') 
     print "GeoNode is now available, running the tests now."
@@ -393,11 +371,6 @@ def reset():
     Reset a development environment (Database, GeoServer & GeoNetwork)
     """
     sh("rm -rf geonode/development.db")
-    sh("rm -rf build/gs_data")
-    # TODO: There should be a better way to clean out GeoNetworks data
-    # Rather than just deleting the entire app
-    sh("rm -rf build/webapps/geonetwork")
-    setup_geonetwork()
 
 @task
 def setup_data():

@@ -27,7 +27,6 @@ from geonode.utils import http_client
 from .utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
-from geonode.catalogue import get_catalogue
 
 from geonode.gs_helpers import cascading_delete, fixup_style
 import gisdata
@@ -455,31 +454,6 @@ class GeoNodeMapTest(TestCase):
 
         tif_layer.delete()
 
-    def test_layer_delete_from_catalogue(self):
-        """Verify that layer is correctly deleted from CSW catalogue
-        """
-
-        # Test Uploading then Deleting a Shapefile from GeoNetwork
-        shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
-        shp_layer = file_upload(shp_file)
-        catalogue = get_catalogue()
-        catalogue.remove_record(shp_layer.uuid)
-        shp_layer_info = catalogue.get_record(shp_layer.uuid)
-        assert shp_layer_info == None
-
-        # Clean up and completely delete the layer
-        shp_layer.delete()
-
-        # Test Uploading then Deleting a TIFF file from GeoNetwork
-        tif_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
-        tif_layer = file_upload(tif_file)
-        catalogue.remove_record(tif_layer.uuid)
-        tif_layer_info = catalogue.get_record(tif_layer.uuid)
-        assert tif_layer_info == None
-
-        # Clean up and completely delete the layer
-        tif_layer.delete()
-
     def test_delete_layer(self):
         """Verify that the 'delete_layer' pre_delete hook is functioning
         """
@@ -506,15 +480,19 @@ class GeoNodeMapTest(TestCase):
         self.assertRaises(FailedRequestError,
             lambda: gs_cat.get_store(shp_store_name))
 
-        catalogue = get_catalogue()
-
-        # Verify that it no longer exists in GeoNetwork
-        shp_layer_gn_info = catalogue.get_record(uuid)
-        assert shp_layer_gn_info == None
-
         # Check that it was also deleted from GeoNodes DB
         self.assertRaises(ObjectDoesNotExist,
             lambda: Layer.objects.get(pk=shp_layer_id))
+
+        # If catalogue is installed, then check that it is deleted from there too.
+        if 'geonode.catalogue' in settings.INSTALLED_APPS:
+            from geonode.catalogue import get_catalogue
+            catalogue = get_catalogue()
+
+            # Verify that it no longer exists in GeoNetwork
+            shp_layer_gn_info = catalogue.get_record(uuid)
+            assert shp_layer_gn_info == None
+
 
     # geonode.maps.gs_helpers
 
