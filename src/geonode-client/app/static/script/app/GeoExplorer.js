@@ -402,7 +402,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     reorderNodes : function() {
         var mpl = this.mapPanel.layers;
         var x = 0;
-        var layerCount = this.mapPanel.layers.getCount() - 1;
+        var layerCount = mpl.getCount() - 1;
         var nodeToSelect = null;
         this.treeRoot.cascade(function(node) {
             if (node.isLeaf() && node.layer) {
@@ -411,7 +411,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 record = store.getAt(store.findBy(function(r) {
                     return r.getLayer() === layer;
                 }));
-                if (record.get("group") !== "background") {
+                if (record.get("group") !== "background" &&
+                    record.getLayer().displayInLayerSwitcher == true) {
                     mpl.remove(record);
                     mpl.insert(layerCount - x, [record]);
                 }
@@ -679,6 +680,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         }
 
+        if (!layerRecord)
+            toggleButtons(false);
+        else {
             //Proceed if this is a local queryable WMS layer
             var layer = layerRecord.getLayer();
             if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
@@ -701,7 +705,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             } else {
                 toggleButtons(false);
             }
-
+        }
     },
 
 
@@ -1989,7 +1993,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             });
 
-            Ext.getCmp("worldmap_query_tool").toggle(true);
+            var queryTool = Ext.getCmp("worldmap_query_tool")
+            if (queryTool)
+                queryTool.toggle(true);
 
             function setScale() {
                 var scale = zoomStore.queryBy(function(record) {
