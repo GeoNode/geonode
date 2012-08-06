@@ -23,8 +23,6 @@ import base64
 import shutil
 import tempfile
 
-from mock import Mock, patch
-
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
@@ -52,9 +50,6 @@ from geoserver.resource import FeatureType, Coverage
 
 from django.db.models import signals
 
-fake_delete = Mock()
-geonode.catalogue.models.catalogue_pre_delete = fake_delete
-geonode.layers.models.geoserver_pre_delete = fake_delete
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
@@ -324,18 +319,6 @@ class LayersTest(TestCase):
         c = Client()
         response = c.get('/data/search/detail', {'uuid':layer.uuid})
         self.failUnlessEqual(response.status_code, 200)
-
-    def test_search_template(self):
-
-        layer = Layer.objects.all()[0]
-        tpl = get_template("catalogue/transaction_insert.xml")
-        ctx = Context({
-            'layer': layer,
-        })
-        md_doc = tpl.render(ctx)
-        layer_path = layer.get_absolute_url()
-        self.assert_(layer_path in md_doc, "%s not found in " %  layer_path + md_doc)
-
 
     def test_describe_data(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
