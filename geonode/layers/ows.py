@@ -47,7 +47,7 @@ def wcs_links(wcs_url, identifier,
             # FIXME(Ariel): Find a way to get proper ext, name and mime 
             # using format as a default for all is not good enough
             output.append((f, f, f, url))
-        return output
+    return output
 
 def _wfs_link(wfs_url, identifier, mime, extra_params):
     params = {
