@@ -89,9 +89,6 @@ class GeoNodeCSWTest(TestCase):
 
         record = csw.catalogue.records.values()[0]
 
-        with open('/tmp/file.xml', 'w') as ff:
-            ff.write(csw.catalogue.response)
-
         # test that the ISO title maps correctly in Dublin Core
         self.assertEqual(record.identification.title, 'san_andres_y_providencia_location',
             'Expected a specific title in ISO model')
