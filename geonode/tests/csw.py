@@ -53,11 +53,11 @@ class GeoNodeCSWTest(TestCase):
 
         # get all records
         csw.catalogue.getrecords(typenames=typenames)
-        self.assertEqual(csw.catalogue.results['matches'], 10, 'Expected 10 records')
+        self.assertEqual(csw.catalogue.results['matches'], 16, 'Expected 16 records')
 
         # get all ISO records, test for numberOfRecordsMatched
         csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
-        self.assertEqual(csw.catalogue.results['matches'], 10, 'Expected 10 ISO records')
+        self.assertEqual(csw.catalogue.results['matches'], 16, 'Expected 10 ISO records')
 
     def test_csw_outputschema_dc(self):
         """Verify that GeoNode can handle ISO metadata with Dublin Core outputSchema"""
@@ -89,6 +89,9 @@ class GeoNodeCSWTest(TestCase):
 
         record = csw.catalogue.records.values()[0]
 
+        with open('/tmp/file.xml', 'w') as ff:
+            ff.write(csw.catalogue.response)
+
         # test that the ISO title maps correctly in Dublin Core
         self.assertEqual(record.identification.title, 'san_andres_y_providencia_location',
             'Expected a specific title in ISO model')
@@ -98,14 +101,14 @@ class GeoNodeCSWTest(TestCase):
             'Expected a specific abstract in ISO model')
 
         # test BBOX properties in Dublin Core
-        self.assertEqual(record.identification.bbox.boundingBox.minx, '-81.8593555',
-            'Expected a specific minx coordinate value in Dublin Core model')
-        self.assertEqual(record.identification.bbox.boundingBox.miny, '12.1665322',
-            'Expected a specific minx coordinate value in Dublin Core model')
-        self.assertEqual(record.identification.bbox.boundingBox.maxx, '-81.356409',
-            'Expected a specific maxx coordinate value in Dublin Core model')
-        self.assertEqual(record.identification.bbox.boundingBox.maxy, '13.396306',
-            'Expected a specific maxy coordinate value in Dublin Core model')
+        self.assertEqual(record.identification.bbox.minx, '-81.8593555',
+            'Expected a specific minx coordinate value in ISO model')
+        self.assertEqual(record.identification.bbox.miny, '12.1665322',
+            'Expected a specific minx coordinate value in ISO model')
+        self.assertEqual(record.identification.bbox.maxx, '-81.356409',
+            'Expected a specific maxx coordinate value in ISO model')
+        self.assertEqual(record.identification.bbox.maxy, '13.396306',
+            'Expected a specific maxy coordinate value in ISO model')
 
     def test_csw_outputschema_dc_bbox(self):
         """Verify that GeoNode can handle ISO metadata BBOX model with Dublin Core outputSchema"""
