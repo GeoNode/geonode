@@ -12,32 +12,39 @@ def wcs_links(wcs_url, identifier,
              quiet=True, version='1.0.0'):
     #FIXME(Ariel): This would only work for layers marked for public view,
     # what about the ones with permissions enabled?
-    wcs = WebCoverageService(wcs_url, version=version)
-    msg = ('Could not create WCS links for layer "%s",'
-           ' it was not in the WCS catalog,'
-           ' the available layers were: "%s"' % (
-            identifier, wcs.contents.keys()))
 
-    output = []
-    formats = []
+    try:
+        wcs = WebCoverageService(wcs_url, version=version)
 
-    if identifier not in wcs.contents:
-        if not quiet:
-            raise RuntimeError(msg)
+        msg = ('Could not create WCS links for layer "%s",'
+               ' it was not in the WCS catalog,'
+               ' the available layers were: "%s"' % (
+                identifier, wcs.contents.keys()))
+
+        output = []
+        formats = []
+
+        if identifier not in wcs.contents:
+            if not quiet:
+                raise RuntimeError(msg)
+            else:
+                logger.warn(msg)
         else:
-            logger.warn(msg)
-    else:
-        coverage = wcs.contents[identifier]
-        formats = coverage.supportedFormats
-        for f in formats:
-            if exclude_formats and f in DEFAULT_EXCLUDE_FORMATS:
-                continue
-            url = wcs.getCoverage(identifier=coverage.id, format=f).geturl()
-            # The outputs are: (ext, name, mime, url)
-            # FIXME(Ariel): Find a way to get proper ext, name and mime 
-            # using format as a default for all is not good enough
-            output.append((f, f, f, url))
-    return output
+            coverage = wcs.contents[identifier]
+            formats = coverage.supportedFormats
+            for f in formats:
+                if exclude_formats and f in DEFAULT_EXCLUDE_FORMATS:
+                    continue
+                url = wcs.getCoverage(identifier=coverage.id, format=f).geturl()
+                # The outputs are: (ext, name, mime, url)
+                # FIXME(Ariel): Find a way to get proper ext, name and mime 
+                # using format as a default for all is not good enough
+                output.append((f, f, f, url))
+        return output
+    except Exception, err:
+        if not quiet:
+            logger.warn('WCS server returned exception: %s' % str(err))
+        return []
 
 
 def _wfs_link(wfs_url, identifier, mime, extra_params):
