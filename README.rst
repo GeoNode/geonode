@@ -75,8 +75,9 @@ Windows Development Build Instructions::
     paver setup
     
     # Start the servers
-    paver start <-- This WON'T work on windows without changes to pavement.py 
-                    and a windows batch script for starting jetty    
+    # This WON'T work on windows without changes to pavement.py 
+    # and a windows batch script for starting jetty    
+    paver start
 
 
 Once fully started, you should see a message indicating the address of your geonode.

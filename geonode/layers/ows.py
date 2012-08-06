@@ -2,7 +2,9 @@ import logging
 
 from django.utils.translation import ugettext_lazy as _
 from owslib.wcs import WebCoverageService
+from owslib.coverage.wcsBase import ServiceException
 import urllib
+from geonode import GeoNodeException
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +14,15 @@ def wcs_links(wcs_url, identifier,
              quiet=True, version='1.0.0'):
     #FIXME(Ariel): This would only work for layers marked for public view,
     # what about the ones with permissions enabled?
-    wcs = WebCoverageService(wcs_url, version=version)
+
+    try:
+        wcs = WebCoverageService(wcs_url, version=version)
+    except ServiceException, err:
+        err_msg = 'WCS server returned exception: %s' % err
+        if not quiet:
+            logger.warn(err_msg)
+        raise GeoNodeException(err_msg)
+
     msg = ('Could not create WCS links for layer "%s",'
            ' it was not in the WCS catalog,'
            ' the available layers were: "%s"' % (
@@ -37,8 +47,7 @@ def wcs_links(wcs_url, identifier,
             # FIXME(Ariel): Find a way to get proper ext, name and mime 
             # using format as a default for all is not good enough
             output.append((f, f, f, url))
-    return output
-
+        return output
 
 def _wfs_link(wfs_url, identifier, mime, extra_params):
     params = {
