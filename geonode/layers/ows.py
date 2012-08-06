@@ -2,7 +2,9 @@ import logging
 
 from django.utils.translation import ugettext_lazy as _
 from owslib.wcs import WebCoverageService
+from owslib.coverage.wcsBase import ServiceException
 import urllib
+from geonode import GeoNodeException
 
 logger = logging.getLogger(__name__)
 
@@ -15,37 +17,37 @@ def wcs_links(wcs_url, identifier,
 
     try:
         wcs = WebCoverageService(wcs_url, version=version)
-
-        msg = ('Could not create WCS links for layer "%s",'
-               ' it was not in the WCS catalog,'
-               ' the available layers were: "%s"' % (
-                identifier, wcs.contents.keys()))
-
-        output = []
-        formats = []
-
-        if identifier not in wcs.contents:
-            if not quiet:
-                raise RuntimeError(msg)
-            else:
-                logger.warn(msg)
-        else:
-            coverage = wcs.contents[identifier]
-            formats = coverage.supportedFormats
-            for f in formats:
-                if exclude_formats and f in DEFAULT_EXCLUDE_FORMATS:
-                    continue
-                url = wcs.getCoverage(identifier=coverage.id, format=f).geturl()
-                # The outputs are: (ext, name, mime, url)
-                # FIXME(Ariel): Find a way to get proper ext, name and mime 
-                # using format as a default for all is not good enough
-                output.append((f, f, f, url))
-        return output
-    except Exception, err:
+    except ServiceException, err:
+        err_msg = 'WCS server returned exception: %s' % err
         if not quiet:
-            logger.warn('WCS server returned exception: %s' % str(err))
-        return []
+            logger.warn(err_msg)
+        raise GeoNodeException(err_msg)
 
+    msg = ('Could not create WCS links for layer "%s",'
+           ' it was not in the WCS catalog,'
+           ' the available layers were: "%s"' % (
+            identifier, wcs.contents.keys()))
+
+    output = []
+    formats = []
+
+    if identifier not in wcs.contents:
+        if not quiet:
+            raise RuntimeError(msg)
+        else:
+            logger.warn(msg)
+    else:
+        coverage = wcs.contents[identifier]
+        formats = coverage.supportedFormats
+        for f in formats:
+            if exclude_formats and f in DEFAULT_EXCLUDE_FORMATS:
+                continue
+            url = wcs.getCoverage(identifier=coverage.id, format=f).geturl()
+            # The outputs are: (ext, name, mime, url)
+            # FIXME(Ariel): Find a way to get proper ext, name and mime 
+            # using format as a default for all is not good enough
+            output.append((f, f, f, url))
+        return output
 
 def _wfs_link(wfs_url, identifier, mime, extra_params):
     params = {
