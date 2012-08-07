@@ -43,7 +43,7 @@ class Command(BaseCommand):
             for l in Layer.objects.all():
                 if l.store not in storenames or l.name not in layernames:
                     l.delete()
-                    print l
+                    print '[cleared] Layer %s' % l
         except URLError:
             print "Couldn't connect to GeoServer; is it running? Make sure the GEOSERVER_BASE_URL setting is set correctly."
         finally:

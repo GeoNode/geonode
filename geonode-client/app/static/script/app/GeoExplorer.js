@@ -416,6 +416,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             actionTarget: ["treetbar", "treecontent.contextMenu"]
         }, {
             ptype: "gxp_styler",
+            sameOriginStyling: false,
             rasterStyling: true,
             actionTarget: ["treetbar", "treecontent.contextMenu"]
         }, {
@@ -482,7 +483,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             for (var id in this.layerSources) {
                 source = this.layerSources[id];
                 if (source.store && source instanceof gxp.plugins.WMSSource &&
-                                source.url.indexOf("/geoserver/wms" === 0)) {
+                                source.url.indexOf("/geoserver/wms") === 0) {
                     startSourceId = id;
                 }
             }
@@ -493,6 +494,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 if (tool.ptype === "gxp_addlayers") {
                     addLayers = tool;
                     addLayers.startSourceId = startSourceId;
+                    addLayers.catalogSourceKey = startSourceId;
                 }
             }
             if (!this.fromLayer && !this.mapID) {
