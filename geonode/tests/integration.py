@@ -96,10 +96,8 @@ class NormalUserTest(TestCase):
 
         from django.contrib.auth.models import User
 
-        client = Client(
-            user='norman',
-            passwd='norman'
-        )
+        client = Client()
+        client.login(username='norman', password='norman')
 
         #TODO: Would be nice to ensure the name is available before
         #running the test...
@@ -113,7 +111,8 @@ class NormalUserTest(TestCase):
              permissions={'users': []}
         )
 
-        resp = client.get('layer_metadata', args=[saved_layer.typename])
+        url = reverse('layer_metadata', args=[saved_layer.typename])
+        resp = client.get(url)
         self.assertEquals(resp.status_code, 200)
 
 
@@ -356,7 +355,8 @@ class GeoNodeMapTest(TestCase):
                 self.assertEquals(layer["_permissions"]["change_permissions"], False)
 
         # - Test with Authenticated User
-        client = Client(username='admin', password='admin')
+        client = Client()
+        client.login(username='admin', password='admin')
         resp = client.get(test_url)
         results = json.loads(resp.content)
         
@@ -518,11 +518,8 @@ class GeoNodeMapTest(TestCase):
         """Regression-test for failures caused by zero-width bounding boxes"""
         thefile = os.path.join(gisdata.VECTOR_DATA, 'single_point.shp')
         uploaded = file_upload(thefile, overwrite=True)
-        client = Client(
-            user='norman',
-            passwd='norman'
-        )
-        client.login()
+        client = Client()
+        client.login(username='norman', password='norman')
         resp = client.get(uploaded.get_absolute_url())
         self.assertEquals(resp.status_code, 200)
 
