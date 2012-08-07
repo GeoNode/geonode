@@ -21,9 +21,6 @@
 # Django settings for the GeoNode project.
 import os
 
-# Do not delete the development database when running tests.
-os.environ['REUSE_DB'] = "1"
-
 #
 # General Django development settings
 #
@@ -41,7 +38,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
-        'TEST_NAME': os.path.join(PROJECT_ROOT, 'development.db'),
     }
 }
 
@@ -274,7 +270,7 @@ NOSE_ARGS = [
       '--cover-tests',
       '--detailed-errors',
       '--with-xunit',
-      '--stop',
+#      '--stop',
       ]
 
 #
@@ -330,7 +326,7 @@ DEFAULT_MAP_ZOOM = 0
 
 DEFAULT_LAYER_SOURCE = {
     "ptype": "gxp_wmscsource",
-    "url": "/geoserver/wms",
+    "url": GEOSERVER_BASE_URL + "wms",
     "restUrl": "/gs/rest"
 }
 

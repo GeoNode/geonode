@@ -22,7 +22,6 @@ import urllib2
 from urlparse import urljoin
 from urllib import urlencode
 import json
-from unittest import TestCase
 import urllib
 import urllib2
 import time
@@ -30,6 +29,8 @@ import time
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import call_command
+from django.test import Client
+from django.test import LiveServerTestCase as TestCase
 
 from geoserver.catalog import FailedRequestError
 
@@ -52,66 +53,7 @@ import gisdata
 
 import zipfile
 
-class _Client(object):
-
-    def __init__(self, url, user, passwd):
-        self.url = url
-        self.user = user
-        self.passwd = passwd
-        self.opener = self._init_url_opener()
-
-    def _init_url_opener(self):
-        auth_handler = urllib2.HTTPBasicAuthHandler()
-        auth_handler.add_password(
-            realm='GeoNode realm',
-            uri='',
-            user=self.user,
-            passwd=self.passwd
-        )
-
-        return urllib2.build_opener(
-            auth_handler,
-            urllib2.HTTPCookieProcessor,
-            # MultipartPostHandler.MultipartPostHandler
-        )
-
-    def parse_cookies(self, cookies):
-        res = {}
-        for part in cookies.split(';'):
-            key, value = part.split('=')
-            res[key] = value
-        return res
-
-    def get_crsf_token(self):
-        """ Method that makes a request against the home page to get
-        the csrf token from the request cookies
-        """
-        resp = self.get('')
-        cookies = self.parse_cookies(resp.headers['set-cookie'])
-        return cookies.get('csrftoken', None)
-
-    def login(self):
-        """ Method to login the GeoNode site"""
-        params = {'csrfmiddlewaretoken': self.get_crsf_token(),
-                  'username': self.user,
-                  'next': '/',
-                  'password': self.passwd}
-        return self._make_request(
-            'accounts/login/',
-            data=urllib.urlencode(params)
-        )
-
-    def _make_request(self, path, data=None):
-        req = urllib2.Request(
-            url=self.url + path, data=data
-        )
-        return self.opener.open(req)
-
-    def get(self, path):
-        return self._make_request(path)
-
-
-LOGIN_URL=settings.SITEURL + "accounts/login/"
+LOGIN_URL= "/accounts/login/"
 
 
 class GeoNodeCoreTest(TestCase):
@@ -153,8 +95,7 @@ class NormalUserTest(TestCase):
 
         from django.contrib.auth.models import User
 
-        client = _Client(
-            settings.SITEURL,
+        client = Client(
             user='norman',
             passwd='norman'
         )
@@ -172,8 +113,8 @@ class NormalUserTest(TestCase):
         )
 
         client.login()
-        resp = client.get('data/geonode:san_andres_y_providencia_poi_by_norman/metadata')
-        self.assertEquals(resp.code, 200)
+        resp = client.get('/data/geonode:san_andres_y_providencia_poi_by_norman/metadata')
+        self.assertEquals(resp.status_code, 200)
 
 
 class GeoNodeMapTest(TestCase):
@@ -348,18 +289,22 @@ class GeoNodeMapTest(TestCase):
         
         # Test Empty Search [returns all results, should match len(Layer.objects.all())+5]
         # +5 is for the 5 'default' records in GeoNetwork
-        test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL, "", 0, 10)
-        results = json.loads(get_web_page(test_url))
+        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("", 0, 10)
+        client = Client()
+        resp = client.get(test_url)
+        results = json.loads(resp.content)
         self.assertEquals(int(results["total"]), Layer.objects.count())
         
         # Test n0ch@nc3 Search (returns no results)
-        test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL, "n0ch@nc3", 0, 10)
-        results = json.loads(get_web_page(test_url))
+        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("n0ch@nc3", 0, 10)
+        resp = client.get(test_url)
+        results = json.loads(resp.content)
         self.assertEquals(int(results["total"]), 0)
         
         # Test Keyword Search (various search terms)
-        test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL, "NIC", 0, 10)
-        results = json.loads(get_web_page(test_url))
+        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("NIC", 0, 10)
+        resp = client.get(test_url)
+        results = json.loads(resp.content)
         #self.assertEquals(int(results["total"]), 3)
 
         # This Section should be greatly expanded upon after uploading several
@@ -369,8 +314,9 @@ class GeoNodeMapTest(TestCase):
         # Test BBOX Search (various bbox)
         
         # - Test with an empty query string and Global BBOX and validate that total is correct
-        test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % (settings.SITEURL, "", 0, 10, "-180,-90,180,90")
-        results = json.loads(get_web_page(test_url))
+        test_url = "/data/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % ("", 0, 10, "-180,-90,180,90")
+        resp = client.get(test_url)
+        results = json.loads(resp.content)
         self.assertEquals(int(results["total"]), Layer.objects.count())
 
         # - Test with a specific query string and a bbox that is disjoint from its results
@@ -395,9 +341,9 @@ class GeoNodeMapTest(TestCase):
         for layer in Layer.objects.all():
             layer_set_permissions(layer, perm_spec)
 
-        test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d"  % (settings.SITEURL,"", 0, 10)
-
-        results = json.loads(get_web_page(test_url))
+        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("", 0, 10)
+        resp = client.get(test_url)
+        results = json.loads(resp.content)
 
         for layer in results["rows"]:
             if layer["_local"] == False:
@@ -410,7 +356,9 @@ class GeoNodeMapTest(TestCase):
                 self.assertEquals(layer["_permissions"]["change_permissions"], False)
 
         # - Test with Authenticated User
-        results = json.loads(get_web_page(test_url, username="admin", password="admin", login_url=LOGIN_URL))
+        client = Client(username='admin', password='admin')
+        resp = client.get(test_url)
+        results = json.loads(resp.content)
         
         for layer in results["rows"]:
             if layer["_local"] == False:
@@ -425,18 +373,24 @@ class GeoNodeMapTest(TestCase):
         # Test that MAX_SEARCH_BATCH_SIZE is respected (in unit test?)
     
     def test_search_result_detail(self):
+        shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
+        shp_layer = file_upload(shp_file)
+ 
         # Test with a valid UUID
         uuid=Layer.objects.all()[0].uuid
 
-        test_url = "%sdata/search/detail/?uuid=%s"  % (settings.SITEURL, uuid)
-        results = get_web_page(test_url)
+        test_url = "/data/search/detail/?uuid=%s"  % uuid
+        client = Client()
+        resp = client.get(test_url)
+        results = resp.content
         
         # Test with an invalid UUID (should return 404, but currently does not)
         uuid="xyz"
-        test_url = "%sdata/search/detail/?uuid=%s"  % (settings.SITEURL, uuid)
+        test_url = "/data/search/detail/?uuid=%s" % uuid
         # Should use assertRaisesRegexp here, but new in 2.7
-        self.assertRaises(urllib2.HTTPError,
-            lambda: get_web_page(test_url)) 
+        resp = client.get(test_url)
+        msg = 'Result for uuid: "%s" should have returned a 404' % resp.status_code
+        assert resp.status_code == 404, msg
 
     def test_maps_search(self):
         pass
@@ -564,14 +518,13 @@ class GeoNodeMapTest(TestCase):
         """Regression-test for failures caused by zero-width bounding boxes"""
         thefile = os.path.join(gisdata.VECTOR_DATA, 'single_point.shp')
         uploaded = file_upload(thefile, overwrite=True)
-        client = _Client(
-            settings.SITEURL,
+        client = Client(
             user='norman',
             passwd='norman'
         )
         client.login()
-        resp = client.get('/' + uploaded.get_absolute_url())
-        self.assertEquals(resp.code, 200)
+        resp = client.get(uploaded.get_absolute_url())
+        self.assertEquals(resp.status_code, 200)
 
     def test_layer_replace(self):
         """Test layer replace functionality
@@ -595,7 +548,7 @@ class GeoNodeMapTest(TestCase):
 
         #test the program can determine the original layer in raster type 
         raster_layer = upload_list_raster.pop()
-        raster_url = '%sdata/%s/replace' % (settings.SITEURL, raster_layer)
+        raster_url = '/data/%s/replace' % (raster_layer)
         response = c.get(raster_url)
         self.assertEquals(response.status_code, 200)   
         self.assertEquals(response.context['is_featuretype'], False)
@@ -603,7 +556,7 @@ class GeoNodeMapTest(TestCase):
         #test the program can determine the original layer in vector type
         original_vector_layer_name = upload_list_vector.pop()
         original_vector_layer = Layer.objects.get(typename = original_vector_layer_name)
-        vector_url = '%sdata/%s/replace' % (settings.SITEURL, original_vector_layer_name)
+        vector_url = '/data/%s/replace' % (original_vector_layer_name)
         response = c.get(vector_url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['is_featuretype'], True)

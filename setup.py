@@ -56,10 +56,6 @@ setup(name='GeoNode',
         "django-forms-bootstrap==2.0.3.post1",
         # setup
         "Paver",
-        # we use paste as an development server
-        "paste>=1.3",
-        "PasteDeploy",
-        "pastescript",
         # assembling javascript
         "jstools==0.6",
         # sample and test data / metadata

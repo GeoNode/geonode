@@ -284,29 +284,14 @@ def start():
     """
     Start the GeoNode app and all its constituent parts (Django, GeoServer & Client)
     """
-    from geonode.settings import GEOSERVER_BASE_URL
- 
-    print 'Starting GeoNode on http://localhost:8000'
-    # wait for GeoServer to start
-    started = waitfor(GEOSERVER_BASE_URL)
-    if not started:
-        # If applications did not start in time we will give the user a chance
-        # to inspect them and stop them manually.
-        print "GeoServer never started properly or timed out. It may still be running in the background."
-        print "The logs are available at geoserver-geonode-ext/jetty.log"
-        sys.exit(1)
-    else:
-        print "GeoNode is now available."
+    print "GeoNode is now available."
 
 
 def stop_django():
     """
     Stop the GeoNode Django application (with paster)
     """
-    try:
-        sh('paster serve shared/dev-paste.ini --stop-daemon')
-    except BuildFailure, e:
-        kill('paster', 'serve')
+    kill('python', 'runserver')
 
 
 def stop_geoserver():
@@ -340,8 +325,21 @@ def start_geoserver(options):
     Start GeoNode's Java apps (GeoServer with GeoNode extensions and GeoNetwork)
     """
 
+    from geonode.settings import GEOSERVER_BASE_URL
+
     with pushd('geoserver-geonode-ext'):
         sh('MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=256m" mvn jetty:run > /dev/null &')
+ 
+    print 'Starting GeoServer on %s' % GEOSERVER_BASE_URL
+    # wait for GeoServer to start
+    started = waitfor(GEOSERVER_BASE_URL)
+    if not started:
+        # If applications did not start in time we will give the user a chance
+        # to inspect them and stop them manually.
+        print "GeoServer never started properly or timed out. It may still be running in the background."
+        print "The logs are available at geoserver-geonode-ext/jetty.log"
+        sys.exit(1)
+ 
 
 
 @task
@@ -359,17 +357,14 @@ def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
-    # Reset data dir
-    sh('git clean -xdf geoserver-geonode-ext/src/main/webapp/data')
-    sh('git checkout geoserver-geonode-ext/src/main/webapp/data')
 
-    # Start Django and GeoServer
-    call_task('start') 
+    # Start GeoServer
+    call_task('start_geoserver') 
     print "GeoNode is now available, running the tests now."
 
     success = False
     try:
-        sh("python manage.py test geonode.tests.integration --noinput")
+        sh('python manage.py test geonode.tests.integration --noinput --liveserver=localhost:8000')
     except BuildFailure, e:
         print 'Tests failed! %s' % str(e)
     else:
@@ -390,6 +385,10 @@ def reset():
     Reset a development environment (Database, GeoServer & GeoNetwork)
     """
     sh("rm -rf geonode/development.db")
+    # Reset data dir
+    sh('git clean -xdf geoserver-geonode-ext/src/main/webapp/data')
+    sh('git checkout geoserver-geonode-ext/src/main/webapp/data')
+
 
 @task
 def setup_data():
