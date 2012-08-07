@@ -128,7 +128,6 @@ INSTALLED_APPS = (
 
     # Third party apps
     'django_forms_bootstrap',
-    'django_extensions',
     'registration',
     'profiles',
     'avatar',
