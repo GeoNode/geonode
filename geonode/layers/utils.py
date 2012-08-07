@@ -533,44 +533,6 @@ def get_default_user():
                                'before importing data. '
                                'Try: django-admin.py createsuperuser')
 
-def get_valid_user(user=None):
-    """Gets the default user or creates it if it does not exist
-    """
-    if user is None:
-        theuser = get_default_user()
-    elif isinstance(user, basestring):
-        theuser = User.objects.get(username=user)
-    elif user.is_anonymous():
-        raise GeoNodeException('The user uploading files must not '
-                               'be anonymous')
-    else:
-        theuser = user
-
-    #FIXME: Pass a user in the unit tests that is not yet saved ;)
-    assert isinstance(theuser, User)
-
-    return theuser
-
-
-def check_geonode_is_up():
-    """Verifies all of geonetwork, geoserver and the django server are running,
-       this is needed to be able to upload.
-    """
-    try:
-        Layer.objects.gs_catalog.get_workspaces()
-    except:
-        msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-               'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
-        raise GeoNodeException(msg)
-
-    try:
-        Layer.objects.gn_catalog.login()
-    except:
-        msg = ('Cannot connect to the GeoNetwork at %s\n'
-               'Please make sure you have started '
-               'GeoNetwork.' % settings.GEONETWORK_BASE_URL)
-        raise GeoNodeException(msg)
-
 def file_upload(filename, user=None, title=None, skip=True, overwrite=False, keywords=()):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
