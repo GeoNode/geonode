@@ -1861,7 +1861,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         },
                         scope: this
                     });
-                }
+                },
+                scope: this
             },
             // hack to get the busy mask so we can close it in case of a
             // communication failure
