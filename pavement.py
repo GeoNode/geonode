@@ -289,14 +289,14 @@ def start():
 
 def stop_django():
     """
-    Stop the GeoNode Django application (with paster)
+    Stop the GeoNode Django application
     """
     kill('python', 'runserver')
 
 
 def stop_geoserver():
     """
-    Stop GeoNode's Java apps (GeoServer and GeoNetwork)
+    Stop GeoServer
     """
     kill('jetty', 'java')
 
@@ -314,7 +314,7 @@ def stop():
 @task
 def start_django():
     """
-    Start the GeoNode Django application (with paster)
+    Start the GeoNode Django application
     """
     sh('python manage.py runserver &')
 
