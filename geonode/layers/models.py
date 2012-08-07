@@ -579,8 +579,6 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * SRID
        * Download links (WMS, WCS or WFS and KML)
     """
-    gs_resource = gs_catalog.get_resource(instance.name)
-
     bbox = gs_resource.latlon_bbox
 
     #FIXME(Ariel): Correct srid setting below
@@ -592,8 +590,6 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_x1 = bbox[1]
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
-
-
 
 
 def geoserver_post_save(instance, sender, **kwargs):
