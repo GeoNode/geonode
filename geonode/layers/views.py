@@ -284,7 +284,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     "success": True,
                     "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
-                logger.exception("Unexpected error during upload.")
+                logger.info("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
                     "success": False,
                     "errors": ["Unexpected error during upload: " + escape(str(e))]}))
