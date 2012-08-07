@@ -31,6 +31,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import call_command
 from django.test import Client
 from django.test import LiveServerTestCase as TestCase
+from django.core.urlresolvers import reverse
 
 from geoserver.catalog import FailedRequestError
 
@@ -103,7 +104,7 @@ class NormalUserTest(TestCase):
         #TODO: Would be nice to ensure the name is available before
         #running the test...
         norman = User.objects.get(username="norman")
-        save("san_andres_y_providencia_poi_by_norman",
+        saved_layer = save("san_andres_y_providencia_poi_by_norman",
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
              norman,
              overwrite=False,
@@ -112,8 +113,7 @@ class NormalUserTest(TestCase):
              permissions={'users': []}
         )
 
-        client.login()
-        resp = client.get('/data/geonode:san_andres_y_providencia_poi_by_norman/metadata')
+        resp = client.get('layer_metadata', args=[saved_layer.typename])
         self.assertEquals(resp.status_code, 200)
 
 
