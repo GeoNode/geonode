@@ -1645,8 +1645,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var oldInitComponent = gxp.plugins.FeatureEditorGrid.prototype.initComponent;
         gxp.plugins.FeatureEditorGrid.prototype.initComponent = function(){
             oldInitComponent.apply(this);
-            if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined) {
-                this.customEditors["Description"].addListener("startedit",
+            var customEditField = null;
+            if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined)
+                customEditField = this.customEditors["Description"];
+            else if (this.customEditors["Descriptio"] != undefined && this.customEditors["Descriptio"].field.maxLength == undefined)
+                customEditField = this.customEditors["Descriptio"];
+            if (customEditField)
+            {
+                customEditField.addListener("startedit",
                     function(el, value) {
                         var htmlEditWindow = new Ext.Window({
                                 title: 'HTML Editor',
