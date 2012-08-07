@@ -343,7 +343,7 @@ class LayersTest(TestCase):
         """Test layer remove functionality
         """
         layer = Layer.objects.all()[0]       
-        url = '%sdata/%s/remove' % (settings.SITEURL, layer.typename)
+        url = '/data/%s/remove' % layer.typename
 
         c = Client()
     

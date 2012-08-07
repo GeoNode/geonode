@@ -172,6 +172,10 @@ LOGGING = {
             "handlers": ["console"],
             "level": "ERROR",
         },
+        "owslib": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },    
     },
 }
 
