@@ -144,19 +144,22 @@ class GeoNodeMapTest(TestCase):
             not_expected_layers.append(
                                     os.path.join(gisdata.BAD_DATA, filename)
                                        )
-        uploaded = upload(gisdata.DATA_DIR)
+        uploaded = upload(gisdata.DATA_DIR, console=None)
 
         for item in uploaded:
-            errors = 'errors' in item
+            errors = 'error' in item
             if errors:
                 # should this file have been uploaded?
                 if item['file'] in not_expected_layers:
                     continue
-                msg = 'Could not upload %s. ' % item['file']
-                assert errors is False, msg + 'Error was: %s' % item['errors']
-                msg = ('Upload should have returned either "name" or '
-                  '"errors" for file %s.' % item['file'])
+                else:
+                    msg = ('Could not upload file "%s", '
+                           'and it is not in %s' % (
+                           item['file'], not_expected_layers))
+                    assert errors == True, msg
             else:
+                msg = ('Upload should have returned either "name" or '
+                      '"errors" for file %s.' % item['file'])
                 assert 'name' in item, msg
                 layers[item['file']] = item['name']
 
@@ -226,7 +229,7 @@ class GeoNodeMapTest(TestCase):
         """Test Uploading a good shapefile
         """
         thefile = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
-        uploaded = file_upload(thefile)
+        uploaded = file_upload(thefile, overwrite=True)
         check_layer(uploaded)
 
         # Clean up and completely delete the layer
@@ -238,7 +241,7 @@ class GeoNodeMapTest(TestCase):
 
         thefile = os.path.join(gisdata.BAD_DATA, 'points_epsg2249_no_prj.shp')
         try:
-            uploaded = file_upload(thefile)
+            uploaded = file_upload(thefile, overwrite=True)
         except GeoNodeException, e:
             pass
         except Exception, e:
@@ -252,7 +255,7 @@ class GeoNodeMapTest(TestCase):
         """Uploading a good .tiff
         """
         thefile = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
-        uploaded = file_upload(thefile)
+        uploaded = file_upload(thefile, overwrite=True)
         check_layer(uploaded)
 
         # Clean up and completely delete the layer
@@ -262,7 +265,7 @@ class GeoNodeMapTest(TestCase):
         """Upload the same file more than once
         """
         thefile = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
-        uploaded1 = file_upload(thefile)
+        uploaded1 = file_upload(thefile, overwrite=True)
         check_layer(uploaded1)
         uploaded2 = file_upload(thefile, overwrite=True)
         check_layer(uploaded2)
@@ -374,7 +377,7 @@ class GeoNodeMapTest(TestCase):
     
     def test_search_result_detail(self):
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
-        shp_layer = file_upload(shp_file)
+        shp_layer = file_upload(shp_file, overwrite=True)
  
         # Test with a valid UUID
         uuid=Layer.objects.all()[0].uuid
@@ -392,9 +395,6 @@ class GeoNodeMapTest(TestCase):
         msg = 'Result for uuid: "%s" should have returned a 404' % resp.status_code
         assert resp.status_code == 404, msg
 
-    def test_maps_search(self):
-        pass
-
     # geonode.maps.models
 
     def test_layer_delete_from_geoserver(self):
@@ -409,7 +409,7 @@ class GeoNodeMapTest(TestCase):
 
         # Test Uploading then Deleting a Shapefile from GeoServer
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
-        shp_layer = file_upload(shp_file)
+        shp_layer = file_upload(shp_file, overwrite=True)
         shp_store = gs_cat.get_store(shp_layer.name)
         shp_layer.delete_from_geoserver()
         self.assertRaises(FailedRequestError,
@@ -526,61 +526,44 @@ class GeoNodeMapTest(TestCase):
     def test_layer_replace(self):
         """Test layer replace functionality
         """
-        # Upload Some Data to work with
-               
-        uploaded_vector = upload(gisdata.VECTOR_DATA)
-        upload_list_vector = []
-        for item in uploaded_vector:
-            upload_list_vector.append('geonode:' + item['name'])
+        vector_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_administrative.shp')
+        vector_layer = file_upload(vector_file, overwrite=True)
+        original_vector_bbox = vector_layer.bbox_string
 
-        uploaded_raster = upload(gisdata.RASTER_DATA)
-        upload_list_raster = []
-        for item in uploaded_raster:
-            upload_list_raster.append('geonode:' + item['name'])
-        
-        #test a valid user with layer replace permission         
-        from django.test.client import Client
+        raster_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
+        raster_layer = file_upload(raster_file, overwrite=True)
+ 
         c = Client()
         c.login(username='admin', password='admin')
 
         #test the program can determine the original layer in raster type 
-        raster_layer = upload_list_raster.pop()
-        raster_url = '/data/%s/replace' % (raster_layer)
-        response = c.get(raster_url)
+        raster_replace_url = reverse('layer_replace', args=[raster_layer.typename])
+        response = c.get(raster_replace_url)
         self.assertEquals(response.status_code, 200)   
         self.assertEquals(response.context['is_featuretype'], False)
         
         #test the program can determine the original layer in vector type
-        original_vector_layer_name = upload_list_vector.pop()
-        original_vector_layer = Layer.objects.get(typename = original_vector_layer_name)
-        vector_url = '/data/%s/replace' % (original_vector_layer_name)
-        response = c.get(vector_url)
+        vector_replace_url = reverse('layer_replace', args=[vector_layer.typename])
+        response = c.get(vector_replace_url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['is_featuretype'], True)
    
         #test replace a vector with a raster 
-        layer_typename = raster_layer 
-        layer_path = str('%s/%s' % (gisdata.RASTER_DATA, layer_typename.replace('geonode:', '')))
-        layer_base = open(layer_path + '.tif')
-        response = c.post(vector_url, {'base_file': layer_base})
+        response = c.post(vector_replace_url, {'base_file': open(raster_file) })
         # TODO: This should really return a 400 series error with the json dict
         self.assertEquals(response.status_code, 200)
         response_dict = json.loads(response.content)
         self.assertEquals(response_dict['success'], False)
 
         #test replace a vector with a different vector
-        new_vector_layer_name = upload_list_vector.pop()
-        new_vector_layer = Layer.objects.get(typename = new_vector_layer_name)
-        layer_path = str('%s/%s' % (gisdata.VECTOR_DATA, new_vector_layer_name.replace('geonode:', '')))
+        new_vector_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
+        layer_path, __ = os.path.splitext(new_vector_file)
         layer_base = open(layer_path + '.shp')
         layer_dbf = open(layer_path + '.dbf')
         layer_shx = open(layer_path + '.shx')
-        try:
-            layer_prj = open(layer_path + '.prj')
-        except:
-            layer_prj = None
+        layer_prj = open(layer_path + '.prj')
 
-        response = c.post(vector_url, {'base_file': layer_base,
+        response = c.post(vector_replace_url, {'base_file': layer_base,
                                 'dbf_file': layer_dbf,
                                 'shx_file': layer_shx,
                                 'prj_file': layer_prj
@@ -589,9 +572,13 @@ class GeoNodeMapTest(TestCase):
         response_dict = json.loads(response.content) 
         self.assertEquals(response_dict['success'], True)
 
+        # Get a Layer object for the newly created layer.
+        new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
+        new_vector_bbox = new_vector_layer.bbox_string
+        #FIXME(Ariel): Check the typename does not change.
+
         #Test the replaced layer is indeed different from the original layer
-        self.assertNotEqual(original_vector_layer.typename, new_vector_layer.typename)
-        self.assertNotEqual(original_vector_layer.bbox_string, new_vector_layer.bbox_string)
+        self.assertNotEqual(original_vector_bbox, new_vector_bbox)
 
         #test an invalid user without layer replace permission
         c.logout()   

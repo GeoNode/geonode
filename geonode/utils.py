@@ -364,7 +364,7 @@ class GXPMapBase(object):
         layers.extend(added_layers)
         
         server_lookup = {}
-        sources = {'local': settings.DEFAULT_LAYER_SOURCE }
+        sources = { }
 
         def uniqify(seq):
             """
