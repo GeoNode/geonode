@@ -528,7 +528,6 @@ class GeoNodeMapTest(TestCase):
         """
         vector_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_administrative.shp')
         vector_layer = file_upload(vector_file, overwrite=True)
-        original_vector_bbox = vector_layer.bbox_string
 
         raster_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         raster_layer = file_upload(raster_file, overwrite=True)
@@ -574,17 +573,19 @@ class GeoNodeMapTest(TestCase):
 
         # Get a Layer object for the newly created layer.
         new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
-        new_vector_bbox = new_vector_layer.bbox_string
         #FIXME(Ariel): Check the typename does not change.
 
         #Test the replaced layer is indeed different from the original layer
-        self.assertNotEqual(original_vector_bbox, new_vector_bbox)
+        self.assertNotEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
+        self.assertNotEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
+        self.assertNotEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
+        self.assertNotEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
 
         #test an invalid user without layer replace permission
         c.logout()   
         c.login(username='norman', password='norman')
           
-        response = c.post(vector_url, {'base_file': layer_base,
+        response = c.post(vector_replace_url, {'base_file': layer_base,
                                 'dbf_file': layer_dbf,
                                 'shx_file': layer_shx,
                                 'prj_file': layer_prj
