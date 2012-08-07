@@ -3,7 +3,7 @@
   <groupId>org.opengeo</groupId>
   <artifactId>geonode-geoserver-ext</artifactId>
   <packaging>jar</packaging>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.2</version>
   <name>GeoNode GeoServer Extensions</name>
 
   <repositories>
@@ -66,11 +66,6 @@
       <groupId>org.geoserver.extension</groupId>
       <artifactId>excel</artifactId>
       <version>${geoserver.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opengeo.geoserver</groupId>
-      <artifactId>importer</artifactId>
-      <version>3.0-SNAPSHOT</version>
     </dependency>
     <!--dependency>
       <groupId>org.geoserver.community</groupId>
@@ -205,9 +200,8 @@
     </dependency>
   </dependencies>
   <properties>
-    <geotools.version>8-SNAPSHOT</geotools.version>
-    <geoserver.version>2.2-SNAPSHOT</geoserver.version>
-    <geotools.version>8-SNAPSHOT</geotools.version>
+    <geotools.version>8.0</geotools.version>
+    <geoserver.version>2.2-RC2</geoserver.version>
     <jetty.version>6.1.8</jetty.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
