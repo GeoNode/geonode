@@ -343,7 +343,6 @@ def start_geoserver(options):
 
 
 @task
-@needs(['reset', 'sync'])
 def test(options):
     """
     Run GeoNode's Unit Test Suite
