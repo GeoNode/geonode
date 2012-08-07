@@ -316,7 +316,7 @@ def start_django():
     """
     Start the GeoNode Django application (with paster)
     """
-    sh('paster serve shared/dev-paste.ini --daemon')
+    sh('python manage.py runserver &')
 
 
 @task
