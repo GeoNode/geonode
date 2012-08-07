@@ -27,6 +27,7 @@ import zipfile
 import tarfile
 
 import urllib
+from urllib import urlretrieve
 from subprocess import Popen, PIPE
 
 from paver.easy import *
@@ -67,8 +68,7 @@ deploy_req_txt = """
 
 
 def grab(src, dest):
-    if not os.path.exists(dest):
-        urllib.urlretrieve(str(src), str(dest))
+    urlretrieve(str(src), str(dest))
 
 @task
 def setup_geoserver(options):
