@@ -1,0 +1,118 @@
+geonode (1.2+beta2) precise; urgency=high
+  * Added geonode-updateip command
+  * Added MapQuest and OSM tiles by default to whitelist
+  * geonode-updateip also adds the local host to the printing whitelist
+  * Fixed gsconfig 0.6 bug with vector datastores
+  * Reorganized LOGGING in settings
+  * Fixed bug related to default style not being present
+  * Upgraded gsconfig to version 0.6
+  * Fixed missing links to local layers in map detail
+  * Map composer fixes
+  * More helpful importlayers
+ 
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 1 Aug 2012 11:44:33 -0500
+
+geonode (1.2+beta1) precise; urgency=high
+  * Fixed a reverse url problem remove
+  * Added legend to layer detail page
+  * Added Bing AerialWithLabels layer as a background layer
+  * Fixed download links in GeoTiff layers
+  * Made keywords optional again
+  * Fixed keywords representation in layer detail page
+  * Fixed link to production docs
+  * Added post_save signals to create contact after user creation
+  * Fixed bug affecting map search
+  * Added CSW based search to map composer
+  * Added ability to delete layers with a shared style
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 24 Jun 2012 11:44:33 -0500
+
+geonode (1.2+alpha2) precise; urgency=high
+  * Fixed a reverse url problem during upload
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 23 May 2012 11:44:33 -0500
+
+geonode (1.2+alpha1) precise; urgency=high
+  * Updated locale files
+  * Switched GeoServer's default output strategy to FILE
+  * Renamed geonode_import to importlayers
+  * Better legends
+  * Updated gxp, geoext, openlayers and other submodules
+  * Added more background layers
+  * Added comments
+  * Added ratings
+  * Added plusone (Facebook and Google Plus)
+  * Upgraded to Django-1.4
+  * Fixes for 12.04 compatibility (postgres9)
+  * Switched to lxml for parsing
+  * Added South for migrations
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 20 May 2012 18:44:33 -0500
+
+geonode (1.1.1+final2) lucid; urgency=low
+  * Fixed bug in first time installs.
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 19 Mar 2012 18:44:33 -0500
+
+geonode (1.1.1+final) lucid; urgency=low
+  * Fixed bug in deleting layers using a postgis backend.
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 12 Mar 2011 18:44:33 -0500
+
+geonode (1.1+final) lucid; urgency=low
+  * Moved from SPEED to Partial Buffer in GeoServer's output strategy
+  * Proper upgrade support
+  * Fixed location of GeoServer's data dir
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 5 Feb 2011 18:44:33 -0500
+
+geonode (1.1+RC2) lucid; urgency=low
+  * Fixed avatar links
+  * Added virtualenv upgrade to the installer to avoid bugs in Lucid
+  * Fixed admin media configuration
+  * Fixed login popup in embedded maps
+  * Removed the GetCapabilities calls in embedded maps
+  * Fixed install script, added pip upgrade
+  * Fixed path to geoserver data dir
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 2 Sept 2011 13:44:33 -0500
+
+geonode (1.1-rc1) natty; urgency=low
+  * After creating installer
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 2 Sept 2011 13:44:33 -0500
+
+geonode (1.1-beta4) natty; urgency=low
+  * Using latest master, after move to /geoserver
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 28 Aug 2011 17:44:33 -0500
+
+geonode (1.1.beta+2) unstable; urgency=low
+  * Update to 1.1beta+2 and added gettext and postgres support
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 10 Aug 2011 17:44:33 -0500
+
+geonode (1.0.final+1) unstable; urgency=low
+  * Add dependency on patch command
+
+ -- David Winslow <dwinslow@opengeo.org>  Tue, 14 Dec 2010 17:44:33 -0500
+
+geonode (1.0+final) unstable; urgency=low
+  * Update to GeoNode 1.0-final
+
+ -- David Winslow <dwinslow@opengeo.org>  Tue, 14 Dec 2010 14:59:18 -0500
+
+geonode (1.0+RC4) unstable; urgency=low
+  * Update to GeoNode 1.0RC4
+
+  * Force headless mode for tomcat service
+
+  * Add dependency on libproj-dev
+
+ -- David Winslow <dwinslow@opengeo.org>  Mon, 06 Dec 2010 15:44:01 -0500
+
+geonode (1.0+RC2) unstable; urgency=low
+
+  *  First complete release including pre and post install hooks.
+
+ -- Aaron Greengrass <aaron@thatserver.ca>  Thu, 04 Nov 2010 14:49:39 -0700

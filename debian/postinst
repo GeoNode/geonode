@@ -1,0 +1,55 @@
+#!/bin/bash
+# postinst script for geonode
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#	* <postinst> `configure' <most-recently-configured-version>
+#	* <old-postinst> `abort-upgrade' <new version>
+#	* <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#	  <new-version>
+#	* <postinst> `abort-remove'
+#	* <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#	  <failed-install-package> <version> `removing'
+#	  <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+
+case "$1" in
+    configure)
+         if [ "$2" = "1.1+RC2" ]
+         then
+             # Migrate old varchar fields to TEXT
+             su - postgres -c 'psql geonode' <<EOF
+ALTER TABLE maps_maplayer 
+    ALTER COLUMN layer_params TYPE text,
+    ALTER COLUMN source_params TYPE text;
+EOF
+         fi
+         if [ "$2" = "" ]
+         then
+		 /usr/share/geonode/install.sh -s once /usr/share/geonode/config-post.sh
+         fi
+
+# ALWAYS run the postinstall tasks
+	 /usr/share/geonode/install.sh -s post /usr/share/geonode/config-post.sh
+
+         if [ "$2" = "" ]
+         then
+		 /usr/share/geonode/install.sh -s setup_apache_once /usr/share/geonode/config-post.sh
+         fi
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+	echo "postinst called with unknown argument \`$1'" >&2
+	exit 1
+    ;;
+esac
+
+exit 0

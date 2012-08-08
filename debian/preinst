@@ -1,0 +1,41 @@
+#!/bin/bash
+# preinst script for geonode
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#	* <postinst> `configure' <most-recently-configured-version>
+#	* <old-postinst> `abort-upgrade' <new version>
+#	* <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#	  <new-version>
+#	* <postinst> `abort-remove'
+#	* <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#	  <failed-install-package> <version> `removing'
+#	  <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+
+case "$1" in
+    upgrade)
+         case "$2" in
+             1.1+RC2)
+                  rsync -ar /var/lib/tomcat6/webapps/geoserver/data/ /var/lib/geoserver/geonode-data/
+                  find /var/lib/geoserver/geonode-data/workspaces/ -name '*.xml' | \
+                       xargs sed -i '\!<keywords>!,\!<\/keywords>! s!<string>\s*</string>!!'
+                  sed -i '/<param-name>GEOSERVER_DATA_DIR/,+1 s!param-value>.*</param-value!param-value>/var/lib/geoserver/geonode-data/</param-value!' /etc/geonode/geoserver/web.xml
+             ;;
+         esac
+    ;;
+    install)
+         true
+    ;;
+    *)
+	echo "preinst called with unknown argument \`$1'" >&2
+	exit 1
+    ;;
+esac
+
+exit 0
