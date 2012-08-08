@@ -1,3 +1,10 @@
+geonode (2.0.0+alpha0) precise; urgency=high
+  * Major source tree refactor
+  * Build refactor
+  * CSW refactor
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 8 Aug 2012 11:44:33 -0500
+
 geonode (1.2+beta2) precise; urgency=high
   * Added geonode-updateip command
   * Added MapQuest and OSM tiles by default to whitelist
