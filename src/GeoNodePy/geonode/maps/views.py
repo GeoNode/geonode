@@ -974,6 +974,7 @@ def view(request, mapid, snapshot=None):
 
     config['first_visit'] = first_visit
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map_obj)
+    config['topic_categories'] = category_list()
     return render_to_response('maps/view.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
@@ -2513,3 +2514,10 @@ def create_pg_layer(request):
         else:
             #The form has errors, what are they?
             return HttpResponse(layer_form.errors, status='500')
+
+def category_list():
+    topics = LayerCategory.objects.all()
+    topicArray = []
+    for topic in topics:
+        topicArray.append([topic.name, topic.title])
+    return topicArray

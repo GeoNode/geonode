@@ -813,6 +813,7 @@ class LayerCategory(models.Model):
         return "%s" % self.name
 
 
+
 class Layer(models.Model, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
@@ -920,7 +921,7 @@ class Layer(models.Model, PermissionLevelMixin):
         # bbox: this.adjustBounds(widthAdjust, heightAdjust, values.llbbox).toString(),
 
         srs = 'EPSG:4326' # bbox[4] might be None
-        bbox_string = ",".join([bbox[0], bbox[2], bbox[1], bbox[3]])
+        bbox_string = ",".join([str(bbox[0]), str(bbox[1]), str(bbox[2]), str(bbox[3])])
 
         links = []
 
@@ -983,7 +984,7 @@ class Layer(models.Model, PermissionLevelMixin):
                 pass
 
         def wms_link(mime):
-            return settings.SITEURL + "download/wms/" + str(self.id) + "?"  + urllib.urlencode({
+            return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
                 'service': 'WMS',
                 'request': 'GetMap',
                 'layers': self.typename,
@@ -1649,14 +1650,16 @@ class Map(models.Model, PermissionLevelMixin):
                 'layers': [layer_config(l, user) for l in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
-                'zoom': self.zoom
+                'zoom': self.zoom,
+
             },
             'social_explorer': [se.json() for se in sejumps]
         }
 
 
         if self.group_params:
-            config["treeconfig"] = json.loads(self.group_params)
+                config["treeconfig"] = json.loads(self.group_params)
+                config["map"]["groups"] = json.loads(self.group_params)
 
         '''
         # Mark the last added layer as selected - important for data page

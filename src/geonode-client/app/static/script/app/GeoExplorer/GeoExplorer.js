@@ -297,21 +297,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             scope: this
         });
 
-
-        Ext.override(Ext.tree.TreeNode, {
-            findDescendant: function(attribute, value) {
-                var children = this.childNodes;
-                for(var i = 0, l = children.length; i < l; i++) {
-                    if(children[i].attributes[attribute] == value){
-                        return children[i];
-                    } else if(node = children[i].findDescendant(attribute, value)) {
-                        return node;
-                    }
-                }
-                return null;
-            }
-        });
-
         // register the color manager with every color field
         Ext.util.Observable.observeClass(gxp.form.ColorField);
         gxp.form.ColorField.on({
@@ -349,7 +334,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             Feature: 3000,
             Popup: 3025,
             Control: 4000
-        },
+        }
 
 
 
@@ -357,142 +342,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.mapID = this.initialConfig.id;
     },
-
-    getNodeRecord : function(node) {
-        if (node && node.layer) {
-            var layer = node.layer;
-            var store = node.layerStore;
-            record = store.getAt(store.findBy(function(r) {
-                return r.getLayer() === layer;
-            }));
-        }
-        return record;
-    },
-
-
-    reorderNodes : function() {
-        var mpl = this.mapPanel.layers;
-        var x = 0;
-        var layerCount = this.mapPanel.layers.getCount() - 1;
-        var nodeToSelect = null;
-        this.treeRoot.cascade(function(node) {
-            if (node.isLeaf() && node.layer) {
-                var layer = node.layer;
-                var store = node.layerStore;
-                record = store.getAt(store.findBy(function(r) {
-                    return r.getLayer() === layer;
-                }));
-                if (record.get("group") !== "background") {
-                    mpl.remove(record);
-                    mpl.insert(layerCount - x, [record]);
-                }
-                x++;
-            }
-        });
-    },
-
-
-    addCategoryFolder : function(category, isExpanded) {
-        var mapRoot = this.treeRoot.findChild("id", "maplayerroot");
-        if (category == "" || category == undefined || category == null)
-            category = "General";
-        if (mapRoot.findChild("text", category) == null) {
-            //alert("adding category");
-            mapRoot.appendChild(new GeoExt.tree.LayerContainer({
-                text: category,
-                group:category,
-                iconCls: "gx-folder",
-                cls: "folder",
-                expanded: isExpanded == "true",
-                loader: new GeoExt.tree.LayerLoader({
-                    store: this.mapPanel.layers,
-                    filter: function(record) {
-                        return record.get("group") == category &&
-                            record.getLayer().displayInLayerSwitcher == true;
-                    },
-                    createNode: function(attr) {
-                        var layer = attr.layer;
-                        var store = attr.layerStore;
-                        if (layer && store) {
-                            var record = store.getAt(store.findBy(function(r) {
-                                return r.getLayer() === layer;
-                            }));
-                            if (record && !record.get("queryable")) {
-                                attr.iconCls = "gx-tree-rasterlayer-icon";
-                            }
-                            if (record && record.get("disabled")) {
-                                attr.disabled = true;
-
-                            }
-                            var legendXType;
-                            // add a WMS legend to each node created
-                            if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
-                                legendXType = "gx_wmslegend";
-                            } else if (OpenLayers.Layer.Vector && attr.layer instanceof OpenLayers.Layer.Vector) {
-                                legendXType = "gx_vectorlegend";
-                            }
-                            if (legendXType) {
-                                Ext.apply(attr, {
-                                    component: {
-                                        xtype: legendXType,
-                                        // TODO these baseParams were only tested with GeoServer,
-                                        // so maybe they should be configurable - and they are
-                                        // only relevant for gx_wmslegend.
-                                        baseParams: {
-                                            transparent: true,
-                                            format: "image/png",
-                                            legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
-                                        },
-                                        layerRecord: this.mapPanel.layers.getByLayer(attr.layer),
-                                        showTitle: false,
-                                        // custom class for css positioning
-                                        // see tree-legend.html
-                                        cls: "legend"
-                                    }
-                                });
-                            }
-
-                        }
-                        return GeoExt.tree.LayerLoader.prototype.createNode.apply(this, [attr]);
-                    }
-                }),
-                singleClickExpand: true,
-                allowDrag: true,
-                listeners: {
-                    append: function(tree, node) {
-                        node.expand();
-                    }
-                }
-            }));
-            //mapRoot.getOwnerTree().reload();
-        } else if (isExpanded == "true") {
-            (mapRoot.findChild("text", category)).expand();
-        }
-    },
-
-
-    registerEvents: function(layer) {
-
-        var geoEx = this;
-        layer.events.register("loadstart", layer, function() {
-            if (!geoEx.busyMask) {
-                geoEx.busyMask = new Ext.LoadMask(
-                    geoEx.mapPanel.map.div, {
-                        msg: 'Searching...'
-                    });
-            }
-            geoEx.busyMask.show();
-        });
-
-
-        layer.events.register("loadend", layer, function() {
-            if (geoEx.busyMask) {
-                geoEx.busyMask.hide();
-            }
-        });
-    },
-
-
 
 
     displayXHRTrouble: function(response) {
@@ -553,6 +402,42 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }, {
                 ptype: "gxp_zoomtoextent",
                 actionTarget: {target: "paneltbar", index: 8}
+        }, {
+            ptype: "gxp_layermanager",
+            groups: config.map.groups,
+            id: "treecontentmgr",
+            outputConfig: {
+                id: "treecontent",
+                autoScroll: true,
+                tbar: {id: 'treetbar'}
+                },
+            outputTarget: "westpanel"
+        }, {
+                ptype: "gxp_zoomtolayerextent",
+                actionTarget: "treecontent.contextMenu"
+        }, {
+            ptype: "gxp_addlayers",
+            search: true,
+            topicCategories: config.topic_categories,
+            actionTarget: "treetbar",
+            createExpander: function() {
+                return new GeoExplorer.CapabilitiesRowExpander({
+                    ows: config.localGeoServerBaseUrl + "ows"
+                });
+            }
+        }, {
+                ptype: "gxp_removelayer",
+                actionTarget: ["treecontent.contextMenu"]
+            }, {
+                ptype: "gxp_layerproperties",
+                layerPanelConfig: {
+                    "gxp_wmslayerpanel": {rasterStyling: true}
+                },
+                actionTarget: ["treecontent.contextMenu"]
+            },{
+                ptype: "gxp_styler",
+                rasterStyling: true,
+                actionTarget: ["treecontent.contextMenu"]
             },
             {
                 ptype: "gxp_featuremanager",
@@ -579,6 +464,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         );
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
+
+
+//        gxp.CatalogueSearchPanel.prototype.addLayer = function (record) {
+//
+//        }
 
         var oldLayerChange = gxp.plugins.FeatureEditor.prototype.onLayerChange;
         var localUrl = this.config.localGeoServerBaseUrl;
@@ -881,10 +771,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.mapPanel.map.events.register("preaddlayer", this, function(e) {
             var layer = e.layer;
             if (layer instanceof OpenLayers.Layer.WMS) {
-                !layer.singleTile && layer.maxExtent && layer.mergeNewParams({
-                    tiled: true,
-                    tilesOrigin: [layer.maxExtent.left, layer.maxExtent.bottom]
-                });
                 layer.events.on({
                     "loadstart": function() {
                         layerCount++;
@@ -978,440 +864,42 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 this.selectControl.activate();
         });
 
-        var getRecordFromNode = function(node) {
-            if (node && node.layer) {
-                var layer = node.layer;
-                var store = node.layerStore;
-                record = store.getAt(store.findBy(function(r) {
-                    return r.getLayer() === layer;
-                }));
-            }
-            return record;
-        };
-
-        var getSelectedLayerRecord = function() {
-            var node = layerTree.getSelectionModel().getSelectedNode();
-            return getRecordFromNode(node);
-        };
-
-
-        var removeLayerAction = new Ext.Action({
-            text: this.removeLayerActionText,
-            iconCls: "icon-removelayers",
-            disabled: true,
-            tooltip: this.removeLayerActionTipText,
-            handler: function() {
-                var record = getSelectedLayerRecord();
-                if (record) {
-                    this.removeFromSelectControl(record);
-                    this.mapPanel.layers.remove(record, true);
-                    removeLayerAction.disable();
-                }
-            },
-            scope: this
-        });
-
-        this.treeRoot = new Ext.tree.TreeNode({
-            text: "Layers",
-            expanded: true,
-            isTarget: false,
-            allowDrop: false
-        });
-
-        this.treeRoot.appendChild(new GeoExt.tree.LayerContainer({
-            text: this.layerContainerText,
-            id: "maplayerroot",
-            iconCls: "gx-folder",
-            expanded: true,
-            loader: new GeoExt.tree.LayerLoader({
-                store: this.mapPanel.layers,
-                filter: function(record) {
-                    return record.get("group") == "none" &&
-                        record.getLayer().displayInLayerSwitcher == true;
-                },
-                createNode: function(attr) {
-                    var layer = attr.layer;
-                    var store = attr.layerStore;
-                    if (layer && store) {
-                        var record = store.getAt(store.findBy(function(r) {
-                            return r.getLayer() === layer;
-                        }));
-                        if (record && !record.get("queryable")) {
-                            attr.iconCls = "gx-tree-rasterlayer-icon";
-                        }
-                    }
-                    return GeoExt.tree.LayerLoader.prototype.createNode.apply(this, [attr]);
-                }
-            }),
-            singleClickExpand: true,
-            allowDrop: true,
-            allowDrag: true,
-            listeners: {
-                append: function(tree, node) {
-                    node.expand();
-                }
-            }
-        }));
-
-        this.treeRoot.appendChild(new GeoExt.tree.LayerContainer({
-            text: this.backgroundContainerText,
-            iconCls: "gx-folder",
-            expanded: true,
-            group: "background",
-            loader: new GeoExt.tree.LayerLoader({
-                baseAttrs: {checkedGroup: "background"},
-                store: this.mapPanel.layers,
-                filter: function(record) {
-                    return record.get("group") === "background" &&
-                        record.getLayer().displayInLayerSwitcher == true;
-                },
-                createNode: function(attr) {
-                    var layer = attr.layer;
-                    var store = attr.layerStore;
-                    if (layer && store) {
-                        var record = store.getAt(store.findBy(function(r) {
-                            return r.getLayer() === layer;
-                        }));
-                        if (record) {
-                            if (!record.get("queryable")) {
-                                attr.iconCls = "gx-tree-rasterlayer-icon";
-                            }
-                            if (record.get("fixed")) {
-                                attr.allowDrag = false;
-                            }
-                        }
-                    }
-                    return GeoExt.tree.LayerLoader.prototype.createNode.apply(this, arguments);
-                }
-            }),
-            singleClickExpand: true,
-            allowDrag: false,
-            listeners: {
-                append: function(tree, node) {
-                    node.expand();
-                }
-            }
-        }));
-
-        createPropertiesDialog = function() {
-            var node = layerTree.getSelectionModel().getSelectedNode();
-            if (node && node.layer) {
-                var layer = node.layer;
-                var store = node.layerStore;
-                var record = store.getAt(store.findBy(function(record) {
-                    return record.getLayer() === layer;
-                }));
-                var backupParams = Ext.apply({}, record.getLayer().params);
-                var prop = this.propDlgCache[layer.id];
-                if (!prop) {
-                    prop = this.propDlgCache[layer.id] = new Ext.Window({
-                        title: "Properties: " + record.getLayer().name,
-                        width: 280,
-                        autoHeight: true,
-                        closeAction: "hide",
-                        items: [
-                            {
-                                xtype: "gxp_wmslayerpanel",
-                                autoHeight: true,
-                                layerRecord: record,
-                                defaults: {
-                                    autoHeight: true,
-                                    hideMode: "offsets"
-                                },
-                                listeners: {
-                                    "change": function() {
-                                        this.modified |= 1;
-                                    },
-                                    "beforerender": {
-                                        fn: function(cmp) {
-                                            Ext.Ajax.request({
-                                                url: "/data/" + layer.params.LAYERS + "/ajax_layer_edit_check/",
-                                                method: "POST",
-                                                params: {layername:record.getLayer().params.LAYERS},
-                                                callback: function(options, success, response) {
-                                                    cmp.authorized = cmp.editableStyles = true; //(response.responseText == "True");
-                                                    cmp.ownerCt.doLayout();
-                                                }
-                                            });
-                                        },
-                                        scope: this
-                                    },
-                                    scope: this
-                                }
-                            }
-                        ]
-                    });
-                    // disable the "About" tab's fields to indicate that they
-                    // are read-only
-                    //TODO WMSLayerPanel should be easier to configure for this
-                    prop.items.get(0).items.get(1).cascade(function(i) {
-                        i instanceof Ext.form.Field && i.setDisabled(true);
-                    });
-
-                    isLocal = layer.url.replace(
-                        this.urlPortRegEx, "$1/").indexOf(
-                        this.localGeoServerBaseUrl.replace(
-                            this.urlPortRegEx, "$1/")) === 0;
-
-                    if (isLocal) {
-                        prop.items.get(0).items.get(0).add({html: "<a target='_blank' href='/data/" + layer.params.LAYERS + "'>" + this.shareLayerText + "</a>", xtype: "panel"});
-                    }
-                }
-                prop.show();
-            }
-        };
-
-        var showPropertiesAction = new Ext.Action({
-            text: this.layerPropertiesText,
-            iconCls: "icon-layerproperties",
-            disabled: true,
-            tooltip: this.layerPropertiesTipText,
-            handler: createPropertiesDialog.createSequence(function() {
-                var node = layerTree.getSelectionModel().getSelectedNode();
-                this.propDlgCache[node.layer.id].items.get(0).setActiveTab(1);
-            }, this),
-            scope: this
-        });
-
-        var updateLayerActions = function(sel, node) {
-            if (node && node.layer) {
-                removeLayerAction.show();
-                zoomLayerAction.show();
-                showPropertiesAction.show();
-//            	showStylesAction.show();
-                // allow removal if more than one non-vector layer
-                var count = this.mapPanel.layers.queryBy(
-                    function(r) {
-                        return !(r.getLayer() instanceof OpenLayers.Layer.Vector);
-                    }).getCount();
-                if (count > 1) {
-                    removeLayerAction.enable();
-                    zoomLayerAction.enable();
-                } else {
-                    zoomLayerAction.disable();
-                    removeLayerAction.disable();
-                }
-                var record = getRecordFromNode(node);
-                if (record.get("properties")) {
-                    showPropertiesAction.enable();
-                } else {
-                    showPropertiesAction.disable();
-                }
-                removeCategoryAction.hide();
-                addCategoryAction.hide();
-                renameAction.hide();
-
-                var changed = true;
-                var layer = node.layer;
-                var store = node.layerStore;
-                var record = store.getAt(store.findBy(function(r) {
-                    return r.getLayer() === layer;
-                }));
-                this.selectionChanging = true;
-                changed = geoEx.selectLayer(record);
-                this.selectionChanging = false;
-
-
-                return changed;
-
-            } else {
-                addCategoryAction.hide();
-                removeLayerAction.hide();
-                showPropertiesAction.hide();
-//                showStylesAction.hide();
-                zoomLayerAction.hide();
-                if (node && !node.parentNode.isRoot) {
-                    removeCategoryAction.show();
-                    renameAction.show();
-                    addCategoryAction.hide();
-                } else if (node && node.parentNode.isRoot) {
-                    addCategoryAction.show();
-                    removeCategoryAction.hide();
-                    renameAction.hide();
-                } else {
-                    addCategoryAction.hide();
-                    removeCategoryAction.hide();
-                    renameAction.hide();
-                }
-
-            }
-        };
-
-        var zoomLayerAction = new Ext.Action({
-            text: this.zoomToLayerExtentText,
-            disabled: true,
-            iconCls: "icon-zoom-to",
-            handler: function() {
-                var node = layerTree.getSelectionModel().getSelectedNode();
-                if (node && node.layer) {
-                    var map = this.mapPanel.map;
-                    var extent = node.layer.restrictedExtent || map.maxExtent;
-                    map.zoomToExtent(extent, true);
-                }
-            },
-            scope: this
-        })
-
-        var renameNode = function(node) {
-            Ext.MessageBox.prompt('Rename Category', 'New name for \"' + node.text + '\"', function(btn, text) {
-                if (btn == 'ok') {
-                    this.modified |= 1;
-                    var a = node;
-                    node.setText(text);
-                    node.attributes.group = text;
-                    node.group = text;
-                    node.loader.filter = function(record) {
-
-                        return record.get("group") == text &&
-                            record.getLayer().displayInLayerSwitcher == true;
-                    }
-
-                    node.eachChild(function(n) {
-
-                        record = getRecordFromNode(n);
-                        if (record) {
-                            record.set("group", text);
-                        }
-                    });
-
-
-                    node.ownerTree.fireEvent('beforechildrenrendered', node.parentNode);
-                }
-            });
-        };
-
-        var renameAction = new Ext.Action({
-            text: this.renameCategoryActionText,
-            iconCls: "icon-layerproperties",
-            disabled: false,
-            tooltip: this.renameCategoryActionTipText,
-            handler: function() {
-                var node = layerTree.getSelectionModel().getSelectedNode();
-                renameNode(node);
-            },
-            scope: this
-        });
-
-
-        var addCategoryAction = new Ext.Action({
-            text: this.addCategoryActionText,
-            iconCls: "icon-add",
-            disabled: false,
-            tooltip: this.addCategoryActionTipText,
-            handler: function() {
-                var geoEx = this;
-                var node = layerTree.getSelectionModel().getSelectedNode();
-                Ext.MessageBox.prompt('Add Category', 'Category name:', function(btn, text) {
-                    if (btn == 'ok') {
-                        geoEx.addCategoryFolder(text, true);
-                    }
-                });
-            },
-            scope: this
-        });
-
-        var removeCategoryAction = new Ext.Action({
-            text: this.removeCategoryActionText,
-            iconCls: "icon-removelayers",
-            disabled: false,
-            tooltip: this.removeCategoryActionTipText,
-            handler: function() {
-                var node = layerTree.getSelectionModel().getSelectedNode();
-                if (node.parentNode.isRoot) {
-                    Ext.Msg.alert(this.layerContainerText, "This category cannot be removed");
-                    return false;
-                }
-                if (node) {
-                    while (node.childNodes.length > 0) {
-                        cnode = node.childNodes[0];
-                        record = getRecordFromNode(cnode);
-                        if (record) {
-                            this.removeFromSelectControl(record);
-                            this.mapPanel.layers.remove(record, true);
-                        }
-                    }
-
-                    parentNode = node.parentNode;
-                    parentNode.removeChild(node, true);
-                }
-            },
-            scope: this
-        });
-
         var mapLayersText = this.layerContainerText;
         var backgroundText = this.backgroundContainerText;
 
-        //var geoEx = this;
-        var layerTree = new Ext.tree.TreePanel({
-            root: this.treeRoot,
-            rootVisible: false,
-            border: false,
-            enableDD: true,
-            selModel: new Ext.tree.DefaultSelectionModel({
-                listeners: {
-                    beforeselect: updateLayerActions,
-                    scope: this
+
+        this.on("ready", function(){
+            var startSourceId = null;
+            for (var id in this.layerSources) {
+                source = this.layerSources[id];
+                if (source instanceof gxp.plugins.GeoNodeSource)  {
+                    startSourceId = id;
                 }
-            }),
-            listeners: {
-                contextmenu: function(node, e) {
-                    if (node) {
-                        node.select();
-                        var c = node.getOwnerTree().contextMenu;
-                        c.contextNode = node;
-                        c.showAt(e.getXY());
-                    }
-                },
-                beforemovenode: function(tree, node, oldParent, newParent, index) {
-                    // change the group when moving to a new container
-                    if (node.layer && oldParent !== newParent) {
-                        var store = newParent.loader.store;
-                        var index = store.findBy(function(r) {
-                            return r.getLayer() === node.layer;
-                        });
-                        var record = store.getAt(index);
-                        record.set("group", newParent.attributes.group);
-                    }
-                },
-                beforenodedrop: function(dropEvent) {
-                    var source_folder_id = undefined;
-                    var dest_folder = undefined;
+            }
+            // find the add layers plugin
 
-                    // Folders can be dragged, but not into another folder
-                    if (dropEvent.data.node.attributes.iconCls == 'gx-folder') {
-                        //alert('gx-folder::' + dropEvent.target.attributes.iconCls + ":" + dropEvent.point + ":" + dropEvent.target.parentNode.text + ":" + dropEvent.target.text);
-                        if (dropEvent.target.attributes.iconCls != "gx-folder")
-                            dropEvent.target = dropEvent.target.parentNode;
-                        if ((dropEvent.target.attributes.iconCls == 'gx-folder' && dropEvent.point == "above") || (dropEvent.target.text != backgroundText && dropEvent.target.attributes.iconCls == 'gx-folder' && dropEvent.point == "below")) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } else {
-                        if (dropEvent.target.parentNode.text == backgroundText || (dropEvent.target.parentNode.text == mapLayersText && dropEvent.point != "append") || dropEvent.target.parentNode.text == "Layers")
-                            return false;
-                        else
-                            return true;
-                    }
 
-                },
-                movenode: function(tree, node, oldParent, newParent, index) {
-                    if (!node.layer)
-                        this.reorderNodes();
-                },
-                scope: this
-            },
-            contextMenu: new Ext.menu.Menu({
-                items: [ zoomLayerAction,
-                    removeLayerAction,
-                    showPropertiesAction,
-                    //showStylesAction,
-                    addCategoryAction,
-                    renameAction,
-                    removeCategoryAction
-                ]
-            })
-        });
+
+            var addLayers = null;
+            var layerTree = null;
+            for (var key in this.tools) {
+                var tool = this.tools[key];
+                if (tool.ptype === "gxp_addlayers") {
+                    addLayers = tool;
+                    addLayers.startSourceId = startSourceId;
+                    addLayers.layerTree = layerTree;
+                } else if (tool.ptype == "gxp_layermanager") {
+                    layerTree = tool;
+                }
+            }
+            if (addLayers !== null) {
+                addLayers.layerTree = layerTree;
+                if (!this.fromLayer && !this.mapID) {
+                    addLayers.showCapabilitiesGrid();
+                }
+            }
+
+        }, this);
 
         this.gxSearchBar = new GeoExplorer.SearchBar(this);
         var searchPanel = new Ext.Panel({
@@ -1419,12 +907,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             items: [this.gxSearchBar]
         });
 
-        var layersContainer = new Ext.Panel({
-            autoScroll: true,
-            border: false,
-            title: this.layersContainerText,
-            items: [layerTree]
-        });
 
 
         this.legendPanel = new GeoExt.LegendPanel({
@@ -1441,22 +923,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             defaults: {cls: 'legend-item'}
         });
 
-        var layersTabPanel = new Ext.TabPanel({
-            anchor: "100% 95%",
-            border: false,
-            deferredRender: false,
-            items: [layersContainer, this.legendPanel],
-            activeTab: 0
-        });
+
 
         //needed for Safari
         var westPanel = new Ext.Panel({
-            id: 'gx_westPanel',
-            layout: "anchor",
+            layout: "fit",
+            id: "westpanel",
+            border: false,
             collapseMode: "mini",
             header: false,
             split: true,
-            items: [layersTabPanel,searchPanel],
             region: "west",
             width: 250
         });
@@ -1516,14 +992,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled.each(function(item) {
                 item.disable();
             });
-
-
-            if (this.busyMask) {
-                this.busyMask.hide();
-            }
-
         }, this);
 
+        var showContextMenu;
         this.googleEarthPanel = new gxp.GoogleEarthPanel({
             mapPanel: this.mapPanel,
             listeners: {
@@ -1531,19 +1002,28 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     return record.get("group") !== "background";
                 },
                 "show": function() {
-                    addLayerButton.disable();
-                    removeLayerAction.disable();
-                    layerTree.getSelectionModel().un(
-                        "beforeselect", updateLayerActions, this);
+                    // disable layers toolbar, selection and context menu
+                    layerTree.contextMenu.on("beforeshow", OpenLayers.Function.False);
+                    this.on(
+                        "beforelayerselectionchange", OpenLayers.Function.False
+                    );
+                    Ext.getCmp("treetbar").disable();
                 },
                 "hide": function() {
-                    addLayerButton.enable();
-                    updateLayerActions();
-                    layerTree.getSelectionModel().on(
-                        "beforeselect", updateLayerActions, this);
-                }
+                    var layerTree = Ext.getCmp("treecontent");
+                    if (layerTree) {
+                        // enable layers toolbar, selection and context menu
+                        layerTree.contextMenu.un("beforeshow", OpenLayers.Function.False);
+                        this.un(
+                            "beforelayerselectionchange", OpenLayers.Function.False
+                        );
+                        Ext.getCmp("treetbar").enable();
+                    }
+                },
+                scope: this
             }
         });
+
 
         this.mapPanelContainer = new Ext.Panel({
             layout: "card",
@@ -1590,14 +1070,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         GeoExplorer.superclass.initPortal.apply(this, arguments);
 
-        if (this.config.treeconfig != undefined) {
-            for (x = 0,max = this.config.treeconfig.length; x < max; x++) {
-                if (this.config.treeconfig[x] != null)
-                    this.addCategoryFolder(this.config.treeconfig[x].group, this.config.treeconfig[x].expanded);
-            }
 
-        }
-        ;
     },
 
 
@@ -2390,14 +1863,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     makeExportDialog: function() {
 
         var mapConfig = this.getState();
-        var treeConfig = [];
-        for (x = 0,max = this.treeRoot.firstChild.childNodes.length; x < max; x++) {
-            node = this.treeRoot.firstChild.childNodes[x];
-            treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
-        }
-
-
-        mapConfig['treeconfig'] = treeConfig;
+//        var treeConfig = [];
+//        for (x = 0,max = this.treeRoot.firstChild.childNodes.length; x < max; x++) {
+//            node = this.treeRoot.firstChild.childNodes[x];
+//            treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
+//        }
+//
+//
+//        mapConfig['treeconfig'] = treeConfig;
 
 
         Ext.Ajax.request({
@@ -3035,14 +2508,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var config = this.getState();
 
-        var treeConfig = [];
-        for (x = 0,max = this.treeRoot.firstChild.childNodes.length; x < max; x++) {
-            node = this.treeRoot.firstChild.childNodes[x];
-            treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
-        }
-
-
-        config.treeconfig = treeConfig;
+//        var treeConfig = [];
+//        for (x = 0,max = this.treeRoot.firstChild.childNodes.length; x < max; x++) {
+//            node = this.treeRoot.firstChild.childNodes[x];
+//            treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
+//        }
+//
+//
+        config.treeconfig = [];
         if (!this.mapID || as) {
             /* create a new map */
             Ext.Ajax.request({

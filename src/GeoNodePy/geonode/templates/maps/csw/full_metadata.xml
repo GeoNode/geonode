@@ -269,7 +269,7 @@
                  <gco:CharacterString />
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>Online link to the '{{layer.resource.title}}' description on GeoNode</gco:CharacterString>
+                 <gco:CharacterString>Online link to the '{{layer.resource.title}}' description on WorldMap</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
