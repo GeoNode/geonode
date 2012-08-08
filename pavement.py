@@ -334,29 +334,6 @@ def setup_data():
     sh("python manage.py importlayers %s" % data_dir)
 
 
-
-
-# Helper functions
-
-def unzip_file(src, dest):
-    import zipfile
-    zip = zipfile.ZipFile(src)
-    if not path(dest).exists():
-        path(dest).makedirs()
-        
-    for name in zip.namelist():
-        if name.endswith("/"):
-            (path(dest) / name).makedirs()
-        else:
-            parent, file = path(name).splitpath()
-            parent = path(dest) / parent
-            if parent and not parent.isdir():
-                path(parent).makedirs()
-            out = open(path(parent) / file, 'wb')
-            out.write(zip.read(name))
-            out.close()
-
-
 def kill(arg1, arg2):
     """Stops a proces that contains arg1 and is filtered by arg2
     """
