@@ -352,7 +352,7 @@ def deb(options):
     key = options.get('key', None)
     ppa = options.get('ppa', None)
 
-    sh('sudo apt-get install debhelper devscripts')
+    sh('sudo apt-get -y install debhelper devscripts')
     if key is None:
         sh('debuild -uc -us -A')
     else:
