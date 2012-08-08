@@ -350,7 +350,7 @@ def deb(options):
         paver deb -k 12345 -p geonode/testing
     """
     key = options.get('key', None)
-    ppa = otions.get('ppa', None)
+    ppa = options.get('ppa', None)
 
     sh('sudo apt-get install debhelper devscripts')
     if key is None:
