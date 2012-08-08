@@ -334,6 +334,35 @@ def setup_data():
     sh("python manage.py importlayers %s" % data_dir)
 
 
+@task
+@cmdopts([
+  ('key=', 'k', 'The GPG key to sign the package'),
+  ('ppa=', 'p', 'The name of the PPA where this package should be published to.'),
+])
+
+def deb(options):
+    """
+    Creates debian packages.
+
+    Example uses:
+        paver deb
+        paver deb -k 12345
+        paver deb -k 12345 -p geonode/testing
+    """
+    key = options.get('key', None)
+    ppa = otions.get('ppa', None)
+
+    sh('sudo apt-get install debhelper devscripts')
+    if key is None:
+        sh('debuild -uc -us -A')
+    else:
+        if ppa is None:
+            sh('debuild -k%s -A' % key)
+        else:
+            sh('debuild -k%s -S' % key)
+            sh('dput ppa:%s geonode_*.sources' % ppa)
+
+
 def kill(arg1, arg2):
     """Stops a proces that contains arg1 and is filtered by arg2
     """
