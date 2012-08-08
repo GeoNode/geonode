@@ -35,37 +35,18 @@ from paver.easy import options
 from paver.path25 import pushd
 
 
-OUTPUT_DIR = path(os.path.abspath('dist'))
-BUNDLE = path(os.path.join(OUTPUT_DIR, 'geonode.pybundle'))
-
 
 assert sys.version_info >= (2,6), \
        SystemError("GeoNode Build requires python 2.6 or better")
 
 
 options(
-    config=Bunch(
-        package_dir = path('shared/package')
-    ),
     sphinx=Bunch(
         docroot='docs',
         builddir="_build",
         sourcedir="source"
     ),
-    deploy=Bunch(
-        req_file=path('shared/package/requirements.txt'),
-        packages_to_install=['pip'],
-        dest_dir='./',
-    ),
 )
-
-deploy_req_txt = """
-# NOTE... this file is generated
--r requirements.txt
-# this line installs GeoNode
-.
-""" % locals()
-
 
 def grab(src, dest):
     urlretrieve(str(src), str(dest))
@@ -198,7 +179,6 @@ def setup(options):
     info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""") 
 
 
-
 @task
 def sync(options):
     """
@@ -209,79 +189,62 @@ def sync(options):
     sh("python manage.py loaddata sample_admin.json")
 
 
-def package_dir(options):
-    """
-    Adds a packaging directory
-    """
-    if not os.path.exists(OUTPUT_DIR):
-        OUTPUT_DIR.mkdir()
-
-
-def package_geoserver(options):
-    """Package GeoServer WAR file with appropriate extensions."""
-    geoserver_target.copy(options.deploy.out_dir)
-
-
-def package_geonetwork(options):
-    """Package GeoNetwork WAR file for deployment."""
-    geonetwork_target.copy(options.deploy.out_dir)
-
-
-def package_webapp(options):
-    """Package (Python, Django) web application and dependencies."""
-    sh('python setup.py egg_info sdist')
-        
-    req_file = options.deploy.req_file
-    req_file.write_text(deploy_req_txt)
-    pip_bundle("-r %s %s/geonode-webapp.pybundle" % (req_file, options.deploy.out_dir))
-
-
-
-def create_version_name():
-    # we'll use the geonode version as our "official" version number
-    # for now
-    slug = "GeoNode-%s" % (
-        pkg_resources.get_distribution('GeoNode').version,
-    )
-
-    return slug
 
 @task
-@cmdopts([
-    ('name=', 'n', 'Release number or name'),
-    ('append_to=', 'a', 'append to release name'),
-    ('skip_packaging', 'y', 'Do not call package functions when creating a release'),
-])
-def release(options):
+def package(options):
     """
     Creates a tarball to use for building the system elsewhere
     """
+    version = pkg_resources.get_distribution('GeoNode').version,
+    # Use GeoNode's version for the package name.
+    pkgname = 'GeoNode-%s-all' % version
 
-    if not hasattr(options, 'skip_packaging'):
-        package_dir()
-        package_geoserver()
-        package_geonetwork()
-        package_webapp()
-    if hasattr(options, 'name'):
-        pkgname = options.name
-    else:
-        pkgname = create_version_name()
-        if hasattr(options, 'append_to'):
-            pkgname += options.append_to
+    # Create the output directory.
+    out_pkg = path(pkgname)
 
-    with pushd('shared'):
-        out_pkg = path(pkgname)
-        out_pkg.rmtree()
-        path('./package').copytree(out_pkg)
+    # Clean anything that is in the outout package tree.
+    out_pkg.rmtree()
+    # And copy the default files from the package folder.
+    path('./package').copytree(out_pkg)
 
-        tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
-        for file in out_pkg.walkfiles():
-            tar.add(file)
-        tar.add('README.release.rst', arcname=('%s/README.rst' % out_pkg))
-        tar.close()
+    # Package Geoserver's war.
+    geoserver_target = path('geoserver-geonode-ext/target/geoserver.war')
+    geoserver_target.copy(out_pkg)
 
-        out_pkg.rmtree()
-        info("%s.tar.gz created" % out_pkg.abspath())
+    # Package (Python, Django) web application and dependencies.
+
+    # Create a new requirements file, only to be able to install the GeoNode
+    # python package along with all the other dependencies.
+    req_file = path('package_requirements.txt')
+    req_file.write_text('-r requirements.txt')
+
+    # Create a distribution in zip format for the geonode python package.
+    sh('python setup.py sdist --format=zip')
+    # Write path to released zip file to requirements.txt, by default
+    # the command below puts it in the 'dist' folder
+    req_file.write_text(os.path.join('dist', 'GeoNode-%s.zip' % version))
+
+    # Bundle all the dependencies in a zip-lib package called a pybundle.
+    bundle = os.path.join(out_pkg, 'geonode-webapp.pybundle')
+    sh('pip bundle -r %s %s' % (req_file, bundle))
+
+    # Remove the requirements file used to create the pybundle.
+    req_file.remove()
+
+    # Create a tar file with all the information in the output package folder.
+    tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
+    for file in out_pkg.walkfiles():
+        tar.add(file)
+
+    # Add the README with the license and important links to documentation.
+    tar.add('./package/README', arcname=('%s/README.rst' % out_pkg))
+    tar.close()
+
+    # Remove all the files in the temporary output package directory.
+    out_pkg.rmtree()
+
+    # Report the info about the new package.
+    info("%s.tar.gz created" % out_pkg.abspath())
 
 
 @task
