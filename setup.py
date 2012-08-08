@@ -31,9 +31,14 @@ setup(name='GeoNode',
       url='http://geonode.org',
       license='GPL',
       packages=['geonode',
+                'geonode.layers',
                 'geonode.maps',
+                'geonode.people',
+                'geonode.catalogue',
+                'geonode.migrations',
                 'geonode.security',
                 'geonode.proxy',
+                'geonode.tests',
                 ],
       package_dir={'geonode': 'geonode'},
       package_data={'geonode': ['geonode/static/*']},
@@ -67,8 +72,4 @@ setup(name='GeoNode',
         "nose>=1.0",
         ],
       zip_safe=False,
-      entry_points="""\
-      [paste.app_factory]
-      main = geonode:main
-      """,
       )

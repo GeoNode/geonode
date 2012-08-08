@@ -21,34 +21,16 @@ import os
 import sys
 import time
 
-import pkg_resources
-import shutil
-import zipfile
-import tarfile
-
-import urllib
-from urllib import urlretrieve
-from subprocess import Popen, PIPE
-
-from paver.easy import *
-from paver.easy import options
-from paver.path25 import pushd
+from paver.easy import task, options, cmdopts, needs
+from paver.easy import path, sh, pushd, info
 
 
+assert sys.version_info >= (2,6,2), \
+       SystemError("GeoNode Build requires python 2.6.2 or better")
 
-assert sys.version_info >= (2,6), \
-       SystemError("GeoNode Build requires python 2.6 or better")
-
-
-options(
-    sphinx=Bunch(
-        docroot='docs',
-        builddir="_build",
-        sourcedir="source"
-    ),
-)
 
 def grab(src, dest):
+    from urllib import urlretrieve
     urlretrieve(str(src), str(dest))
 
 @task
@@ -65,35 +47,6 @@ def setup_geoserver(options):
         else:
             sh("mvn clean install jetty:stop")
 
-@task
-def setup_geonetwork(options):
-    """Fetch the geonetwork.war to use with GeoServer for testing."""
-    war_file = 'geonetwork.war'
-    src_url = 'http://dev.geonode.org/dev-data/synth/%s' % war_file
-    info("geonetwork url: %s" % src_url)
-    # where to download the war files. If changed change also
-    # geoserver-geonode-ext/jetty.xml accordingly
-
-    build_path = path('build')
-    if not build_path.exists():
-        build_path.mkdir()
-
-    dst_url = os.path.join(build_path, war_file)
-
-    webapps = path("build/webapps")
-    if not webapps.exists():
-        webapps.mkdir()
-
-    deployed_url = webapps / "geonetwork"
-
-    if getattr(options, 'clean', False):
-        deployed_url.rmtree()
-
-    grab(src_url, dst_url)
-
-    if not deployed_url.exists():
-        zip_extractall(zipfile.ZipFile(dst_url), deployed_url)
-
 
 @task
 def setup_client(options):
@@ -101,11 +54,12 @@ def setup_client(options):
     Fetch geonode-client
     """
     sh('git submodule update --init')
-    static = os.path.abspath("geonode/static/geonode")
-    scripts_path = os.path.join(static, 'script')
+    here = os.path.abspath('.')
+    static = path(here) / 'geonode' / 'static' / 'geonode'
+    scripts_path = path(static) / 'script'
 
-    if not os.path.exists(scripts_path):
-        os.makedirs(scripts_path)
+    if not scripts_path.exists():
+        scripts_path.makedirs()
     
     with pushd("geonode-client/"):
         sh("jsbuild buildjs.cfg -o %s" % scripts_path)
@@ -160,8 +114,8 @@ def setup_client(options):
     ))
 
     for t, o in resources:
-        origin = os.path.join('geonode-client', o)
-        target = os.path.join(static, t)
+        origin = path('geonode-client') / o
+        target = path(static) / t
         justcopy(origin, target)
 
 @task
@@ -195,6 +149,9 @@ def package(options):
     """
     Creates a tarball to use for building the system elsewhere
     """
+    import pkg_resources
+    import tarfile
+
     version = pkg_resources.get_distribution('GeoNode').version,
     # Use GeoNode's version for the package name.
     pkgname = 'GeoNode-%s-all' % version
@@ -222,10 +179,10 @@ def package(options):
     sh('python setup.py sdist --format=zip')
     # Write path to released zip file to requirements.txt, by default
     # the command below puts it in the 'dist' folder
-    req_file.write_text(os.path.join('dist', 'GeoNode-%s.zip' % version))
+    req_file.write_text(path('dist') / 'GeoNode-%s.zip' % version)
 
     # Bundle all the dependencies in a zip-lib package called a pybundle.
-    bundle = os.path.join(out_pkg, 'geonode-webapp.pybundle')
+    bundle = path(out_pkg)/ 'geonode-webapp.pybundle'
     sh('pip bundle -r %s %s' % (req_file, bundle))
 
     # Remove the requirements file used to create the pybundle.
@@ -255,7 +212,7 @@ def start():
     """
     Start the GeoNode app and all its constituent parts (Django, GeoServer & Client)
     """
-    print "GeoNode is now available."
+    info("GeoNode is now available.")
 
 
 def stop_django():
@@ -277,7 +234,7 @@ def stop():
     """
     Stop GeoNode
     """
-    print "Stopping GeoNode ..."
+    info("Stopping GeoNode ...")
     stop_django()
     stop_geoserver()
 
@@ -301,14 +258,14 @@ def start_geoserver(options):
     with pushd('geoserver-geonode-ext'):
         sh('MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=256m" mvn jetty:run > /dev/null &')
  
-    print 'Starting GeoServer on %s' % GEOSERVER_BASE_URL
+    info('Starting GeoServer on %s' % GEOSERVER_BASE_URL)
     # wait for GeoServer to start
     started = waitfor(GEOSERVER_BASE_URL)
     if not started:
         # If applications did not start in time we will give the user a chance
         # to inspect them and stop them manually.
-        print "GeoServer never started properly or timed out. It may still be running in the background."
-        print "The logs are available at geoserver-geonode-ext/jetty.log"
+        info("GeoServer never started properly or timed out. It may still be running in the background.")
+        info("The logs are available at geoserver-geonode-ext/jetty.log")
         sys.exit(1)
  
 
@@ -330,13 +287,13 @@ def test_integration(options):
 
     # Start GeoServer
     call_task('start_geoserver') 
-    print "GeoNode is now available, running the tests now."
+    info("GeoNode is now available, running the tests now.")
 
     success = False
     try:
         sh('python manage.py test geonode.tests.integration --noinput --liveserver=localhost:8000')
     except BuildFailure, e:
-        print 'Tests failed! %s' % str(e)
+        info('Tests failed! %s' % str(e))
     else:
         success = True
     finally:
@@ -375,6 +332,7 @@ def setup_data():
 # Helper functions
 
 def unzip_file(src, dest):
+    import zipfile
     zip = zipfile.ZipFile(src)
     if not path(dest).exists():
         path(dest).makedirs()
@@ -392,84 +350,11 @@ def unzip_file(src, dest):
             out.close()
 
 
-
-# include patched versions of zipfile code
-# to extract zipfile dirs in python 2.6.1 and below...
-
-def zip_extractall(zf, path=None, members=None, pwd=None):
-    if sys.version_info >= (2, 6, 2):
-        zf.extractall(path=path, members=members, pwd=pwd)
-    else:
-        _zip_extractall(zf, path=path, members=members, pwd=pwd)
-
-def _zip_extractall(zf, path=None, members=None, pwd=None):
-    """Extract all members from the archive to the current working
-       directory. `path' specifies a different directory to extract to.
-       `members' is optional and must be a subset of the list returned
-       by namelist().
-    """
-    if members is None:
-        members = zf.namelist()
-
-    for zipinfo in members:
-        _zip_extract(zf, zipinfo, path, pwd)
-
-def _zip_extract(zf, member, path=None, pwd=None):
-    """Extract a member from the archive to the current working directory,
-       using its full name. Its file information is extracted as accurately
-       as possible. `member' may be a filename or a ZipInfo object. You can
-       specify a different directory using `path'.
-    """
-    if not isinstance(member, zipfile.ZipInfo):
-        member = zf.getinfo(member)
-
-    if path is None:
-        path = os.getcwd()
-    
-    return _zip_extract_member(zf, member, path, pwd)
-
-
-def _zip_extract_member(zf, member, targetpath, pwd):
-    """Extract the ZipInfo object 'member' to a physical
-       file on the path targetpath.
-    """
-    # build the destination pathname, replacing
-    # forward slashes to platform specific separators.
-    # Strip trailing path separator, unless it represents the root.
-    if (targetpath[-1:] in (os.path.sep, os.path.altsep)
-        and len(os.path.splitdrive(targetpath)[1]) > 1):
-        targetpath = targetpath[:-1]
-
-    # don't include leading "/" from file name if present
-    if member.filename[0] == '/':
-        targetpath = os.path.join(targetpath, member.filename[1:])
-    else:
-        targetpath = os.path.join(targetpath, member.filename)
-
-    targetpath = os.path.normpath(targetpath)
-
-    # Create all upper directories if necessary.
-    upperdirs = os.path.dirname(targetpath)
-    if upperdirs and not os.path.exists(upperdirs):
-        os.makedirs(upperdirs)
-
-    if member.filename[-1] == '/':
-        if not os.path.isdir(targetpath):
-            os.mkdir(targetpath)
-        return targetpath
-
-    source = zf.open(member, pwd=pwd)
-    target = file(targetpath, "wb")
-    shutil.copyfileobj(source, target)
-    source.close()
-    target.close()
-
-    return targetpath
-
-
 def kill(arg1, arg2):
     """Stops a proces that contains arg1 and is filtered by arg2
     """
+    from subprocess import Popen, PIPE
+    import urllib
 
     # Wait until ready
     t0 = time.time()
@@ -491,14 +376,13 @@ def kill(arg1, arg2):
                 # Get pid
                 fields = line.strip().split()
 
-                print 'Stopping %s (process number %s)' % (arg1, fields[1])
+                info('Stopping %s (process number %s)' % (arg1, fields[1]))
                 kill = 'kill -9 %s 2> /dev/null' % fields[1]
                 os.system(kill)
 
         # Give it a little more time
         time.sleep(1)
     else:
-        #print 'There are no process containing "%s" running' % arg1
         pass
 
     if running:
@@ -523,6 +407,7 @@ def waitfor(url, timeout=300):
 
 
 def justcopy(origin, target):
+    import shutil
     if os.path.isdir(origin):
          shutil.rmtree(target, ignore_errors=True)
          shutil.copytree(origin, target)
