@@ -20,6 +20,7 @@
 import os
 import sys
 import time
+import urllib
 
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, pushd, info
@@ -30,8 +31,7 @@ assert sys.version_info >= (2,6,2), \
 
 
 def grab(src, dest):
-    from urllib import urlretrieve
-    urlretrieve(str(src), str(dest))
+    urllib.urlretrieve(str(src), str(dest))
 
 @task
 @cmdopts([
@@ -361,7 +361,6 @@ def kill(arg1, arg2):
     """Stops a proces that contains arg1 and is filtered by arg2
     """
     from subprocess import Popen, PIPE
-    import urllib
 
     # Wait until ready
     t0 = time.time()
