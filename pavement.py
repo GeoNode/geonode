@@ -23,7 +23,7 @@ import time
 import urllib
 
 from paver.easy import task, options, cmdopts, needs
-from paver.easy import path, sh, pushd, info
+from paver.easy import path, sh, pushd, info, call_task
 
 
 assert sys.version_info >= (2,6,2), \
