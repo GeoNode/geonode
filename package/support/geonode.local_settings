@@ -54,8 +54,8 @@ CSW = {
     'type': 'pycsw',
     # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
     'url': 'http://localhost/pycsw/trunk/csw.py',
-    #'url': 'http://localhost:8001/geonetwork/srv/en/csw',
-    #'url': 'http://localhost:8001/deegree-csw-demo-3.0.4/services',
+    #'url': 'http://localhost:8080/geonetwork/srv/en/csw',
+    #'url': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
     # login credentials (for GeoNetwork)
     'username': 'scott',
     'password': 'tiger'
