@@ -335,7 +335,7 @@ def setup_data():
     """
     import gisdata
     data_dir = gisdata.GOOD_DATA
-    sh("python manage.py importlayers %s" % data_dir)
+    sh("python manage.py importlayers %s -v2" % data_dir)
 
 
 @cmdopts([
