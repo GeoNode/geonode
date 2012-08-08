@@ -62,7 +62,7 @@ community."
       },
       "sources": {
         "capra": {
-          "url":"http://localhost:8001/geoserver/wms"
+          "url":"http://localhost:8080/geoserver/wms"
         }
       },
       "map": {
@@ -92,7 +92,7 @@ community."
       },
       "sources": {
         "capra": {
-          "url":"http://localhost:8001/geoserver/wms"
+          "url":"http://localhost:8080/geoserver/wms"
         }
       },
       "map": {
