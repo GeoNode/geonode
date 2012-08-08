@@ -335,12 +335,10 @@ def setup_data():
     sh("python manage.py importlayers %s" % data_dir)
 
 
-@task
 @cmdopts([
   ('key=', 'k', 'The GPG key to sign the package'),
   ('ppa=', 'p', 'The name of the PPA where this package should be published to.'),
 ])
-
 def deb(options):
     """
     Creates debian packages.
@@ -352,8 +350,26 @@ def deb(options):
     """
     key = options.get('key', None)
     ppa = options.get('ppa', None)
+    branch = options.get('branch', 'dev')
 
-    sh('sudo apt-get -y install debhelper devscripts')
+    import geonode
+    from geonode.version import get_git_changeset
+    raw_version = geonode.__version__
+    version = geonode.get_version()
+    timestamp = get_git_changeset()
+
+    simple_version = '%s.%s.%s+%s%s' % raw_version
+
+    info('Creating package for GeoNode version %s' % version)
+
+    # Get rid of any uncommitted changes to debian/changelog
+    info('Getting rid of any uncommitted changes in debian/changelog')
+    sh('git checkout debian/changelog')
+    sh('git-dch --git-author --new-version=%s --snapshot --id-length=6 --debian-branch=%s' % (simple_version, branch))
+    sh('git commit -m "Creating package and tag for version %s"' % version)
+
+    sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
+
     if key is None:
         sh('debuild -uc -us -A')
     else:
