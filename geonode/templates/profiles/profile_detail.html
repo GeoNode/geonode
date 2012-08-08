@@ -1,4 +1,4 @@
-{% extends "idios/base.html" %}
+{% extends "profiles/base.html" %}
 
 {% load i18n avatar_tags %}
 
@@ -38,7 +38,7 @@
   </div>
 
   <div class="modal fade" id="modal_delete" style="display:none">
-    <form id="delete_form" accept-charset="UTF-8" action="" data-remote="true" method="post" class="modal-form">
+    <form id="delete_form" accept-charset="UTF-8" action="{% url data_batch_del %}" data-remote="true" method="post" class="modal-form">
       <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>
         <h3>{% trans "Delete Layers" %}</h3>
@@ -65,13 +65,13 @@
     <ul class="nav nav-list">
       <li class="nav-header">{% trans "Actions" %}</li>
       {% if user == profile.user %}
-        <li><a href="{% url profile_edit %}">{% trans "Edit profile information" %}</a></li>
+        <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
         <li><a href="{% url auth_password_change %}">{% trans "Change password" %}</a></li>
       {% endif %}
-      <li><a href="{% url layer_upload %}">{% trans "Upload new data" %}</a></li>
-      <li><a href="{% url new_map %}">{% trans "Create a new map" %}</a></li>
+      <li><a href="{% url data_upload %}">{% trans "Upload new data" %}</a></li>
+      <li><a href="{% url maps_new %}">{% trans "Create a new map" %}</a></li>
       <li class="nav-header">{% trans "Settings" %}</li>
-      <li><a href="{% url profile_edit %}">{% trans "Edit profile information" %}</a></li>
+      <li><a href="{% url profiles_edit_profile %}">{% trans "Edit profile information" %}</a></li>
     </ul>
   {% endif %}
 {% endblock %}
