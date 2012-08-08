@@ -94,6 +94,7 @@ def create_hood(request):
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'DB_DATASTORE' : settings.DB_DATASTORE,
         'maptitle': mapTemplate.title,
         }))
 
