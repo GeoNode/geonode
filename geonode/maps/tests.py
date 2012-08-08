@@ -354,7 +354,7 @@ community."
         c.login(username=self.user, password=self.passwd)
         response = c.get(url)
         self.assertEquals(response.status_code, 200)
-        # Config equals to the map whose id is given
+        # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
         config_map = map_obj.viewer_json()
         response_config_dict = json.loads(response.context['config'])
@@ -402,7 +402,7 @@ community."
         response = c.get(url)
         self.assertEquals(response.status_code, 200)
         
-        # Config equals to the map whose id is given
+        # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
         config_map = map_obj.viewer_json()
         response_config_dict = json.loads(response.context['config'])
@@ -419,7 +419,17 @@ community."
     def test_new_map_config(self):
         """Test that new map config can be properly assigned 
         """
+        # first create a map
+        c = Client()
 
+        # Test successful new map creation
+        c.login(username=self.user, password=self.passwd)
+        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id = int(response['Location'].split('/')[-1])
+        c.logout()
+
+        
     """
     def test_map_download(self):
     def test_map_download_check(self):
