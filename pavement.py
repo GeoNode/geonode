@@ -173,7 +173,8 @@ def package(options):
     # Create a new requirements file, only to be able to install the GeoNode
     # python package along with all the other dependencies.
     req_file = path('package_requirements.txt')
-    req_file.write_text('-r requirements.txt')
+    req_file.write_text('\n')
+    req_file.write_text('-r requirements.txt\n')
 
     #FIXME(Ariel): Uncomment once setup.py is fixed to include all the important things ...
 
@@ -184,7 +185,7 @@ def package(options):
     # geonode_line = path('dist') / 'GeoNode-%s.zip' % version
 
     # ... in the meantime, just install it as editable
-    geonode_line = '-e .'
+    geonode_line = '-e .\n'
     
     req_file.write_text(geonode_line)
     
