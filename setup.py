@@ -22,7 +22,7 @@ from setuptools import setup
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
       description="Application for serving and sharing geospatial data",
-      long_description=open('README.rst').read(),
+      long_description=open('README').read(),
       classifiers=[
         "Development Status :: 1 - Planning"],
       keywords='',
