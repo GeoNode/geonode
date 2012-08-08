@@ -71,10 +71,18 @@ def grab(src, dest):
     urlretrieve(str(src), str(dest))
 
 @task
+@cmdopts([
+  ('fast', 'f', 'Fast. Skip some operations for speed.'),
+])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
+    fast = options.get('fast', False)
+
     with pushd('geoserver-geonode-ext'):
-        sh("mvn clean install jetty:stop")
+        if fast:
+            sh('mvn install -DskipTests')
+        else:
+            sh("mvn clean install jetty:stop")
 
 @task
 def setup_geonetwork(options):
