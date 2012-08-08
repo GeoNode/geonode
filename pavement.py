@@ -287,12 +287,11 @@ def test(options):
 
 
 @task
-@needs(['reset',])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
-
+    reset()
     # Start GeoServer
     call_task('start_geoserver') 
     info("GeoNode is now available, running the tests now.")
@@ -309,12 +308,12 @@ def test_integration(options):
         stop_django()
         stop_geoserver()
 
+    reset()
     if not success:
         sys.exit(1)
 
 
 @task
-@needs(['stop'])
 def reset():
     """
     Reset a development environment (Database, GeoServer & GeoNetwork)
