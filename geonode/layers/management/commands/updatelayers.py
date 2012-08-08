@@ -19,8 +19,8 @@
 
 from django.core.management.base import BaseCommand
 from optparse import make_option
-from geonode.maps.models import Layer
-from geonode.maps.utils import get_valid_user
+from geonode.layers.models import Layer
+from geonode.people.utils import get_valid_user
 import traceback
 import datetime
 
