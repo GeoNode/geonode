@@ -45,7 +45,7 @@ setup(name='GeoNode',
       install_requires=[
         # native dependencies
         "PIL",
-        "lxml==2.3",
+        "lxml",
         # python dependencies
         "gsconfig==0.6",
         "OWSLib==0.5.1",
