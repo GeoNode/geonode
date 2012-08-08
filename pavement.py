@@ -175,12 +175,19 @@ def package(options):
     req_file = path('package_requirements.txt')
     req_file.write_text('-r requirements.txt')
 
-    # Create a distribution in zip format for the geonode python package.
-    sh('python setup.py sdist --format=zip')
-    # Write path to released zip file to requirements.txt, by default
-    # the command below puts it in the 'dist' folder
-    req_file.write_text(path('dist') / 'GeoNode-%s.zip' % version)
+    #FIXME(Ariel): Uncomment once setup.py is fixed to include all the important things ...
 
+    ## Create a distribution in zip format for the geonode python package.
+    #sh('python setup.py sdist --format=zip')
+    ## Write path to released zip file to requirements.txt, by default
+    ## the command below puts it in the 'dist' folder
+    # geonode_line = path('dist') / 'GeoNode-%s.zip' % version
+
+    # ... in the meantime, just install it as editable
+    geonode_line = '-e .'
+    
+    req_file.write_text(geonode_line)
+    
     # Bundle all the dependencies in a zip-lib package called a pybundle.
     bundle = path(out_pkg)/ 'geonode-webapp.pybundle'
     sh('pip bundle -r %s %s' % (req_file, bundle))
