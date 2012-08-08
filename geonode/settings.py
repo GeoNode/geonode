@@ -316,8 +316,8 @@ CATALOGUE = {
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         #'url': 'http://localhost/pycsw/trunk/csw.py',
-        'URL': 'http://localhost:8001/geonetwork/srv/en/csw',
-        #'url': 'http://localhost:8001/deegree-csw-demo-3.0.4/services',
+        'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+        #'url': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
     
         # login credentials (for GeoNetwork)
         'USER': 'admin',
