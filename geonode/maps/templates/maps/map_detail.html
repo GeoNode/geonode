@@ -14,13 +14,11 @@
   <script type="text/javascript">
   var app;
   Ext.onReady(function() {
-  {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
   {% autoescape off %}
       var config = Ext.apply({
           useToolbar: false,
           proxy: "/proxy/?url=",
           rest: "/maps/",
-
           // tell the map viewer where and how to be rendered
           portalConfig: {
               height: 300,
@@ -28,25 +26,6 @@
           }
       }, {{ config }});
       app = new GeoExplorer.Viewer(config);
-  {% if can_change_permissions %}
-      new GeoNode.PermissionsEditor({
-          levels: {
-              'admin': 'map_admin',
-              'readwrite': 'map_readwrite',
-              'readonly': 'map_readonly',
-              '_none': '_none'
-          },
-          renderTo: "permissions_form",
-          userLookup: "{% url auth_ajax_lookup %}",
-          permissions: {{ permissions_json }},
-          listeners: {
-              updated: function(perms) {
-                  var submitTo = "{% url map_ajax_permissions map.id %}";
-                  Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
-              }
-          }
-      });
-  {% endif %}
   {% endautoescape %}
   });
   </script>
@@ -80,17 +59,18 @@
     <div class="comments_container">
         {% comments map as comments %}
         {% for comment in comments %}
-            <div class="comment">
-                <p class="comment_author">{{ comment.author.get_full_name|default:comment.author|capfirst }}</p>
-                <div class="comment_content">
-                    {{ comment.comment|escape|urlize|safe }} &mdash; 
-                    <span class="comment_ago">
-                    {% blocktrans with comment.submit_date|timesince as age %}
-                    {{ age }} ago
-                    {% endblocktrans %}
-                    </span>
-                </div>
-            </div>
+        <div class="comment">
+            <div class="comment_content">
+                {{ comment.comment|escape|urlize|safe }}
+           </div>
+            <p class="comment_author"><a href="comment.author.get_absolute_url">{{ comment.author.get_full_name|default:comment.author|capfirst }}</a>
+                commented <span class="comment_ago">
+                {% blocktrans with comment.submit_date|timesince as age %}
+                {{ age }} ago
+                {% endblocktrans %}
+                </span>
+            </p>
+        </div>
         {% endfor %}
 
         {% if request.user.is_authenticated %}
@@ -116,6 +96,8 @@
 		{% user_rating request.user map "map" as user_map_rating %}
 		<div id="user_rating" class="category-map"></div>
 	{% endif %}
+{% url maps_ajax_perm map.id as form_action %}
+{% include "_permissions_form.html" %}
 {% endblock %}
 
 {% block sidebar %}
@@ -145,9 +127,17 @@
     {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
     <li class="nav-header">{% trans "Permissions" %}</li>
-    <li><div id="permissions_form"></div></li>
+    <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit permissions" %}</a></li>
     {% endif %}
   </ul>
+{% endblock %}
+
+{% block extra_script %}
+  <script>
+    $(function() {
+      $("#permission_form").submit(map_perms_submit);
+    });
+  </script>
 {% endblock %}
 
 {% block end_body_js %}

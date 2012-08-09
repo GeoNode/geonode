@@ -1,4 +1,4 @@
-{% extends "layers/layer_base.html" %}
+{% extends "layers/base.html" %}
 {% load geonode_auth %}
 {% load i18n %}
 {% load dialogos_tags %}
@@ -23,8 +23,7 @@
             var config = {
                 tools: [{
                     ptype: "gxp_wmsgetfeatureinfo",
-                    // uncomment the line below if you want feature info in a grid
-                    //format: "grid",
+                    format: "grid",
                     actionTarget: "main.tbar",
                     outputConfig: {width: 400, height: 200, panIn: false}
                 }],
@@ -249,6 +248,9 @@
 		{% user_rating request.user layer "layer" as user_layer_rating %}
 		<div id="user_rating" class="category-layer"></div>
 	{% endif %}
+
+	{% url data_ajax_perm layer.typename as form_action %}
+	{% include "_permissions_form.html" %}
 {% endblock %}
 
 {% block sidebar %}
@@ -362,6 +364,11 @@
 {% endblock %}
 
 {% block extra_script %}
+  <script>
+    $(function() {
+      $("#permission_form").submit(layer_perms_submit);
+    });
+  </script>
 
 	{% if request.user.is_authenticated %}
 		{% user_rating_js request.user layer "layer" %}
