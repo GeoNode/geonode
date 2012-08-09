@@ -275,6 +275,7 @@ community."
         c.login(username=self.user, password=self.passwd)
         response = c.get(url)
         self.assertEquals(response.status_code, 200)
+        print response
     
         # Now test with a valid user using POST method
         c.login(username=self.user, password=self.passwd)
@@ -371,7 +372,6 @@ community."
         self.assertEquals(config_default['about']['title'],response_config_dict['about']['title'])
         
 
-
     def test_map_view(self):
         """Test that map view can be properly rendered
         """
@@ -410,7 +410,6 @@ community."
         self.assertEquals(config_map['about']['title'],response_config_dict['about']['title'])
 
 
-   
     def test_map_view_js(self):
         """Test that map view js can be properly rendered
         """
@@ -429,11 +428,113 @@ community."
         map_id = int(response['Location'].split('/')[-1])
         c.logout()
 
+        url = '/maps/new/data'
+
+        #map_obj = Map.objects.get(id=map_id)
+        #layer = map_obj.layer_set
+        #(map_obj.layer_set.all().count()
         
+        # Test GET method with COPY
+        response = c.get(url,{'copy': map_id})
+        self.assertEquals(response.status_code,200)
+        map_obj = Map.objects.get(id=map_id)
+        config_map = map_obj.viewer_json()
+        response_config_dict = json.loads(response.content)
+        self.assertEquals(config_map['map']['layers'],response_config_dict['map']['layers'])          
+
+        # Test GET method no COPY and no layer in params
+        response = c.get(url)
+        self.assertEquals(response.status_code,200)
+        config_default = default_map_config()[0] 
+        response_config_dict = json.loads(response.content)
+        self.assertEquals(config_default['about']['abstract'],response_config_dict['about']['abstract']) 
+        self.assertEquals(config_default['about']['title'],response_config_dict['about']['title'])
+
+        # Test GET method no COPY but with layer in params
+        response = c.get(url,{'layer':'layer'})
+        self.assertEquals(response.status_code,200)        
+        ##################################layer, last part to work on################################
+
+        # Test POST method and no layer in params
+        response = c.post(url)
+        self.assertEquals(response.status_code,200)
+        config_default = default_map_config()[0]        
+        response_config_dict = json.loads(response.content)
+        self.assertEquals(config_default['about']['abstract'],response_config_dict['about']['abstract']) 
+        self.assertEquals(config_default['about']['title'],response_config_dict['about']['title'])
+
+        # Test POST method but with layer in params
+        response = c.post(url,{'layer':'layer'})
+        self.assertEquals(response.status_code,200)
+        ##################################layer, last part to work on################################
+
+        # Test methods other than GET or POST and no layer in params
+        response = c.put(url)
+        self.assertEquals(response.status_code,405)        
+
     """
     def test_map_download(self):
     def test_map_download_check(self):
+    """
+
     def test_maps_search_page(self):
+        """Test maps search page can be properly rendered 
+        """
+        c = Client()
+
+        url = '/maps/search/?'
+
+        # Test GET method
+        response = c.get(url,{'keyword':'keyword'})
+        self.assertEquals(response.status_code,200)
+        response_dict = json.loads(response.context['init_search'])  
+        self.assertEquals(response_dict['keyword'],'keyword') 
+        self.assertEquals(response.context['site'],'http://localhost:8000/')
+
+        # Test POST method
+        response = c.post(url)
+        self.assertEquals(response.status_code,200)
+
+        # Test methods other than GET or POST
+        response = c.put(url)
+        self.assertEquals(response.status_code,405)
+        
+    
     def test_maps_search(self):
-    def test_maps__search(self):
+        """Test maps search can function properly 
+        """
+        # first create two maps
+        c = Client()
+
+        # Test successful new map creation
+        c.login(username=self.user, password=self.passwd)
+        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id = int(response['Location'].split('/')[-1])
+        response = c.post("/maps/",data=self.viewer_config_alternative,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id_2 = int(response['Location'].split('/')[-1])
+        c.logout()
+
+        url = '/maps/search/api/?'
+
+        # Test GET method
+        response = c.get(url, {'q': '', 'start': 1, 'limit': '', 'sort': '', 'dir': ''}, content_type="text/json")
+        self.assertEquals(response.status_code,200) 
+        print response
+        response_dict = json.loads(response.content)     
+        self.assertEquals(response_dict['success'], True) 
+
+        # Test POST method
+        response = c.post(url, {'q': '', 'start': 1, 'limit': '', 'sort': '', 'dir': ''}, content_type="text/json")
+        self.assertEquals(response.status_code,200) 
+        response_dict = json.loads(response.content)     
+        self.assertEquals(response_dict['success'], True)
+
+        # Test methods other than GET or POST
+        response = c.put(url)
+        self.assertEquals(response.status_code,405)
+
+    """
+    def test__maps_search(self):
     """
