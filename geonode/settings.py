@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2012 OpenPlans
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 # Django settings for the GeoNode project.
 import os
-
-# Do not delete the development database when running tests.
-os.environ['REUSE_DB'] = "1"
 
 #
 # General Django development settings
@@ -17,12 +33,15 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 # present pretty error pages.
 DEBUG = TEMPLATE_DEBUG = True
 
+# This is needed for integration tests, they require
+# geonode to be listening for GeoServer auth requests.
+os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
+
 # Defines settings for development
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
-        'TEST_NAME': os.path.join(PROJECT_ROOT, 'development.db'),
     }
 }
 
@@ -109,7 +128,6 @@ INSTALLED_APPS = (
 
     # Third party apps
     'django_forms_bootstrap',
-    'django_extensions',
     'registration',
     'profiles',
     'avatar',
@@ -126,31 +144,38 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
-    'geonode.catalogue',
+#    'geonode.catalogue',
 )
-
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "null": {
-            "level": "DEBUG",
-            "class": "django.utils.log.NullHandler",
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-        },
-        "mail_admins": {
-            "level": "ERROR",
-            "class": "django.utils.log.AdminEmailHandler",
-        },
+        'simple': {
+            'format': '%(message)s',        },
     },
-    "loggers": {
-        "django.request": {
-            "handlers": ["mail_admins"],
-            "level": "ERROR",
-            "propagate": True,
+    'handlers': {
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers':['null'],
+            'propagate': True,
+            'level':'INFO',
         },
         "geonode": {
             "handlers": ["console"],
@@ -160,9 +185,12 @@ LOGGING = {
             "handlers": ["console"],
             "level": "ERROR",
         },
+        "owslib": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },    
     },
 }
-
 
 #
 # Customizations to built in Django settings required by GeoNode
@@ -258,7 +286,7 @@ NOSE_ARGS = [
       '--cover-tests',
       '--detailed-errors',
       '--with-xunit',
-      '--stop',
+#      '--stop',
       ]
 
 #
@@ -272,7 +300,7 @@ SITEURL = "http://localhost:8000/"
 # GeoServer information
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
+GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
 
 # The username and password for a user that can add and
 # edit layer details on GeoServer
@@ -290,8 +318,8 @@ CATALOGUE = {
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         #'url': 'http://localhost/pycsw/trunk/csw.py',
-        'URL': 'http://localhost:8001/geonetwork/srv/en/csw',
-        #'url': 'http://localhost:8001/deegree-csw-demo-3.0.4/services',
+        'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+        #'url': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
     
         # login credentials (for GeoNetwork)
         'USER': 'admin',
@@ -312,13 +340,13 @@ DEFAULT_MAP_CENTER = (0, 0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 0
 
-DEFAULT_LAYER_SOURCE = {
-    "ptype": "gxp_wmscsource",
-    "url": "/geoserver/wms",
-    "restUrl": "/gs/rest"
-}
-
 MAP_BASELAYERS = [{
+    "source": {
+        "ptype": "gxp_wmscsource",
+        "url": GEOSERVER_BASE_URL + "wms",
+        "restUrl": "/gs/rest"
+     }
+  },{
     "source": {"ptype": "gx_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
