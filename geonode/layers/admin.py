@@ -46,8 +46,8 @@ class LayerAdmin(admin.ModelAdmin):
 class ContactRoleAdmin(admin.ModelAdmin):
     model = ContactRole
     list_display_links = ('id',)
-    list_display = ('id','contact', 'resource', 'role')
-    list_editable = ('contact', 'resource', 'role')
+    list_display = ('id','contact', 'layer', 'role')
+    list_editable = ('contact', 'layer', 'role')
 
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
