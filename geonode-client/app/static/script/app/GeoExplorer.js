@@ -177,6 +177,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 // use django's /geoserver endpoint when talking to the local
                 // GeoServer's RESTconfig API
                 var url = options.url.replace(this.urlPortRegEx, "$1/");
+                /*
                 if (this.localGeoServerBaseUrl) {
                     if (url.indexOf(this.localGeoServerBaseUrl) == 0) {
                         // replace local GeoServer url with /geoserver/
@@ -194,6 +195,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         return;
                     }
                 }
+                */
                 // use the proxy for all non-local requests
                 if(this.proxy && options.url.indexOf(this.proxy) !== 0 &&
                         options.url.indexOf(window.location.protocol) === 0) {
@@ -416,6 +418,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             actionTarget: ["treetbar", "treecontent.contextMenu"]
         }, {
             ptype: "gxp_styler",
+            sameOriginStyling: false,
             rasterStyling: true,
             actionTarget: ["treetbar", "treecontent.contextMenu"]
         }, {
@@ -482,7 +485,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             for (var id in this.layerSources) {
                 source = this.layerSources[id];
                 if (source.store && source instanceof gxp.plugins.WMSSource &&
-                                source.url.indexOf("/geoserver/wms" === 0)) {
+                                source.url.indexOf("/geoserver/wms") === 0) {
                     startSourceId = id;
                 }
             }
@@ -493,6 +496,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 if (tool.ptype === "gxp_addlayers") {
                     addLayers = tool;
                     addLayers.startSourceId = startSourceId;
+                    addLayers.catalogSourceKey = startSourceId;
                 }
             }
             if (!this.fromLayer && !this.mapID) {

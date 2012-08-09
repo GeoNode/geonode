@@ -6,12 +6,11 @@
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-    {% include "geonode/ext_header.html" %}
     {{ block.super }}
 {% endblock %}
 
 {% block main %}
-  <form action="{{ map.get_absolute_url }}?describe" method="POST">
+  <form action="{{ map.get_absolute_url }}/metadata" method="POST">
     <legend>
         {% blocktrans with map.title as map_title %}
             Updating metadata of {{ map_title }}

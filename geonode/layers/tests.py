@@ -1,10 +1,27 @@
 # -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2012 OpenPlans
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import os
 import base64
 import shutil
 import tempfile
-
-from mock import Mock, patch
 
 from django.conf import settings
 from django.test import TestCase
@@ -33,9 +50,6 @@ from geoserver.resource import FeatureType, Coverage
 
 from django.db.models import signals
 
-fake_delete = Mock()
-geonode.catalogue.models.catalogue_pre_delete = fake_delete
-geonode.layers.models.geoserver_pre_delete = fake_delete
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
@@ -306,18 +320,6 @@ class LayersTest(TestCase):
         response = c.get('/data/search/detail', {'uuid':layer.uuid})
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_search_template(self):
-
-        layer = Layer.objects.all()[0]
-        tpl = get_template("catalogue/transaction_insert.xml")
-        ctx = Context({
-            'layer': layer,
-        })
-        md_doc = tpl.render(ctx)
-        layer_path = layer.get_absolute_url()
-        self.assert_(layer_path in md_doc, "%s not found in " %  layer_path + md_doc)
-
-
     def test_describe_data(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(2, User.objects.all().count())
@@ -341,7 +343,7 @@ class LayersTest(TestCase):
         """Test layer remove functionality
         """
         layer = Layer.objects.all()[0]       
-        url = '%sdata/%s/remove' % (settings.SITEURL, layer.typename)
+        url = '/data/%s/remove' % layer.typename
 
         c = Client()
     

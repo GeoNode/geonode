@@ -48,3 +48,14 @@ Changing the entire site media
 ==============================
 
 All the files in :file:`/var/lib/geonode/src/GeoNodePy/geonode/media/theme` can be overriden using this method, including :file:`site.css` which contains most of the color schemes for the entire site. Once you copy it, the file should live in :file:`/etc/geonode/media/theme/site.css`.
+
+
+Adding external WMS servers by default to the map composer
+==========================================================
+
+The easiest way to do this is to copy the ``MAP_BASELAYERS`` setting from :file:`/var/lib/geonode/src/GeoNodePy/geonode/settings.py` to :file:`/etc/geonode/local_settings.py` and then adding a line with the wms as a source, without specifying any layer::
+
+  },{
+    "source": {"url": "http://my-server/wms?"},
+
+The source's title in the composer would depend on what is configured in the external WMS server.
