@@ -1,0 +1,29 @@
+#! /bin/bash 
+NEWIP=$1
+
+#FIXME(Ariel): Make these variables replaceable from config.sh
+GEONODE_ETC=/etc/geonode
+GEOSERVER_DATA_DIR=/var/lib/geoserver/geonode-data
+APACHE_SERVICE="invoke-rc.d apache2"
+
+# Replace SITEURL in $GEONODE_ETC/local_settings.py
+echo "Replacing SITEURL in $GEONODE_ETC/local_settings.py"
+perl -pi -e 's/SITEURL =(.*)/SITEURL = "replaceiphere"/g' $GEONODE_ETC/local_settings.py
+sed -i "s#replaceiphere#http://$NEWIP/#g" $GEONODE_ETC/local_settings.py
+
+echo "Adding entry for local ip in $GEOSERVER_DATA_DIR/printing/config.yaml"
+printing_config=$GEOSERVER_DATA_DIR/printing/config.yaml
+
+if grep -q "$NEWIP" "$printing_config"
+then
+    echo '  IP was already added to the printing whitelist.'
+else
+    sed -i "s#hosts:#hosts:\n  - !ipMatch\n    ip: $NEWIP#g" $printing_config
+fi
+
+
+# Restart apache server
+$APACHE_SERVICE restart
+
+# Run updatelayers
+geonode updatelayers

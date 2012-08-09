@@ -233,7 +233,7 @@
                  <gco:Decimal>{{layer.bbox_x1}}</gco:Decimal>
                </gmd:eastBoundLongitude>
                <gmd:southBoundLatitude>
-                 <gco:Decimal>{{layer.bbox_y2}}</gco:Decimal>
+                 <gco:Decimal>{{layer.bbox_y0}}</gco:Decimal>
                </gmd:southBoundLatitude>
                <gmd:northBoundLatitude>
                  <gco:Decimal>{{layer.bbox_y1}}</gco:Decimal>

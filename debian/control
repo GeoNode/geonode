@@ -1,0 +1,20 @@
+Source: geonode
+Section: science
+Priority: extra
+Maintainer: Aaron Greengrass <aaron@thatserver.ca>
+Build-Depends: debhelper (>= 7.0.50~), unzip
+Standards-Version: 3.8.4
+Homepage: http://geonode.org/
+Vcs-Browser:  https://github.com/GeoNode/geonode
+Vcs-git: git://github.com/GeoNode/geonode.git
+
+Package: geonode
+Architecture: all
+Depends: debconf, python, python-support, python-dev, python-virtualenv, oracle-java7-installer | openjdk-7-jre | sun-java6-jre | openjdk-6-jre, tomcat6, gcc, patch, zip,  python-imaging, python-reportlab, gdal-bin, libgeos-dev, python-urlgrabber, python-pastescript, gettext, postgresql-contrib, postgresql-9.1-postgis | postgresql-8.4-postgis, libpq-dev, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi, python-lxml, ${misc:Depends}
+#,${shlibs:Depends}
+Description: Allows the creation, sharing, and collaborative use of geospatial data. 
+ At its core, the GeoNode has a stack based on GeoServer, 
+ Django, and GeoExt that provides a platform for sophisticated 
+ web browser spatial visualization and analysis. Atop this stack, 
+ the project has built a map composer and viewer, tools for
+ analysis, and reporting tools.

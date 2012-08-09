@@ -1,0 +1,3 @@
+#!/bin/bash
+
+. /usr/share/debconf/confmodule
