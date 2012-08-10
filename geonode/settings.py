@@ -308,16 +308,16 @@ GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 CATALOGUE = {
     'default': {
         # The underlying CSW implementation
-        'ENGINE': 'geonode.catalogue.backends.geonetwork',
+        'ENGINE': 'geonode.catalogue.backends.pycsw',
 
         # enabled formats
         #'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
         'FORMATS': ['TC211'],
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        #'url': 'http://localhost/pycsw/trunk/csw.py',
+        #'URL': 'http://localhost/pycsw/trunk/csw.py',
         'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
-        #'url': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+        #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
     
         # login credentials (for GeoNetwork)
         'USER': 'admin',
