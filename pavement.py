@@ -125,10 +125,7 @@ def setup_client(options):
 ])
 def setup(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    #FIXME(Ariel): Delete this once the last requirement is available in pypi
     sh('pip install -r requirements.txt')
-    # Needed to re-install in dev mode  after a git clean, better safe than sorry.
-    sh('pip install -e .')
 
     info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""") 
 
@@ -158,6 +155,11 @@ def package(options):
 
     # Create the output directory.
     out_pkg = path(pkgname)
+    out_pkg_tar = path("%s.tar.gz" % out_pkg)
+
+    if out_pkg_tar.exists():
+        info('There is already a package for version %s' % version)
+        return
 
     # Clean anything that is in the outout package tree.
     out_pkg.rmtree()
@@ -170,12 +172,6 @@ def package(options):
 
     # Package (Python, Django) web application and dependencies.
 
-    # Create a new requirements file, only to be able to install the GeoNode
-    # python package along with all the other dependencies.
-    req_file = path('package_requirements.txt')
-    req_file.write_text('\n')
-    req_file.write_text('-r requirements.txt\n')
-
     #FIXME(Ariel): Uncomment once setup.py is fixed to include all the important things ...
 
     ## Create a distribution in zip format for the geonode python package.
@@ -184,20 +180,12 @@ def package(options):
     ## the command below puts it in the 'dist' folder
     # geonode_line = path('dist') / 'GeoNode-%s.zip' % version
 
-    # ... in the meantime, just install it as editable
-    geonode_line = '-e .\n'
-    
-    req_file.write_text(geonode_line)
-    
     # Bundle all the dependencies in a zip-lib package called a pybundle.
     bundle = path(out_pkg)/ 'geonode-webapp.pybundle'
-    sh('pip bundle -r %s %s' % (req_file, bundle))
-
-    # Remove the requirements file used to create the pybundle.
-    req_file.remove()
+    sh('pip bundle -r requirements.txt %s' % (bundle))
 
     # Create a tar file with all the information in the output package folder.
-    tar = tarfile.open("%s.tar.gz" % out_pkg, "w:gz")
+    tar = tarfile.open(out_pkg_tar, "w:gz")
     for file in out_pkg.walkfiles():
         tar.add(file)
 
@@ -368,8 +356,7 @@ def deb(options):
     # Get rid of any uncommitted changes to debian/changelog
     info('Getting rid of any uncommitted changes in debian/changelog')
     sh('git checkout debian/changelog')
-    sh('git-dch --git-author --new-version=%s --snapshot --id-length=6 --debian-branch=%s' % (simple_version, branch))
-    sh('git commit -m "Creating package and tag for version %s"' % version)
+    sh('git-dch --git-author --new-version=%s --id-length=6 --debian-branch=%s' % (simple_version, branch))
 
     sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
