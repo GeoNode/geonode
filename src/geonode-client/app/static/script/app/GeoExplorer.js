@@ -402,7 +402,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     reorderNodes : function() {
         var mpl = this.mapPanel.layers;
         var x = 0;
-        var layerCount = this.mapPanel.layers.getCount() - 1;
+        var layerCount = mpl.getCount() - 1;
         var nodeToSelect = null;
         this.treeRoot.cascade(function(node) {
             if (node.isLeaf() && node.layer) {
@@ -411,7 +411,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 record = store.getAt(store.findBy(function(r) {
                     return r.getLayer() === layer;
                 }));
-                if (record.get("group") !== "background") {
+                if (record.get("group") !== "background" &&
+                    record.getLayer().displayInLayerSwitcher == true) {
                     mpl.remove(record);
                     mpl.insert(layerCount - x, [record]);
                 }
@@ -679,6 +680,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         }
 
+        if (!layerRecord)
+            toggleButtons(false);
+        else {
             //Proceed if this is a local queryable WMS layer
             var layer = layerRecord.getLayer();
             if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
@@ -701,7 +705,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             } else {
                 toggleButtons(false);
             }
-
+        }
     },
 
 
@@ -1637,8 +1641,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var oldInitComponent = gxp.plugins.FeatureEditorGrid.prototype.initComponent;
         gxp.plugins.FeatureEditorGrid.prototype.initComponent = function(){
             oldInitComponent.apply(this);
-            if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined) {
-                this.customEditors["Description"].addListener("startedit",
+            var customEditField = null;
+            if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined)
+                customEditField = this.customEditors["Description"];
+            else if (this.customEditors["Descriptio"] != undefined && this.customEditors["Descriptio"].field.maxLength == undefined)
+                customEditField = this.customEditors["Descriptio"];
+            if (customEditField)
+            {
+                customEditField.addListener("startedit",
                     function(el, value) {
                         var htmlEditWindow = new Ext.Window({
                                 title: 'HTML Editor',
@@ -1847,7 +1857,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         },
                         scope: this
                     });
-                }
+                },
+                scope: this
             },
             // hack to get the busy mask so we can close it in case of a
             // communication failure
@@ -1989,9 +2000,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             });
 
-            var queryTool = Ext.getCmp("worldmap_query_tool");
-                if (queryTool)
-                    queryTool.toggle(true);
+
+            var queryTool = Ext.getCmp("worldmap_query_tool")
+            if (queryTool)
+                queryTool.toggle(true);
+
 
             function setScale() {
                 var scale = zoomStore.queryBy(function(record) {
