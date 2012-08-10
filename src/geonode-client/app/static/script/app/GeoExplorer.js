@@ -1648,8 +1648,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             var customEditField = null;
             if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined)
                 customEditField = this.customEditors["Description"];
-            else if (this.customEditors["Descriptio"] != undefined && this.customEditors["Descriptio"].field.maxLength == undefined)
-                customEditField = this.customEditors["Descriptio"];
+            else if (this.customEditors["descriptio"] != undefined && this.customEditors["descriptio"].field.maxLength == undefined)
+                customEditField = this.customEditors["descriptio"];
             if (customEditField)
             {
                 customEditField.addListener("startedit",
