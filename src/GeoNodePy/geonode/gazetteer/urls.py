@@ -22,8 +22,8 @@ urlpatterns = patterns('',
         '(/Project/(?P<project>[A-Za-z0-9_-]+))?' +
         '(/Map/(?P<map>[\d]+))?' +
         '(/Layer/(?P<layer>[A-Za-z0-9_-]+))?' +
-        '(/StartDate/(?P<start_date>[\d\s\/\-\:]+))?' +
-        '(/EndDate/(?P<end_date>[\d\s\/\-\:]+))?' +
+        '(/StartDate/(?P<start_date>[\d\s\/\-\:]+(\sBC|\sAD)?))?' +
+        '(/EndDate/(?P<end_date>[\d\s\/\-\:]+(\sBC|\sAD)?))?' +
         '$', placename_resource),
 
     url(r'^(?P<place_name>[^/]+)' +

@@ -263,7 +263,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'django.contrib.sitemaps',
     'staticfiles',
     'django_extensions',
     'registration',
@@ -274,7 +273,6 @@ INSTALLED_APPS = (
     'geonode.maps',
     'geonode.proxy',
     'geonode',
-    'geonode.registration',
     'geonode.profiles',
     'geonode.gazetteer',
     'geonode.queue',
@@ -365,8 +363,8 @@ DEFAULT_WORKSPACE = 'geonode'
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
 
-USE_GAZETTEER = False
-USE_QUEUE = True
+USE_GAZETTEER = True
+USE_QUEUE = False
 CELERY_IMPORTS = ("geonode.queue", )
 BROKER_URL = "django://"
 import djcelery

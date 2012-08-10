@@ -8,7 +8,9 @@ from geonode.gazetteer.models import GazetteerEntry
 from geopy import geocoders
 from django.conf import settings
 import psycopg2
+from django.db.models import Q
 from geonode.maps.models import Layer, LayerAttribute, MapLayer, Map
+from datautil.date import DateutilDateParser
 
 GAZETTEER_TABLE = 'gazetteer_gazetteerentry'
 
@@ -86,6 +88,9 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
         project: only return matches within the specified project
     """
 
+    parser = DateutilDateParser()
+
+
     layers = []
     if map:
         mapObject = get_object_or_404(Map, pk=map)
@@ -100,71 +105,88 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
     elif layer:
         layers = [layer]
 
-    matchingEntries = GazetteerEntry.objects.filter(place_name__istartswith=place_name)
+## The following retrieves results using the GazetteerEntry model.
+## Unfortunately, python datetime can't handle dates < 1 AD (WTF!?)so
+## going back to using direct SQL queries for now
 
-    if layers:
-        matchingEntries.filter(layer_name__in=layers)
-
-    if start_date: #Select records whose end_date is >= the specified start date (or no end date)
-        matchingEntries.filter(start_date__gte=start_date)
-
-    if end_date: #Select records whose start date is <= the specified end date (or no start date)
-        matchingEntries.filter(end_date__lte=start_date)
-
-    if project:
-        matchingEntries.filter(project__exact=project)
-
-    posts = []
-    for entry in matchingEntries:
-        #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
-        posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
-            'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
-            'gazetteer_id': entry.id})
-    return posts
-
-
-    return posts
+#    criteria = Q(place_name__istartswith=place_name)
+#
+#    if layers:
+#        criteria = criteria & Q(layer_name__in=layers)
+#
+#    if start_date:
+#        start_date = parser.parse(start_date)
+#        #Start_date is >= the specified start date or no start date
+#        criteria = criteria & (Q(start_date__gte=start_date) | Q(start_date__isnull=True))
+#        # AND End_date is >= the specified start date or no end date
+#        criteria = criteria & (Q(end_date__gte=start_date) | Q(end_date__isnull=True))
+#
+#    if end_date:
+#        end_date = parser.parse(end_date)
+#        #End_date is <= the specified end date or no end date
+#        criteria = criteria & (Q(end_date__lte=end_date) | Q(end_date__isnull=True))
+#        # AND start_date <= specified end date or no start date
+#        criteria = criteria & (Q(start_date__lte=end_date) | Q(start_date__isnull=True))
+#
+#    if project:
+#        criteria = criteria & Q(project__exact=project)
+#
+#    matchingEntries=GazetteerEntry.objects.filter(criteria)
+#
+#    posts = []
+#
+#    for entry in matchingEntries:
+#        #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
+#        posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
+#            'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
+#            'gazetteer_id': entry.id})
+#    return posts
+#
+#
+#    return posts
 
 
 
     #"select ts_headline(place_name, to_tsquery('" + place_name + "')), layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename, to_tsquery('" + place_name + "') query where query @@ text_search"
 
-#    sql_query = "SELECT place_name, layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename WHERE place_name ILIKE '" + place_name + "\%'"
-#    if layers:
-#        layers_str = "'" + "','".join(layers) + "'"
-#        sql_query += " AND layer_name in (" + layers_str + ")"
-#
-#    if start_date: #Select records whose end_date is >= the specified start date (or no end date)
-#        sql_query += " AND (end_date is null or end_date >= CAST('" + start_date + "' as date))"
-#
-#    if end_date: #Select records whose start date is <= the specified end date (or no start date)
-#        sql_query += " AND (start_date is null or start_date <= CAST('" + end_date + "' as date) )"
-#
-#    if project:
-#        sql_query += " AND project = '" + project + "'"
-#
-#    #print("SQL QUERY IS: %s", sql_query)
-#
-#    conn = psycopg2.connect(
-#        "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
-#    try:
-#        cur = conn.cursor()
-#        cur.execute(sql_query)
-#        results = cur.fetchall()
-#
-#        posts = []
-#        for result in results:
-#            #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
-#            posts.append({'placename': result[0], 'coordinates': (result[2], result[3]),
-#                          'source': formatSourceLink(result[1]), 'start_date': result[4], 'end_date': result[5],
-#                          'gazetteer_id': result[6]})
-#            #posts.append({"type": "Feature", "geometry": {"type": "Point", "coordinates":[result[2], result[3]]}, "properties": {'placename': result[0], 'source': result[1], 'start_date': result[4], 'end_date': result[5], 'gazetteer_id': result[6]}})
-#        return posts
-#    except Exception, e:
-#        logger.error("Error retrieving type for PostGIS table %s:%s", layer, str(e))
-#        raise
-#    finally:
-#        conn.close()
+    sql_query = "SELECT place_name, layer_name, latitude, longitude, TO_CHAR(start_date,'YYYY-MM-DD BC'), TO_CHAR(end_date,'YYYY-MM-DD BC'), id from gazetteer_gazetteerentry WHERE place_name ILIKE '" + place_name + "\%'"
+    if layers:
+        layers_str = "'" + "','".join(layers) + "'"
+        sql_query += " AND layer_name in (" + layers_str + ")"
+
+    if start_date: #Select records whose start/end_date is >= the specified start date
+        sql_query += " AND (end_date >= CAST('" + start_date + "' as date) OR "
+        sql_query += "(start_date is null or start_date >= CAST('" + start_date + "' as date)))"
+
+    if end_date: #Select records whose start date is <= the specified end date (or no start date)
+        sql_query += " AND ((end_date <= CAST('" + end_date + "' as date) OR end_date is null) AND"
+        sql_query += " (start_date <= CAST('" + end_date + "' as date) OR start_date is null)"
+
+    if project:
+        sql_query += " AND project = '" + project + "'"
+
+    #print("SQL QUERY IS: %s", sql_query)
+
+    conn = psycopg2.connect(
+        "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    try:
+        cur = conn.cursor()
+        cur.execute(sql_query)
+        results = cur.fetchall()
+
+        posts = []
+        for result in results:
+            #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
+            posts.append({'placename': result[0], 'coordinates': (result[2], result[3]),
+                          'source': formatSourceLink(result[1]), 'start_date': result[4], 'end_date': result[5],
+                          'gazetteer_id': result[6]})
+            #posts.append({"type": "Feature", "geometry": {"type": "Point", "coordinates":[result[2], result[3]]}, "properties": {'placename': result[0], 'source': result[1], 'start_date': result[4], 'end_date': result[5], 'gazetteer_id': result[6]}})
+        return posts
+    except Exception, e:
+        logger.error("Error retrieving type for PostGIS table %s:%s", layer, str(e))
+        raise
+    finally:
+        conn.close()
 
 
 def delete_from_gazetteer(layer_name):
