@@ -33,7 +33,7 @@ setup(name='GeoNode',
       packages=find_packages(),
       package_dir={'geonode': 'geonode'},
       include_package_data=True,
-      package_data = {'geonode':'geonode'}
+      package_data = {'geonode':'geonode'},
       install_requires=[
         # native dependencies
         "PIL",
