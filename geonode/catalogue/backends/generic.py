@@ -42,7 +42,6 @@ class Catalogue(CatalogueServiceWeb):
         self.url = kwargs['URL']
         self.user = kwargs['USER']
         self.password = kwargs['PASSWORD']
-        self.local = kwargs['LOCAL']
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
@@ -356,6 +355,16 @@ class Catalogue(CatalogueServiceWeb):
                     pass
         return links
 
+    def is_local_repo(self):
+        # figure out whether the repository that the catalogue
+        # is working off is local (GeoNode DB/Django model),
+        # or not (native to the Catalogue impl)
+        is_local = False
+        if self.catalogue.type == 'pycsw':
+            if settings.PYCSW['LOCAL']:
+                is_local = True
+        return is_local
+
 class CatalogueBackend(BaseCatalogueBackend):
     def __init__(self, *args, **kwargs):
        self.catalogue = Catalogue(*args, **kwargs) 
@@ -386,7 +395,7 @@ class CatalogueBackend(BaseCatalogueBackend):
             return result
 
     def remove_record(self, uuid):
-        if self.catalogue.type != 'pycsw' and not self.catalogue.local:
+        if not self.is_local_repo():
             with self.catalogue:
                catalogue_record = self.catalogue.get_by_uuid(uuid)
                if catalogue_record is None:
@@ -402,7 +411,7 @@ class CatalogueBackend(BaseCatalogueBackend):
                                         'during cleanup()')
 
     def create_record(self, item):
-        if self.catalogue.type != 'pycsw' and not self.catalogue.local:
+        if not self.is_local_repo():
             with self.catalogue:
                 record = self.catalogue.get_by_uuid(item.uuid)
                 if record is None:
