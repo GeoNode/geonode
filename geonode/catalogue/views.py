@@ -34,7 +34,7 @@ def csw_global_dispatch(request):
     # serialize settings.CSW into SafeConfigParser
     # object for interaction with pycsw
     config = SafeConfigParser()
-    for section, options in settings.CATALOGUE.iteritems():
+    for section, options in settings.PYCSW['CONFIGURATION'].iteritems():
         config.add_section(section)
         for k, v in options.iteritems():
             config.set(section, k, v)
@@ -73,7 +73,7 @@ def csw_local_dispatch(request):
     # set up configuration
     config = SafeConfigParser()
 
-    for section, options in settings.CATALOGUE.iteritems():
+    for section, options in settings.PYCSW['CONFIGURATION'].iteritems():
         config.add_section(section)
         for option, value in options.iteritems():
             config.set(section, option, value)
