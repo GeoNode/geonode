@@ -395,7 +395,7 @@ class CatalogueBackend(BaseCatalogueBackend):
             return result
 
     def remove_record(self, uuid):
-        if not self.is_local_repo():
+        if not self.catalogue.is_local_repo():
             with self.catalogue:
                catalogue_record = self.catalogue.get_by_uuid(uuid)
                if catalogue_record is None:
@@ -411,7 +411,7 @@ class CatalogueBackend(BaseCatalogueBackend):
                                         'during cleanup()')
 
     def create_record(self, item):
-        if not self.is_local_repo():
+        if not self.catalogue.is_local_repo():
             with self.catalogue:
                 record = self.catalogue.get_by_uuid(item.uuid)
                 if record is None:
