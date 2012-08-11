@@ -35,14 +35,11 @@ METADATA_FORMATS = {
     'TC211': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd'),
 }
 
-
-
 class Catalogue(CatalogueServiceWeb):
     def __init__(self, *args, **kwargs):
         self.url = kwargs['URL']
         self.user = kwargs['USER']
         self.password = kwargs['PASSWORD']
-        self.formats = kwargs['FORMATS']
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
@@ -356,8 +353,6 @@ class Catalogue(CatalogueServiceWeb):
                     pass
         return links
 
-
-
 class CatalogueBackend(BaseCatalogueBackend):
     def __init__(self, *args, **kwargs):
        self.catalogue = Catalogue(*args, **kwargs) 
@@ -370,7 +365,6 @@ class CatalogueBackend(BaseCatalogueBackend):
                 rec.links['metadata'] = self.catalogue.urls_for_uuid(uuid)
                 rec.links['download'] = self.catalogue.extract_links(rec)
         return rec
-
 
     def search_records(self, keywords, start, limit, bbox):
         with self.catalogue: 
@@ -388,27 +382,28 @@ class CatalogueBackend(BaseCatalogueBackend):
 
             return result
 
-
     def remove_record(self, uuid):
-        with self.catalogue:
-           catalogue_record = self.catalogue.get_by_uuid(uuid)
-           if catalogue_record is None:
-               return
-
-           try:
-               # this is a bit hacky, delete_layer expects an instance of the layer
-               # model but it just passes it to a Django template so a dict works
-               # too.
-               self.catalogue.delete_layer({ "uuid": uuid })
-           except:
-               logger.exception('Couldn\'t delete Catalogue record '
-                                    'during cleanup()')
+        if self.catalogue.type != 'pycsw' and not self.catalogue.local:
+            with self.catalogue:
+               catalogue_record = self.catalogue.get_by_uuid(uuid)
+               if catalogue_record is None:
+                   return
+    
+               try:
+                   # this is a bit hacky, delete_layer expects an instance of the layer
+                   # model but it just passes it to a Django template so a dict works
+                   # too.
+                   self.catalogue.delete_layer({ "uuid": uuid })
+               except:
+                   logger.exception('Couldn\'t delete Catalogue record '
+                                        'during cleanup()')
 
     def create_record(self, item):
-        with self.catalogue:
-            record = self.catalogue.get_by_uuid(item.uuid)
-            if record is None:
-                md_link = self.catalogue.create_from_layer(item)
-                item.metadata_links = [("text/xml", "TC211", md_link)]
-            else:
-                self.catalogue.update_layer(item)
+        if self.catalogue.type != 'pycsw' and not self.catalogue.local:
+            with self.catalogue:
+                record = self.catalogue.get_by_uuid(item.uuid)
+                if record is None:
+                    md_link = self.catalogue.create_from_layer(item)
+                    item.metadata_links = [("text/xml", "TC211", md_link)]
+                else:
+                    self.catalogue.update_layer(item)

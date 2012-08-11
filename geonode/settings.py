@@ -310,18 +310,17 @@ CATALOGUE = {
         # The underlying CSW implementation
         'ENGINE': 'geonode.catalogue.backends.pycsw',
 
-        # enabled formats
-        #'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
-        'FORMATS': ['TC211'],
-
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': 'http://localhost/pycsw/trunk/csw.py',
+        'URL': 'http://localhost/catalogue/csw',
         #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
     
         # login credentials (for GeoNetwork)
         'USER': 'admin',
-        'PASSWORD': 'admin'
+        'PASSWORD': 'admin',
+
+        # is pycsw tightly coupled?
+        'LOCAL': True
     }
 }
 
