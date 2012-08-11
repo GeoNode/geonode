@@ -154,17 +154,23 @@ def package(options):
     pkgname = 'GeoNode-%s-all' % version
 
     # Create the output directory.
-    out_pkg = path(pkgname)
+    out_pkg = path('package') / pkgname
     out_pkg_tar = path("%s.tar.gz" % out_pkg)
 
     if out_pkg_tar.exists():
         info('There is already a package for version %s' % version)
         return
 
-    # Clean anything that is in the outout package tree.
+    # Clean anything that is in the oupout package tree.
     out_pkg.rmtree()
+
+    support_folder = path('package/support')
+    install_file = path('package/install.sh')
+
     # And copy the default files from the package folder.
-    path('./package').copytree(out_pkg)
+    justcopy(support_folder, out_pkg)
+    justcopy(install_file, out_pkg)
+
 
     # Package Geoserver's war.
     geoserver_target = path('geoserver-geonode-ext/target/geoserver.war')
@@ -349,7 +355,14 @@ def deb(options):
     version = geonode.get_version()
     timestamp = get_git_changeset()
 
-    simple_version = '%s.%s.%s+%s%s' % raw_version
+    major, minor, revision, stage, edition = raw_version
+
+    if stage == 'alpha' and edition == 0:
+        tail = 'dev%s' % timestamp
+    else:
+        tail = '%s%s' % (stage, edition)
+
+    simple_version = '%s.%s.%s+%s' % (major, minor, revision, tail)
 
     info('Creating package for GeoNode version %s' % version)
 

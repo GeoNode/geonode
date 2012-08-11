@@ -65,8 +65,6 @@ setup(name='GeoNode',
         "jstools==0.6",
         # sample and test data / metadata
         "gisdata==0.4.4",
-        # document generator
-        "Sphinx==1.1.3",
         # testing
         "django-nose",
         "nose>=1.0",
