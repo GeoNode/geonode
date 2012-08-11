@@ -290,7 +290,6 @@ class GeoNodeCSWTest(TestCase):
         catalogue.remove_record(tif_layer.uuid)
         tif_layer_info = catalogue.get_record(tif_layer.uuid)
         self.assertEqual(tif_layer_info, None, 'Expected no layer info for TIFF file')
-        assert tif_layer_info == None
 
         # Clean up and completely delete the layer
         tif_layer.delete()
