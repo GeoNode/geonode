@@ -44,7 +44,7 @@ def csw_global_dispatch(request):
         scheme = "https"
 
     # update server.url
-    server_url = '%s://%s/csw/' %(scheme, request.META['HTTP_HOST'])
+    server_url = '%s://%s/catalogue/csw/' %(scheme, request.META['HTTP_HOST'])
     config.set('server', 'url', server_url)
 
     # request.meta has:
