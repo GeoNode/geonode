@@ -142,7 +142,7 @@ INSTALLED_APPS = (
     'geonode.people',
     'geonode.proxy',
     'geonode.security',
-#    'geonode.catalogue',
+    'geonode.catalogue',
 )
 LOGGING = {
     'version': 1,
@@ -315,8 +315,8 @@ CATALOGUE = {
         'FORMATS': ['TC211'],
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        #'URL': 'http://localhost/pycsw/trunk/csw.py',
-        'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+        'URL': 'http://localhost/pycsw/trunk/csw.py',
+        #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
     
         # login credentials (for GeoNetwork)
