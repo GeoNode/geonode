@@ -23,4 +23,4 @@ class CatalogueBackend(GenericCatalogueBackend):
     def __init__(self, *args, **kwargs):
         super(CatalogueBackend, self).__init__(*args, **kwargs)
         self.catalogue.type = 'geonetwork'
-        self.catalogue.formats = ['TC211']
+        self.catalogue.formats = ['Dublin Core', 'TC211']
