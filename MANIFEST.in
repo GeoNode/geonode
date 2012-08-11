@@ -1,0 +1,8 @@
+recursive-include geonode/templates *
+recursive-include geonode/locale *
+recursive-include geonode/maps *
+recursive-include geonode/layers *
+recursive-include geonode/people *
+recursive-include geonode/security *
+recursive-include geonode/catalogue *
+recursive-include geonode/security *
