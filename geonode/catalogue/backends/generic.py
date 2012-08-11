@@ -29,8 +29,10 @@ from lxml import etree
 from geonode.catalogue.backends.base import BaseCatalogueBackend
 
 METADATA_FORMATS = {
+    'Atom': ('atom:entry', 'http://www.w3.org/2005/Atom'),
     'DIF': ('dif:DIF', 'http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/'),
     'Dublin Core': ('csw:Record', 'http://www.opengis.net/cat/csw/2.0.2'),
+    'ebRIM': ('rim:RegistryObject', 'urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0'),
     'FGDC': ('fgdc:metadata', 'http://www.opengis.net/cat/csw/csdgm'),
     'TC211': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd'),
 }
