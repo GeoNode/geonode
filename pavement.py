@@ -125,7 +125,7 @@ def setup_client(options):
 ])
 def setup(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
-    sh('pip install -r requirements.txt')
+    sh('pip install -e .')
 
     info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""") 
 
@@ -154,53 +154,50 @@ def package(options):
     pkgname = 'GeoNode-%s-all' % version
 
     # Create the output directory.
-    out_pkg = path('package') / pkgname
-    out_pkg_tar = path("%s.tar.gz" % out_pkg)
+    out_pkg = path(pkgname)
+    out_pkg_tar = path("%s.tar.gz" % pkgname)
 
-    if out_pkg_tar.exists():
-        info('There is already a package for version %s' % version)
-        return
+    # Create a distribution in zip format for the geonode python package.
+    sh('python setup.py sdist --format=zip')
 
-    # Clean anything that is in the oupout package tree.
-    out_pkg.rmtree()
+    with pushd('package'):
+        if out_pkg_tar.exists():
+            info('There is already a package for version %s' % version)
+            return
 
-    support_folder = path('package/support')
-    install_file = path('package/install.sh')
+        # Clean anything that is in the oupout package tree.
+        out_pkg.rmtree()
+        out_pkg.makedirs()
 
-    # And copy the default files from the package folder.
-    justcopy(support_folder, out_pkg)
-    justcopy(install_file, out_pkg)
+        support_folder = path('support')
+        install_file = path('install.sh')
+
+        # And copy the default files from the package folder.
+        justcopy(support_folder, out_pkg / 'support')
+        justcopy(install_file, out_pkg)
 
 
-    # Package Geoserver's war.
-    geoserver_target = path('geoserver-geonode-ext/target/geoserver.war')
-    geoserver_target.copy(out_pkg)
+        # Package Geoserver's war.
+        geoserver_target = path('../geoserver-geonode-ext/target/geoserver.war')
+        geoserver_target.copy(out_pkg)
 
-    # Package (Python, Django) web application and dependencies.
+        # Package (Python, Django) web application and dependencies.
+        # Bundle all the dependencies in a zip-lib package called a pybundle.
+        bundle = out_pkg / 'geonode-webapp.pybundle'
+        geonode_dist = path('..') / 'dist' / 'GeoNode-%s.zip' % version
+        sh('pip bundle %s %s' % (bundle, geonode_dist))
 
-    #FIXME(Ariel): Uncomment once setup.py is fixed to include all the important things ...
+        # Create a tar file with all the information in the output package folder.
+        tar = tarfile.open(out_pkg_tar, "w:gz")
+        for file in out_pkg.walkfiles():
+            tar.add(file)
 
-    ## Create a distribution in zip format for the geonode python package.
-    #sh('python setup.py sdist --format=zip')
-    ## Write path to released zip file to requirements.txt, by default
-    ## the command below puts it in the 'dist' folder
-    # geonode_line = path('dist') / 'GeoNode-%s.zip' % version
+        # Add the README with the license and important links to documentation.
+        tar.add('README', arcname=('%s/README.rst' % out_pkg))
+        tar.close()
 
-    # Bundle all the dependencies in a zip-lib package called a pybundle.
-    bundle = path(out_pkg)/ 'geonode-webapp.pybundle'
-    sh('pip bundle -r requirements.txt %s' % (bundle))
-
-    # Create a tar file with all the information in the output package folder.
-    tar = tarfile.open(out_pkg_tar, "w:gz")
-    for file in out_pkg.walkfiles():
-        tar.add(file)
-
-    # Add the README with the license and important links to documentation.
-    tar.add('./package/README', arcname=('%s/README.rst' % out_pkg))
-    tar.close()
-
-    # Remove all the files in the temporary output package directory.
-    out_pkg.rmtree()
+        # Remove all the files in the temporary output package directory.
+        out_pkg.rmtree()
 
     # Report the info about the new package.
     info("%s.tar.gz created" % out_pkg.abspath())
