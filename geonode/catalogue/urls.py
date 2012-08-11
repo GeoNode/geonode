@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2012 OpenPlans
@@ -17,10 +18,8 @@
 #
 #########################################################################
 
-from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
+from django.conf.urls.defaults import patterns, url
 
-class CatalogueBackend(GenericCatalogueBackend):
-    def __init__(self, *args, **kwargs):
-        super(CatalogueBackend, self).__init__(*args, **kwargs)
-        self.catalogue.type = 'geonetwork'
-        self.catalogue.formats = ['TC211']
+urlpatterns = patterns('geonode.catalogue.views',
+    url(r'csw', 'csw_global_dispatch', name='csw_global_dispatch'),
+)

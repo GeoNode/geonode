@@ -17,9 +17,15 @@
 #
 #########################################################################
 
+from django.conf import settings
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
 
 class CatalogueBackend(GenericCatalogueBackend):
     def __init__(self, *args, **kwargs):
         super(CatalogueBackend, self).__init__(*args, **kwargs)
         self.catalogue.type = 'pycsw'
+        self.catalogue.formats = ['DIF', 'Dublin Core', 'FGDC', 'TC211']
+
+        self.catalogue.local = True
+        if not settings.CATALOGUE['default']['LOCAL']:
+            self.catalogue.local = False
