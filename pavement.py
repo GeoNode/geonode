@@ -328,7 +328,7 @@ def setup_data():
     data_dir = gisdata.GOOD_DATA
     sh("python manage.py importlayers %s -v2" % data_dir)
 
-
+@needs(['package'])
 @cmdopts([
   ('key=', 'k', 'The GPG key to sign the package'),
   ('ppa=', 'p', 'The name of the PPA where this package should be published to.'),
@@ -363,21 +363,31 @@ def deb(options):
 
     info('Creating package for GeoNode version %s' % version)
 
-    # Get rid of any uncommitted changes to debian/changelog
-    info('Getting rid of any uncommitted changes in debian/changelog')
-    sh('git checkout debian/changelog')
-    sh('git-dch --git-author --new-version=%s --id-length=6 --debian-branch=%s' % (simple_version, branch))
+    with pushd('package'):
+        # Get rid of any uncommitted changes to debian/changelog
+        info('Getting rid of any uncommitted changes in debian/changelog')
+        sh('git checkout debian/changelog')
 
-    sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
+        # Workaround for git-dhc bug
+        # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
+        path('.git').makedirs()
 
-    if key is None:
-        sh('debuild -uc -us -A')
-    else:
-        if ppa is None:
-            sh('debuild -k%s -A' % key)
+        sh('git-dch --git-author --new-version=%s --id-length=6 --debian-branch=%s' % (simple_version, branch))
+
+        # Rever workaround for git-dhc bug
+        path('.git').rmtree()
+
+
+        sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
+
+        if key is None:
+            sh('debuild -uc -us -A')
         else:
-            sh('debuild -k%s -S' % key)
-            sh('dput ppa:%s geonode_*.sources' % ppa)
+            if ppa is None:
+                sh('debuild -k%s -A' % key)
+            else:
+                sh('debuild -k%s -S' % key)
+                sh('dput ppa:%s geonode_*.sources' % ppa)
 
 
 def kill(arg1, arg2):
