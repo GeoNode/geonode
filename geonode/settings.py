@@ -311,7 +311,7 @@ CATALOGUE = {
         'ENGINE': 'geonode.catalogue.backends.pycsw',
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': 'http://localhost/catalogue/csw',
+        'URL': '%scatalogue/csw' % SITEURL,
         #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
     
