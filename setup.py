@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
@@ -30,18 +30,8 @@ setup(name='GeoNode',
       author_email='dev@geonode.org',
       url='http://geonode.org',
       license='GPL',
-      packages=['geonode',
-                'geonode.layers',
-                'geonode.maps',
-                'geonode.people',
-                'geonode.catalogue',
-                'geonode.migrations',
-                'geonode.security',
-                'geonode.proxy',
-                'geonode.tests',
-                ],
+      packages=find_packages(),
       package_dir={'geonode': 'geonode'},
-      package_data={'geonode': ['geonode/static/*']},
       install_requires=[
         # native dependencies
         "PIL",
