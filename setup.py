@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
@@ -30,18 +30,10 @@ setup(name='GeoNode',
       author_email='dev@geonode.org',
       url='http://geonode.org',
       license='GPL',
-      packages=['geonode',
-                'geonode.layers',
-                'geonode.maps',
-                'geonode.people',
-                'geonode.catalogue',
-                'geonode.migrations',
-                'geonode.security',
-                'geonode.proxy',
-                'geonode.tests',
-                ],
+      packages=find_packages(),
       package_dir={'geonode': 'geonode'},
-      package_data={'geonode': ['geonode/static/*']},
+      include_package_data=True,
+      package_data = {'geonode':'geonode'},
       install_requires=[
         # native dependencies
         "PIL",
@@ -53,7 +45,8 @@ setup(name='GeoNode',
         "httplib2>=0.7",
         "django-registration==0.8",
         "django-profiles==0.2",
-        "django-avatar==1.0.4",
+        "geonode-avatar==2.1",
+        "geonode-profiles==0.2",
         "agon-ratings==0.2",
         "django-taggit==0.9.3", 
         "dialogos==0.1",
@@ -65,8 +58,6 @@ setup(name='GeoNode',
         "jstools==0.6",
         # sample and test data / metadata
         "gisdata==0.4.4",
-        # document generator
-        "Sphinx==1.1.3",
         # testing
         "django-nose",
         "nose>=1.0",
