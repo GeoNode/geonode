@@ -148,8 +148,9 @@ def package(options):
     """
     import pkg_resources
     import tarfile
+    import geonode
 
-    version = pkg_resources.get_distribution('GeoNode').version,
+    version = geonode.get_version()
     # Use GeoNode's version for the package name.
     pkgname = 'GeoNode-%s-all' % version
 
