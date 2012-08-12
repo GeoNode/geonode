@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson as json
 
-
 import geonode.maps.models
 import geonode.maps.views
 
@@ -12,6 +11,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 
 from geonode.utils import default_map_config
+from django.conf import settings
 
 
 class MapsTest(TestCase):
@@ -257,6 +257,7 @@ community."
         response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
+        print map_id
         c.logout()
         
         url = '/maps/%s/metadata' % map_id
@@ -275,15 +276,19 @@ community."
         c.login(username=self.user, password=self.passwd)
         response = c.get(url)
         self.assertEquals(response.status_code, 200)
-        print response
+        print response.context['map']
+        print response.context['map_form']
     
         # Now test with a valid user using POST method
         c.login(username=self.user, password=self.passwd)
         response = c.post(url)
         self.assertEquals(response.status_code, 200)
-        
-        
-        ##############unfinished#########################33
+        print response.context['map']
+        print response.context['map_form']
+    
+        # TODO: only invalid mapform is tested#########################
+     
+        ##############unfinished#########################
 
 
     def test_map_remove(self):
@@ -329,9 +334,7 @@ community."
         #Prepare map object for later test that if it is completely removed
         #map_obj = Map.objects.get(id=1)
         
-        ##################work on that####################################
-        # Also associated layers are not existent
-        ##################work on that####################################
+        # TODO: Also associated layers are not existent
         #self.assertEquals(map_obj.layer_set.all().count(), 0) 
         
      
@@ -389,14 +392,16 @@ community."
 
         # test unauthenticated user to view map
         response = c.get(url)
-        self.assertEquals(response.status_code,200) ##unauthenticated user can still access the map view 
+        self.assertEquals(response.status_code,200) 
+        # TODO: unauthenticated user can still access the map view 
 
         # test a user without map view permission
         c.login(username='norman', password='norman')
         response = c.get(url)
-        self.assertEquals(response.status_code, 200)   ##the user can still access the map view without permission 
+        self.assertEquals(response.status_code, 200)   
         c.logout() 
-   
+        # TODO: the user can still access the map view without permission 
+
         # Now test with a valid user using GET method
         c.login(username=self.user, password=self.passwd)
         response = c.get(url)
@@ -418,22 +423,36 @@ community."
     def test_new_map_config(self):
         """Test that new map config can be properly assigned 
         """
-        # first create a map
-        c = Client()
+        from geonode.layers.utils import (
+            upload,
+            file_upload,
+            save
+            )
 
+        import gisdata
+        from django.contrib.auth.models import User
+        from geonode.maps.models import Map
+
+        # first create a map
+        uploaded = upload(gisdata.GOOD_DATA)
+        upload_list = []
+        for item in uploaded:
+            upload_list.append('geonode:' + item['name'])
+
+        from django.test.client import Client
+        c = Client()
+        c.login(username='admin', password='admin')
+  
         # Test successful new map creation
-        c.login(username=self.user, password=self.passwd)
-        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
-        c.logout()
+        m = Map()
+        admin_user = User.objects.get(username='admin')
+        m.create_from_layer_list(admin_user, upload_list, "title", "abstract")   
+        map_id = m.id
+
+        c = Client()
 
         url = '/maps/new/data'
 
-        #map_obj = Map.objects.get(id=map_id)
-        #layer = map_obj.layer_set
-        #(map_obj.layer_set.all().count()
-        
         # Test GET method with COPY
         response = c.get(url,{'copy': map_id})
         self.assertEquals(response.status_code,200)
@@ -451,9 +470,10 @@ community."
         self.assertEquals(config_default['about']['title'],response_config_dict['about']['title'])
 
         # Test GET method no COPY but with layer in params
-        response = c.get(url,{'layer':'layer'})
-        self.assertEquals(response.status_code,200)        
-        ##################################layer, last part to work on################################
+        response = c.get(url,{'layer':'geonode:relief_san_andres'})
+        self.assertEquals(response.status_code,200)      
+        response_dict = json.loads(response.content)    
+        self.assertEquals(response_dict['fromLayer'],True)
 
         # Test POST method and no layer in params
         response = c.post(url)
@@ -464,9 +484,10 @@ community."
         self.assertEquals(config_default['about']['title'],response_config_dict['about']['title'])
 
         # Test POST method but with layer in params
-        response = c.post(url,{'layer':'layer'})
+        response = c.post(url,{'layer':'geonode:relief_san_andres'})
         self.assertEquals(response.status_code,200)
-        ##################################layer, last part to work on################################
+        response_dict = json.loads(response.content)    
+        self.assertEquals(response_dict['fromLayer'],True)
 
         # Test methods other than GET or POST and no layer in params
         response = c.put(url)
@@ -474,8 +495,26 @@ community."
 
     """
     def test_map_download(self):
+    """    
+
     def test_map_download_check(self):
-    """
+        """Test maps download check function properly 
+        """
+
+        c = Client()
+
+        url = '/maps/check/'
+        """
+        session = self.client.session
+        session['somekey'] = 'test'
+        session.save()
+        """
+        # Test GET method
+        # TODO: no layer in response session
+        response = c.get(url)
+        self.assertEquals(response.status_code,400)
+        self.assertEquals(response.content, "Something Went wrong")
+       
 
     def test_maps_search_page(self):
         """Test maps search page can be properly rendered 
@@ -489,7 +528,7 @@ community."
         self.assertEquals(response.status_code,200)
         response_dict = json.loads(response.context['init_search'])  
         self.assertEquals(response_dict['keyword'],'keyword') 
-        self.assertEquals(response.context['site'],'http://localhost:8000/')
+        self.assertEquals(response.context['site'],settings.SITEURL)
 
         # Test POST method
         response = c.post(url)
