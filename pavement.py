@@ -250,7 +250,7 @@ def start_django():
 @task
 def start_geoserver(options):
     """
-    Start GeoNode's Java apps (GeoServer with GeoNode extensions and GeoNetwork)
+    Start GeoServer with GeoNode extensions
     """
 
     from geonode.settings import GEOSERVER_BASE_URL
@@ -309,7 +309,7 @@ def test_integration(options):
 @needs(['stop'])
 def reset():
     """
-    Reset a development environment (Database, GeoServer & GeoNetwork)
+    Reset a development environment (Database, GeoServer & Catalogue)
     """
     _reset()
 
