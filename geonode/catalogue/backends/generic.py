@@ -359,7 +359,7 @@ class Catalogue(CatalogueServiceWeb):
         # figure out whether the repository that the catalogue
         # is working off is local (GeoNode DB/Django model),
         # or not (native to the Catalogue impl)
-        if self.catalogue.type == 'pycsw':
+        if self.type == 'pycsw':
             if settings.PYCSW['LOCAL']:
                 return True
         return False
