@@ -142,7 +142,7 @@ INSTALLED_APPS = (
     'geonode.people',
     'geonode.proxy',
     'geonode.security',
-    'geonode.catalogue',
+#    'geonode.catalogue',
 )
 LOGGING = {
     'version': 1,
