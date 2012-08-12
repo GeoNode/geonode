@@ -366,7 +366,7 @@ PYCSW = {
         },
         'repository': {
             'source': 'geonode',
-            'mappings': 'geonode/catalogue/backends/pycsw_mappings.py',
+            'mappings': 'geonode/catalogue/backends/pycsw.py',
         },
         'metadata:inspire': {
             'enabled': 'true',
