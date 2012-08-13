@@ -482,8 +482,8 @@ class Link(models.Model):
        This helps avoiding the need for runtime lookups
        to the OWS server or the CSW Catalogue.
 
-       There are three types of links:
-        * original: For uploaded files (shapefiles or geotiffs)
+       There are four types of links:
+        * original: For uploaded files (Shapefiles or GeoTIFFs)
         * data: For WFS and WCS links that allow access to raw data
         * image: For WMS and TMS links
         * metadata: For CSW links
