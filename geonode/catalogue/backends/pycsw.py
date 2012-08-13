@@ -23,7 +23,6 @@ from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalo
 class CatalogueBackend(GenericCatalogueBackend):
     def __init__(self, *args, **kwargs):
         super(CatalogueBackend, self).__init__(*args, **kwargs)
-        self.catalogue.type = 'pycsw'
         self.catalogue.formats = ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'TC211']
 
 MD_CORE_MODEL = {

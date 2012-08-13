@@ -42,6 +42,7 @@ class Catalogue(CatalogueServiceWeb):
         self.url = kwargs['URL']
         self.user = kwargs['USER']
         self.password = kwargs['PASSWORD']
+        self.type = kwargs['ENGINE'].split('.')[-1]
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
