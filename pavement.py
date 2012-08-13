@@ -24,7 +24,7 @@ import urllib
 
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, pushd, info, call_task
-
+from paver.easy import BuildFailure
 
 assert sys.version_info >= (2,6,2), \
        SystemError("GeoNode Build requires python 2.6.2 or better")
