@@ -10,7 +10,7 @@ from django.conf import settings
 import psycopg2
 from django.db.models import Q
 from geonode.maps.models import Layer, LayerAttribute, MapLayer, Map
-from datautil.date import DateutilDateParser
+
 
 GAZETTEER_TABLE = 'gazetteer_gazetteerentry'
 
@@ -87,9 +87,6 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
         end_date: return only matches with an end date <= this value
         project: only return matches within the specified project
     """
-
-    parser = DateutilDateParser()
-
 
     layers = []
     if map:
