@@ -9,12 +9,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.codec.binary.Base64;
 import org.easymock.classextension.EasyMock;
-import org.geonode.GeoNodeTestSupport;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
+import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,14 +24,15 @@ import org.springframework.security.core.GrantedAuthority;
  * @author groldan
  * 
  */
-public class DefaultSecurityClientTest extends GeoNodeTestSupport {
+public class DefaultSecurityClientTest extends GeoServerSecurityTestSupport {
 
     private HTTPClient mockHttpClient;
 
     private DefaultSecurityClient client;
 
     @Override
-    public void setUpInternal() {
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
         mockHttpClient = EasyMock.createNiceMock(HTTPClient.class);
         client = new DefaultSecurityClient("http://localhost:8000/", mockHttpClient);
     }
@@ -98,7 +97,7 @@ public class DefaultSecurityClientTest extends GeoNodeTestSupport {
 
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.addAll(authentication.getAuthorities());
-        assertEquals(4, authorities.size());
+        assertEquals(5, authorities.size());
         assertTrue(authorities.get(0) instanceof LayersGrantedAuthority);
         assertEquals(LayerMode.READ_ONLY, ((LayersGrantedAuthority) authorities.get(0)).getAccessMode());
         assertEquals(Collections.singletonList("layer3"),
@@ -110,9 +109,7 @@ public class DefaultSecurityClientTest extends GeoNodeTestSupport {
                 ((LayersGrantedAuthority) authorities.get(1)).getLayerNames());
 
         assertTrue(authorities.get(2) instanceof GrantedAuthority);
-        assertEquals("ROLE_ADMINISTRATOR", authorities.get(2).getAuthority());
-        assertTrue(authorities.get(3) instanceof GrantedAuthority);
-        assertEquals(GeoNodeDataAccessManager.getActiveAdminRole(), authorities.get(3).getAuthority());
+        assertTrue(authorities.contains(GeoNodeDataAccessManager.getAdminRole()));
     }
 
     public void testAuthenticateUserPassword() throws Exception {
@@ -138,7 +135,7 @@ public class DefaultSecurityClientTest extends GeoNodeTestSupport {
 
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.addAll(authentication.getAuthorities());
-        assertEquals(2, authorities.size());
+        assertEquals(3, authorities.size());
         assertTrue(authorities.get(0) instanceof LayersGrantedAuthority);
         assertEquals(LayerMode.READ_ONLY, ((LayersGrantedAuthority) authorities.get(0)).getAccessMode());
         assertEquals(Arrays.asList("layer2", "layer3"),
