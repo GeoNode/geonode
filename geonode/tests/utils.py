@@ -20,9 +20,6 @@
 import os
 import urllib, urllib2, cookielib
 import contextlib
-import tempfile
-import zipfile
-
 from geonode.maps.models import Layer
 
 def get_web_page(url, username=None, password=None, login_url=None):
@@ -86,28 +83,3 @@ def check_layer(uploaded):
     assert type(uploaded) is Layer, msg
     msg = ('The layer does not have a valid name: %s' % uploaded.name)
     assert len(uploaded.name) > 0, msg
-
-def download_and_unzip(url, username=None, password=None):
-    """ Download a zip file from the specified URL and unzip it
-    """
-
-    temp_dir = tempfile.mkdtemp()
-    name = os.path.join(temp_dir, 'temp.zip')
-    print name
-    content = get_web_page(url, username, password)
-    FILE = open(name, 'wb')
-    FILE.write(content)
-    FILE.close()
-    z = zipfile.ZipFile(name)
-    for n in z.namelist():
-        dest = os.path.join(temp_dir, n)
-        destdir = os.path.dirname(dest)
-        if not os.path.isdir(destdir):
-            os.makedirs(destdir)
-        data = z.read(n)
-        f = open(dest, 'w')
-        f.write(data)
-        f.close()
-    z.close()
-    os.unlink(name)
-    return temp_dir
