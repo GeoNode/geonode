@@ -18,17 +18,18 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson as json
-
+from django.contrib.auth.models import User
 
 import geonode.maps.models
 import geonode.maps.views
-
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.utils import default_map_config
 
 
 class MapsTest(TestCase):
@@ -262,3 +263,280 @@ community."
 
         # Test that the permissions specification is applied
 
+
+    def test_map_metadata(self):
+        """Test that map metadata can be properly rendered
+        """
+        # first create a map
+        c = Client()
+
+        # Test successful new map creation
+        c.login(username=self.user, password=self.passwd)
+        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id = int(response['Location'].split('/')[-1])
+        c.logout()
+        
+        url = '/maps/%s/metadata' % map_id
+
+        # test unauthenticated user to modify map metadata
+        response = c.post(url)
+        self.assertEquals(response.status_code,302)
+
+        # test a user without metadata modify permission
+        c.login(username='norman', password='norman')
+        response = c.post(url)
+        self.assertEquals(response.status_code, 302)
+        c.logout()   
+
+        # Now test with a valid user using GET method
+        c.login(username=self.user, password=self.passwd)
+        response = c.get(url)
+        self.assertEquals(response.status_code, 200)
+    
+        # Now test with a valid user using POST method
+        c.login(username=self.user, password=self.passwd)
+        response = c.post(url)
+        self.assertEquals(response.status_code, 200)
+    
+        # TODO: only invalid mapform is tested
+     
+
+    def test_map_remove(self):
+        """Test that map can be properly removed
+        """
+        # first create a map
+        c = Client()
+
+        # Test successful new map creation
+        c.login(username=self.user, password=self.passwd)
+        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id = int(response['Location'].split('/')[-1])
+        c.logout()
+        
+        url = '/maps/%s/remove' % map_id
+        
+        # test unauthenticated user to remove map
+        response = c.post(url)
+        self.assertEquals(response.status_code,302)
+
+        # test a user without map removal permission
+        c.login(username='norman', password='norman')
+        response = c.post(url)
+        self.assertEquals(response.status_code, 302)
+        c.logout()   
+
+        # Now test with a valid user using GET method
+        c.login(username=self.user, password=self.passwd)
+        response = c.get(url)
+        self.assertEquals(response.status_code, 200)
+        
+        # Now test with a valid user using POST method, 
+        # which removes map and associated layers, and redirects webpage 
+        response = c.post(url)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response['Location'], 'http://testserver/maps/')
+        
+        # After removal, map is not existent
+        response = c.get(url)
+        self.assertEquals(response.status_code, 404)
+
+        #Prepare map object for later test that if it is completely removed
+        #map_obj = Map.objects.get(id=1)
+        
+        # TODO: Also associated layers are not existent
+        #self.assertEquals(map_obj.layer_set.all().count(), 0) 
+        
+     
+    def test_map_embed(self):
+        """Test that map can be properly embedded
+        """
+        # first create a map
+        c = Client()
+
+        # Test successful new map creation
+        c.login(username=self.user, password=self.passwd)
+        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id = int(response['Location'].split('/')[-1])
+        c.logout()
+        
+        url = '/maps/%s/embed' % map_id
+        url_no_id = '/maps/embed/'
+        
+        # Now test with a map id
+        c.login(username=self.user, password=self.passwd)
+        response = c.get(url)
+        self.assertEquals(response.status_code, 200)
+        # Config equals to that of the map whose id is given
+        map_obj = Map.objects.get(id=map_id)
+        config_map = map_obj.viewer_json()
+        response_config_dict = json.loads(response.context['config'])
+        self.assertEquals(config_map['about']['abstract'],response_config_dict['about']['abstract']) 
+        self.assertEquals(config_map['about']['title'],response_config_dict['about']['title'])
+
+        # Now test without a map id
+        response = c.get(url_no_id)
+        self.assertEquals(response.status_code, 200)        
+        # Config equals to that of the default map  
+        config_default = default_map_config()[0]        
+        response_config_dict = json.loads(response.context['config'])
+        self.assertEquals(config_default['about']['abstract'],response_config_dict['about']['abstract']) 
+        self.assertEquals(config_default['about']['title'],response_config_dict['about']['title'])
+        
+
+    def test_map_view(self):
+        """Test that map view can be properly rendered
+        """
+        # first create a map
+        c = Client()
+
+        # Test successful new map creation
+        c.login(username=self.user, password=self.passwd)
+        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id = int(response['Location'].split('/')[-1])
+        c.logout()
+        
+        url = '/maps/%s/view' % map_id
+
+        # test unauthenticated user to view map
+        response = c.get(url)
+        self.assertEquals(response.status_code,200) 
+        # TODO: unauthenticated user can still access the map view 
+
+        # test a user without map view permission
+        c.login(username='norman', password='norman')
+        response = c.get(url)
+        self.assertEquals(response.status_code, 200)   
+        c.logout() 
+        # TODO: the user can still access the map view without permission 
+
+        # Now test with a valid user using GET method
+        c.login(username=self.user, password=self.passwd)
+        response = c.get(url)
+        self.assertEquals(response.status_code, 200)
+        
+        # Config equals to that of the map whose id is given
+        map_obj = Map.objects.get(id=map_id)
+        config_map = map_obj.viewer_json()
+        response_config_dict = json.loads(response.context['config'])
+        self.assertEquals(config_map['about']['abstract'],response_config_dict['about']['abstract']) 
+        self.assertEquals(config_map['about']['title'],response_config_dict['about']['title'])
+
+
+    def test_new_map_config(self):
+        """Test that new map config can be properly assigned 
+        """
+        c = Client()
+        c.login(username='admin', password='admin')
+  
+        # Test successful new map creation
+        m = Map()
+        admin_user = User.objects.get(username='admin')
+        layer_name = Layer.objects.all()[0].typename 
+        m.create_from_layer_list(admin_user, [layer_name], "title", "abstract")   
+        map_id = m.id
+
+        c = Client()
+
+        url = '/maps/new/data'
+
+        # Test GET method with COPY
+        response = c.get(url,{'copy': map_id})
+        self.assertEquals(response.status_code,200)
+        map_obj = Map.objects.get(id=map_id)
+        config_map = map_obj.viewer_json()
+        response_config_dict = json.loads(response.content)
+        self.assertEquals(config_map['map']['layers'],response_config_dict['map']['layers'])          
+
+        # Test GET method no COPY and no layer in params
+        response = c.get(url)
+        self.assertEquals(response.status_code,200)
+        config_default = default_map_config()[0] 
+        response_config_dict = json.loads(response.content)
+        self.assertEquals(config_default['about']['abstract'],response_config_dict['about']['abstract']) 
+        self.assertEquals(config_default['about']['title'],response_config_dict['about']['title'])
+
+        # Test GET method no COPY but with layer in params
+        response = c.get(url,{'layer':layer_name})
+        self.assertEquals(response.status_code,200)      
+        response_dict = json.loads(response.content)    
+        self.assertEquals(response_dict['fromLayer'],True)
+
+        # Test POST method and no layer in params
+        response = c.post(url)
+        self.assertEquals(response.status_code,200)
+        config_default = default_map_config()[0]        
+        response_config_dict = json.loads(response.content)
+        self.assertEquals(config_default['about']['abstract'],response_config_dict['about']['abstract']) 
+        self.assertEquals(config_default['about']['title'],response_config_dict['about']['title'])
+
+        # Test POST method but with layer in params
+        response = c.post(url,{'layer':layer_name})
+        self.assertEquals(response.status_code,200)
+        response_dict = json.loads(response.content)    
+        self.assertEquals(response_dict['fromLayer'],True)
+
+        # Test methods other than GET or POST and no layer in params
+        response = c.put(url)
+        self.assertEquals(response.status_code,405)
+
+
+    def test_maps_search_page(self):
+        """Test maps search page can be properly rendered 
+        """
+        c = Client()
+
+        url = '/maps/search/?'
+
+        # Test GET method
+        response = c.get(url,{'keyword':'keyword'})
+        self.assertEquals(response.status_code,200)
+        response_dict = json.loads(response.context['init_search'])  
+        self.assertEquals(response_dict['keyword'],'keyword') 
+        self.assertEquals(response.context['site'],settings.SITEURL)
+
+        # Test POST method
+        response = c.post(url)
+        self.assertEquals(response.status_code,200)
+
+        # Test methods other than GET or POST
+        response = c.put(url)
+        self.assertEquals(response.status_code,405)
+        
+    
+    def test_maps_search(self):
+        """Test maps search can function properly 
+        """
+        # first create two maps
+        c = Client()
+
+        # Test successful new map creation
+        c.login(username=self.user, password=self.passwd)
+        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id = int(response['Location'].split('/')[-1])
+        response = c.post("/maps/",data=self.viewer_config_alternative,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id_2 = int(response['Location'].split('/')[-1])
+        c.logout()
+
+        url = '/maps/search/api/?'
+
+        # Test GET method
+        response = c.get(url, {'q': '', 'start': 1, 'limit': '', 'sort': '', 'dir': ''}, content_type="text/json")
+        self.assertEquals(response.status_code,200) 
+        response_dict = json.loads(response.content)     
+        self.assertEquals(response_dict['success'], True) 
+
+        # Test POST method
+        response = c.post(url, {'q': '', 'start': 1, 'limit': '', 'sort': '', 'dir': ''}, content_type="text/json")
+        self.assertEquals(response.status_code,200) 
+        response_dict = json.loads(response.content)     
+        self.assertEquals(response_dict['success'], True)
+
+        # Test methods other than GET or POST
+        response = c.put(url)
+        self.assertEquals(response.status_code,405)
