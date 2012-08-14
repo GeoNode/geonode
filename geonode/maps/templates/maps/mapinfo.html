@@ -126,40 +126,38 @@
 
     {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
-    <li class="nav-header">{% trans "Permissions" %}</li>
-    <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit permissions" %}</a></li>
+        <li class="nav-header">{% trans "Permissions" %}</li>
+        <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit permissions" %}</a></li>
     {% endif %}
   </ul>
 {% endblock %}
 
 {% block extra_script %}
-  <script>
-    $(function() {
-      $("#permission_form").submit(map_perms_submit);
-    });
-  </script>
-{% endblock %}
+    <script>
+        $(function() {
+            $("#permission_form").submit(map_perms_submit);
+        });
+    </script>
 
-{% block end_body_js %}
-{% if request.user.is_authenticated %}
-	{% user_rating_js request.user map "map" %}
-{% else %}
-	<script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
-{% endif %}
-<script type="text/javascript">
-	$(function() {
-		$('div.overall_rating').raty({
-			half: true,
-			readOnly: true,
-			start: $('div.overall_rating').data('rating'),
-			path: "{{ STATIC_URL }}agon_ratings/img/"
-		});
-	});
+    {% if request.user.is_authenticated %}
+	    {% user_rating_js request.user map "map" %}
+    {% else %}
+	    <script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
+    {% endif %}
+    <script type="text/javascript">
+	    $(function() {
+		    $('div.overall_rating').raty({
+			    half: true,
+			    readOnly: true,
+			    start: $('div.overall_rating').data('rating'),
+			    path: "{{ STATIC_URL }}agon_ratings/img/"
+		    });
+	    });
 
-	(function() {
-		var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-		po.src = 'https://apis.google.com/js/plusone.js';
-		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-	})();
-</script>
+	    (function() {
+		    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+		    po.src = 'https://apis.google.com/js/plusone.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	    })();
+    </script>
 {% endblock %}
