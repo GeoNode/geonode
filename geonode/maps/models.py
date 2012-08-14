@@ -19,6 +19,7 @@
 #########################################################################
 
 import logging
+import math
 import errno
 
 from django.conf import settings
@@ -26,6 +27,8 @@ from django.db import models
 from django.utils import simplejson as json
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.gis.geos import GEOSGeometry
 
 from geonode.layers.models import Layer
 from geonode.security.models import PermissionLevelMixin
@@ -33,6 +36,7 @@ from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
+from geonode.utils import default_map_config
 
 from taggit.managers import TaggableManager
 
@@ -206,6 +210,72 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)    
 
+    def create_from_layer_list(self, user, layers, title, abstract):
+        self.owner = user
+        self.title = title
+        self.abstract = abstract
+        self.projection="EPSG:900913"
+        self.zoom = 0
+        self.center_x = 0
+        self.center_y = 0
+        map_layers = []
+        bbox = None
+        index = 0
+
+        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+        
+        for layer in layers:
+            try:
+                layer = Layer.objects.get(typename=layer)
+            except ObjectDoesNotExist:
+                continue # Raise exception?
+            
+            if not user.has_perm('maps.view_layer', obj=layer):
+                # invisible layer, skip inclusion or raise Exception?
+                continue # Raise Exception
+            
+            layer_bbox = layer.resource.latlon_bbox
+            if bbox is None:
+                bbox = list(layer_bbox[0:4])
+            else:
+                bbox[0] = min(bbox[0], layer_bbox[0])
+                bbox[1] = max(bbox[1], layer_bbox[1])
+                bbox[2] = min(bbox[2], layer_bbox[2])
+                bbox[3] = max(bbox[3], layer_bbox[3])
+
+            map_layers.append(MapLayer(
+                map = self,
+                name = layer.typename,
+                ows_url = settings.GEOSERVER_BASE_URL + "wms",  
+                stack_order = index,
+                visibility = True
+            ))
+            
+        
+            if bbox is not None:
+                minx, maxx, miny, maxy = [float(c) for c in bbox]
+                x = (minx + maxx) / 2
+                y = (miny + maxy) / 2
+                wkt = "POINT(" + str(x) + " " + str(y) + ")"
+                center = GEOSGeometry(wkt, srid=4326)
+                center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+
+                width_zoom = math.log(360 / (maxx - minx), 2)
+                height_zoom = math.log(360 / (maxy - miny), 2)
+
+                self.center_x = center.x
+                self.center_y = center.y
+                self.zoom = math.ceil(min(width_zoom, height_zoom))
+            index += 1
+
+        self.save()
+        for bl in DEFAULT_BASE_LAYERS:
+            bl.map = self
+            #bl.save()
+
+        for ml in map_layers:
+            ml.map = self # update map_id after saving map
+            ml.save()
 
 class MapLayer(models.Model, GXPLayerBase):
     """
