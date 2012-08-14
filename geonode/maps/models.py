@@ -234,7 +234,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
                 # invisible layer, skip inclusion or raise Exception?
                 continue # Raise Exception
             
-            layer_bbox = layer.resource.latlon_bbox
+            layer_bbox = layer.bbox
             if bbox is None:
                 bbox = list(layer_bbox[0:4])
             else:
