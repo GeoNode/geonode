@@ -59,7 +59,7 @@ The stack used is:
 
 Download GeoNode Release Archive
 --------------------------------
-You get the latest GeoNode release from http://dev.geonode.org/release/ or the `GeoNode project wiki <http://dev.geonode.org/trac/>`_ .
+You get the latest GeoNode release from http://dev.geonode.org/release/ or the `GeoNode project wiki <http://github.com/GeoNode/geonode/wiki>`_ .
 
 You can unpack it like::
 
