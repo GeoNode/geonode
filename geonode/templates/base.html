@@ -34,6 +34,8 @@
       </style>
       <link href="{{ STATIC_URL }}theme/site.css" rel="stylesheet">
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet">
+      <link href="{{ STATIC_URL }}geonode/css/datatables.css" rel="stylesheet">
+      <link href="{{ STATIC_URL }}select2/select2.css" rel="stylesheet"/>
     {% endblock %}
 
 
@@ -117,7 +119,7 @@
       <footer class="footer">
         {% block footer %}
           <div class="pull-left">
-            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> |
+            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %} {{ VERSION }}</a> |
             <strong>{% trans "Need Help?" %}</strong>
             <a href="{% url help %}">{% trans "Help" %}</a> |
             <a href="{% url dev %}">{% trans "For Developers" %}</a>
@@ -144,8 +146,62 @@
 
     <script src="{{ STATIC_URL }}bootstrap/js/jquery-1.7.1.min.js"></script>
     <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}datatables/js/jquery.dataTables.min.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/hogan.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/jquery.timeago.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/json2.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
+    <script src="{{ STATIC_URL }}select2/select2.js"></script>
 
     {% block extra_script %}{% endblock extra_script %}
+    <script type="text/javascript">
+    $(function() {
+      $("input.user-select").select2({
+        placeholder: {title: '{% trans "Add User..." %}', id: ""},
+        minimumInputLength: 1,
+        multiple: true,
+        ajax: {
+          url: "{% url auth_ajax_lookup %}",
+          dataType: "json",
+          type: "POST",
+          data: function (term, page) {
+            return {
+              query: term,
+            };
+          },
+          results: function (data, page) {
+            return {results: data.users};
+          }
+        },
+        id: userID,
+        formatResult: userFormatResult,
+        formatSelection: userFormatSelection
+      });
+
+      function userID(user) {
+        return user.username
+      }
+
+      function userFormatResult(user) {
+        return user.username
+      }
+
+      function userFormatSelection(user) {
+          return user.username;
+      }
+
+      var toggle_buttons = function() {
+        if ($("input.asset-selector:checked").length) {
+          $(".asset-modifier").removeClass("disabled");
+        } else {
+          $(".asset-modifier").addClass("disabled");
+        }
+      };
+
+      $("input.asset-selector").live("change", toggle_buttons);
+      toggle_buttons();
+    });
+    </script>
 
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script type="text/javascript" src="{% url lang %}"></script>

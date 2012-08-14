@@ -1,0 +1,54 @@
+#!/bin/sh
+# post script for geonode
+#
+# see: dh_installdeb(1)
+
+set -e
+
+case "$1" in
+    remove|deconfigure)
+	a2dissite geonode
+	a2ensite default
+
+	rm -rf /var/lib/geonode
+	rm -rf /var/www/geonode/wsgi
+	rm -rf /var/www/geonode/static
+	rm -rf /var/lib/tomcat6/webapps/geoserver
+	rm -rf /var/lib/tomcat6/webapps/geonetwork
+
+	rm -rf /usr/share/geonode/role.sql
+	rm -rf /usr/share/geonode/admin.json
+	rm -rf /usr/share/geonode/patch*
+	rm -rf /usr/bin/geonode
+
+	invoke-rc.d apache2 start
+	invoke-rc.d tomcat6 start
+    ;;
+
+    upgrade)
+	rm -rf /var/lib/geonode/src
+	rm -rf /var/lib/geonode/build
+	rm -rf /var/lib/geonode/lib
+	rm -rf /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml
+	rm -rf /var/lib/tomcat6/webapps/geonetwork/WEB-INF/config.xml
+    ;;
+    purge)
+	rm -rf /var/lib/geoserver
+        if su - postgres -c 'psql -l | grep -q geonode'
+	then
+	    su - postgres -c 'dropdb geonode'
+	    su - postgres -c 'dropuser geonode'
+	fi
+    ;;
+    failed-upgrade)
+    ;;
+
+    *)
+        echo "prerm called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

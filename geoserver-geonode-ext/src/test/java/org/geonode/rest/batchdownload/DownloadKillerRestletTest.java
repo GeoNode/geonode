@@ -32,7 +32,7 @@ public class DownloadKillerRestletTest extends GeoNodeTestSupport {
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWcs11Coverages();
+        dataDirectory.addWellKnownCoverageTypes();
     }
 
     public void testHTTPMethod() throws Exception {

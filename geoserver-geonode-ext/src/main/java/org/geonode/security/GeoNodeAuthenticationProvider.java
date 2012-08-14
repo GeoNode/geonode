@@ -10,6 +10,7 @@ import org.geoserver.security.GeoServerAuthenticationProvider;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,7 +39,10 @@ public class GeoNodeAuthenticationProvider extends GeoServerAuthenticationProvid
 	        String password = (String) token.getCredentials();
 	
 	        try {
-	            return client.authenticateUserPwd(username, password);
+	        	if (username == "" && password == null)
+	        		return client.authenticateAnonymous();
+	        	else
+	        		return client.authenticateUserPwd(username, password);
 	        } catch (IOException e) {
 	            throw new AuthenticationServiceException("Communication with GeoNode failed", e);
 	        }
@@ -48,6 +52,12 @@ public class GeoNodeAuthenticationProvider extends GeoServerAuthenticationProvid
 	    	} catch (IOException e) {
 	    		throw new AuthenticationServiceException("Communication with GeoNode failed", e);
 	    	}
+	    } else if (authentication instanceof AnonymousGeoNodeAuthenticationToken) {
+	       try { 
+	           return client.authenticateAnonymous();
+	       } catch (IOException e) {
+	           throw new AuthenticationServiceException("Communication with GeoNode failed", e);
+	       }
 	    } else {
 	    	throw new IllegalArgumentException("GeoNodeAuthenticationProvider accepts only UsernamePasswordAuthenticationToken and GeoNodeSessionAuthToken; received " + authentication);
 	    }
@@ -56,7 +66,8 @@ public class GeoNodeAuthenticationProvider extends GeoServerAuthenticationProvid
     @Override
     public boolean supports(Class<? extends Object> authentication, HttpServletRequest request) {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication) ||
-        	    GeoNodeSessionAuthToken.class.isAssignableFrom(authentication));
+        	    GeoNodeSessionAuthToken.class.isAssignableFrom(authentication)) ||
+        	    AnonymousGeoNodeAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
     /**
