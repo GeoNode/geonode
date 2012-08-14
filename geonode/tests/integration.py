@@ -45,7 +45,7 @@ from geonode.layers.utils import (
     save
 )
 from geonode.utils import http_client
-from .utils import check_layer, get_web_page
+from .utils import check_layer, get_web_page, download_and_unzip
 
 from geonode.maps.utils import *
 
@@ -55,7 +55,6 @@ import gisdata
 import zipfile
 
 LOGIN_URL= "/accounts/login/"
-
 
 class GeoNodeCoreTest(TestCase):
     """Tests geonode.security app/module
@@ -522,6 +521,75 @@ class GeoNodeMapTest(TestCase):
         client.login(username='norman', password='norman')
         resp = client.get(uploaded.get_absolute_url())
         self.assertEquals(resp.status_code, 200)
+
+    def test_batch_download(self):
+        """Test the batch download functionality
+        """
+        # Upload Some Data to work with
+        uploaded = upload(gisdata.GOOD_DATA)
+        upload_list = []
+        for item in uploaded:
+            upload_list.append('geonode:' + item['name'])
+            #file = item['file']
+            #print(file.split('/')[-1])
+        
+        c = Client()
+        c.login(username='admin', password='admin')
+
+        response = c.post('/data/download', {'layer': upload_list})
+        if response.status_code == 200:
+            # go for it
+            response_dict = json.loads(response.content)
+            status = response_dict['status']
+            id = response_dict['id']
+            progress = response_dict['progress']
+            while(progress < 100):
+                url = '%sdata/download?id=%s' % (settings.SITEURL, id)
+                response, content = http_client.request(url,'GET')
+                content_dict = json.loads(content)
+                status = content_dict['process']['status']
+                id = content_dict['process']['id']
+                progress = content_dict['process']['progress']
+                time.sleep(1)
+            download_url = "%srest/process/batchDownload/download/%s" % (settings.GEOSERVER_BASE_URL, id)
+            print download_url
+            
+            # Download the file to a temp folder
+            # Unzip it
+            location = download_and_unzip(download_url, "admin", "admin")
+            
+            # Check that readme.txt is included
+            try:
+                with open('%s/README.txt' % location) as f: pass
+            except IOError as e:
+                print 'README.txt does NOT exist!'
+
+            # Check that all the files are included
+            for item in uploaded:
+                file = (item['file'].split('/')[-1])
+                try:
+                    with open('%s/%s' % (location, file)) as f: pass
+                except IOError as e:
+                    print file + ' does NOT exist!' 
+                    # TODO: tiff files have error because of their inconsistent naming rules
+            
+            # TODO: Check through each file to see that they are valid
+            for item in uploaded:
+                file = (item['file'].split('/')[-1])
+                suffix = (item['file'].split('.')[-1])                
+                if suffix == 'tif':
+                    try:
+                        im = Image.open('%s/geonode:%sf' % (location, file))
+                    except IOError as e:
+                        print file + ' is an invalid tiff file!'                     
+                elif suffix == 'shp':
+                    try:
+                        sf = shapefile.Reader('%s/%s' % (location, file))
+                    except IOError as e:
+                        print file + ' is an invalid shapefile!' 
+        else:
+            # TODO deal with some error
+            pass
 
     def test_layer_replace(self):
         """Test layer replace functionality
