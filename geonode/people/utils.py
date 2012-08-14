@@ -1,19 +1,38 @@
+#########################################################################
+#
+# Copyright (C) 2012 OpenPlans
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 from django.contrib.auth.models import User
 
 from geonode import GeoNodeException
 
+
 def get_default_user():
     """Create a default user
     """
-    try:
-        return User.objects.get(is_superuser=True)
-    except User.DoesNotExist:
+    superusers = User.objects.filter(is_superuser=True).order_by('id')
+    if superusers.count() > 0:
+        # Return the first created superuser
+        return superusers[0]
+    else:
         raise GeoNodeException('You must have an admin account configured '
                                'before importing data. '
                                'Try: django-admin.py createsuperuser')
-    except User.MultipleObjectsReturned:
-        raise GeoNodeException('You have multiple admin accounts, '
-                               'please specify which I should use.')
 
 
 def get_valid_user(user=None):

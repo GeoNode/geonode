@@ -158,6 +158,7 @@ public class ShapeZipWriter {
         return filter;
     }
 
+    @SuppressWarnings("unchecked")
     private boolean doWrite(ZipOutputStream zipOut, Charset defaultCharset, File tempDir,
             ProgressListener monitor, final SimpleFeatureType schema,
             final float featureProgressPercent,
@@ -173,7 +174,7 @@ public class ShapeZipWriter {
             throw new WFSException("Cannot write geometryless shapefiles, yet " + schema
                     + " has no geometry field");
         }
-        Class<?> geomType = geometryDescriptor.getType().getBinding();
+        Class geomType = geometryDescriptor.getType().getBinding();
         if (GeometryCollection.class.equals(geomType) || Geometry.class.equals(geomType)) {
             // in this case we fan out the output to multiple shapefiles
             shapefileCreated = writeCollectionToShapefiles(featureCollection, tempDir,
@@ -272,7 +273,7 @@ public class ShapeZipWriter {
      * @return
      */
     FeatureCollection<SimpleFeatureType, SimpleFeature> remapCollectionSchema(
-            FeatureCollection<SimpleFeatureType, SimpleFeature> fc, Class<?> targetGeometry) {
+            FeatureCollection<SimpleFeatureType, SimpleFeature> fc, Class targetGeometry) {
         SimpleFeatureType schema = fc.getSchema();
 
         // having dots in the name prevents various programs to recognize the file as a shapefile
@@ -286,7 +287,7 @@ public class ShapeZipWriter {
                     if (!(ad instanceof GeometryDescriptor)) {
                         tb.add(ad);
                     } else {
-                        Class<?> geomType = ad.getType().getBinding();
+                        Class geomType = ad.getType().getBinding();
                         if (geomType.equals(Geometry.class)
                                 || geomType.equals(GeometryCollection.class)) {
                             tb.add(ad.getName().getLocalPart(), targetGeometry,
@@ -374,6 +375,7 @@ public class ShapeZipWriter {
      *            per feature progress percent to report to {@code monitor}
      * @return true if a shapefile has been created, false otherwise
      */
+    @SuppressWarnings("unchecked")
     private boolean writeCollectionToShapefiles(
             FeatureCollection<SimpleFeatureType, SimpleFeature> c, File tempDir, Charset charset,
             ProgressListener monitor, final float featureProgressPercent) {
@@ -383,7 +385,7 @@ public class ShapeZipWriter {
         boolean shapefileCreated = false;
 
         float progress = 0F;
-        Map<Class<?>, StoreWriter> writers = new HashMap<Class<?>, StoreWriter>();
+        Map<Class, StoreWriter> writers = new HashMap<Class, StoreWriter>();
         FeatureIterator<SimpleFeature> it;
         try {
             it = c.features();
@@ -441,7 +443,7 @@ public class ShapeZipWriter {
      * writer if there are none so far
      */
     private FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(SimpleFeature f,
-            Map<Class<?>, StoreWriter> writers, File tempDir, Charset charset) throws IOException {
+            Map<Class, StoreWriter> writers, File tempDir, Charset charset) throws IOException {
         // get the target class
         Class<?> target;
         Geometry g = (Geometry) f.getDefaultGeometry();
