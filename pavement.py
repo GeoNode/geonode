@@ -24,7 +24,7 @@ import urllib
 
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, pushd, info, call_task
-
+from paver.easy import BuildFailure
 
 assert sys.version_info >= (2,6,2), \
        SystemError("GeoNode Build requires python 2.6.2 or better")
@@ -148,8 +148,9 @@ def package(options):
     """
     import pkg_resources
     import tarfile
+    import geonode
 
-    version = pkg_resources.get_distribution('GeoNode').version,
+    version = geonode.get_version()
     # Use GeoNode's version for the package name.
     pkgname = 'GeoNode-%s-all' % version
 
@@ -249,7 +250,7 @@ def start_django():
 @task
 def start_geoserver(options):
     """
-    Start GeoNode's Java apps (GeoServer with GeoNode extensions and GeoNetwork)
+    Start GeoServer with GeoNode extensions
     """
 
     from geonode.settings import GEOSERVER_BASE_URL
@@ -308,7 +309,7 @@ def test_integration(options):
 @needs(['stop'])
 def reset():
     """
-    Reset a development environment (Database, GeoServer & GeoNetwork)
+    Reset a development environment (Database, GeoServer & Catalogue)
     """
     _reset()
 
