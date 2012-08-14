@@ -18,21 +18,18 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson as json
 from django.contrib.auth.models import User
-from django.test.client import Client
 
 import geonode.maps.models
 import geonode.maps.views
-
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-
 from geonode.utils import default_map_config
-from django.conf import settings
 
 
 class MapsTest(TestCase):
