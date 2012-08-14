@@ -890,8 +890,13 @@ def describemap(request, mapid):
 
 
 def get_suffix_if_custom(map):
-        if (map.use_custom_template):
-            return map.officialurl
+        if map.use_custom_template:
+            if map.officialurl:
+                return map.officialurl
+            elif map.urlsuffix:
+                return map.urlsuffix
+            else:
+                return None
         else:
             return None
 
