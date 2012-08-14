@@ -20,6 +20,25 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+HIERARCHY_LEVELS = [
+    'series',
+    'software',
+    'featureType',
+    'model',
+    'collectionHardware',
+    'collectionSession',
+    'nonGeographicDataset',
+    'propertyType',
+    'fieldSession',
+    'dataset',
+    'service',
+    'attribute',
+    'attributeType',
+    'tile',
+    'feature',
+    'dimensionGroup'
+]
+
 UPDATE_FREQUENCIES = [
     'annually',
     'asNeeded',
