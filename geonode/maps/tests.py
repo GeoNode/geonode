@@ -221,7 +221,7 @@ community."
 
         c = Client()
         
-        url = lambda id: reverse('map_ajax_permissions',args=[id])
+        url = lambda id: reverse('map_permissions',args=[id])
 
         # Test that an invalid layer.typename is handled for properly
         response = c.post(url(invalid_mapid), 
