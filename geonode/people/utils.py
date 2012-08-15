@@ -21,18 +21,18 @@ from django.contrib.auth.models import User
 
 from geonode import GeoNodeException
 
+
 def get_default_user():
     """Create a default user
     """
-    try:
-        return User.objects.get(is_superuser=True)
-    except User.DoesNotExist:
+    superusers = User.objects.filter(is_superuser=True).order_by('id')
+    if superusers.count() > 0:
+        # Return the first created superuser
+        return superusers[0]
+    else:
         raise GeoNodeException('You must have an admin account configured '
                                'before importing data. '
                                'Try: django-admin.py createsuperuser')
-    except User.MultipleObjectsReturned:
-        raise GeoNodeException('You have multiple admin accounts, '
-                               'please specify which I should use.')
 
 
 def get_valid_user(user=None):

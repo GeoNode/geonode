@@ -527,7 +527,7 @@ def layer_search_result_detail(request, template='layers/layer_search_result_sni
 
 
 @require_POST
-def layer_ajax_permissions(request, layername):
+def layer_permissions(request, layername):
     try:
         layer = _resolve_layer(request, layername, 'layers.change_layer_permissions')
     except PermissionDenied:

@@ -438,7 +438,7 @@ def map_set_permissions(m, perm_spec):
 
 
 @require_POST
-def map_ajax_permissions(request, mapid):
+def map_permissions(request, mapid):
     try:
         map_obj = _resolve_map(request, mapid, 'maps.change_map_permissions')
     except PermissionDenied:
