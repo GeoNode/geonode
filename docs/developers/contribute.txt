@@ -9,7 +9,7 @@ If you are interested in helping us to make GeoNode, there are many ways to do s
 Participate in the Discussion
 -----------------------------
 
-GeoNode has a mailing list (geonode@librelist.org) where users can ask and answer questions about the software.
+GeoNode has a mailing list (https://groups.google.com/d/forum/geonode-users) where users can ask and answer questions about the software.
 There is also an IRC chat room on Freenode (http://freenode.net/) where users and developers can discuss GeoNode in real time.
 Sometimes users also post interesting tips for managing sites running GeoNode.
 If you want to help out with GeoNode, one easy way is to sign up for the mailing list and help answer questions.
@@ -18,7 +18,7 @@ Report Problems
 ---------------
 
 While we do our best to keep GeoNode fast and bug-free, problems can and do arise.
-Informative bug reports are a key part of the bug fixing process, so if you do run into a problem with GeoNode, please don't hesitate to report it on our bug tracker, available online at http://dev.geonode.org/trac.
+Informative bug reports are a key part of the bug fixing process, so if you do run into a problem with GeoNode, please don't hesitate to report it on our bug tracker, available online at http://github.com/GeoNode/geonode/issues.
 Useful information for bug reports includes:
 
   * What were you doing when the bug occurred?
@@ -48,6 +48,6 @@ Write Code
 ----------
 
 Of course since GeoNode is an open source project we do encourage contributions of source code as well.
-If you are interested in making small changes, you can find an open ticket on http://dev.geonode.org/trac/, hack away, and get started on the Patch Review Process.
+If you are interested in making small changes, you can find an open ticket on http://github.com/GeoNode/geonode/issues, hack away, and get started on the Patch Review Process.
 
 

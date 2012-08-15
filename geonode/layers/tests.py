@@ -157,19 +157,19 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post("/data/%s/ajax-permissions" % invalid_layer_typename, 
+        response = c.post("/data/%s/permissions" % invalid_layer_typename, 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 404) 
 
         # Test that POST is required
-        response = c.get("/data/%s/ajax-permissions" % valid_layer_typename)
+        response = c.get("/data/%s/permissions" % valid_layer_typename)
         self.assertEquals(response.status_code, 405)
         
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
+        response = c.post("/data/%s/permissions" % valid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -177,7 +177,7 @@ class LayersTest(TestCase):
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
+        response = c.post("/data/%s/permissions" % valid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -186,7 +186,7 @@ class LayersTest(TestCase):
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
 
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
+        response = c.post("/data/%s/permissions" % valid_layer_typename,
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 
