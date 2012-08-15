@@ -96,7 +96,7 @@
 		{% user_rating request.user map "map" as user_map_rating %}
 		<div id="user_rating" class="category-map"></div>
 	{% endif %}
-{% url maps_ajax_perm map.id as form_action %}
+{% url map_permissions map.id as form_action %}
 {% include "_permissions_form.html" %}
 {% endblock %}
 
