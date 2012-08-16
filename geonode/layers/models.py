@@ -151,21 +151,21 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
     abstract = models.TextField(_('abstract'), blank=True)
     purpose = models.TextField(_('purpose'), null=True, blank=True)
-    maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
+    maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices=UPDATE_FREQUENCIES, blank=True, null=True)
 
     # section 2
     # see poc property definition below
 
     # section 3
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_("A space or comma-separated list of keywords"))
-    keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
-    constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
+    keywords_region = models.CharField(_('keywords region'), max_length=3, choices=COUNTRIES, default='USA')
+    constraints_use = models.CharField(_('constraints use'), max_length=255, choices=[(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
     spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=SPATIAL_REPRESENTATION_TYPES, blank=True, null=True)
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng')
-    topic_category = models.CharField(_('topic_category'), max_length=255, choices = [(x, x) for x in TOPIC_CATEGORIES], default = 'location')
+    topic_category = models.CharField(_('topic_category'), max_length=255, choices=TOPIC_CATEGORIES, default = 'location')
 
     # Section 5
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True)
@@ -196,7 +196,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     csw_schema = models.CharField(_('CSW schema'), max_length=64, default='http://www.isotc211.org/2005/gmd', null=False)
     csw_mdsource = models.CharField(_('CSW source'), max_length=256, default='local', null=False)
     csw_insert_date = models.DateTimeField(_('CSW insert date'), auto_now_add=True, null=True)
-    csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=[(x, x) for x in HIERARCHY_LEVELS])
+    csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=HIERARCHY_LEVELS)
     csw_anytext = models.TextField(_('CSW anytext'), null=True)
     csw_wkt_geometry = csw_anytext = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))')
 
