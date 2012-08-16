@@ -55,7 +55,9 @@ class LayerForm(forms.ModelForm):
     keywords = taggit.forms.TagField()
     class Meta:
         model = Layer
-        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
+                   'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
+                   'csw_wkt_geometry', 'metadata_xml', 'csw_anytext')
 
 
 class LayerUploadForm(forms.Form):
