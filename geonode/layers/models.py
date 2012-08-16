@@ -158,21 +158,21 @@ class Layer(models.Model, PermissionLevelMixin):
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
     abstract = models.TextField(_('abstract'), blank=True)
     purpose = models.TextField(_('purpose'), null=True, blank=True)
-    maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
+    maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices=UPDATE_FREQUENCIES, blank=True, null=True)
 
     # section 2
     # see poc property definition below
 
     # section 3
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_("A space or comma-separated list of keywords"))
-    keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
-    constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
+    keywords_region = models.CharField(_('keywords region'), max_length=3, choices=COUNTRIES, default='USA')
+    constraints_use = models.CharField(_('constraints use'), max_length=255, choices=[(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
     spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=[(x,x) for x in SPATIAL_REPRESENTATION_TYPES], blank=True, null=True)
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng')
-    topic_category = models.CharField(_('topic_category'), max_length=255, choices = [(x, x) for x in TOPIC_CATEGORIES], default = 'location')
+    topic_category = models.CharField(_('topic_category'), max_length=255, choices=TOPIC_CATEGORIES, default = 'location')
 
     # Section 5
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True)
