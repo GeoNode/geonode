@@ -21,23 +21,23 @@
 from django.utils.translation import ugettext_lazy as _
 
 HIERARCHY_LEVELS = [
-    'series',
-    'software',
-    'featureType',
-    'model',
-    'collectionHardware',
-    'collectionSession',
-    'nonGeographicDataset',
-    'propertyType',
-    'fieldSession',
-    'dataset',
-    'service',
-    'attribute',
-    'attributeType',
-    'tile',
-    'feature',
-    'dimensionGroup'
-]
+     ('series', _('series')),
+     ('software', _('computer program or routine')),
+     ('featureType', _('feature type')),
+     ('model', _('copy or imitation of an existing or hypothetical object')),
+     ('collectionHardware', _('collection hardware')),
+     ('collectionSession', _('collection session')),
+     ('nonGeographicDataset', _('non-geographic data')),
+     ('propertyType', _('property type')),
+     ('fieldSession', _('field session')),
+     ('dataset', _('dataset')),
+     ('service', _('service interfaces')),
+     ('attribute', _('attribute class')),
+     ('attributeType', _('characteristic of a feature')),
+     ('tile', _('tile or spatial subset of geographic data')),
+     ('feature', _('feature')),
+     ('dimensionGroup', _('dimension group')),
+)
 
 UPDATE_FREQUENCIES = (
      ('unknown', _('frequency of maintenance for the data is not known')),
