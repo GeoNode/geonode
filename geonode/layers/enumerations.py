@@ -65,9 +65,13 @@ CONSTRAINT_OPTIONS = [
     'trademark'
 ]
 
-SPATIAL_REPRESENTATION_TYPES = [
-    'grid', 'steroModel', 'textTable', 'tin', 'vector'
-]
+SPATIAL_REPRESENTATION_TYPES = (
+    ('grid', _('grid data')),
+    ('stereoModel', _('three-dimensional view formed by the intersecting homologous rays of an overlapping pair of images')),
+    ('textTable', _('textual or tabular data')),
+    ('tin', _('triangulated irregular network')),
+    ('vector', _('vector data')),
+)
 
 TOPIC_CATEGORIES = [
     'biota',
