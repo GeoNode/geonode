@@ -39,7 +39,7 @@ MD_CORE_MODEL = {
         'pycsw:Language': 'language',
         'pycsw:Title': 'title',
         'pycsw:Abstract': 'abstract',
-        'pycsw:Keywords': 'keywords',
+        'pycsw:Keywords': 'keywords_csv',
         'pycsw:KeywordType': 'keywordstype',
         'pycsw:Format': 'spatial_representation_type',
         'pycsw:Source': 'source',
