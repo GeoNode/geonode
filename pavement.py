@@ -208,6 +208,9 @@ def package(options):
 @needs(['start_geoserver',
         'sync',
         'start_django',])
+@cmdopts([
+    ('bind=', 'b', 'Bind Django development server to provided IP address and port number.')
+], share_with=['start_django'])
 def start():
     """
     Start the GeoNode app and all its constituent parts (Django, GeoServer & Client)
@@ -239,12 +242,16 @@ def stop():
     stop_geoserver()
 
 
+@cmdopts([
+    ('bind=', 'b', 'Bind Django development server to provided IP address and port number.')
+])
 @task
 def start_django():
     """
     Start the GeoNode Django application
     """
-    sh('python manage.py runserver &')
+    bind = options.get('bind','')
+    sh('python manage.py runserver %s &' % bind)
 
 
 @task
