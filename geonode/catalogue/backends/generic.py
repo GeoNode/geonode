@@ -122,8 +122,7 @@ class Catalogue(CatalogueServiceWeb):
             urls.append(('text/xml', mformat, self.url_for_uuid(uuid, METADATA_FORMATS[mformat][1])))
         return urls
 
-    def csw_request(self, layer, template):
-
+    def csw_gen_xml(self, layer, template):
         id_pname = 'dc:identifier'
         if self.type == 'deegree':
             id_pname = 'apiso:Identifier'
@@ -136,6 +135,11 @@ class Catalogue(CatalogueServiceWeb):
         })
         md_doc = tpl.render(ctx)
         md_doc = md_doc.encode("utf-8")
+        return md_doc
+
+    def csw_request(self, layer, template):
+
+        md_doc = self.csw_gen_xml(layer, template)
 
         if self.type == 'geonetwork':
             headers = {
