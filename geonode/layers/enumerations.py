@@ -20,7 +20,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 
-HIERARCHY_LEVELS = [
+HIERARCHY_LEVELS = (
      ('series', _('series')),
      ('software', _('computer program or routine')),
      ('featureType', _('feature type')),
