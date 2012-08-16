@@ -43,6 +43,7 @@ class Catalogue(CatalogueServiceWeb):
         self.user = kwargs['USER']
         self.password = kwargs['PASSWORD']
         self.type = kwargs['ENGINE'].split('.')[-1]
+        self.local = False
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
@@ -360,15 +361,6 @@ class Catalogue(CatalogueServiceWeb):
                     pass
         return links
 
-    def is_local_repo(self):
-        # figure out whether the repository that the catalogue
-        # is working off is local (GeoNode DB/Django model),
-        # or not (native to the Catalogue impl)
-        if self.type == 'pycsw':
-            if settings.PYCSW['LOCAL']:
-                return True
-        return False
-
 class CatalogueBackend(BaseCatalogueBackend):
     def __init__(self, *args, **kwargs):
        self.catalogue = Catalogue(*args, **kwargs) 
@@ -399,27 +391,25 @@ class CatalogueBackend(BaseCatalogueBackend):
             return result
 
     def remove_record(self, uuid):
-        if not self.catalogue.is_local_repo():
-            with self.catalogue:
-               catalogue_record = self.catalogue.get_by_uuid(uuid)
-               if catalogue_record is None:
-                   return
+        with self.catalogue:
+           catalogue_record = self.catalogue.get_by_uuid(uuid)
+           if catalogue_record is None:
+               return
     
-               try:
-                   # this is a bit hacky, delete_layer expects an instance of the layer
-                   # model but it just passes it to a Django template so a dict works
-                   # too.
-                   self.catalogue.delete_layer({ "uuid": uuid })
-               except:
-                   logger.exception('Couldn\'t delete Catalogue record '
+           try:
+               # this is a bit hacky, delete_layer expects an instance of the layer
+               # model but it just passes it to a Django template so a dict works
+               # too.
+               self.catalogue.delete_layer({ "uuid": uuid })
+           except:
+               logger.exception('Couldn\'t delete Catalogue record '
                                         'during cleanup()')
 
     def create_record(self, item):
-        if not self.catalogue.is_local_repo():
-            with self.catalogue:
-                record = self.catalogue.get_by_uuid(item.uuid)
-                if record is None:
-                    md_link = self.catalogue.create_from_layer(item)
-                    item.metadata_links = [("text/xml", "TC211", md_link)]
-                else:
-                    self.catalogue.update_layer(item)
+        with self.catalogue:
+            record = self.catalogue.get_by_uuid(item.uuid)
+            if record is None:
+                md_link = self.catalogue.create_from_layer(item)
+                item.metadata_links = [("text/xml", "TC211", md_link)]
+            else:
+                self.catalogue.update_layer(item)
