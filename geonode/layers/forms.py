@@ -55,8 +55,8 @@ class LayerForm(forms.ModelForm):
     keywords = taggit.forms.TagField()
     class Meta:
         model = Layer
-        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename')
-
+        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
+                   'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid')
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
