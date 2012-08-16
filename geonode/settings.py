@@ -308,7 +308,7 @@ GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 CATALOGUE = {
     'default': {
         # The underlying CSW implementation
-        'ENGINE': 'geonode.catalogue.backends.pycsw',
+        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         'URL': '%scatalogue/csw' % SITEURL,
@@ -323,8 +323,6 @@ CATALOGUE = {
 
 # pycsw settings
 PYCSW = {
-    # is pycsw inline to GeoNode and tightly coupled?
-    'LOCAL': True,
     # pycsw configuration
     'CONFIGURATION': {
         'server': {
