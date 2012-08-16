@@ -363,19 +363,35 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
     
     loadConfig: function(config) {
-        config.sources['csw'] = {
-            ptype: "gxp_cataloguesource",
-            url: config.localCSWBaseUrl,
-            proxyOptions: {
-                listeners: {
-                    "beforeload": function(proxy, params) {
-                        params.headers = {
-                            'X-CSRFToken': Ext.util.Cookies.get('csrftoken')
-                        };
+        var beforeLoad = function(proxy, params) {
+            params.headers = {
+                'X-CSRFToken': Ext.util.Cookies.get('csrftoken')
+            };
+        };
+        var found = false;
+        for (var key in config.sources) {
+            var source = config.sources[key];
+            if (source.ptype === "gxp_cataloguesource" && source.url === config.localCSWBaseUrl) {
+                found = true;
+                Ext.apply(source.proxyOptions, {
+                    listeners: {
+                        "beforeload": beforeLoad
+                    }
+                });
+                break;
+            }
+        }
+        if (found === false) {
+            config.sources['csw'] = {
+                ptype: "gxp_cataloguesource",
+                url: config.localCSWBaseUrl,
+                proxyOptions: {
+                    listeners: {
+                        "beforeload": beforeLoad
                     }
                 }
-            }
-        };
+            };
+        }
         config.tools = (config.tools || []).concat({
             ptype: "gxp_zoom",
             actionTarget: {target: "paneltbar", index: 4}
