@@ -1,8 +1,9 @@
+from array import array
 import logging
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-#from geonode.gazetteer.models import GazetteerEntry
+from geonode.gazetteer.models import GazetteerEntry
 #from psycopg2 import extras
 from geonode.gazetteer.models import GazetteerEntry
 from geopy import geocoders
@@ -10,6 +11,7 @@ from django.conf import settings
 import psycopg2
 from django.db.models import Q
 from geonode.maps.models import Layer, LayerAttribute, MapLayer, Map
+
 
 
 GAZETTEER_TABLE = 'gazetteer_gazetteerentry'
@@ -106,84 +108,41 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 ## Unfortunately, python datetime can't handle dates < 1 AD (WTF!?)so
 ## going back to using direct SQL queries for now
 
-#    criteria = Q(place_name__istartswith=place_name)
-#
-#    if layers:
-#        criteria = criteria & Q(layer_name__in=layers)
-#
-#    if start_date:
-#        start_date = parser.parse(start_date)
-#        #Start_date is >= the specified start date or no start date
-#        criteria = criteria & (Q(start_date__gte=start_date) | Q(start_date__isnull=True))
-#        # AND End_date is >= the specified start date or no end date
-#        criteria = criteria & (Q(end_date__gte=start_date) | Q(end_date__isnull=True))
-#
-#    if end_date:
-#        end_date = parser.parse(end_date)
-#        #End_date is <= the specified end date or no end date
-#        criteria = criteria & (Q(end_date__lte=end_date) | Q(end_date__isnull=True))
-#        # AND start_date <= specified end date or no start date
-#        criteria = criteria & (Q(start_date__lte=end_date) | Q(start_date__isnull=True))
-#
-#    if project:
-#        criteria = criteria & Q(project__exact=project)
-#
-#    matchingEntries=GazetteerEntry.objects.filter(criteria)
-#
-#    posts = []
-#
-#    for entry in matchingEntries:
-#        #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
-#        posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
-#            'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
-#            'gazetteer_id': entry.id})
-#    return posts
-#
-#
-#    return posts
+    criteria = Q(place_name__istartswith=place_name)
 
-
-
-    #"select ts_headline(place_name, to_tsquery('" + place_name + "')), layer_name, latitude, longitude, start_date, end_date, id from gazetteer_placename, to_tsquery('" + place_name + "') query where query @@ text_search"
-
-    sql_query = "SELECT place_name, layer_name, latitude, longitude, TO_CHAR(start_date,'YYYY-MM-DD BC'), TO_CHAR(end_date,'YYYY-MM-DD BC'), id from gazetteer_gazetteerentry WHERE place_name ILIKE '" + place_name + "\%'"
     if layers:
-        layers_str = "'" + "','".join(layers) + "'"
-        sql_query += " AND layer_name in (" + layers_str + ")"
+        criteria = criteria & Q(layer_name__in=layers)
 
-    if start_date: #Select records whose start/end_date is >= the specified start date
-        sql_query += " AND (end_date >= CAST('" + start_date + "' as date) OR "
-        sql_query += "(start_date is null or start_date >= CAST('" + start_date + "' as date)))"
+    if start_date:
+        start_date = parseDate(start_date)
+        #Start_date is >= the specified start date or no start date
+        criteria = criteria & (Q(julian_start__gte=start_date) | Q(julian_end__isnull=True))
+        # AND End_date is >= the specified start date or no end date
+        criteria = criteria & (Q(julian_end__gte=start_date) | Q(julian_end__isnull=True))
 
-    if end_date: #Select records whose start date is <= the specified end date (or no start date)
-        sql_query += " AND ((end_date <= CAST('" + end_date + "' as date) OR end_date is null) AND"
-        sql_query += " (start_date <= CAST('" + end_date + "' as date) OR start_date is null)"
+    if end_date:
+        end_date = parseDate(end_date)
+        #End_date is <= the specified end date or no end date
+        criteria = criteria & (Q(julian_end__lte=end_date) | Q(julian_end__isnull=True))
+        # AND start_date <= specified end date or no start date
+        criteria = criteria & (Q(julian_start__lte=end_date) | Q(julian_start__isnull=True))
 
     if project:
-        sql_query += " AND project = '" + project + "'"
+        criteria = criteria & Q(project__exact=project)
 
-    #print("SQL QUERY IS: %s", sql_query)
+    matchingEntries=GazetteerEntry.objects.filter(criteria)
 
-    conn = psycopg2.connect(
-        "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
-    try:
-        cur = conn.cursor()
-        cur.execute(sql_query)
-        results = cur.fetchall()
+    posts = []
 
-        posts = []
-        for result in results:
-            #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
-            posts.append({'placename': result[0], 'coordinates': (result[2], result[3]),
-                          'source': formatSourceLink(result[1]), 'start_date': result[4], 'end_date': result[5],
-                          'gazetteer_id': result[6]})
-            #posts.append({"type": "Feature", "geometry": {"type": "Point", "coordinates":[result[2], result[3]]}, "properties": {'placename': result[0], 'source': result[1], 'start_date': result[4], 'end_date': result[5], 'gazetteer_id': result[6]}})
-        return posts
-    except Exception, e:
-        logger.error("Error retrieving type for PostGIS table %s:%s", layer, str(e))
-        raise
-    finally:
-        conn.close()
+    for entry in matchingEntries:
+        #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
+        posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
+            'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
+            'gazetteer_id': entry.id})
+    return posts
+
+
+    return posts
 
 
 def delete_from_gazetteer(layer_name):
@@ -219,14 +178,20 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
     """
 
     def getDateFormat(date_attribute):
-        date_format = "l.\"" + date_attribute.attribute + "\""
+        field_name = "l." + date_attribute.attribute
+        date_format = [field_name, field_name]
         if "xsd:date" not in date_attribute.attribute_type and date_attribute.date_format is not None:
             #This could be in any of multiple formats, and postgresql needs a format pattern to convert it.
             #User should supply this format when adding the layer attribute to the gazetteer
-            date_format = "TO_DATE(CAST(" + date_format + " AS TEXT), '" + date_attribute.date_format + "')"
+            date_format[0] = "TO_CHAR(TO_DATE(CAST(" + field_name + " AS TEXT), '" + date_attribute.date_format + "'), 'YYYY-MM-DD BC')"
+            date_format[1] = "CAST(TO_CHAR(TO_DATE(CAST(" + field_name + " AS TEXT), '" + date_attribute.date_format + "'), 'J') AS integer)"
+        elif "xsd:date" in date_attribute.attribute_type:
+            #It's a date, convert to string
+            date_format[0] = "TO_CHAR(" + field_name + ", 'YYYY-MM-DD BC')"
+            date_format[1] = "CAST(TO_CHAR(" + field_name + ", 'J') AS integer)"
         elif not "xsd:date" in start_attribute_obj.attribute_type:
             #It's not a date, it's not an int, and no format was specified if it's a string - so don't use it
-            date_format = None
+            date_format = [None,None]
         return date_format
 
     layer = get_object_or_404(Layer, name=layer_name)
@@ -253,15 +218,19 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
     if "POINT" not in layer_type:
         coord_query = "ST_Centroid(" + geom_query + ")"
 
-    start_format = None
+    start_format, julian_start = None, None
     if start_attribute is not None:
         start_attribute_obj = get_object_or_404(LayerAttribute, layer=layer, attribute=start_attribute)
-        start_format = getDateFormat(start_attribute_obj)
+        start_dates = getDateFormat(start_attribute_obj)
+        start_format = start_dates[0]
+        julian_start = start_dates[1]
 
-    end_format = None
+    end_format, julian_end = None, None
     if end_attribute is not None:
         end_attribute_obj = get_object_or_404(LayerAttribute, layer=layer, attribute=end_attribute)
-        end_format = getDateFormat(end_attribute_obj)
+        end_dates = getDateFormat(end_attribute_obj)
+        end_format = end_dates[0]
+        julian_end = end_dates[1]
 
     for name in name_attributes:
         #print("Attribute:" + name + " for " + layer.name)
@@ -272,8 +241,10 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         updateQueries.append("UPDATE " + GAZETTEER_TABLE + " SET layer_attribute = '" + str(
             attribute.attribute) + "', feature = " + geom_query + ", feature_type = '" + layer_type +\
                              "', place_name = l.\"" + attribute.attribute + "\"" +
-        ", start_date = " + (start_format if start_format else "null") +\
+                             ", start_date = " + (start_format if start_format else "null") +\
                              ", end_date = " + (end_format if end_format else "null") +\
+                             ", julian_start = " + (julian_start if julian_start else "null") +\
+                             ", julian_end = " + (julian_end if julian_end else "null") +\
                              ", project = " + ("'" + project + "'" if project else "null") +\
                              ", longitude = ST_X(" + coord_query + "), latitude = ST_Y(" + coord_query + ")" +\
                              " FROM \"" + layer_name + "\" as l WHERE layer_name = '" + layer_name + "' AND" +\
@@ -283,13 +254,15 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         Insert any new placenames
         """
         insertQueries.append(
-            "INSERT INTO " + GAZETTEER_TABLE + " (layer_name, layer_attribute, feature_type, feature_fid, place_name, start_date, end_date, project, feature, longitude, latitude) (SELECT '" + str(
+            "INSERT INTO " + GAZETTEER_TABLE + " (layer_name, layer_attribute, feature_type, feature_fid, place_name, start_date, end_date, julian_start, julian_end, project, feature, longitude, latitude) (SELECT '" + str(
                     layer.name) + "' as layer_name,'" + str(
                     attribute.attribute) + "' as layer_attribute,'" + layer_type + "' as feature_type,fid as feature_fid,"\
                 + "\"" + attribute.attribute + "\" as place_name," +\
-                (start_format.replace("l.","") if start_format else 'null') + " as start_attribute," +\
-                (end_format.replace("l.","") if end_format else 'null') + " as end_attribute," +\
-                ("'" + project + "'" if project else 'null') + " as project" +\
+                (start_format.replace("l.","") if start_format else 'null') + " as start_date," +\
+                (end_format.replace("l.","") if end_format else 'null') + " as end_date," +\
+                (julian_start.replace("l.","") if julian_start else 'null') + " as julian_start," +\
+                (julian_end.replace("l.","") if julian_end else 'null') + " as julian_end," +\
+            ("'" + project + "'" if project else 'null') + " as project" +\
                 "," + geom_query + " as feature," +\
             "ST_X(" + coord_query + "), ST_Y(" + coord_query + ") from " + layer_name +\
             " as l WHERE  l.\"" + attribute.attribute + "\" is not null AND " +\
@@ -319,36 +292,6 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         raise
     finally:
         conn.close()
-
-
-#def alternateUpdateGazetteer():
-#    #If this were to use a django object model....
-#    matchingEntries = GazetteerEntry.objects.filter(place_name__ilike(place_name))
-#
-#    if layers:
-#        matchingEntries.filter(layer_name__in=layers)
-#
-#    if start_date: #Select records whose end_date is >= the specified start date (or no end date)
-#        matchingEntries.filter(start_date__gte=start_date)
-#
-#    if end_date: #Select records whose start date is <= the specified end date (or no start date)
-#        matchingEntries.filter(end_date__lte=start_date)
-#
-#    if project:
-#        matchingEntries.filter(project__exact=project)
-#
-#    return matchingEntries
-
-#def addGazetteerEntry(row):
-#    entry,created = GazetteerEntry.objects.get_or_create(layer_name=row['layer_name'], layer_attribute=row['layer_attribute'],
-#        feature_fid=row['feature_fid'], defaults={'feature_type':row['feature_type'],
-#        'latitude':row['latitude'], 'longitude':row['longitude'], 'place_name':row['place_name'],
-#         'project':row['project'], 'feature':GEOSGeometry(row['feature'])
-#        })
-#    try:
-#        entry.save()
-#    except Exception, e:
-#        logger.error(str(e))
 
 
 
@@ -411,4 +354,18 @@ def getGeonamesResults(place_name):
 def formatExternalGeocode(geocoder, geocodeResult):
     return {'placename': geocodeResult[0], 'coordinates': geocodeResult[1], 'source': geocoder, 'start_date': 'N/A',
             'end_date': 'N/A', 'gazetteer_id': 'N/A'}
-    #return {"type": "Feature", "geometry": {"type": "Point", "coordinates":geocodeResult[1]}, "properties": {'placename': geocodeResult[0], 'source': geocoder, 'start_date': 'N/A', 'end_date': 'N/A', 'gazetteer_id': 'N/A'}}
+
+def parseDate(dateString):
+    from datautil.date import DateutilDateParser
+    from jdcal import gcal2jd
+    parser = DateutilDateParser()
+    flexdate = parser.parse(dateString)
+    julian = gcal2jd(int(flexdate.year), int(flexdate.month if flexdate.month is not '' else '1'), \
+        int(flexdate.day if flexdate.day is not '' else '1'))
+    return julian[0] + julian[1]
+
+def julianDate(year,month=1,day=1,hour=0,min=0,sec=0,utc=0):
+    jd = (367*year) - (7*(year+((month+9)/12))/4) + (275*month/9)+ day + 1721013.5 + utc/24 \
+         - 0.5*sign((100*year)+month-190002.5) + 0.5 + hour/24.0 + min/(60.0*24.0) + sec/(3600.0*24.0)
+    return jd
+

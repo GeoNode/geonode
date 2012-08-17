@@ -54,7 +54,7 @@ var init = function() {
                 ptype: "gxp_coordinatetool",
                 title: coordinateText,
                 actionTarget:  {target: "paneltbar"}
-            },
+            }{% if USE_GAZETTEER %},
             {
                 ptype: "gxp_gazetteertool",
                 actionTarget:  {target: "paneltbar", index: 7},
@@ -62,7 +62,7 @@ var init = function() {
                 iconCls: null,
                 toggleGroup: 'featureGroup',
                 pressed: false
-            }{% if user.is_authenticated and DB_DATASTORE  %},
+            }{% endif %}{% if user.is_authenticated and DB_DATASTORE  %},
             {
                 ptype: "gxp_featuremanager",
                 id: "feature_manager",

@@ -2,7 +2,7 @@
 
 -- DROP TABLE gazetteer_placename;
 
-CREATE TABLE gazetteer_placename
+CREATE TABLE gazetteer_gazetteerentry
 (
   id serial NOT NULL,
   layer_name character varying(256) NOT NULL,

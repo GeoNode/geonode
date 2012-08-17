@@ -24,3 +24,6 @@ https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
 #For scheduled tasks
 django-celery
 kombu
+#For gazetteer
+jdcal
+datautil

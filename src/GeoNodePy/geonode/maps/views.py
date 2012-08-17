@@ -1100,6 +1100,7 @@ def layer_metadata(request, layername):
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
         layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm, )
 
+        show_gazetteer_form = request.user.is_superuser and layer.store == settings.DB_DATASTORE_NAME
 
         fieldTypes = {}
         attributeOptions = layer.attribute_set.filter(attribute_type__in=['xsd:dateTime','xsd:date','xsd:int','xsd:string','xsd:bigint', 'xsd:double'])
@@ -1122,6 +1123,7 @@ def layer_metadata(request, layername):
 
             startAttributeQuerySet = LayerAttribute.objects.filter(layer=layer).filter(is_gaz_start_date=True)
             endAttributeQuerySet = LayerAttribute.objects.filter(layer=layer).filter(is_gaz_end_date=True)
+
 
             gazetteer_form = GazetteerForm()
 
@@ -1214,7 +1216,7 @@ def layer_metadata(request, layername):
                     the_layer.save()
                     logger.debug("Saved")
 
-                    if settings.USE_GAZETTEER:
+                    if settings.USE_GAZETTEER and show_gazetteer_form:
                         if settings.USE_QUEUE:
                             the_layer.queue_gazetteer_update()
                         else:
@@ -1265,10 +1267,10 @@ def layer_metadata(request, layername):
                 "attribute_form": attribute_form,
                 "category_form" : category_form,
                 "gazetteer_form": gazetteer_form,
+                "show_gazetteer_options": show_gazetteer_form,
                 "lastmap" : request.session.get("lastmap"),
                 "lastmapTitle" : request.session.get("lastmapTitle"),
                 "tab" : tab,
-                "superuser" : request.user.is_superuser,
                 "datatypes" : json.dumps(fieldTypes)
                 }))
                 return HttpResponse(data, status=412)
@@ -1283,10 +1285,10 @@ def layer_metadata(request, layername):
             "attribute_form": attribute_form,
             "category_form" : category_form,
             "gazetteer_form": gazetteer_form,
+            "show_gazetteer_options": show_gazetteer_form,
             "lastmap" : request.session.get("lastmap"),
             "lastmapTitle" : request.session.get("lastmapTitle"),
             "tab" : tab,
-            "superuser" : request.user.is_superuser,
             "datatypes" : json.dumps(fieldTypes)
         }))
 
@@ -1299,9 +1301,9 @@ def layer_metadata(request, layername):
             "attribute_form": attribute_form,
             "category_form" : category_form,
             "gazetteer_form": gazetteer_form,
+            "show_gazetteer_options": show_gazetteer_form,
             "lastmap" : request.session.get("lastmap"),
             "lastmapTitle" : request.session.get("lastmapTitle"),
-            "superuser" : request.user.is_superuser,
             "datatypes" : json.dumps(fieldTypes)
         }))
     else:
