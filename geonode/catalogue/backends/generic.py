@@ -408,7 +408,7 @@ class CatalogueBackend(BaseCatalogueBackend):
                self.catalogue.delete_layer({ "uuid": uuid })
            except:
                logger.exception('Couldn\'t delete Catalogue record '
-                                        'during cleanup()')
+                                    'during cleanup()')
 
     def create_record(self, item):
         with self.catalogue:
