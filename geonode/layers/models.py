@@ -199,7 +199,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     csw_insert_date = models.DateTimeField(_('CSW insert date'), auto_now_add=True, null=True)
     csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=HIERARCHY_LEVELS)
     csw_anytext = models.TextField(_('CSW anytext'), null=True)
-    csw_wkt_geometry = csw_anytext = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))')
+    csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))')
 
     # metadata XML specific fields
     #metadata_uploaded = models.BooleanField(default=False)
