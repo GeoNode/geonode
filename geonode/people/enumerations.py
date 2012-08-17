@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+from django.utils.translation import ugettext as _
+
 CONTACT_FIELDS = [                   
     "name",
     "organization",
@@ -33,16 +35,16 @@ CONTACT_FIELDS = [
     "role"
 ]
 
-ROLE_VALUES = [
-    'datasetProvider',
-    'custodian',
-    'owner',
-    'user',
-    'distributor',
-    'originator',
-    'pointOfContact',
-    'principalInvestigator',
-    'processor',
-    'publisher',
-    'author'
-]
+ROLE_VALUES = (
+     ('author', _('party who authored the resource')),
+     ('processor', _('party who has processed the data in a manner such that the resource has been modified')),
+     ('publisher', _('party who published the resource')),
+     ('custodian', _('party that accepts accountability and responsability for the data and ensures appropriate care and maintenance of the resource')),
+     ('pointOfContact', _('party who can be contacted for acquiring knowledge about or acquisition of the resource')),
+     ('distributor', _('party who distributes the resource')),
+     ('user', _('party who uses the resource')),
+     ('resourceProvider', _('party that supplies the resource')),
+     ('originator', _('party who created the resource')),
+     ('owner', _('party that owns the resource')),
+     ('principalInvestigator', _('key party responsible for gathering information and conducting research')),
+)
