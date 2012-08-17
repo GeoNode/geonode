@@ -115,17 +115,32 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     if start_date:
         start_date = parseDate(start_date)
-        #Start_date is >= the specified start date or no start date
-        criteria = criteria & (Q(julian_start__gte=start_date) | Q(julian_end__isnull=True))
-        # AND End_date is >= the specified start date or no end date
-        criteria = criteria & (Q(julian_end__gte=start_date) | Q(julian_end__isnull=True))
 
     if end_date:
         end_date = parseDate(end_date)
-        #End_date is <= the specified end date or no end date
-        criteria = criteria & (Q(julian_end__lte=end_date) | Q(julian_end__isnull=True))
-        # AND start_date <= specified end date or no start date
-        criteria = criteria & (Q(julian_start__lte=end_date) | Q(julian_start__isnull=True))
+
+    if start_date and end_date:
+        #Return all placenames that ended after the start date or started before the end date
+        criteria = criteria & (Q(julian_end__gte=start_date) | Q(julian_start__lte=end_date) |\
+                               (Q(julian_start__isnull=True) & Q(julian_end__isnull=True)))
+
+
+
+    elif start_date:
+        #Return all placenames that started before this date
+        #End_date >= the specified start date or start_date <= the specified date or both are null
+        criteria = criteria & ((Q(julian_end__gte=start_date) & Q(julian_start__lte=start_date)) |\
+                               (Q(julian_end__isnull=True) & Q(julian_start__lte=start_date)) |\
+                               (Q(julian_start__isnull=True) & Q(julian_end__gte=start_date)) |\
+                               (Q(julian_start__isnull=True) & Q(julian_end__isnull=True)))
+
+    elif end_date:
+        #Return all placenames that started before this date
+        #End_date >= the specified end date or start_date <= the specified date or both are null
+        criteria = criteria & ((Q(julian_end__gte=end_date) & Q(julian_start__lte=end_date)) |\
+                               (Q(julian_start__isnull=True) & Q(julian_end__gte=end_date)) |\
+                               (Q(julian_end__isnull=True) & Q(julian_start__lte=end_date)) |\
+                               (Q(julian_start__isnull=True) & Q(julian_end__isnull=True)))
 
     if project:
         criteria = criteria & Q(project__exact=project)
@@ -178,7 +193,7 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
     """
 
     def getDateFormat(date_attribute):
-        field_name = "l." + date_attribute.attribute
+        field_name = "l.\"" + date_attribute.attribute + "\""
         date_format = [field_name, field_name]
         if "xsd:date" not in date_attribute.attribute_type and date_attribute.date_format is not None:
             #This could be in any of multiple formats, and postgresql needs a format pattern to convert it.
@@ -258,8 +273,8 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
                     layer.name) + "' as layer_name,'" + str(
                     attribute.attribute) + "' as layer_attribute,'" + layer_type + "' as feature_type,fid as feature_fid,"\
                 + "\"" + attribute.attribute + "\" as place_name," +\
-                (start_format.replace("l.","") if start_format else 'null') + " as start_date," +\
-                (end_format.replace("l.","") if end_format else 'null') + " as end_date," +\
+                (start_format.replace("l.","") if start_format else 'null') + " as start_attribute," +\
+                (end_format.replace("l.","") if end_format else 'null') + " as end_attribute," +\
                 (julian_start.replace("l.","") if julian_start else 'null') + " as julian_start," +\
                 (julian_end.replace("l.","") if julian_end else 'null') + " as julian_end," +\
             ("'" + project + "'" if project else 'null') + " as project" +\
