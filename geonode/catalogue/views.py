@@ -43,10 +43,6 @@ def csw_global_dispatch(request):
     if request.is_secure():
         scheme = "https"
 
-    # update server.url
-    server_url = '%s://%s/catalogue/csw' %(scheme, request.META['HTTP_HOST'])
-    config.set('server', 'url', server_url)
-
     # request.meta has:
     # QUERY_STRING, REMOTE_ADDR, CONTENT_LENGTH, SERVER_NAME
     # SERVER_PORT
