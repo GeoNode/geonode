@@ -256,13 +256,11 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
                 minx, maxx, miny, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
-                (center_x,center_y) = forward_mercator((x,y))
+                (self.center_x,self.center_y) = forward_mercator((x,y))
 
                 width_zoom = math.log(360 / (maxx - minx), 2)
                 height_zoom = math.log(360 / (maxy - miny), 2)
 
-                center_x = center.x
-                center_y = center.y
                 self.zoom = math.ceil(min(width_zoom, height_zoom))
             index += 1
 
