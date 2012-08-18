@@ -327,6 +327,7 @@ PYCSW = {
     'CONFIGURATION': {
         'server': {
             'home': '.',
+            'url': CATALOGUE['default']['URL'],
             'encoding': 'UTF-8',
             'language': LANGUAGE_CODE,
             'maxrecords': '10',
