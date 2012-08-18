@@ -21,7 +21,6 @@ import os
 import math
 from django.test.client import Client
 from django.test import TestCase
-from mock import patch
 
 from geonode import GeoNodeException
 from geonode.utils import forward_mercator, inverse_mercator
@@ -131,8 +130,8 @@ class GeoNodeUtilsTests(TestCase):
 
     ### Some other Stuff
 
+    """
     def test_check_geonode_is_up(self):
-        return
         from contextlib import nested
         from geonode.utils import check_geonode_is_up
 
@@ -158,7 +157,7 @@ class GeoNodeUtilsTests(TestCase):
         ) as (mock_gs, mock_gn):
             # no assertion, this should just run without error
             check_geonode_is_up()
-
+    """
 
     def test_forward_mercator(self):
         arctic = forward_mercator((0, 85))
