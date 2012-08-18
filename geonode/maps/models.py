@@ -28,7 +28,6 @@ from django.utils import simplejson as json
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.gis.geos import GEOSGeometry
 
 from geonode.layers.models import Layer
 from geonode.security.models import PermissionLevelMixin
@@ -37,6 +36,7 @@ from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
+from geonode.utils import forward_mercator
 
 from taggit.managers import TaggableManager
 
@@ -256,15 +256,13 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
                 minx, maxx, miny, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
-                wkt = "POINT(" + str(x) + " " + str(y) + ")"
-                center = GEOSGeometry(wkt, srid=4326)
-                center.transform("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+                (center_x,center_y) = forward_mercator((x,y))
 
                 width_zoom = math.log(360 / (maxx - minx), 2)
                 height_zoom = math.log(360 / (maxy - miny), 2)
 
-                self.center_x = center.x
-                self.center_y = center.y
+                center_x = center.x
+                center_y = center.y
                 self.zoom = math.ceil(min(width_zoom, height_zoom))
             index += 1
 
