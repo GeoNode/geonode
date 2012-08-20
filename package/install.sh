@@ -121,8 +121,6 @@ function setup_django_once() {
 
 function setup_django_every_time() {
     pushd $GEONODE_LIB
-    easy_install -U virtualenv
-    easy_install -U pip
     virtualenv . --system-site-packages --never-download
 
     if [ ! -f bin/activate ]
@@ -134,11 +132,9 @@ function setup_django_every_time() {
     source bin/activate
     pip install geonode-webapp.pybundle
 
-    # FIXME: What is this doing here?
-    test -d src/GeoNodePy/geonode/media/static &&
-        mv -f src/GeoNodePy/geonode/media/static src/GeoNodePy/geonode/media/geonode
+    sitedir=`$GEONODE_LIB/bin/python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
 
-    ln -sf $GEONODE_ETC/local_settings.py $GEONODE_LIB/src/GeoNodePy/geonode/local_settings.py
+    ln -sf $GEONODE_ETC/local_settings.py $sitedir/geonode/local_settings.py
     # Set up logging symlink
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
