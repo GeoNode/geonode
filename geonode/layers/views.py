@@ -475,7 +475,8 @@ def layer_search(request):
 
         doc['metadata_links'] = metadata_links
 
-        rows.append(doc)
+        if doc['_permissions']['view']:
+            rows.append(doc)
 
     result['rows'] = rows
     result['success'] = True
