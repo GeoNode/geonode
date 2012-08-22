@@ -40,7 +40,6 @@ def get_geometry_type(layer_name):
         cur = conn.cursor()
         cur.execute("select type, f_geometry_column, srid from geometry_columns where f_table_name = '%s'" % layer_name)
         result = cur.fetchone()
-        #print result
         return result
     except Exception, e:
         logger.error("Error retrieving type for PostGIS table %s:%s", layer_name, str(e))
@@ -75,7 +74,6 @@ def getGazetteerEntry(id):
 
 
 def formatSourceLink(layer_name):
-    print(layer_name)
     layer = Layer.objects.get(name=layer_name)
     return "<a href='{0}data/{1}' target='_blank'>{2}</a>".format(settings.SITEURL, layer.typename, layer.name)
 
@@ -152,11 +150,8 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     posts = []
 
-    print "Num is :" + str(len(matchingEntries))
 
     for entry in matchingEntries:
-        print(entry.place_name)
-        #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
         posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
             'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
             'gazetteer_id': entry.id})
@@ -175,7 +170,6 @@ def delete_from_gazetteer(layer_name):
 #    GazetteerEntry.objects.filter(layer_name__exact=layer_name).delete()
 
     delete_query = "DELETE FROM " + GAZETTEER_TABLE + " WHERE layer_name = '%s'" % layer_name
-    print delete_query
     conn = psycopg2.connect(
         "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
@@ -225,7 +219,6 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
     """
     delete_query = "DELETE FROM " + GAZETTEER_TABLE + " WHERE layer_name = '" + str(
         layer.name) + "' AND (feature_fid NOT IN (SELECT fid from \"" + layer.name + "\") OR layer_attribute NOT IN (" + namelist + "))"
-    #print delete_query
 
     updateQueries = []
     insertQueries = []
@@ -254,7 +247,6 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         julian_end = end_dates[1]
 
     for name in name_attributes:
-        #print("Attribute:" + name + " for " + layer.name)
         attribute = get_object_or_404(LayerAttribute, layer=layer, attribute=name)
         """
         Update layer placenames where placename FID = layer FID and placename layer attribute = name attribute
@@ -297,18 +289,15 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         cur.execute(delete_query)
         logger.info(delete_query)
         for updateQuery in updateQueries:
-            #print updateQuery
             cur.execute(updateQuery)
             logger.info(updateQuery)
         for insertQuery in insertQueries:
-            #print insertQuery
             cur.execute(insertQuery)
             logger.info(insertQuery)
         conn.commit()
         cur.close()
         return "Done"
     except Exception, e:
-        #print ("Error retrieving type for PostGIS table %s:%s", layer_name, str(e))
         logger.error("Error retrieving type for PostGIS table %s:%s", layer_name, str(e))
         raise
     finally:
@@ -321,15 +310,12 @@ def getExternalServiceResults(place_name, services):
     results = []
     for service in services.split(',', ):
         if service == "google":
-            #print("get Google")
             google = getGoogleResults(place_name)
             results.extend(google)
         elif service == "yahoo":
-            #print("get Yahoo")
             yahoo = getYahooResults(place_name)
             results.extend(yahoo)
         elif service == "geonames":
-            #print("get Geonames")
             geonames = getGeonamesResults(place_name)
             results.extend(geonames)
     return results
