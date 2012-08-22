@@ -75,6 +75,7 @@ def getGazetteerEntry(id):
 
 
 def formatSourceLink(layer_name):
+    print(layer_name)
     layer = Layer.objects.get(name=layer_name)
     return "<a href='{0}data/{1}' target='_blank'>{2}</a>".format(settings.SITEURL, layer.typename, layer.name)
 
@@ -121,7 +122,9 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     if start_date and end_date:
         #Return all placenames that ended after the start date or started before the end date
-        criteria = criteria & (Q(julian_end__gte=start_date) | Q(julian_start__lte=end_date) |\
+        criteria = criteria & (Q(julian_end__gte=start_date) &  Q(julian_start__lte=end_date) |\
+                               (Q(julian_start__isnull=True) & Q(julian_end__gte=start_date)) |\
+                               (Q(julian_end__isnull=True) &Q(julian_start__lte=end_date)) |\
                                (Q(julian_start__isnull=True) & Q(julian_end__isnull=True)))
 
 
@@ -149,7 +152,10 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     posts = []
 
+    print "Num is :" + str(len(matchingEntries))
+
     for entry in matchingEntries:
+        print(entry.place_name)
         #print(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
         posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
             'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,

@@ -39,7 +39,7 @@ ADMINS = (
 
 
 MANAGERS = ADMINS
-
+POSTGIS_VERSION = (1, 5, 3)
 DATABASE_ENGINE = 'sqlite3'
 DATABASE_NAME = os.path.join(PROJECT_ROOT,"..","..","..","development.db")
 DATABASE_USER = ''             # Not used with sqlite3.
@@ -171,7 +171,7 @@ ROOT_URLCONF = 'geonode.urls'
 # Note that Django automatically includes the "templates" dir in all the
 # INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT,"templates"),    
+    os.path.join(PROJECT_ROOT,"templates"),
 )
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
@@ -263,20 +263,22 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+
     'staticfiles',
     'django_extensions',
-    'registration',
-    'profiles',
+    'register',
+    'profile',
     'avatar',
     'south',
+
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
-    'geonode',
-    'geonode.profiles',
-    'geonode.gazetteer',
-    'geonode.queue',
-    'djcelery',
+    'geonode.profile',
+    'geonode.register',
+    #'geonode.gazetteer',
+    #'geonode.queue',
+    #'djcelery',
     #'debug_toolbar',
 )
 
@@ -330,10 +332,14 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
+DB_DATASTORE_ENGINE=''
 
 
-# Defines settings for databases,
+USE_GAZETTEER = False
+##### START GAZETTEER SETTINGS #####
+# Defines settings for multiple databases,
 # only use if PostGIS integration enabled
+# and USE_GAZETTEER = True
 #DATABASES = {
 #    'default': {
 #        'ENGINE': DATABASE_ENGINE,
@@ -344,7 +350,7 @@ DB_DATASTORE_TYPE=''
 #        'HOST': DATABASE_HOST
 #    },
 #    'wmdata': {
-#        'ENGINE': DATABASE_ENGINE,
+#        'ENGINE': DB_DATASTORE_ENGINE,
 #        'NAME': DB_DATASTORE_DATABASE,
 #        'USER' : DB_DATASTORE_USER,
 #        'PASSWORD': DB_DATASTORE_PASSWORD,
@@ -354,6 +360,24 @@ DB_DATASTORE_TYPE=''
 #
 #}
 #DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
+#SOUTH_DATABASE_ADAPTERS = {
+#    'default': "south.db.sqlite3",
+#    'wmdata' : "south.db.postgresql_psycopg2",
+#
+#    }
+#SOUTH_TESTS_MIGRATE = False
+
+##### END GAZETTEER SETTINGS #####
+
+#Set to true to schedule asynchronous updates of
+#layer bounds updates (after creating/editing features)
+#and gazetteer updates
+USE_QUEUE = False
+CELERY_IMPORTS = ("geonode.queue", )
+if USE_QUEUE:
+    import djcelery
+    djcelery.setup_loader()
+
 
 SOUTH_MIGRATION_MODULES = {
 }
@@ -363,12 +387,8 @@ DEFAULT_WORKSPACE = 'geonode'
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
 
-USE_GAZETTEER = True
-USE_QUEUE = False
-CELERY_IMPORTS = ("geonode.queue", )
 BROKER_URL = "django://"
-import djcelery
-djcelery.setup_loader()
+
 
 try:
     from local_settings import *

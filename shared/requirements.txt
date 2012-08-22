@@ -4,7 +4,7 @@ Django==1.2
 simplejson # needed for python2.5
 django-extensions
 httplib2
-psycopg2
+psycopg2==2.4.1
 -e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 #django-registration
 https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
@@ -25,5 +25,6 @@ https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
 django-celery
 kombu
 #For gazetteer
-jdcal
+python-dateutil==1.5 #For Python < 3.0
 datautil
+jdcal

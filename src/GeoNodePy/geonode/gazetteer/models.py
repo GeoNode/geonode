@@ -1,10 +1,13 @@
-from django.contrib.gis.db import models
-from django.db.models.fields import Field
+
 from django.utils.translation import ugettext as _
+#from south.modelsinspector import add_introspection_rules
 
 #Querying postgis database for features then saving as django model object is significantly slower than
 #doing everything via SQL on postgis database only.
 
+
+#add_introspection_rules([], ["^django\.contrib\.gis\.db\.models\.fields\.GeometryField"])
+from django.contrib.gis.db import models
 
 class GazetteerEntry(models.Model):
     layer_name = models.CharField(_('Layer Name'), max_length=255, blank=False, null=False)
