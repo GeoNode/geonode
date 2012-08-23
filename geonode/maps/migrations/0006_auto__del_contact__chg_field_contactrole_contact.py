@@ -19,18 +19,18 @@ class Migration(SchemaMigration):
         
         # Adding model 'Contact'
         db.create_table('maps_contact', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, blank=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('organization', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('position', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('voice', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('fax', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('delivery', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, blank=True)),
-            ('position', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('city', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('area', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('country', self.gf('django.db.models.fields.CharField')(max_length=3, null=True, blank=True)),
             ('zipcode', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('organization', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('voice', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('country', self.gf('django.db.models.fields.CharField')(max_length=3, null=True, blank=True)),
             ('email', self.gf('django.db.models.fields.EmailField')(max_length=75, null=True, blank=True)),
         ))
         db.send_create_signal('maps', ['Contact'])
