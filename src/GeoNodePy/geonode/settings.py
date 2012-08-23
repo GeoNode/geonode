@@ -362,14 +362,17 @@ GEONODE_CLIENT_LOCATION = "/static/geonode/"
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE = False
 
+#
 #Database datastore connection settings
-DB_DATASTORE_NAME = ''
+#
+DB_DATASTORE_DATABASE = ''
 DB_DATASTORE_USER = ''
 DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
-
+# Name of the store in geoserver
+DB_DATASTORE_NAME = ''
 
 # Load more settings from a file called local_settings.py if it exists
 try:
