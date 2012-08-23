@@ -41,8 +41,6 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('geonode.register.urls')),
     (r'^profiles/', include('geonode.profile.urls')),
-    (r'^accounts/', include('register.urls')),
-    (r'^profiles/', include('profile.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
     (r'^gazetteer/', include('geonode.gazetteer.urls'))

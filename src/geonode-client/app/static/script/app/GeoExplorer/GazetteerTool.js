@@ -35,6 +35,7 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
 
     toolText: 'Gazetteer',
 
+    popup: null,
 
     mapid: null,
 
@@ -201,8 +202,9 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
             var lonlat = new OpenLayers.LonLat(latlon[1],latlon[0]).transform("EPSG:4326", tool.target.mapPanel.map.projection);
             tool.markers.clearMarkers();
             var marker = new OpenLayers.Marker(lonlat);
-            marker.events.register('mousedown', marker, function(evt) { alert(record['placename']); OpenLayers.Event.stop(evt); });
+            marker.events.register('mousedown', marker, function(evt) { tool.showPopup(record); OpenLayers.Event.stop(evt); });
             tool.markers.addMarker(marker);
+            tool.showPopup(record);
             return lonlat;
         };
 
@@ -290,8 +292,31 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
             }
         ]);
 
+
         return actions;
+    },
+
+    onPopupClose: function (evt) {
+        // 'this' is the popup.
+        this.destroy();
+    },
+
+
+    showPopup: function (record) {
+        var latlon = record.get('coordinates');
+        var lonlat = new OpenLayers.LonLat(latlon[1],latlon[0]).transform("EPSG:4326", this.target.mapPanel.map.projection);
+
+        this.popup = new OpenLayers.Popup.FramedCloud("featurePopup",
+            lonlat,
+            new OpenLayers.Size(100,100),
+            "<h2>"+ record.get("placename") + "</h2>" +
+                "Source: " + record.get("source") + '<br/>' +
+                "Start Date: " + record.get("start_date"),
+                "End Date: " + record.get("end_date"),
+            null, true, this.onPopupClose);
+        this.target.mapPanel.map.addPopup(this.popup, true);
     }
+
 
 });
 

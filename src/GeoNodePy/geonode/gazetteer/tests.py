@@ -1,10 +1,6 @@
 from django.conf import settings
 from django.test import TestCase
-from django.test.client import Client
-from mock import Mock, patch
-from django.contrib.gis.geos import Point
-from geonode.gazetteer.models import GazetteerEntry
-from geonode.gazetteer.utils import getGazetteerResults, parseDate
+from geonode.gazetteer.utils import getGazetteerResults
 
 class GazetteerTest(TestCase):
     multi_db = True
@@ -27,7 +23,6 @@ class GazetteerTest(TestCase):
 
     def testGazetteerQueryWithStartDateAD(self):
         if settings.USE_GAZETTEER:
-            results = GazetteerEntry.objects.all()
             # Return all places that existed on this date -
             # Should be two [Paradise1, Paradise5)
             results = getGazetteerResults('Paradis', start_date = '2011-01-01')
@@ -37,7 +32,6 @@ class GazetteerTest(TestCase):
 
     def testGazetteerQueryWithStartDateBC(self):
         if settings.USE_GAZETTEER:
-            results = GazetteerEntry.objects.all()
             # Return all places that existed on this date -
             # Should be one [Paradise3)
             results = getGazetteerResults('Paradis', start_date = '2010-07-20 BC')
@@ -47,7 +41,6 @@ class GazetteerTest(TestCase):
 
     def testGazetteerQueryWithStartDateEndDateAD(self):
         if settings.USE_GAZETTEER:
-            results = GazetteerEntry.objects.all()
             # Return all places that existed at some point between these dates -
             # Should be three [Paradise1, Paradise2, Paradise5)
             results = getGazetteerResults('Paradis', start_date = '2010-01-01', end_date= '2011-07-21')
