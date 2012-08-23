@@ -305,14 +305,18 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
     showPopup: function (record) {
         var latlon = record.get('coordinates');
         var lonlat = new OpenLayers.LonLat(latlon[1],latlon[0]).transform("EPSG:4326", this.target.mapPanel.map.projection);
+        var startDate = record.get("start_date") || "N/A";
+        var endDate = record.get("end_date") || "N/A";
 
         this.popup = new OpenLayers.Popup.FramedCloud("featurePopup",
             lonlat,
             new OpenLayers.Size(100,100),
             "<h2>"+ record.get("placename") + "</h2>" +
                 "Source: " + record.get("source") + '<br/>' +
-                "Start Date: " + record.get("start_date"),
-                "End Date: " + record.get("end_date"),
+                (startDate != "N/A" ?
+                "Start Date: " + startDate + "<br/>" : "") +
+                (endDate != "N/A" ?
+                "End Date: " + endDate + "<br/>" : ""),
             null, true, this.onPopupClose);
         this.target.mapPanel.map.addPopup(this.popup, true);
     }

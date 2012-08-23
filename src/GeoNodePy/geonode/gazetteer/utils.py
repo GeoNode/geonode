@@ -359,7 +359,7 @@ def getGeonamesResults(place_name):
 
 
 def formatExternalGeocode(geocoder, geocodeResult):
-    return {'placename': geocodeResult[0], 'coordinates': geocodeResult[1], 'source': geocoder, 'start_date': 'N/A',
+    return {'placename': geocodeResult[0], 'coordinates': geocodeResult[1], 'source': geocoder, 'start_date': 'N/A', \
             'end_date': 'N/A', 'gazetteer_id': 'N/A'}
 
 def parseDate(dateString):
