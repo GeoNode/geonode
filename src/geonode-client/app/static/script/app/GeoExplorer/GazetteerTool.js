@@ -355,7 +355,7 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
     }
     else
         this.gazetteerDataStore.reload();
-    },
+    }
 
 });
 
