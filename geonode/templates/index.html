@@ -30,7 +30,7 @@
           <h2>{% trans "Latest Data:" %}</h2>
           {% featured_layers as featured_layers %}
           {% for layer in featured_layers %}
-            {% include "layers/_layer_list_item.html" %}
+            {% include "layers/_layer_grid_item.html" %}
           {% endfor %}
         </section>
     </div>
@@ -54,7 +54,7 @@
             {% featured_maps as featured_maps %}
             <section class="map-list">
                 {% for map in featured_maps %}
-                {% include "maps/_map_list_item.html" %}
+                {% include "maps/_map_mini_item.html" %}
                 {% endfor %}
             </section>
       </div>
