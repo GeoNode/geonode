@@ -11,55 +11,79 @@
  */
 Ext.namespace("gxp");
 /** api: constructor
- *  .. class:: GeoNodeQueryTool(config)
+ *  .. class:: GazetteerTool(config)
  *
- *    This plugins provides an action which, when active, will issue a
- *    GetFeatureInfo request to the WMS of all layers on the map. The output
- *    will be displayed in a popup.
+ *    This plugin provides an interface to search the gazetteer
+ *    (and 3rd party databases) for placenames.
  */
 gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
 
-    /** api: ptype = geo_getfeatureinfo */
+    /** api: ptype = gxp_gazetteertool */
     ptype: "gxp_gazetteertool",
 
     /** api: config[outputTarget]
-     *  ``String`` Popups created by this tool are added to the map by default.
+     *  ``String`` Windows created by this tool are added to the map by default.
      */
     outputTarget: "map",
 
-    gazetteerPanel: 'gridResultsPanel',
+    /** api: config[infoActionTip]
+     *  ``String`` Tip on how to use this plugin
+     */
+    infoActionTip: 'Enter a place name to search for',
 
-    infoActionTip: 'Tip',
-
+    /** api: config[iconCls]
+     *  ``String`` Icon class to use if any
+     */
     iconCls: null,
 
+    /** api: config[toolText]
+     *  ``String`` Text to use for tool button
+     */
     toolText: 'Gazetteer',
 
+    /** api: config[popup]
+     *  ``String`` popup for displaying placename info
+     */
     popup: null,
 
-    mapid: null,
-
+    /** api: config[markers]
+     *  ``String`` Markers layer to hold placename point
+     */
     markers: new OpenLayers.Layer.Markers("Gazetteer Results",{displayInLayerSwitcher:false}),
 
-    /** api: config[vendorParams]
-     *  ``Object``
-     *  Optional object with properties to be serialized as vendor specific
-     *  parameters in the requests (e.g. {buffer: 10}).
+    /** api: config[services]
+     *  ``String`` Default gazetteer services to search
      */
+    services: 'worldmap,google',
 
-    /** api: config[paramsFromLayer]
-     *  ``Array`` List of param names that should be taken from the layer and
-     *  added to the GetFeatureInfo request (e.g. ["CQL_FILTER"]).
+    /** api: config[searchingText]
+     *  ``String`` Text to show when search is taking place
      */
+    searchingText: 'Searching...',
+
+
+    serviceCheck: function (item, e) {
+        switch (item.checked)
+        {
+            case true:
+                this.services += ',' + item.id;
+                break;
+            default:
+                this.services = this.services.replace(',' + item.id, '');
+        }
+    },
+
+    firstLoad: true,
 
     /** api: method[addActions]
+     *  Creates the gazetteer interface, functionality, etc.
      */
     addActions: function() {
 
-        var tool = this;
+        //var tool = this;
 
-
-        var searchTB = new Ext.form.TextField({
+        // Text field to enter search term in
+        this.searchTB = new Ext.form.TextField({
             id:'search-tb',
             width:150,
             emptyText:'Place name:',
@@ -70,64 +94,60 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
                     el.getEl().on('keypress', function(e) {
                             var charpress = e.keyCode;
                             if (charpress == 13) {
-                                performSearch();
+                                this.performSearch();
                             }
                         }
                     );
                 }
-            }
+            },
+            scope: this
         });
 
-
-        var psHandler = function() {
-            performSearch();
-        };
-
-        var searchBtn = new Ext.Button({
+        // Button to initiate search
+        this.searchBtn = new Ext.Button({
             text:'<span class="x-btn-text">Search</span>',
-            handler: psHandler
+            handler: function() {
+                this.performSearch();
+            },
+            scope: this
         });
 
-        var services = 'worldmap,google';
-
-        var serviceCheck = function(item, e) {
-           switch (item.checked)
-           {
-               case true:
-                   services += ',' + item.id;
-                   break;
-               default:
-                  services = services.replace(',' + item.id,'')
-           }
-        };
-
-        var geocoderWorldMap = {text: 'WorldMap', id: 'worldmap', checked: true, disabled: true, hideOnClick: false, checkHandler: serviceCheck};
-        var geocoderGoogle = {text: 'Google', id: 'google', checked: true, hideOnClick: false, checkHandler: serviceCheck};
-        var geocoderYahoo = {text: 'Yahoo', id: 'yahoo', checked: false, hideOnClick: false, checkHandler: serviceCheck};
-        var geocoderGeonames = {text: 'GeoNames', id: 'geonames', checked: false, hideOnClick: false, checkHandler: serviceCheck};
 
 
-        var startDateField = new Ext.form.TextField({
+
+
+
+        // Gazetteer/Geocoder service options
+        var geocoderWorldMap = {text: 'WorldMap', id: 'worldmap', checked: true, disabled: true, hideOnClick: false, checkHandler: this.serviceCheck};
+        var geocoderGoogle = {text: 'Google', id: 'google', checked: true, hideOnClick: false, checkHandler: this.serviceCheck};
+        var geocoderYahoo = {text: 'Yahoo', id: 'yahoo', checked: false, hideOnClick: false, checkHandler: this.serviceCheck};
+        var geocoderGeonames = {text: 'GeoNames', id: 'geonames', checked: false, hideOnClick: false, checkHandler: this.serviceCheck};
+
+        //Optional start date filter
+        this.startDateField = new Ext.form.TextField({
             emptyText: 'From: YYYY-MM-DD'
-        })
+        });
 
-        var endDateField = new Ext.form.TextField({
+        //Optional end date filter
+        this.endDateField = new Ext.form.TextField({
             emptyText: 'To: YYYY-MM-DD'
-        })
+        });
 
-        var dateOptions = {
+        //menu for date filters
+        this.dateOptions = {
             text: "Dates",
             menu: {
                 xtype: 'menu',
                 hideOnClick: false,
                 items: [
-                    startDateField,
-                    endDateField
+                    this.startDateField,
+                    this.endDateField
                     ]
             }
         };
 
-        var geocoderOptions = {
+        //menu for service options
+        this.geocoderOptions = {
             text: "Geocoders",
             menu: {
                 xtype: 'menu',
@@ -141,20 +161,21 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
             }
         };
 
-        var advancedOptions = new Ext.Button({
+        //menu for filter options
+        this.advancedOptions = new Ext.Button({
             text:"Advanced",
             menu: {
                 items: [
-                    geocoderOptions,
-                    dateOptions
+                    this.geocoderOptions,
+                    this.dateOptions
                 ]
             }
 
         });
 
 
-
-        var gazetteerReader = new Ext.data.JsonReader({
+        // data store reader
+        this.gazetteerReader = new Ext.data.JsonReader({
             },[
             {name: 'placename'},
             {name: 'coordinates'},
@@ -162,63 +183,86 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
             {name: 'start_date'},
             {name: 'end_date'},
             {name: 'gazetteer_id'}
-        ]
+            ]
         );
 
-
-        var gazetteerProxy = new Ext.data.HttpProxy({
+        // data store proxy
+        this.gazetteerProxy = new Ext.data.HttpProxy({
             url: '/gazetteer/'
         });
 
-        var gazetteerDataStore = new Ext.data.Store({
-            proxy: gazetteerProxy,
-            reader:gazetteerReader
+        // data store
+        this.gazetteerDataStore = new Ext.data.Store({
+            proxy: this.gazetteerProxy,
+            reader:this.gazetteerReader
         });
 
-        var firstLoad = true;
+        this.searchMask = new Ext.LoadMask(Ext.getBody(), {
+            msg: this.searchingText,
+            store: this.gazetteerDataStore
+        });
 
-        var performSearch = function() {
 
-            gazetteerDataStore.proxy.conn.url = '/gazetteer/' + searchTB.getValue() + '/Service/' + services
-                + (startDateField.getValue() && startDateField.getValue() !== '' ? '/StartDate/' + startDateField.getValue(): '')
-                + (endDateField.getValue() && endDateField.getValue() !== '' ? '/EndDate/' + endDateField.getValue(): '');
-
-            if (firstLoad === true)
-            {
-                gazetteerDataStore.load();
-                firstLoad = false;
-            }
-            else
-                gazetteerDataStore.reload();
+        var markers = this.markers;
+        var map = this.target.mapPanel.map;
 
 
 
-        }
+        var onPopupClose = function (evt) {
+            // 'this' is the popup.
+            this.destroy();
+        };
+
+        /*
+         * generate popup for placename marker
+         */
+        var showPopup = function (record) {
+            var latlon = record.get('coordinates');
+            var lonlat = new OpenLayers.LonLat(latlon[1],latlon[0]).transform("EPSG:4326", map.projection);
+            var startDate = record.get("start_date") || "N/A";
+            var endDate = record.get("end_date") || "N/A";
+
+            this.popup = new OpenLayers.Popup.FramedCloud("featurePopup",
+                lonlat,
+                new OpenLayers.Size(100,100),
+                "<h2>"+ record.get("placename") + "</h2>" +
+                    "Source: " + record.get("source") + '<br/>' +
+                    (startDate != "N/A" ?
+                        "Start Date: " + startDate + "<br/>" : "") +
+                    (endDate != "N/A" ?
+                        "End Date: " + endDate + "<br/>" : ""),
+                null, true, onPopupClose);
+            map.addPopup(this.popup, true);
+        };
 
 
+        // Function to create a marker for selected placename in results grid
         var createMarker = function(grid, rowIndex) {
             var record = grid.getStore().getAt(rowIndex);
             var latlon = record.get('coordinates');
-            var lonlat = new OpenLayers.LonLat(latlon[1],latlon[0]).transform("EPSG:4326", tool.target.mapPanel.map.projection);
-            tool.markers.clearMarkers();
+            var lonlat = new OpenLayers.LonLat(latlon[1],latlon[0]).transform("EPSG:4326", map.projection);
+            markers.clearMarkers();
             var marker = new OpenLayers.Marker(lonlat);
-            marker.events.register('mousedown', marker, function(evt) { tool.showPopup(record); OpenLayers.Event.stop(evt); });
-            tool.markers.addMarker(marker);
-            tool.showPopup(record);
+            marker.events.register('mousedown', marker, function(evt) { showPopup(record); OpenLayers.Event.stop(evt); });
+            markers.addMarker(marker);
+            showPopup(record);
             return lonlat;
         };
 
+        // Create the marker for clicked placename in results grid
         var handleRowClick = function(grid, rowIndex,columnIndex, e) {
             createMarker(grid, rowIndex);
         };
 
+        // Create marker and center in map if placename double-clicked
         var handleDblClick =  function(grid, rowIndex,columnIndex, e) {
             var newCenter = createMarker(grid, rowIndex);
-            tool.target.mapPanel.map.setCenter(newCenter);
+            map.setCenter(newCenter);
         };
 
-        var gazetteerGrid = new Ext.grid.GridPanel({
-            store:gazetteerDataStore,
+        // Grid to display search results
+        this.gazetteerGrid = new Ext.grid.GridPanel({
+            store:this.gazetteerDataStore,
             width: 700,
             columns: [
                 {header: 'Place Name', width:200, dataIndex: 'placename', sortable: true},
@@ -242,25 +286,27 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
 
 
 
-
-        var gazetteerToolbar  = new Ext.Toolbar({
+        //Toolbar for gazetteer
+        this.gazetteerToolbar  = new Ext.Toolbar({
             items:[
-                searchTB,
-                searchBtn,
-                advancedOptions
+                this.searchTB,
+                this.searchBtn,
+                this.advancedOptions
             ]
         });
 
-        var gazetteerPanel = new Ext.Panel({
+        //Panel for gazetteer
+        this.gazetteerPanel = new Ext.Panel({
             height:300,
             width:700,
             layout: 'fit',
             items: [
-                gazetteerGrid
+                this.gazetteerGrid
             ],
-            tbar: gazetteerToolbar
+            tbar: this.gazetteerToolbar
         });
 
+        //Gazetteer search window
         var gazetteerWindow = new Ext.Window({
             title: this.title,
             layout: "fit",
@@ -269,16 +315,14 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
             closeAction: "hide",
             listeners:{
                 hide: function(){
-                    tool.target.mapPanel.map.removeLayer(tool.markers);
+                    map.removeLayer(markers);
                 }
             },
-            items: [ gazetteerPanel ]
+            items: [ this.gazetteerPanel ]
         });
 
 
-
-
-        var actions = gxp.plugins.CoordinateTool.superclass.addActions.call(this, [
+        var actions = gxp.plugins.GazetteerTool.superclass.addActions.call(this, [
             {
                 tooltip: this.infoActionTip,
                 iconCls: this.iconCls,
@@ -286,7 +330,7 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
                 text: this.toolText,
                 handler: function() {
                         gazetteerWindow.show();
-                        tool.target.mapPanel.map.addLayer(tool.markers);
+                        map.addLayer(markers);
 
                 }
             }
@@ -296,31 +340,22 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
         return actions;
     },
 
-    onPopupClose: function (evt) {
-        // 'this' is the popup.
-        this.destroy();
-    },
 
+    //Query gazetteer & geocoders for placenames
+    performSearch: function() {
 
-    showPopup: function (record) {
-        var latlon = record.get('coordinates');
-        var lonlat = new OpenLayers.LonLat(latlon[1],latlon[0]).transform("EPSG:4326", this.target.mapPanel.map.projection);
-        var startDate = record.get("start_date") || "N/A";
-        var endDate = record.get("end_date") || "N/A";
+    this.gazetteerDataStore.proxy.conn.url = '/gazetteer/' + this.searchTB.getValue() + '/Service/' + this.services
+        + (this.startDateField.getValue() && this.startDateField.getValue() !== '' ? '/StartDate/' + this.startDateField.getValue(): '')
+        + (this.endDateField.getValue() && this.endDateField.getValue() !== '' ? '/EndDate/' + this.endDateField.getValue(): '');
 
-        this.popup = new OpenLayers.Popup.FramedCloud("featurePopup",
-            lonlat,
-            new OpenLayers.Size(100,100),
-            "<h2>"+ record.get("placename") + "</h2>" +
-                "Source: " + record.get("source") + '<br/>' +
-                (startDate != "N/A" ?
-                "Start Date: " + startDate + "<br/>" : "") +
-                (endDate != "N/A" ?
-                "End Date: " + endDate + "<br/>" : ""),
-            null, true, this.onPopupClose);
-        this.target.mapPanel.map.addPopup(this.popup, true);
+    if (this.firstLoad === true)
+    {
+        this.gazetteerDataStore.load();
+        this.firstLoad = false;
     }
-
+    else
+        this.gazetteerDataStore.reload();
+    },
 
 });
 
