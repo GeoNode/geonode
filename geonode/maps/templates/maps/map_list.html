@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load maps_tags %}
 
 {% block title %} {% trans "Explore Maps" %} - {{ block.super }} {% endblock %}
 
@@ -32,42 +33,10 @@
       <div class="tab-content">
         <div class="tab-pane active span8" id="all">
           <div class="row">
-            <article class="span4">
-              <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="placeholder" /></a>
-              <div class="details">
-                <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
-                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-              </div>
-            </article>
-            <article class="span4">
-              <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="placeholder" /></a>
-              <div class="details">
-                <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
-                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-              </div>
-            </article>
-            <article class="span4">
-              <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="placeholder" /></a>
-              <div class="details">
-                <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
-                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-              </div>
-            </article>
-            <article class="span4">
-              <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="placeholder" /></a>
-              <div class="details">
-                <a href="{% url mapinfo %}"><h3>Title of the Map goes right here</h3></a>
-                <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
-                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-              </div>
-            </article>
+            {% featured_maps as featured_maps %}
+            {% for map in featured_maps %}
+              {% include "maps/_map_grid_item.html" %}
+            {% endfor %}
           </div>
         </div>
       </div>
