@@ -1,0 +1,8 @@
+<article>
+  <div class="details">
+    <a href='{% url layerinfo %}'<h3>{{ layer.title }}</h3></a>
+    <div class="meta">by <a href="{% url profile_detail layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} ago</div>
+    <p>{{ layer.abstract }}</p>
+    <p class="rating">564 likes</p>
+  </div>
+</article>

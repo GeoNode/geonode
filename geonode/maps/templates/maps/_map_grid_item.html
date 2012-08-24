@@ -1,0 +1,8 @@
+<article class="span4">
+  <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="{{ map.title }}" /></a>
+  <div class="details">
+    <a href="{% url mapinfo %}"><h3>{{ map.title }}</h3></a>
+    <div class="meta">by <a href="{% url profile_detail map.owner.username %}">{{ map.owner }}</a>, {{ map.last_modified|timesince }} ago</div>
+    <p>{{ map.abstract }}</p>
+  </div>
+</article>
