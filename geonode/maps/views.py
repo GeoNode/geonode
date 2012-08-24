@@ -164,11 +164,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
     map_obj = _resolve_map(request, mapid, 'maps.delete_map', 
                            _PERMISSION_MSG_DELETE, permission_required=True)
 
-    if request.method == 'GET':
-        return render_to_response(template, RequestContext(request, {
-            "map": map_obj
-        }))
-    elif request.method == 'POST':
+    if request.method == 'POST' or request.method == 'GET':
         layers = map_obj.layer_set.all()
         for layer in layers:
             layer.delete()
