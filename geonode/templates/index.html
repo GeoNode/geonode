@@ -27,13 +27,12 @@
   </div>
   <div class="row">
     <div class="span8">
-      <h2>{% trans "Featured Maps" %}</h2>
-      {% featured_maps as featured_maps %}
-      <section class="map-list">
-        {% for map in featured_maps %}
-          {% include "maps/_map_list_item.html" %}
-        {% endfor %}
-      </section>
+          <h2>{% trans "Latest Data:" %}</h2>
+          {% featured_layers as featured_layers %}
+          {% for layer in featured_layers %}
+            {% include "layers/_layer_list_item.html" %}
+          {% endfor %}
+        </section>
     </div>
     <aside class="span4">
       <div class="well">
@@ -41,22 +40,23 @@
           <h2>{% trans "Contribute" %}</h2>
           <p class="main-actions">
           {% blocktrans %}
-            GeoNode lets you upload, manage, and browse data. Search for data that is valuable to you, or upload your own data. 
+            GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. 
           {% endblocktrans %}
             <a href="{% url layer_upload %}" class="btn btn-large">Upload Data</a>
           {% blocktrans %}
-            GeoNode lets you compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
+            GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
           {% endblocktrans %}
             <a href="{% url new_map %}" class="btn btn-large">Create a Map</a>
           </p>
         </section>
         <section class="article-list last">
-          <h2>{% trans "Featured Data:" %}</h2>
-          {% featured_layers as featured_layers %}
-          {% for layer in featured_layers %}
-            {% include "layers/_layer_mini_item.html" %}
-          {% endfor %}
-        </section>
+            <h2>{% trans "Latest Maps" %}</h2>
+            {% featured_maps as featured_maps %}
+            <section class="map-list">
+                {% for map in featured_maps %}
+                {% include "maps/_map_list_item.html" %}
+                {% endfor %}
+            </section>
       </div>
     </aside>
   </div>
