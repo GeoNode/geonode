@@ -37,7 +37,7 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.db.models import Q
 from django.views.decorators.http import require_POST
-from agon_ratings.models import Rating, OverallRating
+from agon_ratings.models import OverallRating
 
 from geonode.utils import _split_query, http_client
 from geonode.layers.models import Layer
@@ -175,7 +175,6 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         for layer in layers:
             layer.delete()
         map_obj.delete()
-        Rating.objects.filter(category = 1, object_id = mapid).delete()
         OverallRating.objects.filter(category = 1, object_id = mapid).delete()
 
         return HttpResponseRedirect(reverse("maps_browse"))
