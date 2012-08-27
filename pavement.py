@@ -130,6 +130,25 @@ def setup(options):
     info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""") 
 
 
+@cmdopts([
+    ('version=', 'v', 'Legacy GeoNode version of the existing database.')
+])
+@task
+def upgradedb(options):
+    """
+    Add 'fake' data migrations for existing tables from legacy GeoNode versions
+    """
+    version = options.get('version')
+    if version in ['1.1', '1.2']:
+        sh("python manage.py migrate maps 0001 --fake")
+        sh("python manage.py migrate avatar 0001 --fake")
+        sh("python manage.py migrate registration 0001 --fake")
+    elif version == None:
+        print "Please specify your GeoNode version"
+    else:
+        print "Upgrades from GeoNode Version %s are not yet supported." % version
+        
+
 @task
 def sync(options):
     """
