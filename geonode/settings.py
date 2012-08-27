@@ -248,7 +248,7 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
         "map": "How good is this map?"
     },
-    "maps.Layer": {
+    "layers.Layer": {
         "layer": "How good is this layer?"
     },
 }
