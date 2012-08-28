@@ -48,6 +48,7 @@ from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
 
 from geoserver.catalog import Catalog
 from taggit.managers import TaggableManager
+from urlparse import urlparse
 
 
 logger = logging.getLogger("geonode.layers.models")
@@ -252,20 +253,33 @@ class Layer(models.Model, PermissionLevelMixin):
         
     @property
     def attribute_names(self):
+        #Appending authorizations seems necessary to avoid 'layer not found' from GeoServer
+        http = httplib2.Http()
+        http.add_credentials(_user, _password)
+        _netloc = urlparse(settings.GEOSERVER_BASE_URL).netloc
+        http.authorizations.append(
+            httplib2.BasicAuthentication(
+                (_user, _password),
+                _netloc,
+                settings.GEOSERVER_BASE_URL,
+                    {},
+                None,
+                None,
+                http
+            )
+        )
         if self.storeType == "dataStore":
             dft_url = settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
                     "service": "wfs",
                     "version": "1.0.0",
                     "request": "DescribeFeatureType",
-                    "typename": self.typename
+                    "typename": self.typename,
                 })
             try:
-                http = httplib2.Http()
-                http.add_credentials(_user, _password)
-                body = http.request(dft_url)[1]
-                doc = etree.fromstring(body)
-                path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
-                atts = [n.attrib["name"] for n in doc.findall(path)]
+                    body = http.request(dft_url)[1]
+                    doc = etree.fromstring(body)
+                    path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
+                    atts = [[n.attrib["name"],n.attrib["type"]] for n in doc.findall(path)]
             except Exception:
                 atts = []
             return atts
@@ -277,15 +291,18 @@ class Layer(models.Model, PermissionLevelMixin):
                      "identifiers": self.typename
                 })
             try:
-                http = httplib2.Http()
-                http.add_credentials(_user, _password)
                 response, body = http.request(dc_url)
                 doc = etree.fromstring(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
-                atts = [n.text for n in doc.findall(path)]
+                atts = [[n.text,"raster"] for n in doc.findall(path)]
             except Exception:
                 atts = []
             return atts
+
+    @property
+    def display_attributes(self):
+        #Return visible attributes by sort order.
+        return self.attribute_set.filter(visible=True).order_by('display_order')
 
     @property
     def display_type(self):
@@ -423,6 +440,55 @@ class Layer(models.Model, PermissionLevelMixin):
         # assign owner admin privs
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
+
+    def set_attributes(self):
+        attrNames = self.attribute_names
+        attributes = self.attribute_set.all()
+        # Delete existing attributes if they no longer exist in an updated layer
+        for la in attributes:
+            lafound = False
+            for field, ftype in attrNames:
+                if field == la.attribute:
+                    lafound = True
+            if not lafound:
+                logger.debug("Going to delete [%s] for [%s]", la.attribute, self.name)
+                la.delete()
+
+        # Add new layer attributes if they don't already exist
+        if attrNames is not None:
+            iter = len(Attribute.objects.filter(layer=self))+1
+            for field, ftype in attrNames:
+                if field is not None:
+                    la, created = Attribute.objects.get_or_create(layer=self, attribute=field, attribute_type=ftype)
+                    if created:
+                        la.attribute_label = field.title()
+                        la.visible = ftype.find("gml:") != 0
+                        la.display_order = iter
+                        la.save()
+                        iter += 1
+                        logger.info("Created [%s] attribute for [%s]", field, self.name)
+        else:
+            logger.debug("No attributes found")
+
+
+
+class Attribute(models.Model):
+    """
+        Auxiliary model for storing layer attributes.
+
+       This helps reduce the need for runtime lookups
+       to GeoServer, and lets users customize attribute titles,
+       sort order, and visibility.
+    """
+    layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
+    attribute = models.CharField(_('attribute name'), help_text=_('name of attribute as stored in shapefile/spatial database'), max_length=255, blank=False, null=True, unique=False)
+    attribute_label = models.CharField(_('attribute label'), help_text=_('title of attribute as displayed in GeoNode'), max_length=255, blank=False, null=True, unique=False)
+    attribute_type = models.CharField(_('attribute type'), help_text=_('the data type of the attribute (integer, string, geometry, etc)'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
+    visible = models.BooleanField(_('visible?'), help_text=_('specifies if the attribute should be displayed in identify results'), default=True)
+    display_order = models.IntegerField(_('display order'), help_text=_('specifies the order in which attribute should be displayed in identify results'), default=1)
+
+    def __str__(self):
+        return "%s" % self.attribute_label if not None else attribute
 
 class ContactRole(models.Model):
     """
@@ -702,8 +768,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         link_type='data',
                         )
                        )
-
-
+    instance.set_attributes()
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 

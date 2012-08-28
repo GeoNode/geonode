@@ -21,10 +21,13 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from geonode.layers.models import Layer, ContactRole
+from geonode.layers.models import Layer, ContactRole, Attribute
 
 class ContactRoleInline(admin.TabularInline):
     model = ContactRole
+
+class AttributeInline(admin.TabularInline):
+    model = Attribute
 
 class LayerAdmin(admin.ModelAdmin):
     list_display = ('id', 'typename','service_type','title', 'date', 'topic_category')
@@ -34,7 +37,7 @@ class LayerAdmin(admin.ModelAdmin):
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
-    inlines = [ContactRoleInline]
+    inlines = [ContactRoleInline, AttributeInline]
 
     actions = ['change_poc']
 
