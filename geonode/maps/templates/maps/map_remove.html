@@ -6,7 +6,7 @@
 {% block title %}{% trans "Deleting" %} {{ map.title }} — {{ block.super }}{% endblock %}
 
 {% block main %}
-<form action="/maps/{{map.id}}?remove" method="POST">
+<form action="/maps/{{map.id}}/remove" method="POST">
   <legend>
     {% blocktrans with map.title as map_title %}
         Are you sure you want to remove {{ map_title }}?
