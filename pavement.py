@@ -503,6 +503,100 @@ def install_sphinx_conditionally(options):
         # available
         sys.modules['paver.doctools'] = reload(sys.modules['paver.doctools'])
 
+@task
+@needs('package_client')
+@cmdopts([
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
+])
+def start_django(options):
+    djangolog = open("django.log", "w")
+    django = subprocess.Popen([
+        "paster",
+        "serve",
+        "--reload",
+        "shared/dev-paste.ini"
+    ],
+        stdout=djangolog,
+        stderr=djangolog
+    )
+
+    def django_is_up():
+        try:
+            urllib.urlopen("http://" + options.host.bind + ":8000")
+            return True
+        except Exception, e:
+            return False
+
+    socket.setdefaulttimeout(1)
+
+    info("Django is starting up, please wait...")
+    while not django_is_up():
+        time.sleep(2)
+
+    try:
+        info("Django/Worldmap is running at http://" + options.host.bind + ":8000/")
+        info("Press CTRL-C to shut down")
+        django.wait()
+        info("Django process terminated, see log for details.")
+    finally:
+        info("Shutting down...")
+        try:
+            django.terminate()
+        except:
+            pass
+
+        django.wait()
+        sys.exit()
+
+@task
+@needs('package_client')
+@cmdopts([
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
+])
+def start_geoserver(options):
+    jettylog = open("jetty.log", "w")
+    with pushd("src/geoserver-geonode-ext"):
+        os.environ["MAVEN_OPTS"] = " ".join([
+            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
+            "-Djetty.host=" + options.host.bind,
+            "-Xmx512M",
+            "-XX:MaxPermSize=128m"
+        ])
+        mvn = subprocess.Popen(
+            ["mvn", "jetty:run"],
+            stdout=jettylog,
+            stderr=jettylog
+        )
+
+
+    def jetty_is_up():
+        try:
+            urllib.urlopen("http://" + options.host.bind + ":8001/geoserver/web/")
+            return True
+        except Exception, e:
+            return False
+
+    socket.setdefaulttimeout(1)
+
+    info("Logging servlet output to jetty.log...")
+    info("Jetty is starting up, please wait...")
+    while not jetty_is_up():
+        time.sleep(2)
+
+    try:
+        info("Development GeoServer/GeoNetwork is running")
+        info("Press CTRL-C to shut down")
+        mvn.wait()
+        info("GeoServer process terminated, see log for details.")
+    finally:
+        info("Shutting down...")
+        try:
+            mvn.terminate()
+        except:
+            pass
+        mvn.wait()
+        sys.exit()
+
 
 @task
 @needs('package_client')
@@ -560,7 +654,7 @@ def host(options):
         time.sleep(2)
 
     try:
-        #sh("django-admin.py updatelayers --settings=geonode.settings")
+        sh("django-admin.py updatelayers --settings=geonode.settings")
 
         info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
         info("The GeoNode is an unstoppable machine")
@@ -581,6 +675,8 @@ def host(options):
         django.wait()
         mvn.wait()
         sys.exit()
+
+
 
 
 @task

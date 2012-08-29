@@ -119,23 +119,11 @@ gxp.CatalogueSearchPanel = Ext.extend(Ext.Panel, {
                 }]
             }, {
                 xtype: "fieldset",
-                collapsible: true,
-                collapsed: true,
+                collapsible: false,
+                collapsed: false,
                 hideLabels: false,
                 title: this.advancedTitle,
-                items: [{
-                    xtype: 'gxp_cswfilterfield',
-                    name: 'datatype',
-                    property: 'apiso:Type',
-                    comboFieldLabel: this.datatypeLabel,
-                    comboStoreData: [
-                        ['dataset', 'Dataset'],
-                        ['datasetcollection', 'Dataset collection'],
-                        ['application', 'Application'],
-                        ['service', 'Service']
-                    ],
-                    target: this
-                }, {
+                items: [ {
                     xtype: 'gxp_cswfilterfield',
                     name: 'extent',
                     property: 'BoundingBox',
@@ -272,9 +260,8 @@ gxp.CatalogueSearchPanel = Ext.extend(Ext.Panel, {
                     scope: this
                 }]
             }],
-            autoExpandColumn: 'title',
-            width: 400,
-            height: 300
+            autoExpandColumn: 'title'
+
         }];
         gxp.CatalogueSearchPanel.superclass.initComponent.apply(this, arguments);
     },

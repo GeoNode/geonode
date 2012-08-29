@@ -113,8 +113,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     urlPortRegEx: /^(http[s]?:\/\/[^:]*)(:80|:443)?\//,
 
 
-    treeRoot : null,
-
     searchFields : [],
 
     gxSearchBar : null,
@@ -404,7 +402,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 actionTarget: {target: "paneltbar", index: 8}
         }, {
             ptype: "gxp_layermanager",
-            groups: config.map.groups,
+            groups: (config.map.groups || config.treeconfig),
             id: "treecontentmgr",
             outputConfig: {
                 id: "treecontent",
@@ -413,19 +411,28 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
             outputTarget: "westpanel"
         }, {
+                ptype: "gxp_addlayers",
+                search: true,
+                topicCategories: config.topic_categories,
+                actionTarget: "treetbar",
+                createExpander: function() {
+                    return new GeoExplorer.CapabilitiesRowExpander({
+                        ows: config.localGeoServerBaseUrl + "ows"
+                    });
+                }
+            },{
                 ptype: "gxp_zoomtolayerextent",
                 actionTarget: "treecontent.contextMenu"
-        }, {
-            ptype: "gxp_addlayers",
-            search: true,
-            topicCategories: config.topic_categories,
-            actionTarget: "treetbar",
-            createExpander: function() {
-                return new GeoExplorer.CapabilitiesRowExpander({
-                    ows: config.localGeoServerBaseUrl + "ows"
-                });
-            }
-        }, {
+            },{
+                ptype: "gxp_addcategory",
+                actionTarget: ["treecontent.contextMenu"]
+            },{
+                ptype: "gxp_renamecategory",
+                actionTarget: ["treecontent.contextMenu"]
+            },{
+                ptype: "gxp_removecategory",
+                actionTarget: ["treecontent.contextMenu"]
+            },{
                 ptype: "gxp_removelayer",
                 actionTarget: ["treecontent.contextMenu"]
             }, {
@@ -435,40 +442,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
                 actionTarget: ["treecontent.contextMenu"]
             },{
+                ptype: "gxp_layershare",
+                actionTarget: ["treecontent.contextMenu"]
+            },{
                 ptype: "gxp_styler",
                 rasterStyling: true,
                 actionTarget: ["treecontent.contextMenu"]
-            },
-            {
-                ptype: "gxp_featuremanager",
-                id: "featuremanager",
-                paging: false,
-                tooltip: this.infoButtonText,
-                toggleGroup: 'featureGroup'
-            },
-            {
-                ptype: "gxp_featureeditor",
-                id: "gn_layer_editor",
-                featureManager: "featuremanager",
-                readOnly: false,
-                autoLoadFeature: true,
-                actionTarget: {target: "main.tbar", index: 4},
-                defaultAction: 1,
-                outputConfig: {panIn: false, height: 220},
-                tooltip: this.infoButtonText,
-                iconClsAdd: null,
-                iconClsEdit: null,
-                createFeatureActionText: '<span class="x-btn-text" >' + "Create Feature" + '</span>',
-                editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
-                toggleGroup: 'featureGroup'
             }
         );
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
-
-
-//        gxp.CatalogueSearchPanel.prototype.addLayer = function (record) {
-//
-//        }
 
         var oldLayerChange = gxp.plugins.FeatureEditor.prototype.onLayerChange;
         var localUrl = this.config.localGeoServerBaseUrl;
@@ -833,6 +815,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         this.on("ready", function() {
+
             this.addInfo();
 
             //var queryTool = new GeoExplorer.FeatureQueryTool(this, 'queryPanel', 'gridWinPanel');
@@ -862,13 +845,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             //Activate it now.
             if (this.selectControl)
                 this.selectControl.activate();
-        });
 
-        var mapLayersText = this.layerContainerText;
-        var backgroundText = this.backgroundContainerText;
-
-
-        this.on("ready", function(){
             var startSourceId = null;
             for (var id in this.layerSources) {
                 source = this.layerSources[id];
@@ -881,23 +858,28 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
             var addLayers = null;
-            var layerTree = null;
+
             for (var key in this.tools) {
                 var tool = this.tools[key];
                 if (tool.ptype === "gxp_addlayers") {
                     addLayers = tool;
                     addLayers.startSourceId = startSourceId;
-                    addLayers.layerTree = layerTree;
                 } else if (tool.ptype == "gxp_layermanager") {
-                    layerTree = tool;
+                    this.layerTree = tool;
                 }
             }
             if (addLayers !== null) {
-                addLayers.layerTree = layerTree;
+                addLayers.layerTree = this.layerTree;
                 if (!this.fromLayer && !this.mapID) {
                     addLayers.showCapabilitiesGrid();
                 }
             }
+
+//            for (x = 0,max = this.config.map.layers.length; x < max; x++) {
+//                if (this.map.layers[x].group && this.map.layers[x].group != "background")
+//                    this.layerTree.toggleFolder({"group": this.map.layers[x].group});
+//            }
+
 
         }, this);
 
@@ -1069,8 +1051,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         ];
 
         GeoExplorer.superclass.initPortal.apply(this, arguments);
-
-
     },
 
 
@@ -1148,6 +1128,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 var layer = records[i].get("name");
                 var tiled = records[i].get("tiled");
 
+
                 Ext.Ajax.request({
                     url: "/maps/addgeonodelayer/?" + thisRecord.get("name"),
                     method: "POST",
@@ -1176,10 +1157,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 category = record.get("group");
                                 if (!category || category == '')
                                     record.set("group", "General");
+
+                                geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
                                 layerStore.add([record]);
-                                geoEx.addCategoryFolder(record.get("group"), "true");
-                                geoEx.reorderNodes(record.getLayer());
-                                geoEx.treeRoot.findDescendant("layer", record.getLayer()).select();
+
+
+                                //geoEx.reorderNodes(record.getLayer());
+                                geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
                             }
 
 
@@ -1209,9 +1193,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     } else {
                         category = "General";
                         record.set("group", category);
+
+                        geoEx.layerTree.addCategoryFolder(record.get("group"), true);
                         layerStore.add([record]);
-                        geoEx.addCategoryFolder(record.get("group"), "true");
-                        geoEx.reorderNodes();
                     }
                 }
             }
@@ -1222,6 +1206,58 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
 
 
+
+    initSearchPanel: function() {
+
+        if (this.worldMapSourceKey == null)
+            this.setWorldMapSourceKey();
+        var selectedSource = this.layerSources[this.worldMapSourceKey];
+
+        var sources = {};
+        for (var key in this.layerSources) {
+            var source = this.layerSources[key];
+            if (source instanceof gxp.plugins.CatalogueSource) {
+                var obj = {};
+                obj[key] = source;
+                Ext.apply(sources, obj);
+                if (source.url == this.config.localCSWBaseUrl) {
+                    selectedSource = source;
+                }
+            }
+        }
+
+
+//        this.catalogPanel = new gxp.CatalogueSearchPanel({
+//            autoScroll: false,
+//            title: 'WorldMap Data',
+//            header: false,
+//            layout: 'fit',
+//            border: true,
+//                sources: sources,
+//                selectedSource: selectedSource,
+//                topicCategories: this.config.topicCategories,
+//                map: this.mapPanel.map,
+//                listeners: {
+//                    'addlayer': function(cmp, sourceKey, layerConfig) {
+//                        var source = this.layerSources[sourceKey];
+//                        var bounds = OpenLayers.Bounds.fromArray(layerConfig.bbox);
+//                        var mapProjection = this.mapPanel.map.getProjection();
+//                        var bbox = bounds.transform(layerConfig.srs, mapProjection);
+//                        layerConfig.srs = mapProjection;
+//                        layerConfig.bbox = bbox.toArray();
+//                        var record = source.createLayerRecord(layerConfig);
+//                        record.set("group", layerConfig.subject);
+//                        var layerTree = Ext.getCmp("treecontent")
+//                        if (layerTree) {
+//                            layerTree.addCategoryFolder({"group":layerConfig.subject});
+//                        }
+//
+//                        this.mapPanel.layers.add(record);
+//                    },
+//                    scope: this
+//                }
+//            });
+    },
 
 
     /**
@@ -1863,14 +1899,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     makeExportDialog: function() {
 
         var mapConfig = this.getState();
-//        var treeConfig = [];
-//        for (x = 0,max = this.treeRoot.firstChild.childNodes.length; x < max; x++) {
-//            node = this.treeRoot.firstChild.childNodes[x];
-//            treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
-//        }
-//
-//
-//        mapConfig['treeconfig'] = treeConfig;
+        var treeConfig = [];
+        for (x = 0,max = this.layerTree.overlayRoot.childNodes.length; x < max; x++) {
+            node = this.layerTree.overlayRoot.childNodes[x];
+            treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
+        }
+
+
+        mapConfig.map['groups'] = treeConfig;
 
 
         Ext.Ajax.request({
@@ -2239,6 +2275,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
 
+
+
     initTabPanel: function() {
 //        var feedSourceTab = new gxp.FeedSourceDialog({
 //            target: this,
@@ -2248,7 +2286,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
         this.dataTabPanel = new Ext.TabPanel({
-            renderTo: 'dataTabs',
+
             activeTab: 0,
             region:'center',
             items: [
@@ -2258,7 +2296,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         if (this.config["edit_map"]) {
             this.dataTabPanel.add(this.uploadPanel);
-            this.dataTabPanel.add(this.createPanel);
+            if (this.config["db_datastore"]) {
+                this.dataTabPanel.add(this.createPanel);
+            }
         }
         this.dataTabPanel.add(this.warperPanel);
 
@@ -2371,7 +2411,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             this.initUploadPanel();
         }
 
-        if (!this.createPanel && this.config["edit_map"]) {
+        if (!this.createPanel && this.config["edit_map"] && this.config["db_datastore"] === true) {
             this.initCreatePanel();
         }
 
@@ -2417,10 +2457,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         var feedRecord = source.createLayerRecord(config);
 
 
+
+                        this.layerTree.addCategoryFolder(feedRecord.get("group"), true);
                         this.mapPanel.layers.add([feedRecord]);
-                        this.addCategoryFolder(feedRecord.get("group"), "true");
-                        this.reorderNodes(feedRecord.getLayer());
-                        this.treeRoot.findDescendant("layer", feedRecord.getLayer()).select();
+                        this.layerTree.overlayRoot.findDescendant("layer", feedRecord.getLayer()).select();
                         this.selectControl.activate();
                     }, scope:this
                 }, scope:this
@@ -2441,9 +2481,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         if (!this.searchWindow) {
             this.initSearchWindow();
-        } else {
-            this.bbox.updateBBox(this.mapPanel.map.getExtent());
-
         }
         this.searchWindow.show();
         this.searchWindow.alignTo(document, 'tl-tl');
@@ -2508,14 +2545,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var config = this.getState();
 
-//        var treeConfig = [];
-//        for (x = 0,max = this.treeRoot.firstChild.childNodes.length; x < max; x++) {
-//            node = this.treeRoot.firstChild.childNodes[x];
-//            treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
-//        }
-//
-//
-        config.treeconfig = [];
+        var treeConfig = [];
+        for (x = 0,max = this.layerTree.overlayRoot.childNodes.length; x < max; x++) {
+            node = this.layerTree.overlayRoot.childNodes[x];
+            treeConfig.push({group : node.text, expanded:  node.expanded.toString()  });
+        }
+
+
+        config.map.groups = treeConfig;
+
         if (!this.mapID || as) {
             /* create a new map */
             Ext.Ajax.request({
@@ -2604,9 +2642,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
                     var record = hglSource.createLayerRecord(layerConfig);
                     this.mapPanel.layers.add([record]);
-                    this.addCategoryFolder(record.get("group"), "true");
-                    this.reorderNodes(record.getLayer());
-                    this.treeRoot.findDescendant("layer", record.getLayer()).select();
+                    this.layerTree.addCategoryFolder(record.get("group"), true);
+                    this.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
                 }
             },
             failure: function(response, options) {

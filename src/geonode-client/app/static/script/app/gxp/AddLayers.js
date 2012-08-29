@@ -319,6 +319,7 @@ gxp.plugins.AddLayers = Ext.extend(gxp.plugins.Tool, {
                     var bbox = bounds.transform(layerConfig.srs, mapProjection);
                     layerConfig.srs = mapProjection;
                     layerConfig.bbox = bbox.toArray();
+                    layerConfig.source = source.id;
                     var record = source.createLayerRecord(layerConfig);
                     record.set("group", layerConfig.subject);
                     if (this.layerTree) {

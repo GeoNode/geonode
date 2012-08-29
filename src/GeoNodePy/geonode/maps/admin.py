@@ -4,8 +4,8 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 
-class MapLayerInline(admin.TabularInline):
-    model = MapLayer
+#class MapLayerInline(admin.TabularInline):
+#    model = MapLayer
 
 class ContactRoleInline(admin.TabularInline):
     model = ContactRole
@@ -17,7 +17,7 @@ class ContactRoleAdmin(admin.ModelAdmin):
     list_editable = ('contact', 'layer', 'role')
 
 class MapAdmin(admin.ModelAdmin):
-    inlines = [MapLayerInline,]
+    models=MapLayer
 
 class ContactAdmin(admin.ModelAdmin):
     inlines = [ContactRoleInline]

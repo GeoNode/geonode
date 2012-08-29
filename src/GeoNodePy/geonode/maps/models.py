@@ -698,7 +698,7 @@ class LayerManager(models.Manager):
     def default_metadata_author(self):
         return self.admin_contact()
 
-    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, layer=None):
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None, layer=None):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
@@ -729,6 +729,7 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
+                    "owner": owner,
                     "uuid": str(uuid.uuid4())
                 })
                 if layer is not None and layer.bbox is None:
@@ -896,8 +897,6 @@ class Layer(models.Model, PermissionLevelMixin):
     # Section 9
     # see metadata_author property definition below
 
-
-
     def llbbox_coords(self):
         return [float(n) for n in re.findall('[0-9\.\-]+', self.llbbox)]
 
@@ -1059,15 +1058,15 @@ class Layer(models.Model, PermissionLevelMixin):
         if(csw_layer.uri != self.get_absolute_url()):
             msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
 
-            # Visit get_absolute_url and make sure it does not give a 404
-            #logger.info(self.get_absolute_url())
-            #response, body = http.request(self.get_absolute_url())
-            #if(int(response['status']) != 200):
-            #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
-            #    raise GeoNodeException(msg)
+        # Visit get_absolute_url and make sure it does not give a 404
+        #logger.info(self.get_absolute_url())
+        #response, body = http.request(self.get_absolute_url())
+        #if(int(response['status']) != 200):
+        #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
+        #    raise GeoNodeException(msg)
 
-            #FIXME: Add more checks, for example making sure the title, keywords and description
-            # are the same in every database.
+        #FIXME: Add more checks, for example making sure the title, keywords and description
+        # are the same in every database.
 
     def layer_attributes(self):
         attribute_fields = cache.get('layer_searchfields_' + self.typename)
@@ -1166,7 +1165,7 @@ class Layer(models.Model, PermissionLevelMixin):
         return ({
             "dataStore" : "Vector Data",
             "coverageStore": "Raster Data",
-            }).get(self.storeType, "Data")
+        }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
@@ -1207,7 +1206,7 @@ class Layer(models.Model, PermissionLevelMixin):
         try:
             self.resource.metadata_links = md_links
         except Exception, ex:
-            logger.error(str(ex))
+            logger.error("Exception occurred in _set_metadata_links for %s: %s", str(ex))
 
     metadata_links = property(_get_metadata_links, _set_metadata_links)
 
@@ -1658,7 +1657,7 @@ class Map(models.Model, PermissionLevelMixin):
 
 
         if self.group_params:
-                config["treeconfig"] = json.loads(self.group_params)
+                #config["treeconfig"] = json.loads(self.group_params)
                 config["map"]["groups"] = json.loads(self.group_params)
 
         '''
@@ -1699,7 +1698,7 @@ class Map(models.Model, PermissionLevelMixin):
         self.featured = conf['about'].get('featured', False)
 
         logger.debug("Try to save treeconfig")
-        self.group_params = json.dumps(conf['treeconfig'])
+        self.group_params = json.dumps(conf['map']['groups'])
         logger.debug("Saved treeconfig")
 
         def source_for(layer):

@@ -59,6 +59,18 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
      */
     baseNodeText: "Base Layers",
 
+    /** api: config[removeMenuText]
+     *  ``String``
+     *  Text for remove menu item (i18n).
+     */
+    addCategoryActionText:"Add Category",
+
+    /** api: config[addCategoryTip]
+     *  ``String``
+     *  Text for remove action tooltip (i18n).
+     */
+    addCategoryActionTipText:"Add category",
+
     /** api: config[groups]
      *  ``Object`` The groups to show in the layer tree. Keys are group names,
      *  and values are either group titles or an object with ``title`` and
@@ -189,11 +201,26 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
         };
     },
 
+    toggleFolder: function(groupConfig) {
+        var expanded = groupConfig["expanded"] ? groupConfig["expanded"] === "true" :  true;
+        var groupNode = this.overlayRoot.findChild("text", groupConfig.group)
+        if (groupNode != null) {
+            switch (expanded) {
+                case false:
+                    groupNode.collapse();
+                default:
+                    groupNode.expand();
+            }
+        }
+    },
 
-    addCategoryFolder: function(groupConfig){
+    addCategoryFolder: function(groupConfig, insert){
         var newFolder = this.createCategoryFolder(groupConfig);
         if (newFolder) {
-            this.overlayRoot.appendChild(newFolder);
+            if (insert)
+                this.overlayRoot.insertBefore(newFolder, this.overlayRoot.firstChild);
+            else
+                this.overlayRoot.appendChild(newFolder);
         }
     },
 
@@ -295,12 +322,26 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
     /** private: method[handleTreeContextMenu]
      */
     handleTreeContextMenu: function(node, e) {
-        if(node && node.layer) {
+        function toggleVisibility(item, node) {
+            if (item.folderAction != (node.layer ? undefined: true))  {
+                    item.hide();
+                } else {
+                    item.show();
+                }
+        }
+
+        if(node) {
             node.select();
             var tree = node.getOwnerTree();
             if (tree.getSelectionModel().getSelectedNode() === node) {
                 var c = tree.contextMenu;
                 c.contextNode = node;
+                c.items.eachKey(function(key,item) {
+                    toggleVisibility(item, node);
+                    if (item.folderAction) {
+                        item.selectedNode = node;
+                    }
+                });
                 c.items.getCount() > 0 && c.showAt(e.getXY());
             }
         }
@@ -395,7 +436,7 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
             mpl.fireEvent("load",mpl);
             console.log('sorted', 'DESC');
         }
-    }
+    },
 
 
 

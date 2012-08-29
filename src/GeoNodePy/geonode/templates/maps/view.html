@@ -27,12 +27,16 @@
     var app;
     var init = function() {
         {% autoescape off %}
+
+    var identifyText = gettext('Identify');
+    var coordinateText = gettext('Map Coordinates - longitude, latitude');
+
         var config = Ext.apply({
             tools:  [{
                 ptype: "gxp_geonodequerytool",
                 id: "worldmap_query_tool",
                 actionTarget:  {target: "paneltbar", index: 5},
-                toolText: '<span class="x-btn-text">Identify</span>',
+            toolText: '<span class="x-btn-text">' + identifyText + '</span>',
                 iconCls: null,
                 outputConfig: {width: 400, height: 200, panIn: false},
                 featurePanel: 'queryPanel',
@@ -41,12 +45,38 @@
             },
                 {
                     ptype: "gxp_coordinatetool",
-                    actionTarget:  {target: "paneltbar", index: 7},
-                    toolText: '<span class="x-btn-text">Position</span>',
+                title: coordinateText,
                     iconCls: null,
                     toggleGroup: 'featureGroup',
                     pressed: false
-                }
+            }{% if user.is_authenticated and DB_DATASTORE  %},
+            {
+                ptype: "gxp_featuremanager",
+                id: "feature_manager",
+                paging: false,
+                autoSetLayer: true,
+                autoLoadFeatures: true,
+                autoActivate: false,
+                listeners: {
+                    'layerchange': function(mgr, layer, schema) {
+                        app.checkLayerPermissions(layer);
+                    }
+                },
+                actionTarget:  {target: "paneltbar"},
+                toggleGroup: 'featureGroup'
+            },
+            {
+                ptype: "gxp_featureeditor",
+                id: "gn_layer_editor",
+                featureManager: "feature_manager",
+                autoLoadFeature: true,
+                iconClsAdd: null,
+                iconClsEdit: null,
+                createFeatureActionText: '<span class="x-btn-text" >' + "Create Feature" + '</span>',
+                editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
+                actionTarget:  {target: "paneltbar", index: 4},
+                toggleGroup: 'featureGroup'
+            }{% endif %}
             ],
             proxy: "/proxy/?url=",
 
@@ -55,10 +85,14 @@
              * maps on the server for sharing and editing.
              */
             rest: "/maps/",
-        homeUrl: "{% url home %}",
+            homeUrl: "{% url home%}",
+            siteUrl: "{{ SITE_URL }}",
             localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
-        localCSWBaseUrl: "{{ GEONETWORK_BASE_URL }}srv/en/csw",
+            localCSWBaseUrl: "{{ GEONETWORK_BASE_URL }}srv/en/csw",
             csrfToken: "{{ csrf_token }}",
+        {% if user.is_authenticated %}
+        db_datastore: "{{ DB_DATASTORE }}",
+        {% endif %}
             authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
         }, {{ config }});
 
@@ -102,46 +136,48 @@
 
     <div id="dataTabs" class="x-hidden">
 
-        <div id="searchDiv" style="background-color:#fff;width:800px;">
-            <div style="float:left;position:relative;margin:10px;width:580px;">
-                <div class="block">
-                    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+<div id="searchDiv" style="background-color:#fff;width:800px;">
+<div style="float:left;position:relative;margin:10px;width:580px;">
+  <div class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
-                    <div id="search_results"></div>
+    <div id="search_results"></div>
 
-                </div>
+  </div>
 
-                <div class="block wrap selfclear">
-                    <h3>Selected Data</h3>
-                    <div id="selection">
-                        <div id="data_cart"></div>
-                    </div>
-                    <div id="data_ops">
-                    </div>
-                </div>
-
-
-            </div>
+  <div class="block wrap selfclear">
+  <h3>Selected Data</h3>
+  <div id="selection">
+    <div id="data_cart"></div>
+    </div>
+    <div id="data_ops">
+    </div>
+  </div>
 
 
+</div>
 
-            <div style="position:relative;float:right;width:200px">
-                <div id="refine" class="block">
-                    <h3>{% trans "Refine Search" %}</h3>
-                    <div class="bbox-controls">
-                        <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
-                        <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
-                        <div class="bbox-expand">
-                        </div>
-                    </div>
-                    <div class="search-button">Refine</div>
-                </div>
 
-            </div>
-        </div>
+
+<div style="position:relative;float:right;width:200px">
+  <div id="refine" class="block">
+    <h3>{% trans "Refine Search" %}</h3>
+    <div class="bbox-controls">
+      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
+      <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
+      <div class="bbox-expand">
+      </div>
+    </div>
+    <div class="search-button">Refine</div>
+  </div>
+
+</div>
+</div>
         <div id="externalDiv"></div>
         <div id="uploadDiv"></div>
+        {% if user.is_authenticated and DB_DATASTORE  %}
         <div id="createDiv"></div>
+        {% endif %}
         <div id="warpDiv">
             <div id="tabContainer" style="padding:20px;">
 
