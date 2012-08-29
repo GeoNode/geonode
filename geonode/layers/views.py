@@ -475,7 +475,8 @@ def layer_search(request):
 
         doc['metadata_links'] = metadata_links
 
-        rows.append(doc)
+        if doc['_permissions']['view']:
+            rows.append(doc)
 
     result['rows'] = rows
     result['success'] = True
@@ -527,7 +528,7 @@ def layer_search_result_detail(request, template='layers/search_result_snippet.h
 
 
 @require_POST
-def layer_ajax_permissions(request, layername):
+def layer_permissions(request, layername):
     try:
         layer = _resolve_layer(request, layername, 'layers.change_layer_permissions')
     except PermissionDenied:

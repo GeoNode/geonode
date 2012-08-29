@@ -22,6 +22,7 @@ from unittest import TestCase
 from django.core.management import call_command
 import gisdata
 from geonode.catalogue import get_catalogue
+from geonode.layers.utils import file_upload
 
 class GeoNodeCSWTest(TestCase):
     """Tests geonode.catalogue app/module"""
