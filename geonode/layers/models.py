@@ -223,6 +223,9 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 
+    class Meta:
+        abstract = True
+
 class Layer(ResourceBase):
     """
     Layer (inherits ResourceBase fields)
