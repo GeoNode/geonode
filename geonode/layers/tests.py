@@ -336,7 +336,7 @@ class LayersTest(TestCase):
     def test_layer_attributes(self):
         lyr = Layer.objects.get(pk=1)
         #There should be a total of 3 attributes
-        self.assertEqual(len(lyr.attribute_set.all(), 3))
+        self.assertEqual(len(lyr.attribute_set.all()), 3)
         #Two out of 3 attributes should be visible
         custom_attributes = lyr.display_attributes
         self.assertEqual(len(custom_attributes), 2)

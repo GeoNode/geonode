@@ -253,6 +253,10 @@ class Layer(models.Model, PermissionLevelMixin):
         
     @property
     def attribute_names(self):
+        """
+        Retrieve attribute names and types for layer from GeoServer
+        """
+
         #Appending authorizations seems necessary to avoid 'layer not found' from GeoServer
         http = httplib2.Http()
         http.add_credentials(_user, _password)
@@ -273,13 +277,13 @@ class Layer(models.Model, PermissionLevelMixin):
                     "service": "wfs",
                     "version": "1.0.0",
                     "request": "DescribeFeatureType",
-                    "typename": self.typename,
+                    "typename": self.typename
                 })
             try:
-                    body = http.request(dft_url)[1]
-                    doc = etree.fromstring(body)
-                    path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
-                    atts = [[n.attrib["name"],n.attrib["type"]] for n in doc.findall(path)]
+                body = http.request(dft_url)[1]
+                doc = etree.fromstring(body)
+                path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
+                atts = [[n.attrib["name"],n.attrib["type"]] for n in doc.findall(path)]
             except Exception:
                 atts = []
             return atts
