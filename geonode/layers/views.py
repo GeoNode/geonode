@@ -188,7 +188,6 @@ def layer_metadata(request, layername, template='layers/layer_describe.html'):
 
         if attribute_form.is_valid():
             for form in attribute_form.cleaned_data:
-                logger.info(str(form))
                 la = Attribute.objects.get(id=int(form['id'].id))
                 la.attribute_label = form["attribute_label"]
                 la.visible = form["visible"]
