@@ -61,26 +61,12 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
      */
     searchingText: 'Searching...',
 
-
-    serviceCheck: function (item, e) {
-        switch (item.checked)
-        {
-            case true:
-                this.services += ',' + item.id;
-                break;
-            default:
-                this.services = this.services.replace(',' + item.id, '');
-        }
-    },
-
     firstLoad: true,
 
     /** api: method[addActions]
      *  Creates the gazetteer interface, functionality, etc.
      */
     addActions: function() {
-
-        //var tool = this;
 
         // Text field to enter search term in
         this.searchTB = new Ext.form.TextField({
@@ -112,16 +98,22 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
             scope: this
         });
 
-
-
-
-
+        var tool = this;
+        var serviceCheck = function (item, e) {
+            switch (item.checked) {
+                case true:
+                    tool.services += ',' + item.id;
+                    break;
+                default:
+                    this.services = tool.services.replace(',' + item.id, '');
+            }
+        };
 
         // Gazetteer/Geocoder service options
-        var geocoderWorldMap = {text: 'WorldMap', id: 'worldmap', checked: true, disabled: true, hideOnClick: false, checkHandler: this.serviceCheck};
-        var geocoderGoogle = {text: 'Google', id: 'google', checked: true, hideOnClick: false, checkHandler: this.serviceCheck};
-        var geocoderYahoo = {text: 'Yahoo', id: 'yahoo', checked: false, hideOnClick: false, checkHandler: this.serviceCheck};
-        var geocoderGeonames = {text: 'GeoNames', id: 'geonames', checked: false, hideOnClick: false, checkHandler: this.serviceCheck};
+        var geocoderWorldMap = {text: 'WorldMap', id: 'worldmap', checked: true, disabled: true, hideOnClick: false, checkHandler: serviceCheck};
+        var geocoderGoogle = {text: 'Google', id: 'google', checked: true, hideOnClick: false, checkHandler: serviceCheck};
+        var geocoderYahoo = {text: 'Yahoo', id: 'yahoo', checked: false, hideOnClick: false, checkHandler: serviceCheck};
+        var geocoderGeonames = {text: 'GeoNames', id: 'geonames', checked: false, hideOnClick: false, checkHandler: serviceCheck};
 
         //Optional start date filter
         this.startDateField = new Ext.form.TextField({
