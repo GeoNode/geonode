@@ -33,7 +33,7 @@ Ext.onReady(function() {
          * provides listing and, with an authenticated user, saving of 
          * maps on the server for sharing and editing.
          */
-        rest: "/maps/",
+        rest: "{% url maps_browse %}",
         homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
@@ -43,7 +43,7 @@ Ext.onReady(function() {
 
     app = new GeoExplorer(config);
 
-    var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}");
+    var permalinkTemplate = new Ext.Template("{protocol}//{host}/geonode/maps/{id}");
     var permalink = function(id) {
             return permalinkTemplate.apply({
                 protocol: window.location.protocol,
@@ -82,6 +82,6 @@ Ext.onReady(function() {
 </div>
 <div id="templates">
   <div id="more-info-tpl"><a class='link' href='{permalink}'>{% trans "View info" %}</a></div>
-  <div id="title-tpl"><a class='maplist' href='/maps/search'>{% trans "Maps" %}</a> / <strong>{title}</strong></div>
+  <div id="title-tpl"><a class='maplist' href='{% url maps_search %}'>{% trans "Maps" %}</a> / <strong>{title}</strong></div>
 </div>
 {% endblock %}
