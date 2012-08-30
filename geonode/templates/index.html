@@ -37,21 +37,23 @@
       </section>
     </div>
     <aside class="span4">
-      <div class="well">
-        <section>
-          <h2>{% trans "Contribute" %}</h2>
-          <p class="main-actions">
-          {% blocktrans %}
-            GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. 
-          {% endblocktrans %}
-            <a href="{% url layer_upload %}" class="btn btn-large">Upload Data</a>
-          {% blocktrans %}
-            GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
-          {% endblocktrans %}
-            <a href="{% url new_map %}" class="btn btn-large">Create a Map</a>
-          </p>
-        </section>
-      </div>
+      {% if request.user.is_authenticated %}
+        <div class="well">
+          <section>
+            <h2>{% trans "Contribute" %}</h2>
+            <p class="main-actions">
+            {% blocktrans %}
+              GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. 
+            {% endblocktrans %}
+              <a href="{% url layer_upload %}" class="btn btn-large">Upload Data</a>
+            {% blocktrans %}
+              GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
+            {% endblocktrans %}
+              <a href="{% url new_map %}" class="btn btn-large">Create a Map</a>
+            </p>
+          </section>
+        </div>
+      {% endif %}
       <div class="well">
         <h2>{% trans "Latest Maps" %}</h2>
         <section class="article-list">
