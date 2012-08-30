@@ -34,6 +34,7 @@ from django.db.models import signals
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
@@ -393,7 +394,7 @@ class Layer(models.Model, PermissionLevelMixin):
         return [kw.name for kw in self.keywords.all()]
 
     def get_absolute_url(self):
-        return "/data/%s" % (self.typename)
+        return reverse('geonode.layers.views.layer_detail', None, [str(self.typename)]) 
 
     def __str__(self):
         return "%s Layer" % self.typename
