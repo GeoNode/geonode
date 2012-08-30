@@ -1,0 +1,9 @@
+<article>
+  <a href="{% url layer_detail layer.typename %}"><img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" border=0/></a>
+  <div class="details">
+    <a href="{% url layer_detail layer.typename %}"><h3>{{ layer.title }}</h3></a>
+    <div class="meta">by <a href="{% url profile_detail layer.owner.username %}">{{ map.owner }}</a>, {{ layer.date|timesince }} ago</div>
+    <p>{{ layer.abstract }}</p>
+    <p class="rating"><a href="#">564 likes</a></p>
+  </div>
+</article>
