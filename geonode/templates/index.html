@@ -28,13 +28,13 @@
   </div>
   <div class="row">
     <div class="span8">
+      <section class="widget list">
         <h2>{% trans "Latest Data:" %}</h2>
         {% featured_layers as featured_layers %}
-        <section class="map-list">
-          {% for layer in featured_layers %}
-            {% include "layers/_layer_list_item.html" %}
-          {% endfor %}
-        </section>
+        {% for layer in featured_layers %}
+          {% include "layers/_layer_widget_item.html" %}
+        {% endfor %}
+      </section>
     </div>
     <aside class="span4">
       <div class="well">
@@ -51,14 +51,14 @@
             <a href="{% url new_map %}" class="btn btn-large">Create a Map</a>
           </p>
         </section>
-        <section class="article-list last">
-            <h2>{% trans "Latest Maps" %}</h2>
-            {% featured_maps as featured_maps %}
-            <section class="map-list">
-                {% for map in featured_maps %}
-                {% include "maps/_map_mini_item.html" %}
-                {% endfor %}
-            </section>
+      </div>
+      <div class="well">
+        <h2>{% trans "Latest Maps" %}</h2>
+        <section class="article-list">
+          {% featured_maps as featured_maps %}
+          {% for map in featured_maps %}
+            {% include "maps/_map_list_item.html" %}
+          {% endfor %}
       </div>
     </aside>
   </div>
