@@ -27,10 +27,11 @@
   </div>
   <div class="row">
     <div class="span8">
-          <h2>{% trans "Latest Data:" %}</h2>
-          {% featured_layers as featured_layers %}
+        <h2>{% trans "Latest Data:" %}</h2>
+        {% featured_layers as featured_layers %}
+        <section class="map-list">
           {% for layer in featured_layers %}
-            {% include "layers/_layer_grid_item.html" %}
+            {% include "layers/_layer_list_item.html" %}
           {% endfor %}
         </section>
     </div>
