@@ -72,8 +72,13 @@
         "fields": {
             "typename": "base:CA",
             "store": "CA",
+            "name": "CA",
             "workspace": "base",
-            "name": "CA"
+            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298",
+            "bbox_x0": 0,
+            "bbox_x1": 1,
+            "bbox_y0": 0,
+            "bbox_y1": 1
         }
     },
     {
