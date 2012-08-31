@@ -1,0 +1,126 @@
+[    {
+        "fields": {
+        "date_joined": "2010-07-20 13:31:27",
+        "email": "admin@admin.admin",
+        "first_name": "",
+        "groups": [],
+        "is_active": true,
+        "is_staff": true,
+        "is_superuser": true,
+        "last_login": "2010-07-20 17:26:12",
+        "last_name": "",
+        "password": "sha1$6c974$de67ee46336cb3b9bb9e90d53863c3a8d01ce944",
+        "user_permissions": [],
+        "username": "admin"
+    },
+    "model": "auth.user",
+    "pk": 2
+},{
+    "fields": {
+        "typename": "base:CA",
+        "store": "CA",
+        "name": "CA",
+        "workspace": "base",
+        "keywords" : ["key1"],
+        "llbbox" : ["1", "3", "2", "3"],
+        "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298"
+    },
+    "model": "maps.layer",
+    "pk": 1
+}   ,
+    {
+        "fields": {
+            "layer_name": "CA",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 121,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise1",
+            "start_date": "2010-07-20",
+            "end_date": "2012-07-20",
+            "julian_start": 2455398,
+            "julian_end": 2456129,
+            "project": "test",
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "layer_name": "CA",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 122,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise2",
+            "start_date": "2011-07-20",
+            "end_date": "2013-07-20",
+            "julian_start": 2455763,
+            "julian_end": 2456494,
+            "project": "test",
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "layer_name": "CA",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 123,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise3",
+            "start_date": "2013-07-20 BC",
+            "end_date": "2011-07-20 BC",
+            "julian_start": 986376,
+            "julian_end": 987106,
+            "project": "test",
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "layer_name": "CA",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 124,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise4",
+            "start_date": "2012-07-20 BC",
+            "end_date": "2010-07-20 BC",
+            "julian_start": 986741,
+            "julian_end": 987471,
+            "project": "test",
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "layer_name": "CA",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 125,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise5",
+            "start_date": "2010-07-21 BC",
+            "end_date": null,
+            "julian_start": 987472,
+            "julian_end": null,
+            "project": "test",
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 5
+    }
+]

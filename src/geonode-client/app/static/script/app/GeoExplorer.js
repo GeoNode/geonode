@@ -1621,7 +1621,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     layer.redraw(true);
                     if (!updated) {
                         Ext.Ajax.request({
-                            url:"/data/" + layer.params.LAYERS + "/ajax_layer_update_bounds/",
+                            url:"/data/" + layer.params.LAYERS + "/ajax_layer_update/",
                             method:"POST",
                             params:{layername:layer.params.LAYERS},
                             success:function (result, request) {
@@ -2000,9 +2000,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             });
 
+
             var queryTool = Ext.getCmp("worldmap_query_tool")
             if (queryTool)
                 queryTool.toggle(true);
+
 
             function setScale() {
                 var scale = zoomStore.queryBy(function(record) {

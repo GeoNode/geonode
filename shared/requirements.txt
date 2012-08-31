@@ -4,7 +4,7 @@ Django==1.2
 simplejson # needed for python2.5
 django-extensions
 httplib2
-psycopg2
+psycopg2==2.4.1
 -e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 #django-registration
 https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
@@ -15,5 +15,16 @@ South==0.7.3
 #for using memcached
 python-memcached
 ordereddict
+#The following are for the gazetteer
+-e git+https://github.com/cga-harvard/geopy.git#egg=geopy
+geojson
+https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
 #Uncomment the following to use the django debug toolbar
 -e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
+#For scheduled tasks
+django-celery
+kombu
+#For gazetteer
+python-dateutil==1.5 #For Python < 3.0
+datautil
+jdcal

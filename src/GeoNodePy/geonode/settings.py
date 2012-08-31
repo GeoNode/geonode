@@ -39,7 +39,7 @@ ADMINS = (
 
 
 MANAGERS = ADMINS
-
+POSTGIS_VERSION = (1, 5, 3)
 DATABASE_ENGINE = 'sqlite3'
 DATABASE_NAME = os.path.join(PROJECT_ROOT,"..","..","..","development.db")
 DATABASE_USER = ''             # Not used with sqlite3.
@@ -171,7 +171,7 @@ ROOT_URLCONF = 'geonode.urls'
 # Note that Django automatically includes the "templates" dir in all the
 # INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT,"templates"),    
+    os.path.join(PROJECT_ROOT,"templates"),
 )
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
@@ -194,6 +194,7 @@ AUTHENTICATION_BACKENDS = ('geonode.core.auth.GranularBackend',)
 GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 GOOGLE_ANALYTICS_ID = "UA-XXXXXXXX-1"
 
+YAHOO_API_KEY=""
 
 LOGIN_REDIRECT_URL = "/"
 
@@ -262,19 +263,22 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'django.contrib.sitemaps',
+
     'staticfiles',
     'django_extensions',
-    'registration',
-    'profiles',
+    'register',
+    'profile',
     'avatar',
     'south',
+
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
-    'geonode',
-    'geonode.registration',
-    'geonode.profiles',
+    'geonode.profile',
+    'geonode.register',
+    #'geonode.gazetteer',
+    #'geonode.queue',
+    #'djcelery',
     #'debug_toolbar',
 )
 
@@ -302,6 +306,9 @@ GEONODE_CLIENT_LOCATION = "/media/static/"
 # if you do use it replace UA-XXXXXXXX-1 with your own ID
 GOOGLE_ANALYTICS_CODE = ""
 
+GOOGLE_API_KEY = None
+GOOGLE_SECRET_KEY = None
+
 #Set name of additional permissions group (besides anonymous and authenticated)
 CUSTOM_GROUP_NAME = 'Organization Users'
 
@@ -325,6 +332,52 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
+DB_DATASTORE_ENGINE=''
+
+
+USE_GAZETTEER = False
+##### START GAZETTEER SETTINGS #####
+# Defines settings for multiple databases,
+# only use if PostGIS integration enabled
+# and USE_GAZETTEER = True
+#DATABASES = {
+#    'default': {
+#        'ENGINE': DATABASE_ENGINE,
+#        'NAME': DATABASE_NAME,
+#        'USER' : DATABASE_USER,
+#        'PASSWORD': DATABASE_PASSWORD,
+#        'PORT': DATABASE_PORT,
+#        'HOST': DATABASE_HOST
+#    },
+#    'wmdata': {
+#        'ENGINE': DB_DATASTORE_ENGINE,
+#        'NAME': DB_DATASTORE_DATABASE,
+#        'USER' : DB_DATASTORE_USER,
+#        'PASSWORD': DB_DATASTORE_PASSWORD,
+#        'PORT': DB_DATASTORE_PORT,
+#        'HOST': DATABASE_HOST
+#    }
+#
+#}
+#DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
+#SOUTH_DATABASE_ADAPTERS = {
+#    'default': "south.db.sqlite3",
+#    'wmdata' : "south.db.postgresql_psycopg2",
+#
+#    }
+#SOUTH_TESTS_MIGRATE = False
+
+##### END GAZETTEER SETTINGS #####
+
+#Set to true to schedule asynchronous updates of
+#layer bounds updates (after creating/editing features)
+#and gazetteer updates
+USE_QUEUE = False
+CELERY_IMPORTS = ("geonode.queue", )
+if USE_QUEUE:
+    import djcelery
+    djcelery.setup_loader()
+
 
 SOUTH_MIGRATION_MODULES = {
 }
@@ -333,6 +386,9 @@ DEFAULT_WORKSPACE = 'geonode'
 
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
+
+BROKER_URL = "django://"
+
 
 try:
     from local_settings import *

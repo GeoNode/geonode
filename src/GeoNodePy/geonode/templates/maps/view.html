@@ -8,7 +8,12 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
-<script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+{% if "gme-" in GOOGLE_API_KEY %}
+    <script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+{% else %}
+    <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+{% endif %}
+
 <script type="text/javascript">
     google.load("earth", "1");
 </script>
@@ -28,8 +33,10 @@
 var app;
 var init = function() {
 {% autoescape off %}
+
     var identifyText = gettext('Identify');
     var coordinateText = gettext('Map Coordinates - longitude, latitude');
+    var gazetteerText = gettext('Placename gazetteer');
 
     var config = Ext.apply({
         tools:  [{
@@ -45,12 +52,17 @@ var init = function() {
         },
             {
                 ptype: "gxp_coordinatetool",
-                actionTarget:  {target: "paneltbar", index: 7},
                 title: coordinateText,
+                actionTarget:  {target: "paneltbar"}
+            }{% if USE_GAZETTEER %},
+            {
+                ptype: "gxp_gazetteertool",
+                actionTarget:  {target: "paneltbar", index: 7},
+                title: gazetteerText,
                 iconCls: null,
                 toggleGroup: 'featureGroup',
                 pressed: false
-            }{% if user.is_authenticated and DB_DATASTORE  %},
+            }{% endif %}{% if user.is_authenticated and DB_DATASTORE  %},
             {
                 ptype: "gxp_featuremanager",
                 id: "feature_manager",
