@@ -3,6 +3,7 @@
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
+{% block main %}
 {% block body_outer %}
   <div class="hero-unit">
     <h1>{% trans "Welcome" %}</h1>
@@ -50,4 +51,5 @@
         <a href="{% url search %}">{% trans "Advanced Search" %}</a>
     </div>
   </div>
+{% endblock %}
 {% endblock %}

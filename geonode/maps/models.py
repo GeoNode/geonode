@@ -28,6 +28,7 @@ from django.utils import simplejson as json
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 
 from geonode.layers.models import Layer
 from geonode.security.models import PermissionLevelMixin
@@ -188,7 +189,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
             return []
 
     def get_absolute_url(self):
-        return '/maps/%i' % self.id
+        return reverse('geonode.maps.views.map_detail', None, [str(self.id)]) 
         
     class Meta:
         # custom permissions, 
