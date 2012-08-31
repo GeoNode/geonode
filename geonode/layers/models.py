@@ -44,9 +44,8 @@ from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.ows import wcs_links, wfs_links, wms_links
 from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
-    HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
-    SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
-    DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
+    UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, SPATIAL_REPRESENTATION_TYPES, \
+    TOPIC_CATEGORIES, DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 
 from geoserver.catalog import Catalog
 from taggit.managers import TaggableManager
@@ -73,7 +72,7 @@ class LayerManager(models.Manager):
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
 
-    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None):
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
@@ -100,7 +99,6 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
-                    "owner": owner,
                     "uuid": str(uuid.uuid4())
                 })
 
@@ -193,19 +191,6 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     bbox_y1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')
 
-    # CSW specific fields
-    csw_typename = models.CharField(_('CSW typename'), max_length=32, default='gmd:MD_Metadata', null=False)    
-    csw_schema = models.CharField(_('CSW schema'), max_length=64, default='http://www.isotc211.org/2005/gmd', null=False)
-    csw_mdsource = models.CharField(_('CSW source'), max_length=256, default='local', null=False)
-    csw_insert_date = models.DateTimeField(_('CSW insert date'), auto_now_add=True, null=True)
-    csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=HIERARCHY_LEVELS)
-    csw_anytext = models.TextField(_('CSW anytext'), null=True)
-    csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))')
-
-    # metadata XML specific fields
-    #metadata_uploaded = models.BooleanField(default=False)
-    metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
- 
     @property
     def bbox(self):
         return [self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, self.srid]
@@ -239,13 +224,8 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 
-    @property
-    def keyword_csv(self):
-        keywords_qs = self.keywords.all()
-        if keywords_qs:
-            return ','.join([kw.name for kw in keywords_qs])
-        else:
-            return ''
+    class Meta:
+        abstract = True
 
 class Layer(ResourceBase):
     """
@@ -261,15 +241,6 @@ class Layer(ResourceBase):
     typename = models.CharField(max_length=128, unique=True)
 
     contacts = models.ManyToManyField(Contact, through='ContactRole')
-
-    def download_links(self):
-        links = []
-        for url in self.link_set.all():
-            description = '%s (%s Format)' % (self.title, url.name)
-            links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
-        abs_url = '%s%s' % (settings.SITEURL[:-1], self.get_absolute_url())
-        links.append((self.title, self.title, 'WWW:LINK-1.0-http--link', abs_url))
-        return links
 
     def thumbnail(self):
         """ Generate a URL representing thumbnail of the layer """
@@ -565,7 +536,7 @@ class Link(models.Model):
     link_type = models.CharField(max_length=255, choices = [(x, x) for x in LINK_TYPES])
     name = models.CharField(max_length=255, help_text='For example "View in Google Earth"')
     mime = models.CharField(max_length=255, help_text='For example "text/xml"')
-    url = models.CharField(unique=True, max_length=1000)
+    url = models.TextField(unique=True)
 
     objects = LinkManager()
 
