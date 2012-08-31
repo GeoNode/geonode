@@ -191,6 +191,9 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     bbox_y1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')
 
+    metadata_uploaded = models.BooleanField(default=False)
+    metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
+
     @property
     def bbox(self):
         return [self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, self.srid]
