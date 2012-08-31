@@ -332,11 +332,12 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE=''
-DB_DATASTORE_ENGINE=''
+DB_DATASTORE_ENGINE = 'django.contrib.gis.db.backends.postgis'
 
 
 USE_GAZETTEER = False
 ##### START GAZETTEER SETTINGS #####
+
 # Defines settings for multiple databases,
 # only use if PostGIS integration enabled
 # and USE_GAZETTEER = True
@@ -373,6 +374,7 @@ USE_GAZETTEER = False
 #layer bounds updates (after creating/editing features)
 #and gazetteer updates
 USE_QUEUE = False
+QUEUE_INTERVAL = '*/10'
 CELERY_IMPORTS = ("geonode.queue", )
 if USE_QUEUE:
     import djcelery

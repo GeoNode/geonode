@@ -1,11 +1,12 @@
 #from huey.djhuey.decorators import queue_command, periodic_command, crontab
 from celery.task.schedules import crontab
 from celery.decorators import periodic_task, task
+from geonode import settings
 from models import *
 
 __author__ = 'mbertrand'
 
-@periodic_task(run_every=crontab(minute='*/1'))
+@periodic_task(run_every=crontab(minute=settings.QUEUE_INTERVAL))
 def updateGazetteer():
     print "start updateGazetteer"
     gazetteerJobs = GazetteerUpdateJob.objects.all()
@@ -20,7 +21,7 @@ def updateGazetteer():
             job.save()
     #print "end updateGazetteer"
 
-@periodic_task(run_every=crontab(minute='*/1'))
+@periodic_task(run_every=crontab(minute=settings.QUEUE_INTERVAL))
 def updateBounds():
     boundsJobs = LayerBoundsUpdateJob.objects.all()
     for job in boundsJobs:
