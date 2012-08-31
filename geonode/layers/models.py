@@ -263,14 +263,14 @@ class Layer(ResourceBase):
 
     contacts = models.ManyToManyField(Contact, through='ContactRole')
 
-def download_links(self):
-    links = []
-    for url in self.link_set.all():
-        description = '%s (%s Format)' % (self.title, url.name)
-        links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
-    abs_url = '%s%s' % (settings.SITEURL[:-1], self.get_absolute_url())
-    links.append((self.title, self.title, 'WWW:LINK-1.0-http--link', abs_url))
-    return links
+    def download_links(self):
+        links = []
+        for url in self.link_set.all():
+            description = '%s (%s Format)' % (self.title, url.name)
+            links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
+        abs_url = '%s%s' % (settings.SITEURL[:-1], self.get_absolute_url())
+        links.append((self.title, self.title, 'WWW:LINK-1.0-http--link', abs_url))
+        return links
 
     def thumbnail(self):
         """ Generate a URL representing thumbnail of the layer """
