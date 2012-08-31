@@ -9,6 +9,7 @@
 
 {% block main %}
 {% block body_outer %}
+<div class="span12">
   <div class="hero-unit">
     <h1>{% trans "Welcome" %}</h1>
     <p>
@@ -28,38 +29,42 @@
   </div>
   <div class="row">
     <div class="span8">
-          <h2>{% trans "Latest Data:" %}</h2>
-          {% featured_layers as featured_layers %}
-          {% for layer in featured_layers %}
-            {% include "layers/_layer_grid_item.html" %}
-          {% endfor %}
-        </section>
+      <section class="widget list">
+        <h2>{% trans "Latest Data:" %}</h2>
+        {% featured_layers as featured_layers %}
+        {% for layer in featured_layers %}
+          {% include "layers/_layer_widget_item.html" %}
+        {% endfor %}
+      </section>
     </div>
     <aside class="span4">
+      {% if request.user.is_authenticated %}
+        <div class="well">
+          <section>
+            <h2>{% trans "Contribute" %}</h2>
+            <p class="main-actions">
+            {% blocktrans %}
+              GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. 
+            {% endblocktrans %}
+              <a href="{% url layer_upload %}" class="btn btn-large">Upload Data</a>
+            {% blocktrans %}
+              GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
+            {% endblocktrans %}
+              <a href="{% url new_map %}" class="btn btn-large">Create a Map</a>
+            </p>
+          </section>
+        </div>
+      {% endif %}
       <div class="well">
-        <section>
-          <h2>{% trans "Contribute" %}</h2>
-          <p class="main-actions">
-          {% blocktrans %}
-            GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. 
-          {% endblocktrans %}
-            <a href="{% url layer_upload %}" class="btn btn-large">Upload Data</a>
-          {% blocktrans %}
-            GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
-          {% endblocktrans %}
-            <a href="{% url new_map %}" class="btn btn-large">Create a Map</a>
-          </p>
-        </section>
-        <section class="article-list last">
-            <h2>{% trans "Latest Maps" %}</h2>
-            {% featured_maps as featured_maps %}
-            <section class="map-list">
-                {% for map in featured_maps %}
-                {% include "maps/_map_mini_item.html" %}
-                {% endfor %}
-            </section>
+        <h2>{% trans "Latest Maps" %}</h2>
+        <section class="article-list">
+          {% featured_maps as featured_maps %}
+          {% for map in featured_maps %}
+            {% include "maps/_map_list_item.html" %}
+          {% endfor %}
       </div>
     </aside>
   </div>
+</div>
 {% endblock %}
 {% endblock %}
