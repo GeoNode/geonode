@@ -86,15 +86,6 @@ The following steps should prepare a Python virtual environment for you::
   source bin/activate
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
-
-
-Copy these war files to the webapps directory of your Java container
-(Tomcat/Jetty) and deploy them:
-    webapps/geoserver-geonode-dev.war
-    webapps/geonetwork.war
-
-
-Start the server:
   paver host
 
 
@@ -142,11 +133,10 @@ JavaScript Developers can switch to using unminified scripts and CSS:
     $ ant init debug
 
 2. Set the GEONODE_CLIENT_LOCATION entry in :file:`src/geonode/settings.py` to
-   ``http://localhost:8080/`` and run paver as described above.
+   ``http://localhost:9090/`` and run paver as described above.
 
 Note that this requires ant (http://ant.apache.org/) in addition to the above
 build requirements.
-
 
 VirtualBox Setup
 ................
@@ -162,11 +152,11 @@ following needs to be done before running ``paver host``:
 
 * Edit :file:`src/GeoNodePy/geonode/settings.py` and change the line::
 
-    GEOSERVER_BASE_URL="http://localhost:8080/geoserver-geonode-dev/"
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
   to use the IP address you have written down above::
 
-    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver-geonode-dev/"
+    GEOSERVER_BASE_URL="http://192.168.56.1:8001/geoserver/"
 
 * Make sure to change other http://localhost urls in
   :file:`src/GeoNodePy/geonode/settings.py` accordingly as well
@@ -191,13 +181,11 @@ GeoServer used for http://geonode.capra.opengeo.org/ is::
 
     http://geonode.capra.opengeo.org/geoserver/
 
-
-
 The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
 in :file:`src/geoserver-geonode-ext/` is configured to provide a GeoServer
 instance at that port with the following commands::
    
-    cd src/geoserver-geonodeext/
+    cd src/geoserver-geonode-ext/
     sh startup.sh
 
 .. note:: 
@@ -209,7 +197,7 @@ instance at that port with the following commands::
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
   
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver-geonode-dev/"
+    GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
 to indicate the GeoServer URL that you want to use. 
 
@@ -319,6 +307,47 @@ Create or edit the 'gwc-gs.xml' file under the gwc directory within your GeoServ
 </GeoServerGWCConfig>
 
 
+GAZETTEER
+..............
+The gazetteer is disabled by default because it adds a bit of complexity to the setup process.
+It should be enabled only if PostGIS integration is also enabled.
+
+In your settings.py file:
+* uncomment the following in INSTALLED_APPS:
+    * #geonode.gazetteer,
+* uncomment and modify if necessary the entire "GAZETTEER SETTINGS" section
+
+
+QUEUE
+..............
+WorldMap can now optionally make use of Celery (http://celeryproject.org/) to send certain tasks (updating
+the gazetteer, updating layer boundaries after creating/editing features) to a job queue
+where they will be processed later.
+
+In your settings.py file, uncomment the following in INSTALLED_APPS:
+* #'geonode.queue',
+* #'djcelery',
+
+The run interval is determined by QUEUE_INTERVAL - the default is 10 minutes.
+
+You will need to manually setup and run the celery processes on your server.  For basic
+instructions on doing so see  :file:`docs/deploy/celery_queue.txt`
+
+
+Directory Structure
+===================
+
+* docs/ - Documentation based on Sphinx
+* pavement.py - Main build script.
+* shared/ - Configuration files and support files for the installer.
+* src/ - Source code for the java, javascript and python modules. Split in:
+
+    * geonode-client/ - the JavaScript/CSS for general apps (the Map editor,
+      search, embedded viewer...)
+    * GeoNodePy/ - the Python/Django modules.  Inside, geonode/ is the "core".
+    * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
+      Actually, the build script for this project is set up to create a WAR
+      that includes those extensions, not just a bundle with the extension.
 
 GPL License
 =======

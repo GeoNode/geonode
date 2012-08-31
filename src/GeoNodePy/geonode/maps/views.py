@@ -122,6 +122,7 @@ class LayerAttributeForm(forms.ModelForm):
         instance = getattr(self, 'instance', None)
         if instance and instance.attribute_type != 'xsd:string':
             self.fields['searchable'].widget.attrs['disabled'] = True
+            self.fields['in_gazetteer'].widget.attrs['disabled'] = True
         self.fields['attribute'].widget.attrs['readonly'] = True
         self.fields['display_order'].widget.attrs['size'] = 3
 
@@ -131,13 +132,32 @@ class LayerAttributeForm(forms.ModelForm):
         model = LayerAttribute
         exclude = ('attribute_type',)
 
+class GazetteerForm(forms.Form):
+
+    project = forms.CharField(label=_('Project'), max_length=128, required=False)
+    startDate = forms.ModelChoiceField(label = _("Start Date attribute"),
+        required=False,
+        queryset = LayerAttribute.objects.none())
+
+    startDateFormat = forms.CharField(label=_("Date format"), max_length=256, required=False)
+
+    endDate = forms.ModelChoiceField(label = _("End Date attribute"),
+        required=False,
+        queryset = LayerAttribute.objects.none())
+
+    endDateFormat = forms.CharField(label=_("Date format"), max_length=256, required=False)
+
+
+
+
+
 class LayerForm(forms.ModelForm):
     map_id = forms.CharField(widget=forms.HiddenInput(), initial='', required=False)
     date = forms.DateTimeField(label='*' + _('Date'), widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"date"}
     date.widget.widgets[1].attrs = {"class":"time"}
     temporal_extent_start = forms.DateField(required=False,label= _('Temporal Extent Start Date'), widget=forms.DateInput(attrs={"class":"date"}))
-    temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"date"}))
+    temporal_extent_end = forms.DateField(required=False,label= _('Temporal Extent End Date'), widget=forms.DateInput(attrs={"class":"date"}))
     title = forms.CharField(label = '*' + _('Title'), max_length=255)
     abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea)
     keywords = forms.CharField(label = '*' + _('Keywords (separate with spaces)'), widget=forms.Textarea)
@@ -152,7 +172,7 @@ class LayerForm(forms.ModelForm):
 
     class Meta:
         model = Layer
-        exclude = ('owner', 'contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'topic_category', 'bbox', 'llbbox', 'srs', 'geographic_bounding_box' ) #, 'topic_category'
+        exclude = ('owner', 'contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename', 'topic_category', 'bbox', 'llbbox', 'srs', 'geographic_bounding_box', 'in_gazetteer', 'gazetteer_project' ) #, 'topic_category'
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -357,7 +377,7 @@ def newmap_config(request):
 def newmap(request):
     config = newmap_config(request);
     if isinstance(config, HttpResponse):
-        return config;
+        return config
     else:
         return render_to_response('maps/view.html', RequestContext(request, {
         'config': config,
@@ -627,34 +647,22 @@ def ajax_layer_edit_check(request, layername):
             mimetype='text/plain'
         )
 
-def ajax_layer_update_bounds(request, layername):
-    layer = get_object_or_404(Layer, typename=layername);
 
-    #Get extent for layer from PostGIS
-    bboxes = get_postgis_bbox(layer.name)
-    if len(bboxes) != 1 and len(bboxes[0]) != 2:
-        return
-
-    bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
-    llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
-
-    layer.bbox = [float(l) for l in bbox]
-    layer.llbbox = [float(l) for l in llbbox]
-    layer.set_bbox(bbox, srs=layer.srs)
-
-    # Use update to avoid unnecessary post_save signal
-    Layer.objects.filter(id=layer.id).update(bbox=layer.bbox,llbbox=layer.llbbox,geographic_bounding_box=layer.geographic_bounding_box )
-
-    #Update geonetwork record with latest extent
-    logger.info("Save new bounds to geonetwork")
-    layer = get_object_or_404(Layer, typename=layername);
-    layer.save_to_geonetwork()
+def ajax_layer_update(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
+    if settings.USE_GAZETTEER:
+        if settings.USE_QUEUE:
+            layer.queue_gazetteer_update()
+            layer.queue_bounds_update()
+        else:
+            layer.update_gazetteer()
+            layer.update_bounds()
 
     return HttpResponse(
-            "Bounds updated",
-            status=200,
-            mimetype='text/plain'
-        )
+        "Layer updated",
+        status=200,
+        mimetype='text/plain'
+    )
 
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
@@ -1160,16 +1168,44 @@ def layer_metadata(request, layername):
         metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
         layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm, )
 
+        show_gazetteer_form = request.user.is_superuser and layer.store == settings.DB_DATASTORE_NAME
+
+        fieldTypes = {}
+        attributeOptions = layer.attribute_set.filter(attribute_type__in=['xsd:dateTime','xsd:date','xsd:int','xsd:string','xsd:bigint', 'xsd:double'])
+        for option in attributeOptions:
+            try:
+                fieldTypes[option.id] = option.attribute_type
+            except Exception, e:
+                logger.info("Could not get type for %s", option)
 
         if request.method == "GET":
             layer_form = LayerForm(instance=layer, prefix="layer")
             category_form = LayerCategoryForm(prefix="category_choice_field", initial=topic_category.id if topic_category else None)
+
 
             #layer_form.fields["topic_category"].initial = topic_category
             if "map" in request.GET:
                 layer_form.fields["map_id"].initial = request.GET["map"]
 
             attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
+
+            startAttributeQuerySet = LayerAttribute.objects.filter(layer=layer).filter(is_gaz_start_date=True)
+            endAttributeQuerySet = LayerAttribute.objects.filter(layer=layer).filter(is_gaz_end_date=True)
+
+
+            gazetteer_form = GazetteerForm()
+
+
+            gazetteer_form.fields['startDate'].queryset = gazetteer_form.fields['endDate'].queryset = attributeOptions
+            if gazetteer_form.fields['startDate'].queryset.count() == 0:
+                gazetteer_form.fields['startDate'].empty_label = gazetteer_form.fields['endDate'].empty_label = _('No date fields available')
+            gazetteer_form.fields['project'].initial = layer.gazetteer_project
+            if startAttributeQuerySet.exists():
+                gazetteer_form.fields['startDate'].initial = startAttributeQuerySet[0].id
+                gazetteer_form.fields['startDateFormat'].initial = startAttributeQuerySet[0].date_format
+            if endAttributeQuerySet.exists():
+                gazetteer_form.fields['endDate'].initial = endAttributeQuerySet[0].id
+                gazetteer_form.fields['endDateFormat'].initial = endAttributeQuerySet[0].date_format
 
             tab = None
             if "tab" in request.GET:
@@ -1180,15 +1216,17 @@ def layer_metadata(request, layername):
             layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
             category_form = LayerCategoryForm(request.POST, prefix="category_choice_field")
             attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
+            gazetteer_form = GazetteerForm(request.POST)
+            gazetteer_form.fields['startDate'].queryset = gazetteer_form.fields['endDate'].queryset = layer.attribute_set
 
             if "tab" in request.POST:
                 tab = request.POST["tab"]
 
 
-            if layer_form.is_valid() and category_form.is_valid():
+
+            if layer_form.is_valid() and category_form.is_valid() and (not request.user.is_superuser or gazetteer_form.is_valid()):
 
                 new_category = LayerCategory.objects.get(id=category_form.cleaned_data['category_choice_field'])
-
 
                 if attribute_form.is_valid():
                     for form in attribute_form.cleaned_data:
@@ -1197,6 +1235,17 @@ def layer_metadata(request, layername):
                         la.searchable = form["searchable"]
                         la.visible = form["visible"]
                         la.display_order = form["display_order"]
+                        if (request.user.is_superuser and gazetteer_form.is_valid()):
+                            la.in_gazetteer = form["in_gazetteer"]
+                            la.is_gaz_start_date = (la == gazetteer_form.cleaned_data["startDate"])
+                            la.is_gaz_end_date = (la == gazetteer_form.cleaned_data["endDate"])
+                            if la.is_gaz_start_date:
+                                la.date_format = gazetteer_form.cleaned_data["startDateFormat"].strip() \
+                                if len(gazetteer_form.cleaned_data["startDateFormat"]) > 0 else None
+                            elif la.is_gaz_end_date:
+                                la.date_format = gazetteer_form.cleaned_data["endDateFormat"].strip() \
+                                if len(gazetteer_form.cleaned_data["endDateFormat"]) > 0 else None
+
                         la.save()
                     cache.delete('layer_searchfields_' + layer.typename)
                     logger.debug("Deleted cache for layer_searchfields_" + layer.typename)
@@ -1209,7 +1258,6 @@ def layer_metadata(request, layername):
                 logger.debug("NEW category: [%s]", new_category)
                 mapid = layer_form.cleaned_data['map_id']
                 logger.debug("map id is [%s]", str(mapid))
-
 
                 if new_poc is None:
                     poc_form = ContactForm(request.POST, prefix="poc")
@@ -1227,11 +1275,20 @@ def layer_metadata(request, layername):
                     the_layer.poc = new_poc
                     the_layer.topic_category = new_category
                     the_layer.metadata_author = new_author
+                    if request.user.is_superuser and gazetteer_form.is_valid():
+                        the_layer.in_gazetteer = "gazetteer_include" in request.POST
+                        if the_layer.in_gazetteer:
+                            the_layer.gazetteer_project = gazetteer_form.cleaned_data["project"]
+
                     logger.debug("About to save")
                     the_layer.save()
                     logger.debug("Saved")
 
-
+                    if settings.USE_GAZETTEER and show_gazetteer_form:
+                        if settings.USE_QUEUE:
+                            the_layer.queue_gazetteer_update()
+                        else:
+                            the_layer.update_gazetteer()
 
                 if request.is_ajax():
                     return HttpResponse('success', status=200)
@@ -1277,9 +1334,12 @@ def layer_metadata(request, layername):
                 "author_form": author_form,
                 "attribute_form": attribute_form,
                 "category_form" : category_form,
+                "gazetteer_form": gazetteer_form,
+                "show_gazetteer_options": show_gazetteer_form,
                 "lastmap" : request.session.get("lastmap"),
                 "lastmapTitle" : request.session.get("lastmapTitle"),
-                "tab" : tab
+                "tab" : tab,
+                "datatypes" : json.dumps(fieldTypes)
                 }))
                 return HttpResponse(data, status=412)
 
@@ -1292,9 +1352,12 @@ def layer_metadata(request, layername):
             "author_form": author_form,
             "attribute_form": attribute_form,
             "category_form" : category_form,
+            "gazetteer_form": gazetteer_form,
+            "show_gazetteer_options": show_gazetteer_form,
             "lastmap" : request.session.get("lastmap"),
             "lastmapTitle" : request.session.get("lastmapTitle"),
-            "tab" : tab
+            "tab" : tab,
+            "datatypes" : json.dumps(fieldTypes)
         }))
 
         #Display the view on a regular page
@@ -1305,8 +1368,11 @@ def layer_metadata(request, layername):
             "author_form": author_form,
             "attribute_form": attribute_form,
             "category_form" : category_form,
+            "gazetteer_form": gazetteer_form,
+            "show_gazetteer_options": show_gazetteer_form,
             "lastmap" : request.session.get("lastmap"),
-            "lastmapTitle" : request.session.get("lastmapTitle")
+            "lastmapTitle" : request.session.get("lastmapTitle"),
+            "datatypes" : json.dumps(fieldTypes)
         }))
     else:
         return HttpResponse("Not allowed", status=403)

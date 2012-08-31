@@ -103,3 +103,4 @@ class WorldMapLayerUploadForm(LayerUploadForm):
     permissions = JSONField()
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file")
+

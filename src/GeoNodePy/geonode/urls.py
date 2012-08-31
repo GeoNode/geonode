@@ -4,7 +4,7 @@ from staticfiles.urls import staticfiles_urlpatterns
 from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
 import geonode.maps.urls
-
+import geonode.gazetteer.urls
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -37,13 +37,13 @@ urlpatterns = patterns('',
     (r'^accounts/ajax_lookup_email$', 'geonode.views.ajax_lookup_email'),
     (r'^accounts/login', 'django.contrib.auth.views.login'),
     (r'^accounts/logout', 'django.contrib.auth.views.logout'),
-    (r'^affiliation/confirm', 'geonode.registration.views.confirm'),
+    (r'^affiliation/confirm', 'geonode.register.views.confirm'),
     (r'^avatar/', include('avatar.urls')),
-    (r'^accounts/', include('geonode.registration.urls')),
-    (r'^profiles/', include('geonode.profiles.urls')),
-    (r'^profiles/', include('profiles.urls')),
+    (r'^accounts/', include('geonode.register.urls')),
+    (r'^profiles/', include('geonode.profile.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
+    (r'^gazetteer/', include('geonode.gazetteer.urls')),
     (r'^bostonhoods/?', include('geonode.hoods.urls')),
     )
 
