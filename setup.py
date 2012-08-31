@@ -99,6 +99,7 @@ setup(name='GeoNode',
         # testing
         "django-nose",
         "nose>=1.0",
+        "pycsw",
         ],
       zip_safe=False,
       )
