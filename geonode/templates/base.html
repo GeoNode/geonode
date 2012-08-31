@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
     {% block head %}
+      <link href="{{ STATIC_URL }}theme/site.css" rel="stylesheet">
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/datatables.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
@@ -102,49 +103,53 @@
         </div>
       </div>
     </div>
+    <section class="nav-block">
+        <div class="container">
+          <div class="row nav-box">
+            <div class="span10">
+              <nav class="main-nav">
+                <ul>
+                  <li>
+                    <a href="{% url home %}">{% trans "Home" %}</a>
+                  </li>
+                  <li>
+                    <a href="{% url layer_browse %}">{% trans "Explore Data" %}</a>
+                  </li>
+                  <li>
+                    <a href="{% url layer_upload %}">{% trans "Upload Data" %}</a>
+                  </li>
+                  <li>
+                    <a href="{% url maps_browse %}">{% trans "Explore Maps" %}</a>
+                  </li>
+                  <li>
+                    <a href="{% url new_map %}">{% trans "Create a New Map" %}</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+            <div class="span2">
+              <ul class="social">
+                <li><a href="#" class="fb">facebook</a></li>
+                <li><a href="#" class="tw">twitter</a></li>
+                <li><a href="#" class="gp">google+</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+    </section>
     <div class="content-wrap">
-    <div class="container">
-      <div class="row nav-box">
-        <div class="span10">
-          <nav class="main-nav">
-            <ul>
-              <li>
-                <a href="{% url home %}">{% trans "Home" %}</a>
-              </li>
-              <li>
-                <a href="{% url layer_browse %}">{% trans "Explore Data" %}</a>
-              </li>
-              <li>
-                <a href="{% url upload %}">{% trans "Upload Data" %}</a>
-              </li>
-              <li>
-                <a href="{% url maps_browse %}">{% trans "Explore Maps" %}</a>
-              </li>
-              <li>
-                <a href="{% url new_map %}" class="last">{% trans "Create a New Map" %}</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div class="span2">
-          <ul class="social">
-            <li><a href="#" class="fb">facebook</a></li>
-            <li><a href="#" class="tw">twitter</a></li>
-            <li><a href="#" class="gp">google+</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="row">
-        {% block body_outer %}
-          <div class="span8">
-            {% block main %}{% endblock %}
+        <div class="container">
+          <div class="row">
+            {% block body_outer %}
+              <div class="span8">
+                {% block main %}{% endblock %}
+              </div>
+              <div class="span4">
+                {% block sidebar %}{% endblock %}
+              </div>
+            {% endblock %}
           </div>
-          <div class="span4">
-            {% block sidebar %}{% endblock %}
-          </div>
-        {% endblock %}
-      </div>
-    </div>
+        </div>
     </div>
     <footer class="footer">
       <div class="container">
@@ -177,6 +182,12 @@
 
     <script src="{{ STATIC_URL }}bootstrap/js/jquery-1.7.1.min.js"></script>
     <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}datatables/js/jquery.dataTables.min.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/hogan.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/jquery.timeago.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/json2.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
+    <script src="{{ STATIC_URL }}select2/select2.js"></script>
 
     <script src="{{ STATIC_URL }}geonode/select2/select2.js"></script>
     <script type="text/javascript">
@@ -258,6 +269,54 @@
     </script>
 
     {% block extra_script %}{% endblock extra_script %}
+    <script type="text/javascript">
+    $(function() {
+      $("input.user-select").select2({
+        placeholder: {title: '{% trans "Add User..." %}', id: ""},
+        minimumInputLength: 1,
+        multiple: true,
+        ajax: {
+          url: "{% url auth_ajax_lookup %}",
+          dataType: "json",
+          type: "POST",
+          data: function (term, page) {
+            return {
+              query: term,
+            };
+          },
+          results: function (data, page) {
+            return {results: data.users};
+          }
+        },
+        id: userID,
+        formatResult: userFormatResult,
+        formatSelection: userFormatSelection
+      });
+
+      function userID(user) {
+        return user.username
+      }
+
+      function userFormatResult(user) {
+        return user.username
+      }
+
+      function userFormatSelection(user) {
+          return user.username;
+      }
+
+      var toggle_buttons = function() {
+        if ($("input.asset-selector:checked").length) {
+          $(".asset-modifier").removeClass("disabled");
+        } else {
+          $(".asset-modifier").addClass("disabled");
+        }
+      };
+
+      $("input.asset-selector").live("change", toggle_buttons);
+      toggle_buttons();
+    });
+    </script>
 
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script type="text/javascript" src="{% url lang %}"></script>
