@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from urlparse import urlparse
 
 import httplib2
 import urllib
@@ -48,7 +49,6 @@ from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
 
 from geoserver.catalog import Catalog
 from taggit.managers import TaggableManager
-from urlparse import urlparse
 
 
 logger = logging.getLogger("geonode.layers.models")
@@ -250,63 +250,7 @@ class Layer(models.Model, PermissionLevelMixin):
         if record is None:
             msg = "WMS Record missing for layer [%s]" % self.typename 
             raise GeoNodeException(msg)
-        
-    @property
-    def attribute_names(self):
-        """
-        Retrieve attribute names and types for layer from GeoServer
-        """
 
-        #Appending authorizations seems necessary to avoid 'layer not found' from GeoServer
-        http = httplib2.Http()
-        http.add_credentials(_user, _password)
-        _netloc = urlparse(settings.GEOSERVER_BASE_URL).netloc
-        http.authorizations.append(
-            httplib2.BasicAuthentication(
-                (_user, _password),
-                _netloc,
-                settings.GEOSERVER_BASE_URL,
-                    {},
-                None,
-                None,
-                http
-            )
-        )
-        if self.storeType == "dataStore":
-            dft_url = settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
-                    "service": "wfs",
-                    "version": "1.0.0",
-                    "request": "DescribeFeatureType",
-                    "typename": self.typename
-                })
-            try:
-                body = http.request(dft_url)[1]
-                doc = etree.fromstring(body)
-                path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
-                atts = [[n.attrib["name"],n.attrib["type"]] for n in doc.findall(path)]
-            except Exception:
-                atts = []
-            return atts
-        elif self.storeType == "coverageStore":
-            dc_url = settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
-                     "service": "wcs",
-                     "version": "1.1.0",
-                     "request": "DescribeCoverage",
-                     "identifiers": self.typename
-                })
-            try:
-                response, body = http.request(dc_url)
-                doc = etree.fromstring(body)
-                path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
-                atts = [[n.text,"raster"] for n in doc.findall(path)]
-            except Exception:
-                atts = []
-            return atts
-
-    @property
-    def display_attributes(self):
-        #Return visible attributes by sort order.
-        return self.attribute_set.filter(visible=True).order_by('display_order')
 
     @property
     def display_type(self):
@@ -445,35 +389,13 @@ class Layer(models.Model, PermissionLevelMixin):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
-    def set_attributes(self):
-        attrNames = self.attribute_names
-        attributes = self.attribute_set.all()
-        # Delete existing attributes if they no longer exist in an updated layer
-        for la in attributes:
-            lafound = False
-            for field, ftype in attrNames:
-                if field == la.attribute:
-                    lafound = True
-            if not lafound:
-                logger.debug("Going to delete [%s] for [%s]", la.attribute, self.name)
-                la.delete()
 
-        # Add new layer attributes if they don't already exist
-        if attrNames is not None:
-            iter = len(Attribute.objects.filter(layer=self))+1
-            for field, ftype in attrNames:
-                if field is not None:
-                    la, created = Attribute.objects.get_or_create(layer=self, attribute=field, attribute_type=ftype)
-                    if created:
-                        la.attribute_label = field.title()
-                        la.visible = ftype.find("gml:") != 0
-                        la.display_order = iter
-                        la.save()
-                        iter += 1
-                        logger.info("Created [%s] attribute for [%s]", field, self.name)
-        else:
-            logger.debug("No attributes found")
+class AttributeManager(models.Manager):
+    """Helper class to access filtered attributes
+    """
 
+    def visible(self):
+       return self.get_query_set().filter(visible=True).order_by('display_order')
 
 
 class Attribute(models.Model):
@@ -490,6 +412,7 @@ class Attribute(models.Model):
     attribute_type = models.CharField(_('attribute type'), help_text=_('the data type of the attribute (integer, string, geometry, etc)'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
     visible = models.BooleanField(_('visible?'), help_text=_('specifies if the attribute should be displayed in identify results'), default=True)
     display_order = models.IntegerField(_('display order'), help_text=_('specifies the order in which attribute should be displayed in identify results'), default=1)
+    objects = AttributeManager()
 
     def __str__(self):
         return "%s" % self.attribute_label if not None else attribute
@@ -772,7 +695,89 @@ def geoserver_post_save(instance, sender, **kwargs):
                         link_type='data',
                         )
                        )
-    instance.set_attributes()
+    #Save layer attributes
+    set_attributes(instance)
+
+
+def set_attributes(layer):
+    """
+    Retrieve layer attribute names & types from Geoserver,
+    then store in GeoNode database using Attribute model
+    """
+
+    #Appending authorizations seems necessary to avoid 'layer not found' from GeoServer
+    http = httplib2.Http()
+    http.add_credentials(_user, _password)
+    _netloc = urlparse(settings.GEOSERVER_BASE_URL).netloc
+    http.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user, _password),
+            _netloc,
+            settings.GEOSERVER_BASE_URL,
+                {},
+            None,
+            None,
+            http
+        )
+    )
+
+    attribute_map = []
+    if layer.storeType == "dataStore":
+        dft_url = settings.GEOSERVER_BASE_URL + "wfs?" + urllib.urlencode({
+            "service": "wfs",
+            "version": "1.0.0",
+            "request": "DescribeFeatureType",
+            "typename": layer.typename,
+            })
+        try:
+            body = http.request(dft_url)[1]
+            doc = etree.fromstring(body)
+            path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
+            attribute_map = [[n.attrib["name"],n.attrib["type"]] for n in doc.findall(path)]
+        except Exception:
+            attribute_map = []
+    elif layer.storeType == "coverageStore":
+        dc_url = settings.GEOSERVER_BASE_URL + "wcs?" + urllib.urlencode({
+            "service": "wcs",
+            "version": "1.1.0",
+            "request": "DescribeCoverage",
+            "identifiers": layer.typename
+        })
+        try:
+            response, body = http.request(dc_url)
+            doc = etree.fromstring(body)
+            path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
+            attribute_map = [[n.text,"raster"] for n in doc.findall(path)]
+        except Exception:
+            attribute_map = []
+
+    attributes = layer.attribute_set.all()
+    # Delete existing attributes if they no longer exist in an updated layer
+    for la in attributes:
+        lafound = False
+        for field, ftype in attribute_map:
+            if field == la.attribute:
+                lafound = True
+        if not lafound:
+            logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name)
+            la.delete()
+
+    # Add new layer attributes if they don't already exist
+    if attribute_map is not None:
+        iter = len(Attribute.objects.filter(layer=layer)) + 1
+        for field, ftype in attribute_map:
+            if field is not None:
+                la, created = Attribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
+                if created:
+                    la.attribute_label = field.title()
+                    la.visible = ftype.find("gml:") != 0
+                    la.display_order = iter
+                    la.save()
+                    iter += 1
+                    logger.debug("Created [%s] attribute for [%s]", field, layer.name)
+    else:
+        logger.debug("No attributes found")
+
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 
