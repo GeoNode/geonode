@@ -338,7 +338,7 @@ class LayersTest(TestCase):
         #There should be a total of 3 attributes
         self.assertEqual(len(lyr.attribute_set.all()), 3)
         #Two out of 3 attributes should be visible
-        custom_attributes = lyr.display_attributes
+        custom_attributes = lyr.attribute_set.visible()
         self.assertEqual(len(custom_attributes), 2)
         #place_ name should come before description
         self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
