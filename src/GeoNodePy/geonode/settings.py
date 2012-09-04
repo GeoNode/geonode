@@ -279,6 +279,7 @@ INSTALLED_APPS = (
     #'geonode.gazetteer',
     #'geonode.queue',
     #'djcelery',
+    #'djkombu',
     #'debug_toolbar',
 )
 
