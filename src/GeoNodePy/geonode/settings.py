@@ -266,8 +266,8 @@ INSTALLED_APPS = (
 
     'staticfiles',
     'django_extensions',
-    'register',
-    'profile',
+    'registration',
+    'profiles',
     'avatar',
     'south',
 
