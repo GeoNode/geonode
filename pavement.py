@@ -346,6 +346,14 @@ def _reset():
     sh('git checkout geoserver-geonode-ext/src/main/webapp/data')
 
 
+@needs(['reset'])
+def reset_hard():
+    """
+    Reset a development environment (Database, GeoServer & Catalogue) with force
+    """
+    sh("git clean -dxf")
+
+
 @task
 def setup_data():
     """
