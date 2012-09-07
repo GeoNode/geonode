@@ -6,6 +6,8 @@
 
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
+{% block bodyclass %}map-info{% endblock bodyclass %}
+
 {% block body_outer %}
   {% overall_rating map "map" as map_rating %}
   <div class="span8">
@@ -13,8 +15,8 @@
   </div>
   <div class="span4">
     <p class="hd-actions pull-right">
-      <a href="#download-layer" data-toggle="modal" class="btn btn-large strong"><i class="icon-download-alt"></i> {% trans "Download Data" %}</a>
-      <a href="#" class="btn btn-large strong"><i class="icon-print"></i> {% trans "Print Map" %}</a>
+      <a href="{% url map_download map.pk %}" data-toggle="modal" class="btn btn-large btn-primary strong"><i class="icon-download-alt icon-white"></i> {% trans "Download Data" %}</a>
+      <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Map" %}</a>
     </p>
   </div>
   <div class="overall_rating" data-rating="{{ map_rating }}"></div>
@@ -24,17 +26,18 @@
 	  <div id="embedded_map">
 	    <img src="{{ STATIC_URL }}theme/img/placeholder_map.png" width="100%" alt="Placeholder Map" />
       {% include "_actions.html" %}
+        <div class="pointer"></div>
     </div>
   </div>
 
   <div class="span8">
-    <article class="abstract">
+    <article class="abstract collapse in">
       <strong>{% trans "Abstract:" %}</strong>
       {{ map.abstract }}
-      <a href="#" class="read-more" data-toggle="collapse" data-target="#abstract-full">{% trans "Read more" %}</a>
-      <div id="abstract-full" class="collapse">More content goes here and is displayed when read more is clicked.</div>
+      {% comment %}<a href="" class="read-more" data-toggle="collapse" data-target="#abstract-full">{% trans "Read more" %}</a>
+      <div id="abstract-full" class="collapse in">More content goes here and is displayed when read more is clicked.</div>{% endcomment %}
     </article>
-    <p class="meta"><strong>{% trans "Uploaded by" %} <a href="{% url owner.get_profile.get_absolute_url %}">{{ map.owner.get_profile.name }}</a> on Sep 27, 2011</strong></p>
+    <p class="meta">{{ map }}<strong> {% trans "Uploaded by" %} <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner.get_profile.name }}</a> on Sep 27, 2011</strong></p>
     {% include "_comments.html" %}
   </div>
   <aside class="span4">
@@ -43,9 +46,9 @@
         <h2>{% trans "Layers" %}</h2>
         <p>{% trans "This map uses the following layers:" %}</p>
         <ul class="unstyled space">
-          <li><a href="{% url layerinfo %}">Lorem ipsum dolor site amet adipiscing elit</a></li>
-          <li><a href="{% url layerinfo %}">Sed do eisumod tempor</a></li>
-          <li><a href="{% url layerinfo %}">Incididnet ut labore et dolor</a></li>
+          {% for layer in map.layer_set.all %}
+            <li><a href="{% url layer_detail layer.name %}">{{ layer.name }}</a></li>
+          {% endfor %}
         </ul>
       </section>
       <section>
@@ -64,7 +67,9 @@
       </section>
     </div>
     <div class="well">
-      {% include "_widget_about_author.html" %}
+      {% with map.owner as owner %}
+        {% include "_widget_about_author.html" %}          
+      {% endwith %}
     </div>
   </aside>
 
