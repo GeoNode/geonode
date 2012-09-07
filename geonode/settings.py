@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
+    'pagination',
     'taggit',
     'south',
 
@@ -214,6 +215,7 @@ MIDDLEWARE_CLASSES = (
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
+    'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )

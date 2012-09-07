@@ -4609,6 +4609,13 @@ nav.main-nav ul li a.last {
 nav.main-nav ul li a:hover {
   text-decoration: none;
 }
+nav.back {
+  text-align: right;
+  margin-bottom: 1em;
+}
+nav.back i {
+  margin-right: 4px;
+}
 ul.social {
   margin-top: 20px;
 }
@@ -4860,10 +4867,10 @@ section.article-list article footer .views {
   margin-bottom: 15px;
 }
 .hd-actions a.btn-primary {
-  background-color: #ff4600;
+  background-color: #f05a24;
 }
 .hd-actions a.btn-info {
-  background-color: #ff9100;
+  background-color: #f6921e;
 }
 h2.page-title {
   text-transform: uppercase;
@@ -4924,7 +4931,8 @@ ul.nav-pills.filter form select {
   border-left: 1px solid #cccccc;
   padding-left: 3px;
 }
-.pager a {
+.pager a,
+.pager span {
   padding: 0 !important;
   border: 0 !important;
   display: inline-block;
@@ -4932,10 +4940,10 @@ ul.nav-pills.filter form select {
   height: 15px;
   text-indent: -9999px;
 }
-.pages a.prev {
+.pages .prev {
   background: url(../../theme/img/arrows_gr_sm.png) no-repeat 0 0;
 }
-.pages a.next {
+.pages .next {
   background: url(../../theme/img/arrows_gr_sm.png) no-repeat -11px 0;
 }
 .pages a.prev:hover {
@@ -5031,7 +5039,8 @@ ul.space li {
 }
 /** map actions **/
 .map-actions {
-  margin: 0 0 20px;
+  margin: 8px 0 20px;
+  float: left;
 }
 .map-actions a {
   font-size: 14px;
@@ -5042,6 +5051,16 @@ ul.space li {
 .map-actions a [class*=" icon-"] {
   margin: 2px 1px 0 0;
 }
+.avg_rating {
+  float: right;
+  margin-top: 8px;
+  color: #777777;
+}
+.avg_rating .overall_rating {
+  font-size: 18px;
+  padding-left: 6px;
+  color: #f05a24;
+}
 article.abstract {
   border-top: 1px solid #cccccc;
   border-bottom: 1px solid #cccccc;
@@ -5051,6 +5070,20 @@ article.abstract {
 /** comments **/
 .comments {
   margin-top: 20px;
+}
+.comments header {
+  padding: 0.1em 1em;
+  background-color: #464646;
+  color: white;
+  margin-bottom: 1em;
+}
+.comments header h3 {
+  margin-top: 10px;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+.comments header .total {
+  text-transform: lowercase;
 }
 .comments article {
   margin-bottom: 15px;
@@ -5134,9 +5167,6 @@ body.explore-data article {
   border-bottom: 1px solid #cccccc;
   padding-bottom: 10px;
   margin-bottom: 20px;
-}
-.map-actions {
-  margin-top: 8px;
 }
 .layer-actions {
   border-bottom: 1px solid #cccccc;

@@ -187,6 +187,14 @@ nav.main-nav  {
   }
 }
 
+nav.back {
+  text-align: right;
+  margin-bottom: 1em;
+}
+nav.back i {
+  margin-right: 4px;
+}
+
 ul.social {
   margin-top:20px;
     li {
@@ -462,10 +470,10 @@ section.article-list {
   margin-bottom:15px;
 }
 .hd-actions a.btn-primary {
-  background-color: rgb(255, 70, 0);
+  background-color: @orange;
 }
 .hd-actions a.btn-info {
-  background-color: rgb(255, 145, 0);
+  background-color: @orangeLight;
 }
 
 h2.page-title {
@@ -539,7 +547,7 @@ ul.nav-pills.filter {
   padding-left:3px;
 }
 
-.pager a {
+.pager a, .pager span {
   padding:0 !important;
   border: 0 !important;
   display:inline-block;
@@ -548,8 +556,8 @@ ul.nav-pills.filter {
   text-indent:-9999px;
 }
 
-.pages a.prev { background:url(../../theme/img/arrows_gr_sm.png) no-repeat 0 0; }
-.pages a.next { background:url(../../theme/img/arrows_gr_sm.png) no-repeat -11px 0; }
+.pages .prev { background:url(../../theme/img/arrows_gr_sm.png) no-repeat 0 0; }
+.pages .next { background:url(../../theme/img/arrows_gr_sm.png) no-repeat -11px 0; }
 .pages a.prev:hover { background:url(../../theme/img/arrows_gr_sm.png) no-repeat 0 -15px; }
 .pages a.next:hover { background:url(../../theme/img/arrows_gr_sm.png) no-repeat -11px -15px; }
 
@@ -613,7 +621,8 @@ ul.space li {
 
 /** map actions **/
 .map-actions {
-  margin:0 0 20px;
+  margin:8px 0 20px;
+  float: left;
 
   a {
     font-size:14px;
@@ -622,6 +631,17 @@ ul.space li {
     [class^="icon-"], [class*=" icon-"] {
       margin:2px 1px 0 0;
     }
+  }
+}
+.avg_rating {
+  float: right;
+  margin-top: 8px;
+  color: @graySp;
+
+  .overall_rating {
+    font-size: 18px;
+    padding-left: 6px;
+    color: @orange;
   }
 }
 
@@ -635,6 +655,21 @@ article.abstract {
 /** comments **/
 .comments {
   margin-top:20px;
+
+  header {
+    padding: 0.1em 1em;
+    background-color: @brown;
+    color: white;
+    margin-bottom: 1em;
+  }
+  header h3 {
+    margin-top: 10px;
+    text-transform: uppercase;
+    font-weight: normal;
+  }
+  header .total {
+    text-transform: lowercase;
+  }
 
   article {
     margin-bottom:15px;
@@ -745,9 +780,6 @@ body.explore-data article {
 }
 
 // layer info
-.map-actions {
-  margin-top:8px;
-}
 
 .layer-actions {
   border-bottom:1px solid @bdrColor;
