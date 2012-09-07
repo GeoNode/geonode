@@ -461,10 +461,17 @@ section.article-list {
   display:block;
   margin-bottom:15px;
 }
+.hd-actions a.btn-primary {
+  background-color: rgb(255, 70, 0);
+}
+.hd-actions a.btn-info {
+  background-color: rgb(255, 145, 0);
+}
 
 h2.page-title {
   text-transform:uppercase;
-  font-size:22px;
+  font-size:36px;
+  font-weight: 100;
 }
 
 .strong {
@@ -609,9 +616,9 @@ ul.space li {
   margin:0 0 20px;
 
   a {
-    font-size:16px;
+    font-size:14px;
     padding-right:20px;
-
+    color: rgb(255, 70, 0);
     [class^="icon-"], [class*=" icon-"] {
       margin:2px 1px 0 0;
     }
@@ -752,7 +759,8 @@ body.explore-data article {
   }
 }
 
-body.layer-info .pointer {
+body.layer-info .pointer,
+body.map-info .pointer {
   width:17px;
   height:9px;
   background: url(../../theme/img/pointer.png) no-repeat 0 0;
