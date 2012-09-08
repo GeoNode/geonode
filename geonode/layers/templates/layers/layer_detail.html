@@ -6,6 +6,18 @@
 
 {% block title %}{{ layer.resource.title|default:layer.typename }} — {{ block.super }}{% endblock %}
 
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+
+{% include "layers/layer_map.html" %}
+
+{{ block.super }}
+
+{% endblock %}
+
+
 {% block body_class %}layer-info{% endblock %}
 
 {% block body_outer %}
@@ -17,7 +29,7 @@
   </div>
   <div class="span12">
     <div id="embedded_map" class="mrg-btm">
-	    <img src="{{ STATIC_URL }}theme/img/placeholder_map.png" width="100%" alt="Placeholder Map" />
+	    <div id="preview_map" width='100%'></div>
     </div>
   </div>
   <div class="span8">
@@ -29,7 +41,6 @@
       </div>
       <div class="span2">
         <a href="{% url layer_metadata layer.typename %}" class="btn btn-large pull-right">{% trans "Edit Layer" %}</a>
-        
       </div>
     </div>
     <article class="description">
