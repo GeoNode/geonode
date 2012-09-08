@@ -7,6 +7,14 @@
 
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+{% include "maps/map_include.html" %}
+{{ block.super }}
+{% endblock %}
+
 {% block bodyclass %}map-info{% endblock bodyclass %}
 
 {% block body_outer %}
@@ -21,11 +29,13 @@
       <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Map" %}</a>
     </p>
   </div>
+  {% comment %}
   <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+  {% endcomment %}
   <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
   <div class="span12">
 	  <div id="embedded_map">
-	    <img src="{{ STATIC_URL }}theme/img/placeholder_map.png" width="100%" alt="Placeholder Map" />
+        <div id="the_map" width='100%'></div>
       {% include "_actions.html" %}
         <div class="avg_rating" data-rating="{{ map_rating }}">Average rating <span class="overall_rating"></span></div>
         <div class="pointer"></div>
@@ -60,7 +70,7 @@
       </section>
       <section>
         <h2>{% trans "Edit map" %}</h2>
-        <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
+        <p>{% trans "Placeholder" %}</p>
         <a href="{% url "new_map" %}" class="btn btn-large">{% trans "Edit Map" %}</a>
       </section>
       <section>
@@ -69,7 +79,7 @@
       </section>
       <section class="last">
         <h2>{% trans "Create a new map" %}</h2>
-        <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
+        <p>{% trans "Placeholder" %}</p>
         <a href="{% url "new_map" %}" class="btn btn-large">{% trans "Create a New Map" %}</a>
       </section>
     </div>
@@ -86,7 +96,7 @@
       <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
     </div>
     <div class="modal-body">
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nos-trud exercitation.</p>
+      <p></p>
     </div>
     <div class="modal-footer">
       <div class="span2 offset1">
