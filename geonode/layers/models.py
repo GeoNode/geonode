@@ -72,7 +72,7 @@ class LayerManager(models.Manager):
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
 
-    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout):
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
@@ -99,6 +99,7 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
+                    "owner": owner,
                     "uuid": str(uuid.uuid4())
                 })
 
