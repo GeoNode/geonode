@@ -115,7 +115,9 @@
     <div class="well">
       <section>
         <h2>{% trans "Maps using this layer" %}</h2>
+        {% if layer.maps %}
         <p>{% trans "List of maps using this layer:" %}</p>
+        {% endif %}
         <ul class="unstyled space">
           {% for map in layer.maps %} 
             <li><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></li>
@@ -126,7 +128,7 @@
       </section>
       <section>
         <h2>{% trans "Create a map using this layer" %}</h2>
-        <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
+        <p>{% trans "Placeholder" %}</p>
         <a href="{% url new_map %}?layer={{layer.typename}}" class="btn btn-large">{% trans "Create a Map" %}</a>
       </section>
       <section>
@@ -167,7 +169,7 @@
       <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
     </div>
     <div class="modal-body">
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nos-trud exercitation.</p>
+      <p></p>
     </div>
     <div class="modal-footer">
       <div class="span2 offset1">
