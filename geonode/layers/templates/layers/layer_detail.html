@@ -44,7 +44,7 @@
       </div>
     </div>
     <article class="description">
-      <h3>{% trans "Layer Information" %}</h3>
+      <h2>{% trans "Layer Information" %}</h2>
       <ul class="unstyled wide">
         {% if layer.display_type %}
           <li>
@@ -81,12 +81,6 @@
           <li>
         {% endif %}
         
-        {% if layer.attribute_names %}
-          <li>
-            <strong>{% trans "Attributes" %}:</strong> 
-            {{ layer.attribute_names|join:", " }}
-          </li>
-        {% endif %}
 
         {% if layer.supplemental_information %}
           <li>
@@ -109,6 +103,15 @@
           </li>
         {% endif %}
       </ul>
+        {% if layer.attribute_names %}
+            <h2>{% trans "Attributes" %}:</h2>
+            <table border=1 width=100%>
+            <tr><th>Attribute Name</th><th>Range</th><th>Mean</th><th>Median</th><th>Std. Dev.</th></tr>
+            {% for attribute in layer.attribute_names %}
+            <tr><td>{{ attribute }}</td><td></td><td></td><td></td><td></td></tr>
+            {% endfor %}
+            </table>
+        {% endif %}
     </article>
   </div>
   <aside class="span4">
