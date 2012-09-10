@@ -3,6 +3,7 @@ from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GRO
 from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, get_csw, MapSnapshot, MapStats, LayerStats, CHARSETS
 from geonode.maps.gs_helpers import fixup_style, cascading_delete, delete_from_postgis, get_sld_for, get_postgis_bbox
 from geonode.maps.encode import num_encode, num_decode
+from geonode.profile.forms import ContactProfileForm
 import geoserver
 from geoserver.resource import FeatureType, Coverage
 import base64
@@ -148,7 +149,14 @@ class GazetteerForm(forms.Form):
     endDateFormat = forms.CharField(label=_("Date format"), max_length=256, required=False)
 
 
+class LayerContactForm(forms.Form):
+    poc = forms.ModelChoiceField(empty_label = _("Person outside WorldMap (fill form)"),
+        label = "*" + _("Point Of Contact"), required=False,
+        queryset = Contact.objects.exclude(user=None))
 
+    metadata_author = forms.ModelChoiceField(empty_label = _("Person outside WorldMap (fill form)"),
+        label = _("Metadata Author"), required=False,
+        queryset = Contact.objects.exclude(user=None))
 
 
 class LayerForm(forms.ModelForm):
@@ -161,14 +169,6 @@ class LayerForm(forms.ModelForm):
     title = forms.CharField(label = '*' + _('Title'), max_length=255)
     abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea)
     keywords = forms.CharField(label = '*' + _('Keywords (separate with spaces)'), widget=forms.Textarea)
-
-    poc = forms.ModelChoiceField(empty_label = _("Person outside WorldMap (fill form)"),
-                                 label = "*" + _("Point Of Contact"), required=False,
-                                 queryset = Contact.objects.exclude(user=None))
-
-    metadata_author = forms.ModelChoiceField(empty_label = _("Person outside WorldMap (fill form)"),
-                                             label = _("Metadata Author"), required=False,
-                                             queryset = Contact.objects.exclude(user=None))
 
     class Meta:
         model = Layer
@@ -898,8 +898,13 @@ def describemap(request, mapid):
 
 
 def get_suffix_if_custom(map):
-        if (map.use_custom_template):
-            return map.officialurl
+        if map.use_custom_template:
+            if map.officialurl:
+                return map.officialurl
+            elif map.urlsuffix:
+                return map.urlsuffix
+            else:
+                return None
         else:
             return None
 
@@ -1083,6 +1088,85 @@ class LayerDescriptionForm(forms.Form):
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
 
+@login_required
+def layer_contacts(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
+    if request.user.is_authenticated():
+        if not request.user.has_perm('maps.change_layer', obj=layer):
+            return HttpResponse(loader.render_to_string('401.html',
+                RequestContext(request, {'error_message':
+                                             _("You are not permitted to modify this layer's metadata")})), status=401)
+
+
+    poc = layer.poc
+    metadata_author = layer.metadata_author
+
+    if request.method == "GET":
+        contact_form = LayerContactForm(prefix="layer")
+        if poc.user is None:
+            poc_form = ContactProfileForm(instance=poc, prefix="poc")
+        else:
+            contact_form.fields['poc'].initial = poc.id
+            poc_form = ContactProfileForm(prefix="poc")
+            poc_form.hidden=True
+
+        if metadata_author.user is None:
+            author_form = ContactProfileForm(instance=metadata_author, prefix="author")
+        else:
+            contact_form.fields['metadata_author'].initial = metadata_author.id
+            author_form = ContactProfileForm(prefix="author")
+            author_form.hidden=True
+    elif request.method == "POST":
+        contact_form = LayerContactForm(request.POST, prefix="layer")
+        if contact_form.is_valid():
+            new_poc = contact_form.cleaned_data['poc']
+            new_author = contact_form.cleaned_data['metadata_author']
+            if new_poc is None:
+                poc_form = ContactProfileForm(request.POST, prefix="poc")
+                if poc_form.has_changed and poc_form.is_valid():
+                    new_poc = poc_form.save()
+            else:
+                poc_form = ContactProfileForm(prefix="poc")
+                poc_form.hidden=True
+
+            if new_author is None:
+                author_form = ContactProfileForm(request.POST, prefix="author")
+                if author_form.has_changed and author_form.is_valid():
+                    new_author = author_form.save()
+            else:
+                author_form = ContactProfileForm(prefix="author")
+                author_form.hidden=True
+
+            if new_poc is not None and new_author is not None:
+                layer.poc = new_poc
+                layer.metadata_author = new_author
+                layer.save()
+                return HttpResponseRedirect("/data/" + layer.typename)
+
+
+
+    #Deal with a form submission via ajax
+    if request.method == 'POST' and (not contact_form.is_valid()):
+        data = render_to_response("maps/layer_contacts.html", RequestContext(request, {
+            "layer": layer,
+            "contact_form": contact_form,
+            "poc_form": poc_form,
+            "author_form": author_form,
+            "lastmap" : request.session.get("lastmap"),
+            "lastmapTitle" : request.session.get("lastmapTitle")
+        }))
+        return HttpResponse(data, status=412)
+
+    #Display the view on a regular page
+    return render_to_response("maps/layer_contacts.html", RequestContext(request, {
+        "layer": layer,
+        "contact_form": contact_form,
+        "poc_form": poc_form,
+        "author_form": author_form,
+        "lastmap" : request.session.get("lastmap"),
+        "lastmapTitle" : request.session.get("lastmapTitle")
+    }))
+
 @csrf_exempt
 @login_required
 def layer_metadata(request, layername):
@@ -1092,14 +1176,9 @@ def layer_metadata(request, layername):
             return HttpResponse(loader.render_to_string('401.html',
                 RequestContext(request, {'error_message':
                     _("You are not permitted to modify this layer's metadata")})), status=401)
-
-        poc = layer.poc
         topic_category = layer.topic_category
-        metadata_author = layer.metadata_author
-        poc_role = ContactRole.objects.get(layer=layer, role=layer.poc_role)
-        metadata_author_role = ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
-        layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm, )
 
+        layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm, )
         show_gazetteer_form = request.user.is_superuser and layer.store == settings.DB_DATASTORE_NAME
 
         fieldTypes = {}
@@ -1118,13 +1197,9 @@ def layer_metadata(request, layername):
             #layer_form.fields["topic_category"].initial = topic_category
             if "map" in request.GET:
                 layer_form.fields["map_id"].initial = request.GET["map"]
-
             attribute_form = layerAttSet(instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
-
             startAttributeQuerySet = LayerAttribute.objects.filter(layer=layer).filter(is_gaz_start_date=True)
             endAttributeQuerySet = LayerAttribute.objects.filter(layer=layer).filter(is_gaz_end_date=True)
-
-
             gazetteer_form = GazetteerForm()
 
 
@@ -1182,45 +1257,21 @@ def layer_metadata(request, layername):
                     cache.delete('layer_searchfields_' + layer.typename)
                     logger.debug("Deleted cache for layer_searchfields_" + layer.typename)
 
-
-
-                new_poc = layer_form.cleaned_data['poc']
-                new_author = layer_form.cleaned_data['metadata_author']
-
-                logger.debug("NEW category: [%s]", new_category)
                 mapid = layer_form.cleaned_data['map_id']
-                logger.debug("map id is [%s]", str(mapid))
 
-                if new_poc is None:
-                    poc_form = ContactForm(request.POST, prefix="poc")
-                    if poc_form.has_changed and poc_form.is_valid():
-                        new_poc = poc_form.save()
+                the_layer = layer_form.save(commit=False)
+                the_layer.topic_category = new_category
+                if request.user.is_superuser and gazetteer_form.is_valid():
+                    the_layer.in_gazetteer = "gazetteer_include" in request.POST
+                    if the_layer.in_gazetteer:
+                        the_layer.gazetteer_project = gazetteer_form.cleaned_data["project"]
+                the_layer.save()
 
-                if new_author is None:
-                    author_form = ContactForm(request.POST, prefix="author")
-                    if author_form.has_changed and author_form.is_valid():
-                        new_author = author_form.save()
-
-                logger.debug("Save anything?")
-                if new_poc is not None and new_author is not None:
-                    the_layer = layer_form.save(commit=False)
-                    the_layer.poc = new_poc
-                    the_layer.topic_category = new_category
-                    the_layer.metadata_author = new_author
-                    if request.user.is_superuser and gazetteer_form.is_valid():
-                        the_layer.in_gazetteer = "gazetteer_include" in request.POST
-                        if the_layer.in_gazetteer:
-                            the_layer.gazetteer_project = gazetteer_form.cleaned_data["project"]
-
-                    logger.debug("About to save")
-                    the_layer.save()
-                    logger.debug("Saved")
-
-                    if settings.USE_GAZETTEER and show_gazetteer_form:
-                        if settings.USE_QUEUE:
-                            the_layer.queue_gazetteer_update()
-                        else:
-                            the_layer.update_gazetteer()
+                if settings.USE_GAZETTEER and show_gazetteer_form:
+                    if settings.USE_QUEUE:
+                        the_layer.queue_gazetteer_update()
+                    else:
+                        the_layer.update_gazetteer()
 
                 if request.is_ajax():
                     return HttpResponse('success', status=200)
@@ -1243,27 +1294,11 @@ def layer_metadata(request, layername):
                     else:
                         return HttpResponseRedirect("/data/" + layer.typename)
 
-        if poc.user is None:
-            poc_form = ContactForm(instance=poc, prefix="poc")
-        else:
-            layer_form.fields['poc'].initial = poc.id
-            poc_form = ContactForm(prefix="poc")
-            poc_form.hidden=True
-
-        if metadata_author.user is None:
-            author_form = ContactForm(instance=metadata_author, prefix="author")
-        else:
-            layer_form.fields['metadata_author'].initial = metadata_author.id
-            author_form = ContactForm(prefix="author")
-            author_form.hidden=True
-
         #Deal with a form submission via ajax
         if request.method == 'POST' and (not layer_form.is_valid() or not category_form.is_valid()) and request.is_ajax():
                 data = render_to_response("maps/layer_describe_tab.html", RequestContext(request, {
                 "layer": layer,
                 "layer_form": layer_form,
-                "poc_form": poc_form,
-                "author_form": author_form,
                 "attribute_form": attribute_form,
                 "category_form" : category_form,
                 "gazetteer_form": gazetteer_form,
@@ -1280,8 +1315,6 @@ def layer_metadata(request, layername):
             return render_to_response("maps/layer_describe_tab.html", RequestContext(request, {
             "layer": layer,
             "layer_form": layer_form,
-            "poc_form": poc_form,
-            "author_form": author_form,
             "attribute_form": attribute_form,
             "category_form" : category_form,
             "gazetteer_form": gazetteer_form,
@@ -1296,8 +1329,6 @@ def layer_metadata(request, layername):
         return render_to_response("maps/layer_describe.html", RequestContext(request, {
             "layer": layer,
             "layer_form": layer_form,
-            "poc_form": poc_form,
-            "author_form": author_form,
             "attribute_form": attribute_form,
             "category_form" : category_form,
             "gazetteer_form": gazetteer_form,
@@ -1371,10 +1402,10 @@ def layer_style(request, layername):
 def layer_detail(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     if not request.user.has_perm('maps.view_layer', obj=layer):
-        return HttpResponse(loader.render_to_string('401.html', 
-            RequestContext(request, {'error_message': 
+        return HttpResponse(loader.render_to_string('401.html',
+            RequestContext(request, {'error_message':
                 _("You are not permitted to view this layer")})), status=401)
-    
+
     metadata = layer.metadata_csw()
 
     maplayer = MapLayer(name = layer.typename, styles=[layer.default_style.name], source_params = '{"ptype": "gxp_gnsource"}', ows_url = settings.GEOSERVER_BASE_URL + "wms",  layer_params= '{"tiled":true, "title":" '+ layer.title + '"}')
@@ -2199,7 +2230,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
               Q(title__icontains=keyword)
             | Q(abstract__icontains=keyword))
 
-    officialMaps = maps.filter(Q(officialurl__isnull=False))
+    officialMaps = maps.filter(Q(officialurl__isnull=False)).exclude(officialurl='tweetmap')
     maps = maps.filter(Q(officialurl__isnull=True))
 
     if sort_field:
