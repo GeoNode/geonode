@@ -77,16 +77,16 @@
                             <li>
                                 <form action="{% url auth_login %}" method="post" class="sign-in">
                                     {% csrf_token %}
-                                    <label for="id_username">Username:</label>
+                                    <label for="id_username">{% trans "Username" %}:</label>
                                     <input id="id_username" name="username" type="text" />
-                                    <label for="id_password">Password:</label>
+                                    <label for="id_password">{% trans "Password" %}:</label>
                                     <input id="id_password" name="password" type="password" />
                                     <label class="checkbox">
                                         <input type="checkbox" />
-                                        Remember me
+                                        {% trans "Remember Me" %}
                                     </label>
-                                    <button type="submit" class="btn pull-right">Sign In</button>
-                                    <div>Don't have an account yet? <a href="#">Register now</a></div>
+                                    <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
+                                    <div>{% trans "Don't have an account yet?" %} <a href="{% url registration_register %}">{% trans "Register now" %}</a></div>
                                 </form>
                             </li>
                           </ul>
