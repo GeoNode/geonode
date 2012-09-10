@@ -75,11 +75,12 @@
                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
                           <ul class="dropdown-menu">
                             <li>
-                                <form action="" class="sign-in">
-                                    <label for="">Username:</label>
-                                    <input type="text" />
-                                    <label for="">Password:</label>
-                                    <input type="password" />
+                                <form action="{% url auth_login %}" method="post" class="sign-in">
+                                    {% csrf_token %}
+                                    <label for="id_username">Username:</label>
+                                    <input id="id_username" name="username" type="text" />
+                                    <label for="id_password">Password:</label>
+                                    <input id="id_password" name="password" type="password" />
                                     <label class="checkbox">
                                         <input type="checkbox" />
                                         Remember me
