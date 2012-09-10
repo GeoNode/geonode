@@ -24,7 +24,8 @@ https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
 boto
 #For scheduled tasks
 django-celery
-kombu
+django-kombu
+pytz
 #For gazetteer
 python-dateutil==1.5 #For Python < 3.0
 datautil

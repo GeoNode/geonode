@@ -258,8 +258,8 @@ INSTALLED_APPS = (
 
     'staticfiles',
     'django_extensions',
-    'register',
-    'profile',
+    'registration',
+    'profiles',
     'avatar',
     'south',
 
@@ -271,6 +271,7 @@ INSTALLED_APPS = (
     #'geonode.gazetteer',
     #'geonode.queue',
     #'djcelery',
+    #'djkombu',
     #'debug_toolbar',
 )
 

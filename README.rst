@@ -327,6 +327,7 @@ where they will be processed later.
 In your settings.py file, uncomment the following in INSTALLED_APPS:
 * #'geonode.queue',
 * #'djcelery',
+* #'djkombu',
 
 The run interval is determined by QUEUE_INTERVAL - the default is 10 minutes.
 
