@@ -15,6 +15,8 @@ import sys
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.conf import settings
+from xml.etree.ElementTree import XML
+from django.utils.translation import ugettext as _
 
 # Geonode functionality
 from geonode.maps.models import Contact, Layer, LayerAttribute
@@ -61,9 +63,9 @@ def get_files(filename, sldfile):
     #Replace special characters in filenames - []{}()
     glob_name = re.sub(r'([\[\]\(\)\{\}])', r'[\g<1>]', base_name)
 
+    required_extensions = dict(
+        shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]', prj='.[pP][rR][jJ]')
     if extension.lower() == '.shp':
-        required_extensions = dict(
-            shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]')
         for ext, pattern in required_extensions.iteritems():
             matches = glob.glob(glob_name + pattern)
             if len(matches) == 0:

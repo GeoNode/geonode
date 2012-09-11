@@ -52,7 +52,7 @@
 Ext.onReady(function() {
     var mapsAndLayers = [];
     {% for map in profile.user.map_set.all %}
-    mapsAndLayers.push(["map.{{ map.pk|escapejs }}", "{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}", "{{ map.title|escapejs }}", "{{ map.last_modified|escapejs }}"]);
+    mapsAndLayers.push(["map.{{ map.pk|escapejs }}", "{{ map.pk|escapejs }}", "map", "{{ map.get_absolute_url|escapejs }}/edit/", "{{ map.title|escapejs }}", "{{ map.last_modified|escapejs }}"]);
     {% endfor %}
     {% for lyr in profile.user.layer_set.all %}
     mapsAndLayers.push(["lyr.{{ lyr.pk|escapejs }}", "{{ lyr.pk|escapejs }}", "layer", "{{ lyr.get_absolute_url|escapejs }}", "{{ lyr.title|escapejs }}", "{{ lyr.last_modified|escapejs }}"]);
@@ -111,11 +111,12 @@ Ext.onReady(function() {
                 }
                 var view = doToRecord(function(rec) {
                     window.location = rec.get("href");
+
                 });
                 var edit = doToRecord(function(rec) {
                     var link = rec.get("href");
                     if (rec.get("type") === "map") {
-                        link += "/edit/";
+                        link = link.replace("edit/","");
                     }
                     window.location = link;
                 });

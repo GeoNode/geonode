@@ -1194,7 +1194,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         category = "General";
                         record.set("group", category);
 
-                        geoEx.layerTree.addCategoryFolder(record.get("group"), true);
+                        geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
                         layerStore.add([record]);
                     }
                 }
@@ -2458,7 +2458,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
 
-                        this.layerTree.addCategoryFolder(feedRecord.get("group"), true);
+                        this.layerTree.addCategoryFolder({"group":feedRecord.get("group")}, true);
                         this.mapPanel.layers.add([feedRecord]);
                         this.layerTree.overlayRoot.findDescendant("layer", feedRecord.getLayer()).select();
                         this.selectControl.activate();
