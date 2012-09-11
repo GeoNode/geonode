@@ -3,6 +3,8 @@
 
 {% block title %} {% trans "Upload Layer"  %} — {{ block.super }} {% endblock %}
 
+{% block body_class %}upload{% endblock %}
+
 {% block head %}
   {% include "geonode/ext_header.html" %}
   {% include "geonode/app_header.html" %}
