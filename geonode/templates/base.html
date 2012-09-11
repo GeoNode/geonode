@@ -110,19 +110,19 @@
             <div class="span10">
               <nav class="main-nav">
                 <ul>
-                  <li>
+                  <li id="nav_home">
                     <a href="{% url home %}">{% trans "Home" %}</a>
                   </li>
-                  <li>
+                  <li id="nav_data">
                     <a href="{% url layer_browse %}">{% trans "Explore Data" %}</a>
                   </li>
-                  <li>
+                  <li id="nav_upload">
                     <a href="{% url layer_upload %}">{% trans "Upload Data" %}</a>
                   </li>
-                  <li>
+                  <li id="nav_maps">
                     <a href="{% url maps_browse %}">{% trans "Explore Maps" %}</a>
                   </li>
-                  <li>
+                  <li id="nav_create_map">
                     <a href="{% url new_map %}">{% trans "Create a New Map" %}</a>
                   </li>
                 </ul>
