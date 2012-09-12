@@ -17,7 +17,14 @@
 #
 #########################################################################
 
+import os
+from lxml import etree
+from django.conf import settings
+from ConfigParser import SafeConfigParser
+from owslib.iso import MD_Metadata
+from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
+from geonode.catalogue.backends.generic import METADATA_FORMATS
 
 MD_CORE_MODEL = {
     'typename': 'pycsw:CoreMetadata',
@@ -94,3 +101,90 @@ class CatalogueBackend(GenericCatalogueBackend):
     def create_record(self, item):
         pass
 
+    def get_record(self, uuid):
+        results = self._csw_local_dispatch(identifier=uuid)
+        if len(results) < 1:
+            return None
+
+        result = etree.fromstring(results).find('{http://www.isotc211.org/2005/gmd}MD_Metadata')
+
+        if result is None:
+            return None
+
+        record = MD_Metadata(result)
+        record.keywords = []
+        if hasattr(record, 'identification') and hasattr(record.identification, 'keywords'):
+            for kw in record.identification.keywords:
+                record.keywords.extend(kw['keywords'])
+
+        record.links = {}
+        record.links['metadata'] = self.catalogue.urls_for_uuid(uuid)
+        record.links['download'] = self.catalogue.extract_links(record)
+        return record
+
+    def search_records(self, keywords, start, limit, bbox):
+        with self.catalogue:
+            lresults = self._csw_local_dispatch(keywords, keywords, start+1, limit, bbox)
+            # serialize XML
+            e = etree.fromstring(lresults)
+            self.catalogue.records = [MD_Metadata(x) for x in e.findall('//{http://www.isotc211.org/2005/gmd}MD_Metadata')]
+
+            # build results into JSON for API
+            results = [self.catalogue.metadatarecord2dict(doc) for v, doc in self.catalogue.records.iteritems()]
+
+            result = {
+                      'rows': results,
+                      'total': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get('numberOfRecordsMatched'),
+                      'next_page': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get('nextRecord')
+                      }
+
+            return result
+
+
+    def _csw_local_dispatch(self, keywords=None, start=0, limit=10, bbox=None, identifier=None):
+        """
+        HTTP-less CSW
+        """
+        # set up configuration
+        config = SafeConfigParser()
+    
+        for section, options in settings.PYCSW['CONFIGURATION'].iteritems():
+            config.add_section(section)
+            for option, value in options.iteritems():
+                config.set(section, option, value)
+    
+        # fake HTTP environment variable
+        os.environ['QUERY_STRING'] = ''
+    
+        # init pycsw
+        csw = server.Csw(config)
+    
+        # fake HTTP method
+        csw.requesttype = 'POST'
+    
+        # fake HTTP request parameters
+        if identifier is None:  # it's a GetRecords request
+            formats = []
+            for f in self.catalogue.formats:
+                formats.append(METADATA_FORMATS[f][0])
+
+            csw.kvp = {
+                'elementsetname': 'full',
+                'typenames': formats,
+                'resulttype': 'results',
+                'constraintlanguage': 'CQL_TEXT',
+                'constraint': 'csw:AnyText like "%%%s%%"' % keywords,
+                'outputschema': 'http://www.isotc211.org/2005/gmd',
+                'constraint': None,
+                'startposition': start,
+                'maxrecords': limit
+            }
+            response = csw.getrecords()
+        else:  # it's a GetRecordById request
+            csw.kvp = {
+                'id': [identifier],
+                'outputschema': 'http://www.isotc211.org/2005/gmd',
+            }
+            response = csw.getrecordbyid()
+    
+        return etree.tostring(response)
