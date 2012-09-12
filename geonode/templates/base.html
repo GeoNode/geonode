@@ -114,16 +114,16 @@
                     <a href="{% url home %}">{% trans "Home" %}</a>
                   </li>
                   <li id="nav_data">
-                    <a href="{% url layer_browse %}">{% trans "Explore Data" %}</a>
-                  </li>
-                  <li id="nav_upload">
-                    <a href="{% url layer_upload %}">{% trans "Upload Data" %}</a>
+                    <a href="{% url layer_browse %}">{% trans "Layers" %}</a>
                   </li>
                   <li id="nav_maps">
-                    <a href="{% url maps_browse %}">{% trans "Explore Maps" %}</a>
+                    <a href="{% url maps_browse %}">{% trans "Maps" %}</a>
                   </li>
-                  <li id="nav_create_map">
-                    <a href="{% url new_map %}">{% trans "Create a New Map" %}</a>
+                  <li id="nav_profiles">
+                    <a href="{% url profile_list_all %}">{% trans "Profiles" %}</a>
+                  </li>
+                  <li id="nav_search">
+                    <a href="{% url advanced_search %}">{% trans "Search" %}</a>
                   </li>
                 </ul>
               </nav>
