@@ -78,6 +78,9 @@ urlpatterns = patterns('',
                                   {'sitemaps': sitemaps}, name='sitemap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
+
+    # Catalogue
+    (r'^catalogue/', include('geonode.catalogue.urls')),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
