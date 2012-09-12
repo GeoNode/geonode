@@ -2,13 +2,13 @@
 {% load i18n %}
 {% load layers_tags %}
 
-{% block title %} {% trans "Explore Data" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Explore Layers" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}
     <div class="span8">
-      <h2 class="page-title">{% trans "Explore Data" %}</h2>
+      <h2 class="page-title">{% trans "Explore Layers" %}</h2>
       {% include "layers/_layer_filters.html" %}
     </div>
     <div class="span4">
