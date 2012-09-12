@@ -33,7 +33,7 @@ msgstr "代号"
 
 #: core/models.py:27
 msgid "Determines the order that roles are presented in the user interface."
-msgstr "确定的角色是在用户界面中出现的顺序。"
+msgstr "确定角色在用户界面中出现的顺序。"
 
 #: core/models.py:66 maps/views.py:958
 msgid "Anonymous Users"
@@ -741,7 +741,7 @@ msgstr "摩尔多瓦共和国"
 
 #: maps/models.py:226
 msgid "Reunion"
-msgstr "团圆"
+msgstr "留尼汪"
 
 #: maps/models.py:227
 msgid "Romania"
@@ -1000,9 +1000,9 @@ msgid ""
 "editor to create custom structures, but they have to be validated by the "
 "system, so know what you do :-)"
 msgstr ""
-"您可以根据自己需要定义模板。您可以添加和删除基本信息（例如详细联系方式）。你"
-"不能改变默认视图中字段，可访问更全面和复杂的高级视图。你甚至可以使用XML编辑器"
-"创建自定义的结构，但必须通过系统验证，这样才知道你要做什么:-)"
+"您可以根据自己需要定义模板。您可以添加和删除基本信息（例如详细联系方式）。您"
+"不能改变默认视图中字段，可访问更全面和复杂的高级视图。您甚至可以使用XML编辑器"
+"创建自定义结构，但必须通过系统验证，这样才知道您做了什么:-)"
 
 #: maps/models.py:490
 msgid "Individual Name"
@@ -1034,7 +1034,7 @@ msgstr "城市"
 
 #: maps/models.py:497
 msgid "Administrative Area"
-msgstr "行政区"
+msgstr "行政区域"
 
 #: maps/models.py:498
 msgid "Postal Code"
@@ -1046,7 +1046,7 @@ msgstr "关键字"
 
 #: maps/models.py:502 maps/models.py:691 maps/models.py:1209
 msgid "A space or comma-separated list of keywords"
-msgstr ""
+msgstr "空格或者用逗号隔开的关键词"
 
 #: maps/models.py:678
 msgid "date"
@@ -1066,11 +1066,11 @@ msgstr "摘要"
 
 #: maps/models.py:684
 msgid "purpose"
-msgstr "宗旨"
+msgstr "目标"
 
 #: maps/models.py:685
 msgid "maintenance frequency"
-msgstr "维修次数"
+msgstr "维护频率"
 
 #: maps/models.py:692
 msgid "keywords region"
@@ -1086,7 +1086,7 @@ msgstr "其他约束"
 
 #: maps/models.py:695
 msgid "spatial representation type"
-msgstr "空间描绘类型"
+msgstr "空间呈现类型"
 
 #: maps/models.py:698
 msgid "language"
@@ -1094,7 +1094,7 @@ msgstr "语言"
 
 #: maps/models.py:699
 msgid "topic_category"
-msgstr "topic_category"
+msgstr "主题种类"
 
 #: maps/models.py:702
 msgid "temporal extent start"
@@ -1126,7 +1126,7 @@ msgstr "数据质量描述"
 
 #: maps/models.py:751
 msgid "Zipped Shapefile"
-msgstr "Shapefile压缩(.zip)"
+msgstr "Shapefile压缩包(.zip)"
 
 #: maps/models.py:752
 msgid "GML 2.0"
@@ -1242,11 +1242,11 @@ msgstr "图层参数"
 
 #: maps/models.py:1504
 msgid "source params"
-msgstr "资源参数"
+msgstr "数据源参数"
 
 #: maps/views.py:114 maps/views.py:120
 msgid "No Permissions"
-msgstr "没有权限"
+msgstr "无权限"
 
 #: maps/views.py:115 maps/views.py:121
 msgid "Read Only"
@@ -1266,7 +1266,7 @@ msgstr "登录后才能保存地图"
 
 #: maps/views.py:200
 msgid "You are not permitted to view or copy this map."
-msgstr "您没有查看或复制地图权限。"
+msgstr "您没有权限查看或复制地图。"
 
 #: maps/views.py:320 maps/views.py:647 maps/views.py:663 templates/401.html:10
 msgid "Not Permitted"
@@ -1294,7 +1294,7 @@ msgstr "您无权删除此图层"
 
 #: maps/views.py:763 maps/views.py:863
 msgid "You are not permitted to modify this layer"
-msgstr "您无权修改此层"
+msgstr "您无权修改此图层"
 
 #: maps/views.py:796
 msgid "You are not permitted to view this layer"
@@ -1351,7 +1351,7 @@ msgstr "上传"
 
 #: maps/templates/layers/data_base.html:23
 msgid "We support Shapefile and GeoTIFF uploads."
-msgstr "我们支持上传shape和GeoTIFF格式文件。"
+msgstr "我们支持上传Shapefile和GeoTIFF格式文件。"
 
 #: maps/templates/layers/data_base.html:24
 msgid "Upload a new layer"
@@ -1368,7 +1368,7 @@ msgid ""
 "      If you are interested in information about accessing this information "
 "through OGC services, please visit our\n"
 "      "
-msgstr "您要通过OGC服务获得感兴趣的信息，请访问我们的网站"
+msgstr "您如果对通过OGC服务获取信息感兴趣，请访问我们的网站"
 
 #: maps/templates/layers/data_base.html:33
 msgid "developer page"
@@ -1469,7 +1469,7 @@ msgstr "没有指定SRS。"
 
 #: maps/templates/layers/layer.html:195 maps/templates/maps/mapinfo.html:79
 msgid "Comments"
-msgstr ""
+msgstr "评论"
 
 #: maps/templates/layers/layer.html:204
 #, python-format
@@ -1482,7 +1482,7 @@ msgstr ""
 #: maps/templates/layers/layer.html:213 maps/templates/maps/mapinfo.html:97
 #, fuzzy
 msgid "Post a comment"
-msgstr "邮政编码"
+msgstr "发表评论"
 
 #: maps/templates/layers/layer.html:221 maps/templates/maps/mapinfo.html:105
 msgid "Submit"
@@ -1490,22 +1490,22 @@ msgstr "提交"
 
 #: maps/templates/layers/layer.html:226 maps/templates/maps/mapinfo.html:110
 msgid "Login to add a comment"
-msgstr ""
+msgstr "登录以发表评论"
 
 #: maps/templates/layers/layer.html:231
 #, fuzzy
 msgid "Rate this layer"
-msgstr "此图层没有摘要。"
+msgstr "给此图层打分"
 
 #: maps/templates/layers/layer.html:241
 #, fuzzy
 msgid "Download Data"
-msgstr "下载"
+msgstr "下载数据"
 
 #: maps/templates/layers/layer.html:246
 #, fuzzy
 msgid "Download Metadata"
-msgstr "上传数据"
+msgstr "下载数据"
 
 #: maps/templates/layers/layer.html:250
 msgid "No metadata links provided for this data."
@@ -1517,7 +1517,7 @@ msgstr "下面的地图使用该数据集"
 
 #: maps/templates/layers/layer.html:257
 msgid "This layer is not currently used in any maps."
-msgstr "任何地图未使用当前层。"
+msgstr "当前图层未被任何地图使用。"
 
 #: maps/templates/layers/layer.html:260
 msgid "Create new map"
@@ -1533,7 +1533,7 @@ msgid ""
 "view it in the preview to the left.  Click on a style name to view or edit "
 "the style."
 msgstr ""
-"以下数据集样式。选择样式，在左侧的预览。点击一个样式名称查看或编辑样式。"
+"以下样式与该数据集相关。选择样式在左侧预览。点击一个样式名称以查看或编辑该样式。"
 
 #: maps/templates/layers/layer.html:291
 msgid "Default style:"
@@ -1553,7 +1553,7 @@ msgstr "更新数据描述"
 
 #: maps/templates/layers/layer.html:313
 msgid "Upload a new version of this data"
-msgstr "上传此数据新版本"
+msgstr "上传此数据的更新版本"
 
 #: maps/templates/layers/layer.html:319
 msgid "Remove"
@@ -1561,7 +1561,7 @@ msgstr "删除"
 
 #: maps/templates/layers/layer.html:324
 msgid "Please authenticate to update or remove layers"
-msgstr ""
+msgstr "请授权上传或删除图层"
 
 #: maps/templates/layers/layer.html:330
 #: maps/templates/layers/layer_upload.html:225
@@ -1575,12 +1575,12 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr ""
+msgstr "编辑%(layer_title)的细节"
 
 #: maps/templates/layers/layer_describe.html:28
 #, fuzzy
 msgid "Metadata Provider"
-msgstr "元数据"
+msgstr "元数据提供者"
 
 #: maps/templates/layers/layer_describe.html:32
 msgid "Update"
@@ -1592,22 +1592,22 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(layer_title)s?\n"
 "      "
-msgstr "你确定要删除"
+msgstr "你确定要删除?"
 
 #: maps/templates/layers/layer_remove.html:16
 #: maps/templates/maps/map_remove.html:17
 msgid "Yes, I am sure"
-msgstr "是的，我确信"
+msgstr "是的，我确定"
 
 #: maps/templates/layers/layer_remove.html:17
 #: maps/templates/maps/map_remove.html:18
 msgid "No, don't remove it"
-msgstr "不要删除它"
+msgstr "不要删除"
 
 #: maps/templates/layers/layer_remove.html:24
 #: maps/templates/layers/layer_replace.html:167
 msgid "This action affects the following maps:"
-msgstr "此操作会影响下面的地图："
+msgstr "此操作会影响以下地图："
 
 #: maps/templates/layers/layer_remove.html:28
 #, fuzzy
@@ -1617,11 +1617,11 @@ msgstr "没有地图使用此图层。"
 #: maps/templates/layers/layer_replace.html:4
 #: maps/templates/layers/layer_replace.html:155
 msgid "Update Layer"
-msgstr "更新层"
+msgstr "更新图层"
 
 #: maps/templates/layers/layer_replace.html:156
 msgid "This form allows you to update the data for this layer."
-msgstr "这个页面允许你更新此图层的数据。"
+msgstr "此页面允许你更新此图层的数据。"
 
 #: maps/templates/layers/layer_replace.html:157
 msgid ""
@@ -1634,13 +1634,13 @@ msgid ""
 "updated data must be the same format as the data already in place, e.g.\n"
 msgstr ""
 "\n"
-"如果新的数据集，忽略以前的版本属性，或更改字段类型，现有的图层样式，可能无法"
-"正常工作。如果新的数据包括这种变化，请检查您的地图。此外，更新后的数据必须是"
-"相同的数据格式，如\n"
+"如果新的数据集忽略前一版本的属性，或更改了字段类型，现有图层样式可能无法"
+"正常工作。请检查您的地图是否包括这种变化。此外，更新数据必须延用"
+"之前的数据格式，如\n"
 
 #: maps/templates/layers/layer_replace.html:165
 msgid "Select a layer data file and submit the form to begin the transfer."
-msgstr "选择图层数据的文件，并提交表单开始传输。"
+msgstr "选择并提交图层文件以开始传输。"
 
 #: maps/templates/layers/layer_replace.html:173
 msgid "No maps are using this layer."
@@ -1648,11 +1648,11 @@ msgstr "没有地图使用此图层。"
 
 #: maps/templates/layers/layer_replace.html:179
 msgid "Supported Formats"
-msgstr "支持的格式"
+msgstr "支持格式"
 
 #: maps/templates/layers/layer_upload.html:4
 msgid "Upload Layer"
-msgstr "上传层"
+msgstr "上传图层"
 
 #: maps/templates/layers/layer_upload.html:19
 msgid "Add data"
@@ -1675,17 +1675,17 @@ msgstr "地理空间数据"
 msgid ""
 "Click the <b>+</b> on any row to show layer metadata or download in PDF, "
 "KML, GeoTIFF, or SHP."
-msgstr "点击 <b>+</b> 将显示图层元数据或PDF，KML，GeoTIFF，SHP下载链接。"
+msgstr "点击 <b>+</b> 将显示图层元数据或PDF，KML，GeoTIFF，SHP的下载链接。"
 
 #: maps/templates/layers/search_base.html:57
 #: maps/templates/maps/maps_search_base.html:35
 msgid "To bookmark your current search use this"
-msgstr "您当前搜索加入书签"
+msgstr "将当前搜索结果加入书签"
 
 #: maps/templates/layers/search_base.html:57
 #: maps/templates/maps/maps_search_base.html:35
 msgid "permalink"
-msgstr "永久"
+msgstr "永久链接"
 
 #: maps/templates/layers/search_base.html:64
 msgid "Refine Search"
@@ -1693,7 +1693,7 @@ msgstr "细化搜索"
 
 #: maps/templates/layers/search_base.html:66
 msgid "By area"
-msgstr "由区域"
+msgstr "根据区域"
 
 #: maps/templates/layers/search_base.html:67
 msgid "Limit the search to data that includes features in the displayed area."
