@@ -77,7 +77,7 @@ setup(name='GeoNode',
         "PIL",
         "lxml",
         # python dependencies
-        "gsconfig==0.6",
+        "gsconfig==0.6.1",
         "OWSLib==0.5.1",
         "Django==1.4",
         "httplib2>=0.7",
@@ -99,6 +99,8 @@ setup(name='GeoNode',
         # testing
         "django-nose",
         "nose>=1.0",
+        "Shapely>=1.2.15",
+        "pycsw>=1.4.0",
         ],
       zip_safe=False,
       )

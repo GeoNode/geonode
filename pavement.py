@@ -342,8 +342,8 @@ def reset():
 def _reset():
     sh("rm -rf geonode/development.db")
     # Reset data dir
-    sh('git clean -xdf geoserver-geonode-ext/src/main/webapp/data')
-    sh('git checkout geoserver-geonode-ext/src/main/webapp/data')
+    sh('git clean -xdfq geoserver-geonode-ext/src/main/webapp/data')
+    sh('git checkout -q geoserver-geonode-ext/src/main/webapp/data')
 
 
 @needs(['reset'])

@@ -56,7 +56,13 @@ class LayerForm(forms.ModelForm):
     class Meta:
         model = Layer
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
+<<<<<<< HEAD
                    'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid', 'metadata_uploaded', 'metadata_xml')
+=======
+                   'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
+                   'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
+                   'csw_wkt_geometry', 'metadata_xml', 'csw_anytext')
+>>>>>>> c990cd086b618c11e6c4310d401ba833abc650e3
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
