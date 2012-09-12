@@ -65,7 +65,7 @@ msgstr "美属萨摩亚"
 
 #: maps/models.py:57
 msgid "Andorra"
-msgstr "安道"
+msgstr "安道尔"
 
 #: maps/models.py:58
 msgid "Angola"
