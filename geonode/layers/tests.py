@@ -333,6 +333,17 @@ class LayersTest(TestCase):
         response = c.get('/data/base:CA/metadata')
         self.failUnlessEqual(response.status_code, 200)
 
+    def test_layer_attributes(self):
+        lyr = Layer.objects.get(pk=1)
+        #There should be a total of 3 attributes
+        self.assertEqual(len(lyr.attribute_set.all()), 3)
+        #Two out of 3 attributes should be visible
+        custom_attributes = lyr.attribute_set.visible()
+        self.assertEqual(len(custom_attributes), 2)
+        #place_ name should come before description
+        self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
+        self.assertEqual(custom_attributes[1].attribute_label, "Description")
+
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
         lyr.keywords.add(*["saving", "keywords"])
