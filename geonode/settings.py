@@ -276,16 +276,8 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Arguments for the test runner
 NOSE_ARGS = [
-      '--verbosity=2',
-      '--cover-erase',
       '--nocapture',
-      '--with-coverage',
-      '--cover-package=geonode',
-      '--cover-inclusive',
-      '--cover-tests',
       '--detailed-errors',
-      '--with-xunit',
-#      '--stop',
       ]
 
 #
