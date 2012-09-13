@@ -187,7 +187,7 @@ LOGGING = {
         "owslib": {
             "handlers": ["console"],
             "level": "ERROR",
-        },    
+        },
     },
 }
 
@@ -315,7 +315,7 @@ CATALOGUE = {
         'URL': '%scatalogue/csw' % SITEURL,
         #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
-    
+
         # login credentials (for GeoNetwork)
         'USER': 'admin',
         'PASSWORD': 'admin',

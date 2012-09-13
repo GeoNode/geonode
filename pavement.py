@@ -26,16 +26,17 @@ from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, pushd, info, call_task
 from paver.easy import BuildFailure
 
-assert sys.version_info >= (2,6,2), \
-       SystemError("GeoNode Build requires python 2.6.2 or better")
+assert sys.version_info >= (2, 6, 2), \
+    SystemError("GeoNode Build requires python 2.6.2 or better")
 
 
 def grab(src, dest):
     urllib.urlretrieve(str(src), str(dest))
 
+
 @task
 @cmdopts([
-  ('fast', 'f', 'Fast. Skip some operations for speed.'),
+    ('fast', 'f', 'Fast. Skip some operations for speed.'),
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
@@ -60,63 +61,51 @@ def setup_client(options):
 
     if not scripts_path.exists():
         scripts_path.makedirs()
-    
+
     with pushd("geonode-client/"):
         sh("jsbuild buildjs.cfg -o %s" % scripts_path)
- 
-    resources = ((
-           # Ext resources
-           'externals/ext',
-           'app/static/externals/ext'
-           ),(
-           'externals/gxp/theme',
-           'app/static/externals/gxp/src/theme'
-           ),(
-           'externals/PrintPreview/resources',
-           'app/static/externals/PrintPreview/resources'
-           ),(
-           'externals/geoext/resources',
-           'app/static/externals/geoext/resources'
-           ),(
-           # OpenLayers resources
-           'externals/openlayers/theme',
-           'app/static/externals/openlayers/theme'
-           ),(
-           'externals/openlayers/img',
-           'app/static/externals/openlayers/img'
-           ),(
-           'theme/ux/colorpicker',
-           'app/static/script/ux/colorpicker/color-picker.ux.css'
-           ),(
-           'script/ux/colorpicker',
-           'script/ux/colorpicker/picker.gif'
-           ),(
-           'script/ux/colorpicker',
-           'app/static/script/ux/colorpicker/side_slider.jpg'
-           ),(
-           'script/ux/colorpicker',
-           'app/static/script/ux/colorpicker/mask.png'
-           ),(
-           # GeoExt Resources
-           'externals/geoext/resource',
-           'app/static/externals/geoext/resources'
-           ),(
-           'theme/ux/fileuploadfield',
-           'app/static/script/ux/fileuploadfield/css'
-           ),(
-           # gxp resources
-           'externals/gxp/src/theme',
-           'app/static/externals/gxp/src/theme'
-           ), (
-           # GeoExplorer resources
-           'theme/app',
-           'app/static/theme/app'
-    ))
+
+    resources = (
+        # Ext resources
+        ('externals/ext',
+         'app/static/externals/ext'),
+        ('externals/gxp/theme',
+         'app/static/externals/gxp/src/theme'),
+        ('externals/PrintPreview/resources',
+         'app/static/externals/PrintPreview/resources'),
+        ('externals/geoext/resources',
+         'app/static/externals/geoext/resources'),
+        # OpenLayers resources
+        ('externals/openlayers/theme',
+         'app/static/externals/openlayers/theme'),
+        ('externals/openlayers/img',
+         'app/static/externals/openlayers/img'),
+        ('theme/ux/colorpicker',
+         'app/static/script/ux/colorpicker/color-picker.ux.css'),
+        ('script/ux/colorpicker',
+         'script/ux/colorpicker/picker.gif'),
+        ('script/ux/colorpicker',
+         'app/static/script/ux/colorpicker/side_slider.jpg'),
+        ('script/ux/colorpicker',
+         'app/static/script/ux/colorpicker/mask.png'),
+        # GeoExt Resources
+        ('externals/geoext/resource',
+         'app/static/externals/geoext/resources'),
+        ('theme/ux/fileuploadfield',
+         'app/static/script/ux/fileuploadfield/css'),
+        # gxp resources
+        ('externals/gxp/src/theme',
+         'app/static/externals/gxp/src/theme'),
+        # GeoExplorer resources
+        ('theme/app',
+         'app/static/theme/app')
+    )
 
     for t, o in resources:
         origin = path('geonode-client') / o
         target = path(static) / t
         justcopy(origin, target)
+
 
 @task
 @needs([
@@ -124,10 +113,12 @@ def setup_client(options):
     'setup_client',
 ])
 def setup(options):
-    """Get dependencies and generally prepare a GeoNode development environment."""
+    """Get dependencies and prepare a GeoNode development environment."""
     sh('pip install -e .')
 
-    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""") 
+    info(('GeoNode development environment successfully set up.'
+          'If you have not set up an administrative account,'
+          ' please do so now. Use "paver start" to start up the server.'))
 
 
 @cmdopts([
@@ -143,11 +134,11 @@ def upgradedb(options):
         sh("python manage.py migrate maps 0001 --fake")
         sh("python manage.py migrate avatar 0001 --fake")
         sh("python manage.py migrate registration 0001 --fake")
-    elif version == None:
+    elif version is None:
         print "Please specify your GeoNode version"
     else:
-        print "Upgrades from GeoNode Version %s are not yet supported." % version
-        
+        print "Upgrades from version %s are not yet supported." % version
+
 
 @task
 def sync(options):
@@ -157,7 +148,6 @@ def sync(options):
     sh("python manage.py syncdb --noinput")
     sh("python manage.py migrate --noinput")
     sh("python manage.py loaddata sample_admin.json")
-
 
 
 @task
@@ -196,9 +186,9 @@ def package(options):
         justcopy(support_folder, out_pkg / 'support')
         justcopy(install_file, out_pkg)
 
-
         # Package Geoserver's war.
-        geoserver_target = path('../geoserver-geonode-ext/target/geoserver.war')
+        geoserver_path = '../geoserver-geonode-ext/target/geoserver.war'
+        geoserver_target = path(geoserver_path)
         geoserver_target.copy(out_pkg)
 
         # Package (Python, Django) web application and dependencies.
@@ -207,7 +197,7 @@ def package(options):
         geonode_dist = path('..') / 'dist' / 'GeoNode-%s.zip' % version
         sh('pip bundle %s %s' % (bundle, geonode_dist))
 
-        # Create a tar file with all the information in the output package folder.
+        # Create a tar file with all files in the output package folder.
         tar = tarfile.open(out_pkg_tar, "w:gz")
         for file in out_pkg.walkfiles():
             tar.add(file)
@@ -226,13 +216,13 @@ def package(options):
 @task
 @needs(['start_geoserver',
         'sync',
-        'start_django',])
+        'start_django'])
 @cmdopts([
-    ('bind=', 'b', 'Bind Django development server to provided IP address and port number.')
+    ('bind=', 'b', 'Bind server to provided IP address and port number.')
 ], share_with=['start_django'])
 def start():
     """
-    Start the GeoNode app and all its constituent parts (Django, GeoServer & Client)
+    Start GeoNode (Django, GeoServer & Client)
     """
     info("GeoNode is now available.")
 
@@ -262,14 +252,14 @@ def stop():
 
 
 @cmdopts([
-    ('bind=', 'b', 'Bind Django development server to provided IP address and port number.')
+    ('bind=', 'b', 'Bind server to provided IP address and port number.')
 ])
 @task
 def start_django():
     """
     Start the GeoNode Django application
     """
-    bind = options.get('bind','')
+    bind = options.get('bind', '')
     sh('python manage.py runserver %s &' % bind)
 
 
@@ -282,18 +272,19 @@ def start_geoserver(options):
     from geonode.settings import GEOSERVER_BASE_URL
 
     with pushd('geoserver-geonode-ext'):
-        sh('MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=256m" mvn jetty:run > /dev/null &')
- 
+        sh(('MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=256m"'
+           ' mvn jetty:run > /dev/null &'))
+
     info('Starting GeoServer on %s' % GEOSERVER_BASE_URL)
     # wait for GeoServer to start
     started = waitfor(GEOSERVER_BASE_URL)
     if not started:
         # If applications did not start in time we will give the user a chance
         # to inspect them and stop them manually.
-        info("GeoServer never started properly or timed out. It may still be running in the background.")
-        info("The logs are available at geoserver-geonode-ext/jetty.log")
+        info(('GeoServer never started properly or timed out.'
+              'It may still be running in the background.'))
+        info('The logs are available at geoserver-geonode-ext/jetty.log')
         sys.exit(1)
- 
 
 
 @task
@@ -311,12 +302,13 @@ def test_integration(options):
     """
     _reset()
     # Start GeoServer
-    call_task('start_geoserver') 
+    call_task('start_geoserver')
     info("GeoNode is now available, running the tests now.")
 
     success = False
     try:
-        sh('python manage.py test geonode.tests.integration --noinput --liveserver=localhost:8000')
+        sh(('python manage.py test geonode.tests.integration'
+           ' --noinput --liveserver=localhost:8000'))
     except BuildFailure, e:
         info('Tests failed! %s' % str(e))
     else:
@@ -339,6 +331,7 @@ def reset():
     """
     _reset()
 
+
 def _reset():
     sh("rm -rf geonode/development.db")
     # Reset data dir
@@ -349,7 +342,7 @@ def _reset():
 @needs(['reset'])
 def reset_hard():
     """
-    Reset a development environment (Database, GeoServer & Catalogue) with force
+    Reset a development environment (Database, GeoServer & Catalogue)
     """
     sh("git clean -dxf")
 
@@ -363,10 +356,11 @@ def setup_data():
     data_dir = gisdata.GOOD_DATA
     sh("python manage.py importlayers %s -v2" % data_dir)
 
+
 @needs(['package'])
 @cmdopts([
-  ('key=', 'k', 'The GPG key to sign the package'),
-  ('ppa=', 'p', 'The name of the PPA where this package should be published to.'),
+    ('key=', 'k', 'The GPG key to sign the package'),
+    ('ppa=', 'p', 'PPA this package should be published to.'),
 ])
 def deb(options):
     """
@@ -407,11 +401,12 @@ def deb(options):
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
         path('.git').makedirs()
 
-        sh('git-dch --git-author --new-version=%s --id-length=6 --debian-branch=%s' % (simple_version, branch))
+        sh(('git-dch --git-author --new-version=%s'
+            '--id-length=6 --debian-branch=%s' % (
+            simple_version, branch)))
 
         # Rever workaround for git-dhc bug
         path('.git').rmtree()
-
 
         sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
@@ -432,12 +427,13 @@ def kill(arg1, arg2):
 
     # Wait until ready
     t0 = time.time()
-    time_out = 30 # Wait no more than these many seconds
+    # Wait no more than these many seconds
+    time_out = 30
     running = True
 
-    while running and time.time()-t0 < time_out:
+    while running and time.time() - t0 < time_out:
         p = Popen('ps aux | grep %s' % arg1, shell=True,
-              stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
+                  stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
 
         lines = p.stdout.readlines()
 
@@ -475,7 +471,7 @@ def waitfor(url, timeout=300):
         else:
             if resp.getcode() == 200:
                 started = True
-                break 
+                break
         time.sleep(1)
     return started
 
@@ -483,8 +479,8 @@ def waitfor(url, timeout=300):
 def justcopy(origin, target):
     import shutil
     if os.path.isdir(origin):
-         shutil.rmtree(target, ignore_errors=True)
-         shutil.copytree(origin, target)
+        shutil.rmtree(target, ignore_errors=True)
+        shutil.copytree(origin, target)
     elif os.path.isfile(origin):
         if not os.path.exists(target):
             os.makedirs(target)
