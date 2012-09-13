@@ -1,0 +1,14 @@
+[main]
+host = https://www.transifex.com
+
+[geonode.master]
+file_filter = geonode/locale/<lang>/LC_MESSAGES/django.po
+source_file = geonode/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO
+
+[geonode.javascript]
+file_filter = geonode/locale/<lang>/LC_MESSAGES/djangojs.po
+source_file = geonode/locale/en/LC_MESSAGES/djangojs.po
+source_lang = en
+type = PO
