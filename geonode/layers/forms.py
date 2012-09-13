@@ -25,7 +25,7 @@ import taggit
 from django import forms
 from django.utils import simplejson as json
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Attribute
 from geonode.people.models import Contact
 
 
@@ -120,3 +120,14 @@ class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
+
+class LayerAttributeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(LayerAttributeForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        self.fields['attribute'].widget.attrs['readonly'] = True
+        self.fields['display_order'].widget.attrs['size'] = 3
+
+    class Meta:
+        model = Attribute
+        exclude = ('attribute_type',)
