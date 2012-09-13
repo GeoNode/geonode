@@ -876,4 +876,41 @@ span.style-title {
 .checkright {
     color: Red;
     left:100px;
+     float: right;
+     padding-top: 3px;
+}
+
+/*-----------------------
+Comments
+-----------------------*/
+.comments_container {
+  margin-left: 10px;
+  margin-bottom: 20px;
+}
+
+.comment_author {
+  margin:0;
+  margin-bottom: 1.5em;
+  padding-left: 5px;
+  border-left: 2px solid gray;
+}
+.comment_content {
+  font-size: 1.3em;
+  padding-left: 5px;
+  border-left: 2px solid gray;
+}
+
+.comment_box textarea {
+  height: 80px;
+  width: 100%;
+}
+
+.comment_post input {
+  font-size: 1.1em;
+  margin-top: 10px;
+  padding: 5px;
+}
+
+#preview_map {
+  margin-bottom: 1em;
 }

@@ -37,7 +37,31 @@ hosts:
   - !dnsMatch
     host: tile.openstreetmap.org
   - !dnsMatch
+    host: a.tile.openstreetmap.org
+  - !dnsMatch
+    host: b.tile.openstreetmap.org
+  - !dnsMatch
+    host: c.tile.openstreetmap.org
+  - !dnsMatch
+    host: d.tile.openstreetmap.org
+  - !dnsMatch
     host: maps.opengeo.org
+  - !dnsMatch
+    host: oatile1.mqcdn.com
+  - !dnsMatch
+    host: oatile2.mqcdn.com
+  - !dnsMatch
+    host: oatile3.mqcdn.com
+  - !dnsMatch
+    host: oatile4.mqcdn.com
+  - !dnsMatch
+    host: otile1.mqcdn.com
+  - !dnsMatch
+    host: otile2.mqcdn.com
+  - !dnsMatch
+    host: otile3.mqcdn.com
+  - !dnsMatch
+    host: otile4.mqcdn.com
 
 layouts:
   Legal:

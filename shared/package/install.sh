@@ -52,6 +52,7 @@ function reorganize_configuration() {
 	cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
 	cp -rp $INSTALL_DIR/geonode-webapp.pybundle $GEONODE_LIB
 	cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
+	cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
 	cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
 	cp -rp $INSTALL_DIR/support/geoserver.patch $GEONODE_SHARE
 	cp -rp $INSTALL_DIR/support/geonetwork.patch $GEONODE_SHARE
@@ -60,6 +61,7 @@ function reorganize_configuration() {
 	cp -rp $INSTALL_DIR/support/geonode.local_settings $GEONODE_ETC/local_settings.py
 
 	chmod +x $GEONODE_BIN/geonode
+	chmod +x $GEONODE_BIN/geonode-updateip
 }
 
 function preinstall() {

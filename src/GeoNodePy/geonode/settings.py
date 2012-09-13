@@ -141,36 +141,49 @@ INSTALLED_APPS = (
     'geonode.profiles',
     )
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "null": {
-            "level": "DEBUG",
-            "class": "django.utils.log.NullHandler",
-        },
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-        },
-        "mail_admins": {
-            "level": "ERROR",
-            "class": "django.utils.log.AdminEmailHandler",
-        },
-    },
-    "loggers": {
-        "django.request": {
-            "handlers": ["mail_admins"],
-            "level": "ERROR",
-            "propagate": True,
-        },
-        "geonode": {
-            "handlers": ["console"],
-            "level": "WARNING",
-        },
-    },
-}
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(message)s',        },
+    },
+    'handlers': {
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers':['null'],
+            'propagate': True,
+            'level':'INFO',
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'geonode': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+    }
+}
 
 #
 # Customizations to built in Django settings required by GeoNode
@@ -309,58 +322,76 @@ DEFAULT_MAP_CENTER = (0,0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 2
 
+
 DEFAULT_LAYER_SOURCE = {
     "ptype":"gxp_gnsource",
     "url":"/geoserver/wms",
     "restUrl": "/gs/rest"
 }
 
-MAP_BASELAYERS = [
-        {
-        "source": {"ptype": "gx_olsource"},
-        "type":"OpenLayers.Layer",
-        "args":["No background"],
-        "visibility": True,
-        "fixed": False,
-        "group":"background"
-    },
-        {
-        "source": {"ptype": "gx_googlesource"},
-        "group":"background",
-        "name":"SATELLITE",
-        "visibility": False,
-        "fixed": True,
-        },{
-        "source": {"ptype": "gx_googlesource"},
-        "name":"TERRAIN",
-        "visibility": True,
-        "fixed": True,
-        "group":"background"
-    },            {
-        "source": {"ptype": "gx_googlesource"},
-        "group":"background",
-        "name":"ROADMAP",
-        "visibility": False,
-        "fixed": True,
-        },{
-        "source": {"ptype": "gx_googlesource"},
-        "group":"background",
-        "name":"HYBRID",
-        "visibility": False,
-        "fixed": True,
-        },{
-        "source": {"ptype": "gx_olsource"},
-        "type":"OpenLayers.Layer.OSM",
-        "args":["OpenStreetMap"],
-        "visibility": False,
-        "fixed": True,
-        "group":"background"
-    }]
-
 
 REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 30
 SERVE_MEDIA = DEBUG;
+
+MAP_BASELAYERS = [{
+    "source": {
+        "ptype": "gxp_wmscsource",
+        "url": GEOSERVER_BASE_URL + "wms",
+        "restUrl": "/gs/rest"
+     }
+  },{
+    "source": {"ptype": "gx_olsource"},
+    "type":"OpenLayers.Layer",
+    "args":["No background"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  }, {
+    "source": {"ptype": "gx_olsource"},
+    "type":"OpenLayers.Layer.OSM",
+    "args":["OpenStreetMap"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  }, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name":"osm",
+    "group":"background",
+    "visibility": True
+  }, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name":"naip",
+    "group":"background",
+    "visibility": False
+  }, {
+    "source": {"ptype": "gxp_bingsource"},
+    "name": "AerialWithLabels",
+    "fixed": True,
+    "visibility": False,
+    "group":"background"
+  },{
+    "source": {"ptype": "gxp_mapboxsource"},
+  }, {
+    "source": {"ptype": "gx_olsource"},
+    "type":"OpenLayers.Layer.WMS",
+    "group":"background",
+    "visibility": False,
+    "fixed": True,
+    "args":[
+      "bluemarble",
+      "http://maps.opengeo.org/geowebcache/service/wms",
+      {
+        "layers":["bluemarble"],
+        "format":"image/png",
+        "tiled": True,
+        "tilesOrigin": [-20037508.34, -20037508.34]
+      },
+      {"buffer": 0}
+    ]
+
+}]
+
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
 GEONODE_CLIENT_LOCATION = "/media/static/geonode/"
@@ -372,12 +403,16 @@ GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE=False
 
+#
 #Database datastore connection settings
-DB_DATASTORE_NAME = ''
+#
+DB_DATASTORE_DATABASE = ''
 DB_DATASTORE_USER = ''
 DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
+# Name of the store in geoserver
+DB_DATASTORE_NAME = ''
 DB_DATASTORE_TYPE=''
 
 #Set name of additional permissions group (besides anonymous and authenticated)
@@ -395,6 +430,7 @@ DEFAULT_WORKSPACE = 'geonode'
 
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
+
 
 try:
     from local_settings import *

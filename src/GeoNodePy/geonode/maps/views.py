@@ -15,6 +15,8 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
+from django.template.defaultfilters import slugify
+
 import math
 import httplib2
 from owslib.csw import namespaces
@@ -1050,8 +1052,21 @@ def upload_layer(request):
         tempdir = None
         if form.is_valid():
             try:
+
                 tempdir, base_file, sld_file = form.write_files()
-                name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+                title = form.cleaned_data["layer_title"]
+
+                # Replace dots in filename - GeoServer REST API upload bug
+                # and avoid any other invalid characters.
+                # Use the title if possible, otherwise default to the filename
+                if title is not None and len(title) > 0:
+                    name_base = title
+                else:
+                    name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+                name = slugify(name_base.replace(".","_"))
+
                 saved_layer = save(name, base_file, request.user, 
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
@@ -1759,6 +1774,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     for keyword in keywords:
         map_query = map_query.filter(
               Q(title__icontains=keyword)
+            | Q(keywords__name__icontains=keyword)
             | Q(abstract__icontains=keyword))
 
     officialMaps = map_query.filter(Q(officialurl__isnull=False))
@@ -1868,6 +1884,7 @@ def batch_permissions(request, use_email=False):
         if "layers" in spec:
             lyrs = Layer.objects.filter(pk__in = spec['layers'])
             valid_perms = ['layer_readwrite', 'layer_readonly', 'layer_admin']
+
             if anon_level not in valid_perms:
                 anon_level = "_none"
             if auth_level not in valid_perms:
@@ -1888,6 +1905,7 @@ def batch_permissions(request, use_email=False):
                 for user, user_level in users:
                     if user_level not in valid_perms:
                         user_level = "_none"
+                    user = User.objects.get(username=user)
                     lyr.set_user_level(user, user_level)
 
         if "maps" in spec:

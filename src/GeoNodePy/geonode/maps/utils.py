@@ -116,7 +116,6 @@ def get_files(filename, sldfile):
     if sldfile and os.path.exists(sldfile):
         files['sld'] = sldfile
 
-
     return files
 
 
@@ -378,9 +377,9 @@ def save(layer, base_file, user, overwrite = True, title=None,
         raise GeoNodeException(msg)
 
     # Step 6. Make sure our data always has a valid projection
+
     logger.info('>>> Step 7. Making sure [%s] has a valid projection' % name)
     check_projection(name, gs_resource)
-
 
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
@@ -682,7 +681,7 @@ def upload(incoming, user=None, overwrite=True, keywords = (), skip=True, ignore
                                     overwrite=overwrite,
                                     keywords=keywords,
                                     charset=charset
-                                           )
+                                    )
                 if not existed:
                     status = 'created'
                 else:
@@ -734,7 +733,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
 
     try:
-        cat.add_data_to_store(ds, name, data, overwrite, charset)
+        cat.add_data_to_store(ds, name, data, overwrite=overwrite, charset=charset)
         return ds, cat.get_resource(name, store=ds)
     except:
         store_params = ds.connection_parameters

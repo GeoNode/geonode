@@ -50,6 +50,21 @@ Ext.onReady(function(){
         }
     };
 
+    var base_file = new Ext.ux.form.FileUploadField({
+        id: 'base_file',
+        emptyText: gettext('Select a Geotiff or Shapefile .shp file'),
+        fieldLabel: gettext('Data'),
+        name: 'base_file',
+        allowBlank: false,
+        listeners: listeners,
+        validator: function(name) {
+            if ((name.length > 0) && (name.search(/\.(shp|tif+|geotif+)$/i) == -1)) {
+                return gettext("File must be a Shapefile or GeoTIFF");
+            } else {
+                return true;
+            }
+        }
+    });
 
     var map_id = new Ext.form.Hidden({
         id: 'mapid',
