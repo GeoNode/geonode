@@ -296,6 +296,9 @@ def test(options):
 
 
 @task
+@cmdopts([
+    ('name=', 'n', 'Run specific tests.')
+    ])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
@@ -305,10 +308,12 @@ def test_integration(options):
     call_task('start_geoserver')
     info("GeoNode is now available, running the tests now.")
 
+    name = options.get('name', 'geonode.tests.integration')
+
     success = False
     try:
-        sh(('python manage.py test geonode.tests.integration'
-           ' --noinput --liveserver=localhost:8000'))
+        sh(('python manage.py test %s'
+           ' --noinput --liveserver=localhost:8000' % name))
     except BuildFailure, e:
         info('Tests failed! %s' % str(e))
     else:
