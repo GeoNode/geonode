@@ -35,6 +35,7 @@ from django.db.models import signals
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
@@ -44,8 +45,9 @@ from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.ows import wcs_links, wfs_links, wms_links
 from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
-    UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, SPATIAL_REPRESENTATION_TYPES, \
-    TOPIC_CATEGORIES, DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
+    HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
+    SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
+    DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 
 from geoserver.catalog import Catalog
 from taggit.managers import TaggableManager
@@ -131,24 +133,16 @@ class LayerManager(models.Manager):
                 print >> console, msg
         return output
 
-class Layer(models.Model, PermissionLevelMixin):
+class ResourceBase(models.Model, PermissionLevelMixin):
     """
-    Layer Object loosely based on ISO 19115:2003
+    Base Resource Object loosely based on ISO 19115:2003
     """
 
     VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ['Creation', 'Publication', 'Revision']]
 
     # internal fields
-    objects = LayerManager()
-    workspace = models.CharField(max_length=128)
-    store = models.CharField(max_length=128)
-    storeType = models.CharField(max_length=128)
-    name = models.CharField(max_length=128)
     uuid = models.CharField(max_length=36)
-    typename = models.CharField(max_length=128, unique=True)
     owner = models.ForeignKey(User, blank=True, null=True)
-
-    contacts = models.ManyToManyField(Contact, through='ContactRole')
 
     # section 1
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
@@ -200,6 +194,18 @@ class Layer(models.Model, PermissionLevelMixin):
     bbox_y1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')
 
+    # CSW specific fields
+    csw_typename = models.CharField(_('CSW typename'), max_length=32, default='gmd:MD_Metadata', null=False)    
+    csw_schema = models.CharField(_('CSW schema'), max_length=64, default='http://www.isotc211.org/2005/gmd', null=False)
+    csw_mdsource = models.CharField(_('CSW source'), max_length=256, default='local', null=False)
+    csw_insert_date = models.DateTimeField(_('CSW insert date'), auto_now_add=True, null=True)
+    csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=HIERARCHY_LEVELS)
+    csw_anytext = models.TextField(_('CSW anytext'), null=True)
+    csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))')
+    # metadata XML specific fields
+    #metadata_uploaded = models.BooleanField(default=False)
+    metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
+
     @property
     def bbox(self):
         return [self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, self.srid]
@@ -212,7 +218,6 @@ class Layer(models.Model, PermissionLevelMixin):
     def geographic_bounding_box(self):
         return bbox_to_wkt(self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, srid=self.srid )
 
-
     def eval_keywords_region(self):
         """Returns expanded keywords_region tuple'd value"""
         index = next((i for i,(k,v) in enumerate(COUNTRIES) if k==self.keywords_region),None)
@@ -221,8 +226,56 @@ class Layer(models.Model, PermissionLevelMixin):
         else:
             return self.keywords_region
 
+    @property
+    def poc_role(self):
+        role = Role.objects.get(value='pointOfContact')
+        return role
+
+    @property
+    def metadata_author_role(self):
+        role = Role.objects.get(value='author')
+        return role
+
+    def keyword_list(self):
+        return [kw.name for kw in self.keywords.all()]
+
+    @property
+    def keyword_csv(self):
+        keywords_qs = self.keywords.all()
+        if keywords_qs:
+            return ','.join([kw.name for kw in keywords_qs])
+        else:
+            return ''
+
+    class Meta:
+        abstract = True
+
+class Layer(ResourceBase):
+    """
+    Layer (inherits ResourceBase fields)
+    """
+
+    # internal fields
+    objects = LayerManager()
+    workspace = models.CharField(max_length=128)
+    store = models.CharField(max_length=128)
+    storeType = models.CharField(max_length=128)
+    name = models.CharField(max_length=128)
+    typename = models.CharField(max_length=128, unique=True)
+
+    contacts = models.ManyToManyField(Contact, through='ContactRole')
+
+    def download_links(self):
+        links = []
+        for url in self.link_set.all():
+            description = '%s (%s Format)' % (self.title, url.name)
+            links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
+        abs_url = '%s%s' % (settings.SITEURL[:-1], self.get_absolute_url())
+        links.append((self.title, self.title, 'WWW:LINK-1.0-http--link', abs_url))
+        return links
+
     def thumbnail(self):
-        """ Generate a URL representing thumbnail of the resource """
+        """ Generate a URL representing thumbnail of the layer """
 
         width = 20
         height = 20
@@ -241,16 +294,15 @@ class Layer(models.Model, PermissionLevelMixin):
     def verify(self):
         """Makes sure the state of the layer is consistent in GeoServer and Catalogue.
         """
-        
+
         # Check the layer is in the wms get capabilities record
         # FIXME: Implement caching of capabilities record site wide
 
         _local_wms = get_wms()
         record = _local_wms.contents.get(self.typename)
         if record is None:
-            msg = "WMS Record missing for layer [%s]" % self.typename 
+            msg = "WMS Record missing for layer [%s]" % self.typename
             raise GeoNodeException(msg)
-
 
     @property
     def display_type(self):
@@ -297,7 +349,7 @@ class Layer(models.Model, PermissionLevelMixin):
         self.publishing.styles = styles
 
     styles = property(_get_styles, _set_styles)
-    
+
     @property
     def service_type(self):
         if self.storeType == 'coverageStore':
@@ -312,15 +364,37 @@ class Layer(models.Model, PermissionLevelMixin):
             self._publishing_cache = cat.get_layer(self.name)
         return self._publishing_cache
 
-    @property
-    def poc_role(self):
-        role = Role.objects.get(value='pointOfContact')
-        return role
+    def get_absolute_url(self):
+        return "/data/%s" % (self.typename)
 
-    @property
-    def metadata_author_role(self):
-        role = Role.objects.get(value='author')
-        return role
+    def __str__(self):
+        return "%s Layer" % self.typename
+
+    class Meta:
+        # custom permissions,
+        # change and delete are standard in django
+        permissions = (('view_layer', 'Can view'),
+                       ('change_layer_permissions', "Can change permissions"), )
+
+    # Permission Level Constants
+    # LEVEL_NONE inherited
+    LEVEL_READ  = 'layer_readonly'
+    LEVEL_WRITE = 'layer_readwrite'
+    LEVEL_ADMIN = 'layer_admin'
+
+    def set_default_permissions(self):
+        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
+
+        # remove specific user permissions
+        current_perms =  self.get_all_level_info()
+        for username in current_perms['users'].keys():
+            user = User.objects.get(username=username)
+            self.set_user_level(user, self.LEVEL_NONE)
+
+        # assign owner admin privs
+        if self.owner:
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
     def _set_poc(self, poc):
         # reset any poc asignation to this layer
@@ -347,18 +421,17 @@ class Layer(models.Model, PermissionLevelMixin):
     def _get_metadata_author(self):
         try:
             the_ma = ContactRole.objects.get(role=self.metadata_author_role, layer=self).contact
-        except  ContactRole.DoesNotExist:
+        except ContactRole.DoesNotExist:
             the_ma = None
         return the_ma
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
-
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 
     def get_absolute_url(self):
-        return "/data/%s" % (self.typename)
+        return reverse('geonode.layers.views.layer_detail', None, [str(self.typename)]) 
 
     def __str__(self):
         return "%s Layer" % self.typename
@@ -448,7 +521,6 @@ class ContactRole(models.Model):
     class Meta:
         unique_together = (("contact", "layer", "role"),)
 
-
 class LinkManager(models.Manager):
     """Helper class to access links grouped by type
     """
@@ -487,7 +559,7 @@ class Link(models.Model):
     link_type = models.CharField(max_length=255, choices = [(x, x) for x in LINK_TYPES])
     name = models.CharField(max_length=255, help_text='For example "View in Google Earth"')
     mime = models.CharField(max_length=255, help_text='For example "text/xml"')
-    url = models.TextField(unique=True)
+    url = models.TextField(unique=True, max_length=1000)
 
     objects = LinkManager()
 
@@ -573,6 +645,8 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * SRID
        * Download links (WMS, WCS or WFS and KML)
     """
+    gs_resource = gs_catalog.get_resource(instance.name)
+
     bbox = gs_resource.latlon_bbox
 
     #FIXME(Ariel): Correct srid setting below
@@ -584,6 +658,8 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_x1 = bbox[1]
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
+
+
 
 
 def geoserver_post_save(instance, sender, **kwargs):
@@ -784,3 +860,4 @@ signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.pre_save.connect(geoserver_pre_save, sender=Layer)
 signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
+

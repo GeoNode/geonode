@@ -17,9 +17,10 @@
 #
 #########################################################################
 
+from django.conf import settings
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
 
 class CatalogueBackend(GenericCatalogueBackend):
     def __init__(self, *args, **kwargs):
         super(CatalogueBackend, self).__init__(*args, **kwargs)
-        self.catalogue.formats = ['Dublin Core', 'TC211']
+        self.catalogue.formats = ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'TC211']
