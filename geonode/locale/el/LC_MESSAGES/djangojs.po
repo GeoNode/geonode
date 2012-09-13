@@ -1,20 +1,20 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-15 12:29-0500\n"
-"PO-Revision-Date: 2011-08-23 13:36+0200\n"
-"Last-Translator: MINDoSOFT\n"
+"POT-Creation-Date: 2012-05-15 12:41-0500\n"
+"PO-Revision-Date: 2012-09-13 04:34+0000\n"
+"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: el\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
@@ -234,9 +234,7 @@ msgstr "Μικρό"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
-"Σφάλμα στην επικοινωνία με τον εξυπηρετητή.\n"
-" Παρακαλώ ελέγξτε το url και δοκιμάστε ξανά."
+msgstr "Σφάλμα στην επικοινωνία με τον εξυπηρετητή.\n Παρακαλώ ελέγξτε το url και δοκιμάστε ξανά."
 
 #: templates/lang.js:59
 msgid "Layer Properties"
@@ -262,9 +260,7 @@ msgstr "Μεταβείτε στο Google Earth 3D Viewer"
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
-"Ο χάρτης που προσπαθείτε να φορτώσετε δεν υπάρχει. Δημιουργήστε ένα νέο "
-"χάρτη αντί αυτού."
+msgstr "Ο χάρτης που προσπαθείτε να φορτώσετε δεν υπάρχει. Δημιουργήστε ένα νέο χάρτη αντί αυτού."
 
 #: templates/lang.js:65
 msgid "Unknown Map"
@@ -338,9 +334,7 @@ msgstr "Καθόλου φόντο"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
-"Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο! Απλά αντιγράψτε τον "
-"παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην ιστοσελίδα σας:"
+msgstr "Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο! Απλά αντιγράψτε τον παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην ιστοσελίδα σας:"
 
 #: templates/lang.js:126 templates/lang.js.c:192
 msgid "Abstract:"
