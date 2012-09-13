@@ -68,19 +68,15 @@ Install
 
 The following steps should prepare a Python virtual environment for you::
 
-<<<<<<< HEAD
+
   git clone git://github.com/cga-harvard/cga-worldmap.git cga-worldmap
   cd cga-worldmap
-=======
-  git clone git://github.com/GeoNode/geonode.git geonode
-  cd geonode
->>>>>>> gncore/master
   git submodule update --init
   python bootstrap.py --no-site-packages # see note below
   source bin/activate
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
-<<<<<<< HEAD
+
 
 
 Copy these war files to the webapps directory of your Java container
@@ -105,11 +101,7 @@ Once fully started, you should see a message indicating the address of your geon
   Press CTRL-C to shut down
 
 
-<<<<<<< HEAD
 .. note::
-=======
-.. note:: 
->>>>>>> gncore/master
 
   When running ``python bootstrap.py`` the ``--no-site-packages`` option is
   not required.  If enabled, the bootstrap script will sandbox your virtual
@@ -151,10 +143,6 @@ JavaScript Developers can switch to using unminified scripts and CSS:
 Note that this requires ant (http://ant.apache.org/) in addition to the above
 build requirements.
 
-<<<<<<< HEAD
-
-=======
->>>>>>> gncore/master
 VirtualBox Setup
 ................
 
@@ -190,11 +178,7 @@ following needs to be done before running ``paver host``:
 For Java Developers
 -------------------
 
-<<<<<<< HEAD
 How WorldMap Finds GeoServer
-=======
-How GeoNode Finds GeoServer
->>>>>>> gncore/master
 ...........................
 
 Java Developers can point the application at a particular GeoServer instance by
@@ -204,11 +188,7 @@ GeoServer used for http://geonode.capra.opengeo.org/ is::
 
     http://geonode.capra.opengeo.org/geoserver/
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> gncore/master
 The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
 in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
 instance at that port with the following commands::
@@ -221,18 +201,6 @@ instance at that port with the following commands::
     shell script to add some extra parameters to the JVM command-line used to
     run Jetty in order to workaround a JVM bug that affects GeoNetwork.
 
-<<<<<<< HEAD
-
-If you want to change this service URL, edit :file:`src/geonode/settings.py` and
-change the line::
-  
-    GEOSERVER_BASE_URL="http://localhost:8001/geoserver-geonode-dev/"
-
-to indicate the GeoServer URL that you want to use. 
-
-
-
-=======
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
   
@@ -240,14 +208,11 @@ change the line::
 
 to indicate the GeoServer URL that you want to use. 
 
->>>>>>> gncore/master
 To run the Django app when Jetty is started independently, use::
 
     paster serve --reload shared/dev-paste.ini
 
 in the base of your working directory.
-
-<<<<<<< HEAD
 
 
 =======
@@ -267,11 +232,7 @@ For Deployment
 Email
 .....
 
-<<<<<<< HEAD
-Adding an email gateway to WorldMap can be very useful, the two main reasons are
-=======
 Adding an email gateway to GeoNode can be very useful, the two main reasons are
->>>>>>> gncore/master
 the ``ADMINS`` and ``REGISTRATION_OPEN`` settings explained below.
 
 Here is a sample configuration to setup a Gmail account as the email gateway::
@@ -302,10 +263,7 @@ REGISTRATION_OPEN
 .................
 
 <<<<<<< HEAD
-In order to let people autoregister to the WorldMap, set::
-=======
 In order to let people autoregister to the GeoNode, set::
->>>>>>> gncore/master
 
     REGISTRATION_OPEN=True
 
@@ -327,8 +285,6 @@ DB_DATASTORE_HOST = '<Database hostname (typically localhost)'
 DB_DATASTORE_PORT = '<Database port (typically 5432)>'
 DB_DATASTORE_TYPE='postgis'
 
-
-<<<<<<< HEAD
 
 TILE CACHING
 .............
@@ -371,39 +327,23 @@ Directory Structure
     * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
       Actually, the build script for this project is set up to create a WAR
       that includes those extensions, not just a bundle with the extension.
->>>>>>> gncore/master
 
 
 GPL License
 =======
 
-<<<<<<< HEAD
 WorldMap is free software: you can redistribute it and/or modify
-=======
-GeoNode is Copyright 2010 OpenPlans.
-
-GeoNode is free software: you can redistribute it and/or modify
->>>>>>> gncore/master
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-<<<<<<< HEAD
 WorldMap is distributed in the hope that it will be useful,
-=======
-GeoNode is distributed in the hope that it will be useful,
->>>>>>> gncore/master
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-<<<<<<< HEAD
 along with WorldMap.  If not, see <http://www.gnu.org/licenses/>.
 
 WorldMap is Copyright 2011 President and Fellows of Harvard College
 
-GeoNode is Copyright 2010 OpenPlans.
-=======
-along with GeoNode.  If not, see <http://www.gnu.org/licenses/>.
->>>>>>> gncore/master
