@@ -101,6 +101,8 @@ setup(name='GeoNode',
         "nose>=1.0",
         "Shapely>=1.2.15",
         "pycsw>=1.4.0",
+        # translation
+        "transifex-client",
         ],
       zip_safe=False,
       )
