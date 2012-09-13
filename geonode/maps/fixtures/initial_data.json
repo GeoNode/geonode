@@ -1,21 +1,4 @@
 [
-
-{
-    "pk": 1, 
-    "model": "people.role",
-    "fields": {
-        "value": "pointOfContact", 
-        "permissions": []
-    }
-}, 
-{
-    "pk": 2, 
-    "model": "people.role", 
-    "fields": {
-        "value": "author", 
-        "permissions": []
-    }
-},
 {
     "pk": 1,
     "model": "security.objectrole",
@@ -59,50 +42,7 @@
         ],
         "content_type": ["maps", "map"]
     }
-},
-
-{
-    "pk": 4,
-    "model": "security.objectrole",
-    "fields": {
-        "codename": "layer_readonly",
-        "title": "Read Only",
-        "list_order": 0,
-        "permissions": [ 
-            ["view_layer", "layers", "layer"]
-        ],
-        "content_type": ["layers", "layer"]
-    }
-},
-{
-    "pk": 5,
-    "model": "security.objectrole",
-    "fields": {
-        "codename": "layer_readwrite",
-        "title": "Read/Write",
-        "list_order": 1,
-        "permissions": [ 
-            ["view_layer", "layers", "layer"],
-            ["change_layer", "layers", "layer"]
-        ],
-        "content_type": ["layers", "layer"]
-    }
-},
-{
-    "pk": 6,
-    "model": "security.objectrole",
-    "fields": {
-        "codename": "layer_admin",
-        "title": "Administrative",
-        "list_order": 2,
-        "permissions": [ 
-            ["view_layer", "layers", "layer"],
-            ["change_layer", "layers", "layer"],
-            ["delete_layer", "layers", "layer"],
-            ["change_layer_permissions", "layers", "layer"]
-        ],
-        "content_type": ["layers", "layer"]
-    }
 }
-
 ]
+
+
