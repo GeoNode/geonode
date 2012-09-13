@@ -60,10 +60,10 @@ def setup_client(options):
 
     if not scripts_path.exists():
         scripts_path.makedirs()
-    
+
     with pushd("geonode-client/"):
         sh("jsbuild buildjs.cfg -o %s" % scripts_path)
- 
+
     resources = ((
            # Ext resources
            'externals/ext',
@@ -127,7 +127,7 @@ def setup(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     sh('pip install -e .')
 
-    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""") 
+    info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver start" to start up the server.""")
 
 
 @cmdopts([
@@ -147,7 +147,7 @@ def upgradedb(options):
         print "Please specify your GeoNode version"
     else:
         print "Upgrades from GeoNode Version %s are not yet supported." % version
-        
+
 
 @task
 def sync(options):
@@ -283,7 +283,7 @@ def start_geoserver(options):
 
     with pushd('geoserver-geonode-ext'):
         sh('MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=256m" mvn jetty:run > /dev/null &')
- 
+
     info('Starting GeoServer on %s' % GEOSERVER_BASE_URL)
     # wait for GeoServer to start
     started = waitfor(GEOSERVER_BASE_URL)
@@ -293,7 +293,7 @@ def start_geoserver(options):
         info("GeoServer never started properly or timed out. It may still be running in the background.")
         info("The logs are available at geoserver-geonode-ext/jetty.log")
         sys.exit(1)
- 
+
 
 
 @task
@@ -311,7 +311,7 @@ def test_integration(options):
     """
     _reset()
     # Start GeoServer
-    call_task('start_geoserver') 
+    call_task('start_geoserver')
     info("GeoNode is now available, running the tests now.")
 
     success = False
@@ -475,7 +475,7 @@ def waitfor(url, timeout=300):
         else:
             if resp.getcode() == 200:
                 started = True
-                break 
+                break
         time.sleep(1)
     return started
 
