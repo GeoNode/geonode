@@ -54,6 +54,42 @@
     },
     {
         "fields": {
+            "layer": 1,
+            "attribute": "the_geom",
+            "attribute_label": "Shape",
+            "attribute_type": "gml:Geometry",
+            "visible": false,
+            "display_order": 3
+        },
+        "model": "layers.attribute",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "layer": 1,
+            "attribute": "description",
+            "attribute_label": "Description",
+            "attribute_type": "xsd:string",
+            "visible": true,
+            "display_order": 2
+        },
+        "model": "layers.attribute",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "layer": 1,
+            "attribute": "place_name",
+            "attribute_label": "Place Name",
+            "attribute_type": "xsd:string",
+            "visible": true,
+            "display_order": 1
+        },
+        "model": "layers.attribute",
+        "pk": 3
+    },
+    {
+        "fields": {
             "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
             "center_x": -9428760.8701902702,
             "center_y": 1427430.7410345681,

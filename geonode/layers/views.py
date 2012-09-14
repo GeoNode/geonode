@@ -43,8 +43,8 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
-from geonode.layers.forms import LayerForm, LayerUploadForm, LayerMetadataUploadForm, NewLayerUploadForm
-from geonode.layers.models import Layer, ContactRole
+from geonode.layers.forms import LayerForm, LayerUploadForm, LayerMetadataUploadForm, NewLayerUploadForm, LayerAttributeForm
+from geonode.layers.models import Layer, ContactRole, Attribute
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -56,6 +56,7 @@ from geonode.security.views import _perms_info_json
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.utils import update_metadata, set_metadata
 
+from django.forms.models import inlineformset_factory
 from geoserver.resource import FeatureType
 
 logger = logging.getLogger("geonode.layers.views")
@@ -170,6 +171,9 @@ def layer_metadata(request, layername, template='layers/layer_describe.html'):
                 "CSW_URL": "TOM"
             }))
     
+    layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
+    layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
+
     poc = layer.poc
     metadata_author = layer.metadata_author
     ContactRole.objects.get(layer=layer, role=layer.poc_role)
@@ -177,8 +181,10 @@ def layer_metadata(request, layername, template='layers/layer_describe.html'):
 
     if request.method == "POST":
         layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+        attribute_form = layer_attribute_set(request.POST, instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
     else:
         layer_form = LayerForm(instance=layer, prefix="layer")
+        attribute_form = layer_attribute_set(instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
 
     if request.method == "POST" and layer_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
@@ -194,6 +200,14 @@ def layer_metadata(request, layername, template='layers/layer_describe.html'):
             author_form = ContactForm(request.POST, prefix="author")
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
+
+        if attribute_form.is_valid():
+            for form in attribute_form.cleaned_data:
+                la = Attribute.objects.get(id=int(form['id'].id))
+                la.attribute_label = form["attribute_label"]
+                la.visible = form["visible"]
+                la.display_order = form["display_order"]
+                la.save()
 
         if new_poc is not None and new_author is not None:
             the_layer = layer_form.save(commit=False)
@@ -222,6 +236,7 @@ def layer_metadata(request, layername, template='layers/layer_describe.html'):
         "layer_form": layer_form,
         "poc_form": poc_form,
         "author_form": author_form,
+        "attribute_form": attribute_form,
     }))
 
 
