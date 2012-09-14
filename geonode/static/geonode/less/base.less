@@ -373,7 +373,7 @@ section.widget-mini {
 
   .details {
     float:left;
-    width:450px;
+    width:420px;
   }
 
   .rating {
@@ -590,6 +590,11 @@ ul.space li {
 /** slide nav pane (layers & maps) **/
 #contain-slider {
   overflow: hidden;
+
+  .tab-content {
+     margin-left: 40px;
+     width: auto;
+  }
 }
 #slide-pane {
   border-right: 1px solid @grayNeutral;
@@ -619,10 +624,12 @@ ul.space li {
     color: @orange;
   }
   a.toggle {
+    text-decoration: none;
+  }
+  a.toggle-pane {
     display: block;
     font-size: 20px;
     text-align: center;
-    text-decoration: none;
     position: absolute;
     right: 0;
     top: 10px;
@@ -632,6 +639,11 @@ ul.space li {
     border: 1px solid @grayNeutral;
     .border-radius(3px, 3px, 0, 0);
   }
+  a.toggle-nav {
+    float: right;
+    color: @grayLight;
+  }
+
 }
 #nav-keywords {
   ul {
@@ -692,9 +704,6 @@ ul.space li {
   color:@grayDarker;
 }
 
-.tab-content {
-  width:auto;
-}
 
 .tab-pane article {
   margin-bottom:40px;

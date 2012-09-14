@@ -5827,7 +5827,7 @@ section.widget-mini h2 a.btn {
 }
 .list article .details {
   float: left;
-  width: 450px;
+  width: 420px;
 }
 .list article .rating {
   color: #777777;
@@ -6033,6 +6033,10 @@ ul.space li {
 #contain-slider {
   overflow: hidden;
 }
+#contain-slider .tab-content {
+  margin-left: 40px;
+  width: auto;
+}
 #slide-pane {
   border-right: 1px solid #cccccc;
   padding-right: 10px;
@@ -6075,10 +6079,12 @@ ul.space li {
   color: #f05a24;
 }
 #slide-pane a.toggle {
+  text-decoration: none;
+}
+#slide-pane a.toggle-pane {
   display: block;
   font-size: 20px;
   text-align: center;
-  text-decoration: none;
   position: absolute;
   right: 0;
   top: 10px;
@@ -6101,6 +6107,10 @@ ul.space li {
   -moz-background-clip: padding;
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
+}
+#slide-pane a.toggle-nav {
+  float: right;
+  color: #eff0ef;
 }
 #nav-keywords ul {
   list-style: none;
@@ -6218,9 +6228,6 @@ ul.space li {
   /* IE6-9 */
 
   color: #222222;
-}
-.tab-content {
-  width: auto;
 }
 .tab-pane article {
   margin-bottom: 40px;
