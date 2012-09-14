@@ -1,39 +1,51 @@
 {% extends "layers/layer_base.html" %}
 {% load i18n %}
 {% load layers_tags %}
+{% load staticfiles %}
+{% load url from future %}
 
 {% block title %} {% trans "Explore Layers" %} - {{ block.super }} {% endblock %}
 
-{% block body_class %}data{% endblock %}
+{% block body_class %}data data-list{% endblock %}
 
-{% block body_outer %}
-    <div class="span8">
+{% block body %}
+    <div class="span12">
       <h2 class="page-title">{% trans "Explore Layers" %}</h2>
+    </div>
+    <div class="span8">      
       {% include "layers/_layer_filters.html" %}
     </div>
     <div class="span4">
-      <p><a href="{% url layer_upload %}" class="btn btn-large pull-right strong">{% trans "Upload Data" %}</a></p>
       <div class="pull-right">
-        {% include "_pagination.html" %}
+        {% include "_viewby.html" %}
       </div>
     </div>
     <div class="span12">
-      <div class="row">
-        <div class="tabs-left span4">
-          <ul class="nav nav-tabs">
-            <li class="active"><a href="#all" data-toggle="tab">All Categories <i class="icon-chevron-right pull-right"></i></a></li>
-            <li><a href="#cat1" data-toggle="tab">Category 1 <i class="icon-chevron-right pull-right"></i></a></li>
-            <li><a href="#cat2" data-toggle="tab">Category 2 <i class="icon-chevron-right pull-right"></i></a></li>
-            <li><a href="#cat3" data-toggle="tab">Category 3 <i class="icon-chevron-right pull-right"></i></a></li>
-            <li><a href="#cat4" data-toggle="tab">Category 4 <i class="icon-chevron-right pull-right"></i></a></li>
-            <li><a href="#cat5" data-toggle="tab">Category 5 <i class="icon-chevron-right pull-right"></i></a></li>
-            <li><a href="#cat6" data-toggle="tab">Category 6 <i class="icon-chevron-right pull-right"></i></a></li>
-            <li><a href="#cat7" data-toggle="tab">Category 7 <i class="icon-chevron-right pull-right"></i></a></li>
-            <li><a href="#cat8" data-toggle="tab">Category 8 <i class="icon-chevron-right pull-right"></i></a></li>
-          </ul>
+      <div class="row" id="contain-slider">
+        <div class="span4" id="slide-pane">
+          <a href="#" class="toggle"><i class="icon-chevron-left"></i></a>
+          <nav class="tabs-left" id="nav-categories">
+            <h2>Categories</h2>
+            <ul class="nav">
+              <li><a href="{% url "layer_browse" %}" class="active">All Categories</a></li>
+              {% for category in category_list %}
+              <li><a href="#{{ category.slug }}" data-toggle="tab">{{ category }}</a></li>
+              {% endfor %}
+            </ul>
+          </nav>
+          <nav class="" id="nav-keywords">
+            <h2>Keywords</h2>
+            <ul>
+              <li><a href="#">geode</a> <span class="count">(189)</span></li>
+              <li><a href="#">amet dolor et</a> <span class="count">(107)</span></li>
+              <li><a href="#">lorem ipsum</a> <span class="count">(91)</span></li>              
+              <li><a href="#">geoloco</a> <span class="count">(48)</span></li>
+            </ul>
+          </nav>
         </div>
-        <div class="tab-content">
-          <div class="tab-pane active span8" id="all">
+        <div class="tab-content span8">
+          <div class="tab-pane active" id="all">
+            <div style="background-color: rgb(100, 200, 220); width: 100%; height: 200px"></div>
             {% featured_layers as featured_layers %}
             {% for layer in featured_layers %}
               {% include "layers/_layer_list_item.html" %}
@@ -49,3 +61,7 @@
       </div>
     </div>
 {% endblock %}
+
+{% block extra_script %}
+  <script src="{% static "geonode/js/tabslider.js" %}"></script>
+{% endblock extra_script %}
