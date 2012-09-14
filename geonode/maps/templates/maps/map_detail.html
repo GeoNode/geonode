@@ -43,14 +43,16 @@
   </div>
 
   <div class="span8">
-    <article id="info" class="abstract collapse in">
-      <strong>{% trans "Abstract:" %}</strong>
-      {{ map.abstract }}
-      {% comment %}<a href="" class="read-more" data-toggle="collapse" data-target="#abstract-full">{% trans "Read more" %}</a>
-      <div id="abstract-full" class="collapse in">More content goes here and is displayed when read more is clicked.</div>{% endcomment %}
-    </article>
-    <div id="rate-map">
+    <div id="collapse-map">
+      <div id="info" class="collapse in">
+        <strong>{% trans "Abstract:" %}</strong>
+        {{ map.abstract }}
+        {% comment %}<a href="" class="read-more" data-toggle="collapse" data-target="#abstract-full">{% trans "Read more" %}</a>
+        <div id="abstract-full" class="collapse in">More content goes here and is displayed when read more is clicked.</div>{% endcomment %}
+      </div>
+      <div id="rate-map">
 
+      </div>
     </div>
     <p class="meta">{{ map }}<strong> {% trans "Uploaded by" %} <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner.get_profile.name }}</a> on Sep 27, 2011</strong></p>
     {% with map as obj %}

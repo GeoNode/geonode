@@ -27,10 +27,10 @@ class ContactRoleInline(admin.TabularInline):
     model = ContactRole
 
 class LayerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'typename','service_type','title', 'date', 'topic_category')
+    list_display = ('id', 'typename','service_type','title', 'date', 'category')
     list_display_links = ('id',)
-    list_editable = ('title', 'topic_category')
-    list_filter  = ('date', 'date_type', 'constraints_use', 'topic_category')
+    list_editable = ('title', 'category')
+    list_filter  = ('date', 'date_type', 'constraints_use', 'category')
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')

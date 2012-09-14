@@ -44,7 +44,7 @@ from django.shortcuts import get_object_or_404
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm
-from geonode.layers.models import Layer, ContactRole
+from geonode.layers.models import Layer, ContactRole, TopicCategory
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -97,7 +97,14 @@ def data(request):
 
 
 def layer_browse(request, template='layers/layer_list.html'):
-    return render_to_response(template, RequestContext(request, {}))
+    category_list = TopicCategory.objects.all()
+    return render_to_response(
+        template,
+        RequestContext(request, {
+            "category_list": category_list
+            }
+        )
+    )
 
 
 @login_required
