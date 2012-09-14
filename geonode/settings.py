@@ -65,6 +65,7 @@ LANGUAGES = (
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
     ('zh', '中文'),
+    ('ja', '日本人'),
 )
 
 # If you set this to False, Django will make some optimizations so as not
@@ -186,7 +187,11 @@ LOGGING = {
         "owslib": {
             "handlers": ["console"],
             "level": "ERROR",
-        },    
+        },
+        "pycsw": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
     },
 }
 
@@ -275,16 +280,8 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Arguments for the test runner
 NOSE_ARGS = [
-      '--verbosity=2',
-      '--cover-erase',
       '--nocapture',
-      '--with-coverage',
-      '--cover-package=geonode',
-      '--cover-inclusive',
-      '--cover-tests',
       '--detailed-errors',
-      '--with-xunit',
-#      '--stop',
       ]
 
 #
@@ -314,7 +311,7 @@ CATALOGUE = {
         'URL': '%scatalogue/csw' % SITEURL,
         #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
-    
+
         # login credentials (for GeoNetwork)
         'USER': 'admin',
         'PASSWORD': 'admin',
