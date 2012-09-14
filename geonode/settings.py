@@ -188,6 +188,10 @@ LOGGING = {
             "handlers": ["console"],
             "level": "ERROR",
         },
+        "pycsw": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
     },
 }
 
