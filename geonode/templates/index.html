@@ -19,7 +19,7 @@
     <p class="btns">
       <span>Need help <a href="#">Getting Started?</a></span>
       <a class="btn btn-large" href="{% url layer_browse %}">
-        {% trans "Explore Data" %}
+        {% trans "Explore Layers" %}
       </a>
       <a class="btn btn-large" href="{% url maps_browse %}">
         {% trans "Explore Maps" %}
@@ -29,7 +29,7 @@
   <div class="row">
     <div class="span8">
       <section class="widget list">
-        <h2>{% trans "Latest Data:" %}</h2>
+        <h2>{% trans "Latest Layers:" %}</h2>
         {% featured_layers as featured_layers %}
         {% for layer in featured_layers %}
           {% include "layers/_layer_widget_item.html" %}
@@ -45,7 +45,7 @@
             {% blocktrans %}
               GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. 
             {% endblocktrans %}
-              <a href="{% url layer_upload %}" class="btn btn-large">Upload Data</a>
+              <a href="{% url layer_upload %}" class="btn btn-large">Upload Layers</a>
             {% blocktrans %}
               GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
             {% endblocktrans %}
