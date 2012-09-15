@@ -1368,7 +1368,7 @@ msgid ""
 "      If you are interested in information about accessing this information "
 "through OGC services, please visit our\n"
 "      "
-msgstr "您如果对通过OGC服务获取信息感兴趣，请访问我们的网站"
+msgstr "您如果对通过OGC服务获取的信息感兴趣，请访问我们的网站"
 
 #: maps/templates/layers/data_base.html:33
 msgid "developer page"
@@ -1867,11 +1867,11 @@ msgstr ""
 
 #: maps/templates/maps/mapinfo.html:115
 msgid "Rate this map"
-msgstr ""
+msgstr "请给此地图打分"
 
 #: maps/templates/maps/mapinfo.html:124
 msgid "Download all layers included in this map"
-msgstr "下载在此地图中包含所有层。"
+msgstr "下载在此地图中包含的所有层。"
 
 #: maps/templates/maps/mapinfo.html:126
 msgid "Layers"
@@ -2001,7 +2001,7 @@ msgstr "再次登录"
 
 #: templates/base.html:83
 msgid "Profile"
-msgstr ""
+msgstr "简介"
 
 #: templates/base.html:85
 msgid "Admin"
@@ -2013,11 +2013,11 @@ msgstr "注销"
 
 #: templates/base.html:92
 msgid "Sign in"
-msgstr ""
+msgstr "登录"
 
 #: templates/base.html:94
 msgid "or"
-msgstr ""
+msgstr "或者"
 
 #: templates/base.html:95
 msgid "Register"
@@ -2056,7 +2056,7 @@ msgstr "开发者"
 
 #: templates/developer.html:9
 msgid "Useful information for developers interested in GeoNode."
-msgstr ""
+msgstr "有意GeoNode开发者实用信息"
 
 #: templates/developer.html:51
 msgid "GeoNode's Web Services"
@@ -2094,7 +2094,7 @@ msgstr "GeoNode帮助"
 msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
-msgstr ""
+msgstr "本页提供如何使用GeoNode的帮助信息。请点击工具栏链接了解您想知道的内容"
 
 #: templates/help.html:12
 msgid ""
