@@ -92,10 +92,6 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 #### Basic Layer Views ####
 
 
-def data(request):
-    return render_to_response('data.html', RequestContext(request, {}))
-
-
 def layer_browse(request, template='layers/layer_list.html'):
     category_list = TopicCategory.objects.all()
     return render_to_response(
