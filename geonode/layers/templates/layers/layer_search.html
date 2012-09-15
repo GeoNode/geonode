@@ -1,30 +1,15 @@
 {% extends "layers/layer_base.html" %}
 {% load i18n %}
+{% load layers_tags %}
+{% load staticfiles %}
 
-{% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Search Layers" %} - {{ block.super }} {% endblock %}
 
-{% block head %}
-{% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
-{{ block.super }}
-<script type="text/javascript">
-// Ext.onReady(function(){
-//    {% autoescape off %}
+{% block body_class %}data data-list{% endblock %}
 
-//     var bbox = new GeoNode.BoundingBoxWidget({
-//          proxy: "/proxy/?url=",
-//          viewerConfig: {{ viewer_config }},
-//          renderTo: 'refine'
-//     });
-//     {% endautoescape %}
-// });
-</script>
-{% endblock %}
-
-{% block main %} 
+{% block body %} 
   <div class="block">
-    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial layers" %}</span></h2>
     <form class="geonode-search form-search" action="{% url layer_search_page %}" method="GET" data-results-table="#searchResults" data-search-api="{% url layer_search_api %}">
       <input type="text" id="search_query" name="q" class="input-large search-query" value="{{ request.get.q }}">
       <button type="submit" class="btn">Search</button>
