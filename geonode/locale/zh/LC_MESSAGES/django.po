@@ -1000,8 +1000,8 @@ msgid ""
 "editor to create custom structures, but they have to be validated by the "
 "system, so know what you do :-)"
 msgstr ""
-"您可以根据自己需要定义模板。您可以添加和删除基本信息（例如详细联系方式）。您"
-"不能改变默认视图中字段，可访问更全面和复杂的高级视图。您甚至可以使用XML编辑器"
+"您可以根据自己需要定义模板。您可以添加和删除默认信息（例如详细联系方式）。您"
+"不能改变默认视图中字段，可访问更全面（更复杂）的高级视图。您甚至可以使用XML编辑器"
 "创建自定义结构，但必须通过系统验证，这样才知道您做了什么:-)"
 
 #: maps/models.py:490
@@ -1702,7 +1702,7 @@ msgstr "对显示区域包括数据搜索功能。"
 #: maps/templates/layers/search_base.html:74
 #, fuzzy
 msgid "Selected Data"
-msgstr "搜索数据"
+msgstr "已选数据"
 
 #: maps/templates/layers/search_base.html:75
 msgid "Use the checkboxes in the search results to add data to your selection."
@@ -1802,7 +1802,7 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"    此外，该地图包含这些层不会被下载\n"
+"    此外，该地图包含的这些层不会被下载\n"
 "    由于安全限制：\n"
 "    "
 
