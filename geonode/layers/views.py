@@ -531,18 +531,6 @@ def get_query(query_string, search_fields):
     return query
 
 
-def layer_search_result_detail(request, template='layers/layer_search_result_snippet.html'):
-    uuid = request.GET.get("uuid", None)
-    if  uuid is None:
-        return HttpResponse(status=400)
-
-    layer = get_object_or_404(Layer, uuid=uuid)
- 
-    return render_to_response(template, RequestContext(request, {
-        'layer': layer,
-    }))
-
-
 @require_POST
 def layer_permissions(request, layername):
     try:
