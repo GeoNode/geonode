@@ -9,7 +9,9 @@
 
 {% block body %} 
   <div class="block">
-    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial layers" %}</span></h2>
+    <div class="span12">
+      <h2 class="page-title">{% trans "Search for Layers" %}</h2>
+    </div>
     <form class="geonode-search form-search" action="{% url layer_search_page %}" method="GET" data-results-table="#searchResults" data-search-api="{% url layer_search_api %}">
       <input type="text" id="search_query" name="q" class="input-large search-query" value="{{ request.get.q }}">
       <button type="submit" class="btn">Search</button>
