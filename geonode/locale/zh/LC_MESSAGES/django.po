@@ -2305,7 +2305,7 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"GeoNode是一个开源，共享地理空间数据和地图的平台。如果您有任何有关的软件或服务"
+"GeoNode是一个开源，共享地理空间数据和地图的平台。如果您有任何有关软件或服务"
 "的问题，请发送邮件到<em>geonode@librelist.com</em>.\n"
 "    "
 
@@ -2351,51 +2351,51 @@ msgstr "您当前的头像："
 
 #: templates/avatar/add.html:9 templates/profiles/edit_profile.html:9
 msgid "You haven't uploaded an avatar yet. Please upload one now."
-msgstr "您还没有上传头像。请上传一张。"
+msgstr "您还没有上传头像。请现在上传一张。"
 
 #: templates/avatar/add.html:12
 #, fuzzy
 msgid "Upload an Avatar"
-msgstr "上传新数据"
+msgstr "上传一个头像"
 
 #: templates/avatar/add.html:18
 #, fuzzy
 msgid "Upload avatar"
-msgstr "上传数据"
+msgstr "上传头像"
 
 #: templates/profiles/create_profile.html:8
 #: templates/profiles/create_profile.html:14
 #, fuzzy
 msgid "Create Profile"
-msgstr "创建样式"
+msgstr "创建个人信息"
 
 #: templates/profiles/edit_profile.html:12
 msgid "Change Your Avatar"
-msgstr ""
+msgstr "改换您的头像"
 
 #: templates/profiles/edit_profile.html:18
 #, fuzzy
 msgid "Choose new avatar"
-msgstr "选择默认"
+msgstr "选择新头像"
 
 #: templates/profiles/edit_profile.html:24
 #, fuzzy
 msgid "Upload a New Avatar"
-msgstr "上传新数据"
+msgstr "上传新头像"
 
 #: templates/profiles/edit_profile.html:30
 #, fuzzy
 msgid "Upload new avatar"
-msgstr "上传新数据"
+msgstr "上传新头像"
 
 #: templates/profiles/edit_profile.html:35
 msgid "Edit Your Profile"
-msgstr ""
+msgstr "编辑您的个人信息"
 
 #: templates/profiles/edit_profile.html:41
 #, fuzzy
 msgid "Update profile"
-msgstr "更新层"
+msgstr "更新简介"
 
 #: templates/profiles/profile_detail.html:12
 msgid "Maps & Data"
@@ -2439,12 +2439,12 @@ msgstr "帐户激活失败"
 
 #: templates/registration/activation_email.txt:2
 msgid "Activate account at"
-msgstr ""
+msgstr "激活账户于"
 
 #: templates/registration/activation_email.txt:6
 #, python-format
 msgid "Link is valid for %(expiration_days)s days."
-msgstr ""
+msgstr "链接有效时日%(expiration_days)s"
 
 #: templates/registration/activation_email_subject.txt:1
 #, fuzzy
@@ -2470,7 +2470,7 @@ msgstr "注销"
 
 #: templates/registration/logout.html:7
 msgid "You have been logged out of GeoNode."
-msgstr ""
+msgstr "您已从GeoNode退出"
 
 #: templates/registration/password_change_done.html:5
 msgid "Password changed"
@@ -2501,7 +2501,7 @@ msgstr "复位密码%(site_name)s"
 
 #: templates/registration/registration_complete.html:5
 msgid "You are now registered. Activation email sent."
-msgstr "您已经注册，激活已发送到您的邮箱。"
+msgstr "您已经注册，激活邮件已发送到您的邮箱。"
 
 #: templates/registration/registration_form.html:12
 #, fuzzy
@@ -2542,7 +2542,7 @@ msgstr "创建地图"
 #~ "  "
 
 #~ msgid "Reset it"
-#~ msgstr "将其重置"
+#~ msgstr "重置"
 
 #~ msgid "Not member"
 #~ msgstr "非会员"
@@ -2561,7 +2561,7 @@ msgstr "创建地图"
 #~ msgstr "编辑细节"
 
 #~ msgid "Yes I am sure"
-#~ msgstr "是的，我可以肯定"
+#~ msgstr "是的，我确定"
 
 #~ msgid "This map uses the following layers"
 #~ msgstr "地图使用以下几层"
