@@ -2,7 +2,7 @@
 Backing up and Restoring GeoNode
 ================================
 
-In order to completely backup a GeoNode installation requries that each separate component of GeoNode be tackled separately.  There are separate backup files for Geonode/Django, GeoNetwork, and GeoServer.
+In order to completely backup a GeoNode installation requries that each separate component of GeoNode be tackled separately.  There are separate backup files for Geonode/Djangoand GeoServer.
 
 Creating a backup
 =================
@@ -58,10 +58,6 @@ Restoring a backup
 
     sudo /etc/init.d/apache2 start
     sudo /etc/init.d/tomcat6 start
-
-#. Restore GeoNetwork data with::
-
-    geonode updatelayers
 
 Notes
 =====

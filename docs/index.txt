@@ -72,6 +72,7 @@ Administrators are expected to have some experience with Linux systems but they 
     deploy/ssl
     deploy/language
     deploy/backup
+    deploy/csw
 
 For Developers
 ==============
