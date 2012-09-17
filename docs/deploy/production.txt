@@ -173,7 +173,7 @@ Some other things that require tweaking:
 
 .. TODO: Specify how to do this
 
-* Configuring GeoNetwork/Django to use a "real" Postgres database instead of
+* Configuring Django to use a "real" Postgres database instead of
   embedded ones.
 
 .. TODO: Specify how to do this
@@ -190,7 +190,6 @@ In order to request that "robots" do not make requests directly to GeoServer, yo
     User-agent: *
     Disallow: /geoserver/
     Disallow: /geoserver-geonode-dev/
-    Disallow: /geonetwork/
 
 This will only affect automated web agents; web browsers in particular are unaffected.
 
