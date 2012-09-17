@@ -152,7 +152,7 @@ function setup_django_every_time() {
 
     sed -i "s/THE_SECRET_KEY/$secretkey/g" $GEONODE_ETC/local_settings.py
     sed -i "s/THE_DATABASE_PASSWORD/$psqlpass/g" $GEONODE_ETC/local_settings.py
-    
+
     # Set up logging symlink
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
@@ -189,7 +189,6 @@ function setup_apache_every_time() {
 
 function one_time_setup() {
     pgpasswd
-
     setup_postgres_once
     setup_tomcat_once
     setup_django_once
@@ -198,7 +197,7 @@ function one_time_setup() {
 }
 
 function postinstall() {
-	pgpasswd
+    pgpasswd
     setup_postgres_every_time
     setup_tomcat_every_time
     setup_django_every_time
@@ -208,21 +207,21 @@ function postinstall() {
 }
 
 function pgpasswd(){
-   if [ $(su - postgres -c 'psql -l' | awk /geonode/'{print $1}') = 'geonode' ]
-   then
-	if [ -f $GEONODE_ETC/local_settings.py.old ]
-	then
-		psqlpass=$(grep -m 1 "DATABASE_PASSWORD =" $GEONODE_ETC/local_settings.py.old | awk '{$3=substr($3,2,length($3)-2);print $3;}')
-	else
-	psqlpass=$(randpass 8 0)
-	su - postgres <<EOF
-	ALTER ROLE geonode WITH PASSWORD '$psqlpass';
+    if [ $(su - postgres -c 'psql -l' | awk /geonode/'{print $1}') = 'geonode' ]
+    then
+    if [ -f $GEONODE_ETC/local_settings.py.old ]
+    then
+        psqlpass=$(grep -m 1 "DATABASE_PASSWORD =" $GEONODE_ETC/local_settings.py.old | awk '{$3=substr($3,2,length($3)-2);print $3;}')
+    else
+        psqlpass=$(randpass 8 0)
+        su - postgres <<EOF
+        ALTER ROLE geonode WITH PASSWORD '$psqlpass';
 EOF
-	fi
-   else
-	psqlpass=$(randpass 8 0)
-   fi
-   secretkey=$(randpass 18 0)
+    fi
+    else
+        psqlpass=$(randpass 8 0)
+    fi
+        secretkey=$(randpass 18 0)
 }
 
 function once() {
