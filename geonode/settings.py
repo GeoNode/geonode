@@ -305,7 +305,14 @@ GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 CATALOGUE = {
     'default': {
         # The underlying CSW implementation
+        # default is pycsw in local mode (tied directly to GeoNode Django DB)
         'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+        # pycsw in non-local mode
+        #'ENGINE': 'geonode.catalogue.backends.pycsw',
+        # GeoNetwork opensource
+        #'ENGINE': 'geonode.catalogue.backends.geonetwork',
+        # deegree and others
+        #'ENGINE': 'geonode.catalogue.backends.generic',
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         'URL': '%scatalogue/csw' % SITEURL,

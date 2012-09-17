@@ -14,23 +14,23 @@ Components
 
 The main components are:
 
-#. **The GeoSpatial Data Manager: GeoServer**
+#. **The Geospatial Data Manager: GeoServer**
 
     GeoServer provides an *OGC* compatible data store that can speak *WMS*, *WFS*, *WCS* and others in common formats like *GML*, *GeoJSON*, *KML* and *GeoTiff*.
 
     It can be connected to different spatial backends including *PostGIS*, *Oracle Spatial*, *ArcSDE* and others.
 
-#. **The Catalog: GeoNetwork**
+#. **The Metadata Catalogue: pycsw**
 
-    GeoNetwork provides a standard catalog and search interface based on *OGC* standards.
+    pycsw provides a standard catalogue and search interface based on *OGC* standards.
 
-    It is used via the *CSW* interface to create and update records when they are accessed in GeoNode..
+    It is used via the *CSW* interface to create, update, search and display records when they are accessed in GeoNode.
 
 #. **The Website: GeoNode Django Site**
 
     This is a Django based project that allows the user to easily tweak the content and look and feel and to extend GeoNode to build Geospatial.
 
-    It includes tools to handle user registration and accounts, avatars, and helper libraries to interact with GeoServer and GeoNetwork in a programatic and integrated way.
+    It includes tools to handle user registration and accounts, avatars, and helper libraries to interact with GeoServer and pycsw in a programatic and integrated way.
 
     There is a wide range of third party apps that can be plugged into a GeoNode based site including tools to connect to different social networks, to build content management systems and more.
 
@@ -43,7 +43,7 @@ The main components are:
 
 #. **PostgreSQL & PostGIS/ArcSDE: Database**
 
-    The database component manages data and configuration information for Geonode/Django, GeoNetwork and GeoServer.  All of these tables and data are stored within the geonode database on PostgreSQL.  GeoServer can use either PostGIS or ArcSDE to store and manage spatial vector data.  (Each layer is stored as a separate table.)  When PostGIS is used as the spatial database for GeoServer, the layers are also stored within the geonode database.
+    The database component manages data and configuration information for Geonode/Django, pycsw and GeoServer.  All of these tables and data are stored within the geonode database on PostgreSQL.  GeoServer can use either PostGIS or ArcSDE to store and manage spatial vector data.  (Each layer is stored as a separate table.)  When PostGIS is used as the spatial database for GeoServer, the layers are also stored within the geonode database.
 
 
 Dependencies
@@ -149,15 +149,6 @@ That is, a top-level object with five keys:
 All layers not named in this response will be presumed fully restricted, that
 is, neither modifiable nor visible to the user in question.
 
-
-GeoNode and GeoNetwork
-======================
-
-.. TODO: Complete this section
-
-Customizing the schema used in GeoNetwork
-
-  * adapt Layer metadata in Django, analogous to Django's usual User models
 
 JavaScript in GeoNode
 =====================
