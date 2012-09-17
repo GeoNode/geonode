@@ -21,17 +21,11 @@ There are many kinds of logs in GeoNode, most of them are located in :file:`/var
 
    It may also be symlinked in :file:`/var/log/geonode/geoserver.log`.
 
- * **Geonetwork log**: Contains information about CSW and metadata handling.
-
-   Records related to bad html parsing could be further identified by analyzing GeoNetwork logs.
-
-   It is symlinked in :file:`/var/log/geonode/geonetwork.log` and originally in :file:`/var/lib/tomcat6/logs/geonetwork.log`.
-
- * **Tomcat logs**: Tomcat logs could indicate problems loading GeoServer or GeoNetwork.
+ * **Tomcat logs**: Tomcat logs could indicate problems loading GeoServer.
 
    They can be found at :file:`/var/lib/tomcat6/logs/catalina.out`.
 
- * **PostgreSQL logs**: Postgres is accessed by GeoNetwork, GeoServer and Django, therefore information abouterrors which are very hard to debug may be found by looking at PostgreSQL's logs.
+ * **PostgreSQL logs**: PostgreSQL is accessed by GeoServer and Django, therefore information abouterrors which are very hard to debug may be found by looking at PostgreSQL's logs.
 
    They are located at :file:`/var/log/postgresql/postgresql-8.4-main.log`.
 
