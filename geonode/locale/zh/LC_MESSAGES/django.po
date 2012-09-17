@@ -1802,7 +1802,7 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"    此外，该地图包含的这些层不会被下载\n"
+"    此外，该地图包含的这些图层不会被下载\n"
 "    由于安全限制：\n"
 "    "
 
@@ -1815,13 +1815,13 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"    最后，该地图包含这些图层将不会被下载，\n"
+"    最后，该地图包含的这些图层将不会被下载，\n"
 "    因为图层不是GeoNode数据：\n"
 "    "
 
 #: maps/templates/maps/download.html:115
 msgid "Start downloading this map"
-msgstr ""
+msgstr "开始下载地图"
 
 #: maps/templates/maps/embed.html:5 maps/templates/maps/view.html:5
 msgid "Map Viewer"
@@ -1833,7 +1833,7 @@ msgid ""
 "\n"
 "            Updating metadata of %(map_title)s\n"
 "        "
-msgstr ""
+msgstr "更新%(map_title)s的元数据"
 
 #: maps/templates/maps/map_describe.html:25
 #, fuzzy
@@ -1843,7 +1843,7 @@ msgstr "编辑元数据"
 #: maps/templates/maps/map_remove.html:6
 #, fuzzy
 msgid "Deleting"
-msgstr "设置"
+msgstr "删除中"
 
 #: maps/templates/maps/map_remove.html:11
 #, fuzzy, python-format
@@ -1851,7 +1851,7 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr "你确定要删除"
+msgstr "你确定要删除%(map_title)s?"
 
 #: maps/templates/maps/mapinfo.html:78
 msgid "Contact:"
@@ -1863,7 +1863,7 @@ msgid ""
 "\n"
 "                    %(age)s ago\n"
 "                    "
-msgstr ""
+msgstr "%(age)s 以前"
 
 #: maps/templates/maps/mapinfo.html:115
 msgid "Rate this map"
@@ -1891,7 +1891,7 @@ msgstr "删除地图"
 
 #: maps/templates/maps/mapinfo.html:143
 msgid "Duplicate map"
-msgstr "副本地图"
+msgstr "复制地图"
 
 #: maps/templates/maps/maps.html:4
 msgid "Browse Maps"
@@ -2052,11 +2052,11 @@ msgstr "OGC服务"
 #: templates/developer.html:8
 #, fuzzy
 msgid "Information for Developers"
-msgstr "开发者"
+msgstr "供开发者使用的信息"
 
 #: templates/developer.html:9
 msgid "Useful information for developers interested in GeoNode."
-msgstr "有意GeoNode开发者实用信息"
+msgstr "给有意GeoNode开发者的实用信息"
 
 #: templates/developer.html:51
 msgid "GeoNode's Web Services"
@@ -2256,7 +2256,7 @@ msgstr ""
 #: templates/help.html:65
 #, fuzzy
 msgid "Sections"
-msgstr "操作"
+msgstr "路段"
 
 #: templates/help.html:66
 #, fuzzy
@@ -2266,7 +2266,7 @@ msgstr "浏览数据"
 #: templates/help.html:67
 #, fuzzy
 msgid "Developer Access"
-msgstr "开发者"
+msgstr "开发者通道"
 
 #: templates/help.html:68
 #, fuzzy
@@ -2281,11 +2281,11 @@ msgstr "创建地图"
 #: templates/help.html:70
 #, fuzzy
 msgid "Exporting a Map"
-msgstr "浏览地图"
+msgstr "导出地图"
 
 #: templates/help.html:71
 msgid "Remixing a Map"
-msgstr ""
+msgstr "混合地图"
 
 #: templates/index.html:4
 msgid "Welcome!"
@@ -2327,7 +2327,7 @@ msgid ""
 "      "
 msgstr ""
 "  GeoNode让您编写和共享地图。 <strong>创建</strong>\n"
-"      我们已经绘图的地图，或 <strong>编绘</strong> 由他人共享的地图。\n"
+"      我们已经绘图的地图，或 <strong>浏览</strong> 由他人共享的地图。\n"
 "    "
 
 #: templates/index.html:37
@@ -2395,7 +2395,7 @@ msgstr "编辑您的个人信息"
 #: templates/profiles/edit_profile.html:41
 #, fuzzy
 msgid "Update profile"
-msgstr "更新简介"
+msgstr "更新个人信息"
 
 #: templates/profiles/profile_detail.html:12
 msgid "Maps & Data"
@@ -2444,7 +2444,7 @@ msgstr "激活账户于"
 #: templates/registration/activation_email.txt:6
 #, python-format
 msgid "Link is valid for %(expiration_days)s days."
-msgstr "链接有效时日%(expiration_days)s"
+msgstr "链接有效时日为%(expiration_days)s天"
 
 #: templates/registration/activation_email_subject.txt:1
 #, fuzzy
@@ -2555,7 +2555,7 @@ msgstr "创建地图"
 
 #, fuzzy
 #~ msgid "Layer Information"
-#~ msgstr "补充信息"
+#~ msgstr "图层信息"
 
 #~ msgid "Editing details for "
 #~ msgstr "编辑细节"
