@@ -498,15 +498,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
         saved_layer.keywords.add(*keywords)
         Layer.objects.filter(uuid=layer_uuid).update(**vals)
 
-    # add to CSW catalogue
-    #saved_layer.save_to_catalogue()
-    #xml_doc = gen_iso_xml(saved_layer)
-    xml_doc = '<XML/>'
-
-    # save XML doc
-    #if 'xml' not in files: # force the saving of an ISO document
-    #    Layer.objects.filter(uuid=layer_uuid).update(metadata_xml=xml_doc, csw_anytext=gen_anytext(xml_doc))
-
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
     logger.info('>>> Step 11. Setting default permissions for [%s]', name)
@@ -724,10 +715,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
         raise
 
 def update_metadata(layer_uuid, xml, saved_layer):
-    logger.info('>>> Step XML. If an XML metadata document was passed, process it')
-    # Step XML. If an XML metadata document is uploaded,
-    # parse the XML metadata and update uuid and URLs as per the content model
-
+    """Update incoming XML document with GeoNode specific values"""
     # check if document is XML
     try:
         exml = etree.fromstring(xml)
@@ -741,11 +729,7 @@ def update_metadata(layer_uuid, xml, saved_layer):
         tagname = exml.tag
 
     # update relevant XML
-    #layer_updated = saved_layer.date.strftime('%Y-%m-%dT%H:%M:%SZ')
     layer_updated = saved_layer.date.strftime('%Y-%m-%d')
-
-    #if tagname != 'MD_Metadata' and settings.CSW['type'] != 'pycsw':
-    #    raise GeoNodeException('Only ISO XML is supported')
 
     if tagname == 'Record': # Dublin Core
         dc_ns = '{http://purl.org/dc/elements/1.1/}'
@@ -911,13 +895,12 @@ def set_metadata(xml, saved_layer):
         tagname = exml.tag
 
     vals = {}
-    #vals['csw_mdsource'] = 'local'
 
-    if tagname == 'MD_Metadata':
+    if tagname == 'MD_Metadata':  # ISO
         md = MD_Metadata(exml)
 
-        #vals['csw_typename'] = 'gmd:MD_Metadata'
-        #vals['csw_schema'] = 'http://www.isotc211.org/2005/gmd'
+        vals['csw_typename'] = 'gmd:MD_Metadata'
+        vals['csw_schema'] = 'http://www.isotc211.org/2005/gmd'
         vals['language'] = md.language
         vals['spatial_representation_type'] = md.hierarchy
         vals['date'] = sniff_date(md.datestamp.strip())
@@ -934,13 +917,8 @@ def set_metadata(xml, saved_layer):
                 if None not in md.identification.keywords[0]['keywords']:
                     keywords = md.identification.keywords[0]['keywords']
 
-            #if hasattr(md.identification, 'creator'):
-            #    vals['creator'] = md.identification.creator
-
             if len(md.identification.securityconstraints) > 0:
                 vals['constraints_use'] = md.identification.securityconstraints[0]
-            #if len(md.identification.accessconstraints) > 0:
-            #    vals['constraints_access'] = md.identification.accessconstraints[0]
             if len(md.identification.otherconstraints) > 0:
                 vals['constraints_other'] = md.identification.otherconstraints[0]
 
@@ -949,11 +927,11 @@ def set_metadata(xml, saved_layer):
         if hasattr(md.identification, 'dataquality'):
             vals['data_quality_statement'] = md.dataquality.lineage
 
-    elif tagname == 'metadata': # FGDC
+    elif tagname == 'metadata':  # FGDC
         md = Metadata(exml)
 
-        #vals['csw_typename'] = 'fgdc:metadata'
-        #vals['csw_schema'] = 'http://www.opengis.net/cat/csw/csdgm'
+        vals['csw_typename'] = 'fgdc:metadata'
+        vals['csw_schema'] = 'http://www.opengis.net/cat/csw/csdgm'
         vals['spatial_representation_type'] = md.idinfo.citation.citeinfo['geoform']
 
         if hasattr(md.idinfo, 'keywords'):
@@ -965,27 +943,20 @@ def set_metadata(xml, saved_layer):
                 vals['temporal_extent_start'] = sniff_date(md.idinfo.timeperd.timeinfo.rngdates.begdate.strip())
                 vals['temporal_extent_end'] = sniff_date(md.idinfo.timeperd.timeinfo.rngdates.enddate.strip())
 
-        #if hasattr(md.idinfo, 'origin'):
-        #    vals['creator'] = md.idinfo.origin
-
-        #vals['constraints_access'] = md.idinfo.accconst
         vals['constraints_other'] = md.idinfo.useconst
-        #vals['date'] = sniff_date(md.metainfo.metd.strip())
-        vals['date'] = '2012-01-23'
+        vals['date'] = sniff_date(md.metainfo.metd.strip())
+        #vals['date'] = '2012-01-23'
 
-    elif tagname == 'Record': # Dublin Core
+    elif tagname == 'Record':  # Dublin Core
         md = CswRecord(exml)
 
-        #vals['csw_typename'] = 'csw:Record'
-        #vals['csw_schema'] = 'http://www.opengis.net/cat/csw/2.0.2'
+        vals['csw_typename'] = 'csw:Record'
+        vals['csw_schema'] = 'http://www.opengis.net/cat/csw/2.0.2'
         vals['language'] = md.language
         vals['spatial_representation_type'] = md.type
         keywords = md.subjects
         vals['temporal_extent_start'] = md.temporal
         vals['temporal_extent_end'] = md.temporal
-        #vals['creator'] = md.creator
-        #vals['publisher'] = md.publisher
-        #vals['constraints_access'] = md.accessrights
         vals['constraints_other'] = md.license
         vals['date'] = sniff_date(md.modified.strip())
     else:
