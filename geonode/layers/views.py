@@ -123,6 +123,7 @@ def layer_upload(request, template='layers/layer_upload.html'):
                         permissions = form.cleaned_data["permissions"]
                         )
                 if saved_layer.metadata_uploaded:
+                    # metadata was uploaded as XML with the manifest
                     return HttpResponse(json.dumps({
                         "success": True,
                         "redirect_to": saved_layer.get_absolute_url()}))
@@ -165,10 +166,9 @@ def layer_detail(request, layername, template='layers/layer.html'):
 def layer_metadata(request, layername, template='layers/layer_describe.html'):
     layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA) 
     
-    if layer.metadata_uploaded and request.method == 'GET': # show upload just metadata XML page
+    if layer.metadata_uploaded and request.method == 'GET':  # show upload just metadata XML page
         return render_to_response("layers/layer_upload_metadata_uploaded.html", RequestContext(request, {
                 "layer": layer,
-                "CSW_URL": "TOM"
             }))
     
     layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
@@ -300,8 +300,8 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
 
-        if layer.metadata_uploaded: # it's an XML metadata upload update
-            # save the XML file to django and catalogue
+        if layer.metadata_uploaded:  # it's an XML metadata upload update
+            # update metadata based on new XML upload
             form = LayerMetadataUploadForm(request.POST, request.FILES)
 
             if form.is_valid():
@@ -320,12 +320,10 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     layer_to_update.metadata_xml = md_xml
                     layer_to_update.title = md_title
                     layer_to_update.abstract = md_abstract
-                    #layer_to_update.save_to_catalogue()
 
                     vals, keywords = set_metadata(xml_file, layer_to_update)
                     layer_to_update.keywords.add(*keywords)
                     Layer.objects.filter(typename=layer.typename).update(**vals)
-                    #Layer.objects.filter(typename=layer.typename).update(csw_anytext=gen_anytext(md_xml))
 
                     return HttpResponse(json.dumps({
                         "success": True,
