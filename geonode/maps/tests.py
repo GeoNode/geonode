@@ -543,7 +543,7 @@ community."
         response = c.put(url)
         self.assertEquals(response.status_code,405)
 
-    def test_rating_new_map(self):
+    def test_rating_map_delete(self):
         """Test map rating is not there when the map is deleted
         """
         c = Client()
