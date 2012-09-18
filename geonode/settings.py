@@ -292,7 +292,7 @@ NOSE_ARGS = [
 
 SITENAME = "GeoNode"
 
-SITEURL = "http://localhost:8000/"
+SITEURL = "http://ui.dev.geonode.org/"
 
 # GeoServer information
 
@@ -371,7 +371,7 @@ PYCSW = {
         },
         'repository': {
             'source': 'geonode',
-            'mappings': 'geonode/catalogue/backends/pycsw_local.py',
+            'mappings': '/home/geonode/geonode/geonode/catalogue/backends/pycsw_local.py',
         },
         'metadata:inspire': {
             'enabled': 'true',
