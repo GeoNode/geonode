@@ -41,6 +41,7 @@ from django.utils.html import escape
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from agon_ratings.models import OverallRating
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
@@ -232,7 +233,7 @@ def layer_metadata(request, layername, template='layers/layer_describe.html'):
 @login_required
 @require_POST
 def layer_style(request, layername):
-    layer = _resolve_layer(request, typename, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
         
     style_name = request.POST.get('defaultStyle')
 
@@ -324,6 +325,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             "layer": layer
         }))
     if (request.method == 'POST'):
+        OverallRating.objects.filter(category = 2, object_id = layer.id).delete()
         layer.delete()
         return HttpResponseRedirect(reverse("layer_browse"))
     else:

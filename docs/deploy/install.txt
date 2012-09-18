@@ -64,7 +64,6 @@ You get the latest GeoNode release from http://dev.geonode.org/release/ or the `
 You can unpack it like::
 
    $ tar xvzf GeoNode-1.1.tar.gz
-   GeoNode-1.1/geonetwork.war
    GeoNode-1.1/geonode-webapp.pybundle
    GeoNode-1.1/geoserver.war
    GeoNode-1.1/bootstrap.py
@@ -153,7 +152,7 @@ The key steps for setting up a GeoNode installation are as follows:
 
 1) *Set up applications.*
 
-   The GeoServer and GeoNetwork web applications must be served using a Java Servlet container; two popular and free containers are Jetty and Tomcat.
+   The GeoServer web application must be served using a Java Servlet container; two popular and free containers are Jetty and Tomcat.
 
    Typically a Java web application can be deployed by simply copying the .war file into the appropriate place.
 
@@ -187,12 +186,6 @@ The key steps for setting up a GeoNode installation are as follows:
 
        Some features of GeoNode require you to set up a web proxy so that GeoServer and the Django application are on the same domain ("example.com" in this example.).
 
-     * ``CSW`` A dict with the following keys:
-      * ``type``: The underlying CSW implementation (``pycsw``, ``geonetwork``, ``deegree``)
-      * ``url``: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-      * ``username``: login credentials (for GeoNetwork)
-      * ``password``: login credentials (for GeoNetwork)
-
      * ``GEONODE_CLIENT_LOCATION`` the URL where the static files for GeoNode are published, for example `http://example.com/media/`.  These files can be found on disk in the directory where you installed the Django application under ``src/GeoNodePy/geonode/media/`` .
 
 
@@ -203,40 +196,6 @@ GeoNode requires a Java servlet container compatible with the J2EE standard,
 2.5 or higher.  `Jetty <http://jetty.mortbay.org/>`_ and `Tomcat
 <http://tomcat.apache.org/>`_ are two good free servlet containers.  See their
 web sites for installation and application deployment instructions.
-
-
-GeoNetwork with GeoNode Schema
-------------------------------
-
-GeoNode's GeoNetwork integration requires use of a customized metadata schema.
-The GeoNode project provides a custom build of GeoNetwork with this extra
-schema pre-installed.  This GeoNetwork is ready to run out-of-the-box; simply
-deploy using your servlet container's usual mechanism.
-
-Steps
-.....
-
-1. *Deploy* GeoNetwork to your servlet container using the normal mechanism.
-   For Tomcat and Jetty, this simply means placing ``geonetwork.war`` in the
-   webapps subdirectory of the servlet container's installation directory.
-
-2. *Configure* GeoNetwork by changing the administrative account password
-   through GeoNetwork's web interface.  The administrative account username and
-   password are both ``admin`` by default.
-
-3. *Remove* the sample metadata records that are included with GeoNetwork by
-   default.  To do so, you can simply perform a search with no terms after logging
-   in, then use the 'Select all' link on the search results page to select all 
-   records in the GeoNetwork site.  Finally, use the 'actions on selection' menu 
-   to delete the records.
-
-.. note:: 
-
-    GeoNode releases do not include the intermap service that normally
-    accompanies GeoNetwork installations.  As a result, some JavaScript errors
-    come up while performing searches.  These are not a problem, and can safely
-    be ignored since you will not generally used the GeoNetwork web interface
-    directly.
 
 
 GeoServer with GeoNode Extensions
