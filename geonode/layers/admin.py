@@ -57,10 +57,6 @@ class TopicCategoryAdmin(admin.ModelAdmin):
     list_display_links = ('name',)
     list_display = ('id', 'name', 'slug', 'description')
 
-admin.site.register(Layer, LayerAdmin)
-admin.site.register(ContactRole, ContactRoleAdmin)
-admin.site.register(TopicCategory, TopicCategoryAdmin)
-
 class LinkAdmin(admin.ModelAdmin):
     model = Link
     list_display_links = ('id',)
@@ -69,5 +65,6 @@ class LinkAdmin(admin.ModelAdmin):
 
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
+admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Link, LinkAdmin)
->>>>>>> 027ad51d92fd3b0f8a41dfa3cfb73a3d976e22f2
+
