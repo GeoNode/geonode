@@ -212,11 +212,6 @@ instance at that port with the following commands::
     $ cd src/geonode-geoserver-ext/
     $ sh startup.sh
 
-.. note:: 
-    Normally, ``mvn jetty:run-war`` would be sufficient.  However, we use the
-    shell script to add some extra parameters to the JVM command-line used to
-    run Jetty in order to workaround a JVM bug that affects GeoNetwork.
-
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line below to indicate the GeoServer URL that you want to use.::
   

@@ -30,6 +30,7 @@ from datetime import datetime
 from lxml import etree
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
@@ -503,7 +504,7 @@ class Attribute(models.Model):
     objects = AttributeManager()
 
     def __str__(self):
-        return "%s" % self.attribute_label if not None else attribute
+        return "%s" % self.attribute_label if self.attribute_label else self.attribute
 
 class ContactRole(models.Model):
     """
