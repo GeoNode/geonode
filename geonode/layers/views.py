@@ -229,7 +229,7 @@ def layer_metadata(request, layername, template='layers/layer_describe.html'):
 @login_required
 @require_POST
 def layer_style(request, layername):
-    layer = _resolve_layer(request, typename, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
         
     style_name = request.POST.get('defaultStyle')
 

@@ -17,6 +17,8 @@
 #
 #########################################################################
 
+import json
+
 def _layer_json(layers, sources):
     """
     return a list of layer config for the provided layer
