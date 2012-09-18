@@ -25,13 +25,14 @@ from django.test.client import Client
 from django.utils import simplejson as json
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from agon_ratings.models import OverallRating
 
 import geonode.maps.models
 import geonode.maps.views
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import default_map_config
-from agon_ratings.models import OverallRating
+
 
 
 class MapsTest(TestCase):
@@ -543,21 +544,25 @@ community."
         response = c.put(url)
         self.assertEquals(response.status_code,405)
 
-    def test_rating_map_delete(self):
-        """Test map rating is not there when the map is deleted
+    def test_rating_map_remove(self):
+        """Test map rating is removed on map remove
         """
         c = Client()
         c.login(username=self.user, password=self.passwd)
+
+        #Create the map
         response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
         map_id = int(response['Location'].split('/')[-1])
 
-        self.assertEquals(map_id,2)
-        map_obj = Map.objects.get(id=map_id)
+        #Create the rating with the correct content type
         ctype = ContentType.objects.get(model='map')
         OverallRating.objects.create(category=1,object_id=map_id,content_type=ctype, rating=3)
 
+        #Remove the map
         response = c.post("/maps/%s/remove" % map_id)
         self.assertEquals(response.status_code,302)
-        rating = OverallRating.objects.filter(category=1,object_id=2)
+
+        #Check there are no ratings matching the removed map
+        rating = OverallRating.objects.filter(category=1,object_id=map_id)
         self.assertEquals(rating.count(),0)
 
