@@ -32,6 +32,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template import Context
 from django.template.loader import get_template
 from django.forms import ValidationError
+from django.contrib.contenttypes.models import ContentType
+from agon_ratings.models import OverallRating
 
 import geonode.layers.utils
 import geonode.layers.views
@@ -710,3 +712,26 @@ class LayersTest(TestCase):
 
         # text which is not JSON should fail
         self.assertRaises(ValidationError, lambda: field.clean('<users></users>'))
+
+    def test_rating_layer_remove(self):
+        """ Test layer rating is removed on layer remove
+        """
+        #Get the layer to work with
+        layer = Layer.objects.all()[0]       
+        url = '/data/%s/remove' % layer.typename
+        layer_id = layer.id
+
+        #Create the rating with the correct content type
+        ctype = ContentType.objects.get(model='layer')
+        OverallRating.objects.create(category=2,object_id=layer_id,content_type=ctype, rating=3)
+
+        c = Client()
+    
+        c.login(username='admin', password='admin')
+
+        #Remove the layer
+        response = c.post(url)
+
+        #Check there are no ratings matching the remove layer
+        rating = OverallRating.objects.filter(category=2,object_id=layer_id)
+        self.assertEquals(rating.count(),0)

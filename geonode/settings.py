@@ -341,7 +341,7 @@ PYCSW = {
             #'pretty_print': 'true',
             #'domainquerytype': 'range',
             #'domaincounts': 'true',
-           'profiles': 'apiso,atom,dif,ebrim,fgdc',
+            'profiles': 'apiso,atom,dif,ebrim,fgdc',
         },
         'metadata:main': {
             'identification_title': '%s Catalogue' % SITENAME,
