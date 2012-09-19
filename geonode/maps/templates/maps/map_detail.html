@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "maps/map_base.html" %}
 {% load i18n %}
 {% load geonode_auth %}
 {% load dialogos_tags %}
@@ -17,8 +17,7 @@
 
 {% block body_class %}maps{% endblock %}
 
-{% block body_outer %}
-  <nav class="back"><a href="{% url "maps_browse" %}"><i class="icon-chevron-left"></i> See all Maps</a></nav>
+{% block body %}
   {% overall_rating map "map" as map_rating %}
   <div class="span8">
     <h2 class="page-title">{{ map.title }}</h2>

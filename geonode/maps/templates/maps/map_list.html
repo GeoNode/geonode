@@ -1,12 +1,10 @@
-{% extends "base.html" %}
+{% extends "maps/map_base.html" %}
 {% load i18n %}
 {% load maps_tags %}
 
-{% block title %} {% trans "Explore Maps" %} - {{ block.super }} {% endblock %}
+{% block body_class %}maps explore{% endblock %}
 
-{% block body_class %}maps{% endblock %}
-
-{% block body_outer %}
+{% block body %}
   <div class="span8">
     <h2 class="page-title">{% trans "Explore Maps" %}</h2>
     {% include "maps/_map_filters.html" %}

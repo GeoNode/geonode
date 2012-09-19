@@ -1,8 +1,8 @@
-{% extends "base.html" %}
+{% extends "maps/map_base.html" %}
 
 {% load i18n %}
 
-{% block title %} {% trans "Map Viewer" %} — {{ block.super }} {% endblock %}
+{% block title_sub %} {% trans "Map Viewer" %}{% endblock %}
 
 {% block head %}
 {{ block.super }}
@@ -72,7 +72,7 @@ Ext.onReady(function() {
 
 {% endblock %}
 
-{% block main %}
+{% block body %}
 <div id="header-wrapper">
   {{ block.super }}
   <div id="topPanel">

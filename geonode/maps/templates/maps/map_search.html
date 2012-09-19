@@ -1,12 +1,12 @@
-{% extends "base.html" %}
+{% extends "maps/map_base.html" %}
 {% load i18n %}
 {% load bootstrap_tags %}
 
-{% block title %} {% trans "Search Maps" %} - {{ block.super }} {% endblock %}
+{% block title_sub %}{% trans "Search Maps" %}{% endblock %}
 
-{% block body_class %}maps{% endblock %}
+{% block body_class %}maps search{% endblock %}
 
-{% block main %} 
+{% block body %} 
   <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
   <form class="geonode-search form-search" action="{% url maps_search %}" method="GET" data-results-table="#searchResults" data-search-api="{% url maps_search_api %}">
     <input type="text" id="search_query" name="q" class="input-large search-query" value="{{ request.get.q }}">
@@ -28,10 +28,6 @@
       </tr>
     </tbody>
   </table>
-
-{% endblock %}
-
-{% block sidebar %}
 
 {% endblock %}
 

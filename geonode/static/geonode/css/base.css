@@ -6373,7 +6373,8 @@ body.explore-data article {
 body.data-list nav.back {
   display: none;
 }
-body.data #layer-tabs {
+body.data #subnav-tabs,
+body.maps #subnav-tabs {
   background-color: #eff0ef;
   color: #777777;
   -webkit-border-top-right-radius: 3px;
@@ -6399,7 +6400,8 @@ body.data #layer-tabs {
   box-shadow: 0 1px 2px #cccccc;
   border-bottom: 2px solid #484748;
 }
-body.data #layer-tabs a {
+body.data #subnav-tabs a,
+body.maps #subnav-tabs a {
   display: block;
   -webkit-border-top-right-radius: 3px;
   -webkit-border-bottom-right-radius: 0;
@@ -6423,23 +6425,28 @@ body.data #layer-tabs a {
   text-decoration: none;
   border-width: 0;
 }
-body.data #layer-tabs a.active {
+body.data #subnav-tabs a.active,
+body.maps #subnav-tabs a.active {
   background-color: #484748;
   color: white;
   font-weight: 400;
 }
-body.data #layer-tabs a:hover,
-body.data #layer-tabs a:focus,
-body.data #layer-tabs a:active {
+body.data #subnav-tabs a:hover,
+body.maps #subnav-tabs a:hover,
+body.data #subnav-tabs a:focus,
+body.maps #subnav-tabs a:focus,
+body.data #subnav-tabs a:active,
+body.maps #subnav-tabs a:active {
   background-color: #777777;
   color: white;
 }
-body.data #layer-tabs li {
+body.data #subnav-tabs li,
+body.maps #subnav-tabs li {
   margin-bottom: 0;
 }
-body.data-search #layer-tabs a.search,
-body.data-upload #layer-tabs a.upload,
-body.data-explore #layer-tabs a.explore {
+body.search #subnav-tabs a.search,
+body.upload #subnav-tabs a.upload,
+body.explore #subnav-tabs a.explore {
   background-color: #484748;
   color: white;
   font-weight: 400;

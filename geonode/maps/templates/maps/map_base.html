@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %}{% block title_sub %}{% trans "Explore Maps" %}{% endblock %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}maps{% endblock %}
+
+{% block body_outer %}
+  <!--<nav class="back"><a href="{% url "maps_browse" %}"><i class="icon-chevron-left"></i> See all Maps</a></nav>-->
+  <ul class="nav nav-tabs" id="subnav-tabs">
+        <li><a href="{% url "maps_browse" %}" class="explore">Explore Maps</a></li>
+        <li><a href="{% url "maps_search" %}" class="search">Search Maps</a></li>
+  </ul>
+  {% block body %}{% endblock body %}
+{% endblock %}
