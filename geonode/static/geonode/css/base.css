@@ -6112,16 +6112,18 @@ ul.space li {
   float: right;
   color: #eff0ef;
 }
-#nav-keywords ul {
+#nav-keywords ul.nav {
   list-style: none;
   margin: 0;
 }
-#nav-keywords li {
-  font-size: 11px;
+#nav-keywords ul.nav li {
   margin-bottom: 8px;
+  border: 0;
 }
-#nav-keywords a {
+#nav-keywords ul.nav a {
+  display: inline;
   padding: 3px 5px;
+  font-size: 11px;
   background-color: #a7e4ee;
   color: #777777;
   text-transform: lowercase;
@@ -6141,9 +6143,10 @@ ul.space li {
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
-#nav-keywords .count {
+#nav-keywords ul.nav .count {
   color: #cccccc;
   padding-left: 8px;
+  font-size: 11px;
 }
 .tabs-left .nav-tabs {
   float: none !important;
