@@ -6403,15 +6403,15 @@ body.data #layer-tabs a {
   display: block;
   -webkit-border-top-right-radius: 3px;
   -webkit-border-bottom-right-radius: 0;
-  -webkit-border-bottom-left-radius: 3px;
+  -webkit-border-bottom-left-radius: 0;
   -webkit-border-top-left-radius: 3px;
   -moz-border-radius-topright: 3px;
   -moz-border-radius-bottomright: 0;
-  -moz-border-radius-bottomleft: 3px;
+  -moz-border-radius-bottomleft: 0;
   -moz-border-radius-topleft: 3px;
   border-top-right-radius: 3px;
   border-bottom-right-radius: 0;
-  border-bottom-left-radius: 3px;
+  border-bottom-left-radius: 0;
   border-top-left-radius: 3px;
   -moz-background-clip: padding;
   -webkit-background-clip: padding-box;
@@ -6424,6 +6424,22 @@ body.data #layer-tabs a {
   border-width: 0;
 }
 body.data #layer-tabs a.active {
+  background-color: #484748;
+  color: white;
+  font-weight: 400;
+}
+body.data #layer-tabs a:hover,
+body.data #layer-tabs a:focus,
+body.data #layer-tabs a:active {
+  background-color: #777777;
+  color: white;
+}
+body.data #layer-tabs li {
+  margin-bottom: 0;
+}
+body.data-search #layer-tabs a.search,
+body.data-upload #layer-tabs a.upload,
+body.data-explore #layer-tabs a.explore {
   background-color: #484748;
   color: white;
   font-weight: 400;

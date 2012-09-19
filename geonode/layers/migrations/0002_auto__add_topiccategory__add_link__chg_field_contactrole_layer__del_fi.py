@@ -17,18 +17,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('layers', ['TopicCategory'])
 
-        # Adding model 'Link'
-        db.create_table('layers_link', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('layer', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['layers.Layer'])),
-            ('extension', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('link_type', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('mime', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('url', self.gf('django.db.models.fields.TextField')(unique=True)),
-        ))
-        db.send_create_signal('layers', ['Link'])
-
         # Changing field 'ContactRole.layer'
         db.alter_column('layers_contactrole', 'layer_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['layers.Layer'], null=True))
 
@@ -58,9 +46,6 @@ class Migration(SchemaMigration):
         
         # Deleting model 'TopicCategory'
         db.delete_table('layers_topiccategory')
-
-        # Deleting model 'Link'
-        db.delete_table('layers_link')
 
         # User chose to not deal with backwards NULL issues for 'ContactRole.layer'
         raise RuntimeError("Cannot reverse this migration. 'ContactRole.layer' and its values cannot be restored.")
