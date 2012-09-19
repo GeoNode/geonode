@@ -889,7 +889,7 @@ body.data #layer-tabs {
 
   a {
     display: block;
-    .border-radius(3px, 0, 3px, 3px);
+    .border-radius(3px, 0, 0, 3px);
     text-transform: uppercase;
     font-size: 18px;
     font-weight: 500;
@@ -902,7 +902,22 @@ body.data #layer-tabs {
     color: white;
     font-weight: 400;
   }
+  a:hover, a:focus, a:active {
+    background-color: @graySp;
+    color: white;
+  }
+  li {
+    margin-bottom: 0;
+  }
 }
+body.data-search #layer-tabs a.search,
+body.data-upload #layer-tabs a.upload,
+body.data-explore #layer-tabs a.explore {
+  background-color: @grayDark;
+  color: white;
+  font-weight: 400;
+}
+
 
 // layer info
 
