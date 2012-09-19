@@ -880,7 +880,8 @@ body.explore-data article {
 body.data-list nav.back {
   display: none;
 }
-body.data #layer-tabs {
+body.data #subnav-tabs,
+body.maps #subnav-tabs {
   background-color: @grayLight;
   color: @graySp;
   .border-radius(3px, 3px, 3px, 3px);
@@ -910,9 +911,9 @@ body.data #layer-tabs {
     margin-bottom: 0;
   }
 }
-body.data-search #layer-tabs a.search,
-body.data-upload #layer-tabs a.upload,
-body.data-explore #layer-tabs a.explore {
+body.search #subnav-tabs a.search,
+body.upload #subnav-tabs a.upload,
+body.explore #subnav-tabs a.explore {
   background-color: @grayDark;
   color: white;
   font-weight: 400;

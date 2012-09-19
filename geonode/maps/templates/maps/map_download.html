@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "maps/map_base.html" %}
 {% load i18n %}
 
 {% block head %} 
@@ -44,7 +44,7 @@
                         url : "{{site}}geoserver/rest/process/batchDownload/kill/" + process["process"]["id"],
                         method: "GET",
                         success: function(result) { 
-                            alert("You sucessfuly canceled the download"); 
+                            alert("You successfuly canceled the download"); 
                             location.href = "{{site}}maps/{{map.id}}"; 
                             clearInterval(checkStatus);
                         },
@@ -60,7 +60,7 @@
 </script>
 {% endblock %} 
 
-{% block main %}
+{% block body %}
 <div class="twocol">
   <h3>{% trans "Download" %} {{map.title}}</h3>
   <p>
