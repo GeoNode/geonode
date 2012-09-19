@@ -366,13 +366,8 @@ def setup_data():
 
     data_dir = gisdata.GOOD_DATA
 
-    if ctype is not None:
-        if ctype == 'vector':
-            data_dir = os.path.join(gisdata.GOOD_DATA, 'vector')
-        elif ctype == 'raster':
-            data_dir = os.path.join(gisdata.GOOD_DATA, 'raster')
-        elif ctype == 'time':
-            data_dir = os.path.join(gisdata.GOOD_DATA, 'time')
+    if ctype in ['vector', 'raster', 'time']:
+        data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
 
     sh("python manage.py importlayers %s -v2" % data_dir)
 
