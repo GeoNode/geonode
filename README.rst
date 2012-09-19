@@ -76,6 +76,7 @@ The following steps should prepare a Python virtual environment for you::
   source bin/activate
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
+<<<<<<< HEAD
 
 
 
@@ -86,6 +87,8 @@ Copy these war files to the webapps directory of your Java container
 
 
 Start the server:
+=======
+>>>>>>> master
   paver host
 
 
@@ -138,7 +141,7 @@ JavaScript Developers can switch to using unminified scripts and CSS:
     $ ant init debug
 
 2. Set the GEONODE_CLIENT_LOCATION entry in :file:`src/geonode/settings.py` to
-   ``http://localhost:8080/`` and run paver as described above.
+   ``http://localhost:9090/`` and run paver as described above.
 
 Note that this requires ant (http://ant.apache.org/) in addition to the above
 build requirements.
@@ -157,7 +160,10 @@ following needs to be done before running ``paver host``:
 
 * Edit :file:`src/GeoNodePy/geonode/settings.py` and change the line::
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
     GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
   to use the IP address you have written down above::
@@ -188,12 +194,15 @@ GeoServer used for http://geonode.capra.opengeo.org/ is::
 
     http://geonode.capra.opengeo.org/geoserver/
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
-in :file:`src/geonode-geoserver-ext/` is configured to provide a GeoServer
+in :file:`src/geoserver-geonode-ext/` is configured to provide a GeoServer
 instance at that port with the following commands::
    
-    cd src/geonode-geoserver-ext/
+    cd src/geoserver-geonode-ext/
     sh startup.sh
 
 .. note:: 
@@ -328,6 +337,50 @@ Directory Structure
       Actually, the build script for this project is set up to create a WAR
       that includes those extensions, not just a bundle with the extension.
 
+GAZETTEER
+..............
+The gazetteer is disabled by default because it adds a bit of complexity to the setup process.
+It should be enabled only if PostGIS integration is also enabled.
+In your settings.py file:
+* uncomment the following in INSTALLED_APPS:
+    * #geonode.gazetteer,
+* uncomment and modify if necessary the entire "GAZETTEER SETTINGS" section
+
+
+QUEUE
+..............
+WorldMap can now optionally make use of the Celery project to send certain tasks (updating
+the gazetteer, updating layer boundaries after creating/editing features) to a job queue
+where they will be processed later.
+
+In your settings.py file, uncomment the following in INSTALLED_APPS:
+* #'geonode.queue',
+* #'djcelery',
+* #'djkombu',
+
+The default run interval is determined by QUEUE_INTERVAL - the default is 10 minutes.
+
+You will need to manually setup and run the celery processes on your server.  For basic
+instructions on doing so see  :file:`docs/deploy/celery_queue.txt`
+
+
+
+
+
+Directory Structure
+===================
+
+* docs/ - Documentation based on Sphinx
+* pavement.py - Main build script.
+* shared/ - Configuration files and support files for the installer.
+* src/ - Source code for the java, javascript and python modules. Split in:
+
+    * geonode-client/ - the JavaScript/CSS for general apps (the Map editor,
+      search, embedded viewer...)
+    * GeoNodePy/ - the Python/Django modules.  Inside, geonode/ is the "core".
+    * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
+      Actually, the build script for this project is set up to create a WAR
+      that includes those extensions, not just a bundle with the extension.
 
 GPL License
 =======

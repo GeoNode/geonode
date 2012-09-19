@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Django settings for GeoNode project.
-from urllib import urlencode
 import logging
 import os
 
@@ -32,7 +31,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, '..', '..', '..', 'development.db'),
-        }
+    }
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -55,7 +54,7 @@ LANGUAGES = (
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
     ('zh', '中國的'),
-    )
+)
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -81,7 +80,7 @@ STATIC_URL = "/static/"
 # Additional directories which hold static files
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, "static"),
-    ]
+]
 
 # Note that Django automatically includes the "templates" dir in all the
 # INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
@@ -130,18 +129,20 @@ INSTALLED_APPS = (
     'agon_ratings',
     'taggit',
     'south',
-    #'debug_toolbar',
 
     # GeoNode internal apps
-    'geonode',
     'geonode.core',
     'geonode.maps',
     'geonode.proxy',
-    'geonode.registration',
-    'geonode.profiles',
-    )
+    'geonode.profile',
+    'geonode.register',
+    #'geonode.gazetteer',
+    #'geonode.queue',
+    #'djcelery',
+    #'djkombu',
+    #'debug_toolbar',
 
-
+)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -203,7 +204,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # The context processor belows add things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.maps.context_processors.resource_urls',
-    )
+)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -215,7 +216,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    )
+)
 
 #This is only required for the Django Debug Toolbar
 INTERNAL_IPS = ('127.0.0.1',)
@@ -293,8 +294,7 @@ SITEURL = "http://localhost:8000/"
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
 GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 
-# The username and password for a user that can add and
-# edit layer details on GeoServer
+# The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 
 
@@ -305,17 +305,21 @@ GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
+LOGIN_REDIRECT_URL = "/"
 
+DEFAULT_LAYERS_OWNER='admin'
 
 # GeoNode javascript client configuration
 
 # Google Api Key needed for 3D maps / Google Earth plugin
-GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
-GOOGLE_ANALYTICS_ID = "UA-XXXXXXXX-1"
+GOOGLE_API_KEY = None
+GOOGLE_SECRET_KEY = None
 GOOGLE_ANALYTICS_CODE=""
 
+YAHOO_API_KEY=""
+
 # Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (0,0)
+DEFAULT_MAP_CENTER = (0, 0)
 
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
@@ -378,30 +382,18 @@ MAP_BASELAYERS = [{
     "group":"background",
     "visibility": False,
     "fixed": True,
-    "args":[
-      "bluemarble",
-      "http://maps.opengeo.org/geowebcache/service/wms",
-      {
-        "layers":["bluemarble"],
-        "format":"image/png",
-        "tiled": True,
-        "tilesOrigin": [-20037508.34, -20037508.34]
-      },
-      {"buffer": 0}
-    ]
-
-}]
+    "group":"background"
+  }]
 
 
-#GEONODE_CLIENT_LOCATION = "http://localhost:8001/geonode-client/"
-GEONODE_CLIENT_LOCATION = "/media/static/geonode/"
 GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
+#GEONODE_CLIENT_LOCATION = "/static/geonode/"
 
 
 # GeoNode vector data backend configuration.
 
 #Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE=False
+DB_DATASTORE = False
 
 #
 #Database datastore connection settings
@@ -411,9 +403,57 @@ DB_DATASTORE_USER = ''
 DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
+DB_DATASTORE_TYPE = ''
 # Name of the store in geoserver
 DB_DATASTORE_NAME = ''
-DB_DATASTORE_TYPE=''
+DB_DATASTORE_ENGINE = 'django.contrib.gis.db.backends.postgis'
+
+USE_GAZETTEER = False
+##### START GAZETTEER SETTINGS #####
+
+# Defines settings for multiple databases,
+# only use if PostGIS integration enabled
+# and USE_GAZETTEER = True
+#DATABASES = {
+#    'default': {
+#        'ENGINE': DATABASE_ENGINE,
+#        'NAME': DATABASE_NAME,
+#        'USER' : DATABASE_USER,
+#        'PASSWORD': DATABASE_PASSWORD,
+#        'PORT': DATABASE_PORT,
+#        'HOST': DATABASE_HOST
+#    },
+#    'wmdata': {
+#        'ENGINE': DB_DATASTORE_ENGINE,
+#        'NAME': DB_DATASTORE_DATABASE,
+#        'USER' : DB_DATASTORE_USER,
+#        'PASSWORD': DB_DATASTORE_PASSWORD,
+#        'PORT': DB_DATASTORE_PORT,
+#        'HOST': DATABASE_HOST
+#    }
+#
+#}
+#DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
+#SOUTH_DATABASE_ADAPTERS = {
+#    'default': "south.db.sqlite3",
+#    'wmdata' : "south.db.postgresql_psycopg2",
+#
+#    }
+SOUTH_TESTS_MIGRATE = False
+
+##### END GAZETTEER SETTINGS #####
+
+#Set to true to schedule asynchronous updates of
+#layer bounds updates (after creating/editing features)
+#and gazetteer updates
+USE_QUEUE = False
+QUEUE_INTERVAL = '*/10'
+CELERY_IMPORTS = ("geonode.queue", )
+BROKER_URL = "django://"
+if USE_QUEUE:
+    import djcelery
+    djcelery.setup_loader()
+
 
 #Set name of additional permissions group (besides anonymous and authenticated)
 CUSTOM_GROUP_NAME = 'Organization Users'
@@ -430,7 +470,6 @@ DEFAULT_WORKSPACE = 'geonode'
 
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
-
 
 try:
     from local_settings import *

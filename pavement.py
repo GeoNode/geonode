@@ -204,6 +204,12 @@ def setup_geonetwork(options):
     if not deployed_url.exists():
         zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
 
+    src_url = str(options.config.parser.get('geonetwork', 'intermap_war_url'))
+    dst_url = webapps / "intermap.war"
+
+    if not dst_url.exists():
+        grab(src_url, dst_url)
+
 @task
 @needs([
     'setup_geoserver',
@@ -259,6 +265,12 @@ def setup_geonode_client(options):
 @task
 def sync_django_db(options):
     sh("django-admin.py syncdb --settings=geonode.settings --noinput")
+    try:
+        sh("django-admin.py syncdb --database=wmdata --settings=geonode.settings --noinput")
+    except:
+        info("******CREATION OF GAZETTEER TABLE FAILED - if you want the gazetteer enabled, \n \
+unescape the 'DATABASES' AND 'DATABASE_ROUTERS' settings in your settings file \n \
+and modify the default values if necessary")
     sh("django-admin.py migrate --settings=geonode.settings --noinput")
 
 
@@ -334,6 +346,7 @@ def create_version_name():
     # for now
     slug = "GeoNode-%s" % (
         pkg_resources.get_distribution('GeoNodePy').version,
+        date.today().isoformat()
     )
 
     return slug
@@ -653,7 +666,7 @@ def host(options):
         time.sleep(2)
 
     try:
-        sh("django-admin.py updatelayers --settings=geonode.settings")
+        #sh("django-admin.py updatelayers --settings=geonode.settings")
 
         info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
         info("The GeoNode is an unstoppable machine")

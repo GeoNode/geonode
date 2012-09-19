@@ -8,7 +8,12 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
-<script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+{% if "gme-" in GOOGLE_API_KEY %}
+    <script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+{% else %}
+    <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+{% endif %}
+
 <script type="text/javascript">
     google.load("earth", "1");
 </script>
@@ -24,32 +29,39 @@
 {{ block.super }}
 
 <script type="text/javascript">
-    var app;
-    var init = function() {
-        {% autoescape off %}
+var app;
+var init = function() {
+{% autoescape off %}
 
     var identifyText = gettext('Identify');
     var coordinateText = gettext('Map Coordinates - longitude, latitude');
+    var gazetteerText = gettext('Placename gazetteer');
 
-        var config = Ext.apply({
-            tools:  [{
-                ptype: "gxp_geonodequerytool",
-                id: "worldmap_query_tool",
-                actionTarget:  {target: "paneltbar", index: 5},
+    var config = Ext.apply({
+        tools:  [{
+            ptype: "gxp_geonodequerytool",
+            id: "worldmap_query_tool",
+            actionTarget:  {target: "paneltbar", index: 5},
             toolText: '<span class="x-btn-text">' + identifyText + '</span>',
-                iconCls: null,
-                outputConfig: {width: 400, height: 200, panIn: false},
-                featurePanel: 'queryPanel',
-                attributePanel: 'gridWinPanel',
-                toggleGroup: 'featureGroup'
-            },
-                {
-                    ptype: "gxp_coordinatetool",
+            iconCls: null,
+            outputConfig: {width: 400, height: 200, panIn: false},
+            featurePanel: 'queryPanel',
+            attributePanel: 'gridWinPanel',
+            toggleGroup: 'featureGroup'
+        },
+            {
+                ptype: "gxp_coordinatetool",
                 title: coordinateText,
-                    iconCls: null,
-                    toggleGroup: 'featureGroup',
-                    pressed: false
-            }{% if user.is_authenticated and DB_DATASTORE  %},
+                actionTarget:  {target: "paneltbar"}
+            }{% if USE_GAZETTEER %},
+            {
+                ptype: "gxp_gazetteertool",
+                actionTarget:  {target: "paneltbar", index: 7},
+                title: gazetteerText,
+                iconCls: null,
+                toggleGroup: 'featureGroup',
+                pressed: false
+            }{% endif %}{% if user.is_authenticated and DB_DATASTORE  %},
             {
                 ptype: "gxp_featuremanager",
                 id: "feature_manager",
@@ -80,21 +92,19 @@
             ],
             proxy: "/proxy/?url=",
 
-            /* The URL to a REST map configuration service.  This service
-             * provides listing and, with an authenticated user, saving of
-             * maps on the server for sharing and editing.
-             */
-            rest: "/maps/",
-            homeUrl: "{% url home%}",
-            siteUrl: "{{ SITE_URL }}",
-            localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
-            localCSWBaseUrl: "{{ GEONETWORK_BASE_URL }}srv/en/csw",
-            csrfToken: "{{ csrf_token }}",
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/",
+        homeUrl: "{% url home %}",
+        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+        csrfToken: "{{ csrf_token }}",
         {% if user.is_authenticated %}
-        db_datastore: "{{ DB_DATASTORE }}",
+        db_datastore: {{ DB_DATASTORE|lower }},
         {% endif %}
-            authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
-        }, {{ config }});
+        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
+    }, {{ config }});
 
 
 

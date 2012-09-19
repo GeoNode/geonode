@@ -324,7 +324,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         if (!config.map) {
             config.map = {};
         }
-        config.map.numZoomLevels = 21;
+        config.map.numZoomLevels = 22;
 
         OpenLayers.Map.prototype.Z_INDEX_BASE = {
             BaseLayer: 100,
@@ -332,15 +332,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             Feature: 3000,
             Popup: 3025,
             Control: 4000
-        }
+        };
 
 
 
-            GeoExplorer.superclass.constructor.apply(this, arguments);
+        GeoExplorer.superclass.constructor.apply(this, arguments);
 
         this.mapID = this.initialConfig.id;
     },
-
 
     displayXHRTrouble: function(response) {
         response.status && Ext.Msg.show({
@@ -377,30 +376,37 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     },
 
     loadConfig: function(config) {
-        config.sources['csw'] = {
-            ptype: "gxp_cataloguesource",
-            url: config.localCSWBaseUrl,
-            proxyOptions: {
-                listeners: {
-                    "beforeload": function(proxy, params) {
-                        params.headers = {
-                            'X-CSRFToken': Ext.util.Cookies.get('csrftoken')
-                        };
+        var beforeLoad = function(proxy, params) {
+            params.headers = {
+                'X-CSRFToken': Ext.util.Cookies.get('csrftoken')
+            };
+        };
+        var found = false;
+        for (var key in config.sources) {
+            var source = config.sources[key];
+            if (source.ptype === "gxp_cataloguesource" && source.url === config.localCSWBaseUrl) {
+                found = true;
+                Ext.apply(source.proxyOptions, {
+                    listeners: {
+                        "beforeload": beforeLoad
+                    }
+                });
+                break;
+            }
+        }
+        if (found === false) {
+            config.sources['csw'] = {
+                ptype: "gxp_cataloguesource",
+                url: config.localCSWBaseUrl,
+                proxyOptions: {
+                    listeners: {
+                        "beforeload": beforeLoad
                     }
                 }
-            }
-        };
+            };
+        }
         config.tools = (config.tools || []).concat(
-            {
-                ptype: "gxp_zoom",
-                actionTarget: {target: "paneltbar", index: 4}
-            }, {
-                ptype: "gxp_navigationhistory",
-                actionTarget: {target: "paneltbar", index: 6}
-            }, {
-                ptype: "gxp_zoomtoextent",
-                actionTarget: {target: "paneltbar", index: 8}
-        }, {
+{
             ptype: "gxp_layermanager",
             groups: (config.map.groups || config.treeconfig),
             id: "treecontentmgr",
@@ -448,8 +454,20 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 ptype: "gxp_styler",
                 rasterStyling: true,
                 actionTarget: ["treecontent.contextMenu"]
-            }
-        );
+            }, {
+                ptype: "gxp_print",
+                openInNewWindow: true,
+                includeLegend: true,
+                printCapabilities: window.printCapabilities,
+                text: '<span class="x-btn-text">' + this.printBtnText + '</span>',
+                iconCls: null,
+                actionTarget: {target: "paneltbar", index: 10}
+            },{
+                ptype: "gxp_googleearth",
+                text: '<span class="x-btn-text">' + this.googleEarthBtnText + '</span>',
+                iconCls: null,
+                actionTarget: {target: "paneltbar", index: 14}
+            });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
 
         var oldLayerChange = gxp.plugins.FeatureEditor.prototype.onLayerChange;
@@ -750,34 +768,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             onlyShowOnFirstLoad: true
         }];
 
-        this.mapPanel.map.events.register("preaddlayer", this, function(e) {
-            var layer = e.layer;
-            if (layer instanceof OpenLayers.Layer.WMS) {
-                layer.events.on({
-                    "loadstart": function() {
-                        layerCount++;
-                        incrementLayerStats(layer);
-                        if (!this.busyMask) {
-                            this.busyMask = new Ext.LoadMask(
-                                this.mapPanel.map.div, {
-                                    msg: this.loadingMapMessage
-                                }
-                            );
-                            this.busyMask.show();
-                        }
-                        layer.events.unregister("loadstart", this, arguments.callee);
-                    },
-                    "loadend": function() {
-                        layerCount--;
-                        if (layerCount === 0) {
-                            this.busyMask.hide();
-                        }
-                        layer.events.unregister("loadend", this, arguments.callee);
-                    },
-                    scope: this
-                });
-            }
-        });
+        GeoExplorer.superclass.initMapPanel.apply(this, arguments);
     },
 
     /**
@@ -817,9 +808,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.on("ready", function() {
 
             this.addInfo();
-
-            //var queryTool = new GeoExplorer.FeatureQueryTool(this, 'queryPanel', 'gridWinPanel');
-
             this.mapPanel.layers.on({
                 "update": function() {
                     this.modified |= 1;
@@ -854,16 +842,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
             // find the add layers plugin
-
-
-
             var addLayers = null;
-
             for (var key in this.tools) {
                 var tool = this.tools[key];
                 if (tool.ptype === "gxp_addlayers") {
                     addLayers = tool;
                     addLayers.startSourceId = startSourceId;
+                    addLayers.catalogSourceKey = startSourceId;
                 } else if (tool.ptype == "gxp_layermanager") {
                     this.layerTree = tool;
                 }
@@ -874,37 +859,15 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     addLayers.showCapabilitiesGrid();
                 }
             }
-
-//            for (x = 0,max = this.config.map.layers.length; x < max; x++) {
-//                if (this.map.layers[x].group && this.map.layers[x].group != "background")
-//                    this.layerTree.toggleFolder({"group": this.map.layers[x].group});
-//            }
-
-
         }, this);
+
+
 
         this.gxSearchBar = new GeoExplorer.SearchBar(this);
         var searchPanel = new Ext.Panel({
             anchor: "100% 5%",
             items: [this.gxSearchBar]
         });
-
-
-
-        this.legendPanel = new GeoExt.LegendPanel({
-            title: this.legendPanelText,
-            border: false,
-            hideMode: "offsets",
-            split: true,
-            autoScroll: true,
-            ascending: false,
-            map: this.mapPanel.map,
-            filter: function(record) {
-                return record.data.group == undefined || (record.data.group != "Overlays" && !(record.data.layer instanceof OpenLayers.Layer.Vector));
-            },
-            defaults: {cls: 'legend-item'}
-        });
-
 
 
         //needed for Safari
@@ -985,6 +948,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 },
                 "show": function() {
                     // disable layers toolbar, selection and context menu
+                    var layerTree = Ext.getCmp("treecontent");
                     layerTree.contextMenu.on("beforeshow", OpenLayers.Function.False);
                     this.on(
                         "beforelayerselectionchange", OpenLayers.Function.False
@@ -1393,13 +1357,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             listeners: {
                 "server-added": function(url, type) {
                     newSourceWindow.setLoading();
-                    this.addLayerSource({
+                    app.addLayerSource({
                         config: {url: url, ptype: type},
                         callback: function(id) {
                             // add to combo and select
                             var record = new sources.recordType({
                                 id: id,
-                                title: this.layerSources[id].title || "Untitled" // TODO: titles
+                                title: app.layerSources[id].title || "Untitled" // TODO: titles
                             });
                             sources.insert(0, [record]);
                             sourceComboBox.onSelect(record, 0);
@@ -1409,7 +1373,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             // TODO: wire up success/failure
                             newSourceWindow.setError("Error contacting server.\nPlease check the url and try again.");
                         },
-                        scope: this
+                        scope: app
                     });
                 }
             },
@@ -1609,127 +1573,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var busyMask = null;
         var geoEx = this;
 
-
-
-
-        var printButton = new Ext.Button({
-            tooltip: this.printTipText,
-            text: '<span class="x-btn-text">' + this.printBtnText + '</span>',
-            handler: function() {
-                //alert('initMapPanel:' + this.mapPanel.map.numZoomLevels);
-                var unsupportedLayers = [];
-                var printWindow = new Ext.Window({
-                    title: this.printWindowTitleText,
-                    modal: true,
-                    border: false,
-                    autoHeight: true,
-                    resizable: false,
-                    items: [
-                        {
-                            xtype: "gxux_printpreview",
-                            mapTitle: this.about["title"],
-                            comment: this.about["abstract"],
-                            minWidth: 336,
-                            printMapPanel: {
-                                height: Math.min(450, Ext.get(document.body).getHeight() - 150),
-                                autoWidth: true,
-                                limitScales: true,
-                                map: {
-                                    theme: null,
-                                    controls: [
-                                        new OpenLayers.Control.Navigation({
-                                            zoomWheelEnabled: false,
-                                            zoomBoxEnabled: false
-                                        }),
-                                        new OpenLayers.Control.PanPanel(),
-                                        new OpenLayers.Control.Attribution()
-                                    ],
-                                    eventListeners: {
-                                        "preaddlayer": function(evt) {
-                                            if (evt.layer instanceof OpenLayers.Layer.Google) {
-                                                unsupportedLayers.push(evt.layer.name);
-                                                return false;
-                                            }
-                                        },
-                                        scope: this
-                                    }
-                                }
-                            },
-                            printProvider: {
-                                capabilities: window.printCapabilities,
-                                listeners: {
-                                    "beforeprint": function() {
-                                        // The print module does not like array params.
-                                        //TODO Remove when http://trac.geoext.org/ticket/216 is fixed.
-                                        printWindow.items.get(0).printMapPanel.layers.each(function(l) {
-                                            var params = l.getLayer().params;
-                                            for (var p in params) {
-                                                if (params[p] instanceof Array) {
-                                                    params[p] = params[p].join(",");
-                                                }
-                                            }
-                                        });
-                                    },
-                                    "print": function() {
-                                        printWindow.close();
-                                    },
-                                    "printException": function(cmp, response) {
-                                        this.displayXHRTrouble(response);
-                                    },
-                                    scope: this
-                                }
-                            },
-                            includeLegend: true,
-                            sourceMap: this.mapPanel,
-                            legend: this.legendPanel
-                        }
-                    ]
-                }).show();
-                printWindow.center();
-
-                unsupportedLayers.length &&
-                Ext.Msg.alert(this.unsupportedLayersTitleText, this.unsupportedLayersText +
-                    "<ul><li>" + unsupportedLayers.join("</li><li>") + "</li></ul>");
-
-            },
-            scope: this
-        });
-
-        // create a navigation control
-        var navAction = new GeoExt.Action({
-            tooltip: this.navActionTipText,
-            iconCls: "icon-pan",
-            enableToggle: true,
-            pressed: true,
-            allowDepress: false,
-            control: new OpenLayers.Control.Navigation(),
-            map: this.mapPanel.map,
-            toggleGroup: toolGroup
-        });
-
-        // create a navigation history control
-        var historyControl = new OpenLayers.Control.NavigationHistory();
-        this.mapPanel.map.addControl(historyControl);
-
-        this.mapPanel.map.addControl(new OpenLayers.Control.MousePosition({
-            displayProjection: 'EPSG:4326'
-        }));
-
-        // create actions for previous and next
-        var navPreviousAction = new GeoExt.Action({
-            tooltip: this.navPreviousActionText,
-            iconCls: "icon-zoom-previous",
-            disabled: true,
-            control: historyControl.previous
-        });
-
-        var navNextAction = new GeoExt.Action({
-            tooltip: this.navNextAction,
-            iconCls: "icon-zoom-next",
-            disabled: true,
-            control: historyControl.next
-        });
-
         var info = {controls: []};
         // create an info control to show introductory text window
         var infoButton = new Ext.Button({
@@ -1805,24 +1648,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
-        var enable3DButton = new Ext.Button({
-            text: '<span class="x-btn-text">' + this.googleEarthBtnText + '</span>',
-            tooltip: this.switchTo3DActionText,
-            enableToggle: true,
-            toggleHandler: function(button, state) {
-                if (state === true) {
-                    this.mapPanelContainer.getLayout().setActiveItem(1);
-                    this.toolbar.disable();
-                    button.enable();
-                } else {
-                    this.mapPanelContainer.getLayout().setActiveItem(0);
-                    this.toolbar.enable();
-                }
-            },
-            scope: this
-        });
-
-
         var advancedToolsLink = function() {
             if (!this.mapID) {
                 Ext.Msg.alert("Save your Map View", "You must save this map view before using advanced map tools");
@@ -1871,9 +1696,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }), "-","-","-",
             "-",
             publishAction,
-            "-",
-            window.printCapabilities ? printButton : "", "-", infoButton,
-            "-",enable3DButton,"-",streetViewButton, "-",
+            "-","-",
+            infoButton,"-",
+            "-",streetViewButton,"-",
             jumpBar,
             '->',
             historyAction, shareMapButton
@@ -1888,8 +1713,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         return tools;
     },
-
-
 
     /** private: method[makeExportDialog]
      *
@@ -2123,33 +1946,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         metaDataPanel.enable();
 
-
-        /*
-         var saveAsButton = new Ext.Button({
-         id: 'gx_saveAsButton',
-         text: this.metadataFormSaveAsCopyText,
-         cls:'x-btn-text',
-         disabled: !this.about.title,
-         handler: function(button, event){
-         if (this.about["urlsuffix"] == urlField.getValue() && this.about["urlsuffix"].length > 0){
-         Ext.Msg.alert("Change the URL suffix", "You must change the URL suffix before saving a copy of this map view.");
-         urlField.markInvalid("This URL is already taken, please choose another");
-         return false;
-         } else {
-         checkUrlBeforeSave(true);
-         }
-         },
-         scope: this
-         });
-         */
-
         var saveButton = new Ext.Button({
             id: 'gx_saveButton',
             text: this.metadataFormSaveText,
             cls:'x-btn-text',
             disabled: !this.about.title,
             handler: function(e) {
-
                 checkUrlBeforeSave(false);
             },
             scope: this
@@ -2525,14 +2327,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         //Ext.getCmp('gx_saveAsButton').enable();
     },
 
-
-
     updateURL: function() {
         /* PUT to this url to update an existing map */
         return this.rest + this.mapID + '/data';
     },
-
-
 
     /** api: method[save]
      *  :arg as: ''Boolean'' True if map should be "Saved as..."
@@ -2541,8 +2339,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      *  any configuration before applyConfig is called.
      */
     save: function(as) {
-
-
         var config = this.getState();
 
         var treeConfig = [];

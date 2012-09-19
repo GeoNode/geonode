@@ -24,7 +24,7 @@
   <onlineResource>http://geoserver.org</onlineResource>
   <verbose>false</verbose>
   <verboseExceptions>false</verboseExceptions>
-  <updateSequence>12</updateSequence>
+  <updateSequence>106</updateSequence>
   <featureTypeCacheSize>0</featureTypeCacheSize>
   <globalServices>true</globalServices>
   <xmlPostRequestLogBufferSize>1024</xmlPostRequestLogBufferSize>

@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
 import geonode.maps.urls
+import geonode.gazetteer.urls
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -47,12 +48,6 @@ urlpatterns = patterns('',
 
     (r'^accounts/login', 'django.contrib.auth.views.login'),
     (r'^accounts/logout', 'django.contrib.auth.views.logout'),
-    (r'^affiliation/confirm', 'geonode.registration.views.confirm'),
-
-    (r'^accounts/', include('geonode.registration.urls')),
-    (r'^profiles/', include('geonode.profiles.urls')),
-    (r'^avatar/', include('avatar.urls')),
-
 
     # Meta
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
@@ -61,9 +56,15 @@ urlpatterns = patterns('',
         js_info_dict, name='jscat'),
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
                                   {'sitemaps': sitemaps}, name='sitemap'),
-    (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/?$','geonode.proxy.views.download'),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
+    (r'^affiliation/confirm', 'geonode.register.views.confirm'),
+    (r'^avatar/', include('avatar.urls')),
+    (r'^accounts/', include('geonode.register.urls')),
+    (r'^profiles/', include('geonode.profile.urls')),
+    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
+    (r'^gazetteer/', include('geonode.gazetteer.urls'))
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns

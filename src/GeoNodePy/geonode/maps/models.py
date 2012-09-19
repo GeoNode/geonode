@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import threading
 from django.conf import settings
 from django.db import models
-from owslib.wms import WebMapService
 from geonode.maps.owslib_csw import CatalogueServiceWeb
 from geoserver.catalog import Catalog
 from geonode.core.models import PermissionLevelMixin
@@ -12,6 +10,7 @@ from django.db.models import signals
 from taggit.managers import TaggableManager
 from django.utils import simplejson as json
 from django.utils.safestring import mark_safe
+
 import httplib2
 import urllib
 from urlparse import urlparse
@@ -21,7 +20,7 @@ from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from lxml import etree
-from geonode.maps.gs_helpers import cascading_delete
+from geonode.maps.gs_helpers import cascading_delete, get_postgis_bbox
 import logging
 from geonode.maps.encode import num_encode
 from django.core.cache import cache
@@ -38,9 +37,6 @@ ows_sub = re.compile(re.escape('&SERVICE=WMS|&REQUEST=GetCapabilities'), re.IGNO
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
                             x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
-
-
-
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -435,39 +431,39 @@ ALL_LANGUAGES = (
 
 
 CHARSETS = [
-        ['', 'None/Unknown'],
-        ['UTF-8', 'UTF-8/Unicode'],
-        ['ISO-8859-1', 'Latin1/ISO-8859-1'],
-        ['ISO-8859-2', 'Latin2/ISO-8859-2'],
-        ['ISO-8859-3', 'Latin3/ISO-8859-3'],
-        ['ISO-8859-4', 'Latin4/ISO-8859-4'],
-        ['ISO-8859-5', 'Latin5/ISO-8859-5'],
-        ['ISO-8859-6', 'Latin6/ISO-8859-6'],
-        ['ISO-8859-7', 'Latin7/ISO-8859-7'],
-        ['ISO-8859-8', 'Latin8/ISO-8859-8'],
-        ['ISO-8859-9', 'Latin9/ISO-8859-9'],
-        ['ISO-8859-10','Latin10/ISO-8859-10'],
-        ['ISO-8859-13','Latin13/ISO-8859-13'],
-        ['ISO-8859-14','Latin14/ISO-8859-14'],
-        ['ISO8859-15','Latin15/ISO-8859-15'],
-        ['Big5', 'BIG5'],
-        ['EUC-JP','EUC-JP'],
-        ['EUC-KR','EUC-KR'],
-        ['GBK','GBK'],
-        ['GB18030','GB18030'],
-        ['Shift_JIS','Shift_JIS'],
-        ['KOI8-R','KOI8-R'],
-        ['KOI8-U','KOI8-U'],
-        ['windows-874', 'Windows CP874'],
-        ['windows-1250', 'Windows CP1250'],
-        ['windows-1251', 'Windows CP1251'],
-        ['windows-1252', 'Windows CP1252'],
-        ['windows-1253', 'Windows CP1253'],
-        ['windows-1254', 'Windows CP1254'],
-        ['windows-1255', 'Windows CP1255'],
-        ['windows-1256', 'Windows CP1256'],
-        ['windows-1257', 'Windows CP1257'],
-        ['windows-1258', 'Windows CP1258']
+    ['', 'None/Unknown'],
+    ['UTF-8', 'UTF-8/Unicode'],
+    ['ISO-8859-1', 'Latin1/ISO-8859-1'],
+    ['ISO-8859-2', 'Latin2/ISO-8859-2'],
+    ['ISO-8859-3', 'Latin3/ISO-8859-3'],
+    ['ISO-8859-4', 'Latin4/ISO-8859-4'],
+    ['ISO-8859-5', 'Latin5/ISO-8859-5'],
+    ['ISO-8859-6', 'Latin6/ISO-8859-6'],
+    ['ISO-8859-7', 'Latin7/ISO-8859-7'],
+    ['ISO-8859-8', 'Latin8/ISO-8859-8'],
+    ['ISO-8859-9', 'Latin9/ISO-8859-9'],
+    ['ISO-8859-10','Latin10/ISO-8859-10'],
+    ['ISO-8859-13','Latin13/ISO-8859-13'],
+    ['ISO-8859-14','Latin14/ISO-8859-14'],
+    ['ISO8859-15','Latin15/ISO-8859-15'],
+    ['Big5', 'BIG5'],
+    ['EUC-JP','EUC-JP'],
+    ['EUC-KR','EUC-KR'],
+    ['GBK','GBK'],
+    ['GB18030','GB18030'],
+    ['Shift_JIS','Shift_JIS'],
+    ['KOI8-R','KOI8-R'],
+    ['KOI8-U','KOI8-U'],
+    ['windows-874', 'Windows CP874'],
+    ['windows-1250', 'Windows CP1250'],
+    ['windows-1251', 'Windows CP1251'],
+    ['windows-1252', 'Windows CP1252'],
+    ['windows-1253', 'Windows CP1253'],
+    ['windows-1254', 'Windows CP1254'],
+    ['windows-1255', 'Windows CP1255'],
+    ['windows-1256', 'Windows CP1256'],
+    ['windows-1257', 'Windows CP1257'],
+    ['windows-1258', 'Windows CP1258']
 ]
 
 
@@ -492,7 +488,7 @@ CONSTRAINT_OPTIONS = [
     'Attribution License (ODC-By)',
     'Open Database License (ODC-ODbL)',
     'CC-BY-SA',
-    
+
     # ISO standard constraint options.
     'copyright',
     'intellectualPropertyRights',
@@ -527,7 +523,7 @@ CONTACT_FIELDS = [
 ]
 
 DEFAULT_SUPPLEMENTAL_INFORMATION=_(
-''
+    ''
 )
 
 DEFAULT_CONTENT=_(
@@ -587,11 +583,11 @@ class Contact(models.Model):
     name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True)
     organization = models.CharField(_('Organization Name'), max_length=255, blank=True, null=True)
     position = models.CharField(_('Position Name'), max_length=255, blank=True, null=True)
-    voice = models.CharField(_('Voice'), max_length=255, blank=True, null=True)
-    fax = models.CharField(_('Facsimile'),  max_length=255, blank=True, null=True)
-    delivery = models.CharField(_('Delivery Point'), max_length=255, blank=True, null=True)
+    voice = models.CharField(_('Phone'), max_length=255, blank=True, null=True)
+    fax = models.CharField(_('Fax'),  max_length=255, blank=True, null=True)
+    delivery = models.CharField(_('Address'), max_length=255, blank=True, null=True)
     city = models.CharField(_('City'), max_length=255, blank=True, null=True)
-    area = models.CharField(_('Administrative Area'), max_length=255, blank=True, null=True)
+    area = models.CharField(_('State/Province'), max_length=255, blank=True, null=True)
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True)
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True)
     email = models.EmailField(blank=True, null=True, unique=False)
@@ -599,6 +595,17 @@ class Contact(models.Model):
     is_org_member = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
     member_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
+
+
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
 
 
     def clean(self):
@@ -631,7 +638,7 @@ _viewer_projection_lookup = {
         "maxResolution": 156543.03390625,
         "units": "m",
         "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
-    },
+        },
     "EPSG:4326": {
         "max_resolution": (180 - (-180)) / 256,
         "units": "degrees",
@@ -640,7 +647,7 @@ _viewer_projection_lookup = {
 }
 
 def _get_viewer_projection_info(srid):
-    # TODO: Look up projection details in EPSG database
+    #TODO: Look up projection details in EPSG database
     return _viewer_projection_lookup.get(srid, {})
 
 _wms = None
@@ -686,7 +693,7 @@ class LayerManager(models.Manager):
         # check if geonetwork is logged in
         if not self.geonetwork.connected:
             self.geonetwork.login()
-        # Make sure to logout after you have finished using it.
+            # Make sure to logout after you have finished using it.
         return self.geonetwork
 
     def admin_contact(self):
@@ -696,7 +703,7 @@ class LayerManager(models.Manager):
             raise RuntimeError('GeoNode needs at least one admin/superuser set')
 
         contact = Contact.objects.get_or_create(user=superusers[0],
-                                                defaults={"name": "Geonode Admin"})[0]
+            defaults={"name": "Geonode Admin"})[0]
         return contact
 
     def default_poc(self):
@@ -801,8 +808,8 @@ class LayerManager(models.Manager):
 
     def update_stores(self):
         cat = self.gs_catalog
-	for layer in Layer.objects.all():
-    	    logger.debug('Process %s', layer.name)
+        for layer in Layer.objects.all():
+            logger.debug('Process %s', layer.name)
             resource = cat.get_resource(layer.name)
             if resource:
                 store = resource.store
@@ -816,10 +823,18 @@ class LayerCategory(models.Model):
     name = models.CharField(_('Category Name'), max_length=255, blank=True, null=True, unique=True)
     title = models.CharField(_('Category Title'), max_length=255, blank=True, null=True, unique=True)
     description = models.TextField(_('Category Description'), blank=True, null=True)
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
 
     def __str__(self):
         return "%s" % self.name
-
 
 
 class Layer(models.Model, PermissionLevelMixin):
@@ -891,12 +906,20 @@ class Layer(models.Model, PermissionLevelMixin):
     The last time the object was modified.
     """
 
-    downloadable = models.BooleanField(_('Downloadable'), blank=False, null=False, default=True)
+    downloadable = models.BooleanField(_('Downloadable?'), blank=False, null=False, default=True)
     """
     Is the layer downloadable?
     """
 
+    in_gazetteer = models.BooleanField(_('In Gazetteer?'), blank=False, null=False, default=False)
+    """
+    Is the layer in the gazetteer?
+    """
 
+    gazetteer_project = models.CharField(_("Gazetteer Project"), max_length=128, blank=True, null=True)
+    """
+    Gazetteer project that the layer is associated with
+    """
 
     # Section 8
     data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True)
@@ -932,35 +955,34 @@ class Layer(models.Model, PermissionLevelMixin):
         links = []
 
         if self.resource.resource_type == "featureType":
-            def wfs_link(mime, extra_params):
-                params = {
+            def wfs_link(mime,extra_params,ext):
+                return settings.SITEURL + "download/wfs/" + str(self.id) + "/" + ext + "?" + urllib.urlencode({
                     'service': 'WFS',
                     'version': '1.0.0',
                     'request': 'GetFeature',
                     'typename': self.typename,
-                    'outputFormat': mime
-                }
-                params.update(extra_params)
-                return settings.SITEURL + "download/wfs/" + str(self.id) + "?" + urllib.urlencode(params)
+                    'outputFormat': mime,
+                    'format_options': 'charset:UTF-8' #TODO: make this a settings property?
+                })
 
             types = [
                 ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
                 ("gml", _("GML 2.0"), "gml2", {}),
                 ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
                 ("csv", _("CSV"), "csv", {}),
-                ("excel", _("Excel"), "excel", {}),
+                ("xls", _("Excel"), "excel", {}),
                 ("json", _("GeoJSON"), "json", {})
             ]
-            links.extend((ext, name, wfs_link(mime, extra_params)) for ext, name, mime, extra_params in types)
+            links.extend((ext, name, wfs_link(mime, extra_params, ext)) for ext, name, mime, extra_params in types)
         elif self.resource.resource_type == "coverage":
             try:
                 client = httplib2.Http()
-                description_url = settings.SITEURL + "download/wcs/" + str(self.id) + "?" + urllib.urlencode({
-                        "service": "WCS",
-                        "version": "1.0.0",
-                        "request": "DescribeCoverage",
-                        "coverage": self.typename
-                    })
+                description_url = settings.SITEURL + "download/wcs/" + str(self.id)  + "/mime" + "?" + urllib.urlencode({
+                    "service": "WCS",
+                    "version": "1.0.0",
+                    "request": "DescribeCoverage",
+                    "coverage": self.typename
+                })
                 content = client.request(description_url)[1]
                 doc = etree.fromstring(content)
                 extent = doc.find(".//%(gml)slimits/%(gml)sGridEnvelope" % {"gml": "{http://www.opengis.net/gml}"})
@@ -968,8 +990,8 @@ class Layer(models.Model, PermissionLevelMixin):
                 high = extent.find("{http://www.opengis.net/gml}high").text.split()
                 w, h = [int(h) - int(l) for (h, l) in zip(high, low)]
 
-                def wcs_link(mime):
-                    return settings.SITEURL + "download/wcs/" + str(self.id) + "?" + urllib.urlencode({
+                def wcs_link(mime,ext):
+                    return settings.SITEURL + "download/wcs/" + str(self.id) + "/" + ext + "?" + urllib.urlencode({
                         "service": "WCS",
                         "version": "1.0.0",
                         "request": "GetCoverage",
@@ -981,17 +1003,17 @@ class Layer(models.Model, PermissionLevelMixin):
                         "format": mime
                     })
 
-                types = [("tiff", "GeoTIFF", "geotiff")]
-                links.extend([(ext, name, wcs_link(mime)) for (ext, name, mime) in types])
-            except Exception:
+                types = [("tif", "GeoTIFF", "geotiff")]
+                links.extend([(ext, name, wcs_link(mime,ext)) for (ext, name, mime) in types])
+            except Exception, e:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
                 # But at least this indicates a problem
                 notiff = mark_safe("<del>GeoTIFF</del>")
                 links.extend([("tiff",notiff,"#")])
 
-        def wms_link(mime):
-            return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
+        def wms_link(mime, ext):
+            return settings.SITEURL + "download/wms/" + str(self.id) + "/" + ext + "?"  + urllib.urlencode({
                 'service': 'WMS',
                 'request': 'GetMap',
                 'layers': self.typename,
@@ -1003,19 +1025,20 @@ class Layer(models.Model, PermissionLevelMixin):
             })
 
         types = [
+            ("tiff", _("GeoTIFF"), "image/geotiff"),
             ("jpg", _("JPEG"), "image/jpeg"),
             ("pdf", _("PDF"), "application/pdf"),
             ("png", _("PNG"), "image/png")
         ]
 
-        links.extend((ext, name, wms_link(mime)) for ext, name, mime in types)
+        links.extend((ext, name, wms_link(mime,ext)) for ext, name, mime in types)
 
-        kml_reflector_link_download = settings.SITEURL + "download/wms_kml/" + str(self.id) + "?"  + urllib.urlencode({
+        kml_reflector_link_download = settings.SITEURL + "download/wms_kml/" + str(self.id) + "/kml" + "?"  + urllib.urlencode({
             'layers': self.typename,
             'mode': "download"
         })
 
-        kml_reflector_link_view = settings.SITEURL + "download/wms_kml/" + str(self.id) + "?" + urllib.urlencode({
+        kml_reflector_link_view = settings.SITEURL + "download/wms_kml/" + str(self.id)  + "/kml" + "?" + urllib.urlencode({
             'layers': self.typename,
             'mode': "refresh"
         })
@@ -1031,13 +1054,13 @@ class Layer(models.Model, PermissionLevelMixin):
 
         # Check the layer is in the wms get capabilities record
         # FIXME: Implement caching of capabilities record site wide
-#        if (_wms is None) or (self.typename not in _wms.contents):
-#            get_wms()
-#        try:
-#            _wms[self.typename]
-#        except:
-#            msg = "WMS Record missing for layer [%s]" % self.typename
-#            raise GeoNodeException(msg)
+        #        if (_wms is None) or (self.typename not in _wms.contents):
+        #            get_wms()
+        #        try:
+        #            _wms[self.typename]
+        #        except:
+        #            msg = "WMS Record missing for layer [%s]" % self.typename
+        #            raise GeoNodeException(msg)
 
         # Check the layer is in GeoServer's REST API
         # It would be nice if we could ask for the definition of a layer by name
@@ -1066,15 +1089,15 @@ class Layer(models.Model, PermissionLevelMixin):
         if(csw_layer.uri != self.get_absolute_url()):
             msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
 
-        # Visit get_absolute_url and make sure it does not give a 404
-        #logger.info(self.get_absolute_url())
-        #response, body = http.request(self.get_absolute_url())
-        #if(int(response['status']) != 200):
-        #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
-        #    raise GeoNodeException(msg)
+            # Visit get_absolute_url and make sure it does not give a 404
+            #logger.info(self.get_absolute_url())
+            #response, body = http.request(self.get_absolute_url())
+            #if(int(response['status']) != 200):
+            #    msg = "Layer Info page for layer [%s] is %d" % (self.typename, int(response['status']))
+            #    raise GeoNodeException(msg)
 
-        #FIXME: Add more checks, for example making sure the title, keywords and description
-        # are the same in every database.
+            #FIXME: Add more checks, for example making sure the title, keywords and description
+            # are the same in every database.
 
     def layer_attributes(self):
         attribute_fields = cache.get('layer_searchfields_' + self.typename)
@@ -1093,27 +1116,27 @@ class Layer(models.Model, PermissionLevelMixin):
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
         return set([layer.map for layer in MapLayer.objects.filter(ows_url=local_wms, name=self.typename).select_related()])
 
-#    def metadata(self):
-#        if (_wms is None) or (self.typename not in _wms.contents):
-#            get_wms()
-            # wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
-            # netloc = urlparse(wms_url).netloc
-            # http = httplib2.Http()
-            # http.add_credentials(_user, _password)
-            # http.authorizations.append(
-            #     httplib2.BasicAuthentication(
-            #         (_user, _password),
-            #         netloc,
-            #         wms_url,
-            #         {},
-            #         None,
-            #         None,
-            #         http
-            #     )
-            # )
-            # response, body = http.request(wms_url)
-            # _wms = WebMapService(wms_url, xml=body)
-#        return _wms[self.typename]
+    #    def metadata(self):
+    #        if (_wms is None) or (self.typename not in _wms.contents):
+    #            get_wms()
+    # wms_url = "%swms?request=GetCapabilities" % settings.GEOSERVER_BASE_URL
+    # netloc = urlparse(wms_url).netloc
+    # http = httplib2.Http()
+    # http.add_credentials(_user, _password)
+    # http.authorizations.append(
+    #     httplib2.BasicAuthentication(
+    #         (_user, _password),
+    #         netloc,
+    #         wms_url,
+    #         {},
+    #         None,
+    #         None,
+    #         http
+    #     )
+    # )
+    # response, body = http.request(wms_url)
+    # _wms = WebMapService(wms_url, xml=body)
+    #        return _wms[self.typename]
 
     def __setattr__(self, name, value):
         return super(Layer, self).__setattr__(name, value)
@@ -1138,7 +1161,18 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
-                body = http.request(dft_url)[1]
+                netloc = urlparse(dft_url).netloc
+                http.authorizations.append(
+                    httplib2.BasicAuthentication(
+                        (_user, _password),
+                        netloc,
+                        dft_url,
+                            {},
+                        None,
+                        None,
+                        http
+                    ))
+                response, body = http.request(dft_url)
                 doc = etree.fromstring(body)
                 path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
                 atts = OrderedDict({})
@@ -1158,6 +1192,17 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
+                netloc = urlparse(dft_url).netloc
+                http.authorizations.append(
+                    httplib2.BasicAuthentication(
+                        (_user, _password),
+                        netloc,
+                        dft_url,
+                            {},
+                        None,
+                        None,
+                        http
+                    ))
                 response, body = http.request(dc_url)
                 doc = etree.fromstring(body)
                 path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
@@ -1173,7 +1218,7 @@ class Layer(models.Model, PermissionLevelMixin):
         return ({
             "dataStore" : "Vector Data",
             "coverageStore": "Raster Data",
-        }).get(self.storeType, "Data")
+            }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
@@ -1321,7 +1366,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
         if self.geographic_bounding_box is '' or self.geographic_bounding_box is None:
             self.set_bbox(gs_resource.native_bbox, srs=self.srs)
-        ## Save using filter/update to avoid triggering post_save_layer
+            ## Save using filter/update to avoid triggering post_save_layer
         Layer.objects.filter(id=self.id).update(srs = self.srs, llbbox = self.llbbox, bbox=self.bbox, geographic_bounding_box = self.geographic_bounding_box)
 
     def _autopopulate(self):
@@ -1431,6 +1476,56 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['styles'] = ''
         return cfg
 
+    def queue_gazetteer_update(self):
+        from geonode.queue.models import GazetteerUpdateJob
+        if GazetteerUpdateJob.objects.filter(layer=self.id).exists() == 0:
+            newJob = GazetteerUpdateJob(layer=self)
+            newJob.save()
+
+
+
+    def update_gazetteer(self):
+        from geonode.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
+        if not self.in_gazetteer:
+            delete_from_gazetteer(self.name)
+        else:
+            includedAttributes = []
+            gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
+            for attribute in gazetteerAttributes:
+                includedAttributes.append(attribute.attribute)
+
+            startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
+            endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
+
+            add_to_gazetteer(self.name, includedAttributes, start_attribute=startAttribute, end_attribute=endAttribute, project=self.gazetteer_project)
+
+    def queue_bounds_update(self):
+        from geonode.queue.models import LayerBoundsUpdateJob
+        if LayerBoundsUpdateJob.objects.filter(layer=self.id).exists() == 0:
+            newJob = LayerBoundsUpdateJob(layer=self)
+            newJob.save()
+
+    def update_bounds(self):
+        #Get extent for layer from PostGIS
+        bboxes = get_postgis_bbox(self.name)
+        if len(bboxes) != 1 and len(bboxes[0]) != 2:
+            return
+
+        bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
+        llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
+
+        self.bbox = [float(l) for l in bbox]
+        self.llbbox = [float(l) for l in llbbox]
+        self.set_bbox(bbox, srs=self.srs)
+
+        # Use update to avoid unnecessary post_save signal
+        Layer.objects.filter(id=self.id).update(bbox=self.bbox,llbbox=self.llbbox,geographic_bounding_box=self.geographic_bounding_box )
+
+        #Update geonetwork record with latest extent
+        logger.info("Save new bounds to geonetwork")
+        self.save_to_geonetwork()
+
+
 class LayerAttribute(models.Model):
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
@@ -1439,6 +1534,10 @@ class LayerAttribute(models.Model):
     searchable = models.BooleanField(_('Searchable?'), default=False)
     visible = models.BooleanField(_('Visible?'), default=True)
     display_order = models.IntegerField(_('Display Order'), default=1)
+    in_gazetteer = models.BooleanField(_('In Gazetteer?'), default=False)
+    is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
+    is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
+    date_format = models.CharField(_('Date Format'), max_length=255, blank=True, null=True)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
@@ -1486,8 +1585,10 @@ class Map(models.Model, PermissionLevelMixin):
     owner = models.ForeignKey(User, verbose_name=_('owner'), blank=True, null=True)
     # The user that created/owns this map.
 
-    last_modified = models.DateTimeField(auto_now_add=True)
-    # The last time the map was modified.
+    created_dttm = models.DateTimeField(_("Date Created"), auto_now_add=True)
+    """
+    The date/time the map was created.
+    """
 
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
 
@@ -1604,7 +1705,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         sejumps = self.jump_set.all()
         server_lookup = {}
-        sources = {}
+        sources = {'local': settings.DEFAULT_LAYER_SOURCE }
 
         def uniqify(seq):
             """
@@ -1659,14 +1760,14 @@ class Map(models.Model, PermissionLevelMixin):
                 'projection': self.projection,
                 'zoom': self.zoom,
 
-            },
+                },
             'social_explorer': [se.json() for se in sejumps]
         }
 
 
         if self.group_params:
-                #config["treeconfig"] = json.loads(self.group_params)
-                config["map"]["groups"] = json.loads(self.group_params)
+            #config["treeconfig"] = json.loads(self.group_params)
+            config["map"]["groups"] = json.loads(self.group_params)
 
         '''
         # Mark the last added layer as selected - important for data page
@@ -1678,6 +1779,7 @@ class Map(models.Model, PermissionLevelMixin):
         return config
 
     def update_from_viewer(self, conf):
+        from django.utils.html import escape
         """
         Update this Map's details by parsing a JSON object as produced by
         a GXP Viewer.
@@ -1788,10 +1890,10 @@ class MapSnapshot(models.Model):
 
     def json(self):
         return {
-                "map": self.map.id,
-                "created": self.created_dttm.isoformat(),
-                "user": self.user.username if self.user else None,
-                "url": num_encode(self.id)
+            "map": self.map.id,
+            "created": self.created_dttm.isoformat(),
+            "user": self.user.username if self.user else None,
+            "url": num_encode(self.id)
         }
 
 
@@ -1963,7 +2065,7 @@ class MapLayer(models.Model):
         :method:`geonode.maps.models.Map.viewer_json` for an example of
         generating a full map configuration.
         """
-#       Caching of  maplayer config, per user (due to permissions)
+        #       Caching of  maplayer config, per user (due to permissions)
         if self.id is not None:
             cfg = cache.get("maplayer_config_" + str(self.id) + "_" + str(0 if user is None else user.id))
             if cfg is not None:
@@ -2012,11 +2114,9 @@ class MapLayer(models.Model):
                 logger.error("Could not retrieve Layer with typename of %s : %s", self.name, str(e))
         elif self.source_params.find( "gxp_hglsource") > -1:
             # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
-            from geonode.proxy.views import hglServiceStarter
-            import threading
-            t = threading.Thread(target=hglServiceStarter,
-                args=[None, self.name])
-            t.start()
+            from geonode.queue.tasks import loadHGL
+            loadHGL(self.name)
+
 
         #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)
         if self.id is not None:
@@ -2045,6 +2145,16 @@ class Role(models.Model):
     """
     value = models.CharField('Role', choices= [(x, x) for x in ROLE_VALUES], max_length=255, unique=True)
     permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
+
+    created_dttm = models.DateTimeField(auto_now_add=True)
+    """
+    The date/time the object was created.
+    """
+
+    last_modified = models.DateTimeField(auto_now=True)
+    """
+    The last time the object was modified.
+    """
 
     def __unicode__(self):
         return self.get_value_display()

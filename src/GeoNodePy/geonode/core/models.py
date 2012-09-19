@@ -269,11 +269,10 @@ class PermissionLevelMixin(object):
 
         return levels
 
-# Logic to login a user automatically when it has successfully
-# activated an account:
 from registration.signals import user_activated
 from django.contrib.auth import login
-
+# Logic to login a user automatically when it has successfully
+# activated an account:
 def autologin(sender, **kwargs):
     user = kwargs['user']
     request = kwargs['request']

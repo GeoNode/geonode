@@ -142,7 +142,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                     //console.log(layer.name + 'IS LOCAL?' );
                     var control = new OpenLayers.Control.GetFeature({
                         protocol: OpenLayers.Protocol.WFS.fromWMSLayer(layer),
-                        clickTolerance:25,
+                        clickTolerance:10,
                         layer: layer,
                         box: false,
                         hover: false,

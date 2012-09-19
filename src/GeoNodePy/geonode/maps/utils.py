@@ -6,6 +6,15 @@ import logging
 from zipfile import ZipFile
 from random import choice
 import re
+from django.db import transaction
+from django.utils.html import escape
+from django.utils.translation import ugettext as _
+from django.contrib.auth.models import User
+from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
+from geonode.maps.gs_helpers import fixup_style, cascading_delete, get_sld_for, delete_from_postgis, get_postgis_bbox
+import geoserver
+from geoserver.catalog import FailedRequestError
+from geoserver.resource import FeatureType, Coverage
 import uuid
 import os
 import glob
@@ -52,7 +61,6 @@ def layer_type(filename):
         msg = ('Saving of extension [%s] is not implemented' % extension)
         raise GeoNodeException(msg)
 
-
 def get_files(filename, sldfile):
     """Converts the data to Shapefiles or Geotiffs and returns
        a dictionary with all the required files
@@ -80,15 +88,6 @@ def get_files(filename, sldfile):
                 raise GeoNodeException(msg)
             else:
                 files[ext] = matches[0]
-
-        matches = glob.glob(glob_name + ".[pP][rR][jJ]")
-        if len(matches) == 1:
-            files['prj'] = matches[0]
-        elif len(matches) > 1:
-            msg = ('Multiple helper files for %s exist; they need to be '
-                   'distinct by spelling and not just case.') % filename
-            raise GeoNodeException(msg)
-
     elif extension.lower() == '.zip':
         zipFiles = ZipFile(filename).namelist()
 
@@ -263,7 +262,10 @@ def save(layer, base_file, user, overwrite = True, title=None,
 
     # Check if the store exists in geoserver
     try:
-        store = cat.get_store(name)
+        if settings.DB_DATASTORE and the_layer_type == FeatureType.resource_type:
+            store = cat.get_store(settings.DB_DATASTORE_NAME)
+        else:
+            store = cat.get_store(name);
     except geoserver.catalog.FailedRequestError, e:
         # There is no store, ergo the road is clear
         pass
@@ -407,7 +409,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
                    'cannot overwrite: "%s"' % (name, str(e)))
             logger.warn(msg)
             e.args = (msg,)
-
         #FIXME: Should we use the fully qualified typename?
         publishing.default_style = cat.get_style(name)
         cat.save(publishing)
@@ -491,7 +492,7 @@ def create_django_record(user, title, keywords, abstract, gs_resource, permissio
     logger.info('>>> Step 11. Setting default permissions for [%s]', name)
     if permissions is not None:
         from geonode.maps.views import set_layer_permissions
-        set_layer_permissions(saved_layer, permissions)
+        set_layer_permissions(saved_layer, permissions, True)
 
     # Step 12. Verify the layer was saved correctly and clean up if needed
     logger.info('>>> Step 12. Verifying the layer [%s] was created '
@@ -521,7 +522,7 @@ def create_django_record(user, title, keywords, abstract, gs_resource, permissio
                          'method in geonode.maps.models.Layer')
     except GeoNodeException, e:
         msg = ('The layer [%s] was not correctly saved to '
-               'GeoNetwork/GeoServer. Error is: %s' % (layer, str(e)))
+               'GeoNetwork/GeoServer. Error is: %s' % (saved_layer, str(e)))
         logger.exception(msg)
         e.args = (msg,)
         # Deleting the layer
@@ -709,7 +710,6 @@ def upload(incoming, user=None, overwrite=True, keywords = (), skip=True, ignore
         if verbosity > 0:
             print >> console, msg
     return output
-
 
 def _create_db_featurestore(name, data, overwrite = False, charset = None):
     """Create a database store then use it to import a shapefile.
