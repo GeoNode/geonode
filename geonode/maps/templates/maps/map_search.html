@@ -7,7 +7,7 @@
 {% block body_class %}maps search{% endblock %}
 
 {% block body %} 
-  <h2>{% trans "Search" %} <span class="subtitle">{% trans "for maps" %}</span></h2>
+ <h2 class="page-title">{% trans "Search Maps" %}</h2>
   <form class="geonode-search form-search" action="{% url maps_search %}" method="GET" data-results-table="#searchResults" data-search-api="{% url maps_search_api %}">
     <input type="text" id="search_query" name="q" class="input-large search-query" value="{{ request.get.q }}">
     <button type="submit" class="btn">Search</button>
