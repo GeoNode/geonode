@@ -1,10 +1,10 @@
 {% load i18n %}
+{% load url from future %}
 
 <ul class="nav nav-pills filter">
-  <li><a href="{% url layer_browse %}" class="selected">{% trans "All" %}</a></li>
-  <li><a href="{% url layer_browse %}">{% trans "Most viewed" %}</a></li>
-  <li><a href="{% url layer_browse %}">{% trans "Most popular" %}</a></li>
-  <li><a href="{% url layer_browse %}">{% trans "Most shared" %}</a></li>
+  <li><a href="{% url "layer_browse" %}" class="selected">{% trans "Most recent" %}</a></li>
+  <li><a href="{% url "layer_browse" %}">{% trans "Most popular" %}</a></li>
+  <li><a href="{% url "layer_browse" %}">{% trans "Most shared" %}</a></li>
   <li>
     <form action="" class="form-inline">
       <label for="">sort by:</label>
