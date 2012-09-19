@@ -54,10 +54,6 @@ from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 import geoserver
 from geoserver.catalog import FailedRequestError
 from geoserver.resource import FeatureType, Coverage
-# OWSLib functionality
-from owslib.csw import CswRecord
-from owslib.iso import MD_Metadata
-from owslib.fgdc import Metadata
 
 logger = logging.getLogger('geonode.layers.utils')
 
