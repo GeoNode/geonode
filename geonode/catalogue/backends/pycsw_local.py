@@ -26,6 +26,29 @@ from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
 from geonode.catalogue.backends.generic import METADATA_FORMATS
 
+# pycsw settings that the user shouldn't have to worry about
+CONFIGURATION = {
+    'server': {
+        'home': '.',
+        'url': settings.CATALOGUE['default']['URL'],
+        'encoding': 'UTF-8',
+        'language': settings.LANGUAGE_CODE,
+        'maxrecords': '10',
+        #'loglevel': 'DEBUG',
+        #'logfile': '/tmp/pycsw.log',
+        #'federatedcatalogues': 'http://geo.data.gov/geoportal/csw/discovery',
+        #'pretty_print': 'true',
+        #'domainquerytype': 'range',
+        #'domaincounts': 'true',
+        'profiles': 'apiso,atom,dif,ebrim,fgdc',
+    },
+    'repository': {
+        'source': 'geonode',
+        'mappings': os.path.abspath(__file__[:-1])
+    }
+}
+
+
 MD_CORE_MODEL = {
     'typename': 'pycsw:CoreMetadata',
     'outputschema': 'http://pycsw.org/metadata',
@@ -145,10 +168,13 @@ class CatalogueBackend(GenericCatalogueBackend):
         """
         HTTP-less CSW
         """
-        # set up configuration
+
+        # serialize pycsw settings into SafeConfigParser
+        # object for interaction with pycsw
+        mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
         config = SafeConfigParser()
     
-        for section, options in settings.PYCSW['CONFIGURATION'].iteritems():
+        for section, options in mdict.iteritems():
             config.add_section(section)
             for option, value in options.iteritems():
                 config.set(section, option, value)
