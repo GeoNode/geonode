@@ -646,24 +646,27 @@ ul.space li {
 
 }
 #nav-keywords {
-  ul {
+  ul.nav {
     list-style: none;
     margin: 0;
-  }
-  li {
-    font-size: 11px;
-    margin-bottom: 8px;
-  }
-  a {
-    padding: 3px 5px;
-    background-color: @navBkgd;
-    color: @graySp;
-    text-transform: lowercase;
-    .border-radius(4px, 4px, 4px, 4px);
-  }
-  .count {
-    color: @grayNeutral;
-    padding-left: 8px;
+    li {
+      margin-bottom: 8px;
+      border: 0
+    }
+    a {
+      display: inline;
+      padding: 3px 5px;
+      font-size: 11px;
+      background-color: @navBkgd;
+      color: @graySp;
+      text-transform: lowercase;
+      .border-radius(4px, 4px, 4px, 4px);
+    }
+    .count {
+      color: @grayNeutral;
+      padding-left: 8px;
+      font-size: 11px;
+    }
   }
 }
 
