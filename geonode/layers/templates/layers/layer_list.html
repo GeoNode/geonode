@@ -16,7 +16,7 @@
       {% include "layers/_layer_filters.html" %}
     </div>
     <div class="span4">
-      <div class="pull-right">
+      <div class="pull-right" data-viewby="list">
         {% include "_viewby.html" %}
       </div>
     </div>
@@ -62,5 +62,5 @@
 {% endblock %}
 
 {% block extra_script %}
-  <script src="{% static "geonode/js/tabslider.js" %}"></script>
+  <script src="{% static "geonode/js/layers.js" %}"></script>
 {% endblock extra_script %}

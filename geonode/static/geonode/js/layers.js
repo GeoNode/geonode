@@ -1,4 +1,7 @@
 $(function() {
+    $("[data-viewby]").each(function() {
+        $(this).find("nav.viewby a."+$(this).data("viewby")).addClass("active");
+    });
     $("#slide-pane a.toggle-pane").click(function(e) {
         e.preventDefault();
         if(!$("#slide-pane").is('.hidden')) {
