@@ -34,22 +34,22 @@
                 <button type="submit" class="btn">{% trans "Search "%}</button>
               </div>
               <div class="control-group">
-                <label for="">Exclude words from your search<br />
-                  <input type="text" />
+                <label for="id_exclusions">Exclude words from your search<br />
+                  <input type="text" id="id_exclusions" />
                 </label>
               </div>
               <div class="control-group">
-                <label for="" class="radio inline">
-                  <input type="radio" checked /> All categories
+                <label for="id_filter_categories_all" class="radio inline">
+                  <input type="radio" name="filter_categories" id="id_filter_categories_all" checked /> All categories
                 </label>
-                <label for="" class="radio inline">
-                  <input type="radio" /> Maps only
+                <label for="id_filter_categories_maps" class="radio inline">
+                  <input type="radio" name="filter_categories" id="id_filter_categories_maps" /> Maps only
                 </label>
-                <label for="" class="radio inline">
-                  <input type="radio" /> Datasets only
+                <label for="id_filter_categories_datasets" class="radio inline">
+                  <input type="radio" name="filter_categories" id="id_filter_categories_datasets" /> Datasets only
                 </label>
-                <label for="" class="radio inline">
-                  <input type="radio" /> Groups only
+                <label for="id_filter_categories_groups" class="radio inline">
+                  <input type="radio" name="filter_categories" id="id_filter_categories_groups" /> Groups only
                 </label>
               </div>
             </div>
@@ -61,27 +61,27 @@
         <div class="span10">
           <fieldset>
             <div class="control-group">
-              <label class="control-label" for="input01">From this site/portal</label>
+              <label class="control-label" for="id_type_site">From this site/portal</label>
               <div class="controls">
-                <input type="text" class="input-xlarge" id="input01">
+                <input type="text" class="input-xlarge" id="id_type_site">
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="input01">From this group</label>
+              <label class="control-label" for="id_type_group">From this group</label>
               <div class="controls">
-                <input type="text" class="input-xlarge" id="input01">
+                <input type="text" class="input-xlarge" id="id_type_group">
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="input01">From this organization</label>
+              <label class="control-label" for="id_type_org">From this organization</label>
               <div class="controls">
-                <input type="text" class="input-xlarge" id="input01">
+                <input type="text" class="input-xlarge" id="id_type_org">
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="input01">From this geographic region</label>
+              <label class="control-label" for="id_type_region">From this geographic region</label>
               <div class="controls">
-                <select name="" id="">
+                <select name="" id="id_type_region">
                   <option value=""></option>
                 </select>
               </div>
@@ -94,15 +94,15 @@
         <div class="span10">
           <fieldset>
             <div class="control-group">
-              <label class="control-label" for="input01">Since this date</label>
+              <label class="control-label" for="id_meta_date_since">Since this date</label>
               <div class="controls">
-                <input data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+                <input id="id_meta_date_since" data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="input01">Until this date</label>
+              <label class="control-label" for="id_meta_date_until">Until this date</label>
               <div class="controls">
-                <input data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+                <input id="id_meta_date_until" data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
               </div>
             </div>
           </fieldset>
