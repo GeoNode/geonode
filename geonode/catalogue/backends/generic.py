@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import logging
 import re
 import urllib, urllib2, cookielib
 from django.conf import settings
@@ -27,6 +28,8 @@ from owslib.util import http_post, nspath
 from urlparse import urlparse
 from lxml import etree
 from geonode.catalogue.backends.base import BaseCatalogueBackend
+
+logger = logging.getLogger(__name__)
 
 METADATA_FORMATS = {
     'Atom': ('atom:entry', 'http://www.w3.org/2005/Atom'),
