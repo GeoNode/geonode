@@ -5832,6 +5832,10 @@ section.widget-mini h2 a.btn {
 .list article .rating {
   color: #777777;
 }
+.grid article {
+  width: 285px;
+  float: left;
+}
 aside .well section {
   border-bottom: 1px solid #cccccc;
   padding-bottom: 20px;
