@@ -99,6 +99,7 @@ var init = function() {
         rest: "/maps/",
         homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+        localCSWBaseUrl: "{{ GEONETWORK_BASE_URL }}srv/en/csw",
         csrfToken: "{{ csrf_token }}",
         {% if user.is_authenticated %}
         db_datastore: {{ DB_DATASTORE|lower }},

@@ -379,6 +379,7 @@ def newmap(request):
         'config': config,
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'GEONETWORK_BASE_URL' : settings.GEONETWORK_BASE_URL,
         'maptitle': settings.SITENAME,
         'DB_DATASTORE' : settings.DB_DATASTORE
     }))
