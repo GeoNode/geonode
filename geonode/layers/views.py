@@ -54,7 +54,7 @@ from geonode.utils import resolve_object
 from geonode.people.forms import ContactForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.layers.utils import update_metadata, set_metadata
+from geonode.layers.metadata import update_metadata, set_metadata
 
 from django.forms.models import inlineformset_factory
 from geoserver.resource import FeatureType
@@ -308,22 +308,22 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 try:
                     layer_to_update = Layer.objects.get_or_create(typename=layer.typename)[0]
 
+                    # set updated XML with GeoNode links
                     xml_file = form.cleaned_data['xml_file'].read()
-                    md_xml, md_title, md_abstract = update_metadata(layer.uuid, xml_file, layer_to_update)
-
-                    Layer.objects.filter(typename=layer.typename).update(
-                        metadata_xml=md_xml,
-                        title=md_title,
-                        abstract=md_abstract
-                    )
-
+                    md_xml = update_metadata(layer.uuid, xml_file, layer_to_update)
                     layer_to_update.metadata_xml = md_xml
-                    layer_to_update.title = md_title
-                    layer_to_update.abstract = md_abstract
 
-                    vals, keywords = set_metadata(xml_file, layer_to_update)
+                    # get model properties from XML
+                    vals, keywords = set_metadata(md_xml)
+
+                    # set taggit keywords
                     layer_to_update.keywords.add(*keywords)
-                    Layer.objects.filter(typename=layer.typename).update(**vals)
+
+                    # set model properties
+                    for (key, value) in vals.items():
+                        setattr(layer_to_update, key, value)
+
+                    layer_to_update.save()
 
                     return HttpResponse(json.dumps({
                         "success": True,
