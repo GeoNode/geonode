@@ -353,12 +353,22 @@ def reset_hard():
 
 
 @task
+@cmdopts([
+    ('type=', 't', 'Import specific data type ("vector", "raster", "time")'),
+])
 def setup_data():
     """
     Import sample data (from gisdata package) into GeoNode
     """
     import gisdata
+
+    ctype = options.get('type', None)
+
     data_dir = gisdata.GOOD_DATA
+
+    if ctype in ['vector', 'raster', 'time']:
+        data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
+
     sh("python manage.py importlayers %s -v2" % data_dir)
 
 
