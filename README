@@ -38,6 +38,43 @@ If instead, you are interested in doing development on the source code, here are
     # Start the servers
     paver start
 
+openSUSE Development Build Instructions::
+
+    # Add Application:Geo and Python repositories
+    zypper -ar http://download.opensuse.org/repositories/Application:/Geo/openSUSE_12.2/ GEO
+    zypper -ar http://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_12.1/ python
+    zypper refresh
+
+    # Basic build packages
+    zypper install gcc gcc-c++ python-devel libgeos-devel libproj-devel
+
+    # Python native dependencies
+    zypper install python-pip python-virtualenv python-imaging python-lxml
+
+    # Java dependencies
+    zypper install java-1_7_0_openjdk-devel ant maven
+
+    # Supporting tools
+    zypper install git gettext-runtime
+
+    # Create virtualenv and activate it
+    virtualenv venv --system-site-packages
+    source venv/bin/activate
+    cd venv
+
+    # Clone GeoNode and switch to dev branch
+    git clone https://github.com/GeoNode/geonode.git -b dev
+
+    # Install GeoNode in the local virtualenv
+    pip install -e geonode --use-mirrors
+
+    cd geonode
+
+    # Compile GeoServer
+    paver setup
+    
+    # Start the servers
+    paver start
 
 Windows Development Build Instructions::
 
