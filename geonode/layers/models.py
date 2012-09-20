@@ -279,6 +279,9 @@ class Layer(ResourceBase):
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, unique=True)
 
+    popular_count = models.IntegerField(default=0)
+    share_count = models.IntegerField(default=0)
+
     contacts = models.ManyToManyField(Contact, through='ContactRole')
 
     def download_links(self):

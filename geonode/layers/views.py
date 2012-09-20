@@ -39,6 +39,7 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
+from django.views.generic.list import ListView
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from agon_ratings.models import OverallRating
@@ -93,15 +94,19 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 #### Basic Layer Views ####
 
 
-def layer_browse(request, template='layers/layer_list.html'):
-    layer_list = Layer.objects.order_by("-date")[:8]
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "layer_list": layer_list
-            }
-        )
-    )
+class LayerListView(ListView):
+
+    layer_filter = "date"
+    queryset = Layer.objects.all()
+
+    def __init__(self, *args, **kwargs):
+        self.layer_filter = kwargs.pop("layer_filter", "date")
+        self.queryset = self.queryset.order_by("-{0}".format(self.layer_filter))
+        super(LayerListView, self).__init__(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({"layer_filter": self.layer_filter})
+        return kwargs
 
 
 def layer_category(request, slug, template='layers/layer_list.html'):

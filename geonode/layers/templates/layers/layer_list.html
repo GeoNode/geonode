@@ -52,8 +52,8 @@
         </div>
         <div class="tab-content span8">
           <div class="tab-pane active list" id="all">
-            {% autopaginate layer_list 2 %}
-            {% for layer in layer_list %}
+            {% autopaginate object_list 2 %}
+            {% for layer in object_list %}
               {% include "layers/_layer_list_item.html" %}
             {% endfor %}
           </div>

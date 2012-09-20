@@ -1,6 +1,8 @@
 {% extends "maps/map_base.html" %}
 {% load i18n %}
 {% load maps_tags %}
+{% load pagination_tags %}
+{% load url from future %}
 
 {% block body_class %}maps explore{% endblock %}
 
@@ -10,10 +12,8 @@
     {% include "maps/_map_filters.html" %}
   </div>
   <div class="span4">
-    <p><a href="{% url new_map %}" class="btn btn-large pull-right strong">{% trans "Create a New Map" %}</a></p>
-    <div class="pull-right">
-      {% include "_pagination.html" %}
-    </div>
+    <p><a href="{% url "new_map" %}" class="btn btn-large pull-right strong">{% trans "Create a New Map" %}</a></p>
+    
   </div>
   <div class="span12">
     <div class="row">
@@ -34,16 +34,15 @@
         <div class="tab-pane active span8" id="all">
           <div class="row">
             {% featured_maps as featured_maps %}
+            {% autopaginate featured_maps 8 %}
             {% for map in featured_maps %}
               {% include "maps/_map_grid_item.html" %}
             {% endfor %}
           </div>
         </div>
       </div>
-      <div class="span12">
-        <div class="pull-right">
-          {% include "_pagination.html" %}
-        </div>
+      <div>
+        {% paginate %}
       </div>
     </div>
   </div>
