@@ -136,6 +136,7 @@ INSTALLED_APPS = (
     'agon_ratings',
     'pagination',
     'taggit',
+    'taggit_templatetags',
     'south',
 
     # GeoNode internal apps

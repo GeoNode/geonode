@@ -94,11 +94,24 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 
 
 def layer_browse(request, template='layers/layer_list.html'):
-    category_list = TopicCategory.objects.all()
+    layer_list = Layer.objects.order_by("-date")[:8]
     return render_to_response(
         template,
         RequestContext(request, {
-            "category_list": category_list
+            "layer_list": layer_list
+            }
+        )
+    )
+
+
+def layer_category(request, slug, template='layers/layer_list.html'):
+    category = get_object_or_404(TopicCategory, slug=slug)
+    layer_list = category.layer_set.all()
+    return render_to_response(
+        template,
+        RequestContext(request, {
+            "layer_list": layer_list,
+            "layer_category": category
             }
         )
     )
