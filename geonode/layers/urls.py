@@ -26,6 +26,7 @@ js_info_dict = {
 
 urlpatterns = patterns('geonode.layers.views',
   url(r'^$', 'layer_browse', name='layer_browse'),
+  url(r'^category/(?P<slug>[-\w]+?)/$', 'layer_category', name='layer_browse_category'),
   url(r'^acls/?$', 'layer_acls', name='layer_acls'),
   url(r'^search/?$', 'layer_search_page', name='layer_search_page'),
   url(r'^search/api/?$', 'layer_search', name='layer_search_api'),
