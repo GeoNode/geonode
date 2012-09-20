@@ -25,19 +25,22 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from lxml import etree
 from pycsw import server
+from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 
 @csrf_exempt
 def csw_global_dispatch(request):
 
     app_root = os.path.dirname(__file__)
 
-    # serialize settings.CSW into SafeConfigParser
+    # serialize pycsw settings into SafeConfigParser
     # object for interaction with pycsw
+    mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
     config = SafeConfigParser()
-    for section, options in settings.PYCSW['CONFIGURATION'].iteritems():
+
+    for section, options in mdict.iteritems():
         config.add_section(section)
-        for k, v in options.iteritems():
-            config.set(section, k, v)
+        for option, value in options.iteritems():
+            config.set(section, option, value)
 
     scheme = "http"
     if request.is_secure():
