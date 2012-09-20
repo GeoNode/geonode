@@ -54,7 +54,6 @@ from geonode.utils import resolve_object
 from geonode.people.forms import ContactForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.layers.metadata import set_metadata
 
 from django.forms.models import inlineformset_factory
 from geoserver.resource import FeatureType
