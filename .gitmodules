@@ -18,4 +18,4 @@
 	url = git://github.com/ringo/ringojs.git
 [submodule "src/geonode-client/externals/buildkit"]
 	path = src/geonode-client/externals/buildkit
-	url = git://github.com/tschaub/buildkit.git
+	url = git://github.com/opengeo/buildkit.git

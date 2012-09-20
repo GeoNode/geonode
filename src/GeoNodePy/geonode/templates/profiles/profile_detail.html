@@ -179,7 +179,22 @@ Ext.onReady(function() {
                           Ext.Ajax.request({
                               url: '/data/api/batch_permissions',
                               method: 'post',
-                              jsonData: spec
+                              jsonData: spec,
+                              success: function() {
+                                     win.hide(); 
+                              },
+                              failure: function(result, request) {
+                                res = Ext.util.JSON.decode(result.responseText);
+                                var error_message = res.errors[0];
+                                Ext.Msg.show({
+                                    title: gettext("Error"),
+                                    msg: error_message,
+                                    minWidth: 200,
+                                    modal: true,
+                                    icon: Ext.Msg.ERROR,
+                                    buttons: Ext.Msg.OK
+                                });
+                              }
                           });
                       }
                   });

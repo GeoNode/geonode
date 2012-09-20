@@ -756,14 +756,19 @@ Comments
 -----------------------*/
 .comments_container {
   margin-left: 10px;
+  margin-bottom: 20px;
 }
 
 .comment_author {
   margin:0;
-  font-size: 1.2em;
+  margin-bottom: 1.5em;
+  padding-left: 5px;
+  border-left: 2px solid gray;
 }
 .comment_content {
-  margin-bottom: 1.5em;
+  font-size: 1.3em;
+  padding-left: 5px;
+  border-left: 2px solid gray;
 }
 
 .comment_box textarea {
@@ -772,14 +777,9 @@ Comments
 }
 
 .comment_post input {
-  border: 1px solid #000;
   font-size: 1.1em;
   margin-top: 10px;
   padding: 5px;
-}
-
-.comment_post input:hover {
-  background-color: #F2FFE6;
 }
 
 #preview_map {

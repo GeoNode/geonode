@@ -15,6 +15,7 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
+from django.template.defaultfilters import slugify
 
 import math
 import httplib2 
@@ -834,7 +835,19 @@ def upload_layer(request):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+                title = form.cleaned_data["layer_title"]
+
+                # Replace dots in filename - GeoServer REST API upload bug
+                # and avoid any other invalid characters.
+                # Use the title if possible, otherwise default to the filename
+                if title is not None and len(title) > 0:
+                    name_base = title
+                else:
+                    name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+                name = slugify(name_base.replace(".","_"))
+
                 saved_layer = save(name, base_file, request.user, 
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
@@ -848,15 +861,15 @@ def upload_layer(request):
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
                     "success": False,
-                    "errors": ["Unexpected error during upload: " + escape(str(e))]}))
+                    "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
-            errors = []
+            errormsgs = []
             for e in form.errors.values():
-                errors.extend([escape(v) for v in e])
-            return HttpResponse(json.dumps({ "success": False, "errors": errors}))
+                errormsgs.extend([escape(v) for v in e])
+            return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))
 
 @login_required
 def layer_replace(request, layername):
@@ -1219,16 +1232,21 @@ def _metadata_search(query, start, limit, **kw):
 
     next_page = csw.results.get('nextrecord', 0) 
     if next_page > 0:
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
+        params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.metadata_search') + '?' + params
     
     return result
 
 def search_result_detail(request):
-    uuid = request.GET.get("uuid")
+    uuid = request.GET.get("uuid", None)
+    if  uuid is None:
+        return HttpResponse(status=400)
     csw = get_csw()
     csw.getrecordbyid([uuid], outputschema=namespaces['gmd'])
-    rec = csw.records.values()[0]
+    recs = csw.records.values()
+    if len(recs) == 0:
+        return HttpResponse(status=404)
+    rec = recs[0]
     raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
     extra_links = _extract_links(raw_xml)
     
@@ -1473,6 +1491,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     for keyword in keywords:
         map_query = map_query.filter(
               Q(title__icontains=keyword)
+            | Q(keywords__name__icontains=keyword)
             | Q(abstract__icontains=keyword))
 
     if sort_field:
@@ -1513,7 +1532,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
     next_page = start + limit + 1
     if next_page < map_query.count():
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
+        params = urlencode({'q': query, 'start': next_page - 1, 'limit': limit})
         result['next'] = reverse('geonode.maps.views.maps_search') + '?' + params
     
     return result
@@ -1535,65 +1554,79 @@ def maps_search_page(request):
 
 def batch_permissions(request):
     if not request.user.is_authenticated:
-        return HttpResponse("You must log in to change permissions", status=401) 
+        result = {'success': False, 'errors': ['You must log in to change permissions']} 
+        return HttpResponse(json.dumps(result), mimetype="application/json", status=401)
 
     if request.method != "POST":
-        return HttpResponse("Permissions API requires POST requests", status=405)
+        result = {'success': False, 'errors': ['Permissions API requires POST requests']} 
+        return HttpResponse(json.dumps(result), mimetype="application/json", status=405)
 
-    spec = json.loads(request.raw_post_data)
+    try:
+        spec = json.loads(request.raw_post_data)
     
-    if "layers" in spec:
-        lyrs = Layer.objects.filter(pk__in = spec['layers'])
-        for lyr in lyrs:
-            if not request.user.has_perm("maps.change_layer_permissions", obj=lyr):
-                return HttpResponse("User not authorized to change layer permissions", status=403)
+        if "layers" in spec:
+            lyrs = Layer.objects.filter(pk__in = spec['layers'])
+            for lyr in lyrs:
+                if not request.user.has_perm("maps.change_layer_permissions", obj=lyr):
+                    result = {'success': False, 'errors': ['User not authorized to change layer permissions']}
+                    return HttpResponse(json.dumps(result), mimetype="application/json", status=403) 
 
-    if "maps" in spec:
-        map_query = Map.objects.filter(pk__in = spec['maps'])
-        for m in map_query:
-            if not request.user.has_perm("maps.change_map_permissions", obj=m):
-                return HttpResponse("User not authorized to change map permissions", status=403)
+        if "maps" in spec:
+            map_query = Map.objects.filter(pk__in = spec['maps'])
+            for m in map_query:
+                if not request.user.has_perm("maps.change_map_permissions", obj=m):
+                    result = {'success': False, 'errors': ['User not authorized to change map permissions']}
+                    return HttpResponse(json.dumps(result), mimetype="application/json", status=403) 
 
-    anon_level = spec['permissions'].get("anonymous")
-    auth_level = spec['permissions'].get("authenticated")
-    users = spec['permissions'].get('users', [])
-    user_names = [x[0] for x in users]
+        anon_level = spec['permissions'].get("anonymous")
+        auth_level = spec['permissions'].get("authenticated")
+        users = spec['permissions'].get('users', [])
+        user_names = [x[0] for x in users]
 
-    if "layers" in spec:
-        lyrs = Layer.objects.filter(pk__in = spec['layers'])
-        valid_perms = ['layer_readwrite', 'layer_readonly']
-        if anon_level not in valid_perms:
-            anon_level = "_none"
-        if auth_level not in valid_perms:
-            auth_level = "_none"
-        for lyr in lyrs:
-            lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
-            lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
-            lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
-            for user, user_level in users:
-                if user_level not in valid_perms:
-                    user_level = "_none"
-                lyr.set_user_level(user, user_level)
+        if "layers" in spec:
+            lyrs = Layer.objects.filter(pk__in = spec['layers'])
+            valid_perms = ['layer_readwrite', 'layer_readonly']
+            if anon_level not in valid_perms:
+                anon_level = "_none"
+            if auth_level not in valid_perms:
+                auth_level = "_none"
+            for lyr in lyrs:
+                lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
+                lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
+                lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
+                for user, user_level in users:
+                    if user_level not in valid_perms:
+                        user_level = "_none"
+                    user = User.objects.get(username=user)
+                    lyr.set_user_level(user, user_level)
 
-    if "maps" in spec:
-        map_query = Map.objects.filter(pk__in = spec['maps'])
-        valid_perms = ['layer_readwrite', 'layer_readonly']
-        if anon_level not in valid_perms:
-            anon_level = "_none"
-        if auth_level not in valid_perms:
-            auth_level = "_none"
-        anon_level = anon_level.replace("layer", "map")
-        auth_level = auth_level.replace("layer", "map")
+        if "maps" in spec:
+            map_query = Map.objects.filter(pk__in = spec['maps'])
+            valid_perms = ['layer_readwrite', 'layer_readonly']
+            if anon_level not in valid_perms:
+                anon_level = "_none"
+            if auth_level not in valid_perms:
+                auth_level = "_none"
+            anon_level = anon_level.replace("layer", "map")
+            auth_level = auth_level.replace("layer", "map")
 
-        for m in map_query:
-            m.get_user_levels().exclude(user__username__in = user_names + [m.owner.username]).delete()
-            m.set_gen_level(ANONYMOUS_USERS, anon_level)
-            m.set_gen_level(AUTHENTICATED_USERS, auth_level)
-            for user, user_level in spec['permissions'].get("users", []):
-                user_level = user_level.replace("layer", "map")
-                m.set_user_level(user, valid_perms.get(user_level, "_none"))
+            for m in map_query:
+                m.get_user_levels().exclude(user__username__in = user_names + [m.owner.username]).delete()
+                m.set_gen_level(ANONYMOUS_USERS, anon_level)
+                m.set_gen_level(AUTHENTICATED_USERS, auth_level)
+                for user, user_level in spec['permissions'].get("users", []):
+                    if user_level not in valid_perms:
+                        user_level = "_none"
+                    user_level = user_level.replace("layer", "map")
+                    user = User.objects.get(username=user)
+                    m.set_user_level(user, user_level)
 
-    return HttpResponse("Not implemented yet")
+        result = {'success': True }
+        return HttpResponse(json.dumps(result), mimetype="application/json")
+    except:
+        logger.exception("Unexpected error during upload. %s" % sys.exc_info()[0])
+        result = {'success': False, 'errors': [sys.exc_info()[0]]}
+        return HttpResponse(json.dumps(result), mimetype="application/json", status=500)
 
 def batch_delete(request):
     if not request.user.is_authenticated:

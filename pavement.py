@@ -19,6 +19,7 @@ from shutil import move
 import zipfile
 import tarfile
 import urllib
+from urllib import urlretrieve
 import glob
 
 assert sys.version_info >= (2,6), \
@@ -152,7 +153,6 @@ def post_bootstrap(options):
 #TODO Move svn urls out to a config file
 
 def grab(src, dest):
-    from urllib import urlretrieve
     urlretrieve(str(src), str(dest))
 
 @task
@@ -315,7 +315,6 @@ def create_version_name():
 @task
 def make_devkit(options):
     import virtualenv
-    from urllib import urlretrieve
 
     (path("package") / "devkit" / "share").makedirs()
     pip_bundle("package/devkit/share/geonode-core.pybundle -r shared/devkit.requirements")

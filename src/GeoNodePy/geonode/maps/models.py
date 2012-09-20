@@ -10,6 +10,7 @@ from geonode.geonetwork import Catalog as GeoNetwork
 from django.db.models import signals
 from taggit.managers import TaggableManager
 from django.utils import simplejson as json
+from django.utils.safestring import mark_safe
 
 import httplib2
 import urllib
@@ -420,6 +421,13 @@ UPDATE_FREQUENCIES = [
 ]
 
 CONSTRAINT_OPTIONS = [
+    # Shortcuts added for convenience in Open Data cases.
+    'Public Domain Dedication and License (PDDL)',
+    'Attribution License (ODC-By)',
+    'Open Database License (ODC-ODbL)',
+    'CC-BY-SA',
+    
+    # ISO standard constraint options.
     'copyright',
     'intellectualPropertyRights',
     'license',
@@ -601,7 +609,7 @@ class LayerManager(models.Manager):
     def default_metadata_author(self):
         return self.admin_contact()
 
-    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout):
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None, new_only=False, lnames=None):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
@@ -616,10 +624,24 @@ class LayerManager(models.Manager):
             msg =  "Found %d layers, starting processing" % number
             print >> console, msg
         output = []
+        
+        # check lnames
+        if lnames is not None:
+            gs_lnames = [resource.name for resource in resources]
+            for l in lnames:
+                if l not in gs_lnames:
+                    raise Exception('Layer %s does not exist' % l )
+
         for i, resource in enumerate(resources):
             name = resource.name
             store = resource.store
             workspace = store.workspace
+
+            if new_only and Layer.objects.filter(name=name).exists():
+                continue
+            elif lnames is not None and name not in lnames:
+                continue
+
             try:
                 layer, created = Layer.objects.get_or_create(name=name, defaults = {
                     "workspace": workspace.name,
@@ -628,6 +650,7 @@ class LayerManager(models.Manager):
                     "typename": "%s:%s" % (workspace.name, resource.name),
                     "title": resource.title or 'No title provided',
                     "abstract": resource.abstract or 'No abstract provided',
+                    "owner": owner,
                     "uuid": str(uuid.uuid4())
                 })
 
@@ -658,7 +681,6 @@ class LayerManager(models.Manager):
             if verbosity > 0:
                 print >> console, msg
         return output
-
 
 class Layer(models.Model, PermissionLevelMixin):
     """
@@ -796,8 +818,9 @@ class Layer(models.Model, PermissionLevelMixin):
             except Exception:
                 # if something is wrong with WCS we probably don't want to link
                 # to it anyway
-                # TODO: This is a bad idea to eat errors like this.
-                pass 
+                # But at least this indicates a problem
+                notiff = mark_safe("<del>GeoTIFF</del>")
+                links.extend([("tiff",notiff,"#")])
 
         def wms_link(mime):
             return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
@@ -1280,7 +1303,7 @@ class Map(models.Model, PermissionLevelMixin):
         """
         layers = list(self.layer_set.all()) + list(added_layers) #implicitly sorted by stack_order
         server_lookup = {}
-        sources = {'local': settings.DEFAULT_LAYER_SOURCE }
+        sources = {}
 
         def uniqify(seq):
             """
@@ -1426,7 +1449,7 @@ class MapLayerManager(models.Manager):
         """
         layer_cfg = dict(layer)
         for k in ["format", "name", "opacity", "styles", "transparent",
-                  "fixed", "group", "visibility", "title", "source"]:
+                  "fixed", "group", "visibility", "source"]:
             if k in layer_cfg: del layer_cfg[k]
 
         source_cfg = dict(source)
