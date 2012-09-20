@@ -1,6 +1,7 @@
 {% extends "layers/layer_base.html" %}
 {% load i18n %}
 {% load layers_tags %}
+{% load pagination_tags %}
 {% load taggit_extras %}
 {% load staticfiles %}
 {% load url from future %}
@@ -51,21 +52,18 @@
         </div>
         <div class="tab-content span8">
           <div class="tab-pane active list" id="all">
+            {% autopaginate layer_list 2 %}
             {% for layer in layer_list %}
               {% include "layers/_layer_list_item.html" %}
             {% endfor %}
           </div>
-
-        </div>
-        <div class="span12">
-          <div class="pull-right mrg-btm">
-            {% include "_pagination.html" %}
+            {% paginate %}
           </div>
-        </div>
       </div>
     </div>
 {% endblock %}
 
 {% block extra_script %}
   <script src="{% static "geonode/js/layers.js" %}"></script>
+  <script src="{% static "geonode/js/loadmore.js" %}"></script>
 {% endblock extra_script %}
