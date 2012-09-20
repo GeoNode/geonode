@@ -9,7 +9,7 @@
         <span class="disabled prev">{% trans "previous" %}</span>
         {% endif %}
       </li>
-      <li>page <b class="current page">{{ page_obj.number }}</b> of {{ page_obj.paginator.num_pages }}
+      <li>page <b class="current page">{{ page_obj.number }}</b> of <b class="page_total">{{ page_obj.paginator.num_pages }}</b>
       </li>
       <li>
         {% if page_obj.has_next %}

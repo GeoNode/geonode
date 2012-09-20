@@ -6015,6 +6015,14 @@ ul.nav-pills.filter form select {
 .pages a.next:hover {
   background: url(../../theme/img/arrows_gr_sm.png) no-repeat -11px -15px;
 }
+.loadmore.loading a {
+  text-decoration: none;
+}
+.loadmore.loading a:before {
+  content: "[Loading...] ";
+  color: #cccccc;
+  text-decoration: none;
+}
 ul.space li {
   margin-bottom: 5px;
 }
