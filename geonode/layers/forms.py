@@ -58,7 +58,7 @@ class LayerForm(forms.ModelForm):
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
                    'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
-                   'csw_wkt_geometry', 'metadata_xml', 'metadata_uploaded', 'csw_anytext')
+                   'csw_wkt_geometry', 'metadata_xml', 'csw_anytext')
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
@@ -122,10 +122,6 @@ class NewLayerUploadForm(LayerUploadForm):
     permissions = JSONField()
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file", "xml_file")
-
-
-class LayerMetadataUploadForm(forms.Form):
-    xml_file = forms.FileField(required=True)
 
 
 class LayerDescriptionForm(forms.Form):

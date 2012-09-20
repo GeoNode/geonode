@@ -67,11 +67,9 @@ def catalogue_post_save(instance, sender, **kwargs):
     # generate and save CSW specific fields
     signals.post_save.disconnect(catalogue_post_save, sender=Layer)
 
-    if not instance.metadata_uploaded:
-        # no XML metadata was provided with the manifest
-        # generate an XML document (GeoNode's default is ISO)
-        md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
-        instance.metadata_xml = md_doc
+    # generate an XML document (GeoNode's default is ISO)
+    md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
+    instance.metadata_xml = md_doc
     instance.csw_anytext = catalogue.catalogue.csw_gen_anytext(instance.metadata_xml)
 
     instance.csw_wkt_geometry = instance.geographic_bounding_box
