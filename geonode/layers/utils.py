@@ -45,7 +45,7 @@ from geonode import GeoNodeException
 from geonode.utils import check_geonode_is_up
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
-from geonode.layers.metadata import set_metadata, update_metadata
+from geonode.layers.metadata import set_metadata
 from geonode.people.models import Contact
 from geonode.gs_helpers import cascading_delete, get_sld_for, delete_from_postgis
 from django.contrib.auth.models import User
@@ -479,8 +479,6 @@ def save(layer, base_file, user, overwrite = True, title=None,
     # parse the XML metadata and update uuid and URLs as per the content model
 
     if 'xml' in files:
-        saved_layer.metadata_uploaded = True
-
         # set updated XML with GeoNode links
         md_xml = update_metadata(layer_uuid, open(files['xml']).read(), saved_layer)
         saved_layer.metadata_xml = md_xml

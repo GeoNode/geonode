@@ -44,7 +44,7 @@ from django.shortcuts import get_object_or_404
 from agon_ratings.models import OverallRating
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
-from geonode.layers.forms import LayerForm, LayerUploadForm, LayerMetadataUploadForm, NewLayerUploadForm, LayerAttributeForm
+from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.layers.models import Layer, ContactRole, Attribute
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -55,7 +55,7 @@ from geonode.utils import resolve_object
 from geonode.people.forms import ContactForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.layers.metadata import update_metadata, set_metadata
+from geonode.layers.metadata import set_metadata
 
 from django.forms.models import inlineformset_factory
 from geoserver.resource import FeatureType
@@ -123,15 +123,9 @@ def layer_upload(request, template='layers/layer_upload.html'):
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"]
                         )
-                if saved_layer.metadata_uploaded:
-                    # metadata was uploaded as XML with the manifest
-                    return HttpResponse(json.dumps({
-                        "success": True,
-                        "redirect_to": saved_layer.get_absolute_url()}))
-                else:
-                    return HttpResponse(json.dumps({
-                        "success": True,
-                        "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
+                return HttpResponse(json.dumps({
+                    "success": True,
+                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
@@ -165,13 +159,6 @@ def layer_detail(request, layername, template='layers/layer.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_describe.html'):
-    layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA) 
-    
-    if layer.metadata_uploaded and request.method == 'GET':  # show upload just metadata XML page
-        return render_to_response("layers/layer_upload_metadata_uploaded.html", RequestContext(request, {
-                "layer": layer,
-            }))
-    
     layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
 
@@ -300,42 +287,6 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                                   RequestContext(request, {'layer': layer,
                                                            'is_featuretype': is_featuretype}))
     elif request.method == 'POST':
-
-        if layer.metadata_uploaded:  # it's an XML metadata upload update
-            # update metadata based on new XML upload
-            form = LayerMetadataUploadForm(request.POST, request.FILES)
-
-            if form.is_valid():
-                try:
-                    layer_to_update = Layer.objects.get_or_create(typename=layer.typename)[0]
-
-                    # set updated XML with GeoNode links
-                    xml_file = form.cleaned_data['xml_file'].read()
-                    md_xml = update_metadata(layer.uuid, xml_file, layer_to_update)
-                    layer_to_update.metadata_xml = md_xml
-
-                    # get model properties from XML
-                    vals, keywords = set_metadata(md_xml)
-
-                    # set taggit keywords
-                    layer_to_update.keywords.add(*keywords)
-
-                    # set model properties
-                    for (key, value) in vals.items():
-                        setattr(layer_to_update, key, value)
-
-                    layer_to_update.save()
-
-                    return HttpResponse(json.dumps({
-                        "success": True,
-                        "redirect_to": "/data/" + layer.typename}))
-
-                except Exception, e:
-                    logger.exception("Unexpected error during metadata upload.")
-                    return HttpResponse(json.dumps({
-                        "success": False,
-                        "errors": ["Unexpected error during metadata upload: " + escape(str(e))]}))
-
 
         form = LayerUploadForm(request.POST, request.FILES)
         tempdir = None
