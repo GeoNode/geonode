@@ -416,17 +416,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 tbar: {id: 'treetbar'}
                 },
             outputTarget: "westpanel"
-        }, {
-                ptype: "gxp_addlayers",
-                search: true,
-                topicCategories: config.topic_categories,
-                actionTarget: "treetbar",
-                createExpander: function() {
-                    return new GeoExplorer.CapabilitiesRowExpander({
-                        ows: config.localGeoServerBaseUrl + "ows"
-                    });
-                }
-            },{
+        },{
                 ptype: "gxp_zoomtolayerextent",
                 actionTarget: "treecontent.contextMenu"
             },{
@@ -2096,7 +2086,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 this.capGrid
             ]
         });
-        if (this.config["edit_map"]) {
+        if (this.config["edit_map"] && Ext.get("uploadDiv")) {
             this.dataTabPanel.add(this.uploadPanel);
             if (this.config["db_datastore"]) {
                 this.dataTabPanel.add(this.createPanel);
@@ -2209,7 +2199,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             this.initCapGrid();
         }
 
-        if (!this.uploadPanel && this.config["edit_map"]) {
+        if (!this.uploadPanel && this.config["edit_map"] && Ext.get("uploadDiv")) {
             this.initUploadPanel();
         }
 
@@ -2262,8 +2252,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
                         this.layerTree.addCategoryFolder({"group":feedRecord.get("group")}, true);
                         this.mapPanel.layers.add([feedRecord]);
-                        this.layerTree.overlayRoot.findDescendant("layer", feedRecord.getLayer()).select();
-                        this.selectControl.activate();
+                        var layer = feedRecord.getLayer();
+                        this.layerTree.overlayRoot.findDescendant("layer", layer).select();
+
                     }, scope:this
                 }, scope:this
             });
@@ -2436,9 +2427,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         "format": "image/png"
                     }
 
+
+
                     var record = hglSource.createLayerRecord(layerConfig);
-                    this.mapPanel.layers.add([record]);
                     this.layerTree.addCategoryFolder(record.get("group"), true);
+
+                    this.mapPanel.layers.add([record]);
                     this.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
                 }
             },

@@ -185,9 +185,11 @@ var init = function() {
 </div>
 </div>
         <div id="externalDiv"></div>
-        <div id="uploadDiv"></div>
-        {% if user.is_authenticated and DB_DATASTORE  %}
-        <div id="createDiv"></div>
+        {% if user.is_authenticated %}
+            <div id="uploadDiv"></div>
+            {% if DB_DATASTORE  %}
+                <div id="createDiv"></div>
+            {% endif %}
         {% endif %}
         <div id="warpDiv">
             <div id="tabContainer" style="padding:20px;">

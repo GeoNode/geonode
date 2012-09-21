@@ -2084,7 +2084,10 @@ class MapLayer(models.Model):
         if self.transparent: cfg['transparent'] = True
 
         cfg["fixed"] = self.fixed
-        if self.ows_url:cfg['url'] = ows_sub.sub('', self.ows_url)
+        if 'url' not in cfg:
+            cfg['url'] = self.ows_url
+        if cfg['url']:
+            cfg['url'] = ows_sub.sub('', cfg['url'])
         if self.group: cfg["group"] = self.group
         cfg["visibility"] = self.visibility
 
