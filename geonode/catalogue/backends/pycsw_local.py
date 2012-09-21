@@ -44,7 +44,7 @@ CONFIGURATION = {
     },
     'repository': {
         'source': 'geonode',
-        'mappings': os.path.abspath(__file__[:-1])
+        'mappings': os.path.abspath(__file__.rstrip('co'))
     }
 }
 
