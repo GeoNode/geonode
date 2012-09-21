@@ -207,6 +207,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))')
 
     # metadata XML specific fields
+    metadata_uploaded = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
 
     @property
