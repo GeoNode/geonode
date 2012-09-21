@@ -479,12 +479,9 @@ def save(layer, base_file, user, overwrite = True, title=None,
     # parse the XML metadata and update uuid and URLs as per the content model
 
     if 'xml' in files:
-        # set updated XML with GeoNode links
-        md_xml = update_metadata(layer_uuid, open(files['xml']).read(), saved_layer)
-        saved_layer.metadata_xml = md_xml
-
+        saved_layer.metadata_uploaded = True
         # get model properties from XML
-        vals, keywords = set_metadata(md_xml)
+        vals, keywords = set_metadata(open(files['xml']).read())
 
         # set taggit keywords
         saved_layer.keywords.add(*keywords)
