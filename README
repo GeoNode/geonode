@@ -12,7 +12,7 @@ If instead, you are interested in doing development on the source code, here are
 
 
     # Python native dependencies
-    sudo apt-get install python-virtualenv python-imaging python-lxml python-pyproj
+    sudo apt-get install python-virtualenv python-imaging python-lxml python-pyproj libgeos-dev
      
     # Java dependencies
     sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
