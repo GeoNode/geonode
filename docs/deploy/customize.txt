@@ -14,7 +14,7 @@ GeoNode uses Django's template engine, :file:`/etc/geonode/templates` is empty b
 This means that it is possible to copy any html template to that location and it will take precence.
 Let's start by doing the following::
 
-    sudo cp /var/lib/geonode/src/GeoNodePy/geonode/templates/index.html /etc/geonode/templates
+    sudo cp /var/lib/geonode/geonode/templates/index.html /etc/geonode/templates
 
 The copy of :file:`index.html` that was just created takes precedence over the default one, the text in the main section can be changed there and a reload of the web page in the browser will show the updated version.
 
@@ -32,7 +32,7 @@ Changing the default logo
 
 Similarly to the way the templates work, GeoNode's images and css files can be overriden in :file:`/etc/geonode/media`.
 
-The original GeoNode logo is located at :file:`/var/lib/geonode/src/GeoNodePy/geonode/media/theme/img/logo-bg.png`.
+The original GeoNode logo is located at :file:`/var/lib/geonode/geonode/media/theme/img/logo-bg.png`.
 Make a copy and edit it using Photoshop, GIMP, or your preferred image editor and then save it in :file:`/etc/geonode/media/theme/img/logo-bg.png`.
 
 Once the logo is placed there, it is neccessary to run the media collection command::
@@ -47,13 +47,13 @@ This will gather all the media in the diferent locations (both source and the us
 Changing the entire site media
 ==============================
 
-All the files in :file:`/var/lib/geonode/src/GeoNodePy/geonode/media/theme` can be overriden using this method, including :file:`site.css` which contains most of the color schemes for the entire site. Once you copy it, the file should live in :file:`/etc/geonode/media/theme/site.css`.
+All the files in :file:`/var/lib/geonode/geonode/media/theme` can be overriden using this method, including :file:`site.css` which contains most of the color schemes for the entire site. Once you copy it, the file should live in :file:`/etc/geonode/media/theme/site.css`.
 
 
 Adding external WMS servers by default to the map composer
 ==========================================================
 
-The easiest way to do this is to copy the ``MAP_BASELAYERS`` setting from :file:`/var/lib/geonode/src/GeoNodePy/geonode/settings.py` to :file:`/etc/geonode/local_settings.py` and then adding a line with the wms as a source, without specifying any layer::
+The easiest way to do this is to copy the ``MAP_BASELAYERS`` setting from :file:`/var/lib/geonode/geonode/settings.py` to :file:`/etc/geonode/local_settings.py` and then adding a line with the wms as a source, without specifying any layer::
 
   },{
     "source": {"url": "http://my-server/wms?"},
