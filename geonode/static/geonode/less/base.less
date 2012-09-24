@@ -623,7 +623,7 @@ ul.space li {
     color: #FFF;
     background-color: @grayDark;
     padding: 0 8px;
-    .border-radius(3px, 3px, 3px, 3px);
+    .border-radius(3px);
     margin-top: 10px;
   }
   .nav li {
@@ -674,7 +674,7 @@ ul.space li {
       background-color: @navBkgd;
       color: @graySp;
       text-transform: lowercase;
-      .border-radius(4px, 4px, 4px, 4px);
+      .border-radius(4px);
     }
     .count {
       color: @grayNeutral;
@@ -901,7 +901,7 @@ body.data #subnav-tabs,
 body.maps #subnav-tabs {
   background-color: @grayLight;
   color: @graySp;
-  .border-radius(3px, 3px, 3px, 3px);
+  .border-radius(3px);
   .box-shadow(0 1px 2px #CCC);
   border-bottom: 2px solid @grayDark;
 
@@ -972,12 +972,7 @@ body.search-results {
     background:@grayLighter;
     margin:-19px -19px 10px -19px;
     padding:8px 20px 0;
-    -webkit-border-top-left-radius: 6px;
-    -webkit-border-top-right-radius: 6px;
-    -moz-border-radius-topleft: 6px;
-    -moz-border-radius-topright: 6px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+    .border-radius(6px 6px  0 0);
     border-bottom: 1px solid #EEE;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 
