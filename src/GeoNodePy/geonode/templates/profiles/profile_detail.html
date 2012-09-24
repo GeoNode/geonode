@@ -103,7 +103,13 @@ Ext.onReady(function() {
                     window.location = link;
                 });
                 var delete_ = doToRecord(function(rec) {
-                    var link = rec.get("href") + "/remove";
+                    var type = rec.get('type');
+                    var link = '';
+                    if (type == 'layer'){
+                        link = rec.get("href") + "/remove";
+                    } else {
+                        link = rec.get("href") + "?remove";
+                    }
                     window.location = link;
                 });
                 grid.getEl().on("click", view, this, { delegate: 'a' });
