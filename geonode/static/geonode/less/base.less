@@ -16,6 +16,7 @@
 @linkColor: #41aaba;
 @navBkgd:#a7e4ee;
 @bdrColor: #ccc;
+@placeholderText: #aaa;
 
 .lines (@p: 10px, @m: 10px, @bdr-width: 1px, @bdr-style: solid, @bdr-color: @grayNeutral) {
   padding-bottom:@p;
@@ -145,11 +146,11 @@ section.nav-block {
     border-bottom: 0;
     margin-bottom: 0;
   }
-  
+
   nav.main-nav ul li.current a {
     font-weight:bold;
   }
-  
+
   nav.main-nav ul li a {
     border:0;
     color:#353535;
@@ -322,6 +323,23 @@ footer.footer {
   &:hover {
     background:@blueDark;
     color:@white;
+  }
+
+  &.btn-primary {
+    background:@orange;
+
+    &:hover {
+      background:darken(@orange, 5%);
+    }
+  }
+
+  &.btn-secondary {
+    background:none;
+    color:@linkColor;
+
+    &:hover {
+      text-decoration:underline;
+    }
   }
 }
 
