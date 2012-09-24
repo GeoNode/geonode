@@ -14,7 +14,7 @@ class Migration(DataMigration):
         from geonode.maps.models import Layer
         for layer in orm.Layer.objects.all():
             l = Layer.objects.get(id=layer.id)
-            if layer.keywords_temp is not None or len(layer.keywords_temp) > 0:
+            if layer.keywords_temp is not None and len(layer.keywords_temp) > 0:
                 for keyword in layer.keywords_temp.split():
                     l.keywords.add(keyword)
 
