@@ -462,44 +462,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var oldLayerChange = gxp.plugins.FeatureEditor.prototype.onLayerChange;
         var localUrl = this.config.localGeoServerBaseUrl;
-        gxp.plugins.FeatureEditor.prototype.onLayerChange = function (mgr, layer, schema) {
-            oldLayerChange.apply(this, [mgr,layer,schema]);
-
-            var buttons = this.actions;
-            if (layer == null) {
-                buttons[0].disable();
-                buttons[1].disable();
-            }
-            else if (layer.getLayer().params  && layer.data.layer.url.indexOf(localUrl) > -1 && !buttons[0].disabled) {
-                Ext.Ajax.request({
-                    url: "/data/" + layer.data.layer.params.LAYERS + "/ajax_layer_edit_check/",
-                    method: "POST",
-                    params: {layername:layer.data.layer.params.LAYERS},
-                    success: function(result, request) {
-                        if (result.responseText != "True") {
-                            for (i=0;i< buttons.length;i++) {
-                                buttons[i].disable();
-                            }
-                        } else {
-                            layer.data.layer.displayOutsideMaxExtent = true;
-                            for (i=0;i< buttons.length;i++) {
-                                buttons[i].enable();
-                                buttons[i].items[0].toggle(false);
-                                Ext.getCmp("worldmap_query_tool").toggle(true);
-                            }
-                        }
-                    },
-                    failure: function (result, request) {
-                        buttons[0].disable();
-                        buttons[1].disable();
-                    }
-                });
-            } else {
-                buttons[0].disable();
-                buttons[1].disable();
-            }
-        }
-
 
         gxp.plugins.FeatureManager.prototype.redrawMatchingLayers = function (record) {
             var name = record.get("name");
@@ -587,6 +549,47 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         }
 
+    },
+
+    //Check permissions for selected layer and enable/disable feature edit buttons accordingly
+    checkLayerPermissions:function (layerRecord) {
+
+        var buttons = this.tools["gn_layer_editor"].actions;
+
+        var toggleButtons = function(enabled) {
+            for (var i; i < buttons.length; i++) {
+                enabled ? buttons[i].enable() : buttons[i].disable();
+            }
+        }
+
+        //Disable if layer is null or selected layer in tree doesn't match input layer
+        var tree_node =  Ext.getCmp("treecontent").getSelectionModel().getSelectedNode();
+        if (layerRecord == null) {
+            toggleButtons(false);
+        }
+        else {
+            //Proceed if this is a local queryable WMS layer
+            var layer = layerRecord.getLayer();
+            if (this.layerSources[layerRecord.get("source")] instanceof gxp.plugins.GeoNodeSource) {
+                Ext.Ajax.request({
+                    url:"/data/" + layer.params.LAYERS + "/ajax-edit-check",
+                    method:"POST",
+                    success:function (result, request) {
+                        if (result.status != 200) {
+                            toggleButtons(false);
+                        } else {
+                            layer.displayOutsideMaxExtent = true;
+                            toggleButtons(true);
+                        }
+                    },
+                    failure:function (result, request) {
+                        toggleButtons(false);
+                    }
+                });
+            } else {
+                toggleButtons(false);
+            }
+        }
     },
 
     showLoginWindow: function(options) {
@@ -743,9 +746,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
 
-        var searchFields = this.searchFields;
-        var layerCount = 0;
-
         var incrementLayerStats = function(layer) {
             Ext.Ajax.request({
                 url: "/data/layerstats/",
@@ -758,7 +758,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             onlyShowOnFirstLoad: true
         }];
 
-        GeoExplorer.superclass.initMapPanel.apply(this, arguments);
+        this.mapPanel.map.events.register("preaddlayer", this, function(e) {
+            var layer = e.layer;
+            if (layer instanceof OpenLayers.Layer.WMS) {
+                layer.events.on({
+                    "loadend": function() {
+                        incrementLayerStats(layer);
+                        layer.events.unregister("loadend", this, arguments.callee);
+                    },
+                    scope: this
+                });
+            }
+        });
+
     },
 
     /**

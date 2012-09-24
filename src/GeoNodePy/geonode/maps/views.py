@@ -2979,7 +2979,7 @@ def create_pg_layer(request):
                 geonodeLayer = create_django_record(request.user, layer_form.cleaned_data['title'], layer_form.cleaned_data['keywords'].strip().split(" "), layer_form.cleaned_data['abstract'], layer, permissions)
 
 
-                redirect_to  = reverse('geonode.maps.views.data_metadata', args=(geonodeLayer.typename,))
+                redirect_to  = reverse('data_metadata', args=[geonodeLayer.typename])
                 if 'mapid' in request.POST and request.POST['mapid'] == 'tab': #if mapid = tab then open metadata form in tabbed panel
                     redirect_to+= "?tab=worldmap_create_panel"
                 elif 'mapid' in request.POST and request.POST['mapid'] != '': #if mapid = number then add to parameters and open in full page
