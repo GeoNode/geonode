@@ -102,8 +102,6 @@ GEOSERVER_BASE_URL
   http://example.com/geoserver/web/ , your GEOSERVER_BASE_URL is
   http://example.com/ .
 
-# CSW settings
-
 CATALOGUE
   A dict with the following keys:
 
