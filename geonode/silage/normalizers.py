@@ -34,8 +34,6 @@ class Normalizer:
         self.o = o
         self.data = data
         self.dict = None
-    def rank(self):
-        return (self.rating + 1) * (self.views + 1)
     def title(self):
         return self.o.title
     def last_modified(self):
@@ -48,7 +46,6 @@ class Normalizer:
                 self.o = getattr(type(self.o),'objects').get(pk = self.o.pk)
             self.dict = self.populate(self.data or {}, exclude)
             self.dict['iid'] = self.iid
-            self.dict['rating'] = self.rating
             self.dict['relevance'] = getattr(self.o, 'relevance', 0)
             if hasattr(self,'views'):
                 self.dict['views'] = self.views
@@ -131,9 +128,9 @@ class OwnerNormalizer(Normalizer):
         doc['id'] = user.username
         doc['title'] = user.get_full_name() or user.username
         doc['organization'] = contact.organization
-        doc['abstract'] = contact.blurb
+        doc['abstract'] = contact.profile
         doc['last_modified'] = extension.date_fmt(self.last_modified())
-        doc['detail'] = reverse('about_storyteller', args=(user.username,))
+        doc['detail'] = contact.get_absolute_url()
         doc['layer_cnt'] = Layer.objects.filter(owner = user).count()
         doc['map_cnt'] = Map.objects.filter(owner = user).count()
         doc['_type'] = 'owner'
