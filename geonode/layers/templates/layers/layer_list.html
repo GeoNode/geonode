@@ -52,12 +52,18 @@
         </div>
         <div class="tab-content span8">
           <div class="tab-pane active list" id="all">
+            {% if object_list.count %}
             {% autopaginate object_list 2 %}
             {% for layer in object_list %}
               {% include "layers/_layer_list_item.html" %}
             {% endfor %}
+            {% else %}
+              <p>No data found</p>
+            {% endif %}
           </div>
+          {% if object_list.count %}
             {% paginate %}
+          {% endif %}
           </div>
       </div>
     </div>
