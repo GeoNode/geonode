@@ -11,7 +11,7 @@ from geonode.silage import extension
 from agon_ratings.categories import RATING_CATEGORY_LOOKUP
 from agon_ratings.models import OverallRating
 
-from avatar.utils import get_default_avatar_url
+from avatar.util import get_default_avatar_url
 
 _default_avatar_url = get_default_avatar_url()
 
