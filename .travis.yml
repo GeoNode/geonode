@@ -30,8 +30,8 @@ script:
 after_script:
   - paver reset_hard
 
-#notifications:
-#  irc:
-#    channels:
-#      - "irc.freenode.org#geopython"
-#    use_notice: true
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#geonode"
+    use_notice: true
