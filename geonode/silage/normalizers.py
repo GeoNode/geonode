@@ -69,11 +69,13 @@ def apply_normalizers(results):
         ('owners', OwnerNormalizer),
     ]
     for k,n in mapping:
-        normalizers = map(n, results[k])
+        r = results[k]
+        if not r: continue
+        normalizers = map(n, r)
         _annotate(normalizers)
         extension.process_results(normalizers)
         normalized.extend(normalizers)
-    return normalizers
+    return normalized
 
 
 class Normalizer:
@@ -113,16 +115,16 @@ class MapNormalizer(Normalizer):
     def populate(self, doc, exclude):
         map = self.o
         # resolve any local layers and their keywords
-        # @todo this makes this search awful slow and these should be lazily evaluated
         local_kw = [ l.keyword_list() for l in map.local_layers if l.keywords]
         keywords = local_kw and list(set( reduce(lambda a,b: a+b, local_kw))) or []
         doc['id'] = map.id
         doc['title'] = map.title
         doc['abstract'] = defaultfilters.linebreaks(map.abstract)
         doc['topic'] = '', # @todo
-        doc['detail'] = reverse('geonode.maps.views.map_controller', args=(map.id,))
+        doc['detail'] = reverse('map_detail', args=(map.id,))
         doc['owner'] = map.owner.username
-        doc['owner_detail'] = reverse('about_storyteller', args=(map.owner.username,))
+#        doc['owner_detail'] = reverse('about_storyteller', args=(map.owner.username,))
+        doc['owner_detail'] = map.owner.get_absolute_url()
         doc['last_modified'] = extension.date_fmt(map.last_modified)
         doc['_type'] = 'map'
         doc['_display_type'] = extension.MAP_DISPLAY
@@ -143,7 +145,7 @@ class LayerNormalizer(Normalizer):
         doc['last_modified'] = extension.date_fmt(layer.date)
         doc['id'] = layer.id
         doc['_type'] = 'layer'
-        doc['owsUrl'] = layer.get_virtual_wms_url()
+#        doc['owsUrl'] = layer.get_virtual_wms_url()
         doc['topic'] = layer.topic_category
         doc['name'] = layer.typename
         doc['abstract'] = defaultfilters.linebreaks(layer.abstract)
@@ -161,7 +163,8 @@ class LayerNormalizer(Normalizer):
         #    doc['download_links'] = links
         owner = layer.owner
         if owner:
-            doc['owner_detail'] = reverse('about_storyteller', args=(layer.owner.username,))
+            doc['owner_detail'] = layer.owner.get_absolute_url()
+#            doc['owner_detail'] = reverse('about_storyteller', args=(layer.owner.username,))
         return doc
 
 
