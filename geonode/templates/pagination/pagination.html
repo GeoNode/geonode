@@ -13,7 +13,7 @@
       </li>
       <li>
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">{% trans "Next" %}</a>
+        <a href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" class="next more">{% trans "Next" %}</a>
         {% else %}
         <span class="disabled next">{% trans "next" %}</span>
         {% endif %}
