@@ -36,6 +36,8 @@ gxp.plugins.HGLFeedSource = Ext.extend(gxp.plugins.FeedSource, {
         if (config.params["q"] == null) {
             config.params["q"] == ""
         }
+        if (config.params["max-results"] == "") { config.params["max-results"] = 50;
+        }
         config.url = this.url;
 
         var record = gxp.plugins.HGLFeedSource.superclass.createLayerRecord.apply(this, arguments);

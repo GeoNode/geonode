@@ -79,7 +79,6 @@ gxp.plugins.FeedSource = Ext.extend(gxp.plugins.LayerSource, {
                 clickout: true,
                 listeners: {
                     'clickoutFeature': function () {
-                        alert('clickout');
                     }
                 },
                 scope: this
