@@ -11,7 +11,9 @@ from geonode.silage import extension
 from agon_ratings.categories import RATING_CATEGORY_LOOKUP
 from agon_ratings.models import OverallRating
 
-import avatar
+from avatar.utils import get_default_avatar_url
+
+_default_avatar_url = get_default_avatar_url()
 
 def _bbox(obj):
     idx = None
@@ -174,7 +176,7 @@ class OwnerNormalizer(Normalizer):
         try:
             doc['thumb'] = user.avatar_set.all()[0].avatar_url(80)
         except IndexError:
-            doc['thumb'] = avatar.AVATAR_DEFAULT_URL
+            doc['thumb'] = _default_avatar_url
         doc['id'] = user.username
         doc['title'] = user.get_full_name() or user.username
         doc['organization'] = contact.organization
