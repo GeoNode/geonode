@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+__path__ = "".join(__file__.split('/')[:-1]) #weird hack
 import os
 from lxml import etree
 from django.conf import settings
