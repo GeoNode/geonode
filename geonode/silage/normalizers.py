@@ -13,8 +13,6 @@ from agon_ratings.models import OverallRating
 
 from avatar.util import get_default_avatar_url
 
-from datetime import datetime
-
 _default_avatar_url = get_default_avatar_url()
 
 def _bbox(obj):

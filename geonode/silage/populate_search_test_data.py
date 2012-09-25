@@ -52,19 +52,17 @@ layers = [
 
 def create_models():
     users = []
-    for user_name, password, first_name, last_name in user_data:
+    for ud, pd in zip(user_data, cycle(people_data)):
+        user_name, password, first_name, last_name = ud
+        profile = pd[0]
         u = User.objects.create_user(user_name)
         u.first_name = first_name
         u.last_name = last_name
         u.save()
-        users.append(u)
-
-    people_data_generator = cycle(people_data)
-    for u in users:
-        profile = people_data_generator.next()[0]
-        contact = Contact(profile=profile)
-        contact.user = u
+        contact = Contact.objects.get(user=u)
+        contact.profile = profile
         contact.save()
+        users.append(u)
 
     for md, user in zip(map_data, cycle(users)):
         title, abstract = md

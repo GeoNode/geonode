@@ -86,3 +86,10 @@ class SilageTest(TestCase):
 
     def test_abstract_results(self):
         self.search_assert(self.request('foo'), n_results=7)
+
+    def test_bbox_query(self):
+        # @todo since maps and users are excluded at the moment, this will have
+        # to be revisited
+        self.search_assert(self.request(extent='-180,180,-90,90'), n_results=8)
+        self.search_assert(self.request(extent='0,10,0,10'), n_results=3)
+        self.search_assert(self.request(extent='0,1,0,1'), n_results=1)
