@@ -43,17 +43,17 @@ if process_results is None:
     
 owner_query = resolve_extension('owner_query')
 if not owner_query:
-    owner_query = lambda q,k: Contact.objects.filter()
+    owner_query = lambda q: Contact.objects.filter()
     
 owner_query_fields = resolve_extension('owner_query_fields') or []
     
 layer_query = resolve_extension('layer_query')
 if not layer_query:
-    layer_query = lambda q,k: Layer.objects.filter()
+    layer_query = lambda q: Layer.objects.filter()
     
 map_query = resolve_extension('map_query')
 if not map_query:
-    map_query = lambda q,k: Map.objects.filter()
+    map_query = lambda q: Map.objects.filter()
 
 display_names = resolve_extension('display_names')
 if display_names:

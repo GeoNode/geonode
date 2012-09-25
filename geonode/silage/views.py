@@ -31,6 +31,7 @@ from geonode.people.models import Contact
 from geonode.silage.search import combined_search_results
 from geonode.silage.util import resolve_extension
 from geonode.silage.normalizers import apply_normalizers
+from geonode.silage.query import query_from_request
 
 from datetime import datetime
 import json
@@ -120,12 +121,11 @@ def search_api(request):
 #    connection.queries = []
     ts = time()
     try:
-        params = _search_params(request)
-        start = params[1]
-        total, items = _search(*params)
+        query = query_from_request(**request.REQUEST)
+        items = _search(query)
         ts1 = time() - ts
         ts = time()
-        results = _search_json(params[-1], items, total, start, ts1)
+        results = _search_json(query, items, ts1)
         ts2 = time() - ts
         logger.info('generated combined search results in %s, %s',ts1,ts2)
 #        print ts1,ts2, connection.queries.__len__()
@@ -138,77 +138,28 @@ def search_api(request):
         }), status=400)
 
 
-def _search_params(request):
-    params = request.REQUEST
-
-    # grab params directly to implement defaults as
-    # opposed to panicy django forms behavior.
-    query = params.get('q', '')
-    try:
-        start = int(params.get('start', '0'))
-        # compat
-        if 'startIndex' in params:
-            start = int(params.get('startIndex',0))
-    except:
-        start = 0
-    try:
-        limit = int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE))
-    except:
-        limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
-        
-    # handle old search link parameters
-    if 'sort' in params and 'dir' in params:
-        sort_field = params['sort']
-        sort_asc = params['dir'] == 'ASC'
-    else:    
-        sort_field, sort_asc = {
-            'newest' : ('last_modified',False),
-            'oldest' : ('last_modified',True),
-            'alphaaz' : ('title',True),
-            'alphaza' : ('title',False),
-            'popularity' : ('rank',False),
-            'rel' : ('relevance',False)
-
-        }[params.get('sort','newest')]
-
-    filters = dict([(k,params.get(k,None) or None) for k in _SEARCH_PARAMS])
+def _search_json(query, items, time):
+    total = len(items)
     
-    # stuff the user in there, too, if authenticated
-    filters['user'] = request.user if request.user.is_authenticated() else None
+    if query.limit > 0:
+        items = items[query.start:query.start + query.limit]
     
-    filters['limit'] = limit
-    
-    # compat
-    aliases = dict(type='bytype',bbox='byextent')
-    for k,v in aliases.items():
-        if k in params: filters[v] = params[k]
-                
-    if filters.get('byperiod'):
-        filters['byperiod'] = tuple(filters['byperiod'].split(','))
-        
-    if filters.get('byextent'):
-        filters['byextent'] = map(float, filters.get('byextent').split(','))
-
-    return query, start, limit, sort_field, sort_asc, filters
-    
-    
-def _search_json(params, results, total, start, time):
     # unique item id for ext store (this could be done client side)
-    iid = start
-    for r in results:
+    iid = query.start
+    for r in items:
         r.iid = iid
         iid += 1
     
-    exclude = params.get('exclude')
+    exclude = query.params.get('exclude')
     exclude = set(exclude.split(',')) if exclude else ()
-    results = map(lambda r: r.as_dict(exclude),results)
+    items = map(lambda r: r.as_dict(exclude), items)
         
     results = {
         '_time' : time,
-        'results' : results,
+        'results' : items,
         'total' :  total,
         'success' : True,
-        'query' : params
+        'query' : query.params
     }
     return HttpResponse(json.dumps(results), mimetype="application/json")
 
@@ -217,22 +168,21 @@ def cache_key(query,filters):
     return str(reduce(operator.xor,map(hash,filters.items())) ^ hash(query))
 
 
-def _search(query, start, limit, sort_field, sort_asc, filters):
+def _search(query):
     # to support super fast paging results, cache the intermediates
-    use_cache = filters.get('cache',1)
     results = None
     cache_time = 60
-    if use_cache:
-        key = cache_key(query,filters)
+    if query.cache:
+        key = query.cache_key()
         results = cache.get(key)
         if results:
             # put it back again - this basically extends the lease
             cache.add(key, results, cache_time)
         
     if not results:
-        results = combined_search_results(query,filters)
+        results = combined_search_results(query)
         results = apply_normalizers(results)
-        if use_cache:
+        if query.cache:
             dumped = zlib.compress(pickle.dumps(results))
             logger.info("cached search results %s" % len(dumped))
             cache.set(key, dumped, cache_time)
@@ -241,19 +191,16 @@ def _search(query, start, limit, sort_field, sort_asc, filters):
         results = pickle.loads(zlib.decompress(results))
 
     # default sort order by id (could be last_modified when external layers are dealt with)
-    if sort_field == 'title':
+    if query.sort == 'title':
         keyfunc = lambda r: r.title().lower()
-    elif sort_field == 'last_modified':
+    elif query.sort == 'last_modified':
         old = datetime(1,1,1)
         keyfunc = lambda r: r.last_modified() or old
     else:
-        keyfunc = lambda r: getattr(r,sort_field)()
-    results.sort(key=keyfunc,reverse=not sort_asc)
+        keyfunc = lambda r: getattr(r, query.sort)()
+    results.sort(key=keyfunc, reverse=not query.order)
     
-    if limit > 0:
-        results = results[start:start+limit]
-    
-    return len(results), results
+    return results
 
 
 def author_list(req):
