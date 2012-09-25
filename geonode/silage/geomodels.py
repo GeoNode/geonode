@@ -85,10 +85,10 @@ def filter_by_period(model, q, start, end, user=None):
     if end:
         q = q.filter(time_end__lte = util.iso_str_to_jdate(end))
     if user:
-        period_ids = period_ids.values('indexed__owner')
+        period_ids = q.values('indexed__owner')
         q = q.filter(user__in=period_ids)
     else:
-        period_ids = period_ids.values('indexed')
+        period_ids = q.values('indexed')
         q = q.filter(id__in=period_ids)
     return q
 

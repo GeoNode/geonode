@@ -30,8 +30,7 @@ from geonode.maps.models import Map
 from geonode.people.models import Contact
 from geonode.silage.search import combined_search_results
 from geonode.silage.util import resolve_extension
-from geonode.silage import normalizers
-from geonode.silage import extension
+from geonode.silage.normalizers import apply_normalizers
 
 import json
 import cPickle as pickle
@@ -235,7 +234,7 @@ def _search(query, start, limit, sort_field, sort_asc, filters):
         
     if not results:
         results = combined_search_results(query,filters)
-        results = _apply_normalizers(results)
+        results = apply_normalizers(results)
         if use_cache:
             dumped = zlib.compress(pickle.dumps(results))
             logger.info("cached search results %s" % len(dumped))
@@ -255,18 +254,6 @@ def _search(query, start, limit, sort_field, sort_asc, filters):
         results = results[start:start+limit]
     
     return len(results), results
-
-
-def _apply_normalizers(results):
-    normalized = []
-    mapping = [
-        ('maps',normalizers.MapNormalizer),
-        ('layers',normalizers.LayerNormalizer),
-        ('owners',normalizers.OwnerNormalizer),
-    ]
-    for k,n in mapping:
-        normalized.extend(extension.process_results(map(n, results[k])))
-    return normalized
 
 
 def author_list(req):

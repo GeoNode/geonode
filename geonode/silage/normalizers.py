@@ -1,4 +1,5 @@
-from django.conf import settings
+from django.core.cache import cache
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import defaultfilters
@@ -6,6 +7,9 @@ from django.template import defaultfilters
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
 from geonode.silage import extension
+
+from agon_ratings.categories import RATING_CATEGORY_LOOKUP
+from agon_ratings.models import OverallRating
 
 import avatar
 
@@ -24,6 +28,52 @@ def _bbox(obj):
     return dict(minx=extent[0], miny=extent[1], maxx=extent[2], maxy=extent[3])
 
 
+def _get_ratings(model):
+    '''cached, bulk access for a given models rating'''
+    key = 'overall_rating_%s' % model.__name__
+    results = cache.get(key)
+    if not results:
+        # this is some hacky stuff related to rankings
+        choice = model.__name__.lower()
+        category = RATING_CATEGORY_LOOKUP.get(
+            "%s.%s-%s" % (model._meta.app_label, model._meta.object_name, choice)
+        ) 
+        try:
+            ct = ContentType.objects.get_for_model(model)
+            ratings = OverallRating.objects.filter(
+                content_type = ct,
+                category = category
+            )
+            results = dict([ (r.object_id, r.rating) or 0 for r in ratings])
+            cache.set(key, results)
+        except OverallRating.DoesNotExist:
+            return {}
+    return results
+
+
+def _annotate(normalizers):
+    if not normalizers: return
+    model = type(normalizers[0].o)
+    ratings = _get_ratings(model)
+    for n in normalizers:
+        n.rating = float(ratings.get(n.o.id, 0))
+
+
+def apply_normalizers(results):
+    normalized = []
+    mapping = [
+        ('maps', MapNormalizer),
+        ('layers', LayerNormalizer),
+        ('owners', OwnerNormalizer),
+    ]
+    for k,n in mapping:
+        normalizers = map(n, results[k])
+        _annotate(normalizers)
+        extension.process_results(normalizers)
+        normalized.extend(normalizers)
+    return normalizers
+
+
 class Normalizer:
     '''Base class to allow lazy normalization of Map and Layer attributes.
     
@@ -34,8 +84,6 @@ class Normalizer:
         self.o = o
         self.data = data
         self.dict = None
-    def rank(self):
-        return (self.rating + 1) * (self.views + 1)
     def title(self):
         return self.o.title
     def last_modified(self):
@@ -48,7 +96,6 @@ class Normalizer:
                 self.o = getattr(type(self.o),'objects').get(pk = self.o.pk)
             self.dict = self.populate(self.data or {}, exclude)
             self.dict['iid'] = self.iid
-            self.dict['rating'] = self.rating
             self.dict['relevance'] = getattr(self.o, 'relevance', 0)
             if hasattr(self,'views'):
                 self.dict['views'] = self.views
@@ -77,7 +124,7 @@ class MapNormalizer(Normalizer):
         doc['last_modified'] = extension.date_fmt(map.last_modified)
         doc['_type'] = 'map'
         doc['_display_type'] = extension.MAP_DISPLAY
-        doc['thumb'] = map.get_thumbnail_url()
+#        doc['thumb'] = map.get_thumbnail_url()
         doc['keywords'] = keywords
         if 'bbox' not in exclude:
             doc['bbox'] = _bbox(map)
@@ -90,7 +137,7 @@ class LayerNormalizer(Normalizer):
     def populate(self, doc, exclude):
         layer = self.o
         doc['owner'] = layer.owner.username
-        doc['thumb'] = layer.get_thumbnail_url()
+#        doc['thumb'] = layer.get_thumbnail_url()
         doc['last_modified'] = extension.date_fmt(layer.date)
         doc['id'] = layer.id
         doc['_type'] = 'layer'
@@ -131,9 +178,9 @@ class OwnerNormalizer(Normalizer):
         doc['id'] = user.username
         doc['title'] = user.get_full_name() or user.username
         doc['organization'] = contact.organization
-        doc['abstract'] = contact.blurb
+        doc['abstract'] = contact.profile
         doc['last_modified'] = extension.date_fmt(self.last_modified())
-        doc['detail'] = reverse('about_storyteller', args=(user.username,))
+        doc['detail'] = contact.get_absolute_url()
         doc['layer_cnt'] = Layer.objects.filter(owner = user).count()
         doc['map_cnt'] = Map.objects.filter(owner = user).count()
         doc['_type'] = 'owner'
