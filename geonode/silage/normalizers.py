@@ -88,6 +88,8 @@ class Normalizer:
         self.o = o
         self.data = data
         self.dict = None
+    def rank(self):
+        return self.rating
     def title(self):
         return self.o.title
     def last_modified(self):

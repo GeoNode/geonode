@@ -54,6 +54,8 @@ def filter_by_extent(model, q, extent, user=None):
         q = q.none()
     return q
 
+using_geodjango = False
 
 if 'django.contrib.gis' in settings.INSTALLED_APPS:
     from geonode.silage.geomodels import *
+    using_geodjango = True

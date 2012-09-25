@@ -30,6 +30,7 @@ from geonode.utils import _split_query
 from geonode.silage import extension
 from geonode.silage.models import filter_by_period
 from geonode.silage.models import filter_by_extent
+from geonode.silage.models import using_geodjango
 
 import operator
 
@@ -44,84 +45,6 @@ def _rank_rules(model, *rules):
 def _filter_results(l):
     '''If the layer name doesn't match any of the patterns, it shows in the results'''
     return not any(p.search(l['name']) for p in extension.exclude_regex)
-
-
-def _get_owner_results(query):
-    # make sure all contacts have a user attached
-    q = extension.owner_query(query)
-    
-    if q is None: return None
-    
-    if query.kw:
-        # hard to handle - not supporting at the moment
-        return
-    
-    if query.owner:
-        q = q.filter(user__username__icontains = query.owner)
-    
-    if query.extent:
-        q = filter_by_extent(Map, q, query.extent, True) | \
-            filter_by_extent(Layer, q, query.extent, True)
-    
-    if query.period:
-        q = filter_by_period(Map, q, query.period, True) | \
-            filter_by_period(Layer, q, query.period, True)
-    
-    if query.added:
-        q = q.filter(user__date_joined__gt = query.added)
-    
-    if query.query:
-        qs = Q(user__username__icontains=query.query) | \
-             Q(user__first_name__icontains=query.query) | \
-             Q(user__last_name__icontains=query.query)
-        for field in extension.owner_query_fields:
-            qs = qs | Q(**{'%s__icontains' % field: query.query})
-        q = q.filter(qs)
-        
-        rules = _rank_rules(User,['username', 10, 5]) + \
-                _rank_rules(Contact,['organization', 5, 2])
-        added = extension.owner_rank_rules()
-        if added:
-            rules = rules + _rank_rules(*added)
-        q = _add_relevance(q, query.query, rules)
-    return q
-
-
-def _get_map_results(query):
-    q = extension.map_query(query)
-    
-    if query.query:
-        q = q.filter(title__icontains=query.query) | \
-            q.filter(abstract__icontains=query.query)
-        
-    if query.owner:
-        q = q.filter(owner__username=query. owner)
-
-    if query.query:
-        q = q.filter(_build_kw_query(query. query))
-        
-    if query.extent:
-        q = filter_by_extent(Map, q, query. extent)
-        
-    if query.added:
-        q = q.filter(last_modified__gte=query. added)
-    
-    if query.period:
-        q = filter_by_period(Map, q, *query.period)
-        
-    if query.kw:
-        # this is a somewhat nested query but it performs way faster
-        layers_with_kw = Layer.objects.filter(_build_kw_only_query(query.kw)).values('typename')
-        map_layers_with = MapLayer.objects.filter(name__in=layers_with_kw).values('map')
-        q = q.filter(id__in=map_layers_with)
-    if query.query:
-        rules = _rank_rules(Map,
-            ['title',10, 5],
-            ['abstract',5, 2],
-        )
-        q = _add_relevance(q, query.query, rules)
-
-    return q
 
 
 def _add_relevance(query, text, rank_rules):
@@ -166,6 +89,84 @@ def _build_kw_query(query, query_keywords=False):
 def _build_kw_only_query(query):
     return reduce(operator.or_, [Q(keywords__name__contains=kw) for kw in _split_query(query)])
 
+
+def _get_owner_results(query):
+    # make sure all contacts have a user attached
+    q = extension.owner_query(query)
+    
+    if q is None: return None
+    
+    if query.kw:
+        # hard to handle - not supporting at the moment
+        return
+    
+    if query.owner:
+        q = q.filter(user__username__icontains = query.owner)
+    
+    if query.extent:
+        q = filter_by_extent(Map, q, query.extent, True) | \
+            filter_by_extent(Layer, q, query.extent, True)
+    
+    if query.period:
+        q = filter_by_period(Map, q, *query.period, user=True) | \
+            filter_by_period(Layer, q, *query.period, user=True)
+    
+    if query.added:
+        q = q.filter(user__date_joined__gt = query.added)
+    
+    if query.query:
+        qs = Q(user__username__icontains=query.query) | \
+             Q(user__first_name__icontains=query.query) | \
+             Q(user__last_name__icontains=query.query)
+        for field in extension.owner_query_fields:
+            qs = qs | Q(**{'%s__icontains' % field: query.query})
+        q = q.filter(qs)
+        
+        rules = _rank_rules(User,['username', 10, 5]) + \
+                _rank_rules(Contact,['organization', 5, 2])
+        added = extension.owner_rank_rules()
+        if added:
+            rules = rules + _rank_rules(*added)
+        q = _add_relevance(q, query.query, rules)
+    return q
+
+
+def _get_map_results(query):
+    q = extension.map_query(query)
+    
+    if query.query:
+        q = q.filter(title__icontains=query.query) | \
+            q.filter(abstract__icontains=query.query)
+        
+    if query.owner:
+        q = q.filter(owner__username=query.owner)
+
+    if query.query:
+        q = q.filter(_build_kw_query(query.query))
+        
+    if query.extent:
+        q = filter_by_extent(Map, q, query.extent)
+        
+    if query.added:
+        q = q.filter(last_modified__gte=query.added)
+    
+    if query.period:
+        q = filter_by_period(Map, q, *query.period)
+        
+    if query.kw:
+        # this is a somewhat nested query but it performs way faster
+        layers_with_kw = Layer.objects.filter(_build_kw_only_query(query.kw)).values('typename')
+        map_layers_with = MapLayer.objects.filter(name__in=layers_with_kw).values('map')
+        q = q.filter(id__in=map_layers_with)
+    if query.query:
+        rules = _rank_rules(Map,
+            ['title',10, 5],
+            ['abstract',5, 2],
+        )
+        q = _add_relevance(q, query.query, rules)
+
+    return q
+
     
 def _get_layer_results(query):
     
@@ -196,14 +197,13 @@ def _get_layer_results(query):
         q = q.filter(date__gte=query.added)
         
     if query.period:
-        q = filter_by_period(Layer, q, query.period)
+        q = filter_by_period(Layer, q, *query.period)
        
     # this is a special optimization for prefetching results when requesting
     # all records via search
     # keywords and thumbnails cannot be prefetched at the moment due to
     # the way the contenttypes are implemented
-    # @todo ian - extract to geomodels
-    if query.limit == 0:
+    if query.limit == 0 and using_geodjango:
         q = q.defer(None).prefetch_related("owner","spatial_temporal_index")
     
     if query.query:
