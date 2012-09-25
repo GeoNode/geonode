@@ -25,11 +25,13 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 
 from geonode.maps.views import default_map_config
-from geonode.maps.models import Contact
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
+from geonode.people.models import Contact
 from geonode.silage.search import combined_search_results
 from geonode.silage.util import resolve_extension
+from geonode.silage import normalizers
+from geonode.silage import extension
 
 import json
 import cPickle as pickle
@@ -49,30 +51,25 @@ _extra_context = resolve_extension('extra_context')
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 
+
 def _create_viewer_config():
-    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
     _map = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
-    return json.dumps(_map.viewer_json(added_layers=DEFAULT_BASE_LAYERS, authenticated=False))
+    return json.dumps(_map.viewer_json(*DEFAULT_BASE_LAYERS))
 _viewer_config = _create_viewer_config()
 
-def new_search_page(request, **kw):
-    
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-    
+
+def search_page(request, **kw):
+    params = {}
     if kw:
-        params = dict(params)
         params.update(kw)
 
     context = _get_search_context()
-    context['init_search'] = json.dumps(params or {})
+    context['init_search'] = json.dumps(params)
      
     return render_to_response('silage/search.html', RequestContext(request, context))
-    
+
+
 def _get_search_context():
     cache_key = 'simple_search_context'
     context = cache.get(cache_key)
@@ -102,23 +99,22 @@ def _get_search_context():
     cache.set(cache_key, context, 60)
         
     return context
-    
+
+
 def _get_all_keywords():
-    if settings.USE_GEONETWORK:
-        allkw = Layer.objects.gn_catalog.get_all_keywords()
-    else:    
-        allkw = {}
-        # @todo tagging added to maps and contacts, depending upon search type,
-        # need to get these... for now it doesn't matter (in mapstory) as
-        # only layers support keywords ATM.
-        for l in Layer.objects.all().select_related().only('keywords'):
-            kw = [ k.name for k in l.keywords.all() ]
-            for k in kw:
-                allkw[k] = allkw.get(k,0) + 1
+    allkw = {}
+    # @todo tagging added to maps and contacts, depending upon search type,
+    # need to get these... for now it doesn't matter (in mapstory) as
+    # only layers support keywords ATM.
+    for l in Layer.objects.all().select_related().only('keywords'):
+        kw = [ k.name for k in l.keywords.all() ]
+        for k in kw:
+            allkw[k] = allkw.get(k,0) + 1
 
     return allkw
 
-def new_search_api(request):
+
+def search_api(request):
     from time import time
 #    from django.db import connection
 #    connection.queries = []
@@ -126,7 +122,7 @@ def new_search_api(request):
     try:
         params = _search_params(request)
         start = params[1]
-        total, items = _new_search(*params)
+        total, items = _search(*params)
         ts1 = time() - ts
         ts = time()
         results = _search_json(params[-1], items, total, start, ts1)
@@ -141,21 +137,6 @@ def new_search_api(request):
             'errors' : [str(ex)]
         }), status=400)
 
-def new_search_api_reduced(request):
-    from time import time
-
-    ts = time()
-    params = _search_params(request)
-    total, items = _new_search(*params)
-    ts = time() - ts
-    logger.info('generated combined search results in %s',ts)
-    idfun = lambda o: (isinstance(o, Map) and 'm%s' or 'l%s') % o.o.pk
-    results = {
-        "_time" : ts,
-        "rows" : [ idfun(i) for i in items ],
-        "total" : total
-    }
-    return HttpResponse(json.dumps(results), mimetype="application/json")
 
 def _search_params(request):
     if request.method == 'GET':
@@ -209,6 +190,9 @@ def _search_params(request):
                 
     if filters.get('byperiod'):
         filters['byperiod'] = tuple(filters['byperiod'].split(','))
+        
+    if filters.get('byextent'):
+        filters['byextent'] = map(float, filters.get('byextent').split(','))
 
     return query, start, limit, sort_field, sort_asc, filters
     
@@ -237,7 +221,7 @@ def cache_key(query,filters):
     return str(reduce(operator.xor,map(hash,filters.items())) ^ hash(query))
 
 
-def _new_search(query, start, limit, sort_field, sort_asc, filters):
+def _search(query, start, limit, sort_field, sort_asc, filters):
     # to support super fast paging results, cache the intermediates
     use_cache = filters.get('cache',1)
     results = None
@@ -251,6 +235,7 @@ def _new_search(query, start, limit, sort_field, sort_asc, filters):
         
     if not results:
         results = combined_search_results(query,filters)
+        results = _apply_normalizers(results)
         if use_cache:
             dumped = zlib.compress(pickle.dumps(results))
             logger.info("cached search results %s" % len(dumped))
@@ -258,20 +243,6 @@ def _new_search(query, start, limit, sort_field, sort_asc, filters):
 
     else:
         results = pickle.loads(zlib.decompress(results))
-
-    filter_fun = []
-    # careful when creating lambda or function filters inline like this
-    # as multiple filters cannot use the same local variable or they
-    # will overwrite each other
-    
-    # this is a cruddy, in-memory search since there is no database relationship
-    if settings.USE_GEONETWORK:
-        kw = filters['bykw']
-        if kw:
-            filter_fun.append(lambda r: 'keywords' in r.as_dict(()) and kw in r.as_dict(())['keywords'])
-    
-    for fun in filter_fun:
-        results = filter(fun,results)
 
     # default sort order by id (could be last_modified when external layers are dealt with)
     if sort_field == 'title':
@@ -284,6 +255,18 @@ def _new_search(query, start, limit, sort_field, sort_asc, filters):
         results = results[start:start+limit]
     
     return len(results), results
+
+
+def _apply_normalizers(results):
+    normalized = []
+    mapping = [
+        ('maps',normalizers.MapNormalizer),
+        ('layers',normalizers.LayerNormalizer),
+        ('owners',normalizers.OwnerNormalizer),
+    ]
+    for k,n in mapping:
+        normalized.extend(extension.process_results(map(n, results[k])))
+    return normalized
 
 
 def author_list(req):

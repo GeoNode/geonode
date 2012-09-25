@@ -53,14 +53,45 @@ class LayerIndex(SpatialTemporalIndex):
     
 class MapIndex(SpatialTemporalIndex):
     indexed = models.OneToOneField(Map,related_name='spatial_temporal_index')
-    
-def filter_by_period(index, start, end):
+
+
+def _index_for_model(model):
+    if model == Layer:
+        index = LayerIndex
+    elif model == Map:
+        index = MapIndex
+    else:
+        raise Exception('no index for model', model)
+    return index
+
+
+def filter_by_extent(model, q, extent, user=None):
+    env = Envelope(extent)
+    index = _index_for_model(model)
+    extent_ids = index.objects.filter(extent__contained=env.wkt)
+    if user:
+        extent_ids = extent_ids.values('indexed__owner')
+        return q.filter(user__in=extent_ids)
+    else:
+        extent_ids = extent_ids.values('indexed')
+        return q.filter(id__in=extent_ids)
+
+
+def filter_by_period(model, q, start, end, user=None):
+    index = _index_for_model(model)
     q = index.objects.all()
     if start:
         q = q.filter(time_start__gte = util.iso_str_to_jdate(start))
     if end:
         q = q.filter(time_end__lte = util.iso_str_to_jdate(end))
+    if user:
+        period_ids = period_ids.values('indexed__owner')
+        q = q.filter(user__in=period_ids)
+    else:
+        period_ids = period_ids.values('indexed')
+        q = q.filter(id__in=period_ids)
     return q
+
 
 def index_object(obj, update=False):
     if type(obj) == Layer:
@@ -159,15 +190,18 @@ def index_map(index, obj):
         index.time_end = time_end
     index.extent = extent.wkt
     index.save()
-        
+
+
 def object_created(instance, sender, **kw):
     if kw['created']:
         index_object(instance)
-        
+
+
 def map_updated(sender, **kw):
     if kw['what_changed'] == 'layers':
         index_object(sender)
-        
+
+
 def object_deleted(instance, sender, **kw):
     if type(instance) == Layer:
         index = LayerIndex
@@ -177,7 +211,8 @@ def object_deleted(instance, sender, **kw):
         index.objects.get(indexed=instance).delete()
     except index.DoesNotExist:
         pass
-        
+
+
 signals.post_save.connect(object_created, sender=Layer)
 
 signals.pre_delete.connect(object_deleted, sender=Map)

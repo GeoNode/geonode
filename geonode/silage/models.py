@@ -19,12 +19,13 @@
 
 from django.conf import settings
 
-def filter_by_period(q, model, start, end):
+def filter_by_period(model, q, start, end, user=None):
     '''modify the query to filter the given model for dates between start and end
     start, end - iso str ('-5000-01-01T12:00:00Z')
     '''
+    print 'NOT DONE'
     
-def filter_by_extent(q, model, extent, user=None):
+def filter_by_extent(model, q, extent, user=None):
     '''modify the query to filter the given model for the provided extent and optional user
     extent: tuple of float coordinates representing x0,y1,y0,y1
     '''
