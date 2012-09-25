@@ -1,5 +1,4 @@
 @import "../../bootstrap/less/bootstrap";
-@import "elements.less";
 
 @grayLight: rgb(239, 240, 239);
 @grayDark: rgb(72, 71, 72);
@@ -669,7 +668,7 @@ ul.space li {
     width: 20px;
     padding: 8px 4px 6px;
     border: 1px solid @grayNeutral;
-    .border-radius(3px, 3px, 0, 0);
+    .border-radius(0 3px 3px 0);
   }
   a.toggle-nav {
     float: right;
@@ -919,13 +918,13 @@ body.data #subnav-tabs,
 body.maps #subnav-tabs {
   background-color: @grayLight;
   color: @graySp;
-  .border-radius(3px);
+  .border-radius(3px 3px 0 0);
   .box-shadow(0 1px 2px #CCC);
   border-bottom: 2px solid @grayDark;
 
   a {
     display: block;
-    .border-radius(3px, 0, 0, 3px);
+    .border-radius(3px 3px 0 0);
     text-transform: uppercase;
     font-size: 18px;
     font-weight: 500;
