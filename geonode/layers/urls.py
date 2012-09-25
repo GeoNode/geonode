@@ -20,7 +20,6 @@
 
 from django.conf.urls.defaults import patterns, url
 
-from geonode.layers.models import Layer
 from geonode.layers.views import LayerListView
 
 js_info_dict = {
@@ -36,6 +35,7 @@ urlpatterns = patterns('geonode.layers.views',
     layer_filter="share_count"
   ), name='layer_browse_shared'),
   url(r'^category/(?P<slug>[-\w]+?)/$', 'layer_category', name='layer_browse_category'),
+  url(r'^tag/(?P<slug>[-\w]+?)/$', 'layer_tag', name='layer_browse_tag'),
   url(r'^acls/?$', 'layer_acls', name='layer_acls'),
   url(r'^search/?$', 'layer_search_page', name='layer_search_page'),
   url(r'^search/api/?$', 'layer_search', name='layer_search_api'),
