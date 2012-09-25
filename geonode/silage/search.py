@@ -96,6 +96,10 @@ def _get_owner_results(query, kw):
 
 def _get_map_results(query, kw):
     q = extension.map_query(query,kw)
+    
+    if query:
+        q = q.filter(title__icontains=query) | \
+            q.filter(abstract__icontains=query)
         
     byowner = kw.get('byowner')
     if byowner:
@@ -128,14 +132,14 @@ def _get_map_results(query, kw):
             ['abstract',5, 2],
         )
         q = _add_relevance(q, query, rules)
-    
+
     return q
-    
-    
+
+
 def _add_relevance(query, text, rank_rules):
     # for unittests, it doesn't make sense to test this as it's postgres
     # specific SQL - instead test/verify directly using a query and getting SQL
-    if 'sqlite' in backend.__name__: return
+    if 'sqlite' in backend.__name__: return query
     
     eq = """CASE WHEN %s = '%s' THEN %s ELSE 0 END"""
     frag = """CASE WHEN position(lower('%s') in lower(%s)) >= 1 THEN %s ELSE 0 END"""
@@ -195,7 +199,9 @@ def _get_layer_results(query, kw):
         name_filter = reduce(operator.or_,[ Q(name__regex=f) for f in extension.exclude_patterns])
         q = q.exclude(name_filter)
     if query:
-        q = q.filter(_build_kw_query(query,True)) | q.filter(name__icontains = query)
+        q = q.filter(_build_kw_query(query,True)) | \
+            q.filter(name__icontains = query) | \
+            q.filter(title__icontains=query)
     # we can optimize kw search here
     # maps will still be slow, but this way all the layers are filtered
     # bybw before the cruddy in-memory filter
@@ -238,7 +244,7 @@ def _get_layer_results(query, kw):
             ['abstract',5, 2],
         )
         q = _add_relevance(q, query, rules)
-        
+
     return q
                 
 

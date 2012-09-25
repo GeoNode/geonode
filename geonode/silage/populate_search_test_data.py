@@ -1,9 +1,11 @@
+from django.core.serializers import serialize
 from django.contrib.auth.models import User
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.people.models import Contact
 from itertools import cycle
 from uuid import uuid4
+import os.path
 
 
 # This is used to populate the database with the search fixture data. This is
@@ -64,15 +66,15 @@ def create_models():
         contact.user = u
         contact.save()
 
-    for title, abstract in map_data:
+    for md, user in zip(map_data, cycle(users)):
+        title, abstract = md
         m = Map(title=title,
                 abstract=abstract,
                 zoom=4,
                 projection='EPSG:4326',
                 center_x=42,
                 center_y=-73,
-                # searching probably doesn't care for map owners :P
-                #owner=user
+                owner=user,
                 )
         m.save()
 
@@ -92,5 +94,20 @@ def create_models():
         l.save()
 
 
+def dump_models(path=None):
+    result = serialize("json", sum([list(x) for x in
+                                    [User.objects.all(),
+                                     Contact.objects.all(),
+                                     Layer.objects.all(),
+                                     Map.objects.all(),
+                                     ]], []))
+    if path is None:
+        parent, _ = os.path.split(__file__)
+        path = os.path.join(parent, 'fixtures', 'silage_testdata.json')
+    with open(path, 'w') as f:
+        f.write(result)
+
+
 if __name__ == '__main__':
     create_models()
+    dump_models()
