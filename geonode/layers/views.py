@@ -115,8 +115,20 @@ def layer_category(request, slug, template='layers/layer_list.html'):
     return render_to_response(
         template,
         RequestContext(request, {
-            "layer_list": layer_list,
+            "object_list": layer_list,
             "layer_category": category
+            }
+        )
+    )
+
+
+def layer_tag(request, slug, template='layers/layer_list.html'):
+    layer_list = Layer.objects.filter(keywords__slug__in=[slug])
+    return render_to_response(
+        template,
+        RequestContext(request, {
+            "object_list": layer_list,
+            "layer_tag": slug
             }
         )
     )

@@ -41,12 +41,8 @@
             <ul class="nav">
               {% get_taglist as tags for 'layers.Layer' %}
               {% for tag in tags %}
-                <li><a href="">{{ tag }}</a></li>
+                <li><a href="{% url "layer_browse_tag" tag.slug %}"{% if tag.slug == layer_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
               {% endfor %}
-              <li><a href="#">geode</a> <span class="count">(189)</span></li>
-              <li><a href="#">amet dolor et</a> <span class="count">(107)</span></li>
-              <li><a href="#">lorem ipsum</a> <span class="count">(91)</span></li>              
-              <li><a href="#">geoloco</a> <span class="count">(48)</span></li>
             </ul>
           </nav>
         </div>
