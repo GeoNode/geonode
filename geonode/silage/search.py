@@ -183,7 +183,7 @@ def parse_by_added(spec):
     return date.today() - td
 
 
-def _get_layer_results(results, query, kw):
+def _get_layer_results(query, kw):
     
     q = extension.layer_query(query,kw)
     if extension.exclude_patterns:
