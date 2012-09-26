@@ -332,12 +332,43 @@ footer.footer {
     }
   }
 
+  &.btn-info {
+    background: @orangeLight;
+
+    &:hover {
+      background: darken(@orangeLight, 5%);
+    }
+  }
+
   &.btn-secondary {
     background:none;
     color:@linkColor;
 
     &:hover {
       text-decoration:underline;
+    }
+  }
+}
+
+.action-group {
+  .btn-group:first-child {
+    float: left;
+  }
+}
+
+.btn-group {
+  li {
+    border-bottom: 1px solid @grayNeutral;
+    text-transform: uppercase;
+    margin: 0 4px;
+  
+    &:last-child {
+      border-bottom: none;
+    }
+    a {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      .border-radius(3px);
     }
   }
 }
