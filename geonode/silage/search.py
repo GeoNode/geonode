@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+from django.db import backend
 from django.db.models import Q
 from django.contrib.auth.models import User
 
@@ -24,7 +25,7 @@ from geonode.maps.models import Layer
 from geonode.maps.models import Map
 from geonode.maps.models import MapLayer
 from geonode.people.models import Contact
-from geonode.maps.views import _split_query
+from geonode.utils import _split_query
 
 from geonode.silage import extension
 from geonode.silage.models import filter_by_period
@@ -132,6 +133,10 @@ def _get_map_results(query, kw):
     
     
 def _add_relevance(query, text, rank_rules):
+    # for unittests, it doesn't make sense to test this as it's postgres
+    # specific SQL - instead test/verify directly using a query and getting SQL
+    if 'sqlite' in backend.__name__: return
+    
     eq = """CASE WHEN %s = '%s' THEN %s ELSE 0 END"""
     frag = """CASE WHEN position(lower('%s') in lower(%s)) >= 1 THEN %s ELSE 0 END"""
     
