@@ -37,3 +37,9 @@ notifications:
     use_notice: true
   email:
     - geonode-dev@opengeo.org
+
+# whitelist
+branches:
+  only:
+    - dev
+    - opendri-dev
