@@ -32,8 +32,6 @@ from geonode.silage.models import filter_by_period
 from geonode.silage.models import filter_by_extent
 
 import operator
-from datetime import date
-from datetime import timedelta
 
 
 def _rank_rules(model, *rules):
@@ -48,40 +46,36 @@ def _filter_results(l):
     return not any(p.search(l['name']) for p in extension.exclude_regex)
 
 
-def _get_owner_results(query, kw):
+def _get_owner_results(query):
     # make sure all contacts have a user attached
-    q = extension.owner_query(query, kw)
+    q = extension.owner_query(query)
     
     if q is None: return None
     
-    if kw['bykw']:
+    if query.kw:
         # hard to handle - not supporting at the moment
         return
     
-    byowner = kw.get('byowner')
-    if byowner:
-        q = q.filter(user__username__icontains = byowner)
+    if query.owner:
+        q = q.filter(user__username__icontains = query.owner)
     
-    byextent = kw.get('byextent')
-    if byextent:
-        q = filter_by_extent(Map, q, byextent, True) | \
-            filter_by_extent(Layer, q, byextent, True)
+    if query.extent:
+        q = filter_by_extent(Map, q, query.extent, True) | \
+            filter_by_extent(Layer, q, query.extent, True)
     
-    byperiod = kw.get('byperiod')
-    if byperiod:
-        q = filter_by_period(Map, q, byperiod, True) | \
-            filter_by_period(Layer, q, byperiod, True)
+    if query.period:
+        q = filter_by_period(Map, q, query.period, True) | \
+            filter_by_period(Layer, q, query.period, True)
     
-    byadded = parse_by_added(kw.get('byadded'))
-    if byadded:
-        q = q.filter(user__date_joined__gt = byadded)
+    if query.added:
+        q = q.filter(user__date_joined__gt = query.added)
     
-    if query:
-        qs = Q(user__username__icontains=query) | \
-             Q(user__first_name__icontains=query) | \
-             Q(user__last_name__icontains=query)
+    if query.query:
+        qs = Q(user__username__icontains=query.query) | \
+             Q(user__first_name__icontains=query.query) | \
+             Q(user__last_name__icontains=query.query)
         for field in extension.owner_query_fields:
-            qs = qs | Q(**{'%s__icontains' % field: query})
+            qs = qs | Q(**{'%s__icontains' % field: query.query})
         q = q.filter(qs)
         
         rules = _rank_rules(User,['username', 10, 5]) + \
@@ -89,49 +83,44 @@ def _get_owner_results(query, kw):
         added = extension.owner_rank_rules()
         if added:
             rules = rules + _rank_rules(*added)
-        q = _add_relevance(q, query, rules)
+        q = _add_relevance(q, query.query, rules)
     
     return q
 
 
-def _get_map_results(query, kw):
-    q = extension.map_query(query,kw)
+def _get_map_results(query):
+    q = extension.map_query(query)
     
-    if query:
+    if query.query:
         q = q.filter(title__icontains=query) | \
             q.filter(abstract__icontains=query)
         
-    byowner = kw.get('byowner')
-    if byowner:
-        q = q.filter(owner__username=byowner)
+    if query.owner:
+        q = q.filter(owner__username=query.owner)
 
-    if query:
-        q = q.filter(_build_kw_query(query))
+    if query.query:
+        q = q.filter(_build_kw_query(query.query))
         
-    byextent = kw.get('byextent')
-    if byextent:
-        q = filter_by_extent(Map, q, byextent)
+    if query.extent:
+        q = filter_by_extent(Map, q, query.extent)
         
-    byadded = parse_by_added(kw.get('byadded'))
-    if byadded:
-        q = q.filter(last_modified__gte=byadded)
+    if query.added:
+        q = q.filter(last_modified__gte=query.added)
     
-    byperiod = kw.get('byperiod')
-    if byperiod:
-        q = filter_by_period(Map, q, byperiod)
+    if query.period:
+        q = filter_by_period(Map, q, query.period)
         
-    bykw = kw.get('bykw')
-    if bykw:
+    if query.kw:
         # this is a somewhat nested query but it performs way faster
-        layers_with_kw = Layer.objects.filter(_build_kw_only_query(bykw)).values('typename')
+        layers_with_kw = Layer.objects.filter(_build_kw_only_query(query.kw)).values('typename')
         map_layers_with = MapLayer.objects.filter(name__in=layers_with_kw).values('map')
         q = q.filter(id__in=map_layers_with)
-    if query:
+    if query.query:
         rules = _rank_rules(Map,
             ['title',10, 5],
             ['abstract',5, 2],
         )
-        q = _add_relevance(q, query, rules)
+        q = _add_relevance(q, query.query, rules)
 
     return q
 
@@ -179,87 +168,68 @@ def _build_kw_only_query(query):
     return reduce(operator.or_, [Q(keywords__name__contains=kw) for kw in _split_query(query)])
 
     
-def parse_by_added(spec):
-    td = None
-    if spec == 'today':
-        td = timedelta(days=1)
-    elif spec == 'week':
-        td = timedelta(days=7)
-    elif spec == 'month':
-        td = timedelta(days=30)
-    else:
-        return None
-    return date.today() - td
-
-
-def _get_layer_results(query, kw):
+def _get_layer_results(query):
     
-    q = extension.layer_query(query,kw)
+    q = extension.layer_query(query)
     if extension.exclude_patterns:
         name_filter = reduce(operator.or_,[ Q(name__regex=f) for f in extension.exclude_patterns])
         q = q.exclude(name_filter)
-    if query:
-        q = q.filter(_build_kw_query(query,True)) | \
-            q.filter(name__icontains = query) | \
-            q.filter(title__icontains=query)
+    if query.query:
+        q = q.filter(_build_kw_query(query.query,True)) | \
+            q.filter(name__icontains = query.query) | \
+            q.filter(title__icontains=query.query)
     # we can optimize kw search here
     # maps will still be slow, but this way all the layers are filtered
     # bybw before the cruddy in-memory filter
-    bykw = kw.get('bykw')
-    if bykw:
-        q = q.filter(_build_kw_only_query(bykw))
+    if query.kw:
+        q = q.filter(_build_kw_only_query(query.kw))
             
-    byowner = kw.get('byowner')
-    if byowner:
-        q = q.filter(owner__username=byowner)
+    if query.owner:
+        q = q.filter(owner__username=query.owner)
             
-    bytype = kw.get('bytype')
-    if bytype and bytype != 'layer':
-        q = q.filter(storeType = bytype)
+    if query.type and query.type != 'layer':
+        q = q.filter(storeType = query.type)
         
-    byextent = kw.get('byextent')
-    if byextent:
-        q = filter_by_extent(Layer, q, byextent)
+    if query.extent:
+        q = filter_by_extent(Layer, q, query.extent)
         
-    byadded = parse_by_added(kw.get('byadded'))
-    if byadded:
-        q = q.filter(date__gte=byadded)
+    if query.added:
+        q = q.filter(date__gte=query.added)
         
-    byperiod = kw.get('byperiod')
-    if byperiod:
-        q = filter_by_period(Layer, q, byperiod)
+    if query.period:
+        q = filter_by_period(Layer, q, query.period)
        
     # this is a special optimization for prefetching results when requesting
     # all records via search
     # keywords and thumbnails cannot be prefetched at the moment due to
     # the way the contenttypes are implemented
     # @todo ian - extract to geomodels
-    if kw['limit'] == 0:
+    if query.limit == 0:
         q = q.defer(None).prefetch_related("owner","spatial_temporal_index")
     
-    if query:
+    if query.query:
         rules = _rank_rules(Layer,
             ['name',10, 1],
             ['title',10, 5],
             ['abstract',5, 2],
         )
-        q = _add_relevance(q, query, rules)
+        q = _add_relevance(q, query.query, rules)
 
     return q
                 
 
-def combined_search_results(query, kw):
+def combined_search_results(query):
     results = {}
     
-    bytype = kw.get('bytype', None)
+    bytype = query.type
     
     if bytype is None or bytype == u'map':
-        results['maps'] = _get_map_results(query, kw)
+        results['maps'] = _get_map_results(query)
         
     if bytype is None or bytype == u'layer':
-        results['layers'] = _get_layer_results(query, kw)
+        results['layers'] = _get_layer_results(query)
         
     if bytype is None or bytype == u'owner':
-        results['owners'] = _get_owner_results(query, kw)
+        results['owners'] = _get_owner_results(query)
         
     return results
