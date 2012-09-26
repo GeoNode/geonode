@@ -50,16 +50,8 @@ def get_geometry_type(layer_name):
 
 def getGazetteerEntry(id):
 
-    #sql_query = "SELECT  place_name, layer_name, latitude, longitude, id from gazetteer_placename WHERE id = %d" % id
-    #conn = psycopg2.connect(
-    #    "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
-        #cur = conn.cursor()
-        #cur.execute(sql_query)
-        #results = cur.fetchall()
-
         results = GazetteerEntry.objects.filter(id__exact=id)
-
         posts = []
         for entry in results:
             #(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
@@ -69,8 +61,7 @@ def getGazetteerEntry(id):
     except Exception, e:
         logger.error("Error retrieving results for gazetteer by id %d:%s", id, str(e))
         raise
-    finally:
-        conn.close()
+
 
 
 def formatSourceLink(layer_name):
@@ -165,21 +156,7 @@ def delete_from_gazetteer(layer_name):
     """
     Delete all placenames for a layer
     """
-
-#    If this were to use a django objemt model....
-#    GazetteerEntry.objects.filter(layer_name__exact=layer_name).delete()
-
-    delete_query = "DELETE FROM " + GAZETTEER_TABLE + " WHERE layer_name = '%s'" % layer_name
-    conn = psycopg2.connect(
-        "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
-    try:
-        cur = conn.cursor()
-        cur.execute(delete_query)
-    except Exception, e:
-        logger.error("Error deleting %s from gazetteer: %s", layer_name, str(e))
-        raise
-    finally:
-        conn.close()
+    GazetteerEntry.objects.filter(layer_name__exact=layer_name).delete()
 
 
 def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attribute=None, project=None):
