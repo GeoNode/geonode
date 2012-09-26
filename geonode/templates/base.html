@@ -49,8 +49,11 @@
             <div class="span3">
               <div class="nav-collapse">
                 <div class="pull-right">
-                  <p class="navbar-text pull-left"><a href="{% url help %}">{% trans "Help" %}</a>
-                  <ul class="nav pull-right">
+                  <ul class="nav pull-right account-bar">
+                      <li>
+                          <a href="{% url help %}">{% trans "Help" %}</a>
+                      </li>
+                      <li class="divider-v">|</li>
                     {% if user.is_authenticated %}
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
