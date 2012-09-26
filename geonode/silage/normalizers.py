@@ -13,6 +13,8 @@ from agon_ratings.models import OverallRating
 
 from avatar.util import get_default_avatar_url
 
+from datetime import datetime
+
 _default_avatar_url = get_default_avatar_url()
 
 def _bbox(obj):
@@ -69,7 +71,7 @@ def apply_normalizers(results):
         ('owners', OwnerNormalizer),
     ]
     for k,n in mapping:
-        r = results[k]
+        r = results.get(k, None)
         if not r: continue
         normalizers = map(n, r)
         _annotate(normalizers)
@@ -172,7 +174,10 @@ class OwnerNormalizer(Normalizer):
     def title(self):
         return self.o.user.username
     def last_modified(self):
-        return self.o.user.date_joined
+        try:
+            return self.o.user.date_joined
+        except ObjectDoesNotExist:
+            return None
     def populate(self, doc, exclude):
         contact = self.o
         user = contact.user
@@ -184,7 +189,8 @@ class OwnerNormalizer(Normalizer):
         doc['title'] = user.get_full_name() or user.username
         doc['organization'] = contact.organization
         doc['abstract'] = contact.profile
-        doc['last_modified'] = extension.date_fmt(self.last_modified())
+        modified = self.last_modified()
+        doc['last_modified'] = extension.date_fmt(modified) if modified else ''
         doc['detail'] = contact.get_absolute_url()
         doc['layer_cnt'] = Layer.objects.filter(owner = user).count()
         doc['map_cnt'] = Map.objects.filter(owner = user).count()
