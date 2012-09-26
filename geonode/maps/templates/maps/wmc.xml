@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<ViewContext version="1.1.0"
+                id="{{ map.id }}"
+                xmlns="http://www.opengis.net/context"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/context http://schemas.opengis.net/context/1.1.0/context.xsd">
+    <General>
+        <Window width="500" height="300" />
+        <BoundingBox SRS="{{ map.projection }}" minx="-180.000000" miny="-90.000000" maxx="180.000000" maxy="90.000000"/>
+        <Title>{{ map.title }}</Title>
+                {% if map.keyword_list %}
+        <KeywordList>
+                {% for keyword in map.keyword_list %}
+            <Keyword>{{ keyword }}</Keyword>
+                {% endfor %}
+        </KeywordList>
+                {% endif %}
+        <Abstract>{{ map.abstract }}</Abstract>
+        <LogoURL width="307" height="168" format="image/png">
+            <OnlineResource xlink:type="simple" xlink:href="http://geonode.org/wp-content/uploads/2010/01/GeoNode-fancy.png"/>
+        </LogoURL>
+        <DescriptionURL format="text/html">
+            <OnlineResource xlink:type="simple" xlink:href="{{ siteurl }}{{ map.get_absolute_url }}"/>
+        </DescriptionURL>
+        <ContactInformation>
+            <ContactPersonPrimary>
+                <ContactPerson>Firstname Lastname</ContactPerson>
+                <ContactOrganization>self</ContactOrganization>
+            </ContactPersonPrimary>
+            <ContactPosition>position</ContactPosition>
+            <ContactAddress>
+                <AddressType>postal</AddressType>
+                <Address>address</Address>
+                <City>city</City>
+                <StateOrProvince>state</StateOrProvince>
+                <PostCode>zipcode</PostCode>
+                <Country>country</Country>
+            </ContactAddress>
+            <ContactVoiceTelephone>+01-xxx-xxx-xxxx</ContactVoiceTelephone>
+            <ContactFacsimileTelephone>+01-xxx-xxx-xxxx</ContactFacsimileTelephone>
+            <ContactElectronicMailAddress>email@email.email</ContactElectronicMailAddress>
+        </ContactInformation>
+    </General>
+    <LayerList>
+    {% for layer in map.layers %}        
+        <Layer queryable="1" hidden="0">
+            <Server service="OGC:WMS" version="1.1.1" title="ESA CubeSERV">
+                <OnlineResource xlink:type="simple" xlink:href="{{ layer.ows_url }}"/>
+            </Server>
+            <Name>{{ layer.name }}</Name>
+            <Title>TITLE</Title>
+            <Abstract>ABSTRACT</Abstract>
+            <SRS>LAYER_SRS</SRS>
+            <FormatList>
+                {% if layer.format %}
+                <Format current="1">{{ layer.format }}</Format>
+                {% else %}
+                <Format current="1">image/png</Format>
+                {% endif %}
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                    <LegendURL width="LEGEND_URL_WIDTH" height="LEGEND_URL_HEIGHT" format="LEGEND_URL_FORMAT">
+                        <OnlineResource xlink:type="simple" xlink:href="LEGEND_URL"/>
+                    </LegendURL>
+                </Style>
+            </StyleList>
+        </Layer>
+    {% endfor %}
+    </LayerList>
+</ViewContext> 
