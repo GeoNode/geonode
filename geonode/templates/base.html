@@ -70,6 +70,12 @@
                           <li><a href="{% url auth_logout %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
                         </ul>
                       </li>
+                      <li class="divider-v">|</li>
+                      <li class="actions">
+                        <a href="#"><i class="icon-bullhorn"></i></a>
+                        <a href="#"><i class="icon-envelope"></i></a>
+                        <a href="{% url layer_upload %}"><i class="icon-upload-alt"></i></a>
+                      </li>
                     {% else %}
                         <li class="dropdown">
                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
