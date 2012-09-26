@@ -64,15 +64,15 @@ def create_models():
         contact.user = u
         contact.save()
 
-    for title, abstract in map_data:
+    for md, user in zip(map_data, cycle(users)):
+        title, abstract = md
         m = Map(title=title,
                 abstract=abstract,
                 zoom=4,
                 projection='EPSG:4326',
                 center_x=42,
                 center_y=-73,
-                # searching probably doesn't care for map owners :P
-                #owner=user
+                owner=user,
                 )
         m.save()
 
