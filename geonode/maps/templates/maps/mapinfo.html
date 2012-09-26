@@ -104,6 +104,7 @@
   <ul class="nav nav-list">
     <li class="nav-header">{% trans "Download" %}</li>
     <li><a href="{% url map_download map.id %}">{% trans "Download all layers included in this map" %}</a></li>
+    <li><a href="{% url map_wmc map.id %}">{% trans "Download Web Map Context" %}</a></li>
     
     <li class="nav-header">{% trans "Layers" %}</li>
     {% for layer in layers %}
