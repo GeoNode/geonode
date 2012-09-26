@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-__path__ = "".join(__file__.split('/')[:-1]) #weird hack
 import os
 from lxml import etree
 from django.conf import settings
@@ -45,10 +44,12 @@ CONFIGURATION = {
     },
     'repository': {
         'source': 'geonode',
-        'mappings': os.path.abspath(__file__.rstrip('co'))
+        'mappings': os.path.join(os.path.dirname(__file__), "local_mapping.py")
     }
 }
 
+# Moved mapping out so it can be imported with warnings
+# Might be able to delete at least the mapping part.
 
 MD_CORE_MODEL = {
     'typename': 'pycsw:CoreMetadata',
