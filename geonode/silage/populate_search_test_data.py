@@ -96,7 +96,7 @@ def create_models():
 
 def dump_models(path=None):
     result = serialize("json", sum([list(x) for x in
-                                    [User.objects.exclude(username='admin'),
+                                    [User.objects.all(),
                                      Contact.objects.all(),
                                      Layer.objects.all(),
                                      Map.objects.all(),
