@@ -24,6 +24,8 @@ _search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
 _extension = _search_config.get('extension', None)
 if _extension:
     _extension = __import__(_extension,level=0,fromlist=['*'])
+    
+iso_fmt = '%Y-%m-%dT%H:%M:%SZ'
 
 def resolve_extension(name):
     if _extension is None: return None
@@ -180,13 +182,4 @@ def iso_str_to_jdate(iso_str):
 def jdate_to_approx_iso_str(jdate):
     if jdate is None: return None
     y,m,d,h,m,s = caldate(jdate - MJD0)
-    return '%.4d-%.2d-%.2d' % (y,m,d)
-
-def test():
-    print int(julian_date(-1000000000,1,1))
-    jdate = iso_str_to_jdate('-5000-01-01T12:00:00Z')
-    print caldate(jdate - MJD0)
-    
-
-if __name__ == '__main__':
-    test()
+    return '%.4d-%.2d-%.2d' % (y,m + 1,d)

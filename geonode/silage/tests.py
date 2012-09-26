@@ -1,3 +1,5 @@
+from geonode.silage import util
+
 from django.test import TestCase
 from django.test.client import Client
 import json
@@ -66,6 +68,12 @@ class SilageTest(TestCase):
         if n_total:
             self.assertEquals(n_total, jsonvalue['total'])
 
+        first_title = options.pop('first_title', None)
+        if first_title:
+            self.assertTrue(len(jsonvalue['results']) > 0, 'No results found')
+            doc = jsonvalue['results'][0]
+            self.assertEquals(first_title, doc['title'])
+
 
     def test_limit(self):
         self.search_assert(self.request(limit=1), n_results=1)
@@ -85,7 +93,12 @@ class SilageTest(TestCase):
                            contains_username='jblaze')
 
     def test_text_across_types(self):
-        self.search_assert(self.request('foo'), n_results=7)
+        self.search_assert(self.request('foo'), n_results=7, n_total=7)
+        self.search_assert(self.request('common'), n_results=10, n_total=14)
+
+    def test_pagination(self):
+        self.search_assert(self.request('common', startIndex=0), n_results=10, n_total=14)
+        self.search_assert(self.request('common', startIndex=10), n_results=4, n_total=14)
 
     def test_bbox_query(self):
         # @todo since maps and users are excluded at the moment, this will have
@@ -101,3 +114,54 @@ class SilageTest(TestCase):
                            n_results=7)
         self.search_assert(self.request(period='1980-01-01T00:00:00Z,'),
                            n_results=4)
+
+    def test_errors(self):
+        self.assert_error(self.request(sort='foo'),
+            "valid sorting values are: ['alphaaz', 'newest', 'popularity', 'alphaza', 'rel', 'oldest']")
+        self.assert_error(self.request(extent='1,2,3'),
+            'extent filter must contain x0,x1,y0,y1 comma separated')
+        self.assert_error(self.request(extent='a,b,c,d'),
+            'extent filter must contain x0,x1,y0,y1 comma separated')
+        self.assert_error(self.request(startIndex='x'),
+            'startIndex must be valid number')
+        self.assert_error(self.request(limit='x'),
+            'limit must be valid number')
+        self.assert_error(self.request(added='x'),
+            'valid added filter values are: today,week,month')
+        
+    def assert_error(self, resp, msg):
+        obj = json.loads(resp.content)
+        self.assertTrue(obj['success'] == False)
+        self.assertEquals(msg, obj['errors'][0])
+
+    def test_sort(self):
+        self.search_assert(self.request('foo', sort='newest'),
+                           first_title='common double time')
+        self.search_assert(self.request('foo', sort='oldest'),
+                           first_title='uniquefirst foo')
+        self.search_assert(self.request('foo', sort='alphaaz'),
+                           first_title='common blar')
+        self.search_assert(self.request('foo', sort='alphaza'),
+                           first_title='foo uniquelast')
+        self.search_assert(self.request('foo', sort='popularity'),
+                           first_title='ipsum foo')
+
+    def test_keywords(self):
+        self.search_assert(self.request('populartag'), n_results=10, n_total=17)
+        self.search_assert(self.request('maptagunique'), n_results=1, n_total=1)
+        self.search_assert(self.request('layertagunique'), n_results=1, n_total=1)
+        
+    def test_author_endpoint(self):
+        resp = self.c.get('/search/api/authors')
+        jsobj = json.loads(resp.content)
+        self.assertEquals(6, jsobj['total'])
+        
+    def test_search_page(self):
+        resp = self.c.get('/search/')
+        self.assertEquals(200, resp.status_code)
+
+    def test_util(self):
+        jdate = util.iso_str_to_jdate('-5000-01-01T12:00:00Z')
+        self.assertEquals(jdate, -105192)
+        roundtripped = util.jdate_to_approx_iso_str(jdate)
+        self.assertEquals(roundtripped, '-4999-01-03')

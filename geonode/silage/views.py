@@ -32,6 +32,7 @@ from geonode.silage.search import combined_search_results
 from geonode.silage.util import resolve_extension
 from geonode.silage.normalizers import apply_normalizers
 from geonode.silage.query import query_from_request
+from geonode.silage.query import BadQuery
 
 from datetime import datetime
 import json
@@ -42,13 +43,7 @@ import zlib
 
 logger = logging.getLogger(__name__)
 
-_SEARCH_PARAMS = ['bytype','bykw','byowner','byextent','byadded','byperiod','exclude','cache']
-
-# settings API
-_search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
-_SEARCH_PARAMS.extend(_search_config.get('extra_query',[]))
 _extra_context = resolve_extension('extra_context')
-# end settings API
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 
@@ -131,7 +126,8 @@ def search_api(request):
 #        print ts1,ts2, connection.queries.__len__()
         return results
     except Exception, ex:
-        logger.exception("error during search")
+        if not isinstance(ex, BadQuery):
+            logger.exception("error during search")
         return HttpResponse(json.dumps({
             'success' : False,
             'errors' : [str(ex)]

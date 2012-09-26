@@ -17,7 +17,10 @@
 #
 #########################################################################
 
+from geonode.silage.util import resolve_extension
 from geonode.utils import _split_query
+
+from django.conf import settings
 
 from datetime import date
 from datetime import timedelta
@@ -36,6 +39,12 @@ _SEARCH_PARAMS = [
     'end',
     'exclude',
     'cache']
+    
+# settings API
+_search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
+_SEARCH_PARAMS.extend(_search_config.get('extra_query',[]))
+_extra_context = resolve_extension('extra_context')
+# end settings API
     
 
 class BadQuery(Exception):
@@ -99,10 +108,15 @@ class Query(object):
             self.period = (start, end)
             
         val = filters['extent']
-        try:
-            self.extent = map(float, filters.get('extent').split(',')) if val else None
-        except:
-            raise BadQuery('extent filter must contain x0,x1,y0,y1 comma separated')
+        if val:
+            try:
+                err = BadQuery('extent filter must contain x0,x1,y0,y1 comma separated')
+                parts = val.split(',')
+                if len(parts) != 4:
+                    raise err
+                self.extent = map(float, parts)
+            except:
+                raise err
         
         val = filters['added']
         self.added = parse_by_added(val) if val else None
@@ -114,7 +128,6 @@ class Query(object):
 
 
 def parse_by_added(spec):
-    td = None
     if spec == 'today':
         td = timedelta(days=1)
     elif spec == 'week':
@@ -130,16 +143,13 @@ def query_from_request(**params):
     
     query = params.get('q', '')
     try:
-        start = int(params.get('start', '0'))
-        # compat
-        if 'startIndex' in params:
-            start = int(params.get('startIndex',0))
-    except:
-        start = 0
+        start = int(params.get('startIndex', 0))
+    except ValueError:
+        raise BadQuery('startIndex must be valid number')
     try:
         limit = int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE))
-    except:
-        limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
+    except ValueError:
+        raise BadQuery('limit must be valid number')
         
     # handle old search link parameters
     if 'sort' in params and 'dir' in params:
@@ -161,8 +171,7 @@ def query_from_request(**params):
 
     filters = dict([(k,params.get(k,None) or None) for k in _SEARCH_PARAMS])
     
-    # compat
-    aliases = dict(type='bytype',bbox='byextent')
+    aliases = dict(bbox='extent')
     for k,v in aliases.items():
         if k in params: filters[v] = params[k]
                 
