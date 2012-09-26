@@ -614,7 +614,7 @@ class Contact(models.Model):
         valid_organization = (self.organization != None and self.organization !='')
         if not (valid_name or valid_organization):
             raise ValidationError('Either name or organization should be provided')
-        if self.email and User.objects.filter(email=self.email).exclude(username=self.user.username).count():
+        if self.email and User.objects.filter(email=self.email).exclude(username=self.user.username if self.user else '').count():
             raise ValidationError(u'The email address is already registered.')
 
     def get_absolute_url(self):

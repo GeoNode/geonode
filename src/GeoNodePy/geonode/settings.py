@@ -297,9 +297,6 @@ GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 
-
-# GeoNetwork information
-
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
 GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
 

@@ -214,6 +214,26 @@
     </p>
     {% endif %}
 
+    {% if layer.metadata_author %}
+    <p> <strong>{% trans "Metadata Author" %}:</strong>
+        {% if layer.metadata_author.user %}
+        <a href="{{ layer.metadata_author.user.get_profile.get_absolute_url }}"> {{ layer.metadata_author.user.username }} </a>
+        {% else %}
+    <ul>
+        {% if layer.metadata_author.name %}<li><strong>{% trans "Name" %}:</strong> {{ layer.metadata_author.name}}</li>{% endif %}
+        {% if layer.metadata_author.email %}<li><strong>{% trans "Email" %}:</strong>  {{ layer.metadata_author.email }}</li>{% endif %}
+        {% if layer.metadata_author.organization %}<li><strong>{% trans "Organization" %}:</strong> {{ layer.metadata_author.organization}}</li>{% endif %}
+        {% if layer.metadata_author.position %}<li><strong>{% trans "Position" %}:</strong>: {{ layer.metadata_author.position}}</li>{% endif %}
+        {% if layer.metadata_author.voice %}<li><strong>{% trans "Voice" %}:</strong>  {{ layer.metadata_author.voice}}</li>{% endif %}
+        {% if layer.metadata_author.fax %}<li><strong>{% trans "Fax" %}:</strong> {{ layer.metadata_author.fax}}</li>{% endif %}
+        {% if layer.metadata_author.delivery %}<li><strong>{% trans "Delivery" %}:</strong> {{ layer.metadata_author.delivery}}</li>{% endif %}
+        {% if layer.metadata_author.area %}<li><strong>{% trans "Area" %}:</strong> {{ layer.metadata_author.area}}</li>{% endif %}
+        {% if layer.metadata_author.zipcode %}<li><strong>{% trans "Zip Code" %}:</strong> {{ layer.metadata_author.zipcode}}</li>{% endif %}
+        {% if layer.metadata_author.country %}<li><strong>{% trans "Country" %}:</strong> {{ layer.metadata_author.country}}</li>{% endif %}
+    </ul>
+    {% endif %}
+    </p>
+    {% endif %}
 
     {% if layer.attribute_set %}
     <p> <strong>{% trans "Attributes" %}:</strong>
@@ -382,6 +402,9 @@
         <li> <a href="{% url data_metadata layer.typename %}">
             {% trans "Update the description of this data" %}
         </a> </li>
+        <li> <a href="{% url layer_contacts layer.typename %}">
+                {% trans "Update the contacts for this data" %}
+            </a> </li>
         <li> <a href="{% url data_replace layer.typename %}">
             {% trans "Upload a new version of this data" %}
         </a></li>
