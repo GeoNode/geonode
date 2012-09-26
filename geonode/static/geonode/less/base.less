@@ -17,6 +17,8 @@
 @bdrColor: #ccc;
 @placeholderText: #aaa;
 
+@customFont: 'Lato', sans-serif;
+
 .lines (@p: 10px, @m: 10px, @bdr-width: 1px, @bdr-style: solid, @bdr-color: @grayNeutral) {
   padding-bottom:@p;
   margin-bottom:@m;
@@ -151,12 +153,14 @@ section.nav-block {
   }
 
   nav.main-nav ul li.current a {
-    font-weight:bold;
+    font-weight:700;
   }
 
   nav.main-nav ul li a {
     border:0;
     color:#353535;
+    font-family:@customFont;
+    font-weight: 400;
   }
 }
 
@@ -322,6 +326,8 @@ footer.footer {
   .box-shadow(none);
   color:@white;
   text-shadow:none;
+  font-family:@customFont;
+  font-weight: 700;
 
   &:hover {
     background:@blueDark;
@@ -546,7 +552,9 @@ h2.page-title {
   text-transform:uppercase;
   font-size:48px;
   letter-spacing: 0.1em;
-  font-weight: 100;
+  font-family:@customFont;
+  font-weight: 300;
+  color:@black;
 }
 
 .strong {
@@ -763,6 +771,8 @@ ul.space li {
     margin-bottom:0 !important;
     .border-radius(0) !important;
     border:0;
+    font-family:@customFont;
+    font-weight: 700;
   }
 }
 
@@ -941,7 +951,6 @@ body.home {
     a.btn-large {
       font-size:@baseFontSize * 2;
       margin-left:15px;
-      font-weight:bold;
     }
   }
 }
@@ -1220,7 +1229,6 @@ body.upload-prms .steps .step3 { color:@gray; }
     float:none;
     width:300px;
     font-size:@baseFontSize + 10;
-    font-weight:bold;
   }
 
   .note {
