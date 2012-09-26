@@ -44,7 +44,7 @@ CONFIGURATION = {
     },
     'repository': {
         'source': 'geonode',
-        'mappings': os.path.join(os.path.dirname(__file__), "local_mapping.py")
+        'mappings': os.path.join(os.path.dirname(__file__), "pycsw_local_mappings.py")
     }
 }
 
