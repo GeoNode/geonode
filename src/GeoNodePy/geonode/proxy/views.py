@@ -121,20 +121,31 @@ def hglpoints (request):
     from xml.dom import minidom
     import re
     url = HGL_URL + "/HGLGeoRSS?GeometryType=point"
+    bbox = ["-180","-90","180","90"]
+    max_results = request.GET['max-results'] if request.method == 'GET' else request.POST['max-results']
+    if max_results is None:
+        max_results = "100"
     try:
-        bbox = request.GET['bbox'] if request.method == 'GET' else request.POST['bbox']
+        bbox = request.GET['bbox'].split(",") if request.method == 'GET' else request.POST['bbox'].split(",")
     except:
-        bbox = "-180,-90,180,90"
+        pass
     query = request.GET['q'] if request.method == 'GET' else request.POST['q']
-    url = url + "&UserQuery=" + urllib.quote(query.encode('utf-8')) + "&bbox=" + bbox
+    url = url + "&UserQuery=" + urllib.quote(query.encode('utf-8')) #+ \
+        #"&BBSearchOption=1&minx=" + bbox[0] + "&miny=" + bbox[1] + "&maxx=" + bbox[2] + "&maxy=" + bbox[3]
     dom = minidom.parse(urllib.urlopen(url))
+    iterator = 1
     for node in dom.getElementsByTagName('item'):
-        description = node.getElementsByTagName('description')[0]
-        guid = node.getElementsByTagName('guid')[0]
-        title = node.getElementsByTagName('title')[0]
-        if guid.firstChild.data != 'OWNER.TABLE_NAME':
-            description.firstChild.data = description.firstChild.data + '<br/><br/><p><a href=\'javascript:void(0);\' onClick=\'app.addHGL("' \
-                + escape(title.firstChild.data) + '","' + re.sub("SDE\d?\.","", guid.firstChild.data)  + '");\'>Add to Map</a></p>'
+        if iterator <= int(max_results):
+            description = node.getElementsByTagName('description')[0]
+            guid = node.getElementsByTagName('guid')[0]
+            title = node.getElementsByTagName('title')[0]
+            if guid.firstChild.data != 'OWNER.TABLE_NAME':
+                description.firstChild.data = description.firstChild.data + '<br/><br/><p><a href=\'javascript:void(0);\' onClick=\'app.addHGL("' \
+                    + escape(title.firstChild.data) + '","' + re.sub("SDE\d?\.","", guid.firstChild.data)  + '");\'>Add to Map</a></p>'
+            iterator +=1
+        else:
+            node.parentNode.removeChild(node)
+
     return HttpResponse(dom.toxml(), mimetype="text/xml")
 
 
