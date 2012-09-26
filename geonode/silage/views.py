@@ -32,6 +32,7 @@ from geonode.silage.search import combined_search_results
 from geonode.silage.util import resolve_extension
 from geonode.silage.normalizers import apply_normalizers
 
+from datetime import datetime
 import json
 import cPickle as pickle
 import operator
@@ -138,12 +139,7 @@ def search_api(request):
 
 
 def _search_params(request):
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
+    params = request.REQUEST
 
     # grab params directly to implement defaults as
     # opposed to panicy django forms behavior.
@@ -209,9 +205,10 @@ def _search_json(params, results, total, start, time):
         
     results = {
         '_time' : time,
-        'rows' : results,
+        'results' : results,
         'total' :  total,
         'success' : True,
+        'query' : params
     }
     return HttpResponse(json.dumps(results), mimetype="application/json")
 
@@ -246,6 +243,9 @@ def _search(query, start, limit, sort_field, sort_asc, filters):
     # default sort order by id (could be last_modified when external layers are dealt with)
     if sort_field == 'title':
         keyfunc = lambda r: r.title().lower()
+    elif sort_field == 'last_modified':
+        old = datetime(1,1,1)
+        keyfunc = lambda r: r.last_modified() or old
     else:
         keyfunc = lambda r: getattr(r,sort_field)()
     results.sort(key=keyfunc,reverse=not sort_asc)
