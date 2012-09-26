@@ -31,7 +31,7 @@ from geonode.maps.encode import despam, XssCleaner
 logger = logging.getLogger("geonode.maps.models")
 
 
-ows_sub = re.compile(re.escape('&SERVICE=WMS|&REQUEST=GetCapabilities'), re.IGNORECASE)
+ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNORECASE)
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
