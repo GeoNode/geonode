@@ -4748,8 +4748,12 @@ footer.footer form label {
 .btn.btn-secondary:hover {
   text-decoration: underline;
 }
-.action-group .btn-group:first-child {
+.action-group .btn-group {
   float: left;
+  margin-right: 10px;
+}
+.action-group .btn-group:last-child {
+  margin-right: 0;
 }
 .btn-group li {
   border-bottom: 1px solid #cccccc;

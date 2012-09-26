@@ -22,10 +22,10 @@
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}
-  <div class="span8">
+  <div class="span6">
     <h2 class="page-title">{{ layer.resource.title|default:layer.typename }}</h2>
   </div>
-  <div class="span4 action-group">
+  <div class="span6 action-group">
     <div class="btn-group">
       <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
         {% trans "Download Layer" %}
@@ -33,6 +33,16 @@
       </a>
       <ul class="dropdown-menu">
         {% for link in layer.link_set.download %}
+          <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+        {% endfor %}
+    </div>
+    <div class="btn-group">
+      <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+        {% trans "Download Metadata" %}
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        {% for link in layer.link_set.metadata %}
           <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
         {% endfor %}
     </div>
