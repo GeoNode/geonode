@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
+{% load url from future %}
 
 {% block title %}{{ layer.resource.title|default:layer.typename }} — {{ block.super }}{% endblock %}
 
@@ -24,8 +25,29 @@
   <div class="span8">
     <h2 class="page-title">{{ layer.resource.title|default:layer.typename }}</h2>
   </div>
-  <div class="span4">
-    <a href="#download-layer" data-toggle="modal" class="btn btn-large strong pull-right"><i class="icon-download-alt"></i> {% trans "Download Layer" %}</a>
+  <div class="span4 action-group">
+    <div class="btn-group">
+      <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+        {% trans "Download Layer" %}
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        {% for link in layer.link_set.download %}
+          <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+        {% endfor %}
+    </div>
+    <div class="btn-group pull-right">
+      <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
+        {% trans "Edit Layer" %}
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_metadata" layer.typename %}">Edit Metadata <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_style" layer.typename %}">Edit Styles <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_permissions" layer.typename %}">Edit Permissions <i class="icon-chevron-right"></i></a></li>
+      </ul>
+    </div>
   </div>
   <div class="span12">
     <div id="embedded_map" class="mrg-btm">
@@ -40,7 +62,7 @@
         
       </div>
       <div class="span2">
-        <a href="{% url layer_metadata layer.typename %}" class="btn btn-large pull-right">{% trans "Edit Layer" %}</a>
+        
       </div>
     </div>
     <article class="description">
@@ -132,7 +154,7 @@
       <section>
         <h2>{% trans "Create a map using this layer" %}</h2>
         <p>{% trans "Placeholder" %}</p>
-        <a href="{% url new_map %}?layer={{layer.typename}}" class="btn btn-large">{% trans "Create a Map" %}</a>
+        <a href="{% url "new_map" %}?layer={{layer.typename}}" class="btn btn-large">{% trans "Create a Map" %}</a>
       </section>
       <section>
         <h2>{% trans "Permissions" %}</h2>
