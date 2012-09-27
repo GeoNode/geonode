@@ -34,6 +34,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
@@ -52,6 +53,7 @@ from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
 
 from geoserver.catalog import Catalog
 from taggit.managers import TaggableManager
+from agon_ratings.models import OverallRating
 
 
 logger = logging.getLogger("geonode.layers.models")
@@ -218,8 +220,9 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=HIERARCHY_LEVELS)
     csw_anytext = models.TextField(_('CSW anytext'), null=True)
     csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))')
+
     # metadata XML specific fields
-    #metadata_uploaded = models.BooleanField(default=False)
+    metadata_uploaded = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
 
     @property
@@ -586,6 +589,8 @@ class Link(models.Model):
 def geoserver_pre_delete(instance, sender, **kwargs): 
     """Removes the layer from GeoServer
     """
+    ct = ContentType.objects.get_for_model(instance)
+    OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
     instance.delete_from_geoserver()
 
 

@@ -45,6 +45,7 @@ from geonode import GeoNodeException
 from geonode.utils import check_geonode_is_up
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
+from geonode.layers.metadata import set_metadata
 from geonode.people.models import Contact
 from geonode.gs_helpers import cascading_delete, get_sld_for, delete_from_postgis
 from django.contrib.auth.models import User
@@ -472,6 +473,24 @@ def save(layer, base_file, user, overwrite = True, title=None,
 
     saved_layer.poc = poc_contact
     saved_layer.metadata_author = author_contact
+
+    logger.info('>>> Step XML. If an XML metadata document was passed, process it')
+    # Step XML. If an XML metadata document is uploaded,
+    # parse the XML metadata and update uuid and URLs as per the content model
+
+    if 'xml' in files:
+        saved_layer.metadata_uploaded = True
+        # get model properties from XML
+        vals, keywords = set_metadata(open(files['xml']).read())
+
+        # set taggit keywords
+        saved_layer.keywords.add(*keywords)
+
+        # set model properties
+        for (key, value) in vals.items():
+            setattr(saved_layer, key, value)
+
+        saved_layer.save()
 
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook

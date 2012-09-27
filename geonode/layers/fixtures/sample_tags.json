@@ -28,7 +28,7 @@
         "model": "taggit.taggeditem", 
         "fields": {
             "tag": 1, 
-            "content_type": 24, 
+            "content_type": 20, 
             "object_id": 1
         }
     }, 
@@ -37,7 +37,7 @@
         "model": "taggit.taggeditem", 
         "fields": {
             "tag": 2, 
-            "content_type": 24, 
+            "content_type": 20, 
             "object_id": 1
         }
     }, 
@@ -46,7 +46,7 @@
         "model": "taggit.taggeditem", 
         "fields": {
             "tag": 3, 
-            "content_type": 24, 
+            "content_type": 20, 
             "object_id": 1
         }
     }
