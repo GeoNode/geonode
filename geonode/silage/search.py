@@ -25,7 +25,6 @@ from geonode.maps.models import Layer
 from geonode.maps.models import Map
 from geonode.maps.models import MapLayer
 from geonode.people.models import Contact
-from geonode.utils import _split_query
 
 from geonode.silage import extension
 from geonode.silage.models import filter_by_period
@@ -47,20 +46,20 @@ def _filter_results(l):
     return not any(p.search(l['name']) for p in extension.exclude_regex)
 
 
-def _add_relevance(query, text, rank_rules):
+def _add_relevance(q, query, rank_rules):
     # for unittests, it doesn't make sense to test this as it's postgres
     # specific SQL - instead test/verify directly using a query and getting SQL
-    if 'sqlite' in backend.__name__: return query
+    if 'sqlite' in backend.__name__: return q
     
     eq = """CASE WHEN %s = '%s' THEN %s ELSE 0 END"""
     frag = """CASE WHEN position(lower('%s') in lower(%s)) >= 1 THEN %s ELSE 0 END"""
     
     preds = []
 
-    preds.extend( [ eq % (r[0],text,r[1]) for r in rank_rules] )
-    preds.extend( [ frag % (text,r[0],r[2]) for r in rank_rules] )
+    preds.extend( [ eq % (r[0],query.query,r[1]) for r in rank_rules] )
+    preds.extend( [ frag % (query.query,r[0],r[2]) for r in rank_rules] )
     
-    words = _split_query(text)
+    words = query.split_query
     if len(words) > 1:
         for w in words:
             preds.extend( [ frag % (w,r[0],r[2] / 2) for r in rank_rules] )
@@ -68,26 +67,26 @@ def _add_relevance(query, text, rank_rules):
     sql = " + ".join(preds)
             
     # ugh - work around bug
-    query = query.defer(None)
-    return query.extra(select={'relevance':sql})
+    q = q.defer(None)
+    return q.extra(select={'relevance':sql})
 
 
 def _build_kw_query(query, query_keywords=False):
     '''Build an OR query on title and abstract from provided search text.
     if query_keywords is provided, include a query on the keywords attribute
+    
     return a Q object
     '''
-    kws = _split_query(query)
     subquery = [
-        Q(title__icontains=kw) | Q(abstract__icontains=kw) for kw in kws
+        Q(title__icontains=kw) | Q(abstract__icontains=kw) for kw in query.split_query
     ]
     if query_keywords:
-        subquery = [ q | Q(keywords__name__icontains=kw) for q in subquery ]
+        subquery.append(_build_kw_only_query(query.split_query))
     return reduce( operator.or_, subquery)
 
 
-def _build_kw_only_query(query):
-    return reduce(operator.or_, [Q(keywords__name__contains=kw) for kw in _split_query(query)])
+def _build_kw_only_query(keywords):
+    return reduce(operator.or_, [Q(keywords__name__contains=kw) for kw in keywords])
 
 
 def _get_owner_results(query):
@@ -127,7 +126,7 @@ def _get_owner_results(query):
         added = extension.owner_rank_rules()
         if added:
             rules = rules + _rank_rules(*added)
-        q = _add_relevance(q, query.query, rules)
+        q = _add_relevance(q, query, rules)
     return q
 
 
@@ -142,7 +141,7 @@ def _get_map_results(query):
         q = q.filter(owner__username=query.owner)
 
     if query.query:
-        q = q.filter(_build_kw_query(query.query))
+        q = q.filter(_build_kw_query(query))
         
     if query.extent:
         q = filter_by_extent(Map, q, query.extent)
@@ -163,7 +162,7 @@ def _get_map_results(query):
             ['title',10, 5],
             ['abstract',5, 2],
         )
-        q = _add_relevance(q, query.query, rules)
+        q = _add_relevance(q, query, rules)
 
     return q
 
@@ -175,7 +174,7 @@ def _get_layer_results(query):
         name_filter = reduce(operator.or_,[ Q(name__regex=f) for f in extension.exclude_patterns])
         q = q.exclude(name_filter)
     if query.query:
-        q = q.filter(_build_kw_query(query.query,True)) | \
+        q = q.filter(_build_kw_query(query,True)) | \
             q.filter(name__icontains = query.query) | \
             q.filter(title__icontains=query.query)
     # we can optimize kw search here
@@ -212,7 +211,7 @@ def _get_layer_results(query):
             ['title',10, 5],
             ['abstract',5, 2],
         )
-        q = _add_relevance(q, query.query, rules)
+        q = _add_relevance(q, query, rules)
 
     return q
                 

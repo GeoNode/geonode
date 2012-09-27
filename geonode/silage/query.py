@@ -105,7 +105,7 @@ class Query(object):
                 parts = val.split(',')
                 if len(parts) != 4:
                     raise err
-                self.extent = map(float, val)
+                self.extent = map(float, parts)
             except:
                 raise err
         
