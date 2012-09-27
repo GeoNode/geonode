@@ -30,6 +30,7 @@ from geonode.utils import _split_query
 from geonode.silage import extension
 from geonode.silage.models import filter_by_period
 from geonode.silage.models import filter_by_extent
+from geonode.silage.models import using_geodjango
 
 import operator
 
@@ -44,6 +45,49 @@ def _rank_rules(model, *rules):
 def _filter_results(l):
     '''If the layer name doesn't match any of the patterns, it shows in the results'''
     return not any(p.search(l['name']) for p in extension.exclude_regex)
+
+
+def _add_relevance(query, text, rank_rules):
+    # for unittests, it doesn't make sense to test this as it's postgres
+    # specific SQL - instead test/verify directly using a query and getting SQL
+    if 'sqlite' in backend.__name__: return query
+    
+    eq = """CASE WHEN %s = '%s' THEN %s ELSE 0 END"""
+    frag = """CASE WHEN position(lower('%s') in lower(%s)) >= 1 THEN %s ELSE 0 END"""
+    
+    preds = []
+
+    preds.extend( [ eq % (r[0],text,r[1]) for r in rank_rules] )
+    preds.extend( [ frag % (text,r[0],r[2]) for r in rank_rules] )
+    
+    words = _split_query(text)
+    if len(words) > 1:
+        for w in words:
+            preds.extend( [ frag % (w,r[0],r[2] / 2) for r in rank_rules] )
+            
+    sql = " + ".join(preds)
+            
+    # ugh - work around bug
+    query = query.defer(None)
+    return query.extra(select={'relevance':sql})
+
+
+def _build_kw_query(query, query_keywords=False):
+    '''Build an OR query on title and abstract from provided search text.
+    if query_keywords is provided, include a query on the keywords attribute
+    return a Q object
+    '''
+    kws = _split_query(query)
+    subquery = [
+        Q(title__icontains=kw) | Q(abstract__icontains=kw) for kw in kws
+    ]
+    if query_keywords:
+        subquery = [ q | Q(keywords__name__icontains=kw) for q in subquery ]
+    return reduce( operator.or_, subquery)
+
+
+def _build_kw_only_query(query):
+    return reduce(operator.or_, [Q(keywords__name__contains=kw) for kw in _split_query(query)])
 
 
 def _get_owner_results(query):
@@ -123,49 +167,6 @@ def _get_map_results(query):
 
     return q
 
-
-def _add_relevance(query, text, rank_rules):
-    # for unittests, it doesn't make sense to test this as it's postgres
-    # specific SQL - instead test/verify directly using a query and getting SQL
-    if 'sqlite' in backend.__name__: return query
-    
-    eq = """CASE WHEN %s = '%s' THEN %s ELSE 0 END"""
-    frag = """CASE WHEN position(lower('%s') in lower(%s)) >= 1 THEN %s ELSE 0 END"""
-    
-    preds = []
-
-    preds.extend( [ eq % (r[0],text,r[1]) for r in rank_rules] )
-    preds.extend( [ frag % (text,r[0],r[2]) for r in rank_rules] )
-    
-    words = _split_query(text)
-    if len(words) > 1:
-        for w in words:
-            preds.extend( [ frag % (w,r[0],r[2] / 2) for r in rank_rules] )
-            
-    sql = " + ".join(preds)
-            
-    # ugh - work around bug
-    query = query.defer(None)
-    return query.extra(select={'relevance':sql})
-
-
-def _build_kw_query(query, query_keywords=False):
-    '''Build an OR query on title and abstract from provided search text.
-    if query_keywords is provided, include a query on the keywords attribute
-    return a Q object
-    '''
-    kws = _split_query(query)
-    subquery = [
-        Q(title__icontains=kw) | Q(abstract__icontains=kw) for kw in kws
-    ]
-    if query_keywords:
-        subquery = [ q | Q(keywords__name__icontains=kw) for q in subquery ]
-    return reduce( operator.or_, subquery)
-
-
-def _build_kw_only_query(query):
-    return reduce(operator.or_, [Q(keywords__name__contains=kw) for kw in _split_query(query)])
-
     
 def _get_layer_results(query):
     
@@ -202,8 +203,7 @@ def _get_layer_results(query):
     # all records via search
     # keywords and thumbnails cannot be prefetched at the moment due to
     # the way the contenttypes are implemented
-    # @todo ian - extract to geomodels
-    if query.limit == 0:
+    if query.limit == 0 and using_geodjango:
         q = q.defer(None).prefetch_related("owner","spatial_temporal_index")
     
     if query.query:
