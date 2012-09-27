@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-12 21:58-0700\n"
+"POT-Creation-Date: 2012-09-27 15:50-0700\n"
 "PO-Revision-Date: 2012-09-13 04:27+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,1283 +129,1333 @@ msgstr ""
 msgid "data is updated every two weeks"
 msgstr ""
 
-#: layers/enumerations.py:51
+#: layers/enumerations.py:52
 msgid "data is updated in intervals that are uneven in duration"
 msgstr ""
 
-#: layers/enumerations.py:52
+#: layers/enumerations.py:53
 msgid "data is updated on a weekly basis"
 msgstr ""
 
-#: layers/enumerations.py:53
+#: layers/enumerations.py:54
 msgid "data is updated twice each year"
 msgstr ""
 
-#: layers/enumerations.py:54
+#: layers/enumerations.py:55
 msgid "data is updated every three months"
 msgstr ""
 
-#: layers/enumerations.py:69
+#: layers/enumerations.py:70
 msgid "grid data"
 msgstr ""
 
-#: layers/enumerations.py:70
+#: layers/enumerations.py:72
 msgid ""
-"three-dimensional view formed by the intersecting homologous rays of an "
-"overlapping pair of images"
+"three-dimensional view formed by the intersecting homologous           rays "
+"of an overlapping pair of images"
 msgstr ""
 
-#: layers/enumerations.py:71
+#: layers/enumerations.py:74
 msgid "textual or tabular data"
 msgstr ""
 
-#: layers/enumerations.py:72
+#: layers/enumerations.py:75
 msgid "triangulated irregular network"
 msgstr ""
 
-#: layers/enumerations.py:73
+#: layers/enumerations.py:76
 msgid "vector data"
 msgstr ""
 
-#: layers/enumerations.py:77
+#: layers/enumerations.py:81
 msgid "information pertaining to earth sciences"
 msgstr ""
 
-#: layers/enumerations.py:78
+#: layers/enumerations.py:82
 msgid "rearing of animals and/or cultivation of plants"
 msgstr ""
 
-#: layers/enumerations.py:79
+#: layers/enumerations.py:83
 msgid "height above or below sea level"
 msgstr ""
 
-#: layers/enumerations.py:80
-msgid ""
-"energy, water and waste systems and communications infrastructure and "
-"services"
-msgstr ""
-
-#: layers/enumerations.py:81
-msgid ""
-"features and characteristics of salt water bodies (excluding inland waters)"
-msgstr ""
-
-#: layers/enumerations.py:82
-msgid "legal land descriptions"
-msgstr ""
-
-#: layers/enumerations.py:83
-msgid "inland water features, drainage systems and their characteristics"
-msgstr ""
-
-#: layers/enumerations.py:84
-msgid "military bases, structures, activities"
-msgstr ""
-
 #: layers/enumerations.py:85
-msgid "environmental resources, protection and conservation"
-msgstr ""
-
-#: layers/enumerations.py:86
-msgid "positional information and services"
-msgstr ""
-
-#: layers/enumerations.py:87
-msgid "economic activities, conditions and employment"
+msgid ""
+"energy, water and waste systems and communications infrastructure           "
+"and services"
 msgstr ""
 
 #: layers/enumerations.py:88
-msgid "information used for appropriate actions for future use of the land"
-msgstr ""
-
-#: layers/enumerations.py:89
-msgid "flora and/or fauna in natural environment"
+msgid ""
+"features and characteristics of salt water bodies (excluding           "
+"inland waters)"
 msgstr ""
 
 #: layers/enumerations.py:90
-msgid "health, health services, human ecology, and safety"
-msgstr ""
-
-#: layers/enumerations.py:91
-msgid "base maps"
+msgid "legal land descriptions"
 msgstr ""
 
 #: layers/enumerations.py:92
-msgid "means and aids for conveying persons and/or goods"
-msgstr ""
-
-#: layers/enumerations.py:93
-msgid "characteristics of society and cultures"
+msgid ""
+"inland water features, drainage systems and           their characteristics"
 msgstr ""
 
 #: layers/enumerations.py:94
-msgid "man-made construction"
+msgid "military bases, structures, activities"
 msgstr ""
 
 #: layers/enumerations.py:95
+msgid "environmental resources, protection and conservation"
+msgstr ""
+
+#: layers/enumerations.py:96
+msgid "positional information and services"
+msgstr ""
+
+#: layers/enumerations.py:97
+msgid "economic activities, conditions and employment"
+msgstr ""
+
+#: layers/enumerations.py:99
+msgid ""
+"information used for appropriate actions for future use of the           land"
+msgstr ""
+
+#: layers/enumerations.py:101
+msgid "flora and/or fauna in natural environment"
+msgstr ""
+
+#: layers/enumerations.py:102
+msgid "health, health services, human ecology, and safety"
+msgstr ""
+
+#: layers/enumerations.py:103
+msgid "base maps"
+msgstr ""
+
+#: layers/enumerations.py:104
+msgid "means and aids for conveying persons and/or goods"
+msgstr ""
+
+#: layers/enumerations.py:105
+msgid "characteristics of society and cultures"
+msgstr ""
+
+#: layers/enumerations.py:106
+msgid "man-made construction"
+msgstr ""
+
+#: layers/enumerations.py:108
 msgid "processes and phenomena of the atmosphere"
 msgstr ""
 
-#: layers/enumerations.py:114
+#: layers/enumerations.py:127
 msgid "No information provided"
 msgstr ""
 
-#: layers/enumerations.py:118
+#: layers/enumerations.py:131
 msgid "Afghanistan"
 msgstr "Afganistan"
 
-#: layers/enumerations.py:119
+#: layers/enumerations.py:132
 msgid "Aland Islands"
 msgstr "Islas Aland"
 
-#: layers/enumerations.py:120
+#: layers/enumerations.py:133
 msgid "Albania"
 msgstr "Albania"
 
-#: layers/enumerations.py:121
+#: layers/enumerations.py:134
 msgid "Algeria"
 msgstr "Argelia"
 
-#: layers/enumerations.py:122
+#: layers/enumerations.py:135
 msgid "American Samoa"
 msgstr "Samoa Americana"
 
-#: layers/enumerations.py:123
+#: layers/enumerations.py:136
 msgid "Andorra"
 msgstr "Andorra"
 
-#: layers/enumerations.py:124
+#: layers/enumerations.py:137
 msgid "Angola"
 msgstr "Angola"
 
-#: layers/enumerations.py:125
+#: layers/enumerations.py:138
 msgid "Anguilla"
 msgstr "Anguilla"
 
-#: layers/enumerations.py:126
+#: layers/enumerations.py:139
 msgid "Antigua and Barbuda"
 msgstr "Antigua dan Barbuda"
 
-#: layers/enumerations.py:127
+#: layers/enumerations.py:140
 msgid "Argentina"
 msgstr "Argentina"
 
-#: layers/enumerations.py:128
+#: layers/enumerations.py:141
 msgid "Armenia"
 msgstr "Armenia "
 
-#: layers/enumerations.py:129
+#: layers/enumerations.py:142
 msgid "Aruba"
 msgstr "Aruba "
 
-#: layers/enumerations.py:130
+#: layers/enumerations.py:143
 msgid "Australia"
 msgstr "Australia "
 
-#: layers/enumerations.py:131
+#: layers/enumerations.py:144
 msgid "Austria"
 msgstr "Austria "
 
-#: layers/enumerations.py:132
+#: layers/enumerations.py:145
 msgid "Azerbaijan"
 msgstr "Azerbaijan "
 
-#: layers/enumerations.py:133
+#: layers/enumerations.py:146
 msgid "Bahamas"
 msgstr "Bahamas "
 
-#: layers/enumerations.py:134
+#: layers/enumerations.py:147
 msgid "Bahrain"
 msgstr "Bahrain"
 
-#: layers/enumerations.py:135
+#: layers/enumerations.py:148
 msgid "Bangladesh"
 msgstr "Bangladesh "
 
-#: layers/enumerations.py:136
+#: layers/enumerations.py:149
 msgid "Barbados"
 msgstr "Barbados "
 
-#: layers/enumerations.py:137
+#: layers/enumerations.py:150
 msgid "Belarus"
 msgstr "Belarus"
 
-#: layers/enumerations.py:138
+#: layers/enumerations.py:151
 msgid "Belgium"
 msgstr "Belgia "
 
-#: layers/enumerations.py:139
+#: layers/enumerations.py:152
 msgid "Belize"
 msgstr "Belize "
 
-#: layers/enumerations.py:140
+#: layers/enumerations.py:153
 msgid "Benin"
 msgstr "Benin"
 
-#: layers/enumerations.py:141
+#: layers/enumerations.py:154
 msgid "Bermuda"
 msgstr "Bermuda"
 
-#: layers/enumerations.py:142
+#: layers/enumerations.py:155
 msgid "Bhutan"
 msgstr "Bhutan"
 
-#: layers/enumerations.py:143
+#: layers/enumerations.py:156
 msgid "Bolivia"
 msgstr "Bolivia"
 
-#: layers/enumerations.py:144
+#: layers/enumerations.py:157
 msgid "Bosnia and Herzegovina"
 msgstr "Bosnia Herzegovina"
 
-#: layers/enumerations.py:145
+#: layers/enumerations.py:158
 msgid "Botswana"
 msgstr "Botswana "
 
-#: layers/enumerations.py:146
+#: layers/enumerations.py:159
 msgid "Brazil"
 msgstr "Brazil "
 
-#: layers/enumerations.py:147
+#: layers/enumerations.py:160
 msgid "British Virgin Islands"
 msgstr "British Virgin Islands"
 
-#: layers/enumerations.py:148
+#: layers/enumerations.py:161
 msgid "Brunei Darussalam"
 msgstr "Brunei Darussalam"
 
-#: layers/enumerations.py:149
+#: layers/enumerations.py:162
 msgid "Bulgaria"
 msgstr "Bulgaria "
 
-#: layers/enumerations.py:150
+#: layers/enumerations.py:163
 msgid "Burkina Faso"
 msgstr "Burkina Faso"
 
-#: layers/enumerations.py:151
+#: layers/enumerations.py:164
 msgid "Burundi"
 msgstr "Burundi "
 
-#: layers/enumerations.py:152
+#: layers/enumerations.py:165
 msgid "Cambodia"
 msgstr "Kamboja"
 
-#: layers/enumerations.py:153
+#: layers/enumerations.py:166
 msgid "Cameroon"
 msgstr "Kamerun"
 
-#: layers/enumerations.py:154
+#: layers/enumerations.py:167
 msgid "Canada"
 msgstr "Kanada"
 
-#: layers/enumerations.py:155
+#: layers/enumerations.py:168
 msgid "Cape Verde"
 msgstr "Cape Verde"
 
-#: layers/enumerations.py:156
+#: layers/enumerations.py:169
 msgid "Cayman Islands"
 msgstr "Cayman Islands"
 
-#: layers/enumerations.py:157
+#: layers/enumerations.py:170
 msgid "Central African Republic"
 msgstr "Republik Afrika tengah"
 
-#: layers/enumerations.py:158
+#: layers/enumerations.py:171
 msgid "Chad"
 msgstr "Chad "
 
-#: layers/enumerations.py:159
+#: layers/enumerations.py:172
 msgid "Channel Islands"
 msgstr "Kepulauan Canal "
 
-#: layers/enumerations.py:160
+#: layers/enumerations.py:173
 msgid "Chile"
 msgstr "Chile"
 
-#: layers/enumerations.py:161
+#: layers/enumerations.py:174
 msgid "China"
 msgstr "China"
 
-#: layers/enumerations.py:162
+#: layers/enumerations.py:175
 msgid "China - Hong Kong"
 msgstr "China - Hong Kong"
 
-#: layers/enumerations.py:163
+#: layers/enumerations.py:176
 msgid "China - Macao"
 msgstr "China - Makau"
 
-#: layers/enumerations.py:164
+#: layers/enumerations.py:177
 msgid "Colombia"
 msgstr "Colombia"
 
-#: layers/enumerations.py:165
+#: layers/enumerations.py:178
 msgid "Comoros"
 msgstr "Comoras "
 
-#: layers/enumerations.py:166
+#: layers/enumerations.py:179
 msgid "Congo"
 msgstr "Congo"
 
-#: layers/enumerations.py:167
+#: layers/enumerations.py:180
 msgid "Cook Islands"
 msgstr "Cook Islands"
 
-#: layers/enumerations.py:168
+#: layers/enumerations.py:181
 msgid "Costa Rica"
 msgstr "Costa Rica"
 
-#: layers/enumerations.py:169
+#: layers/enumerations.py:182
 msgid "Cote d'Ivoire"
 msgstr "Pantai Gading"
 
-#: layers/enumerations.py:170
+#: layers/enumerations.py:183
 msgid "Croatia"
 msgstr "Kroasia"
 
-#: layers/enumerations.py:171
+#: layers/enumerations.py:184
 msgid "Cuba"
 msgstr "Kuba"
 
-#: layers/enumerations.py:172
+#: layers/enumerations.py:185
 msgid "Cyprus"
 msgstr "Siprus "
 
-#: layers/enumerations.py:173
+#: layers/enumerations.py:186
 msgid "Czech Republic"
 msgstr "Republik Ceko"
 
-#: layers/enumerations.py:174
+#: layers/enumerations.py:187
 msgid "Democratic People's Republic of Korea"
 msgstr "Democratic People's Republic of Korea"
 
-#: layers/enumerations.py:175
+#: layers/enumerations.py:188
 msgid "Democratic Republic of the Congo"
 msgstr "Democratic Republic of the Congo"
 
-#: layers/enumerations.py:176
+#: layers/enumerations.py:189
 msgid "Denmark"
 msgstr "Denmark "
 
-#: layers/enumerations.py:177
+#: layers/enumerations.py:190
 msgid "Djibouti"
 msgstr "Djibouti"
 
-#: layers/enumerations.py:178
+#: layers/enumerations.py:191
 msgid "Dominica"
 msgstr "Dominika "
 
-#: layers/enumerations.py:179
+#: layers/enumerations.py:192
 msgid "Dominican Republic"
 msgstr "Dominican Republic"
 
-#: layers/enumerations.py:180
+#: layers/enumerations.py:193
 msgid "Ecuador"
 msgstr "Ekuador"
 
-#: layers/enumerations.py:181
+#: layers/enumerations.py:194
 msgid "Egypt"
 msgstr "Mesir"
 
-#: layers/enumerations.py:182
+#: layers/enumerations.py:195
 msgid "El Salvador"
 msgstr "El Salvador"
 
-#: layers/enumerations.py:183
+#: layers/enumerations.py:196
 msgid "Equatorial Guinea"
 msgstr "Equatorial Guinea"
 
-#: layers/enumerations.py:184
+#: layers/enumerations.py:197
 msgid "Eritrea"
 msgstr "Eritrea "
 
-#: layers/enumerations.py:185
+#: layers/enumerations.py:198
 msgid "Estonia"
 msgstr "Estonia"
 
-#: layers/enumerations.py:186
+#: layers/enumerations.py:199
 msgid "Ethiopia"
 msgstr "Ethiopia"
 
-#: layers/enumerations.py:187
+#: layers/enumerations.py:200
 msgid "Faeroe Islands"
 msgstr "Faeroe Islands"
 
-#: layers/enumerations.py:188
+#: layers/enumerations.py:201
 msgid "Falkland Islands (Malvinas)"
 msgstr "Falkland Islands (Malvinas)"
 
-#: layers/enumerations.py:189
+#: layers/enumerations.py:202
 msgid "Fiji"
 msgstr "Fiji "
 
-#: layers/enumerations.py:190
+#: layers/enumerations.py:203
 msgid "Finland"
 msgstr "Finlandia "
 
-#: layers/enumerations.py:191
+#: layers/enumerations.py:204
 msgid "France"
 msgstr "Perancis"
 
-#: layers/enumerations.py:192
+#: layers/enumerations.py:205
 msgid "French Guiana"
 msgstr "French Guiana"
 
-#: layers/enumerations.py:193
+#: layers/enumerations.py:206
 msgid "French Polynesia"
 msgstr "French Polynesia"
 
-#: layers/enumerations.py:194
+#: layers/enumerations.py:207
 msgid "Gabon"
 msgstr "Gabon "
 
-#: layers/enumerations.py:195
+#: layers/enumerations.py:208
 msgid "Gambia"
 msgstr "Gambia "
 
-#: layers/enumerations.py:196
+#: layers/enumerations.py:209
 msgid "Georgia"
 msgstr "Georgia "
 
-#: layers/enumerations.py:197
+#: layers/enumerations.py:210
 msgid "Germany"
 msgstr "Jerman"
 
-#: layers/enumerations.py:198
+#: layers/enumerations.py:211
 msgid "Ghana"
 msgstr "Ghana "
 
-#: layers/enumerations.py:199
+#: layers/enumerations.py:212
 msgid "Gibraltar"
 msgstr "Gibraltar "
 
-#: layers/enumerations.py:200
+#: layers/enumerations.py:213
 msgid "Greece"
 msgstr "Yunani "
 
-#: layers/enumerations.py:201
+#: layers/enumerations.py:214
 msgid "Greenland"
 msgstr "Greenland "
 
-#: layers/enumerations.py:202
+#: layers/enumerations.py:215
 msgid "Grenada"
 msgstr "Grenada "
 
-#: layers/enumerations.py:203
+#: layers/enumerations.py:216
 msgid "Guadeloupe"
 msgstr "Guadalupe "
 
-#: layers/enumerations.py:204
+#: layers/enumerations.py:217
 msgid "Guam"
 msgstr "Guam "
 
-#: layers/enumerations.py:205
+#: layers/enumerations.py:218
 msgid "Guatemala"
 msgstr "Guatemala"
 
-#: layers/enumerations.py:206
+#: layers/enumerations.py:219
 msgid "Guernsey"
 msgstr "Guernsey "
 
-#: layers/enumerations.py:207
+#: layers/enumerations.py:220
 msgid "Guinea"
 msgstr "Guinea"
 
-#: layers/enumerations.py:208
+#: layers/enumerations.py:221
 msgid "Guinea-Bissau"
 msgstr "Guinea-Bissau"
 
-#: layers/enumerations.py:209
+#: layers/enumerations.py:222
 msgid "Guyana"
 msgstr "Guyana"
 
-#: layers/enumerations.py:210
+#: layers/enumerations.py:223
 msgid "Haiti"
 msgstr "Haití "
 
-#: layers/enumerations.py:211
+#: layers/enumerations.py:224
 msgid "Holy See (Vatican City)"
 msgstr "Vatikan"
 
-#: layers/enumerations.py:212
+#: layers/enumerations.py:225
 msgid "Honduras"
 msgstr "Honduras"
 
-#: layers/enumerations.py:213
+#: layers/enumerations.py:226
 msgid "Hungary"
 msgstr "Hungaria"
 
-#: layers/enumerations.py:214
+#: layers/enumerations.py:227
 msgid "Iceland"
 msgstr "Islandia "
 
-#: layers/enumerations.py:215
+#: layers/enumerations.py:228
 msgid "India"
 msgstr "India "
 
-#: layers/enumerations.py:216
+#: layers/enumerations.py:229
 msgid "Indonesia"
 msgstr "Indonesia "
 
-#: layers/enumerations.py:217
+#: layers/enumerations.py:230
 msgid "Iran"
 msgstr "Iran"
 
-#: layers/enumerations.py:218
+#: layers/enumerations.py:231
 msgid "Iraq"
 msgstr "Irak "
 
-#: layers/enumerations.py:219
+#: layers/enumerations.py:232
 msgid "Ireland"
 msgstr "Irlandia "
 
-#: layers/enumerations.py:220
+#: layers/enumerations.py:233
 msgid "Isle of Man"
 msgstr "Isla of Man"
 
-#: layers/enumerations.py:221
+#: layers/enumerations.py:234
 msgid "Israel"
 msgstr "Israel "
 
-#: layers/enumerations.py:222
+#: layers/enumerations.py:235
 msgid "Italy"
 msgstr "Italia "
 
-#: layers/enumerations.py:223
+#: layers/enumerations.py:236
 msgid "Jamaica"
 msgstr "Jamaica "
 
-#: layers/enumerations.py:224
+#: layers/enumerations.py:237
 msgid "Japan"
 msgstr "Jepang"
 
-#: layers/enumerations.py:225
+#: layers/enumerations.py:238
 msgid "Jersey"
 msgstr "Jersey "
 
-#: layers/enumerations.py:226
+#: layers/enumerations.py:239
 msgid "Jordan"
 msgstr "Jordania "
 
-#: layers/enumerations.py:227
+#: layers/enumerations.py:240
 msgid "Kazakhstan"
 msgstr "Kazakhstan"
 
-#: layers/enumerations.py:228
+#: layers/enumerations.py:241
 msgid "Kenya"
 msgstr "Kenya "
 
-#: layers/enumerations.py:229
+#: layers/enumerations.py:242
 msgid "Kiribati"
 msgstr "Kiribati "
 
-#: layers/enumerations.py:230
+#: layers/enumerations.py:243
 msgid "Kuwait"
 msgstr "Kuwait "
 
-#: layers/enumerations.py:231
+#: layers/enumerations.py:244
 msgid "Kyrgyzstan"
 msgstr "Kyrgyzstan"
 
-#: layers/enumerations.py:232
+#: layers/enumerations.py:245
 msgid "Lao People's Democratic Republic"
 msgstr "Laos PDR"
 
-#: layers/enumerations.py:233
+#: layers/enumerations.py:246
 msgid "Latvia"
 msgstr "Latvia"
 
-#: layers/enumerations.py:234
+#: layers/enumerations.py:247
 msgid "Lebanon"
 msgstr "Lebanon"
 
-#: layers/enumerations.py:235
+#: layers/enumerations.py:248
 msgid "Lesotho"
 msgstr "Lesotho "
 
-#: layers/enumerations.py:236
+#: layers/enumerations.py:249
 msgid "Liberia"
 msgstr "Liberia "
 
-#: layers/enumerations.py:237
+#: layers/enumerations.py:250
 msgid "Libyan Arab Jamahiriya"
 msgstr "Libyan Arab Jamahiriya"
 
-#: layers/enumerations.py:238
+#: layers/enumerations.py:251
 msgid "Liechtenstein"
 msgstr "Liechtenstein "
 
-#: layers/enumerations.py:239
+#: layers/enumerations.py:252
 msgid "Lithuania"
 msgstr "Lituania "
 
-#: layers/enumerations.py:240
+#: layers/enumerations.py:253
 msgid "Luxembourg"
 msgstr "Luxemburg"
 
-#: layers/enumerations.py:241
+#: layers/enumerations.py:254
 msgid "Macedonia"
 msgstr "Macedonia "
 
-#: layers/enumerations.py:242
+#: layers/enumerations.py:255
 msgid "Madagascar"
 msgstr "Madagaskar "
 
-#: layers/enumerations.py:243
+#: layers/enumerations.py:256
 msgid "Malawi"
 msgstr "Malawi "
 
-#: layers/enumerations.py:244
+#: layers/enumerations.py:257
 msgid "Malaysia"
 msgstr "Malaysia"
 
-#: layers/enumerations.py:245
+#: layers/enumerations.py:258
 msgid "Maldives"
 msgstr "Maldivas "
 
-#: layers/enumerations.py:246
+#: layers/enumerations.py:259
 msgid "Mali"
 msgstr "Mali"
 
-#: layers/enumerations.py:247
+#: layers/enumerations.py:260
 msgid "Malta"
 msgstr "Malta"
 
-#: layers/enumerations.py:248
+#: layers/enumerations.py:261
 msgid "Marshall Islands"
 msgstr "Marshall Islands"
 
-#: layers/enumerations.py:249
+#: layers/enumerations.py:262
 msgid "Martinique"
 msgstr "Martinica "
 
-#: layers/enumerations.py:250
+#: layers/enumerations.py:263
 msgid "Mauritania"
 msgstr "Mauritania "
 
-#: layers/enumerations.py:251
+#: layers/enumerations.py:264
 msgid "Mauritius"
 msgstr "Mauritius"
 
-#: layers/enumerations.py:252
+#: layers/enumerations.py:265
 msgid "Mayotte"
 msgstr "Mayotte "
 
-#: layers/enumerations.py:253
+#: layers/enumerations.py:266
 msgid "Mexico"
 msgstr "Mexico"
 
-#: layers/enumerations.py:254
+#: layers/enumerations.py:267
 msgid "Micronesia, Federated States of"
 msgstr "Micronesia, Federated States of"
 
-#: layers/enumerations.py:255
+#: layers/enumerations.py:268
 msgid "Monaco"
 msgstr "Monaco "
 
-#: layers/enumerations.py:256
+#: layers/enumerations.py:269
 msgid "Mongolia"
 msgstr "Mongolia "
 
-#: layers/enumerations.py:257
+#: layers/enumerations.py:270
 msgid "Montenegro"
 msgstr "Montenegro"
 
-#: layers/enumerations.py:258
+#: layers/enumerations.py:271
 msgid "Montserrat"
 msgstr "Montserrat "
 
-#: layers/enumerations.py:259
+#: layers/enumerations.py:272
 msgid "Morocco"
 msgstr "Marruecos "
 
-#: layers/enumerations.py:260
+#: layers/enumerations.py:273
 msgid "Mozambique"
 msgstr "Mozambique "
 
-#: layers/enumerations.py:261
+#: layers/enumerations.py:274
 msgid "Myanmar"
 msgstr "Myanmar "
 
-#: layers/enumerations.py:262
+#: layers/enumerations.py:275
 msgid "Namibia"
 msgstr "Namibia "
 
-#: layers/enumerations.py:263
+#: layers/enumerations.py:276
 msgid "Nauru"
 msgstr "Nauru "
 
-#: layers/enumerations.py:264
+#: layers/enumerations.py:277
 msgid "Nepal"
 msgstr "Nepal "
 
-#: layers/enumerations.py:265
+#: layers/enumerations.py:278
 msgid "Netherlands"
 msgstr "Belanda"
 
-#: layers/enumerations.py:266
+#: layers/enumerations.py:279
 msgid "Netherlands Antilles"
 msgstr "Netherlands Antilles"
 
-#: layers/enumerations.py:267
+#: layers/enumerations.py:280
 msgid "New Caledonia"
 msgstr "New Caledonia"
 
-#: layers/enumerations.py:268
+#: layers/enumerations.py:281
 msgid "New Zealand"
 msgstr "Selandia Baru"
 
-#: layers/enumerations.py:269
+#: layers/enumerations.py:282
 msgid "Nicaragua"
 msgstr "Nicaragua "
 
-#: layers/enumerations.py:270
+#: layers/enumerations.py:283
 msgid "Niger"
 msgstr "Niger "
 
-#: layers/enumerations.py:271
+#: layers/enumerations.py:284
 msgid "Nigeria"
 msgstr "Nigeria "
 
-#: layers/enumerations.py:272
+#: layers/enumerations.py:285
 msgid "Niue"
 msgstr "Niue "
 
-#: layers/enumerations.py:273
+#: layers/enumerations.py:286
 msgid "Norfolk Island"
 msgstr "Kepulauan Norfolk "
 
-#: layers/enumerations.py:274
+#: layers/enumerations.py:287
 msgid "Northern Mariana Islands"
 msgstr "Kepulauan Mariana Utara"
 
-#: layers/enumerations.py:275
+#: layers/enumerations.py:288
 msgid "Norway"
 msgstr "Norwegia "
 
-#: layers/enumerations.py:276
+#: layers/enumerations.py:289
 msgid "Occupied Palestinian Territory"
 msgstr "Territorio Palestino Ocupado"
 
-#: layers/enumerations.py:277
+#: layers/enumerations.py:290
 msgid "Oman"
 msgstr "Oman"
 
-#: layers/enumerations.py:278
+#: layers/enumerations.py:291
 msgid "Pakistan"
 msgstr "Pakistan "
 
-#: layers/enumerations.py:279
+#: layers/enumerations.py:292
 msgid "Palau"
 msgstr "Palau "
 
-#: layers/enumerations.py:280
+#: layers/enumerations.py:293
 msgid "Panama"
 msgstr "Panama"
 
-#: layers/enumerations.py:281
+#: layers/enumerations.py:294
 msgid "Papua New Guinea"
 msgstr "Papua Nueva Guinea"
 
-#: layers/enumerations.py:282
+#: layers/enumerations.py:295
 msgid "Paraguay"
 msgstr "Paraguay "
 
-#: layers/enumerations.py:283
+#: layers/enumerations.py:296
 msgid "Peru"
 msgstr "Peru"
 
-#: layers/enumerations.py:284
+#: layers/enumerations.py:297
 msgid "Philippines"
 msgstr "Filipina"
 
-#: layers/enumerations.py:285
+#: layers/enumerations.py:298
 msgid "Pitcairn"
 msgstr "Pitcairn "
 
-#: layers/enumerations.py:286
+#: layers/enumerations.py:299
 msgid "Poland"
 msgstr "Polandia"
 
-#: layers/enumerations.py:287
+#: layers/enumerations.py:300
 msgid "Portugal"
 msgstr "Portugal"
 
-#: layers/enumerations.py:288
+#: layers/enumerations.py:301
 msgid "Puerto Rico"
 msgstr "Puerto Rico"
 
-#: layers/enumerations.py:289
+#: layers/enumerations.py:302
 msgid "Qatar"
 msgstr "Qatar "
 
-#: layers/enumerations.py:290
+#: layers/enumerations.py:303
 msgid "Republic of Korea"
 msgstr "Republik Korea"
 
-#: layers/enumerations.py:291
+#: layers/enumerations.py:304
 msgid "Republic of Moldova"
 msgstr "Republik Moldova "
 
-#: layers/enumerations.py:292
+#: layers/enumerations.py:305
 msgid "Reunion"
 msgstr "Reunion"
 
-#: layers/enumerations.py:293
+#: layers/enumerations.py:306
 msgid "Romania"
 msgstr "Rumania "
 
-#: layers/enumerations.py:294
+#: layers/enumerations.py:307
 msgid "Russian Federation"
 msgstr "Rusia"
 
-#: layers/enumerations.py:295
+#: layers/enumerations.py:308
 msgid "Rwanda"
 msgstr "Rwanda "
 
-#: layers/enumerations.py:296
+#: layers/enumerations.py:309
 msgid "Saint-Barthelemy"
 msgstr "Saint-Barthelemy"
 
-#: layers/enumerations.py:297
+#: layers/enumerations.py:310
 msgid "Saint Helena"
 msgstr "Saint Helena"
 
-#: layers/enumerations.py:298
+#: layers/enumerations.py:311
 msgid "Saint Kitts and Nevis"
 msgstr "Saint Kitts and Nevis"
 
-#: layers/enumerations.py:299
+#: layers/enumerations.py:312
 msgid "Saint Lucia"
 msgstr "Saint Lucia"
 
-#: layers/enumerations.py:300
+#: layers/enumerations.py:313
 msgid "Saint-Martin (French part)"
 msgstr "Saint-Martin (French part)"
 
-#: layers/enumerations.py:301
+#: layers/enumerations.py:314
 msgid "Saint Pierre and Miquelon"
 msgstr "Saint Pierre and Miquelon"
 
-#: layers/enumerations.py:302
+#: layers/enumerations.py:315
 msgid "Saint Vincent and the Grenadines"
 msgstr "Saint Vincent and the Grenadines"
 
-#: layers/enumerations.py:303
+#: layers/enumerations.py:316
 msgid "Samoa"
 msgstr "Samoa "
 
-#: layers/enumerations.py:304
+#: layers/enumerations.py:317
 msgid "San Marino"
 msgstr "San Marino"
 
-#: layers/enumerations.py:305
+#: layers/enumerations.py:318
 msgid "Sao Tome and Principe"
 msgstr "Sao Tome dan Principe"
 
-#: layers/enumerations.py:306
+#: layers/enumerations.py:319
 msgid "Saudi Arabia"
 msgstr "Saudi Arabia"
 
-#: layers/enumerations.py:307
+#: layers/enumerations.py:320
 msgid "Senegal"
 msgstr "Senegal"
 
-#: layers/enumerations.py:308
+#: layers/enumerations.py:321
 msgid "Serbia"
 msgstr "Serbia "
 
-#: layers/enumerations.py:309
+#: layers/enumerations.py:322
 msgid "Seychelles"
 msgstr "Seychelles "
 
-#: layers/enumerations.py:310
+#: layers/enumerations.py:323
 msgid "Sierra Leone"
 msgstr "Sierra Leona "
 
-#: layers/enumerations.py:311
+#: layers/enumerations.py:324
 msgid "Singapore"
 msgstr "Singapura"
 
-#: layers/enumerations.py:312
+#: layers/enumerations.py:325
 msgid "Slovakia"
 msgstr "Slovakia"
 
-#: layers/enumerations.py:313
+#: layers/enumerations.py:326
 msgid "Slovenia"
 msgstr "Slovenia"
 
-#: layers/enumerations.py:314
+#: layers/enumerations.py:327
 msgid "Solomon Islands"
 msgstr "Kepulauan Solomon"
 
-#: layers/enumerations.py:315
+#: layers/enumerations.py:328
 msgid "Somalia"
 msgstr "Somalia "
 
-#: layers/enumerations.py:316
+#: layers/enumerations.py:329
 msgid "South Africa"
 msgstr "Afrika Selatan"
 
-#: layers/enumerations.py:317
+#: layers/enumerations.py:330
 msgid "Spain"
 msgstr "Spanyol"
 
-#: layers/enumerations.py:318
+#: layers/enumerations.py:331
 msgid "Sri Lanka"
 msgstr "Sri Lanka"
 
-#: layers/enumerations.py:319
+#: layers/enumerations.py:332
 msgid "Sudan"
 msgstr "Sudan "
 
-#: layers/enumerations.py:320
+#: layers/enumerations.py:333
 msgid "Suriname"
 msgstr "Suriname "
 
-#: layers/enumerations.py:321
+#: layers/enumerations.py:334
 msgid "Svalbard and Jan Mayen Islands"
 msgstr "Svalbard y Jan Mayen"
 
-#: layers/enumerations.py:322
+#: layers/enumerations.py:335
 msgid "Swaziland"
 msgstr "Swazilandia "
 
-#: layers/enumerations.py:323
+#: layers/enumerations.py:336
 msgid "Sweden"
 msgstr "Swedia"
 
-#: layers/enumerations.py:324
+#: layers/enumerations.py:337
 msgid "Switzerland"
 msgstr "Swiss"
 
-#: layers/enumerations.py:325
+#: layers/enumerations.py:338
 msgid "Syrian Arab Republic"
 msgstr "Republik Arab Syrian"
 
-#: layers/enumerations.py:326
+#: layers/enumerations.py:339
 msgid "Tajikistan"
 msgstr "Tajikistan "
 
-#: layers/enumerations.py:327
+#: layers/enumerations.py:340
 msgid "Thailand"
 msgstr "Thailand"
 
-#: layers/enumerations.py:328
+#: layers/enumerations.py:341
 msgid "Timor-Leste"
 msgstr "Timor-Leste"
 
-#: layers/enumerations.py:329
+#: layers/enumerations.py:342
 msgid "Togo"
 msgstr "Togo "
 
-#: layers/enumerations.py:330
+#: layers/enumerations.py:343
 msgid "Tokelau"
 msgstr "Tokelau "
 
-#: layers/enumerations.py:331
+#: layers/enumerations.py:344
 msgid "Tonga"
 msgstr "Tonga "
 
-#: layers/enumerations.py:332
+#: layers/enumerations.py:345
 msgid "Trinidad and Tobago"
 msgstr "Trinidad and Tobago"
 
-#: layers/enumerations.py:333
+#: layers/enumerations.py:346
 msgid "Tunisia"
 msgstr "Tunisia "
 
-#: layers/enumerations.py:334
+#: layers/enumerations.py:347
 msgid "Turkey"
 msgstr "Turki"
 
-#: layers/enumerations.py:335
+#: layers/enumerations.py:348
 msgid "Turkmenistan"
 msgstr "Turkmenistan "
 
-#: layers/enumerations.py:336
+#: layers/enumerations.py:349
 msgid "Turks and Caicos Islands"
 msgstr "Turks and Caicos Islands"
 
-#: layers/enumerations.py:337
+#: layers/enumerations.py:350
 msgid "Tuvalu"
 msgstr "Tuvalu"
 
-#: layers/enumerations.py:338
+#: layers/enumerations.py:351
 msgid "Uganda"
 msgstr "Uganda "
 
-#: layers/enumerations.py:339
+#: layers/enumerations.py:352
 msgid "Ukraine"
 msgstr "Ukraine"
 
-#: layers/enumerations.py:340
+#: layers/enumerations.py:353
 msgid "United Arab Emirates"
 msgstr "Uni Emirat Arab"
 
-#: layers/enumerations.py:341
+#: layers/enumerations.py:354
 msgid "United Kingdom"
 msgstr "Inggris"
 
-#: layers/enumerations.py:342
+#: layers/enumerations.py:355
 msgid "United Republic of Tanzania"
 msgstr "United Republic of Tanzania"
 
-#: layers/enumerations.py:343
+#: layers/enumerations.py:356
 msgid "United States of America"
 msgstr "United States of America"
 
-#: layers/enumerations.py:344
+#: layers/enumerations.py:357
 msgid "United States Virgin Islands"
 msgstr "United States Virgin Islands"
 
-#: layers/enumerations.py:345
+#: layers/enumerations.py:358
 msgid "Uruguay"
 msgstr "Uruguay"
 
-#: layers/enumerations.py:346
+#: layers/enumerations.py:359
 msgid "Uzbekistan"
 msgstr "Uzbekistan"
 
-#: layers/enumerations.py:347
+#: layers/enumerations.py:360
 msgid "Vanuatu"
 msgstr "Vanuatu"
 
-#: layers/enumerations.py:348
+#: layers/enumerations.py:361
 msgid "Venezuela (Bolivarian Republic of)"
 msgstr "Venezuela (Bolivarian Republic of)"
 
-#: layers/enumerations.py:349
+#: layers/enumerations.py:362
 msgid "Viet Nam"
 msgstr "Vietnam"
 
-#: layers/enumerations.py:350
+#: layers/enumerations.py:363
 msgid "Wallis and Futuna Islands"
 msgstr "Kepulauan Wallis dan Futuna"
 
-#: layers/enumerations.py:351
+#: layers/enumerations.py:364
 msgid "Western Sahara"
 msgstr "Sahara Barat"
 
-#: layers/enumerations.py:352
+#: layers/enumerations.py:365
 msgid "Yemen"
 msgstr "Yemen"
 
-#: layers/enumerations.py:353
+#: layers/enumerations.py:366
 msgid "Zambia"
 msgstr "Zambia"
 
-#: layers/enumerations.py:354
+#: layers/enumerations.py:367
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
 
-#: layers/models.py:147 security/models.py:55
+#: layers/models.py:151 security/models.py:55
 msgid "title"
 msgstr "Judul "
 
-#: layers/models.py:147
+#: layers/models.py:151
 msgid "name by which the cited resource is known"
 msgstr ""
 
-#: layers/models.py:148
+#: layers/models.py:152
 msgid "date"
 msgstr "tanggal"
 
-#: layers/models.py:148
+#: layers/models.py:152
 msgid "reference date for the cited resource"
 msgstr ""
 
-#: layers/models.py:150
+#: layers/models.py:154
 msgid "date type"
 msgstr "tipe tanggal"
 
-#: layers/models.py:150
+#: layers/models.py:154
 msgid "identification of when a given event occurred"
 msgstr ""
 
-#: layers/models.py:152
+#: layers/models.py:156
 msgid "edition"
 msgstr "Edisi"
 
-#: layers/models.py:152
+#: layers/models.py:156
 msgid "version of the cited resource"
 msgstr ""
 
-#: layers/models.py:153
+#: layers/models.py:157
 msgid "abstract"
 msgstr "abstrak"
 
-#: layers/models.py:153
+#: layers/models.py:157
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr ""
 
-#: layers/models.py:154
+#: layers/models.py:158
 msgid "purpose"
 msgstr "tujuan"
 
-#: layers/models.py:154
+#: layers/models.py:158
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr ""
 
-#: layers/models.py:156
+#: layers/models.py:160
 msgid "maintenance frequency"
 msgstr "frekuensi pemeliharaan"
 
-#: layers/models.py:156
+#: layers/models.py:160
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr ""
 
-#: layers/models.py:162 maps/models.py:85
+#: layers/models.py:166 maps/models.py:87
 msgid "keywords"
 msgstr "kata kunci"
 
-#: layers/models.py:162
+#: layers/models.py:166
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr ""
 
-#: layers/models.py:163
+#: layers/models.py:167
 msgid "keywords region"
 msgstr "kata kunci wilayah"
 
-#: layers/models.py:163
+#: layers/models.py:167
 msgid "keyword identifies a location"
 msgstr ""
 
-#: layers/models.py:164
+#: layers/models.py:168
 msgid "constraints use"
 msgstr "batasan penggunaan"
 
-#: layers/models.py:164
+#: layers/models.py:168
 msgid ""
 "constraints applied to assure the protection of privacy or intellectual "
 "property, and any special restrictions or limitations or warnings on using "
 "the resource or metadata"
 msgstr ""
 
-#: layers/models.py:165
+#: layers/models.py:169
 msgid "constraints other"
 msgstr "batasan lainnya"
 
-#: layers/models.py:165
+#: layers/models.py:169
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr ""
 
-#: layers/models.py:166
+#: layers/models.py:170
 msgid "spatial representation type"
 msgstr "tipe representasi spasial"
 
-#: layers/models.py:166
+#: layers/models.py:170
 msgid "method used to represent geographic information in the dataset"
 msgstr ""
 
-#: layers/models.py:169
+#: layers/models.py:173
 msgid "language"
 msgstr "bahasa"
 
-#: layers/models.py:169
+#: layers/models.py:173
 msgid "language used within the dataset"
 msgstr ""
 
-#: layers/models.py:170
+#: layers/models.py:174
 msgid "topic_category"
 msgstr "kategori_topik"
 
-#: layers/models.py:170
+#: layers/models.py:174
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
 msgstr ""
 
-#: layers/models.py:173
+#: layers/models.py:177
 msgid "temporal extent start"
 msgstr "periode waktu mulai"
 
-#: layers/models.py:173
+#: layers/models.py:177
 msgid "time period covered by the content of the dataset (start)"
 msgstr ""
 
-#: layers/models.py:174
+#: layers/models.py:178
 msgid "temporal extent end"
 msgstr "periode waktu selesai"
 
-#: layers/models.py:174
+#: layers/models.py:178
 msgid "time period covered by the content of the dataset (end)"
 msgstr ""
 
-#: layers/models.py:176
+#: layers/models.py:180
 msgid "supplemental information"
 msgstr "informasi tambahan"
 
-#: layers/models.py:176
+#: layers/models.py:180
 msgid "any other descriptive information about the dataset"
 msgstr ""
 
-#: layers/models.py:179
+#: layers/models.py:183
 msgid "distribution URL"
 msgstr "URL distribusi"
 
-#: layers/models.py:179
+#: layers/models.py:183
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
 msgstr ""
 
-#: layers/models.py:180
+#: layers/models.py:184
 msgid "distribution description"
 msgstr "deskripsi distribusi"
 
-#: layers/models.py:180
+#: layers/models.py:184
 msgid "detailed text description of what the online resource is/does"
 msgstr ""
 
-#: layers/models.py:183
+#: layers/models.py:187
 msgid "data quality statement"
 msgstr "pernyataan kualitas data"
 
-#: layers/models.py:183
+#: layers/models.py:187
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr ""
 
-#: layers/models.py:197
+#: layers/models.py:201
 msgid "CSW typename"
 msgstr ""
 
-#: layers/models.py:198
+#: layers/models.py:202
 msgid "CSW schema"
 msgstr ""
 
-#: layers/models.py:199
+#: layers/models.py:203
 msgid "CSW source"
 msgstr ""
 
-#: layers/models.py:200
+#: layers/models.py:204
 msgid "CSW insert date"
 msgstr ""
 
-#: layers/models.py:201
+#: layers/models.py:205
 msgid "CSW type"
 msgstr ""
 
-#: layers/models.py:202
+#: layers/models.py:206
 msgid "CSW anytext"
 msgstr ""
 
-#: layers/models.py:203
+#: layers/models.py:207
 msgid "CSW WKT geometry"
 msgstr ""
 
-#: layers/models.py:763
+#: layers/models.py:487
+#, fuzzy
+msgid "attribute name"
+msgstr "Atribut"
+
+#: layers/models.py:487
+msgid "name of attribute as stored in shapefile/spatial database"
+msgstr ""
+
+#: layers/models.py:488
+#, fuzzy
+msgid "attribute label"
+msgstr "Atribut"
+
+#: layers/models.py:488
+msgid "title of attribute as displayed in GeoNode"
+msgstr ""
+
+#: layers/models.py:489
+#, fuzzy
+msgid "attribute type"
+msgstr "tipe tanggal"
+
+#: layers/models.py:489
+msgid "the data type of the attribute (integer, string, geometry, etc)"
+msgstr ""
+
+#: layers/models.py:490
+#, fuzzy
+msgid "visible?"
+msgstr "visibilitas"
+
+#: layers/models.py:490
+msgid "specifies if the attribute should be displayed in identify results"
+msgstr ""
+
+#: layers/models.py:491
+#, fuzzy
+msgid "display order"
+msgstr "urutan penempatan"
+
+#: layers/models.py:491
+msgid ""
+"specifies the order in which attribute should be displayed in identify "
+"results"
+msgstr ""
+
+#: layers/models.py:761
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:777
+#: layers/models.py:775
 msgid "View in Google Earth"
 msgstr "Tampilkan di Google Earth"
 
@@ -1489,7 +1539,7 @@ msgstr "Anda tidak diizinkan untuk memodifikasi metadata layer ini"
 msgid "You are not permitted to view this layer"
 msgstr "Anda tidak diijinkan untuk melihat layer peta ini"
 
-#: layers/views.py:584
+#: layers/views.py:596
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Autorisasi HTTP salah"
 
@@ -1543,7 +1593,7 @@ msgstr ""
 msgid "developer page"
 msgstr "Halaman Pengembang"
 
-#: layers/templates/layers/layer.html:131 maps/models.py:59
+#: layers/templates/layers/layer.html:131 maps/models.py:61
 msgid "Abstract"
 msgstr "Abstrak"
 
@@ -1578,7 +1628,7 @@ msgid "Owner"
 msgstr "Pemilik"
 
 #: layers/templates/layers/layer.html:153
-#: layers/templates/layers/layer_describe.html:24
+#: layers/templates/layers/layer_describe.html:38
 msgid "Point of Contact"
 msgstr "Kontak"
 
@@ -1622,35 +1672,35 @@ msgstr "Kode Pos"
 msgid "Country"
 msgstr "Negara"
 
-#: layers/templates/layers/layer.html:174
+#: layers/templates/layers/layer.html:173
 msgid "Attributes"
 msgstr "Atribut"
 
-#: layers/templates/layers/layer.html:180
+#: layers/templates/layers/layer.html:181
 msgid "Supplemental Information"
 msgstr "Informasi tambahan"
 
-#: layers/templates/layers/layer.html:186
+#: layers/templates/layers/layer.html:187
 msgid "Data Quality Statement"
 msgstr "Declaración de Calidad de Datos"
 
-#: layers/templates/layers/layer.html:191
+#: layers/templates/layers/layer.html:192
 msgid "Bounding Box"
 msgstr "Batas"
 
-#: layers/templates/layers/layer.html:192
+#: layers/templates/layers/layer.html:193
 msgid "Native SRS"
 msgstr "SRS Asli"
 
-#: layers/templates/layers/layer.html:192
+#: layers/templates/layers/layer.html:193
 msgid "No SRS specified."
 msgstr "Tidak ada SRS ditentukan"
 
-#: layers/templates/layers/layer.html:194 maps/templates/maps/mapinfo.html:58
+#: layers/templates/layers/layer.html:195 maps/templates/maps/mapinfo.html:58
 msgid "Comments"
 msgstr ""
 
-#: layers/templates/layers/layer.html:203
+#: layers/templates/layers/layer.html:204
 #, python-format
 msgid ""
 "\n"
@@ -1658,56 +1708,56 @@ msgid ""
 "\t                "
 msgstr ""
 
-#: layers/templates/layers/layer.html:212 maps/templates/maps/mapinfo.html:77
+#: layers/templates/layers/layer.html:213 maps/templates/maps/mapinfo.html:77
 msgid "Post a comment"
 msgstr ""
 
-#: layers/templates/layers/layer.html:220 maps/templates/maps/mapinfo.html:85
+#: layers/templates/layers/layer.html:221 maps/templates/maps/mapinfo.html:85
 #: people/templates/people/forgot_username_form.html:18
 msgid "Submit"
 msgstr "Proses"
 
-#: layers/templates/layers/layer.html:225 maps/templates/maps/mapinfo.html:90
+#: layers/templates/layers/layer.html:226 maps/templates/maps/mapinfo.html:90
 msgid "Login to add a comment"
 msgstr ""
 
-#: layers/templates/layers/layer.html:230
+#: layers/templates/layers/layer.html:231
 msgid "Rate this layer"
 msgstr ""
 
-#: layers/templates/layers/layer.html:243
+#: layers/templates/layers/layer.html:244
 msgid "Legend"
 msgstr ""
 
-#: layers/templates/layers/layer.html:254
+#: layers/templates/layers/layer.html:255
 msgid "Download Data"
 msgstr ""
 
-#: layers/templates/layers/layer.html:259
+#: layers/templates/layers/layer.html:260
 msgid "Download Metadata"
 msgstr ""
 
-#: layers/templates/layers/layer.html:263
+#: layers/templates/layers/layer.html:264
 msgid "No metadata links provided for this data."
 msgstr "Tidak ada link metadata untuk data ini."
 
-#: layers/templates/layers/layer.html:266
+#: layers/templates/layers/layer.html:267
 msgid "The following maps use this data set"
 msgstr "Peta berikut menggunakan dataset ini"
 
-#: layers/templates/layers/layer.html:270
+#: layers/templates/layers/layer.html:271
 msgid "This layer is not currently used in any maps."
 msgstr "Layer ini tidak digunakan pada peta manapun"
 
-#: layers/templates/layers/layer.html:273
+#: layers/templates/layers/layer.html:274
 msgid "Create new map"
 msgstr ""
 
-#: layers/templates/layers/layer.html:277
+#: layers/templates/layers/layer.html:278
 msgid "Styles"
 msgstr "Penampilan"
 
-#: layers/templates/layers/layer.html:278
+#: layers/templates/layers/layer.html:279
 msgid ""
 "The following styles are associated with this data set.  Choose a style to "
 "view it in the preview to the left.  Click on a style name to view or edit "
@@ -1717,41 +1767,41 @@ msgstr ""
 "menampilkannya di bagian sebelah kiri. Tekan nama jenis tampilan untuk "
 "melihat atau mengubah jenis tampilan."
 
-#: layers/templates/layers/layer.html:304
+#: layers/templates/layers/layer.html:305
 msgid "Default style:"
 msgstr "Tampilan umum:"
 
-#: layers/templates/layers/layer.html:313
+#: layers/templates/layers/layer.html:314
 msgid "Create new style"
 msgstr ""
 
-#: layers/templates/layers/layer.html:319 maps/templates/maps/mapinfo.html:115
+#: layers/templates/layers/layer.html:320 maps/templates/maps/mapinfo.html:115
 msgid "Manage"
 msgstr "Mengelola"
 
-#: layers/templates/layers/layer.html:323
+#: layers/templates/layers/layer.html:324
 msgid "Update the description of this data"
 msgstr "Perbaharui deskripsi dari data ini"
 
-#: layers/templates/layers/layer.html:326
+#: layers/templates/layers/layer.html:327
 msgid "Upload a new version of this data"
 msgstr "Unggah versi terbaru dari data"
 
-#: layers/templates/layers/layer.html:332
+#: layers/templates/layers/layer.html:333
 msgid "Remove"
 msgstr "Hapus"
 
-#: layers/templates/layers/layer.html:337
+#: layers/templates/layers/layer.html:338
 msgid "Please authenticate to update or remove layers"
 msgstr ""
 
-#: layers/templates/layers/layer.html:343
-#: layers/templates/layers/layer_upload.html:232
+#: layers/templates/layers/layer.html:344
+#: layers/templates/layers/layer_upload.html:252
 #: maps/templates/maps/mapinfo.html:129 templates/_permissions_form.html:7
 msgid "Permissions"
 msgstr "Izin"
 
-#: layers/templates/layers/layer.html:344 maps/templates/maps/mapinfo.html:130
+#: layers/templates/layers/layer.html:345 maps/templates/maps/mapinfo.html:130
 msgid "Edit permissions"
 msgstr "Ubah izin"
 
@@ -1763,11 +1813,28 @@ msgid ""
 "      "
 msgstr ""
 
-#: layers/templates/layers/layer_describe.html:28
+#: layers/templates/layers/layer_describe.html:30
+#, fuzzy
+msgid "Attribute"
+msgstr "Atribut"
+
+#: layers/templates/layers/layer_describe.html:30
+msgid "Display Title"
+msgstr ""
+
+#: layers/templates/layers/layer_describe.html:30
+msgid "Display Order"
+msgstr ""
+
+#: layers/templates/layers/layer_describe.html:30
+msgid "Visible?"
+msgstr ""
+
+#: layers/templates/layers/layer_describe.html:42
 msgid "Metadata Provider"
 msgstr ""
 
-#: layers/templates/layers/layer_describe.html:32
+#: layers/templates/layers/layer_describe.html:46
 msgid "Update"
 msgstr "Ubah"
 
@@ -1867,7 +1934,7 @@ msgstr "Cari"
 msgid "for geospatial data"
 msgstr "untuk data geospasial"
 
-#: layers/templates/layers/search_base.html:35 maps/models.py:56
+#: layers/templates/layers/search_base.html:35 maps/models.py:58
 #: maps/templates/maps/maps_search_base.html:16
 #: people/templates/idios/profile.html:10
 #: templates/profiles/profile_detail.html:10
@@ -1971,75 +2038,75 @@ msgstr "Tekan disini untuk infomrasi mengenai layer ini."
 msgid "You do not have permission to view or download this layer"
 msgstr "Anda tidak memiliki izin untuk melihat atau mengunduh layer ini"
 
-#: maps/models.py:63
+#: maps/models.py:65
 msgid "zoom"
 msgstr "zoom"
 
-#: maps/models.py:67
+#: maps/models.py:69
 msgid "projection"
 msgstr "proyeksi"
 
-#: maps/models.py:71
+#: maps/models.py:73
 msgid "center X"
 msgstr "titik pusat X"
 
-#: maps/models.py:75
+#: maps/models.py:77
 msgid "center Y"
 msgstr "titik pusat Y"
 
-#: maps/models.py:79
+#: maps/models.py:81
 msgid "owner"
 msgstr "pemilik"
 
-#: maps/models.py:85
+#: maps/models.py:87
 msgid "A space or comma-separated list of keywords"
 msgstr ""
 
-#: maps/models.py:287
+#: maps/models.py:289
 msgid "stack order"
 msgstr "urutan penempatan"
 
-#: maps/models.py:291
+#: maps/models.py:293
 msgid "format"
 msgstr "format"
 
-#: maps/models.py:295
+#: maps/models.py:297
 msgid "name"
 msgstr "nama"
 
-#: maps/models.py:302
+#: maps/models.py:304
 msgid "opacity"
 msgstr "opcacity"
 
-#: maps/models.py:305
+#: maps/models.py:307
 msgid "styles"
 msgstr "style"
 
-#: maps/models.py:308
+#: maps/models.py:310
 msgid "transparent"
 msgstr "transparan"
 
-#: maps/models.py:311
+#: maps/models.py:313
 msgid "fixed"
 msgstr "tetap"
 
-#: maps/models.py:315
+#: maps/models.py:317
 msgid "group"
 msgstr "grup"
 
-#: maps/models.py:319
+#: maps/models.py:321
 msgid "visibility"
 msgstr "visibilitas"
 
-#: maps/models.py:322
+#: maps/models.py:324
 msgid "ows URL"
 msgstr "URL ows"
 
-#: maps/models.py:325
+#: maps/models.py:327
 msgid "layer params"
 msgstr "parameter layer"
 
-#: maps/models.py:332
+#: maps/models.py:334
 msgid "source params"
 msgstr "parameter sumber"
 
@@ -2363,15 +2430,15 @@ msgstr ""
 msgid "permissions"
 msgstr "ijin"
 
-#: people/views.py:36
+#: people/views.py:37
 msgid "Your username for "
 msgstr ""
 
-#: people/views.py:48
+#: people/views.py:52
 msgid "Your username has been emailed to you."
 msgstr ""
 
-#: people/views.py:50
+#: people/views.py:54
 msgid "No user could be found with that email address."
 msgstr ""
 
