@@ -91,8 +91,8 @@ def _get_map_results(query):
     q = extension.map_query(query)
     
     if query.query:
-        q = q.filter(title__icontains=query) | \
-            q.filter(abstract__icontains=query)
+        q = q.filter(title__icontains=query.query) | \
+            q.filter(abstract__icontains=query.query)
         
     if query.owner:
         q = q.filter(owner__username=query.owner)
