@@ -95,16 +95,16 @@ def _get_map_results(query):
             q.filter(abstract__icontains=query.query)
         
     if query.owner:
-        q = q.filter(owner__username=query. owner)
+        q = q.filter(owner__username=query.owner)
 
     if query.query:
-        q = q.filter(_build_kw_query(query. query))
+        q = q.filter(_build_kw_query(query.query))
         
     if query.extent:
-        q = filter_by_extent(Map, q, query. extent)
+        q = filter_by_extent(Map, q, query.extent)
         
     if query.added:
-        q = q.filter(last_modified__gte=query. added)
+        q = q.filter(last_modified__gte=query.added)
     
     if query.period:
         q = filter_by_period(Map, q, *query.period)
@@ -196,7 +196,7 @@ def _get_layer_results(query):
         q = q.filter(date__gte=query.added)
         
     if query.period:
-        q = filter_by_period(Layer, q, query.period)
+        q = filter_by_period(Layer, q, *query.period)
        
     # this is a special optimization for prefetching results when requesting
     # all records via search
