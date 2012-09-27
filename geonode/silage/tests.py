@@ -85,7 +85,8 @@ class SilageTest(TestCase):
                            contains_username='jblaze')
 
     def test_text_across_types(self):
-        self.search_assert(self.request('foo'), n_results=7)
+        self.search_assert(self.request('foo'), n_results=7, n_total=7)
+        self.search_assert(self.request('common'), n_results=9, n_total=9)
 
     def test_bbox_query(self):
         # @todo since maps and users are excluded at the moment, this will have
