@@ -64,8 +64,8 @@ def _get_owner_results(query):
             filter_by_extent(Layer, q, query.extent, True)
     
     if query.period:
-        q = filter_by_period(Map, q, query.period, True) | \
-            filter_by_period(Layer, q, query.period, True)
+        q = filter_by_period(Map, q, *query.period, user=True) | \
+            filter_by_period(Layer, q, *query.period, user=True)
     
     if query.added:
         q = q.filter(user__date_joined__gt = query.added)
