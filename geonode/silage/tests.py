@@ -101,3 +101,24 @@ class SilageTest(TestCase):
                            n_results=7)
         self.search_assert(self.request(period='1980-01-01T00:00:00Z,'),
                            n_results=4)
+
+
+
+    def test_errors(self):
+        self.assert_error(self.request(sort='foo'),
+            "valid sorting values are: ['alphaaz', 'newest', 'popularity', 'alphaza', 'rel', 'oldest']")
+        self.assert_error(self.request(extent='1,2,3'),
+            'extent filter must contain x0,x1,y0,y1 comma separated')
+        self.assert_error(self.request(extent='a,b,c,d'),
+            'extent filter must contain x0,x1,y0,y1 comma separated')
+        self.assert_error(self.request(startIndex='x'),
+            'startIndex must be valid number')
+        self.assert_error(self.request(limit='x'),
+            'limit must be valid number')
+        self.assert_error(self.request(added='x'),
+            'valid added filter values are: today,week,month')
+        
+    def assert_error(self, resp, msg):
+        obj = json.loads(resp.content)
+        self.assertTrue(obj['success'] == False)
+        self.assertEquals(msg, obj['errors'][0])
