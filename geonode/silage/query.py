@@ -36,6 +36,10 @@ _SEARCH_PARAMS = [
     'end',
     'exclude',
     'cache']
+    
+
+class BadQuery(Exception):
+    pass
 
 
 class Query(object):
@@ -91,11 +95,14 @@ class Query(object):
         end = filters['end']
         if start or end:
             if self.period:
-                raise Exception('period and start/end both provided')
+                raise BadQuery('period and start/end both provided')
             self.period = (start, end)
             
         val = filters['extent']
-        self.extent = map(float, filters.get('extent').split(',')) if val else None
+        try:
+            self.extent = map(float, filters.get('extent').split(',')) if val else None
+        except:
+            raise BadQuery('extent filter must contain x0,x1,y0,y1 comma separated')
         
         val = filters['added']
         self.added = parse_by_added(val) if val else None
@@ -115,7 +122,7 @@ def parse_by_added(spec):
     elif spec == 'month':
         td = timedelta(days=30)
     else:
-        return None
+        raise BadQuery('valid added filter values are: today,week,month')
     return date.today() - td
 
 
@@ -138,16 +145,19 @@ def query_from_request(**params):
     if 'sort' in params and 'dir' in params:
         sort_field = params['sort']
         sort_asc = params['dir'] == 'ASC'
-    else:    
-        sort_field, sort_asc = {
+    else:
+        sorts = {
             'newest' : ('last_modified',False),
             'oldest' : ('last_modified',True),
             'alphaaz' : ('title',True),
             'alphaza' : ('title',False),
             'popularity' : ('rank',False),
             'rel' : ('relevance',False)
-
-        }[params.get('sort','newest')]
+        }
+        try:
+            sort_field, sort_asc = sorts[params.get('sort','newest')]
+        except KeyError:
+            raise BadQuery('valid sorting values are: %s' % sorts.keys())
 
     filters = dict([(k,params.get(k,None) or None) for k in _SEARCH_PARAMS])
     
