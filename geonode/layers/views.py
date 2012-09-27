@@ -42,7 +42,6 @@ from django.views.decorators.http import require_POST
 from django.views.generic.list import ListView
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from agon_ratings.models import OverallRating
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
@@ -355,7 +354,6 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             "layer": layer
         }))
     if (request.method == 'POST'):
-        OverallRating.objects.filter(category = 2, object_id = layer.id).delete()
         layer.delete()
         return HttpResponseRedirect(reverse("layer_browse"))
     else:

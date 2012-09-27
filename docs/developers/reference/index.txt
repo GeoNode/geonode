@@ -9,4 +9,3 @@ This contains detailed information about the implementation of the different sof
 
    django-apps
    javascript
-   test

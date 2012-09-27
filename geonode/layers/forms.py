@@ -58,13 +58,14 @@ class LayerForm(forms.ModelForm):
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
                    'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
-                   'csw_wkt_geometry', 'metadata_xml', 'csw_anytext')
+                   'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext')
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
     dbf_file = forms.FileField(required=False)
     shx_file = forms.FileField(required=False)
     prj_file = forms.FileField(required=False)
+    xml_file = forms.FileField(required=False)
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file")
 
@@ -90,6 +91,12 @@ class LayerUploadForm(forms.Form):
                     raise forms.ValidationError("It looks like you're "
                         "uploading components from different Shapefiles. "
                         "Please double-check your file selections.")
+            if cleaned["xml_file"] is not None:
+                xml_file = cleaned["xml_file"].name
+                if os.path.splitext(xml_file)[0] != base_name:
+                    if xml_file.find('.shp') != -1:
+                        # force rename of file so that file.shp.xml doesn't overwrite as file.shp
+                        cleaned["xml_file"].name = '%s.xml' % base_name
         return cleaned
 
     def write_files(self):
@@ -108,18 +115,20 @@ class LayerUploadForm(forms.Form):
 
 class NewLayerUploadForm(LayerUploadForm):
     sld_file = forms.FileField(required=False)
+    xml_file = forms.FileField(required=False)
 
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
     permissions = JSONField()
 
-    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file")
+    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file", "xml_file")
 
 
 class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
+
 
 class LayerAttributeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

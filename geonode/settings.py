@@ -332,20 +332,6 @@ CATALOGUE = {
 PYCSW = {
     # pycsw configuration
     'CONFIGURATION': {
-        'server': {
-            'home': '.',
-            'url': CATALOGUE['default']['URL'],
-            'encoding': 'UTF-8',
-            'language': LANGUAGE_CODE,
-            'maxrecords': '10',
-            #'loglevel': 'DEBUG',
-            #'logfile': '/tmp/pycsw.log',
-            #'federatedcatalogues': 'http://geo.data.gov/geoportal/csw/discovery',
-            #'pretty_print': 'true',
-            #'domainquerytype': 'range',
-            #'domaincounts': 'true',
-            'profiles': 'apiso,atom,dif,ebrim,fgdc',
-        },
         'metadata:main': {
             'identification_title': '%s Catalogue' % SITENAME,
             'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data',

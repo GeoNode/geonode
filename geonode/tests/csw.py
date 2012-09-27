@@ -79,7 +79,7 @@ class GeoNodeCSWTest(TestCase):
 
         # get all ISO records, test for numberOfRecordsMatched
         csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
-        self.assertEqual(csw.catalogue.results['matches'], 16, 'Expected 10 ISO records')
+        self.assertEqual(csw.catalogue.results['matches'], 16, 'Expected 16 ISO records')
 
     def test_csw_outputschema_dc(self):
         """Verify that GeoNode can handle ISO metadata with Dublin Core outputSchema"""

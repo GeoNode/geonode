@@ -24,8 +24,10 @@ import errno
 
 from django.conf import settings
 from django.db import models
+from django.db.models import signals
 from django.utils import simplejson as json
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -43,7 +45,7 @@ from taggit.managers import TaggableManager
 
 from geoserver.catalog import Catalog
 from geoserver.layer import Layer as GsLayer
-from django.db.models import signals
+from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
 
@@ -371,5 +373,11 @@ def pre_save_maplayer(instance, sender, **kwargs):
             logger.warn(msg, e)
         else:
             raise e
+        
+def pre_delete_map(instance, sender, **kwrargs):
+    ct = ContentType.objects.get_for_model(instance)
+    OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
 
 signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
+signals.pre_delete.connect(pre_delete_map, sender=Map)
+

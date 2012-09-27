@@ -16,6 +16,11 @@
         Editing details for {{ layer_title }}
       {% endblocktrans %}
     </legend>
+    {% if layer.metadata_uploaded %}
+        Note: this layer's orginal metadata was populated by importing a metadata XML file.
+        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.
+        Some of your original metadata may have been lost.
+    {% endif %}
     {% csrf_token %}
     <div class="form-controls">
       {{ layer_form|as_bootstrap }}

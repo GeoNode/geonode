@@ -5,7 +5,7 @@ About GeoNode
 GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data.
 The project aims to surpass existing spatial data infrastructure solutions by integrating robust social and cartographic tools.
 
-At its core, GeoNode is built on a stack based on GeoServer, Django, and GeoExt that provides a platform for sophisticated web browser spatial visualization and analysis.
+At its core, GeoNode is built on a stack based on GeoServer, pycsw, Django, and GeoExt that provides a platform for sophisticated web browser spatial visualization and analysis.
 
 Atop this stack, the project has built a map composer and viewer, tools for analysis, and reporting tools.
 
@@ -25,10 +25,10 @@ But it should hopefully allow you to easily preview the capabilities of GeoNode.
 Geospatial data storage
 =======================
 
-GeoNode allows the upload vector and raster data in their original projections using a web form.
-Vector data is uploaded in ESRI Shapefile format and satellite imagery and other kinds of raster data are uploaded as Geotiffs.
+GeoNode allows the user to upload vector and raster data in their original projections using a web form.
+Vector data is uploaded in ESRI Shapefile format and satellite imagery and other kinds of raster data are uploaded as GeoTIFFs.
 
-Special importance is given to standard metadata formats like TC211. After the upload is finished, the user is presented with a form to fill in the metadata and it is made available using a `CSW`_ interface.
+Special importance is given to standard metadata formats like ISO 19139:2007. After the upload is finished, the user is presented with a form to fill in the metadata and it is made available using a `CSW`_ interface.  Users may also upload a metadata XML document (in ISO, FGDC, or Dublin Core format) to fill in key GeoNode metadata elements automatically.
 
 Similarly, GeoNode provides a web based styler, that lets the user change how the data looks and preview the changes in real time.
 
