@@ -162,7 +162,7 @@ def _get_map_results(query):
         )
         q = _add_relevance(q, query, rules)
 
-    return q
+    return q.distinct()
 
     
 def _get_layer_results(query):
@@ -211,7 +211,7 @@ def _get_layer_results(query):
         )
         q = _add_relevance(q, query, rules)
 
-    return q
+    return q.distinct()
                 
 
 def combined_search_results(query):
