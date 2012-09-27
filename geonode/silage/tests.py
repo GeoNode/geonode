@@ -66,6 +66,12 @@ class SilageTest(TestCase):
         if n_total:
             self.assertEquals(n_total, jsonvalue['total'])
 
+        first_title = options.pop('first_title', None)
+        if first_title:
+            self.assertTrue(len(jsonvalue['results']) > 0, 'No results found')
+            doc = jsonvalue['results'][0]
+            self.assertEquals(first_title, doc['title'])
+
 
     def test_limit(self):
         self.search_assert(self.request(limit=1), n_results=1)
@@ -102,3 +108,15 @@ class SilageTest(TestCase):
                            n_results=7)
         self.search_assert(self.request(period='1980-01-01T00:00:00Z,'),
                            n_results=4)
+
+    def test_sort(self):
+        self.search_assert(self.request('foo', sort='newest'),
+                           first_title='double time')
+        self.search_assert(self.request('foo', sort='oldest'),
+                           first_title='uniquefirst foo')
+        self.search_assert(self.request('foo', sort='alphaaz'),
+                           first_title='blar')
+        self.search_assert(self.request('foo', sort='alphaza'),
+                           first_title='foo uniquelast')
+        self.search_assert(self.request('foo', sort='popularity'),
+                           first_title='ipsum foo')
