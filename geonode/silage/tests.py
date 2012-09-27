@@ -1,26 +1,35 @@
 from django.test import TestCase
 from django.test.client import Client
+from geonode.silage.query import query_from_request
 import json
 import logging
 
 logging.getLogger('south').setLevel(logging.INFO)
-setup_ran = False
 
 class SilageTest(TestCase):
 
     c = Client()
-
+    
     fixtures = ['initial_data.json', 'silage_testdata.json']
+    
+    @classmethod
+    def setUpClass(cls):
+        "Hook method for setting up class fixture before running tests in the class."
+        SilageTest('_fixture_setup')._fixture_setup(True)
 
-    def _fixture_setup(self):
-        global setup_ran
-        if setup_ran:
-            return
-        super(SilageTest, self)._fixture_setup()
-        setup_ran = True
+    @classmethod
+    def tearDownClass(cls):
+        "Hook method for deconstructing the class fixture after running all tests in the class."
+        SilageTest('_fixture_teardown')._fixture_teardown(True)
+        logging.getLogger('south').setLevel(logging.DEBUG)
+
+    def _fixture_setup(self, a=False):
+        if a:
+            super(SilageTest, self)._fixture_setup()
         
-    def _fixture_teardown(self):
-        return
+    def _fixture_teardown(self, a=False):
+        if a:
+            super(SilageTest, self)._fixture_teardown()
 
     def request(self, query=None, **options):
         query_dict = dict(q=query) if query else {}
@@ -37,7 +46,6 @@ class SilageTest(TestCase):
         jsonvalue = json.loads(response.content)
         self.assertFalse(jsonvalue.get('errors'))
         self.assertTrue(jsonvalue.get('success'))
-
         contains_maptitle = options.pop('contains_maptitle', None)
         if contains_maptitle:
             self.assert_results_contain_title(jsonvalue, contains_maptitle, 'map')
@@ -52,8 +60,11 @@ class SilageTest(TestCase):
 
         n_results = options.pop('n_results', None)
         if n_results:
-            self.assertEquals(n_results, jsonvalue['total'])
             self.assertEquals(n_results, len(jsonvalue['results']))
+            
+        n_total = options.pop('n_total', None)
+        if n_total:
+            self.assertEquals(n_total, jsonvalue['total'])
 
 
     def test_limit(self):
