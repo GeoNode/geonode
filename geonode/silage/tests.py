@@ -92,7 +92,11 @@ class SilageTest(TestCase):
 
     def test_text_across_types(self):
         self.search_assert(self.request('foo'), n_results=7, n_total=7)
-        self.search_assert(self.request('common'), n_results=9, n_total=9)
+        self.search_assert(self.request('common'), n_results=10, n_total=14)
+
+    def test_pagination(self):
+        self.search_assert(self.request('common', startIndex=0), n_results=10, n_total=14)
+        self.search_assert(self.request('common', startIndex=10), n_results=4, n_total=14)
 
     def test_bbox_query(self):
         # @todo since maps and users are excluded at the moment, this will have
@@ -111,11 +115,11 @@ class SilageTest(TestCase):
 
     def test_sort(self):
         self.search_assert(self.request('foo', sort='newest'),
-                           first_title='double time')
+                           first_title='common double time')
         self.search_assert(self.request('foo', sort='oldest'),
                            first_title='uniquefirst foo')
         self.search_assert(self.request('foo', sort='alphaaz'),
-                           first_title='blar')
+                           first_title='common blar')
         self.search_assert(self.request('foo', sort='alphaza'),
                            first_title='foo uniquelast')
         self.search_assert(self.request('foo', sort='popularity'),

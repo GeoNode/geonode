@@ -44,11 +44,11 @@ layer_data = [
         ('layer1', 'abstract1', 'layer1', 'geonode:layer1', [-180, 180, -90, 90], '19850101'),
         ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501'),
         ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001'),
-        ('blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603'),
-        ('double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101'),
-        ('double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101'),
-        ('bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209'),
-        ('morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829'),
+        ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603'),
+        ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101'),
+        ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101'),
+        ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209'),
+        ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829'),
         ]
 
 
