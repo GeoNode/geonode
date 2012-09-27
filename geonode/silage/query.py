@@ -86,6 +86,13 @@ class Query(object):
         
         val = filters['period']
         self.period = tuple(val.split(',')) if val else None
+        
+        start = filters['start']
+        end = filters['end']
+        if start or end:
+            if self.period:
+                raise Exception('period and start/end both provided')
+            self.period = (start, end)
             
         val = filters['extent']
         self.extent = map(float, filters.get('extent').split(',')) if val else None

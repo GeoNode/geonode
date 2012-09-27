@@ -95,19 +95,19 @@ def _get_map_results(query):
             q.filter(abstract__icontains=query.query)
         
     if query.owner:
-        q = q.filter(owner__username=query.owner)
+        q = q.filter(owner__username=query. owner)
 
     if query.query:
-        q = q.filter(_build_kw_query(query.query))
+        q = q.filter(_build_kw_query(query. query))
         
     if query.extent:
-        q = filter_by_extent(Map, q, query.extent)
+        q = filter_by_extent(Map, q, query. extent)
         
     if query.added:
-        q = q.filter(last_modified__gte=query.added)
+        q = q.filter(last_modified__gte=query. added)
     
     if query.period:
-        q = filter_by_period(Map, q, query.period)
+        q = filter_by_period(Map, q, *query.period)
         
     if query.kw:
         # this is a somewhat nested query but it performs way faster
