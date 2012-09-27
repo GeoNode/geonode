@@ -28,6 +28,7 @@ class Query(object):
     'the query, but split into pieces'
     
     period = None
+    'tuple of start/end date'
     extent = None
     
     params = None
@@ -49,7 +50,7 @@ class Query(object):
     
     def __init__(self, query, start=0, limit=DEFAULT_MAPS_SEARCH_BATCH_SIZE, 
                  sort_field='last_modified', sort_asc=False, filters=None,
-                 user=None, cache=True, **kwargs):
+                 user=None, cache=True):
         self.query = query
         self.split_query = _split_query(query)
         self.start = start
@@ -58,6 +59,7 @@ class Query(object):
         self.order = sort_asc
         self.params = filters or {}
         self.user = user
+        self.cache = cache
         
         self.type = filters.get('type')
         self.owner = filters.get('owner')
@@ -130,6 +132,7 @@ def query_from_request(**params):
                 
     cache = params.get('cache',True)
     
-    return Query(**locals())
+    return Query(query, start=start, limit=limit, sort_field=sort_field, 
+                 sort_asc=sort_asc, filters=filters, cache=cache)
     
     

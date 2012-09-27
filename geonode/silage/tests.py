@@ -4,6 +4,7 @@ from geonode.silage.query import query_from_request
 import json
 import logging
 
+logging.getLogger('south').setLevel(logging.INFO)
 
 class SilageTest(TestCase):
 
@@ -14,7 +15,6 @@ class SilageTest(TestCase):
     @classmethod
     def setUpClass(cls):
         "Hook method for setting up class fixture before running tests in the class."
-        logging.getLogger('south').setLevel(logging.INFO)
         SilageTest('_fixture_setup')._fixture_setup(True)
 
     @classmethod
@@ -60,8 +60,11 @@ class SilageTest(TestCase):
 
         n_results = options.pop('n_results', None)
         if n_results:
-            self.assertEquals(n_results, jsonvalue['total'])
             self.assertEquals(n_results, len(jsonvalue['results']))
+            
+        n_total = options.pop('n_total', None)
+        if n_total:
+            self.assertEquals(n_total, jsonvalue['total'])
 
 
     def test_limit(self):

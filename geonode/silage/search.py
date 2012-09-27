@@ -84,7 +84,6 @@ def _get_owner_results(query):
         if added:
             rules = rules + _rank_rules(*added)
         q = _add_relevance(q, query.query, rules)
-    
     return q
 
 
