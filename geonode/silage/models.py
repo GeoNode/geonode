@@ -19,17 +19,29 @@
 
 from django.conf import settings
 
+from geonode.layers.models import Layer
+from geonode.layers.models import add_bbox_query
+
+
 def filter_by_period(model, q, start, end, user=None):
     '''modify the query to filter the given model for dates between start and end
     start, end - iso str ('-5000-01-01T12:00:00Z')
     '''
     print 'NOT DONE'
-    
+
+
 def filter_by_extent(model, q, extent, user=None):
     '''modify the query to filter the given model for the provided extent and optional user
-    extent: tuple of float coordinates representing x0,y1,y0,y1
+    extent: tuple of float coordinates representing x0,x1,y0,y1
     '''
-    print 'NOT DONE'
+    if model == Layer and not user:
+        q = add_bbox_query(q, extent)
+    else:
+        # @todo handle map and/or users - either directly if implemented or ...
+        # this will effectively short-circuit the query at this point
+        q = q.none()
+    return q
+
 
 if 'django.contrib.gis' in settings.INSTALLED_APPS:
     from geonode.silage.geomodels import *

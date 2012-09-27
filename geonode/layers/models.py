@@ -253,6 +253,19 @@ class ResourceBase(models.Model, PermissionLevelMixin):
 
     class Meta:
         abstract = True
+        
+
+def add_bbox_query(q, bbox):
+    '''modify the queryset q to limit to the provided bbox
+    
+    bbox - 4 tuple of floats representing x0,x1,y0,y1
+    returns the modified query
+    '''
+    q = q.filter(bbox_x0__gte=bbox[0])
+    q = q.filter(bbox_x1__lte=bbox[1])
+    q = q.filter(bbox_y0__gte=bbox[2])
+    return q.filter(bbox_y1__lte=bbox[3])
+
 
 class Layer(ResourceBase):
     """
