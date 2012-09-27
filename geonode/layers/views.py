@@ -189,7 +189,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 @login_required
         
-def layer_metadata(request, layername, template='layers/layer_describe.html'):
+def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
 
