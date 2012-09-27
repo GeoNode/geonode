@@ -135,14 +135,12 @@ def _get_map_results(query):
     
     if query.query:
         q = q.filter(title__icontains=query.query) | \
-            q.filter(abstract__icontains=query.query)
-        
+            q.filter(abstract__icontains=query.query) | \
+            q.filter(_build_kw_query(query, query_keywords=True))
+
     if query.owner:
         q = q.filter(owner__username=query.owner)
 
-    if query.query:
-        q = q.filter(_build_kw_query(query))
-        
     if query.extent:
         q = filter_by_extent(Map, q, query.extent)
         
@@ -174,7 +172,7 @@ def _get_layer_results(query):
         name_filter = reduce(operator.or_,[ Q(name__regex=f) for f in extension.exclude_patterns])
         q = q.exclude(name_filter)
     if query.query:
-        q = q.filter(_build_kw_query(query,True)) | \
+        q = q.filter(_build_kw_query(query, query_keywords=True)) | \
             q.filter(name__icontains = query.query) | \
             q.filter(title__icontains=query.query)
     # we can optimize kw search here

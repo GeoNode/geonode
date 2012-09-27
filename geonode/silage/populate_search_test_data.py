@@ -6,6 +6,8 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.people.models import Contact
 from itertools import cycle
+from taggit.models import Tag
+from taggit.models import TaggedItem
 from uuid import uuid4
 import os.path
 
@@ -16,15 +18,15 @@ import os.path
 
 
 map_data = [
-        ('lorem ipsum', 'common lorem ipsum'),
-        ('ipsum lorem', 'common ipsum lorem'),
-        ('lorem1 ipsum1', 'common abstract1'),
-        ('ipsum foo', 'common bar lorem'),
-        ('map one', 'common this is a unique thing'),
-        ('quux', 'common double thing'),
-        ('morx', 'common thing double'),
-        ('titledupe something else ', 'whatever common'),
-        ('something titledupe else ', 'bar common'),
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',)),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique')),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',)),
+        ('ipsum foo', 'common bar lorem', ('populartag',)),
+        ('map one', 'common this is a unique thing', ('populartag',)),
+        ('quux', 'common double thing', ('populartag',)),
+        ('morx', 'common thing double', ('populartag',)),
+        ('titledupe something else ', 'whatever common', ('populartag',)),
+        ('something titledupe else ', 'bar common', ('populartag',)),
         ]
 
 user_data = [
@@ -41,14 +43,14 @@ people_data = [
         ]
 
 layer_data = [
-        ('layer1', 'abstract1', 'layer1', 'geonode:layer1', [-180, 180, -90, 90], '19850101'),
-        ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501'),
-        ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001'),
-        ('blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603'),
-        ('double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101'),
-        ('double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101'),
-        ('bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209'),
-        ('morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829'),
+        ('layer1', 'abstract1', 'layer1', 'geonode:layer1', [-180, 180, -90, 90], '19850101', ('populartag',)),
+        ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501', ('populartag',)),
+        ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001', ('populartag',)),
+        ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603', ('populartag', 'layertagunique')),
+        ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101', ('populartag',)),
+        ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101', ('populartag',)),
+        ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209', ('populartag',)),
+        ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829', ('populartag',)),
         ]
 
 
@@ -67,7 +69,7 @@ def create_models():
         users.append(u)
 
     for md, user in zip(map_data, cycle(users)):
-        title, abstract = md
+        title, abstract, kws = md
         m = Map(title=title,
                 abstract=abstract,
                 zoom=4,
@@ -77,9 +79,12 @@ def create_models():
                 owner=user,
                 )
         m.save()
+        for kw in kws:
+            m.keywords.add(kw)
+            m.save()
 
     for ld, owner in zip(layer_data, cycle(users)):
-        title, abstract, name, typename, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), dt = ld
+        title, abstract, name, typename, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), dt, kws = ld
         year, month, day = map(int, (dt[:4], dt[4:6], dt[6:]))
         start = datetime(year, month, day)
         end = start + timedelta(days=365)
@@ -97,6 +102,9 @@ def create_models():
                   temporal_extent_end=end,
                   )
         l.save()
+        for kw in kws:
+            l.keywords.add(kw)
+            l.save()
 
 
 def dump_models(path=None):
@@ -105,7 +113,9 @@ def dump_models(path=None):
                                      Contact.objects.all(),
                                      Layer.objects.all(),
                                      Map.objects.all(),
-                                     ]], []))
+                                     Tag.objects.all(),
+                                     TaggedItem.objects.all(),
+                                     ]], []), indent=2, use_natural_keys=True)
     if path is None:
         parent, _ = os.path.split(__file__)
         path = os.path.join(parent, 'fixtures', 'silage_testdata.json')
