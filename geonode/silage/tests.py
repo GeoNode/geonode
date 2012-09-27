@@ -97,3 +97,7 @@ class SilageTest(TestCase):
     def test_date_query(self):
         self.search_assert(self.request(period='1980-01-01T00:00:00Z,1995-01-01T00:00:00Z'),
                            n_results=3)
+        self.search_assert(self.request(period=',1995-01-01T00:00:00Z'),
+                           n_results=7)
+        self.search_assert(self.request(period='1980-01-01T00:00:00Z,'),
+                           n_results=4)
