@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.test.client import Client
-from geonode.silage.query import query_from_request
 import json
 import logging
 
@@ -46,6 +45,7 @@ class SilageTest(TestCase):
         jsonvalue = json.loads(response.content)
         self.assertFalse(jsonvalue.get('errors'))
         self.assertTrue(jsonvalue.get('success'))
+
         contains_maptitle = options.pop('contains_maptitle', None)
         if contains_maptitle:
             self.assert_results_contain_title(jsonvalue, contains_maptitle, 'map')
@@ -84,7 +84,7 @@ class SilageTest(TestCase):
         self.search_assert(self.request("some other information"),
                            contains_username='jblaze')
 
-    def test_abstract_results(self):
+    def test_text_across_types(self):
         self.search_assert(self.request('foo'), n_results=7)
 
     def test_bbox_query(self):
@@ -93,3 +93,7 @@ class SilageTest(TestCase):
         self.search_assert(self.request(extent='-180,180,-90,90'), n_results=8)
         self.search_assert(self.request(extent='0,10,0,10'), n_results=3)
         self.search_assert(self.request(extent='0,1,0,1'), n_results=1)
+
+    def test_date_query(self):
+        self.search_assert(self.request(period='1980-01-01T00:00:00Z,1995-01-01T00:00:00Z'),
+                           n_results=3)

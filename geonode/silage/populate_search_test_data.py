@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import timedelta
 from django.core.serializers import serialize
 from django.contrib.auth.models import User
 from geonode.layers.models import Layer
@@ -38,15 +40,15 @@ people_data = [
         ('some other information goes here',),
         ]
 
-layers = [
-        ('layer1', 'abstract1', 'layer1', 'geonode:layer1', [-180, 180, -90, 90]),
-        ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90]),
-        ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90]),
-        ('blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90]),
-        ('double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1]),
-        ('double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5]),
-        ('bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10]),
-        ('morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50]),
+layer_data = [
+        ('layer1', 'abstract1', 'layer1', 'geonode:layer1', [-180, 180, -90, 90], '19850101'),
+        ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501'),
+        ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001'),
+        ('blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603'),
+        ('double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101'),
+        ('double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101'),
+        ('bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209'),
+        ('morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829'),
         ]
 
 
@@ -76,8 +78,11 @@ def create_models():
                 )
         m.save()
 
-    for layer_data, owner in zip(layers, cycle(users)):
-        title, abstract, name, typename, (bbox_x0, bbox_x1, bbox_y0, bbox_y1) = layer_data
+    for ld, owner in zip(layer_data, cycle(users)):
+        title, abstract, name, typename, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), dt = ld
+        year, month, day = map(int, (dt[:4], dt[4:6], dt[6:]))
+        start = datetime(year, month, day)
+        end = start + timedelta(days=365)
         l = Layer(title=title,
                   abstract=abstract,
                   name=name,
@@ -88,6 +93,8 @@ def create_models():
                   bbox_y1=bbox_y1,
                   uuid=str(uuid4()),
                   owner=owner,
+                  temporal_extent_start=start,
+                  temporal_extent_end=end,
                   )
         l.save()
 
