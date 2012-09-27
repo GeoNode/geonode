@@ -124,3 +124,8 @@ class SilageTest(TestCase):
                            first_title='foo uniquelast')
         self.search_assert(self.request('foo', sort='popularity'),
                            first_title='ipsum foo')
+
+    def test_keywords(self):
+        self.search_assert(self.request('populartag'), n_results=10, n_total=17)
+        self.search_assert(self.request('maptagunique'), n_results=1, n_total=1)
+        self.search_assert(self.request('layertagunique'), n_results=1, n_total=1)
