@@ -310,7 +310,7 @@ CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 CUSTOM_GROUP_EMAIL_SUFFIX = ''
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_AUTH_URL = ''
-
+CUSTOM_AUTH_COOKIE=''
 
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE=False

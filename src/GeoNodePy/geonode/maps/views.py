@@ -1626,6 +1626,11 @@ def layer_replace(request, layername):
                     "success": True,
                     "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
+                try:
+                    if len(settings.ADMINS) > 0:
+                        send_mail("Upload Error", escape(str(e)), settings.DEFAULT_FROM_EMAIL,[settings.ADMINS[0][1]], fail_silently=True)
+                except Exception, f:
+                    pass
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
                     "success": False,
