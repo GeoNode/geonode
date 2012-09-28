@@ -2,7 +2,7 @@
 Configuring Alternate CSW Backends
 ==================================
 
-By default, `pycsw <http://pycsw.org/>`_ is the CSW server implementation which is provided with GeoNode. This section will explain how to configure GeoNode to operate against alternate CSW server implementations.
+`pycsw <http://pycsw.org/>`_ is the default CSW server implementation provided with GeoNode. This section will explain how to configure GeoNode to operate against alternate CSW server implementations.
 
 Supported CSW server implementations
 ------------------------------------

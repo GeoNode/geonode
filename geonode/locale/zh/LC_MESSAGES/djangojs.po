@@ -19,35 +19,35 @@ msgstr ""
 
 #: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
 msgid "Add user..."
-msgstr ""
+msgstr "添加用户......"
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "谁能浏览并下载此数据？"
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Anyone"
-msgstr ""
+msgstr "任何人"
 
 #: static/geonode/script/GeoNode.js:36 static/geonode/script/GeoNode.js.c:38
 msgid "Any registered user"
-msgstr ""
+msgstr "任何注册用户"
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Only users who can edit"
-msgstr ""
+msgstr "仅限有编辑权限的用户"
 
 #: static/geonode/script/GeoNode.js:37
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "谁能编辑此数据"
 
 #: static/geonode/script/GeoNode.js:38
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "仅限以下用户或组织"
 
 #: static/geonode/script/GeoNode.js:39
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "谁能管理编辑此数据"
 
 #: templates/lang.js:9 templates/lang.js.c:12
 msgid "Add Layers"
@@ -180,11 +180,11 @@ msgstr "缩放到下一个区域"
 
 #: templates/lang.js:43
 msgid "Zoom to Previous Extent"
-msgstr "缩放到下一个区域"
+msgstr "缩放到上一个区域"
 
 #: templates/lang.js:44
 msgid "This map has not yet been saved."
-msgstr "地图还没保存"
+msgstr "地图还未被保存"
 
 #: templates/lang.js:46 templates/lang.js.c:115
 msgid "Premium"
@@ -288,7 +288,7 @@ msgstr "缩放级别"
 
 #: templates/lang.js:71
 msgid "Zoom to Layer Extent"
-msgstr "缩放范围"
+msgstr "缩放到图层范围"
 
 #: templates/lang.js:72
 msgid "Zoom to Visible Extent"
@@ -324,7 +324,7 @@ msgstr "名称"
 
 #: templates/lang.js:98
 msgid "Queryable"
-msgstr "查询"
+msgstr "可查询"
 
 #: templates/lang.js:105
 msgid "No background"
@@ -334,7 +334,7 @@ msgstr "没有背景"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr "您可以随时发布地图到网上！只需复制下面的HTML地图代码嵌入到您的网页："
+msgstr "您可以随时发布地图到网上！只需复制下面的HTML代码即可将地图嵌入到您的网页："
 
 #: templates/lang.js:126 templates/lang.js.c:192
 msgid "Abstract:"
@@ -342,7 +342,7 @@ msgstr "摘要："
 
 #: templates/lang.js:127 templates/lang.js.c:194
 msgid "No attribution information is provided for this layer."
-msgstr "此图层提供无属性信息。"
+msgstr "没有此图层的属性信息。"
 
 #: templates/lang.js:128 templates/lang.js.c:195
 msgid "Provided by:"
@@ -354,7 +354,7 @@ msgstr "下载："
 
 #: templates/lang.js:130 templates/lang.js.c:198
 msgid "No keywords are listed for this layer."
-msgstr "无关键字列出此图层。"
+msgstr "没有关于此图层的关键词。"
 
 #: templates/lang.js:131 templates/lang.js.c:199
 msgid "Keywords:"
@@ -394,7 +394,7 @@ msgstr "在这里输入评论。"
 
 #: templates/lang.js:145
 msgid "Creating PDF..."
-msgstr "生成PDF..."
+msgstr "生成PDF中..."
 
 #: templates/lang.js:154
 msgid "Last Modified"
