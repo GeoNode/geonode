@@ -15,10 +15,17 @@ TEMPLATE_DEBUG = True
 DEFAULT_FROM_EMAIL="me@me.com"
 NO_REPLY_EMAIL = "do-not-reply@worldmap.harvard.edu"
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'naturegirls@gmail.com'
+EMAIL_HOST_PASSWORD = '@makihi69gmail2'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Your Name', 'mrbertrand@gmail.com'),
 )
 
 #Email settings (example gmail account) for registration, passwords, etc
@@ -318,7 +325,7 @@ CUSTOM_ORG_AUTH_TEXT = 'Are you affiliated with XXXX?'
 CUSTOM_GROUP_EMAIL_SUFFIX = ''
 #URL to redirect to if user indicates they are a member of your organization
 CUSTOM_AUTH_URL = ''
-
+CUSTOM_AUTH_COOKIE=''
 
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE=False

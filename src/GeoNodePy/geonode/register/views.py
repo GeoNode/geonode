@@ -85,7 +85,7 @@ def registerOrganizationUser(request, success_url=None,
 
 def registercompleteOrganizationUser(request, template_name='registration/registration_complete.html',):
 
-    if settings.ORG_AUTH_COOKIE in request.COOKIES:
+    if settings.CUSTOM_AUTH_COOKIE in request.COOKIES and  "group_username" in request.session:
         username = request.session["group_username"]
         user = User.objects.get(username=username)
         userProfile = user.get_profile()
