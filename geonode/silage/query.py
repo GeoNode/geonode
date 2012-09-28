@@ -17,7 +17,10 @@
 #
 #########################################################################
 
+from geonode.silage.util import resolve_extension
 from geonode.utils import _split_query
+
+from django.conf import settings
 
 from datetime import date
 from datetime import timedelta
@@ -36,6 +39,12 @@ _SEARCH_PARAMS = [
     'end',
     'exclude',
     'cache']
+    
+# settings API
+_search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
+_SEARCH_PARAMS.extend(_search_config.get('extra_query',[]))
+_extra_context = resolve_extension('extra_context')
+# end settings API
     
 
 class BadQuery(Exception):

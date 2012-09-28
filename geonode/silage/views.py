@@ -43,13 +43,7 @@ import zlib
 
 logger = logging.getLogger(__name__)
 
-_SEARCH_PARAMS = ['bytype','bykw','byowner','byextent','byadded','byperiod','exclude','cache']
-
-# settings API
-_search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
-_SEARCH_PARAMS.extend(_search_config.get('extra_query',[]))
 _extra_context = resolve_extension('extra_context')
-# end settings API
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 

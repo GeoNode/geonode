@@ -1,3 +1,5 @@
+from geonode.silage import util
+
 from django.test import TestCase
 from django.test.client import Client
 import json
@@ -148,3 +150,18 @@ class SilageTest(TestCase):
         self.search_assert(self.request('populartag'), n_results=10, n_total=17)
         self.search_assert(self.request('maptagunique'), n_results=1, n_total=1)
         self.search_assert(self.request('layertagunique'), n_results=1, n_total=1)
+        
+    def test_author_endpoint(self):
+        resp = self.c.get('/search/api/authors')
+        jsobj = json.loads(resp.content)
+        self.assertEquals(6, jsobj['total'])
+        
+    def test_search_page(self):
+        resp = self.c.get('/search/')
+        self.assertEquals(200, resp.status_code)
+
+    def test_util(self):
+        jdate = util.iso_str_to_jdate('-5000-01-01T12:00:00Z')
+        self.assertEquals(jdate, -105192)
+        roundtripped = util.jdate_to_approx_iso_str(jdate)
+        self.assertEquals(roundtripped, '-4999-01-03')

@@ -115,25 +115,25 @@ class MapNormalizer(Normalizer):
     def last_modified(self):
         return self.o.last_modified
     def populate(self, doc, exclude):
-        map = self.o
+        mapobj = self.o
         # resolve any local layers and their keywords
-        local_kw = [ l.keyword_list() for l in map.local_layers if l.keywords]
+        local_kw = [ l.keyword_list() for l in mapobj.local_layers if l.keywords]
         keywords = local_kw and list(set( reduce(lambda a,b: a+b, local_kw))) or []
-        doc['id'] = map.id
-        doc['title'] = map.title
-        doc['abstract'] = defaultfilters.linebreaks(map.abstract)
+        doc['id'] = mapobj.id
+        doc['title'] = mapobj.title
+        doc['abstract'] = defaultfilters.linebreaks(mapobj.abstract)
         doc['topic'] = '', # @todo
-        doc['detail'] = reverse('map_detail', args=(map.id,))
-        doc['owner'] = map.owner.username
+        doc['detail'] = reverse('map_detail', args=(mapobj.id,))
+        doc['owner'] = mapobj.owner.username
 #        doc['owner_detail'] = reverse('about_storyteller', args=(map.owner.username,))
-        doc['owner_detail'] = map.owner.get_absolute_url()
-        doc['last_modified'] = extension.date_fmt(map.last_modified)
+        doc['owner_detail'] = mapobj.owner.get_absolute_url()
+        doc['last_modified'] = extension.date_fmt(mapobj.last_modified)
         doc['_type'] = 'map'
         doc['_display_type'] = extension.MAP_DISPLAY
 #        doc['thumb'] = map.get_thumbnail_url()
         doc['keywords'] = keywords
         if 'bbox' not in exclude:
-            doc['bbox'] = _bbox(map)
+            doc['bbox'] = _bbox(mapobj)
         return doc
 
 
