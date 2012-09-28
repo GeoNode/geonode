@@ -1,9 +1,6 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, \
      get_csw, LayerCategory, LayerAttribute, MapSnapshot, MapStats, LayerStats, CHARSETS
-from geonode.maps.gs_helpers import get_sld_for, get_postgis_bbox
-from geonode.maps.encode import num_encode, num_decode
-from geonode.profile.forms import ContactProfileForm
 from geoserver.resource import FeatureType, Coverage
 import base64
 from django import forms
@@ -1016,7 +1013,7 @@ def official_site(request, site):
     return view(request, str(map.id))
 
 def embed(request, mapid=None, snapshot=None):
-    if mapid is None and permalink is None:
+    if mapid is None:
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
         config = DEFAULT_MAP_CONFIG
     else:
@@ -2197,8 +2194,8 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             | Q(keywords__name__icontains=keyword)
             | Q(abstract__icontains=keyword))
 
-    officialMaps = maps.filter(Q(officialurl__isnull=False)).exclude(officialurl='tweetmap')
-    maps = maps.filter(Q(officialurl__isnull=True))
+    officialMaps = map_query.filter(Q(officialurl__isnull=False)).exclude(officialurl='tweetmap')
+    map_query = map_query.filter(Q(officialurl__isnull=True))
 
     if sort_field:
         order_by = ("" if sort_dir == "ASC" else "-") + sort_field
