@@ -8,7 +8,7 @@
       <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
       <style>
         body {
-          padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
+          padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
         }
         footer {
           margin-top: 30px;
@@ -104,17 +104,18 @@
         </div>
       </div>
     </div>
-    <div class="container">
-      <div class="row">
+    <div  id="main" class="container">
+
         {% block body_outer %}
+         <div class="row">
           <div class="span8">
             {% block main %}{% endblock %}
           </div>
           <div class="span4">
             {% block sidebar %}{% endblock %}
           </div>
+         </div>
         {% endblock %}
-      </div>
 
       <footer class="footer">
         {% block footer %}
