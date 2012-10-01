@@ -102,9 +102,7 @@ img.olTileImage {
   }
 
   li.user-avatar {
-    a {
-      padding-right:0;
-    }
+    padding: 15px 0 16px;
   }
 
   li.user {
@@ -148,13 +146,17 @@ img.olTileImage {
     background:@blueBright;
     border:0;
 
+    input[type="text"] {
+      width:200px;
+    }
+
     select {
       font-size:11px;
       width:110px;
     }
 
     button {
-      margin-left:0;
+      margin:11px 5px 11px 0;
     }
 
     a {
@@ -176,6 +178,10 @@ img.olTileImage {
         background:@grayLighter;
         color:@grayDark;
       }
+    }
+
+    i {
+      color:@textColor;
     }
   }
 }
@@ -459,6 +465,26 @@ section.widget-mini {
   background-color: @white;
   border: 1px solid #ccc;
   .box-shadow(none);
+}
+
+.placeholder {
+  float:left;
+  margin:0 15px 15px 0;
+  background:#dddeda;
+  text-align:center;
+  color:@graySp;
+  display:table-cell;vertical-align: middle;
+
+  &.pl-153-113 {
+    .size(63px, 153px);
+    padding-top:50px;
+  }
+
+  &.pl-64-70 {
+    .size(50px, 64px);
+    padding-top:20px;
+    font-size:11px;
+  }
 }
 
 .list article {
