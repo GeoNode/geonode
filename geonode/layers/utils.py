@@ -457,7 +457,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
                                                        workspace=gs_resource.store.workspace.name,
                                                        defaults=defaults)
 
-    
+
     saved_layer.keywords.add(*keywords)
 
     # Step 9. Create the points of contact records for the layer
@@ -582,7 +582,8 @@ def file_upload(filename, user=None, title=None, skip=True, overwrite=False, key
     return new_layer
 
 
-def upload(incoming, user=None, overwrite=False, keywords = (), skip=True, ignore_errors=True, verbosity=1, console=sys.stdout):
+def upload(incoming, user=None, overwrite=False, keywords = (), skip=True,
+        ignore_errors=True, verbosity=1, console=None):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -594,12 +595,15 @@ def upload(incoming, user=None, overwrite=False, keywords = (), skip=True, ignor
         print >> console, "Verifying that GeoNode is running ..."
     check_geonode_is_up()
 
+    if console is None:
+        console = open(os.devnull, 'w')
+
     potential_files = []
     if os.path.isfile(incoming):
         ___, short_filename = os.path.split(incoming)
         basename, extension = os.path.splitext(short_filename)
         filename = incoming
- 
+
         if extension in ['.tif', '.shp', '.zip']:
             potential_files.append((basename, filename))
 
@@ -702,7 +706,7 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
 
     try:
         cat.add_data_to_store(ds, name, data,
-            overwrite=overwrite, charset=charset)        
+            overwrite=overwrite, charset=charset)
         return ds, cat.get_resource(name, store=ds)
     except Exception:
         delete_from_postgis(name)
