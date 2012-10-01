@@ -1,6 +1,10 @@
 {% load url from future %}
+{% load i18n %}
+
 <article>
-  <a href="{% url "layer_detail" layer.typename %}"><img src="{{ STATIC_URL }}theme/img/placeholder.png" width="153" height="113" alt="placeholder" border=0/></a>
+  <a href="{% url "layer_detail" layer.typename %}">
+      <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
+  </a>
   <div class="details">
     <a href="{% url "layer_detail" layer.typename %}"><h3>{{ layer.title }}</h3></a>
     <div class="meta">by <a href="{% url "profile_detail" layer.owner.username %}">{{ map.owner }}</a>, {{ layer.date|timesince }} ago</div>
