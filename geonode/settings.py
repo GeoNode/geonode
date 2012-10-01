@@ -276,7 +276,7 @@ REGISTRATION_OPEN = False
 
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+TEST_RUNNER = 'geonode.runner.GeonodeTestSuiteRunner'
 
 # Arguments for the test runner
 NOSE_ARGS = [
