@@ -41,13 +41,8 @@ cp coverage.xml integration-coverage.xml
 cp -R coverage integration-coverage
 
 # Run the catalogue tests
-paver reset
 cp /home/jenkins/local_settings_with_coverage.py geonode/local_settings.py
-paver start
-sleep 30
-paver setup_data
-python manage.py test geonode.tests.csw --noinput
-paver stop
+paver test_integration -n geonode.tests.csw
 cp TEST-nose.xml csw-TEST-nose.xml
 cp coverage.xml csw-coverage.xml
 cp coverage -R csw-coverage
