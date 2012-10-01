@@ -22,12 +22,13 @@ from optparse import make_option
 from geonode.layers.utils import upload
 import traceback
 import datetime
+import sys
 
 class Command(BaseCommand):
     help = ("Brings a data file or a directory full of data files into a"
             "GeoNode site.  Layers are added to the Django database, the"
             "GeoServer configuration, and the GeoNetwork metadata index.")
-            
+
     args = 'path [path...]'
 
     option_list = BaseCommand.option_list + (
@@ -40,7 +41,7 @@ class Command(BaseCommand):
                 help='Stop after any errors are encountered.'),
             make_option('-o', '--overwrite', dest='overwrite', default=False, action="store_true",
                 help="Overwrite existing layers if discovered (defaults False)"),
-            make_option('-k', '--keywords', dest='keywords', default="", 
+            make_option('-k', '--keywords', dest='keywords', default="",
                 help="The default keywords for the imported layer(s). Will be the same for all imported layers if multiple imports are done in one command")
         )
 
@@ -49,6 +50,11 @@ class Command(BaseCommand):
         ignore_errors = options.get('ignore_errors')
         user = options.get('user')
         overwrite = options.get('overwrite')
+
+        if verbosity > 0:
+            console = sys.stdout
+        else:
+            console = None
 
         if overwrite == True:
             skip = False
@@ -59,7 +65,8 @@ class Command(BaseCommand):
         start = datetime.datetime.now()
         output = []
         for path in args:
-            out = upload(path, user=user, overwrite=overwrite, skip=skip, keywords=keywords, verbosity=verbosity)
+            out = upload(path, user=user, overwrite=overwrite, skip=skip,
+                    keywords=keywords, verbosity=verbosity, console=console)
             output.extend(out)
 
         updated = [dict_['file'] for dict_ in output if dict_['status']=='updated']
